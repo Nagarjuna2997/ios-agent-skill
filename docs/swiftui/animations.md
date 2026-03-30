@@ -613,3 +613,533 @@ struct PulsingDot: View {
 4. Use `Animation.spring` over custom spring parameters when possible -- the system optimizes it.
 5. Profile with Instruments (Core Animation template) to verify 60fps.
 6. Reduce use of `blur` and `shadow` modifiers during active animations.
+
+---
+
+## iOS 17/18 Advanced Visual Effects
+
+### visualEffect Modifier (iOS 17+)
+
+The `.visualEffect` modifier lets you read a view's geometry proxy and apply visual transforms without triggering layout passes. Unlike `GeometryReader`, it never changes the size or position of the view in the layout -- it only applies render-time effects like scale, offset, rotation, opacity, and blur.
+
+```swift
+// Basic usage -- read size and position for visual-only transforms
+Rectangle()
+    .fill(.blue)
+    .frame(width: 200, height: 200)
+    .visualEffect { content, proxy in
+        content
+            .offset(y: proxy.frame(in: .global).minY * 0.1)
+            .scaleEffect(proxy.size.width / 300)
+    }
+```
+
+**When to use `visualEffect` instead of `GeometryReader`:**
+- Parallax scrolling effects
+- Scale or rotation based on scroll position
+- Blur or opacity that depends on a view's position
+- Any visual tweak that should not alter layout
+
+#### Complete Parallax Scroll Example
+
+```swift
+struct ParallaxScrollView: View {
+    let images = ["photo1", "photo2", "photo3", "photo4", "photo5"]
+
+    var body: some View {
+        ScrollView {
+            LazyVStack(spacing: 16) {
+                ForEach(images, id: \.self) { imageName in
+                    ParallaxCard(imageName: imageName)
+                }
+            }
+            .padding()
+        }
+    }
+}
+
+struct ParallaxCard: View {
+    let imageName: String
+
+    var body: some View {
+        RoundedRectangle(cornerRadius: 20)
+            .fill(.gray.opacity(0.2))
+            .frame(height: 250)
+            .overlay {
+                Image(imageName)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(height: 300) // Slightly taller than container
+                    .visualEffect { content, proxy in
+                        let frame = proxy.frame(in: .scrollView(axis: .vertical))
+                        let distance = min(0, frame.minY)
+                        return content
+                            .offset(y: -distance * 0.4)
+                    }
+            }
+            .clipShape(RoundedRectangle(cornerRadius: 20))
+            .shadow(color: .black.opacity(0.15), radius: 10, y: 5)
+    }
+}
+```
+
+#### Position-Based Rotation and Scale
+
+```swift
+struct VisualEffectGallery: View {
+    let colors: [Color] = [.red, .orange, .yellow, .green, .blue, .purple]
+
+    var body: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 16) {
+                ForEach(colors, id: \.self) { color in
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(color.gradient)
+                        .frame(width: 200, height: 280)
+                        .visualEffect { content, proxy in
+                            let frame = proxy.frame(in: .scrollView(axis: .horizontal))
+                            let midX = frame.midX
+                            let screenMidX = UIScreen.main.bounds.width / 2
+                            let distance = abs(midX - screenMidX)
+                            let maxDistance: CGFloat = 300
+                            let normalizedDistance = min(distance / maxDistance, 1.0)
+
+                            return content
+                                .scaleEffect(1.0 - normalizedDistance * 0.15)
+                                .rotation3DEffect(
+                                    .degrees(Double(midX - screenMidX) / 10),
+                                    axis: (x: 0, y: 1, z: 0)
+                                )
+                                .opacity(1.0 - Double(normalizedDistance) * 0.3)
+                        }
+                }
+            }
+            .padding(.horizontal, 80)
+        }
+        .scrollTargetBehavior(.viewAligned)
+    }
+}
+```
+
+---
+
+### scrollTransition (iOS 17+)
+
+The `.scrollTransition` modifier animates views as they enter and leave the visible area of a `ScrollView`. It provides a `phase` value that indicates where the view is relative to the viewport.
+
+**Phase values:**
+- `.topLeading` -- the view is above or to the leading side of the viewport (about to enter from top/leading).
+- `.identity` -- the view is fully within the visible area.
+- `.bottomTrailing` -- the view is below or to the trailing side of the viewport (about to exit bottom/trailing).
+
+```swift
+// Basic fade and scale on scroll
+ScrollView {
+    LazyVStack(spacing: 16) {
+        ForEach(0..<20) { index in
+            RoundedRectangle(cornerRadius: 16)
+                .fill(.blue.gradient)
+                .frame(height: 120)
+                .overlay {
+                    Text("Card \(index)")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                        .foregroundStyle(.white)
+                }
+                .scrollTransition { content, phase in
+                    content
+                        .opacity(phase.isIdentity ? 1.0 : 0.3)
+                        .scaleEffect(phase.isIdentity ? 1.0 : 0.85)
+                }
+        }
+    }
+    .padding()
+}
+```
+
+#### Complete Example: Cards That Scale Up as They Enter
+
+```swift
+struct ScrollTransitionDemo: View {
+    struct CardItem: Identifiable {
+        let id = UUID()
+        let title: String
+        let subtitle: String
+        let color: Color
+    }
+
+    let items: [CardItem] = [
+        CardItem(title: "Design", subtitle: "Create beautiful interfaces", color: .blue),
+        CardItem(title: "Develop", subtitle: "Build with SwiftUI", color: .purple),
+        CardItem(title: "Test", subtitle: "Ensure quality everywhere", color: .orange),
+        CardItem(title: "Deploy", subtitle: "Ship to the App Store", color: .green),
+        CardItem(title: "Monitor", subtitle: "Track performance", color: .red),
+        CardItem(title: "Iterate", subtitle: "Improve continuously", color: .teal),
+        CardItem(title: "Scale", subtitle: "Grow your user base", color: .indigo),
+        CardItem(title: "Optimize", subtitle: "Fine-tune performance", color: .pink),
+    ]
+
+    var body: some View {
+        ScrollView {
+            LazyVStack(spacing: 20) {
+                ForEach(items) { item in
+                    HStack(spacing: 16) {
+                        Circle()
+                            .fill(item.color.gradient)
+                            .frame(width: 56, height: 56)
+                            .overlay {
+                                Image(systemName: "star.fill")
+                                    .foregroundStyle(.white)
+                                    .font(.title3)
+                            }
+
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(item.title)
+                                .font(.headline)
+                            Text(item.subtitle)
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
+
+                        Spacer()
+
+                        Image(systemName: "chevron.right")
+                            .foregroundStyle(.tertiary)
+                    }
+                    .padding()
+                    .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
+                    .scrollTransition(.animated(.spring(duration: 0.4))) { content, phase in
+                        content
+                            .opacity(phase.isIdentity ? 1.0 : 0.0)
+                            .scaleEffect(phase.isIdentity ? 1.0 : 0.75)
+                            .offset(y: phase == .bottomTrailing ? 30 : phase == .topLeading ? -30 : 0)
+                            .blur(radius: phase.isIdentity ? 0 : 2)
+                    }
+                }
+            }
+            .padding()
+        }
+    }
+}
+```
+
+#### Horizontal Scroll with Rotation
+
+```swift
+ScrollView(.horizontal, showsIndicators: false) {
+    HStack(spacing: 12) {
+        ForEach(0..<10) { index in
+            RoundedRectangle(cornerRadius: 20)
+                .fill(Color(hue: Double(index) / 10, saturation: 0.7, brightness: 0.9).gradient)
+                .frame(width: 200, height: 280)
+                .scrollTransition(.interactive) { content, phase in
+                    content
+                        .rotation3DEffect(
+                            .degrees(phase.value * 25),
+                            axis: (x: 0, y: 1, z: 0)
+                        )
+                        .scaleEffect(phase.isIdentity ? 1.0 : 0.9)
+                }
+        }
+    }
+    .padding(.horizontal)
+}
+.scrollTargetBehavior(.viewAligned)
+```
+
+---
+
+### MeshGradient (iOS 18+)
+
+`MeshGradient` creates a two-dimensional gradient defined by a grid of control points, each with an associated color. The colors blend smoothly across the mesh, creating organic, flowing gradients far more complex than linear or radial gradients.
+
+```swift
+// Static mesh gradient
+MeshGradient(
+    width: 3,
+    height: 3,
+    points: [
+        [0.0, 0.0], [0.5, 0.0], [1.0, 0.0],
+        [0.0, 0.5], [0.5, 0.5], [1.0, 0.5],
+        [0.0, 1.0], [0.5, 1.0], [1.0, 1.0]
+    ],
+    colors: [
+        .red,    .purple, .indigo,
+        .orange, .pink,   .blue,
+        .yellow, .mint,   .teal
+    ]
+)
+.frame(width: 300, height: 300)
+.clipShape(RoundedRectangle(cornerRadius: 24))
+```
+
+#### Complete Animated Mesh Gradient Background
+
+```swift
+struct AnimatedMeshBackground: View {
+    @State private var animationPhase: CGFloat = 0.0
+
+    var body: some View {
+        TimelineView(.animation) { context in
+            let time = context.date.timeIntervalSinceReferenceDate
+
+            MeshGradient(
+                width: 3,
+                height: 3,
+                points: [
+                    [0.0, 0.0],
+                    [Float(0.5 + 0.3 * cos(time * 0.7)), 0.0],
+                    [1.0, 0.0],
+
+                    [0.0, Float(0.5 + 0.2 * sin(time * 0.5))],
+                    [Float(0.5 + 0.2 * sin(time * 0.8)), Float(0.5 + 0.2 * cos(time * 0.6))],
+                    [1.0, Float(0.5 + 0.3 * sin(time * 0.4))],
+
+                    [0.0, 1.0],
+                    [Float(0.5 + 0.2 * sin(time * 0.9)), 1.0],
+                    [1.0, 1.0]
+                ],
+                colors: [
+                    .red,    .purple, .indigo,
+                    .orange, .pink,   .blue,
+                    .yellow, .mint,   .teal
+                ]
+            )
+            .ignoresSafeArea()
+        }
+    }
+}
+
+// Usage as a background
+struct MeshGradientScreen: View {
+    var body: some View {
+        ZStack {
+            AnimatedMeshBackground()
+
+            VStack(spacing: 16) {
+                Text("Welcome")
+                    .font(.largeTitle)
+                    .fontWeight(.bold)
+                    .foregroundStyle(.white)
+
+                Text("Beautiful animated gradients")
+                    .font(.title3)
+                    .foregroundStyle(.white.opacity(0.8))
+            }
+        }
+    }
+}
+```
+
+#### Mesh Gradient with Color Cycling
+
+```swift
+struct ColorCyclingMesh: View {
+    let baseColors: [Color] = [
+        .red, .orange, .yellow,
+        .green, .mint, .teal,
+        .blue, .indigo, .purple
+    ]
+
+    var body: some View {
+        TimelineView(.animation) { context in
+            let time = context.date.timeIntervalSinceReferenceDate
+            let shift = Int(time * 2) % baseColors.count
+
+            MeshGradient(
+                width: 3,
+                height: 3,
+                points: [
+                    [0.0, 0.0], [0.5, 0.0], [1.0, 0.0],
+                    [0.0, 0.5], [0.5, 0.5], [1.0, 0.5],
+                    [0.0, 1.0], [0.5, 1.0], [1.0, 1.0]
+                ],
+                colors: (0..<9).map { index in
+                    baseColors[(index + shift) % baseColors.count]
+                }
+            )
+            .ignoresSafeArea()
+        }
+    }
+}
+```
+
+---
+
+### TextRenderer Protocol (iOS 18+)
+
+The `TextRenderer` protocol lets you customize how each glyph or line of text is drawn. You conform to `TextRenderer` and implement `draw(layout:in:)`, where you receive the resolved text layout and a `GraphicsContext`. This enables per-character animations like typing effects, wave motion, and fade-in sequences.
+
+#### TextRenderer Protocol Basics
+
+```swift
+import SwiftUI
+
+struct WaveTextRenderer: TextRenderer {
+    var timeOffset: Double
+
+    var animatableData: Double {
+        get { timeOffset }
+        set { timeOffset = newValue }
+    }
+
+    func draw(layout: Text.Layout, in context: inout GraphicsContext) {
+        for line in layout {
+            for run in line {
+                for (index, glyph) in run.enumerated() {
+                    var copy = context
+                    let yOffset = sin(Double(index) * 0.5 + timeOffset) * 5
+                    copy.translateBy(x: 0, y: yOffset)
+                    copy.draw(glyph)
+                }
+            }
+        }
+    }
+}
+```
+
+#### Complete Custom Text Animation: Per-Character Fade-In
+
+```swift
+import SwiftUI
+
+struct FadeInTextRenderer: TextRenderer {
+    var progress: Double
+
+    var animatableData: Double {
+        get { progress }
+        set { progress = newValue }
+    }
+
+    func draw(layout: Text.Layout, in context: inout GraphicsContext) {
+        var characterIndex = 0
+        var totalCharacters = 0
+
+        // Count total characters
+        for line in layout {
+            for run in line {
+                for _ in run {
+                    totalCharacters += 1
+                }
+            }
+        }
+
+        // Draw each character with staggered opacity
+        for line in layout {
+            for run in line {
+                for glyph in run {
+                    let threshold = Double(characterIndex) / Double(max(totalCharacters - 1, 1))
+                    let characterProgress = max(0, min(1, (progress - threshold) * Double(totalCharacters) / 3.0))
+
+                    var copy = context
+                    copy.opacity = characterProgress
+                    let yShift = (1.0 - characterProgress) * 10
+                    copy.translateBy(x: 0, y: yShift)
+                    copy.draw(glyph)
+
+                    characterIndex += 1
+                }
+            }
+        }
+    }
+}
+
+struct FadeInTextDemo: View {
+    @State private var progress: Double = 0.0
+
+    var body: some View {
+        VStack(spacing: 40) {
+            Text("Hello, SwiftUI!")
+                .font(.largeTitle)
+                .fontWeight(.bold)
+                .textRenderer(FadeInTextRenderer(progress: progress))
+
+            Button("Animate") {
+                progress = 0
+                withAnimation(.easeInOut(duration: 1.5)) {
+                    progress = 1.0
+                }
+            }
+            .buttonStyle(.borderedProminent)
+        }
+        .padding()
+    }
+}
+```
+
+#### Typing Effect with TextRenderer
+
+```swift
+struct TypingTextRenderer: TextRenderer {
+    var visibleCount: Int
+
+    var animatableData: Double {
+        get { Double(visibleCount) }
+        set { visibleCount = Int(newValue) }
+    }
+
+    func draw(layout: Text.Layout, in context: inout GraphicsContext) {
+        var characterIndex = 0
+        for line in layout {
+            for run in line {
+                for glyph in run {
+                    if characterIndex < visibleCount {
+                        context.draw(glyph)
+                    }
+                    characterIndex += 1
+                }
+            }
+        }
+    }
+}
+
+struct TypingEffectDemo: View {
+    @State private var visibleCount = 0
+    private let message = "Welcome to the future of text rendering."
+
+    var body: some View {
+        VStack(spacing: 30) {
+            Text(message)
+                .font(.title2)
+                .fontWeight(.medium)
+                .textRenderer(TypingTextRenderer(visibleCount: visibleCount))
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            Button("Start Typing") {
+                visibleCount = 0
+                withAnimation(.linear(duration: 2.0)) {
+                    visibleCount = message.count
+                }
+            }
+            .buttonStyle(.borderedProminent)
+        }
+        .padding()
+    }
+}
+```
+
+#### Wave Text Animation
+
+```swift
+struct WaveTextDemo: View {
+    @State private var wavePhase: Double = 0
+
+    var body: some View {
+        Text("SwiftUI Waves")
+            .font(.largeTitle)
+            .fontWeight(.heavy)
+            .textRenderer(WaveTextRenderer(timeOffset: wavePhase))
+            .onAppear {
+                withAnimation(.linear(duration: 2).repeatForever(autoreverses: false)) {
+                    wavePhase = .pi * 2
+                }
+            }
+    }
+}
+```
+
+**Key rules for TextRenderer:**
+- The `animatableData` property is required if you want SwiftUI to interpolate your renderer over time.
+- `Text.Layout` provides an iterable hierarchy: layout -> lines -> runs -> glyphs.
+- Use `GraphicsContext.draw(_:)` to render individual glyphs. You can modify the context (translate, rotate, set opacity) before each draw call.
+- TextRenderer only works with `Text` views. It does not apply to `TextField`, `Label`, or other text-containing views.
