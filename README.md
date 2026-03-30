@@ -77,18 +77,52 @@ You are an expert iOS/Swift developer. Reference the ios-agent-skill knowledge b
 
 ## Compatibility
 
+### IDE-Based AI Assistants
+
 | Platform | Entry File | Auto-detected |
 |----------|-----------|---------------|
 | **Claude Code** | `CLAUDE.md` | Yes |
-| **Antigravity** | `AGENTS.md` | Yes |
-| **Codex** | `SKILL.md` | Yes |
-| **Cursor** | `.cursorrules` | Yes |
+| **OpenAI Codex CLI** | `AGENTS.md` | Yes |
+| **Gemini CLI / Antigravity** | `GEMINI.md`, `AGENTS.md` | Yes |
+| **Cursor** | `.cursor/rules/ios-skill.md`, `.cursorrules` | Yes |
 | **GitHub Copilot** | `.github/copilot-instructions.md` | Yes |
-| **Windsurf** | `CLAUDE.md` or `.cursorrules` | Yes |
-| **Cline / Roo Code** | `CLAUDE.md` | Yes |
-| **Any AI Agent** | Copy any entry file to project root | Manual |
+| **Windsurf (Codeium)** | `.windsurf/rules/ios-skill.md`, `.windsurfrules` | Yes |
+| **JetBrains AI Assistant** | `.aiassistant/rules/ios-skill.md` | Yes |
+| **JetBrains Junie** | `.junie/guidelines.md` | Yes |
+| **Zed AI** | `.rules` | Yes |
+| **Trae (ByteDance)** | `.trae/rules/ios-skill.md` | Yes |
+| **Amazon Q Developer** | `.amazonq/rules/ios-skill.md` | Yes |
+| **Cline** | `.clinerules` | Yes |
+| **Roo Code** | `.roo/rules/ios-skill.md`, `.roorules` | Yes |
+| **KiloCode** | `.kilocode/rules/ios-skill.md`, `.kilocoderules` | Yes |
+| **Continue.dev / PearAI** | `.continue/rules/ios-skill.md`, `.continuerules` | Yes |
+| **Augment Code** | `.augment/rules/ios-skill.md` | Yes |
+| **Tabnine** | `.tabnine/guidelines/ios-skill.md` | Yes |
+| **Aider** | `CONVENTIONS.md` | Via `--read` flag |
+| **Sourcegraph Amp** | `AGENTS.md` | Yes |
 
-All entry files contain **identical content** — the same expert iOS/Swift skill instructions.
+### Cloud / Browser-Based Builders
+
+| Platform | Entry File | Auto-detected |
+|----------|-----------|---------------|
+| **Replit Agent** | `replit.md` | Yes |
+| **Lovable** | `AGENTS.md` | Yes |
+| **Bolt.new** | `CLAUDE.md` | Partial |
+| **OpenCode** | `AGENTS.md` | Yes |
+| **OpenHands** | `AGENTS.md` | Yes |
+
+### Universal Files (in this repo)
+
+| File | Read By |
+|------|---------|
+| `AGENTS.md` | Codex, Gemini CLI, Antigravity, Cursor, Copilot, Sourcegraph Amp, Aider, Continue, Zed, Trae, OpenCode, OpenHands, Replit, Lovable, Augment, Junie |
+| `CLAUDE.md` | Claude Code, Windsurf, Cline, Roo, Bolt, Lovable, Trae |
+| `GEMINI.md` | Gemini CLI, Antigravity |
+| `SKILL.md` | Codex |
+| `.cursorrules` | Cursor (legacy), Zed, Cline, OpenHands |
+| `.rules` | Zed AI (highest priority) |
+
+All files contain **identical content** — the same expert iOS/Swift skill instructions.
 
 ---
 
