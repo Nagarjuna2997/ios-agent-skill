@@ -193,6 +193,7 @@ This repository contains comprehensive documentation. Consult these files when b
 - `docs/design/typography-system.md` — Text styles, custom fonts, SF Symbols, Dynamic Type, text effects
 - `docs/design/stunning-ui-patterns.md` — 20+ stunning UI patterns with full SwiftUI code (glass cards, neumorphism, parallax, shimmer, animated tabs, card stacks, and more)
 - `docs/design/interaction-standards.md` — Animation curves/durations, haptic feedback rules, SF Symbols guidelines, button style standards, loading/empty/error states, localization, privacy manifest, device support, preview standards
+- `docs/design/fonts-catalog.md` — Every iOS system font, 100+ Google Fonts, font pairing recipes, custom font setup, variable fonts, international fonts, FontManager utilities
 
 ### Swift Language
 - `docs/swift/swift-language.md` — Types, protocols, generics, macros, property wrappers

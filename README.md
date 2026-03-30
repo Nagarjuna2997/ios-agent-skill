@@ -91,6 +91,7 @@ The master skill file that makes Claude an iOS expert. Contains:
 | [typography-system.md](docs/design/typography-system.md) | Apple's 11 text styles, font weights & designs (.rounded, .serif, .monospaced), custom fonts, SF Symbols (rendering modes, variable values, effects), Dynamic Type, gradient text, shadow text, outlined text, animated text, AttributedString |
 | [stunning-ui-patterns.md](docs/design/stunning-ui-patterns.md) | 20+ production-ready UI patterns with full SwiftUI code: glassmorphism cards, neumorphic design, gradient cards, animated onboarding, parallax headers, bottom sheets, animated tab bars, profile cards, dashboard stats, floating action buttons, card stacks, shimmer loading, toast notifications, expandable cards, animated backgrounds, scroll-blur headers, chip layouts, rating stars |
 | [interaction-standards.md](docs/design/interaction-standards.md) | Animation curves & durations (micro/navigation/content/dismissal), haptic feedback rules (when to use which type), SF Symbols guidelines (weights, sizes, rendering modes, effects), 6 button styles (primary/secondary/destructive/ghost/icon/pill), loading/empty/error state patterns with ViewState enum, localization approach (String Catalogs, pluralization, RTL), privacy manifest (PrivacyInfo.xcprivacy), iPad adaptive layout (size classes, Stage Manager), preview standards (#Preview with dark mode, Dynamic Type, devices) |
+| [fonts-catalog.md](docs/design/fonts-catalog.md) | **The ultimate font bible** — Every Apple system font (SF Pro, SF Rounded, SF Mono, New York), 50+ built-in iOS fonts with exact Font.custom() names, top 100 Google Fonts with weights and use cases, 15 proven font pairings with SwiftUI code, step-by-step custom font setup, FontManager utility class, variable fonts guide, international fonts (Chinese, Japanese, Korean, Arabic, Hindi) |
 
 ### Reusable UI Components — `templates/common-patterns/`
 
@@ -270,11 +271,12 @@ ios-agent-skill/
 │   │   ├── animations.md
 │   │   └── gestures.md
 │   │
-│   ├── design/                            # 4 files — UI design system
+│   ├── design/                            # 5 files — UI design system
 │   │   ├── color-system.md               # 5 color palettes, gradients, materials
 │   │   ├── typography-system.md          # Text styles, fonts, SF Symbols, effects
 │   │   ├── stunning-ui-patterns.md       # 20+ beautiful UI patterns with code
-│   │   └── interaction-standards.md      # Animations, haptics, buttons, states, privacy
+│   │   ├── interaction-standards.md      # Animations, haptics, buttons, states, privacy
+│   │   └── fonts-catalog.md             # Every font for iOS — system, Google, pairings
 │   │
 │   ├── uikit/                             # 2 files — UIKit + SwiftUI bridging
 │   │   ├── uikit-essentials.md
@@ -343,7 +345,7 @@ ios-agent-skill/
     └── testing.md
 ```
 
-**68 files | 35,000+ lines | Stunning UIs + All Apple platforms covered**
+**69 files | 37,000+ lines | Stunning UIs + All Apple platforms covered**
 
 ---
 
