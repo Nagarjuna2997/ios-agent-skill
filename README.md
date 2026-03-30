@@ -118,6 +118,54 @@ The master skill file that makes Claude an iOS expert. Contains:
 | [widgetkit.md](docs/frameworks/widgetkit.md) | WidgetKit | TimelineProvider, widget families, Lock Screen widgets, Live Activities, interactive widgets (iOS 17+) |
 | [accessibility.md](docs/frameworks/accessibility.md) | Accessibility | VoiceOver, Dynamic Type, color contrast, reduce motion, custom actions, rotors, testing |
 
+### AI & Machine Learning — `docs/frameworks/ml/`
+
+| File | Framework | What You'll Learn |
+|------|-----------|-------------------|
+| [coreml.md](docs/frameworks/ml/coreml.md) | CoreML | Model loading, prediction, MLTensor, compute units (CPU/GPU/Neural Engine), VNCoreMLRequest, async prediction, model compilation |
+| [vision.md](docs/frameworks/ml/vision.md) | Vision | OCR (VNRecognizeTextRequest), face/barcode detection, person segmentation, object tracking, DataScannerViewController, ImageAnalyzer |
+| [natural-language.md](docs/frameworks/ml/natural-language.md) | NaturalLanguage | NLTokenizer, NLTagger (POS, NER), sentiment analysis, language detection, text embeddings, semantic similarity |
+| [speech.md](docs/frameworks/ml/speech.md) | Speech | SFSpeechRecognizer, on-device transcription, live audio with AVAudioEngine, language selection, confidence scores |
+| [on-device-ai.md](docs/frameworks/ml/on-device-ai.md) | On-Device AI | Foundation Models framework, SystemLanguageModel, guided generation, tool calling, MLX Swift, on-device LLM inference |
+
+### Advanced App Experience
+
+| File | Framework | What You'll Learn |
+|------|-----------|-------------------|
+| [activitykit.md](docs/frameworks/activitykit.md) | ActivityKit | Live Activities, Dynamic Island (compact/minimal/expanded), push-to-update, timer activities, delivery tracking |
+| [app-intents.md](docs/frameworks/app-intents.md) | App Intents | Siri shortcuts, Spotlight, widget configuration, Focus filters, Apple Intelligence integration |
+| [tipkit.md](docs/frameworks/tipkit.md) | TipKit | Contextual tooltips, tip rules (parameter/event), display frequency, feature discovery |
+| [app-clips.md](docs/frameworks/app-clips.md) | App Clips | Invocation URLs, NFC/QR triggers, App Clip Card, 15MB limit, data handoff to full app |
+| [photosui.md](docs/frameworks/photosui.md) | PhotosUI & AVKit | PhotosPicker, custom camera (AVCaptureSession), VideoPlayer, Picture-in-Picture |
+
+### Hardware Integration — `docs/frameworks/hardware/`
+
+| File | Framework | What You'll Learn |
+|------|-----------|-------------------|
+| [core-bluetooth.md](docs/frameworks/hardware/core-bluetooth.md) | CoreBluetooth | BLE scanning, connecting, services/characteristics, background execution, state restoration |
+| [healthkit.md](docs/frameworks/hardware/healthkit.md) | HealthKit | Health data queries, writing samples, statistics, workout sessions, background delivery |
+| [core-motion.md](docs/frameworks/hardware/core-motion.md) | CoreMotion | Accelerometer, gyroscope, device motion, pedometer, activity recognition, altimeter |
+| [core-nfc.md](docs/frameworks/hardware/core-nfc.md) | CoreNFC | NDEF tag reading/writing, ISO 14443/15693, background tag reading |
+| [homekit.md](docs/frameworks/hardware/homekit.md) | HomeKit & Matter | Home automation, accessories, triggers, scenes, Matter device pairing |
+
+### Data Services — `docs/frameworks/services/`
+
+| File | Framework | What You'll Learn |
+|------|-----------|-------------------|
+| [passkit.md](docs/frameworks/services/passkit.md) | PassKit & FinanceKit | Apple Pay checkout, PKPaymentRequest, Wallet passes, Apple Card queries |
+| [weatherkit.md](docs/frameworks/services/weatherkit.md) | WeatherKit | Current/hourly/daily forecasts, alerts, precipitation, attribution requirements |
+| [eventkit.md](docs/frameworks/services/eventkit.md) | EventKit | Calendar events, reminders, recurrence rules, EventKitUI |
+| [contacts.md](docs/frameworks/services/contacts.md) | Contacts | CNContactStore, fetch requests, contact picker, creating contacts |
+
+### Security & Engineering
+
+| File | Framework | What You'll Learn |
+|------|-----------|-------------------|
+| [cryptokit.md](docs/frameworks/cryptokit.md) | CryptoKit | SHA256 hashing, HMAC, AES-GCM encryption, P256 signing, Secure Enclave |
+| [oslog.md](docs/frameworks/oslog.md) | OSLog & MetricKit | Logger, log levels, os_signpost profiling, MXMetricManager diagnostics |
+| [background-tasks.md](docs/frameworks/background-tasks.md) | BackgroundTasks | BGTaskScheduler, app refresh, processing tasks, background URLSession |
+| [device-integrity.md](docs/frameworks/device-integrity.md) | DeviceCheck & AppAttest | Per-device bits, key attestation, assertion generation, API security |
+
 ### Platform Guides — `docs/platforms/`
 
 | File | Platform | What You'll Learn |
@@ -191,6 +239,14 @@ Drop-in Swift files for the most common app features:
 | [coordinator.md](patterns/coordinator.md) | Coordinator | Coordinator protocol with NavigationPath, child coordinators, deep link routing, lifecycle management |
 | [repository.md](patterns/repository.md) | Repository | Generic CRUD protocol, remote + local data sources, caching with TTL, offline-first with sync queue |
 | [error-handling.md](patterns/error-handling.md) | Error Handling | Custom error types, propagation chains, user-facing alerts, retry with backoff, circuit breaker, logging |
+| [tca.md](patterns/tca.md) | The Composable Architecture | State, Action, Reducer, Store, @Dependency, navigation, TestStore, when to use TCA vs MVVM |
+
+### CI/CD Templates — `templates/ci-cd/`
+
+| File | What It Does |
+|------|--------------|
+| [github-actions.yml](templates/ci-cd/github-actions.yml) | Complete GitHub Actions workflow — build, test, code signing, TestFlight upload, SPM caching, Slack notifications |
+| [Fastfile](templates/ci-cd/Fastfile) | Fastlane configuration — test, beta (TestFlight), release (App Store), match signing, screenshots |
 
 ---
 
@@ -345,7 +401,7 @@ ios-agent-skill/
     └── testing.md
 ```
 
-**69 files | 37,000+ lines | Stunning UIs + All Apple platforms covered**
+**93 files | 46,000+ lines | AI/ML + Hardware + Stunning UIs + All Apple platforms**
 
 ---
 

@@ -1,0 +1,278 @@
+# Fastfile — iOS CI/CD with Fastlane
+#
+# Install: gem install fastlane
+# Usage:   fastlane <lane_name>
+
+default_platform(:ios)
+
+# ─── Configuration ──────────────────────────────────────────────────
+
+APP_IDENTIFIER  = "com.yourcompany.yourapp"
+TEAM_ID         = "ABCDE12345"
+SCHEME          = "YourApp"
+PROJECT         = "YourApp.xcodeproj"
+ITC_TEAM_ID     = "123456789"   # App Store Connect Team ID
+
+SLACK_URL       = ENV["SLACK_WEBHOOK_URL"]
+
+# ─── Platform: iOS ──────────────────────────────────────────────────
+
+platform :ios do
+
+  before_all do
+    setup_circle_ci if is_ci   # CI environment setup (optional)
+    ensure_git_status_clean unless is_ci
+  end
+
+  # ─── Test Lane ──────────────────────────────────────────────────
+  desc "Run all unit and UI tests"
+  lane :test do
+    scan(
+      scheme: SCHEME,
+      project: PROJECT,
+      devices: ["iPhone 16"],
+      code_coverage: true,
+      result_bundle: true,
+      output_directory: "./build/test_output",
+      clean: true,
+      prelaunch_simulator: true,
+      parallel_testing: true,
+      concurrent_workers: 2
+    )
+
+    # Optional: enforce minimum code coverage
+    # xcov(
+    #   scheme: SCHEME,
+    #   project: PROJECT,
+    #   minimum_coverage_percentage: 70.0,
+    #   output_directory: "./build/coverage"
+    # )
+  end
+
+  # ─── Beta Lane (TestFlight) ────────────────────────────────────
+  desc "Build and upload to TestFlight"
+  lane :beta do |options|
+    # 1. Ensure on correct branch
+    ensure_git_branch(branch: "(main|develop|release/.*)") unless options[:skip_branch_check]
+
+    # 2. Run tests first
+    test unless options[:skip_tests]
+
+    # 3. Code signing with match
+    setup_signing(type: "appstore")
+
+    # 4. Increment build number
+    build_number = increment_build_number(
+      build_number: latest_testflight_build_number + 1
+    )
+    commit_version_bump(
+      message: "Bump build number to #{build_number} [skip ci]",
+      xcodeproj: PROJECT,
+      force: true
+    )
+
+    # 5. Build the app
+    gym(
+      scheme: SCHEME,
+      project: PROJECT,
+      export_method: "app-store",
+      output_directory: "./build",
+      output_name: "YourApp.ipa",
+      clean: true,
+      include_symbols: true,
+      include_bitcode: false,
+      xcargs: "-allowProvisioningUpdates"
+    )
+
+    # 6. Upload to TestFlight
+    changelog = changelog_from_git_commits(
+      commits_count: 10,
+      merge_commit_filtering: "exclude_merges"
+    )
+
+    pilot(
+      ipa: "./build/YourApp.ipa",
+      changelog: changelog,
+      distribute_external: false,
+      notify_external_testers: false,
+      skip_waiting_for_build_processing: true
+    )
+
+    # 7. Tag the release
+    add_git_tag(
+      tag: "beta/#{get_version_number(xcodeproj: PROJECT, scheme: SCHEME)}-#{build_number}"
+    )
+    push_to_git_remote(tags: true)
+
+    # 8. Notify
+    notify_slack(
+      message: "New TestFlight build #{build_number} uploaded successfully!"
+    )
+  end
+
+  # ─── Release Lane (App Store) ──────────────────────────────────
+  desc "Build and upload to App Store for review"
+  lane :release do |options|
+    # 1. Ensure on main branch
+    ensure_git_branch(branch: "main")
+
+    # 2. Run full test suite
+    test
+
+    # 3. Code signing
+    setup_signing(type: "appstore")
+
+    # 4. Version bump
+    version = options[:version]
+    if version
+      increment_version_number(version_number: version)
+    else
+      increment_version_number(bump_type: options[:bump] || "patch")
+    end
+
+    build_number = increment_build_number(
+      build_number: latest_testflight_build_number + 1
+    )
+
+    version_number = get_version_number(xcodeproj: PROJECT, scheme: SCHEME)
+
+    commit_version_bump(
+      message: "Release #{version_number} (#{build_number}) [skip ci]",
+      xcodeproj: PROJECT,
+      force: true
+    )
+
+    # 5. Build
+    gym(
+      scheme: SCHEME,
+      project: PROJECT,
+      export_method: "app-store",
+      output_directory: "./build",
+      output_name: "YourApp.ipa",
+      clean: true,
+      include_symbols: true,
+      include_bitcode: false
+    )
+
+    # 6. Upload to App Store Connect
+    deliver(
+      ipa: "./build/YourApp.ipa",
+      submit_for_review: options[:submit] || false,
+      automatic_release: false,
+      force: true,
+      skip_metadata: options[:skip_metadata] || false,
+      skip_screenshots: options[:skip_screenshots] || true,
+      precheck_include_in_app_purchases: false,
+      submission_information: {
+        add_id_info_uses_idfa: false
+      }
+    )
+
+    # 7. Tag and push
+    add_git_tag(
+      tag: "v#{version_number}"
+    )
+    push_to_git_remote(tags: true)
+
+    # 8. Notify
+    notify_slack(
+      message: "Version #{version_number} (#{build_number}) submitted to App Store!"
+    )
+  end
+
+  # ─── Match (Code Signing) ──────────────────────────────────────
+  desc "Sync code signing certificates and profiles"
+  lane :signing do |options|
+    type = options[:type] || "development"
+    setup_signing(type: type)
+  end
+
+  # ─── Screenshots ───────────────────────────────────────────────
+  desc "Capture App Store screenshots"
+  lane :screenshots do
+    snapshot(
+      scheme: "YourAppUITests",
+      project: PROJECT,
+      devices: [
+        "iPhone 16 Pro Max",
+        "iPhone 16",
+        "iPhone SE (3rd generation)",
+        "iPad Pro 13-inch (M4)"
+      ],
+      languages: ["en-US"],
+      output_directory: "./fastlane/screenshots",
+      clear_previous_screenshots: true,
+      override_status_bar: true,
+      concurrent_simulators: true
+    )
+
+    # Optional: frame screenshots with device bezels
+    # frameit(
+    #   path: "./fastlane/screenshots",
+    #   white: true
+    # )
+  end
+
+  # ─── Nuke Signing (Reset) ─────────────────────────────────────
+  desc "Nuke and recreate all certificates and profiles"
+  lane :nuke_signing do
+    match_nuke(type: "development")
+    match_nuke(type: "appstore")
+    setup_signing(type: "development")
+    setup_signing(type: "appstore")
+  end
+
+  # ─── Private Lanes ─────────────────────────────────────────────
+
+  private_lane :setup_signing do |options|
+    type = options[:type] || "appstore"
+
+    api_key = app_store_connect_api_key(
+      key_id: ENV["ASC_KEY_ID"],
+      issuer_id: ENV["ASC_ISSUER_ID"],
+      key_filepath: ENV["ASC_KEY_PATH"] || "./private_keys/AuthKey.p8",
+      in_house: false
+    )
+
+    match(
+      type: type,
+      app_identifier: APP_IDENTIFIER,
+      team_id: TEAM_ID,
+      api_key: api_key,
+      readonly: is_ci,
+      git_url: ENV["MATCH_GIT_URL"] || "https://github.com/yourcompany/certificates.git",
+      storage_mode: "git",
+      force_for_new_devices: !is_ci
+    )
+  end
+
+  private_lane :notify_slack do |options|
+    next unless SLACK_URL
+
+    slack(
+      message: options[:message],
+      slack_url: SLACK_URL,
+      success: options[:success] != false,
+      default_payloads: [:git_branch, :git_author, :last_git_commit_hash]
+    )
+  end
+
+  # ─── Error Handling ────────────────────────────────────────────
+
+  error do |lane, exception|
+    notify_slack(
+      message: "Lane `#{lane}` failed: #{exception.message}",
+      success: false
+    )
+  end
+
+  after_all do |lane|
+    clean_build_artifacts
+  end
+end
+
+# ─── Helper Methods ───────────────────────────────────────────────
+
+def is_ci
+  ENV["CI"] == "true"
+end

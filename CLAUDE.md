@@ -131,6 +131,27 @@ AppName/
 | Spatial | **RealityKit + SwiftUI** | visionOS spatial computing |
 | Accessibility | **Accessibility APIs** | VoiceOver, Dynamic Type, etc. |
 | Testing | **XCTest + Swift Testing** | Unit tests, UI tests, performance tests |
+| ML/AI | **CoreML + Vision** | On-device ML inference, image/text recognition |
+| NLP | **NaturalLanguage** | Tokenization, sentiment, language detection |
+| Speech | **Speech framework** | On-device speech-to-text transcription |
+| On-device LLM | **Foundation Models** | Apple Intelligence, on-device text generation |
+| Live Activities | **ActivityKit** | Lock Screen + Dynamic Island live updates |
+| Shortcuts/Siri | **App Intents** | Siri, Shortcuts, Spotlight, Apple Intelligence |
+| Tips | **TipKit** | Contextual feature discovery tooltips |
+| Photos | **PhotosUI** | PhotosPicker, custom camera, video player |
+| Bluetooth | **CoreBluetooth** | BLE scanning, connecting, data transfer |
+| Health | **HealthKit** | Health data, workouts, step counting |
+| Motion | **CoreMotion** | Accelerometer, gyroscope, pedometer |
+| NFC | **CoreNFC** | NFC tag reading and writing |
+| Smart Home | **HomeKit** | Home automation, Matter devices |
+| Payments | **PassKit** | Apple Pay, Wallet passes |
+| Weather | **WeatherKit** | Forecasts, alerts, precipitation |
+| Calendar | **EventKit** | Calendar events, reminders |
+| Contacts | **Contacts** | Contact access and picker |
+| Crypto | **CryptoKit** | Hashing, encryption, signing, Secure Enclave |
+| Logging | **OSLog** | Structured logging, performance profiling |
+| Background | **BackgroundTasks** | BGTaskScheduler, background refresh |
+| Integrity | **DeviceCheck + AppAttest** | Device verification, API security |
 
 ## Platform-Specific Guidance
 
@@ -226,6 +247,39 @@ This repository contains comprehensive documentation. Consult these files when b
 - `docs/frameworks/widgetkit.md` — Widgets
 - `docs/frameworks/networking.md` — HTTP networking patterns
 - `docs/frameworks/accessibility.md` — Accessibility best practices
+
+### AI & Machine Learning
+- `docs/frameworks/ml/coreml.md` — Model loading, prediction, compute units
+- `docs/frameworks/ml/vision.md` — OCR, face detection, barcode, segmentation, DataScanner
+- `docs/frameworks/ml/natural-language.md` — Tokenization, tagging, sentiment, embeddings
+- `docs/frameworks/ml/speech.md` — Speech-to-text, live transcription
+- `docs/frameworks/ml/on-device-ai.md` — Foundation Models, MLX Swift, on-device LLM
+
+### Advanced App Experience
+- `docs/frameworks/activitykit.md` — Live Activities, Dynamic Island, push-to-update
+- `docs/frameworks/app-intents.md` — Siri, Shortcuts, Spotlight, Apple Intelligence
+- `docs/frameworks/tipkit.md` — Feature discovery tooltips
+- `docs/frameworks/app-clips.md` — App Clips, invocation, NFC/QR triggers
+- `docs/frameworks/photosui.md` — PhotosPicker, custom camera, VideoPlayer, PiP
+
+### Hardware Integration
+- `docs/frameworks/hardware/core-bluetooth.md` — BLE scanning, connecting, background
+- `docs/frameworks/hardware/healthkit.md` — Health data, workouts, statistics
+- `docs/frameworks/hardware/core-motion.md` — Accelerometer, gyroscope, pedometer
+- `docs/frameworks/hardware/core-nfc.md` — NFC tag reading and writing
+- `docs/frameworks/hardware/homekit.md` — Home automation, Matter devices
+
+### Services
+- `docs/frameworks/services/passkit.md` — Apple Pay, Wallet passes, FinanceKit
+- `docs/frameworks/services/weatherkit.md` — Weather forecasts and alerts
+- `docs/frameworks/services/eventkit.md` — Calendar events and reminders
+- `docs/frameworks/services/contacts.md` — Contact access and picker
+
+### Security & Engineering
+- `docs/frameworks/cryptokit.md` — Hashing, encryption, signing, Secure Enclave
+- `docs/frameworks/oslog.md` — Structured logging, MetricKit diagnostics
+- `docs/frameworks/background-tasks.md` — BGTaskScheduler, background refresh
+- `docs/frameworks/device-integrity.md` — DeviceCheck, AppAttest
 
 ### Platforms
 - `docs/platforms/ios.md` — iOS-specific development
