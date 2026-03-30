@@ -40,16 +40,43 @@ extension Color {
 /// Protocol that every theme must conform to.
 protocol AppTheme: Sendable {
     var name: String { get }
+
+    // Core colors
     var primary: Color { get }
     var secondary: Color { get }
     var accent: Color { get }
+
+    // Surfaces
     var background: Color { get }
     var surface: Color { get }
+    var surfaceSecondary: Color { get }
+
+    // Text
     var textPrimary: Color { get }
     var textSecondary: Color { get }
+    var textOnPrimary: Color { get }
+
+    // Semantic / action colors
+    var primaryAction: Color { get }
+    var destructive: Color { get }
     var error: Color { get }
     var success: Color { get }
     var warning: Color { get }
+    var info: Color { get }
+
+    // Borders & dividers
+    var border: Color { get }
+    var divider: Color { get }
+}
+
+/// Default implementations for convenience
+extension AppTheme {
+    var primaryAction: Color { primary }
+    var surfaceSecondary: Color { surface.opacity(0.7) }
+    var textOnPrimary: Color { Color.white }
+    var info: Color { Color(hex: "#0A84FF") }
+    var border: Color { Color(hex: "#E0E0E0") }
+    var divider: Color { Color(hex: "#F0F0F0") }
 }
 
 // MARK: - Pre-built Themes
@@ -63,6 +90,7 @@ struct OceanBlueTheme: AppTheme {
     let surface = Color(hex: "#FFFFFF")
     let textPrimary = Color(hex: "#03045E")
     let textSecondary = Color(hex: "#5A7D9A")
+    let destructive = Color(hex: "#E63946")
     let error = Color(hex: "#E63946")
     let success = Color(hex: "#06D6A0")
     let warning = Color(hex: "#FFB703")
@@ -77,6 +105,7 @@ struct SunsetWarmTheme: AppTheme {
     let surface = Color(hex: "#FFFFFF")
     let textPrimary = Color(hex: "#264653")
     let textSecondary = Color(hex: "#6B8F71")
+    let destructive = Color(hex: "#D62828")
     let error = Color(hex: "#D62828")
     let success = Color(hex: "#2A9D8F")
     let warning = Color(hex: "#F77F00")
@@ -91,6 +120,7 @@ struct MidnightDarkTheme: AppTheme {
     let surface = Color(hex: "#1E1E2E")
     let textPrimary = Color(hex: "#E1E1E6")
     let textSecondary = Color(hex: "#A0A0B0")
+    let destructive = Color(hex: "#CF6679")
     let error = Color(hex: "#CF6679")
     let success = Color(hex: "#03DAC6")
     let warning = Color(hex: "#FFAB40")
@@ -105,6 +135,7 @@ struct NatureGreenTheme: AppTheme {
     let surface = Color(hex: "#FFFFFF")
     let textPrimary = Color(hex: "#1B4332")
     let textSecondary = Color(hex: "#588B76")
+    let destructive = Color(hex: "#E63946")
     let error = Color(hex: "#E63946")
     let success = Color(hex: "#40916C")
     let warning = Color(hex: "#FB8500")
@@ -119,6 +150,7 @@ struct VioletDreamTheme: AppTheme {
     let surface = Color(hex: "#FFFFFF")
     let textPrimary = Color(hex: "#240046")
     let textSecondary = Color(hex: "#7B6D8E")
+    let destructive = Color(hex: "#E63946")
     let error = Color(hex: "#E63946")
     let success = Color(hex: "#06D6A0")
     let warning = Color(hex: "#FFBE0B")
@@ -464,4 +496,214 @@ extension View {
         .padding(Spacing.md)
     }
     .gradientBackground(colors: [Color(hex: "#F0F8FF"), Color(hex: "#E8F0FE")])
+}
+
+// MARK: - Button Styles
+
+/// Primary filled button with gradient and press animation.
+struct PrimaryButtonStyle: ButtonStyle {
+    @Environment(\.isEnabled) private var isEnabled
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.body.weight(.semibold))
+            .foregroundStyle(.white)
+            .padding(.horizontal, Spacing.lg)
+            .padding(.vertical, Spacing.md)
+            .frame(maxWidth: .infinity)
+            .background(
+                LinearGradient(
+                    colors: isEnabled ? [Color(hex: "#0077B6"), Color(hex: "#00B4D8")] : [.gray],
+                    startPoint: .leading,
+                    endPoint: .trailing
+                )
+            )
+            .clipShape(RoundedRectangle(cornerRadius: CornerRadius.md, style: .continuous))
+            .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
+            .opacity(isEnabled ? 1.0 : 0.5)
+            .animation(.spring(response: 0.25, dampingFraction: 0.7), value: configuration.isPressed)
+    }
+}
+
+/// Secondary outlined button.
+struct SecondaryButtonStyle: ButtonStyle {
+    @Environment(\.isEnabled) private var isEnabled
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.body.weight(.medium))
+            .foregroundStyle(isEnabled ? Color(hex: "#0077B6") : .gray)
+            .padding(.horizontal, Spacing.lg)
+            .padding(.vertical, Spacing.md)
+            .frame(maxWidth: .infinity)
+            .background(
+                RoundedRectangle(cornerRadius: CornerRadius.md, style: .continuous)
+                    .stroke(isEnabled ? Color(hex: "#0077B6") : .gray, lineWidth: 1.5)
+            )
+            .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
+            .opacity(configuration.isPressed ? 0.8 : 1.0)
+            .animation(.spring(response: 0.25, dampingFraction: 0.7), value: configuration.isPressed)
+    }
+}
+
+/// Destructive red button for delete/remove actions.
+struct DestructiveButtonStyle: ButtonStyle {
+    @Environment(\.isEnabled) private var isEnabled
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.body.weight(.semibold))
+            .foregroundStyle(.white)
+            .padding(.horizontal, Spacing.lg)
+            .padding(.vertical, Spacing.md)
+            .frame(maxWidth: .infinity)
+            .background(isEnabled ? Color(hex: "#E63946") : .gray)
+            .clipShape(RoundedRectangle(cornerRadius: CornerRadius.md, style: .continuous))
+            .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
+            .opacity(isEnabled ? 1.0 : 0.5)
+            .animation(.spring(response: 0.25, dampingFraction: 0.7), value: configuration.isPressed)
+    }
+}
+
+/// Ghost button — no background, no border, just tinted text.
+struct GhostButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.body.weight(.medium))
+            .foregroundStyle(Color(hex: "#0077B6"))
+            .padding(.horizontal, Spacing.md)
+            .padding(.vertical, Spacing.sm)
+            .opacity(configuration.isPressed ? 0.5 : 1.0)
+            .animation(.easeOut(duration: 0.15), value: configuration.isPressed)
+    }
+}
+
+/// Pill-shaped capsule button.
+struct PillButtonStyle: ButtonStyle {
+    var color: Color = Color(hex: "#0077B6")
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(.white)
+            .padding(.horizontal, Spacing.lg)
+            .padding(.vertical, Spacing.sm)
+            .background(color)
+            .clipShape(Capsule())
+            .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
+            .animation(.spring(response: 0.25, dampingFraction: 0.7), value: configuration.isPressed)
+    }
+}
+
+/// Circular icon button.
+struct IconButtonStyle: ButtonStyle {
+    var size: CGFloat = 44
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.body)
+            .foregroundStyle(Color(hex: "#0077B6"))
+            .frame(width: size, height: size)
+            .background(Color(hex: "#0077B6").opacity(0.1))
+            .clipShape(Circle())
+            .scaleEffect(configuration.isPressed ? 0.9 : 1.0)
+            .animation(.spring(response: 0.2, dampingFraction: 0.6), value: configuration.isPressed)
+    }
+}
+
+// MARK: - View State Pattern
+
+/// Generic view state for handling loading, loaded, empty, and error states.
+enum ViewState<T> {
+    case loading
+    case loaded(T)
+    case empty
+    case error(Error)
+
+    var isLoading: Bool {
+        if case .loading = self { return true }
+        return false
+    }
+
+    var data: T? {
+        if case .loaded(let data) = self { return data }
+        return nil
+    }
+}
+
+/// A wrapper view that automatically handles all view states.
+struct AsyncContentView<T, LoadedContent: View>: View {
+    let state: ViewState<T>
+    let emptyTitle: String
+    let emptyMessage: String
+    let emptyIcon: String
+    let onRetry: (() async -> Void)?
+    @ViewBuilder let loadedContent: (T) -> LoadedContent
+
+    init(
+        state: ViewState<T>,
+        emptyTitle: String = "Nothing Here",
+        emptyMessage: String = "Check back later.",
+        emptyIcon: String = "tray",
+        onRetry: (() async -> Void)? = nil,
+        @ViewBuilder loadedContent: @escaping (T) -> LoadedContent
+    ) {
+        self.state = state
+        self.emptyTitle = emptyTitle
+        self.emptyMessage = emptyMessage
+        self.emptyIcon = emptyIcon
+        self.onRetry = onRetry
+        self.loadedContent = loadedContent
+    }
+
+    var body: some View {
+        switch state {
+        case .loading:
+            ProgressView()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+        case .loaded(let data):
+            loadedContent(data)
+
+        case .empty:
+            ContentUnavailableView(
+                emptyTitle,
+                systemImage: emptyIcon,
+                description: Text(emptyMessage)
+            )
+
+        case .error(let error):
+            ContentUnavailableView {
+                Label("Something Went Wrong", systemImage: "exclamationmark.triangle")
+            } description: {
+                Text(error.localizedDescription)
+            } actions: {
+                if let onRetry {
+                    Button("Try Again") {
+                        Task { await onRetry() }
+                    }
+                    .buttonStyle(SecondaryButtonStyle())
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Animation Standards
+
+enum AnimationStandard {
+    /// Micro interactions: toggles, button taps (0.2s)
+    static let micro = Animation.easeOut(duration: 0.2)
+    /// Navigation transitions (0.35s spring)
+    static let navigation = Animation.spring(response: 0.35, dampingFraction: 0.85)
+    /// Content loading/appearance (0.3s)
+    static let content = Animation.easeInOut(duration: 0.3)
+    /// Dismissal animations (0.25s)
+    static let dismissal = Animation.easeIn(duration: 0.25)
+    /// Playful bounce
+    static let bouncy = Animation.bouncy(duration: 0.4)
+    /// Quick and responsive
+    static let snappy = Animation.snappy(duration: 0.3)
+    /// Smooth and elegant
+    static let smooth = Animation.smooth(duration: 0.4)
 }

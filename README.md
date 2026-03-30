@@ -90,6 +90,7 @@ The master skill file that makes Claude an iOS expert. Contains:
 | [color-system.md](docs/design/color-system.md) | 5 pre-built color palettes (Ocean Blue, Sunset Warm, Midnight Dark, Nature Green, Violet Dream) with full hex codes, Color hex extension, 10 gradient recipes (LinearGradient, RadialGradient, MeshGradient), material effects, dark mode, vibrancy, color accessibility |
 | [typography-system.md](docs/design/typography-system.md) | Apple's 11 text styles, font weights & designs (.rounded, .serif, .monospaced), custom fonts, SF Symbols (rendering modes, variable values, effects), Dynamic Type, gradient text, shadow text, outlined text, animated text, AttributedString |
 | [stunning-ui-patterns.md](docs/design/stunning-ui-patterns.md) | 20+ production-ready UI patterns with full SwiftUI code: glassmorphism cards, neumorphic design, gradient cards, animated onboarding, parallax headers, bottom sheets, animated tab bars, profile cards, dashboard stats, floating action buttons, card stacks, shimmer loading, toast notifications, expandable cards, animated backgrounds, scroll-blur headers, chip layouts, rating stars |
+| [interaction-standards.md](docs/design/interaction-standards.md) | Animation curves & durations (micro/navigation/content/dismissal), haptic feedback rules (when to use which type), SF Symbols guidelines (weights, sizes, rendering modes, effects), 6 button styles (primary/secondary/destructive/ghost/icon/pill), loading/empty/error state patterns with ViewState enum, localization approach (String Catalogs, pluralization, RTL), privacy manifest (PrivacyInfo.xcprivacy), iPad adaptive layout (size classes, Stage Manager), preview standards (#Preview with dark mode, Dynamic Type, devices) |
 
 ### Reusable UI Components — `templates/common-patterns/`
 
@@ -255,7 +256,7 @@ ios-agent-skill/
 ├── .gitignore                             # Swift/Xcode gitignore
 ├── .claude/settings.json                  # Claude Code configuration
 │
-├── docs/                                  # 31 documentation files
+├── docs/                                  # 32 documentation files
 │   ├── swift/                             # 3 files — language, concurrency, stdlib
 │   │   ├── swift-language.md
 │   │   ├── swift-concurrency.md
@@ -269,10 +270,11 @@ ios-agent-skill/
 │   │   ├── animations.md
 │   │   └── gestures.md
 │   │
-│   ├── design/                            # 3 files — UI design system
+│   ├── design/                            # 4 files — UI design system
 │   │   ├── color-system.md               # 5 color palettes, gradients, materials
 │   │   ├── typography-system.md          # Text styles, fonts, SF Symbols, effects
-│   │   └── stunning-ui-patterns.md       # 20+ beautiful UI patterns with code
+│   │   ├── stunning-ui-patterns.md       # 20+ beautiful UI patterns with code
+│   │   └── interaction-standards.md      # Animations, haptics, buttons, states, privacy
 │   │
 │   ├── uikit/                             # 2 files — UIKit + SwiftUI bridging
 │   │   ├── uikit-essentials.md
@@ -341,7 +343,7 @@ ios-agent-skill/
     └── testing.md
 ```
 
-**65 files | 30,000+ lines | Stunning UIs + All Apple platforms covered**
+**68 files | 35,000+ lines | Stunning UIs + All Apple platforms covered**
 
 ---
 
