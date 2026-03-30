@@ -1,516 +1,381 @@
-# ios-agent-skill
+<p align="center">
+  <img src="https://img.shields.io/badge/Swift-5.9+-F05138?style=for-the-badge&logo=swift&logoColor=white" alt="Swift">
+  <img src="https://img.shields.io/badge/SwiftUI-blue?style=for-the-badge&logo=swift&logoColor=white" alt="SwiftUI">
+  <img src="https://img.shields.io/badge/iOS%2017+-000000?style=for-the-badge&logo=apple&logoColor=white" alt="iOS">
+  <img src="https://img.shields.io/badge/visionOS-8B5CF6?style=for-the-badge&logo=apple&logoColor=white" alt="visionOS">
+  <img src="https://img.shields.io/badge/AI%20Agents-25+-00D084?style=for-the-badge" alt="AI Agents">
+  <img src="https://img.shields.io/badge/Lines-50K+-FF6B6B?style=for-the-badge" alt="Lines">
+</p>
 
-> Created by [**Nagarjuna Reddy**](https://www.linkedin.com/in/nagarjuna-reddy-97836a193/) — iOS Developer & AI Engineer
+<h1 align="center">ios-agent-skill</h1>
 
-**Turn Claude into an expert iOS/Swift developer that writes production-ready, error-free code with stunning UIs across all Apple platforms.**
+<p align="center">
+  <strong>The ultimate AI skill that turns any coding agent into a senior iOS/Swift developer.</strong><br>
+  Production-ready code. Stunning UIs. Zero errors. All Apple platforms.
+</p>
 
-This is a comprehensive Claude AI skill repository — a knowledge base, design system, code template library, and coding standards guide that transforms Claude into a senior-level Apple platform engineer. Every app Claude builds will have beautiful color palettes, polished typography, smooth animations, and pixel-perfect layouts. Just clone, open with Claude Code, and start building apps.
+<p align="center">
+  <a href="https://www.linkedin.com/in/nagarjuna-reddy-97836a193/"><img src="https://img.shields.io/badge/Created%20by-Nagarjuna%20Reddy-0A66C2?style=flat-square&logo=linkedin" alt="Author"></a>
+  <a href="https://github.com/Nagarjuna2997"><img src="https://img.shields.io/badge/GitHub-Nagarjuna2997-181717?style=flat-square&logo=github" alt="GitHub"></a>
+  <img src="https://img.shields.io/github/license/Nagarjuna2997/ios-agent-skill?style=flat-square" alt="License">
+  <img src="https://img.shields.io/github/stars/Nagarjuna2997/ios-agent-skill?style=flat-square" alt="Stars">
+</p>
 
 ---
 
-## Quick Start
-
-### One-Line Install
+## :zap: One-Line Install
 
 ```bash
 curl -sL https://raw.githubusercontent.com/Nagarjuna2997/ios-agent-skill/main/install.sh | bash
 ```
 
-### Claude Code
+---
+
+## :robot: Works With Every AI Coding Agent
+
+<details>
+<summary><strong>:large_blue_diamond: Claude Code</strong></summary>
 
 ```bash
-git clone https://github.com/Nagarjuna2997/ios-agent-skill.git
-cd ios-agent-skill
-claude
+git clone https://github.com/Nagarjuna2997/ios-agent-skill.git && cd ios-agent-skill && claude
 ```
+Auto-reads `CLAUDE.md`
+</details>
 
-Claude automatically reads `CLAUDE.md` and becomes an expert iOS developer. Ask it to build any app.
-
-### Codex
+<details>
+<summary><strong>:green_circle: OpenAI Codex CLI</strong></summary>
 
 ```bash
 git clone https://github.com/Nagarjuna2997/ios-agent-skill.git ~/.codex/skills/ios-agent-skill
 ```
+Auto-reads `AGENTS.md`
+</details>
 
-Codex automatically reads `SKILL.md` and registers the skill.
-
-### Antigravity
-
-```bash
-git clone https://github.com/Nagarjuna2997/ios-agent-skill.git
-cd ios-agent-skill
-```
-
-Antigravity automatically reads `AGENTS.md` and activates expert iOS mode.
-
-### Cursor
-
-Clone into your project or copy `.cursorrules` to your project root:
+<details>
+<summary><strong>:large_blue_circle: Gemini CLI / Antigravity</strong></summary>
 
 ```bash
-cp ios-agent-skill/.cursorrules /path/to/your/project/.cursorrules
+git clone https://github.com/Nagarjuna2997/ios-agent-skill.git && cd ios-agent-skill
 ```
+Auto-reads `GEMINI.md` and `AGENTS.md`
+</details>
 
-### GitHub Copilot
+<details>
+<summary><strong>:purple_circle: Cursor</strong></summary>
 
-The `.github/copilot-instructions.md` file is auto-detected by Copilot when the repo is cloned.
-
-### Any Other AI Agent
-
-Copy whichever file your agent reads (`AGENTS.md`, `SKILL.md`, `CLAUDE.md`, or `.cursorrules`) into your project root. All contain identical content.
-
-### Reference from Your Existing Project
-
-Add this to your project's `CLAUDE.md` or `SKILL.md`:
-
-```markdown
-You are an expert iOS/Swift developer. Reference the ios-agent-skill knowledge base for all Apple development:
-
-- Coding standards: /path/to/ios-agent-skill/SKILL.md
-- Documentation: /path/to/ios-agent-skill/docs/
-- Code templates: /path/to/ios-agent-skill/templates/
-- Architecture patterns: /path/to/ios-agent-skill/patterns/
-- Quality checklists: /path/to/ios-agent-skill/checklists/
+```bash
+cp ios-agent-skill/.cursorrules /path/to/your/project/
+# Or use modern format:
+cp -r ios-agent-skill/.cursor /path/to/your/project/
 ```
+Auto-reads `.cursor/rules/ios-skill.md` or `.cursorrules`
+</details>
+
+<details>
+<summary><strong>:octocat: GitHub Copilot</strong></summary>
+
+Auto-reads `.github/copilot-instructions.md` when repo is cloned.
+</details>
+
+<details>
+<summary><strong>:ocean: Windsurf (Codeium)</strong></summary>
+
+Auto-reads `.windsurf/rules/ios-skill.md` or `.windsurfrules`
+</details>
+
+<details>
+<summary><strong>:brain: JetBrains AI / Junie</strong></summary>
+
+Auto-reads `.aiassistant/rules/ios-skill.md` or `.junie/guidelines.md`
+</details>
+
+<details>
+<summary><strong>:globe_with_meridians: 15+ More Platforms</strong></summary>
+
+| Platform | File | Auto-detected |
+|----------|------|:---:|
+| Zed AI | `.rules` | :white_check_mark: |
+| Trae (ByteDance) | `.trae/rules/ios-skill.md` | :white_check_mark: |
+| Amazon Q Developer | `.amazonq/rules/ios-skill.md` | :white_check_mark: |
+| Cline | `.clinerules` | :white_check_mark: |
+| Roo Code | `.roo/rules/ios-skill.md` | :white_check_mark: |
+| KiloCode | `.kilocode/rules/ios-skill.md` | :white_check_mark: |
+| Continue.dev / PearAI | `.continue/rules/ios-skill.md` | :white_check_mark: |
+| Augment Code | `.augment/rules/ios-skill.md` | :white_check_mark: |
+| Tabnine | `.tabnine/guidelines/ios-skill.md` | :white_check_mark: |
+| Aider | `CONVENTIONS.md` | :white_check_mark: |
+| Sourcegraph Amp | `AGENTS.md` | :white_check_mark: |
+| Replit Agent | `replit.md` | :white_check_mark: |
+| Lovable | `AGENTS.md` | :white_check_mark: |
+| OpenCode / OpenHands | `AGENTS.md` | :white_check_mark: |
+| Bolt.new | `CLAUDE.md` | :white_check_mark: |
+
+</details>
 
 ---
 
-## Compatibility
+## :brain: What's Inside
 
-### IDE-Based AI Assistants
+### :gear: The Skill Brain
 
-| Platform | Entry File | Auto-detected |
-|----------|-----------|---------------|
-| **Claude Code** | `CLAUDE.md` | Yes |
-| **OpenAI Codex CLI** | `AGENTS.md` | Yes |
-| **Gemini CLI / Antigravity** | `GEMINI.md`, `AGENTS.md` | Yes |
-| **Cursor** | `.cursor/rules/ios-skill.md`, `.cursorrules` | Yes |
-| **GitHub Copilot** | `.github/copilot-instructions.md` | Yes |
-| **Windsurf (Codeium)** | `.windsurf/rules/ios-skill.md`, `.windsurfrules` | Yes |
-| **JetBrains AI Assistant** | `.aiassistant/rules/ios-skill.md` | Yes |
-| **JetBrains Junie** | `.junie/guidelines.md` | Yes |
-| **Zed AI** | `.rules` | Yes |
-| **Trae (ByteDance)** | `.trae/rules/ios-skill.md` | Yes |
-| **Amazon Q Developer** | `.amazonq/rules/ios-skill.md` | Yes |
-| **Cline** | `.clinerules` | Yes |
-| **Roo Code** | `.roo/rules/ios-skill.md`, `.roorules` | Yes |
-| **KiloCode** | `.kilocode/rules/ios-skill.md`, `.kilocoderules` | Yes |
-| **Continue.dev / PearAI** | `.continue/rules/ios-skill.md`, `.continuerules` | Yes |
-| **Augment Code** | `.augment/rules/ios-skill.md` | Yes |
-| **Tabnine** | `.tabnine/guidelines/ios-skill.md` | Yes |
-| **Aider** | `CONVENTIONS.md` | Via `--read` flag |
-| **Sourcegraph Amp** | `AGENTS.md` | Yes |
+> `CLAUDE.md` / `SKILL.md` / `AGENTS.md` / `GEMINI.md` — all identical
 
-### Cloud / Browser-Based Builders
-
-| Platform | Entry File | Auto-detected |
-|----------|-----------|---------------|
-| **Replit Agent** | `replit.md` | Yes |
-| **Lovable** | `AGENTS.md` | Yes |
-| **Bolt.new** | `CLAUDE.md` | Partial |
-| **OpenCode** | `AGENTS.md` | Yes |
-| **OpenHands** | `AGENTS.md` | Yes |
-
-### Universal Files (in this repo)
-
-| File | Read By |
-|------|---------|
-| `AGENTS.md` | Codex, Gemini CLI, Antigravity, Cursor, Copilot, Sourcegraph Amp, Aider, Continue, Zed, Trae, OpenCode, OpenHands, Replit, Lovable, Augment, Junie |
-| `CLAUDE.md` | Claude Code, Windsurf, Cline, Roo, Bolt, Lovable, Trae |
-| `GEMINI.md` | Gemini CLI, Antigravity |
-| `SKILL.md` | Codex |
-| `.cursorrules` | Cursor (legacy), Zed, Cline, OpenHands |
-| `.rules` | Zed AI (highest priority) |
-
-All files contain **identical content** — the same expert iOS/Swift skill instructions.
+- :white_check_mark: Zero-error Swift code generation rules
+- :white_check_mark: Framework selection guide (SwiftUI vs UIKit, SwiftData vs CoreData)
+- :white_check_mark: MVVM project structure with naming conventions
+- :white_check_mark: Platform-specific guidance (iOS, macOS, watchOS, tvOS, visionOS)
+- :white_check_mark: UI design standards (colors, typography, spacing, animations)
+- :white_check_mark: Top 10 pitfalls and how to avoid them
 
 ---
 
-## What's Inside
+## :books: Documentation Reference
 
-### `CLAUDE.md` / `SKILL.md` — The Brain
+### :orange_book: Swift Language — `docs/swift/`
 
-The master skill file (identical content in both) that makes any AI agent an iOS expert. Contains:
+| | File | Topics |
+|:---:|------|--------|
+| :abc: | [swift-language.md](docs/swift/swift-language.md) | Types, protocols, generics, property wrappers, result builders, macros, pattern matching |
+| :arrows_counterclockwise: | [swift-concurrency.md](docs/swift/swift-concurrency.md) | async/await, Task, actors, @MainActor, Sendable, AsyncSequence, continuations |
+| :package: | [swift-standard-library.md](docs/swift/swift-standard-library.md) | Collections, String, Codable, Result, Regex, Clock/Duration |
 
-- Zero-error code generation rules
-- Swift 5.9+ coding standards (naming, structure, patterns)
-- Framework selection guide (when to use SwiftUI vs UIKit, SwiftData vs CoreData, etc.)
-- Platform-specific guidance for iOS, macOS, watchOS, tvOS, visionOS
-- MVVM project structure template
-- Top 10 common pitfalls and how to avoid them
+### :art: SwiftUI — `docs/swiftui/`
 
----
+| | File | Topics |
+|:---:|------|--------|
+| :jigsaw: | [views-and-controls.md](docs/swiftui/views-and-controls.md) | Text, Image, Button, List, ScrollView, Form, Menu, ViewModifier, lifecycle |
+| :floppy_disk: | [state-and-data-flow.md](docs/swiftui/state-and-data-flow.md) | @State, @Binding, @Observable, @Environment, @Query |
+| :compass: | [navigation.md](docs/swiftui/navigation.md) | NavigationStack, sheets, TabView, deep linking, iOS 18 zoom transitions |
+| :triangular_ruler: | [layout.md](docs/swiftui/layout.md) | Stacks, Grid, GeometryReader, LazyVGrid, custom Layout protocol |
+| :sparkles: | [animations.md](docs/swiftui/animations.md) | Spring, transitions, matchedGeometry, PhaseAnimator, MeshGradient, TextRenderer |
+| :point_up_2: | [gestures.md](docs/swiftui/gestures.md) | Tap, drag, magnify, rotate, gesture composition |
 
-## Documentation Reference (`docs/`)
+### :iphone: UIKit — `docs/uikit/`
 
-### Swift Language — `docs/swift/`
+| | File | Topics |
+|:---:|------|--------|
+| :building_construction: | [uikit-essentials.md](docs/uikit/uikit-essentials.md) | UIViewController, Auto Layout, diffable data sources, compositional layout |
+| :bridge_at_night: | [uikit-swiftui-interop.md](docs/uikit/uikit-swiftui-interop.md) | UIViewRepresentable, UIHostingController, Coordinator pattern |
+| :movie_camera: | [animations.md](docs/uikit/animations.md) | UIViewPropertyAnimator, custom VC transitions, Core Animation, CAShapeLayer |
 
-| File | What You'll Learn |
-|------|-------------------|
-| [swift-language.md](docs/swift/swift-language.md) | Value vs reference types, protocols, generics, property wrappers, result builders, macros, pattern matching, access control, key paths, extensions |
-| [swift-concurrency.md](docs/swift/swift-concurrency.md) | async/await, Task & TaskGroup, async let, actors, @MainActor, Sendable, AsyncSequence, AsyncStream, continuations, migration from GCD |
-| [swift-standard-library.md](docs/swift/swift-standard-library.md) | Array, Dictionary, Set, String/Character, Codable, Result, Comparable, Hashable, Sequence/Collection protocols, Regex/RegexBuilder, Clock/Duration |
+### :rainbow: Design System — `docs/design/`
 
-### SwiftUI — `docs/swiftui/`
+| | File | Topics |
+|:---:|------|--------|
+| :art: | [color-system.md](docs/design/color-system.md) | 5 color palettes, hex codes, 10 gradient recipes, materials, dark mode |
+| :capital_abcd: | [typography-system.md](docs/design/typography-system.md) | Text styles, SF Symbols, Dynamic Type, gradient/animated text effects |
+| :star2: | [stunning-ui-patterns.md](docs/design/stunning-ui-patterns.md) | 20+ UI patterns: glassmorphism, neumorphism, parallax, shimmer, card stacks |
+| :joystick: | [interaction-standards.md](docs/design/interaction-standards.md) | Animation curves, haptics, button styles, states, localization, privacy manifest |
+| :pencil2: | [fonts-catalog.md](docs/design/fonts-catalog.md) | Every iOS font, 100+ Google Fonts, 15 pairings, variable fonts, international |
+| :clapper: | [third-party-animations.md](docs/design/third-party-animations.md) | Lottie integration, Rive state machines, decision table |
 
-| File | What You'll Learn |
-|------|-------------------|
-| [views-and-controls.md](docs/swiftui/views-and-controls.md) | Text, Image, Button, Toggle, Picker, TextField, List, ScrollView, LazyVStack/HStack/VGrid/HGrid, Form, Menu, ProgressView, custom ViewModifier, view lifecycle (onAppear, task, onChange) |
-| [state-and-data-flow.md](docs/swiftui/state-and-data-flow.md) | @State, @Binding, @Observable (iOS 17+), @Environment, @AppStorage, @Query, when to use which property wrapper |
-| [navigation.md](docs/swiftui/navigation.md) | NavigationStack, NavigationPath, NavigationSplitView, sheets, alerts, TabView, deep linking, programmatic navigation, type-safe routing |
-| [layout.md](docs/swiftui/layout.md) | VStack/HStack/ZStack, Grid, ViewThatFits, GeometryReader, LazyVGrid/HGrid, safe area, custom Layout protocol, ScrollViewReader |
-| [animations.md](docs/swiftui/animations.md) | Implicit/explicit animations, spring/bouncy/snappy, transitions, matchedGeometryEffect, PhaseAnimator, KeyframeAnimator, symbol effects, haptics |
-| [gestures.md](docs/swiftui/gestures.md) | Tap, long press, drag, magnify, rotate, gesture composition (.simultaneously, .sequenced), @GestureState, custom gesture modifiers |
+### :wrench: Drop-In Components — `templates/common-patterns/`
 
-### UIKit — `docs/uikit/`
+| | File | Includes |
+|:---:|------|---------|
+| :paintbrush: | [design-system.swift](templates/common-patterns/design-system.swift) | 5 themes, spacing/radius/shadow tokens, 6 ButtonStyles, ViewState, AnimationStandard |
+| :bricks: | [ui-components.swift](templates/common-patterns/ui-components.swift) | GradientButton, GlassCard, AvatarView, StatCard, RatingView, CircularProgress, ToastView, SearchBar + 9 more |
 
-| File | What You'll Learn |
-|------|-------------------|
-| [uikit-essentials.md](docs/uikit/uikit-essentials.md) | UIViewController lifecycle, Auto Layout, UICollectionView diffable data sources & compositional layout, UINavigationController, keyboard handling |
-| [uikit-swiftui-interop.md](docs/uikit/uikit-swiftui-interop.md) | UIViewRepresentable, UIViewControllerRepresentable, UIHostingController, Coordinator pattern, data flow between UIKit and SwiftUI |
+### :gear: Apple Frameworks — `docs/frameworks/`
 
-### UI Design System — `docs/design/`
+| | File | Framework |
+|:---:|------|-----------|
+| :globe_with_meridians: | [foundation.md](docs/frameworks/foundation.md) | URLSession, FileManager, Codable, NotificationCenter |
+| :ocean: | [combine.md](docs/frameworks/combine.md) | Publishers, operators, error handling |
+| :floppy_disk: | [core-data.md](docs/frameworks/core-data.md) | NSManagedObject, fetch requests, migration |
+| :sparkle: | [swiftdata.md](docs/frameworks/swiftdata.md) | @Model, @Query, #Predicate, History API, custom DataStore |
+| :satellite: | [networking.md](docs/frameworks/networking.md) | API client, auth tokens, WebSocket |
+| :round_pushpin: | [core-location.md](docs/frameworks/core-location.md) | GPS, geofencing, iBeacon |
+| :world_map: | [mapkit.md](docs/frameworks/mapkit.md) | Map views, annotations, directions, LookAround |
+| :film_projector: | [avfoundation.md](docs/frameworks/avfoundation.md) | Audio/video playback, camera capture |
+| :credit_card: | [storekit.md](docs/frameworks/storekit.md) | In-app purchases, subscriptions, EU marketplace |
+| :cloud: | [cloudkit.md](docs/frameworks/cloudkit.md) | iCloud sync, CKSyncEngine, sharing |
+| :bell: | [usernotifications.md](docs/frameworks/usernotifications.md) | Local/remote notifications, actions |
+| :card_index_dividers: | [widgetkit.md](docs/frameworks/widgetkit.md) | Widgets, Live Activities, Control Center |
+| :wheelchair: | [accessibility.md](docs/frameworks/accessibility.md) | VoiceOver, Dynamic Type, contrast |
 
-| File | What You'll Learn |
-|------|-------------------|
-| [color-system.md](docs/design/color-system.md) | 5 pre-built color palettes (Ocean Blue, Sunset Warm, Midnight Dark, Nature Green, Violet Dream) with full hex codes, Color hex extension, 10 gradient recipes (LinearGradient, RadialGradient, MeshGradient), material effects, dark mode, vibrancy, color accessibility |
-| [typography-system.md](docs/design/typography-system.md) | Apple's 11 text styles, font weights & designs (.rounded, .serif, .monospaced), custom fonts, SF Symbols (rendering modes, variable values, effects), Dynamic Type, gradient text, shadow text, outlined text, animated text, AttributedString |
-| [stunning-ui-patterns.md](docs/design/stunning-ui-patterns.md) | 20+ production-ready UI patterns with full SwiftUI code: glassmorphism cards, neumorphic design, gradient cards, animated onboarding, parallax headers, bottom sheets, animated tab bars, profile cards, dashboard stats, floating action buttons, card stacks, shimmer loading, toast notifications, expandable cards, animated backgrounds, scroll-blur headers, chip layouts, rating stars |
-| [interaction-standards.md](docs/design/interaction-standards.md) | Animation curves & durations (micro/navigation/content/dismissal), haptic feedback rules (when to use which type), SF Symbols guidelines (weights, sizes, rendering modes, effects), 6 button styles (primary/secondary/destructive/ghost/icon/pill), loading/empty/error state patterns with ViewState enum, localization approach (String Catalogs, pluralization, RTL), privacy manifest (PrivacyInfo.xcprivacy), iPad adaptive layout (size classes, Stage Manager), preview standards (#Preview with dark mode, Dynamic Type, devices) |
-| [fonts-catalog.md](docs/design/fonts-catalog.md) | **The ultimate font bible** — Every Apple system font (SF Pro, SF Rounded, SF Mono, New York), 50+ built-in iOS fonts with exact Font.custom() names, top 100 Google Fonts with weights and use cases, 15 proven font pairings with SwiftUI code, step-by-step custom font setup, FontManager utility class, variable fonts guide, international fonts (Chinese, Japanese, Korean, Arabic, Hindi) |
+### :robot: AI & Machine Learning — `docs/frameworks/ml/`
 
-### Reusable UI Components — `templates/common-patterns/`
+| | File | Framework |
+|:---:|------|-----------|
+| :brain: | [coreml.md](docs/frameworks/ml/coreml.md) | Model loading, prediction, Neural Engine |
+| :eye: | [vision.md](docs/frameworks/ml/vision.md) | OCR, face detection, barcode, segmentation |
+| :speech_balloon: | [natural-language.md](docs/frameworks/ml/natural-language.md) | Tokenization, sentiment, embeddings |
+| :microphone: | [speech.md](docs/frameworks/ml/speech.md) | Speech-to-text, live transcription |
+| :crystal_ball: | [on-device-ai.md](docs/frameworks/ml/on-device-ai.md) | Foundation Models, MLX Swift, on-device LLM |
 
-| File | Components Included |
-|------|-------------------|
-| [design-system.swift](templates/common-patterns/design-system.swift) | Color hex extension, 5 theme structs (OceanBlue, SunsetWarm, MidnightDark, NatureGreen, VioletDream), ThemeManager with runtime switching, typography scale, spacing system, corner radius system, shadow styles, ViewModifiers (.cardStyle, .glassCard, .gradientBackground, .shimmer, .pressable, .slideIn) |
-| [ui-components.swift](templates/common-patterns/ui-components.swift) | GradientButton, GlassCard, AvatarView, StatCard, TagView, FlowLayout, RatingView, CircularProgress, AnimatedCounter, GradientText, CustomToggle, SkeletonView, ToastView, StepIndicator, EmptyStateView, SearchBar, SegmentedControl |
+### :rocket: Advanced App Experience
 
-### Apple Frameworks — `docs/frameworks/`
+| | File | Framework |
+|:---:|------|-----------|
+| :green_circle: | [activitykit.md](docs/frameworks/activitykit.md) | Live Activities, Dynamic Island |
+| :raised_hands: | [app-intents.md](docs/frameworks/app-intents.md) | Siri, Shortcuts, Spotlight, Apple Intelligence |
+| :bulb: | [tipkit.md](docs/frameworks/tipkit.md) | Feature discovery tooltips |
+| :scissors: | [app-clips.md](docs/frameworks/app-clips.md) | App Clips, NFC/QR triggers |
+| :camera: | [photosui.md](docs/frameworks/photosui.md) | PhotosPicker, custom camera, PiP |
 
-| File | Framework | What You'll Learn |
-|------|-----------|-------------------|
-| [foundation.md](docs/frameworks/foundation.md) | Foundation | URLSession async, FileManager, UserDefaults, JSONEncoder/Decoder, Codable patterns, formatters, NotificationCenter, Timer |
-| [combine.md](docs/frameworks/combine.md) | Combine | Publishers, subscribers, operators (map, filter, flatMap, debounce, combineLatest), error handling, scheduling, memory management |
-| [core-data.md](docs/frameworks/core-data.md) | Core Data | NSManagedObject, contexts, fetch requests, NSFetchedResultsController, relationships, migration, CloudKit integration |
-| [swiftdata.md](docs/frameworks/swiftdata.md) | SwiftData | @Model, ModelContainer, @Query, #Predicate, relationships, VersionedSchema migration, CloudKit sync |
-| [networking.md](docs/frameworks/networking.md) | Networking | Generic API client (actor-based), auth tokens, retry logic, multipart upload, WebSocket, NWPathMonitor |
-| [core-location.md](docs/frameworks/core-location.md) | CoreLocation | CLLocationManager, permissions, geocoding, geofencing, iBeacon, background location |
-| [mapkit.md](docs/frameworks/mapkit.md) | MapKit | SwiftUI Map, annotations, overlays, MKLocalSearch, MKDirections, MapCamera, LookAround |
-| [avfoundation.md](docs/frameworks/avfoundation.md) | AVFoundation | AVPlayer, audio recording, camera capture (AVCaptureSession), video export, audio session, Now Playing |
-| [storekit.md](docs/frameworks/storekit.md) | StoreKit 2 | Products, purchase flow, transaction verification, subscriptions, SubscriptionStoreView, testing |
-| [cloudkit.md](docs/frameworks/cloudkit.md) | CloudKit | CKContainer, CKRecord CRUD, CKQuery, subscriptions, sharing (CKShare), SwiftData/CoreData integration |
-| [usernotifications.md](docs/frameworks/usernotifications.md) | UserNotifications | Local/remote notifications, triggers (time, calendar, location), actions, categories, service extension |
-| [widgetkit.md](docs/frameworks/widgetkit.md) | WidgetKit | TimelineProvider, widget families, Lock Screen widgets, Live Activities, interactive widgets (iOS 17+) |
-| [accessibility.md](docs/frameworks/accessibility.md) | Accessibility | VoiceOver, Dynamic Type, color contrast, reduce motion, custom actions, rotors, testing |
+### :electric_plug: Hardware — `docs/frameworks/hardware/`
 
-### AI & Machine Learning — `docs/frameworks/ml/`
+| | File | Framework |
+|:---:|------|-----------|
+| :signal_strength: | [core-bluetooth.md](docs/frameworks/hardware/core-bluetooth.md) | BLE scanning, connecting |
+| :heart: | [healthkit.md](docs/frameworks/hardware/healthkit.md) | Health data, workouts |
+| :running: | [core-motion.md](docs/frameworks/hardware/core-motion.md) | Accelerometer, pedometer |
+| :vibration_mode: | [core-nfc.md](docs/frameworks/hardware/core-nfc.md) | NFC tag reading/writing |
+| :house: | [homekit.md](docs/frameworks/hardware/homekit.md) | Home automation, Matter |
 
-| File | Framework | What You'll Learn |
-|------|-----------|-------------------|
-| [coreml.md](docs/frameworks/ml/coreml.md) | CoreML | Model loading, prediction, MLTensor, compute units (CPU/GPU/Neural Engine), VNCoreMLRequest, async prediction, model compilation |
-| [vision.md](docs/frameworks/ml/vision.md) | Vision | OCR (VNRecognizeTextRequest), face/barcode detection, person segmentation, object tracking, DataScannerViewController, ImageAnalyzer |
-| [natural-language.md](docs/frameworks/ml/natural-language.md) | NaturalLanguage | NLTokenizer, NLTagger (POS, NER), sentiment analysis, language detection, text embeddings, semantic similarity |
-| [speech.md](docs/frameworks/ml/speech.md) | Speech | SFSpeechRecognizer, on-device transcription, live audio with AVAudioEngine, language selection, confidence scores |
-| [on-device-ai.md](docs/frameworks/ml/on-device-ai.md) | On-Device AI | Foundation Models framework, SystemLanguageModel, guided generation, tool calling, MLX Swift, on-device LLM inference |
+### :briefcase: Services — `docs/frameworks/services/`
 
-### Advanced App Experience
+| | File | Framework |
+|:---:|------|-----------|
+| :moneybag: | [passkit.md](docs/frameworks/services/passkit.md) | Apple Pay, Wallet passes |
+| :partly_sunny: | [weatherkit.md](docs/frameworks/services/weatherkit.md) | Weather forecasts, alerts |
+| :calendar: | [eventkit.md](docs/frameworks/services/eventkit.md) | Calendar, reminders |
+| :busts_in_silhouette: | [contacts.md](docs/frameworks/services/contacts.md) | Contact access, picker |
 
-| File | Framework | What You'll Learn |
-|------|-----------|-------------------|
-| [activitykit.md](docs/frameworks/activitykit.md) | ActivityKit | Live Activities, Dynamic Island (compact/minimal/expanded), push-to-update, timer activities, delivery tracking |
-| [app-intents.md](docs/frameworks/app-intents.md) | App Intents | Siri shortcuts, Spotlight, widget configuration, Focus filters, Apple Intelligence integration |
-| [tipkit.md](docs/frameworks/tipkit.md) | TipKit | Contextual tooltips, tip rules (parameter/event), display frequency, feature discovery |
-| [app-clips.md](docs/frameworks/app-clips.md) | App Clips | Invocation URLs, NFC/QR triggers, App Clip Card, 15MB limit, data handoff to full app |
-| [photosui.md](docs/frameworks/photosui.md) | PhotosUI & AVKit | PhotosPicker, custom camera (AVCaptureSession), VideoPlayer, Picture-in-Picture |
+### :shield: Security & Engineering
 
-### Hardware Integration — `docs/frameworks/hardware/`
+| | File | Framework |
+|:---:|------|-----------|
+| :lock: | [cryptokit.md](docs/frameworks/cryptokit.md) | SHA256, AES-GCM, Secure Enclave |
+| :mag: | [oslog.md](docs/frameworks/oslog.md) | Logger, MetricKit diagnostics |
+| :hourglass_flowing_sand: | [background-tasks.md](docs/frameworks/background-tasks.md) | BGTaskScheduler |
+| :white_check_mark: | [device-integrity.md](docs/frameworks/device-integrity.md) | DeviceCheck, AppAttest |
 
-| File | Framework | What You'll Learn |
-|------|-----------|-------------------|
-| [core-bluetooth.md](docs/frameworks/hardware/core-bluetooth.md) | CoreBluetooth | BLE scanning, connecting, services/characteristics, background execution, state restoration |
-| [healthkit.md](docs/frameworks/hardware/healthkit.md) | HealthKit | Health data queries, writing samples, statistics, workout sessions, background delivery |
-| [core-motion.md](docs/frameworks/hardware/core-motion.md) | CoreMotion | Accelerometer, gyroscope, device motion, pedometer, activity recognition, altimeter |
-| [core-nfc.md](docs/frameworks/hardware/core-nfc.md) | CoreNFC | NDEF tag reading/writing, ISO 14443/15693, background tag reading |
-| [homekit.md](docs/frameworks/hardware/homekit.md) | HomeKit & Matter | Home automation, accessories, triggers, scenes, Matter device pairing |
+### :earth_americas: Platform Guides — `docs/platforms/`
 
-### Data Services — `docs/frameworks/services/`
-
-| File | Framework | What You'll Learn |
-|------|-----------|-------------------|
-| [passkit.md](docs/frameworks/services/passkit.md) | PassKit & FinanceKit | Apple Pay checkout, PKPaymentRequest, Wallet passes, Apple Card queries |
-| [weatherkit.md](docs/frameworks/services/weatherkit.md) | WeatherKit | Current/hourly/daily forecasts, alerts, precipitation, attribution requirements |
-| [eventkit.md](docs/frameworks/services/eventkit.md) | EventKit | Calendar events, reminders, recurrence rules, EventKitUI |
-| [contacts.md](docs/frameworks/services/contacts.md) | Contacts | CNContactStore, fetch requests, contact picker, creating contacts |
-
-### Security & Engineering
-
-| File | Framework | What You'll Learn |
-|------|-----------|-------------------|
-| [cryptokit.md](docs/frameworks/cryptokit.md) | CryptoKit | SHA256 hashing, HMAC, AES-GCM encryption, P256 signing, Secure Enclave |
-| [oslog.md](docs/frameworks/oslog.md) | OSLog & MetricKit | Logger, log levels, os_signpost profiling, MXMetricManager diagnostics |
-| [background-tasks.md](docs/frameworks/background-tasks.md) | BackgroundTasks | BGTaskScheduler, app refresh, processing tasks, background URLSession |
-| [device-integrity.md](docs/frameworks/device-integrity.md) | DeviceCheck & AppAttest | Per-device bits, key attestation, assertion generation, API security |
-
-### Platform Guides — `docs/platforms/`
-
-| File | Platform | What You'll Learn |
-|------|----------|-------------------|
-| [ios.md](docs/platforms/ios.md) | iOS | App lifecycle, BGTaskScheduler, deep linking (Universal Links), share extensions, HealthKit, Core Haptics |
-| [macos.md](docs/platforms/macos.md) | macOS | Menu bar, NSWindow, toolbar/sidebar, document-based apps, sandboxing, NSViewRepresentable, drag & drop |
-| [watchos.md](docs/platforms/watchos.md) | watchOS | Complications (WidgetKit), Watch Connectivity, HealthKit workouts, Digital Crown, always-on display |
-| [tvos.md](docs/platforms/tvos.md) | tvOS | Focus engine, TVUIKit, Top Shelf, Siri Remote, media playback, multi-user support |
-| [visionos.md](docs/platforms/visionos.md) | visionOS | WindowGroup/ImmersiveSpace/Volume, RealityView, Model3D, hand & eye tracking, spatial audio, ornaments |
+| | File | Platform |
+|:---:|------|----------|
+| :iphone: | [ios.md](docs/platforms/ios.md) | iOS — lifecycle, deep linking, extensions |
+| :computer: | [macos.md](docs/platforms/macos.md) | macOS — menu bar, toolbar, sandboxing |
+| :watch: | [watchos.md](docs/platforms/watchos.md) | watchOS — complications, workouts |
+| :tv: | [tvos.md](docs/platforms/tvos.md) | tvOS — focus engine, Siri Remote |
+| :eyeglasses: | [visionos.md](docs/platforms/visionos.md) | visionOS — spatial computing, RealityKit |
 
 ---
 
-## Code Templates (`templates/`)
+## :building_construction: Code Templates
 
-### iOS App Template — `templates/ios-app/`
-
-A complete MVVM SwiftUI app ready to build on:
+### :iphone: iOS App Template
 
 ```
 templates/ios-app/
-├── App.swift                    # @main entry point with SwiftData
-├── ContentView.swift            # TabView with Home, Profile, Settings
-├── Models/
-│   └── Item.swift               # Sample data model with Identifiable, Hashable
-├── Views/
-│   ├── HomeView.swift           # NavigationStack, List, pull-to-refresh, empty state
-│   ├── ProfileView.swift        # User profile with sections and sign out
-│   └── SettingsView.swift       # Form with toggles, pickers, app info
-├── ViewModels/
-│   ├── HomeViewModel.swift      # @Observable with async loading, error handling
-│   └── ProfileViewModel.swift   # @Observable with user state management
-└── Info.plist                   # Configured for iOS with scene support
+ |- App.swift              # @main with SwiftData
+ |- ContentView.swift      # TabView (Home, Profile, Settings)
+ |- Models/Item.swift      # Data model
+ |- Views/                 # HomeView, ProfileView, SettingsView
+ |- ViewModels/            # @Observable view models
+ |- Info.plist
 ```
 
-### Multiplatform Template — `templates/multiplatform-app/`
-
-SwiftUI app targeting iOS, macOS, and watchOS simultaneously:
+### :globe_with_meridians: Multiplatform Template
 
 ```
 templates/multiplatform-app/
-├── Shared/
-│   └── MultiplatformApp.swift   # NavigationSplitView, platform-adaptive
-├── iOS/
-│   └── iOSApp.swift             # Haptic feedback helper, iOS modifiers
-├── macOS/
-│   └── macOSApp.swift           # Custom menu commands, window styling
-└── watchOS/
-    └── watchOSApp.swift         # Vertical page TabView, compact layouts
+ |- Shared/                # NavigationSplitView, shared logic
+ |- iOS/                   # iOS-specific (haptics, etc.)
+ |- macOS/                 # Menu commands, window styling
+ |- watchOS/               # Compact layouts
 ```
 
-### Common Patterns — `templates/common-patterns/`
+### :toolbox: Common Patterns
 
-Drop-in Swift files for the most common app features:
-
-| File | What It Does |
-|------|--------------|
-| [networking-layer.swift](templates/common-patterns/networking-layer.swift) | Actor-based generic API client with GET/POST/PUT/DELETE, error handling, status codes, authenticated client with token management |
-| [persistence-layer.swift](templates/common-patterns/persistence-layer.swift) | SwiftData setup with @Model, ModelContainer, @Query integration, CRUD operations, preview container with sample data |
-| [auth-flow.swift](templates/common-patterns/auth-flow.swift) | Complete auth system — AuthManager (@Observable), Keychain storage, email/password sign in, Sign in with Apple, auth-gated root view, login form |
-| [navigation-router.swift](templates/common-patterns/navigation-router.swift) | Type-safe router with NavigationPath, push/pop/popToRoot, sheet/fullScreenCover, deep link handling |
-| [dependency-injection.swift](templates/common-patterns/dependency-injection.swift) | Protocol-based DI with SwiftUI Environment, service protocols, concrete + mock implementations, AppDependencies container |
+| | File | What It Does |
+|:---:|------|--------------|
+| :satellite: | [networking-layer.swift](templates/common-patterns/networking-layer.swift) | Actor-based API client, auth tokens |
+| :floppy_disk: | [persistence-layer.swift](templates/common-patterns/persistence-layer.swift) | SwiftData setup, @Query, previews |
+| :key: | [auth-flow.swift](templates/common-patterns/auth-flow.swift) | AuthManager, Keychain, Sign in with Apple |
+| :compass: | [navigation-router.swift](templates/common-patterns/navigation-router.swift) | Type-safe router, deep linking |
+| :syringe: | [dependency-injection.swift](templates/common-patterns/dependency-injection.swift) | Protocol-based DI, Environment |
 
 ---
 
-## Architecture Patterns (`patterns/`)
+## :classical_building: Architecture Patterns
 
-| File | Pattern | What You'll Learn |
-|------|---------|-------------------|
-| [mvvm.md](patterns/mvvm.md) | MVVM | @Observable ViewModel, protocol-based DI, optimistic updates, Equatable views, testing with mocks |
-| [clean-architecture.md](patterns/clean-architecture.md) | Clean Architecture | Domain/Data/Presentation layers, use cases, entity vs DTO separation, dependency inversion |
-| [coordinator.md](patterns/coordinator.md) | Coordinator | Coordinator protocol with NavigationPath, child coordinators, deep link routing, lifecycle management |
-| [repository.md](patterns/repository.md) | Repository | Generic CRUD protocol, remote + local data sources, caching with TTL, offline-first with sync queue |
-| [error-handling.md](patterns/error-handling.md) | Error Handling | Custom error types, propagation chains, user-facing alerts, retry with backoff, circuit breaker, logging |
-| [tca.md](patterns/tca.md) | The Composable Architecture | State, Action, Reducer, Store, @Dependency, navigation, TestStore, when to use TCA vs MVVM |
-
-### CI/CD Templates — `templates/ci-cd/`
-
-| File | What It Does |
-|------|--------------|
-| [github-actions.yml](templates/ci-cd/github-actions.yml) | Complete GitHub Actions workflow — build, test, code signing, TestFlight upload, SPM caching, Slack notifications |
-| [Fastfile](templates/ci-cd/Fastfile) | Fastlane configuration — test, beta (TestFlight), release (App Store), match signing, screenshots |
+| | Pattern | Guide |
+|:---:|---------|-------|
+| :arrows_counterclockwise: | **MVVM** | [@Observable, DI, testing](patterns/mvvm.md) |
+| :bricks: | **Clean Architecture** | [Domain/Data/Presentation layers](patterns/clean-architecture.md) |
+| :compass: | **Coordinator** | [NavigationPath, deep linking](patterns/coordinator.md) |
+| :file_cabinet: | **Repository** | [Offline-first, caching](patterns/repository.md) |
+| :warning: | **Error Handling** | [Custom errors, retry, circuit breaker](patterns/error-handling.md) |
+| :atom_symbol: | **TCA** | [Composable Architecture, TestStore](patterns/tca.md) |
 
 ---
 
-## Quality Checklists (`checklists/`)
+## :rocket: CI/CD Templates
 
-| File | When to Use |
-|------|-------------|
-| [app-store-submission.md](checklists/app-store-submission.md) | Before submitting to App Store — metadata, privacy labels, ATS, entitlements, TestFlight, common rejection fixes |
-| [performance.md](checklists/performance.md) | Optimizing your app — Instruments profiling, SwiftUI performance, image optimization, launch time, memory management |
-| [security.md](checklists/security.md) | Securing your app — Keychain, certificate pinning, biometric auth, data protection, input validation |
-| [testing.md](checklists/testing.md) | Testing your app — XCTest, Swift Testing (@Test, #expect), UI testing, network mocking, CI/CD with GitHub Actions |
+| | File | What It Does |
+|:---:|------|--------------|
+| :octocat: | [github-actions.yml](templates/ci-cd/github-actions.yml) | Build, test, TestFlight deploy, SPM cache |
+| :gem: | [Fastfile](templates/ci-cd/Fastfile) | Test, beta, release lanes, match signing |
 
 ---
 
-## Supported Platforms & Tech Stack
+## :clipboard: Quality Checklists
 
-| Category | Technology | Minimum Version |
-|----------|-----------|-----------------|
-| Language | Swift 5.9+ | Xcode 15+ |
-| UI (primary) | SwiftUI | iOS 15+ / macOS 13+ |
-| UI (interop) | UIKit / AppKit | iOS 13+ / macOS 10.15+ |
-| Persistence (modern) | SwiftData | iOS 17+ |
-| Persistence (legacy) | Core Data | iOS 13+ |
-| Concurrency | Swift Concurrency | iOS 15+ |
-| State (modern) | Observation (@Observable) | iOS 17+ |
-| State (legacy) | Combine | iOS 13+ |
-| Architecture | MVVM | All |
-| Spatial | RealityKit + ARKit | visionOS 1.0+ |
-| Widgets | WidgetKit | iOS 14+ |
-| Payments | StoreKit 2 | iOS 15+ |
+| | Checklist | When to Use |
+|:---:|-----------|-------------|
+| :apple: | [App Store Submission](checklists/app-store-submission.md) | Before submitting — metadata, privacy, entitlements |
+| :racing_car: | [Performance](checklists/performance.md) | Instruments, SwiftUI perf, image optimization |
+| :shield: | [Security](checklists/security.md) | Keychain, pinning, biometrics, encryption |
+| :test_tube: | [Testing](checklists/testing.md) | XCTest, Swift Testing, UI tests, CI/CD |
 
 ---
 
-## Example Prompts
+## :bar_chart: Tech Stack
 
-Once Claude loads this skill, try these:
-
-| What You Want | What to Ask Claude |
-|--------------|-------------------|
-| New iOS app | "Create a SwiftUI iOS app for tracking daily habits with SwiftData persistence" |
-| Add a feature | "Add push notification support to my app with local and remote notifications" |
-| Fix a bug | "My NavigationStack isn't preserving state when I go back. Fix it." |
-| Add networking | "Create a REST API client for my app that fetches user data from this endpoint" |
-| visionOS app | "Build a visionOS app that displays 3D models in an immersive space" |
-| watchOS companion | "Add a watchOS companion app that syncs data with the iPhone app" |
-| Widget | "Create a home screen widget that shows today's tasks from my app" |
-| In-app purchase | "Add a subscription paywall using StoreKit 2" |
-| Architecture help | "Refactor this view to use MVVM with the repository pattern" |
-| App Store prep | "Review my app against the App Store submission checklist" |
-| Performance | "Profile and optimize my app's scroll performance in this list view" |
-| Stunning UI | "Build a beautiful onboarding screen with gradient backgrounds, glass cards, and smooth animations" |
-| Design system | "Create a custom theme with Ocean Blue palette and apply it across the entire app" |
-| Components | "Add a dashboard with stat cards, circular progress indicators, and animated counters" |
+| | Category | Technology | Version |
+|:---:|----------|-----------|---------|
+| :abc: | Language | Swift 5.9+ | Xcode 15+ |
+| :art: | UI (primary) | SwiftUI | iOS 15+ |
+| :iphone: | UI (interop) | UIKit / AppKit | iOS 13+ |
+| :floppy_disk: | Persistence | SwiftData | iOS 17+ |
+| :arrows_counterclockwise: | Concurrency | async/await, actors | iOS 15+ |
+| :eyes: | State | @Observable | iOS 17+ |
+| :building_construction: | Architecture | MVVM / TCA | All |
+| :eyeglasses: | Spatial | RealityKit + ARKit | visionOS 1.0+ |
+| :brain: | AI/ML | CoreML + Vision | iOS 15+ |
 
 ---
 
-## Repository Structure
+## :speech_balloon: Example Prompts
 
-```
-ios-agent-skill/
-│
-├── CLAUDE.md                              # Master skill — Claude's iOS expert brain
-├── README.md                              # This file
-├── .gitignore                             # Swift/Xcode gitignore
-├── .claude/settings.json                  # Claude Code configuration
-│
-├── docs/                                  # 32 documentation files
-│   ├── swift/                             # 3 files — language, concurrency, stdlib
-│   │   ├── swift-language.md
-│   │   ├── swift-concurrency.md
-│   │   └── swift-standard-library.md
-│   │
-│   ├── swiftui/                           # 6 files — complete SwiftUI reference
-│   │   ├── views-and-controls.md
-│   │   ├── state-and-data-flow.md
-│   │   ├── navigation.md
-│   │   ├── layout.md
-│   │   ├── animations.md
-│   │   └── gestures.md
-│   │
-│   ├── design/                            # 5 files — UI design system
-│   │   ├── color-system.md               # 5 color palettes, gradients, materials
-│   │   ├── typography-system.md          # Text styles, fonts, SF Symbols, effects
-│   │   ├── stunning-ui-patterns.md       # 20+ beautiful UI patterns with code
-│   │   ├── interaction-standards.md      # Animations, haptics, buttons, states, privacy
-│   │   └── fonts-catalog.md             # Every font for iOS — system, Google, pairings
-│   │
-│   ├── uikit/                             # 2 files — UIKit + SwiftUI bridging
-│   │   ├── uikit-essentials.md
-│   │   └── uikit-swiftui-interop.md
-│   │
-│   ├── frameworks/                        # 13 files — every major Apple framework
-│   │   ├── foundation.md
-│   │   ├── combine.md
-│   │   ├── core-data.md
-│   │   ├── swiftdata.md
-│   │   ├── networking.md
-│   │   ├── core-location.md
-│   │   ├── mapkit.md
-│   │   ├── avfoundation.md
-│   │   ├── storekit.md
-│   │   ├── cloudkit.md
-│   │   ├── usernotifications.md
-│   │   ├── widgetkit.md
-│   │   └── accessibility.md
-│   │
-│   └── platforms/                         # 5 files — every Apple platform
-│       ├── ios.md
-│       ├── macos.md
-│       ├── watchos.md
-│       ├── tvos.md
-│       └── visionos.md
-│
-├── templates/                             # 16 Swift source files
-│   ├── ios-app/                           # Complete iOS MVVM app
-│   │   ├── App.swift
-│   │   ├── ContentView.swift
-│   │   ├── Info.plist
-│   │   ├── Models/Item.swift
-│   │   ├── ViewModels/HomeViewModel.swift
-│   │   ├── ViewModels/ProfileViewModel.swift
-│   │   ├── Views/HomeView.swift
-│   │   ├── Views/ProfileView.swift
-│   │   └── Views/SettingsView.swift
-│   │
-│   ├── multiplatform-app/                 # iOS + macOS + watchOS app
-│   │   ├── Shared/MultiplatformApp.swift
-│   │   ├── iOS/iOSApp.swift
-│   │   ├── macOS/macOSApp.swift
-│   │   └── watchOS/watchOSApp.swift
-│   │
-│   └── common-patterns/                   # Drop-in code patterns
-│       ├── networking-layer.swift
-│       ├── persistence-layer.swift
-│       ├── auth-flow.swift
-│       ├── navigation-router.swift
-│       ├── dependency-injection.swift
-│       ├── design-system.swift            # Themes, colors, spacing, shadows, modifiers
-│       └── ui-components.swift            # 17 reusable beautiful UI components
-│
-├── patterns/                              # 5 architecture guides
-│   ├── mvvm.md
-│   ├── clean-architecture.md
-│   ├── coordinator.md
-│   ├── repository.md
-│   └── error-handling.md
-│
-└── checklists/                            # 4 quality checklists
-    ├── app-store-submission.md
-    ├── performance.md
-    ├── security.md
-    └── testing.md
-```
-
-**93 files | 46,000+ lines | AI/ML + Hardware + Stunning UIs + All Apple platforms**
+| | What You Want | What to Ask |
+|:---:|--------------|-------------|
+| :iphone: | New app | *"Create a SwiftUI habit tracker with SwiftData persistence"* |
+| :bell: | Push notifications | *"Add local and remote notification support"* |
+| :bug: | Fix a bug | *"My NavigationStack isn't preserving state on back"* |
+| :satellite: | Networking | *"Create a REST API client that fetches user data"* |
+| :eyeglasses: | visionOS | *"Build a visionOS app with 3D models in immersive space"* |
+| :watch: | watchOS | *"Add a watchOS companion that syncs with iPhone"* |
+| :card_index_dividers: | Widget | *"Create a home screen widget showing today's tasks"* |
+| :credit_card: | In-app purchase | *"Add a subscription paywall with StoreKit 2"* |
+| :star2: | Stunning UI | *"Build onboarding with gradient glass cards and animations"* |
+| :art: | Design system | *"Apply Ocean Blue theme across the entire app"* |
+| :bar_chart: | Dashboard | *"Add stat cards with circular progress and animated counters"* |
+| :brain: | ML feature | *"Add on-device text recognition with Vision framework"* |
+| :heart: | Health app | *"Read step count data from HealthKit and display weekly chart"* |
 
 ---
 
-## Author
+## :handshake: Contributing
 
-**Nagarjuna Reddy** — iOS Developer & AI Engineer
-
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Nagarjuna%20Reddy-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/nagarjuna-reddy-97836a193/)
-[![GitHub](https://img.shields.io/badge/GitHub-Nagarjuna2997-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Nagarjuna2997)
-
----
-
-## Contributing
-
-1. Fork this repository
-2. Add or update documentation in `docs/`
-3. Add new templates or patterns
-4. Submit a pull request
+1. :fork_and_knife: Fork this repository
+2. :pencil2: Add or update documentation in `docs/`
+3. :hammer_and_wrench: Add new templates or patterns
+4. :arrow_heading_up: Submit a pull request
 
 ---
 
-## License
+## :scroll: License
 
-MIT License
+MIT License | Copyright (c) 2026 **Nagarjuna Reddy**
 
-Copyright (c) 2026 Nagarjuna Reddy
+---
+
+<p align="center">
+  <strong>95+ files | 50,000+ lines | 25+ AI platforms | All Apple frameworks</strong><br><br>
+  <a href="https://www.linkedin.com/in/nagarjuna-reddy-97836a193/"><img src="https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn"></a>
+  <a href="https://github.com/Nagarjuna2997/ios-agent-skill"><img src="https://img.shields.io/badge/GitHub-Star%20this%20repo-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub"></a>
+</p>
