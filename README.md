@@ -32,11 +32,32 @@ Claude automatically reads `CLAUDE.md` and becomes an expert iOS developer. Ask 
 git clone https://github.com/Nagarjuna2997/ios-agent-skill.git ~/.codex/skills/ios-agent-skill
 ```
 
-Codex automatically reads `SKILL.md` and registers the skill. The `skill.json` manifest provides metadata for skill discovery.
+Codex automatically reads `SKILL.md` and registers the skill.
 
-### OpenAI Codex / Other AI Agents
+### Antigravity
 
-Copy `SKILL.md` (or `CLAUDE.md` — they're identical) into your project root. Any AI coding agent that reads system prompt files will pick it up.
+```bash
+git clone https://github.com/Nagarjuna2997/ios-agent-skill.git
+cd ios-agent-skill
+```
+
+Antigravity automatically reads `AGENTS.md` and activates expert iOS mode.
+
+### Cursor
+
+Clone into your project or copy `.cursorrules` to your project root:
+
+```bash
+cp ios-agent-skill/.cursorrules /path/to/your/project/.cursorrules
+```
+
+### GitHub Copilot
+
+The `.github/copilot-instructions.md` file is auto-detected by Copilot when the repo is cloned.
+
+### Any Other AI Agent
+
+Copy whichever file your agent reads (`AGENTS.md`, `SKILL.md`, `CLAUDE.md`, or `.cursorrules`) into your project root. All contain identical content.
 
 ### Reference from Your Existing Project
 
@@ -59,10 +80,15 @@ You are an expert iOS/Swift developer. Reference the ios-agent-skill knowledge b
 | Platform | Entry File | Auto-detected |
 |----------|-----------|---------------|
 | **Claude Code** | `CLAUDE.md` | Yes |
+| **Antigravity** | `AGENTS.md` | Yes |
 | **Codex** | `SKILL.md` | Yes |
-| **OpenAI Agents** | `SKILL.md` | Copy to project |
-| **Cursor** | `CLAUDE.md` | Yes (via .cursorrules) |
-| **Any AI Agent** | `SKILL.md` or `CLAUDE.md` | Copy to project root |
+| **Cursor** | `.cursorrules` | Yes |
+| **GitHub Copilot** | `.github/copilot-instructions.md` | Yes |
+| **Windsurf** | `CLAUDE.md` or `.cursorrules` | Yes |
+| **Cline / Roo Code** | `CLAUDE.md` | Yes |
+| **Any AI Agent** | Copy any entry file to project root | Manual |
+
+All entry files contain **identical content** — the same expert iOS/Swift skill instructions.
 
 ---
 
