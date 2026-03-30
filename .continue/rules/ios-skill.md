@@ -12,12 +12,54 @@ You are an **expert iOS/Swift developer** with deep knowledge of all Apple platf
 
 ## UI Design Standards
 
+### CRITICAL: Color Contrast & Readability Rules
+These rules are NON-NEGOTIABLE. Every UI must be readable and accessible:
+
+1. **Text MUST be readable against its background** — minimum 4.5:1 contrast ratio for body text, 3:1 for large text (18pt+)
+2. **NEVER use gray text on gray backgrounds** — if the background is light gray, use dark text (`.primary` or black). If the background is dark, use white text
+3. **NEVER use low-opacity text on colored backgrounds** — use full-opacity white or dark text, not `.secondary` or `.opacity(0.6)` on colored surfaces
+4. **Card backgrounds must contrast with the page background** — if page is white/light gray, cards should be pure white with a visible shadow OR a distinctly different shade. Never gray-on-gray
+5. **Colored category pills/tags must have readable text** — use white text on dark-colored pills, or dark text on light-colored pills. The pill color itself must be vivid and saturated, not washed out
+6. **Test both light and dark mode** — every color pairing must work in both. Use `Color(.systemBackground)` for page backgrounds, `Color(.secondarySystemBackground)` for cards
+7. **Use Apple's semantic colors for guaranteed readability:**
+   - Page background: `Color(.systemBackground)` — white in light, black in dark
+   - Card/section background: `Color(.secondarySystemBackground)` — light gray in light, dark gray in dark
+   - Grouped background: `Color(.systemGroupedBackground)`
+   - Primary text: `Color(.label)` — always readable on system backgrounds
+   - Secondary text: `Color(.secondaryLabel)` — dimmed but still readable
+   - Tertiary text: `Color(.tertiaryLabel)` — use sparingly, still meets contrast
+
+### Color Application Rules
+When applying colors to UI elements, follow these exact rules:
+
+**Backgrounds:**
+- Page/screen background → `Color(.systemBackground)` or a very light tint of your primary color
+- Cards/containers → `Color(.secondarySystemBackground)` or white with `.shadow(color: .black.opacity(0.08), radius: 8, y: 4)`
+- NEVER use plain `Color.gray` or `Color.gray.opacity(0.3)` as a card background — it looks washed out
+
+**Text:**
+- Headlines/titles → `Color(.label)` with `.fontWeight(.bold)` — always full opacity, always readable
+- Body text → `Color(.label)` — never reduce opacity below 0.87
+- Captions/metadata → `Color(.secondaryLabel)` — already dimmed by the system, don't add more opacity
+- Text on colored buttons → `.white` (on dark buttons) or `Color(.label)` (on light buttons)
+
+**Interactive Elements (buttons, pills, tags, chips):**
+- Use VIVID, SATURATED colors — not pastel or washed out
+- Category pills → use your theme's primary/secondary/accent colors at FULL saturation with white text
+- Example: `.background(Color.blue)` with `.foregroundStyle(.white)` — NOT `.background(Color.blue.opacity(0.3))` with `.foregroundStyle(.blue)`
+- Disabled state → reduce to `.opacity(0.4)` but never make active elements look disabled
+
+**Stat cards / number displays:**
+- Large numbers → bold, high-contrast, use primary color or `Color(.label)`
+- Labels below numbers → `Color(.secondaryLabel)`
+- Card background → white or `Color(.secondarySystemBackground)` with clear shadow
+
 ### Visual Design Rules
 - **Always use a color palette** — never use raw hex colors scattered through code. Define a theme with primary, secondary, accent, background, surface, and text colors
-- **Use semantic colors** (`Color.primary`, `.secondary`, `.accentColor`) as defaults — override with custom palettes for branded experiences
-- **Apply material effects** (`.ultraThinMaterial`, `.regularMaterial`) for glassmorphism and depth
-- **Add shadows for elevation** — cards float above the background with `.shadow(color:radius:x:y:)`
-- **Use gradients** — `LinearGradient`, `RadialGradient`, `MeshGradient` (iOS 18+) for modern, premium feels
+- **Use Apple's semantic system colors** for backgrounds and text — they automatically handle light/dark mode
+- **Apply material effects** (`.ultraThinMaterial`, `.regularMaterial`) for glassmorphism ONLY when there is content behind the blur — never on solid backgrounds
+- **Add shadows for elevation** — cards float above the background with `.shadow(color: .black.opacity(0.08), radius: 8, y: 4)` — subtle but visible
+- **Use gradients on feature elements** — hero cards, CTAs, headers. Not on every surface
 - **Animate everything meaningful** — state transitions, navigation, interactions. Use `.spring()`, `.bouncy`, `.snappy`
 - **Respect spacing rhythm** — use consistent spacing (4, 8, 12, 16, 24, 32, 48pt) throughout the UI
 - **Use corner radius consistently** — small (8pt) for buttons, medium (12-16pt) for cards, large (24pt) for modals
@@ -25,9 +67,10 @@ You are an **expert iOS/Swift developer** with deep knowledge of all Apple platf
 ### Typography Rules
 - Use Apple's semantic text styles (`.largeTitle`, `.title`, `.headline`, `.body`, `.caption`)
 - Create clear visual hierarchy — max 3 font sizes per screen
-- Use `.fontWeight()` for emphasis, not font size changes
+- Use `.fontWeight(.bold)` or `.fontWeight(.semibold)` for headings — they must stand out
 - Use `.fontDesign(.rounded)` for friendly apps, `.serif` for editorial
 - Support Dynamic Type — never use fixed font sizes
+- Headlines must be CLEARLY larger and bolder than body text — don't make everything the same weight
 
 ### Color Palette Usage
 When building UIs, select from these pre-built palettes or create a custom one:
@@ -38,6 +81,15 @@ When building UIs, select from these pre-built palettes or create a custom one:
 - **Violet Dream** — creative, entertainment (primary: #AF52DE, accent: #FF2D55)
 
 See `docs/design/color-system.md` for full hex values and gradient recipes.
+
+### Common UI Mistakes to AVOID
+1. **Gray-on-gray**: Using `Color.gray` backgrounds with `Color.secondary` text — completely unreadable
+2. **Washed-out pills**: Using `.opacity(0.2)` tinted backgrounds with matching tinted text — looks disabled
+3. **Material on solid**: Applying `.ultraThinMaterial` when there's nothing behind it — just looks gray and muddy
+4. **No visual hierarchy**: Every element the same size, weight, and color — nothing stands out
+5. **Missing shadows on cards**: Cards that blend into the background with no elevation
+6. **Low-opacity overlays**: Putting `.opacity(0.5)` on text or icons — makes them look broken
+7. **Not using system colors**: Hardcoding colors that break in dark mode
 
 ### Reusable Components
 Always check `templates/common-patterns/ui-components.swift` for pre-built components before creating new ones:
