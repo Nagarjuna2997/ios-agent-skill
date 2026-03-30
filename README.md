@@ -10,7 +10,13 @@ This is a comprehensive Claude AI skill repository — a knowledge base, design 
 
 ## Quick Start
 
-### Option 1: Clone and Use Directly
+### One-Line Install
+
+```bash
+curl -sL https://raw.githubusercontent.com/Nagarjuna2997/ios-agent-skill/main/install.sh | bash
+```
+
+### Claude Code
 
 ```bash
 git clone https://github.com/Nagarjuna2997/ios-agent-skill.git
@@ -18,33 +24,53 @@ cd ios-agent-skill
 claude
 ```
 
-Claude will automatically read `CLAUDE.md` and become an expert iOS developer. Ask it to build any app.
+Claude automatically reads `CLAUDE.md` and becomes an expert iOS developer. Ask it to build any app.
 
-### Option 2: Reference from Your Existing Project
+### Codex
 
-Add this to your project's `CLAUDE.md`:
+```bash
+git clone https://github.com/Nagarjuna2997/ios-agent-skill.git ~/.codex/skills/ios-agent-skill
+```
+
+Codex automatically reads `SKILL.md` and registers the skill. The `skill.json` manifest provides metadata for skill discovery.
+
+### OpenAI Codex / Other AI Agents
+
+Copy `SKILL.md` (or `CLAUDE.md` — they're identical) into your project root. Any AI coding agent that reads system prompt files will pick it up.
+
+### Reference from Your Existing Project
+
+Add this to your project's `CLAUDE.md` or `SKILL.md`:
 
 ```markdown
 You are an expert iOS/Swift developer. Reference the ios-agent-skill knowledge base for all Apple development:
 
-- Coding standards: /path/to/ios-agent-skill/CLAUDE.md
+- Coding standards: /path/to/ios-agent-skill/SKILL.md
 - Documentation: /path/to/ios-agent-skill/docs/
 - Code templates: /path/to/ios-agent-skill/templates/
 - Architecture patterns: /path/to/ios-agent-skill/patterns/
 - Quality checklists: /path/to/ios-agent-skill/checklists/
 ```
 
-### Option 3: Copy CLAUDE.md into Any Project
+---
 
-Copy `CLAUDE.md` into the root of any Xcode project. Claude Code will pick it up automatically.
+## Compatibility
+
+| Platform | Entry File | Auto-detected |
+|----------|-----------|---------------|
+| **Claude Code** | `CLAUDE.md` | Yes |
+| **Codex** | `SKILL.md` | Yes |
+| **OpenAI Agents** | `SKILL.md` | Copy to project |
+| **Cursor** | `CLAUDE.md` | Yes (via .cursorrules) |
+| **Any AI Agent** | `SKILL.md` or `CLAUDE.md` | Copy to project root |
 
 ---
 
 ## What's Inside
 
-### `CLAUDE.md` — The Brain
+### `CLAUDE.md` / `SKILL.md` — The Brain
 
-The master skill file that makes Claude an iOS expert. Contains:
+The master skill file (identical content in both) that makes any AI agent an iOS expert. Contains:
 
 - Zero-error code generation rules
 - Swift 5.9+ coding standards (naming, structure, patterns)

@@ -1,0 +1,42 @@
+{
+  "name": "ios-agent-skill",
+  "version": "1.0.0",
+  "description": "Expert iOS/Swift developer skill for Claude — 93 files covering all Apple platforms, frameworks, design systems, and architecture patterns",
+  "author": "Nagarjuna Reddy",
+  "homepage": "https://github.com/Nagarjuna2997/ios-agent-skill",
+  "license": "MIT",
+  "keywords": [
+    "ios",
+    "swift",
+    "swiftui",
+    "uikit",
+    "xcode",
+    "apple",
+    "macos",
+    "watchos",
+    "tvos",
+    "visionos",
+    "mobile",
+    "app-development"
+  ],
+  "skill": {
+    "entry": "SKILL.md",
+    "type": "system-prompt",
+    "platforms": ["ios", "macos", "watchos", "tvos", "visionos"],
+    "languages": ["swift"],
+    "frameworks": [
+      "swiftui", "uikit", "foundation", "combine", "swiftdata",
+      "coredata", "coreml", "vision", "arkit", "realitykit",
+      "mapkit", "healthkit", "storekit", "cloudkit", "widgetkit",
+      "activitykit", "appintents", "tipkit", "corelocation",
+      "avfoundation", "corebluetooth", "coremotion", "corenfc",
+      "homekit", "passkit", "weatherkit", "eventkit", "cryptokit"
+    ]
+  },
+  "resources": {
+    "docs": "docs/",
+    "templates": "templates/",
+    "patterns": "patterns/",
+    "checklists": "checklists/"
+  }
+}
