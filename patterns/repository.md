@@ -1,502 +1,615 @@
 # Repository Pattern
 
-## Overview
+The Repository pattern abstracts data access behind a clean interface. The caller does not know (or care) whether data comes from a network API, a local database, or an in-memory cache. This enables offline-first behavior, testability, and easy swapping of data sources.
 
-The Repository pattern abstracts data access behind a protocol, letting the rest of the app work with domain objects without knowing whether data comes from a network API, local database, or cache.
-
-```
-┌─────────────┐
-│  ViewModel   │  Knows only the protocol
-└──────┬──────┘
-       │
-┌──────▼──────────────────────────┐
-│  RepositoryProtocol (interface)  │
-└──────┬──────────────────────────┘
-       │
-┌──────▼──────────────────────────┐
-│  Repository (implementation)     │
-│  ┌───────────┐ ┌──────────────┐ │
-│  │ Remote API │ │ Local Cache  │ │
-│  └───────────┘ └──────────────┘ │
-└─────────────────────────────────┘
-```
-
----
-
-## Repository Protocol
+## Repository Protocol with Generic CRUD
 
 ```swift
-protocol ArticleRepositoryProtocol: Sendable {
-    func fetchAll() async throws -> [Article]
-    func fetch(id: Article.ID) async throws -> Article
-    func save(_ article: Article) async throws
-    func delete(id: Article.ID) async throws
-    func search(query: String) async throws -> [Article]
-}
+import Foundation
 
-struct Article: Identifiable, Codable, Hashable, Sendable {
-    let id: UUID
+// MARK: - Repository Protocol
+
+protocol Repository {
+    associatedtype Entity: Identifiable & Codable
+
+    func getAll() async throws -> [Entity]
+    func getById(_ id: Entity.ID) async throws -> Entity?
+    func create(_ entity: Entity) async throws -> Entity
+    func update(_ entity: Entity) async throws -> Entity
+    func delete(_ id: Entity.ID) async throws
+    func search(predicate: @Sendable (Entity) -> Bool) async throws -> [Entity]
+}
+```
+
+## Domain Model
+
+```swift
+// MARK: - Domain Model
+
+struct Article: Identifiable, Codable, Sendable {
+    let id: String
     var title: String
     var body: String
-    var author: String
-    var publishedAt: Date
-    var isFavorite: Bool
+    var authorId: String
+    var publishedAt: Date?
+    var updatedAt: Date
+    var tags: [String]
+
+    var isPublished: Bool { publishedAt != nil }
 }
 ```
 
----
-
-## Remote Data Source (API)
+## Remote Data Source (API Client)
 
 ```swift
-actor RemoteArticleDataSource {
+// MARK: - API Client
+
+protocol APIClient: Sendable {
+    func request<T: Decodable>(_ endpoint: Endpoint) async throws -> T
+}
+
+struct Endpoint {
+    let path: String
+    let method: HTTPMethod
+    let body: Data?
+    let queryItems: [URLQueryItem]
+
+    enum HTTPMethod: String {
+        case GET, POST, PUT, DELETE
+    }
+}
+
+final class URLSessionAPIClient: APIClient {
     private let session: URLSession
     private let baseURL: URL
     private let decoder: JSONDecoder
 
-    init(baseURL: URL = URL(string: "https://api.example.com/v1")!,
-         session: URLSession = .shared) {
+    init(baseURL: URL, session: URLSession = .shared) {
         self.baseURL = baseURL
         self.session = session
         self.decoder = JSONDecoder()
         self.decoder.dateDecodingStrategy = .iso8601
-        self.decoder.keyDecodingStrategy = .convertFromSnakeCase
     }
 
-    func fetchAll() async throws -> [ArticleDTO] {
-        let url = baseURL.appending(path: "articles")
-        let (data, response) = try await session.data(from: url)
-        try validateResponse(response)
-        return try decoder.decode([ArticleDTO].self, from: data)
-    }
-
-    func fetch(id: UUID) async throws -> ArticleDTO {
-        let url = baseURL.appending(path: "articles/\(id)")
-        let (data, response) = try await session.data(from: url)
-        try validateResponse(response)
-        return try decoder.decode(ArticleDTO.self, from: data)
-    }
-
-    func save(_ dto: ArticleDTO) async throws {
-        let url = baseURL.appending(path: "articles")
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = try JSONEncoder().encode(dto)
-        let (_, response) = try await session.data(for: request)
-        try validateResponse(response)
-    }
-
-    func delete(id: UUID) async throws {
-        let url = baseURL.appending(path: "articles/\(id)")
-        var request = URLRequest(url: url)
-        request.httpMethod = "DELETE"
-        let (_, response) = try await session.data(for: request)
-        try validateResponse(response)
-    }
-
-    private func validateResponse(_ response: URLResponse) throws {
-        guard let http = response as? HTTPURLResponse,
-              (200..<300).contains(http.statusCode) else {
-            let code = (response as? HTTPURLResponse)?.statusCode ?? -1
-            throw RepositoryError.networkError(statusCode: code)
+    func request<T: Decodable>(_ endpoint: Endpoint) async throws -> T {
+        var urlComponents = URLComponents(
+            url: baseURL.appendingPathComponent(endpoint.path),
+            resolvingAgainstBaseURL: true
+        )!
+        if !endpoint.queryItems.isEmpty {
+            urlComponents.queryItems = endpoint.queryItems
         }
-    }
-}
 
-struct ArticleDTO: Codable {
-    let id: String
-    let title: String
-    let body: String
-    let author: String
-    let published_at: Date
-    let is_favorite: Bool
+        var request = URLRequest(url: urlComponents.url!)
+        request.httpMethod = endpoint.method.rawValue
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = endpoint.body
 
-    func toDomain() -> Article {
-        Article(
-            id: UUID(uuidString: id) ?? UUID(),
-            title: title, body: body, author: author,
-            publishedAt: published_at, isFavorite: is_favorite
-        )
-    }
+        let (data, response) = try await session.data(for: request)
 
-    static func fromDomain(_ article: Article) -> ArticleDTO {
-        ArticleDTO(
-            id: article.id.uuidString,
-            title: article.title, body: article.body,
-            author: article.author, published_at: article.publishedAt,
-            is_favorite: article.isFavorite
-        )
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw RepositoryError.invalidResponse
+        }
+        guard (200...299).contains(httpResponse.statusCode) else {
+            throw RepositoryError.httpError(statusCode: httpResponse.statusCode, data: data)
+        }
+
+        return try decoder.decode(T.self, from: data)
     }
 }
 ```
-
----
 
 ## Local Data Source (SwiftData)
 
 ```swift
 import SwiftData
 
+// MARK: - SwiftData Model
+
 @Model
-class ArticleEntity {
-    @Attribute(.unique) var id: UUID
+final class ArticleRecord {
+    @Attribute(.unique) var id: String
     var title: String
     var body: String
-    var author: String
-    var publishedAt: Date
-    var isFavorite: Bool
-    var lastSyncedAt: Date
+    var authorId: String
+    var publishedAt: Date?
+    var updatedAt: Date
+    var tags: [String]
+    var isSynced: Bool
+    var locallyModifiedAt: Date?
 
-    init(from article: Article) {
+    init(from article: Article, isSynced: Bool = true) {
         self.id = article.id
         self.title = article.title
         self.body = article.body
-        self.author = article.author
+        self.authorId = article.authorId
         self.publishedAt = article.publishedAt
-        self.isFavorite = article.isFavorite
-        self.lastSyncedAt = .now
+        self.updatedAt = article.updatedAt
+        self.tags = article.tags
+        self.isSynced = isSynced
+        self.locallyModifiedAt = isSynced ? nil : Date()
     }
 
     func toDomain() -> Article {
         Article(
             id: id, title: title, body: body,
-            author: author, publishedAt: publishedAt,
-            isFavorite: isFavorite
+            authorId: authorId, publishedAt: publishedAt,
+            updatedAt: updatedAt, tags: tags
         )
-    }
-
-    func update(from article: Article) {
-        title = article.title
-        body = article.body
-        author = article.author
-        publishedAt = article.publishedAt
-        isFavorite = article.isFavorite
-        lastSyncedAt = .now
     }
 }
 
-@ModelActor
-actor LocalArticleDataSource {
+// MARK: - Local Data Source
+
+@MainActor
+final class ArticleLocalDataSource {
+    private let modelContext: ModelContext
+
+    init(modelContext: ModelContext) {
+        self.modelContext = modelContext
+    }
+
     func fetchAll() throws -> [Article] {
-        let descriptor = FetchDescriptor<ArticleEntity>(
-            sortBy: [SortDescriptor(\.publishedAt, order: .reverse)]
+        let descriptor = FetchDescriptor<ArticleRecord>(
+            sortBy: [SortDescriptor(\.updatedAt, order: .reverse)]
         )
         return try modelContext.fetch(descriptor).map { $0.toDomain() }
     }
 
-    func fetch(id: UUID) throws -> Article? {
-        let predicate = #Predicate<ArticleEntity> { $0.id == id }
-        let descriptor = FetchDescriptor(predicate: predicate)
+    func fetchById(_ id: String) throws -> Article? {
+        let descriptor = FetchDescriptor<ArticleRecord>(
+            predicate: #Predicate { $0.id == id }
+        )
         return try modelContext.fetch(descriptor).first?.toDomain()
     }
 
-    func save(_ articles: [Article]) throws {
-        for article in articles {
-            let predicate = #Predicate<ArticleEntity> { $0.id == article.id }
-            let descriptor = FetchDescriptor(predicate: predicate)
-            if let existing = try modelContext.fetch(descriptor).first {
-                existing.update(from: article)
-            } else {
-                modelContext.insert(ArticleEntity(from: article))
-            }
+    func save(_ article: Article, isSynced: Bool) throws {
+        let descriptor = FetchDescriptor<ArticleRecord>(
+            predicate: #Predicate { $0.id == article.id }
+        )
+        if let existing = try modelContext.fetch(descriptor).first {
+            existing.title = article.title
+            existing.body = article.body
+            existing.authorId = article.authorId
+            existing.publishedAt = article.publishedAt
+            existing.updatedAt = article.updatedAt
+            existing.tags = article.tags
+            existing.isSynced = isSynced
+            existing.locallyModifiedAt = isSynced ? nil : Date()
+        } else {
+            modelContext.insert(ArticleRecord(from: article, isSynced: isSynced))
         }
         try modelContext.save()
     }
 
-    func delete(id: UUID) throws {
-        let predicate = #Predicate<ArticleEntity> { $0.id == id }
-        let descriptor = FetchDescriptor(predicate: predicate)
-        if let entity = try modelContext.fetch(descriptor).first {
-            modelContext.delete(entity)
+    func delete(_ id: String) throws {
+        let descriptor = FetchDescriptor<ArticleRecord>(
+            predicate: #Predicate { $0.id == id }
+        )
+        if let record = try modelContext.fetch(descriptor).first {
+            modelContext.delete(record)
             try modelContext.save()
         }
+    }
+
+    func fetchUnsynced() throws -> [Article] {
+        let descriptor = FetchDescriptor<ArticleRecord>(
+            predicate: #Predicate { $0.isSynced == false }
+        )
+        return try modelContext.fetch(descriptor).map { $0.toDomain() }
     }
 }
 ```
 
----
-
-## Caching Strategies
+## In-Memory Cache
 
 ```swift
-actor CacheService {
-    struct CacheEntry<T> {
-        let value: T
+// MARK: - Cache Layer
+
+actor MemoryCache<Key: Hashable & Sendable, Value: Sendable> {
+    private var storage: [Key: CacheEntry] = [:]
+    private let maxAge: TimeInterval
+    private let maxCount: Int
+
+    struct CacheEntry {
+        let value: Value
         let timestamp: Date
-        let ttl: TimeInterval
-        var isExpired: Bool { Date.now.timeIntervalSince(timestamp) > ttl }
+
+        func isExpired(maxAge: TimeInterval) -> Bool {
+            Date().timeIntervalSince(timestamp) > maxAge
+        }
     }
 
-    private var storage: [String: Any] = [:]
+    init(maxAge: TimeInterval = 300, maxCount: Int = 200) {
+        self.maxAge = maxAge
+        self.maxCount = maxCount
+    }
 
-    func get<T>(key: String) -> T? {
-        guard let entry = storage[key] as? CacheEntry<T>,
-              !entry.isExpired else {
+    func get(_ key: Key) -> Value? {
+        guard let entry = storage[key],
+              !entry.isExpired(maxAge: maxAge) else {
             storage.removeValue(forKey: key)
             return nil
         }
         return entry.value
     }
 
-    func set<T>(key: String, value: T, ttl: TimeInterval = 300) {
-        storage[key] = CacheEntry(value: value, timestamp: .now, ttl: ttl)
+    func set(_ key: Key, value: Value) {
+        if storage.count >= maxCount {
+            evictOldest()
+        }
+        storage[key] = CacheEntry(value: value, timestamp: Date())
     }
 
-    func invalidate(key: String) {
+    func invalidate(_ key: Key) {
         storage.removeValue(forKey: key)
     }
 
     func invalidateAll() {
         storage.removeAll()
     }
+
+    private func evictOldest() {
+        let sorted = storage.sorted { $0.value.timestamp < $1.value.timestamp }
+        let removeCount = max(storage.count / 4, 1)
+        for (key, _) in sorted.prefix(removeCount) {
+            storage.removeValue(forKey: key)
+        }
+    }
 }
 ```
 
----
-
-## Repository Implementation with Offline-First
+## Sync Queue for Offline-First
 
 ```swift
-struct ArticleRepository: ArticleRepositoryProtocol {
-    private let remote: RemoteArticleDataSource
-    private let local: LocalArticleDataSource
-    private let cache: CacheService
+// MARK: - Sync Queue
+
+actor SyncQueue {
+    private var pendingOperations: [SyncOperation] = []
+
+    enum SyncOperation: Codable {
+        case create(Article)
+        case update(Article)
+        case delete(id: String)
+
+        var articleId: String {
+            switch self {
+            case .create(let a), .update(let a): return a.id
+            case .delete(let id): return id
+            }
+        }
+    }
+
+    func enqueue(_ operation: SyncOperation) {
+        // Coalesce: if we already have an op for this id, replace it
+        pendingOperations.removeAll { $0.articleId == operation.articleId }
+        pendingOperations.append(operation)
+    }
+
+    func dequeueAll() -> [SyncOperation] {
+        let ops = pendingOperations
+        pendingOperations.removeAll()
+        return ops
+    }
+
+    var hasPendingWork: Bool {
+        !pendingOperations.isEmpty
+    }
+}
+```
+
+## Complete Repository Implementation
+
+```swift
+// MARK: - Article Repository
+
+@MainActor
+final class ArticleRepository: Repository {
+    typealias Entity = Article
+
+    private let apiClient: APIClient
+    private let localDataSource: ArticleLocalDataSource
+    private let cache: MemoryCache<String, Article>
+    private let listCache: MemoryCache<String, [Article]>
+    private let syncQueue: SyncQueue
     private let connectivity: ConnectivityMonitor
 
-    init(remote: RemoteArticleDataSource, local: LocalArticleDataSource,
-         cache: CacheService, connectivity: ConnectivityMonitor) {
-        self.remote = remote
-        self.local = local
-        self.cache = cache
+    init(
+        apiClient: APIClient,
+        localDataSource: ArticleLocalDataSource,
+        connectivity: ConnectivityMonitor
+    ) {
+        self.apiClient = apiClient
+        self.localDataSource = localDataSource
+        self.cache = MemoryCache(maxAge: 300, maxCount: 500)
+        self.listCache = MemoryCache(maxAge: 120, maxCount: 50)
+        self.syncQueue = SyncQueue()
         self.connectivity = connectivity
     }
 
-    /// Strategy: Cache -> Local -> Remote (with sync)
-    func fetchAll() async throws -> [Article] {
-        // 1. Return cached data immediately if available
-        if let cached: [Article] = await cache.get(key: "articles") {
-            // Refresh in background
-            Task { try? await syncFromRemote() }
+    // MARK: - Read Operations (cache -> local -> remote)
+
+    func getAll() async throws -> [Article] {
+        // 1. Check memory cache
+        if let cached = await listCache.get("all") {
             return cached
         }
 
-        // 2. Try local database
-        let localArticles = try await local.fetchAll()
-        if !localArticles.isEmpty {
-            await cache.set(key: "articles", value: localArticles, ttl: 120)
-            Task { try? await syncFromRemote() }
-            return localArticles
-        }
+        // 2. Return local data immediately (fast)
+        let localArticles = try localDataSource.fetchAll()
 
-        // 3. Fetch from remote
-        return try await syncFromRemote()
-    }
-
-    @discardableResult
-    private func syncFromRemote() async throws -> [Article] {
-        let dtos = try await remote.fetchAll()
-        let articles = dtos.map { $0.toDomain() }
-        try await local.save(articles)
-        await cache.set(key: "articles", value: articles, ttl: 300)
-        return articles
-    }
-
-    func fetch(id: Article.ID) async throws -> Article {
-        // Try local first
-        if let local = try await local.fetch(id: id) {
-            return local
-        }
-
-        // Fetch from remote
-        let dto = try await remote.fetch(id: id)
-        let article = dto.toDomain()
-        try await local.save([article])
-        return article
-    }
-
-    func save(_ article: Article) async throws {
-        // Save locally first (optimistic)
-        try await local.save([article])
-        await cache.invalidate(key: "articles")
-
-        // Sync to remote
-        if await connectivity.isConnected {
-            try await remote.save(.fromDomain(article))
-        } else {
-            await PendingSyncQueue.shared.enqueue(.save(article))
-        }
-    }
-
-    func delete(id: Article.ID) async throws {
-        try await local.delete(id: id)
-        await cache.invalidate(key: "articles")
-
-        if await connectivity.isConnected {
-            try await remote.delete(id: id)
-        } else {
-            await PendingSyncQueue.shared.enqueue(.delete(id))
-        }
-    }
-
-    func search(query: String) async throws -> [Article] {
-        // Search locally (works offline)
-        let all = try await local.fetchAll()
-        return all.filter {
-            $0.title.localizedCaseInsensitiveContains(query) ||
-            $0.body.localizedCaseInsensitiveContains(query)
-        }
-    }
-}
-```
-
----
-
-## Pending Sync Queue (Offline Operations)
-
-```swift
-actor PendingSyncQueue {
-    static let shared = PendingSyncQueue()
-
-    enum Operation: Codable {
-        case save(Article)
-        case delete(UUID)
-    }
-
-    private var queue: [Operation] = []
-
-    func enqueue(_ operation: Operation) {
-        queue.append(operation)
-        persist()
-    }
-
-    func processAll(remote: RemoteArticleDataSource) async {
-        var failedOps: [Operation] = []
-
-        for op in queue {
+        // 3. Refresh from network in the background if online
+        if connectivity.isConnected {
             do {
-                switch op {
-                case .save(let article):
-                    try await remote.save(.fromDomain(article))
-                case .delete(let id):
-                    try await remote.delete(id: id)
+                let remote: [Article] = try await apiClient.request(
+                    Endpoint(path: "/articles", method: .GET, body: nil, queryItems: [])
+                )
+                // Persist remote data locally
+                for article in remote {
+                    try localDataSource.save(article, isSynced: true)
                 }
+                await listCache.set("all", value: remote)
+                return remote
             } catch {
-                failedOps.append(op)
+                // Network failed; fall through to local data
             }
         }
 
-        queue = failedOps
-        persist()
+        await listCache.set("all", value: localArticles)
+        return localArticles
     }
 
-    private func persist() {
-        if let data = try? JSONEncoder().encode(queue) {
-            UserDefaults.standard.set(data, forKey: "pendingSyncQueue")
+    func getById(_ id: String) async throws -> Article? {
+        // 1. Memory cache
+        if let cached = await cache.get(id) {
+            return cached
+        }
+
+        // 2. Local database
+        if let local = try localDataSource.fetchById(id) {
+            await cache.set(id, value: local)
+
+            // 3. Refresh from remote if connected
+            if connectivity.isConnected {
+                if let remote: Article = try? await apiClient.request(
+                    Endpoint(path: "/articles/\(id)", method: .GET, body: nil, queryItems: [])
+                ) {
+                    try localDataSource.save(remote, isSynced: true)
+                    await cache.set(id, value: remote)
+                    return remote
+                }
+            }
+            return local
+        }
+
+        // 4. Not in local DB -- fetch from network
+        guard connectivity.isConnected else {
+            throw RepositoryError.offline
+        }
+        let remote: Article = try await apiClient.request(
+            Endpoint(path: "/articles/\(id)", method: .GET, body: nil, queryItems: [])
+        )
+        try localDataSource.save(remote, isSynced: true)
+        await cache.set(id, value: remote)
+        return remote
+    }
+
+    // MARK: - Write Operations (local-first, enqueue sync)
+
+    func create(_ entity: Article) async throws -> Article {
+        // Save locally immediately
+        try localDataSource.save(entity, isSynced: false)
+        await cache.set(entity.id, value: entity)
+        await listCache.invalidateAll()
+
+        if connectivity.isConnected {
+            do {
+                let encoder = JSONEncoder()
+                encoder.dateEncodingStrategy = .iso8601
+                let body = try encoder.encode(entity)
+                let remote: Article = try await apiClient.request(
+                    Endpoint(path: "/articles", method: .POST, body: body, queryItems: [])
+                )
+                try localDataSource.save(remote, isSynced: true)
+                await cache.set(remote.id, value: remote)
+                return remote
+            } catch {
+                await syncQueue.enqueue(.create(entity))
+                return entity
+            }
+        } else {
+            await syncQueue.enqueue(.create(entity))
+            return entity
+        }
+    }
+
+    func update(_ entity: Article) async throws -> Article {
+        try localDataSource.save(entity, isSynced: false)
+        await cache.set(entity.id, value: entity)
+        await listCache.invalidateAll()
+
+        if connectivity.isConnected {
+            do {
+                let encoder = JSONEncoder()
+                encoder.dateEncodingStrategy = .iso8601
+                let body = try encoder.encode(entity)
+                let remote: Article = try await apiClient.request(
+                    Endpoint(path: "/articles/\(entity.id)", method: .PUT, body: body, queryItems: [])
+                )
+                try localDataSource.save(remote, isSynced: true)
+                await cache.set(remote.id, value: remote)
+                return remote
+            } catch {
+                await syncQueue.enqueue(.update(entity))
+                return entity
+            }
+        } else {
+            await syncQueue.enqueue(.update(entity))
+            return entity
+        }
+    }
+
+    func delete(_ id: String) async throws {
+        try localDataSource.delete(id)
+        await cache.invalidate(id)
+        await listCache.invalidateAll()
+
+        if connectivity.isConnected {
+            do {
+                let _: EmptyResponse = try await apiClient.request(
+                    Endpoint(path: "/articles/\(id)", method: .DELETE, body: nil, queryItems: [])
+                )
+            } catch {
+                await syncQueue.enqueue(.delete(id: id))
+            }
+        } else {
+            await syncQueue.enqueue(.delete(id: id))
+        }
+    }
+
+    func search(predicate: @Sendable (Article) -> Bool) async throws -> [Article] {
+        let all = try await getAll()
+        return all.filter(predicate)
+    }
+
+    // MARK: - Sync
+
+    func syncPendingChanges() async throws {
+        guard connectivity.isConnected else { return }
+
+        let operations = await syncQueue.dequeueAll()
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+
+        for operation in operations {
+            do {
+                switch operation {
+                case .create(let article):
+                    let body = try encoder.encode(article)
+                    let _: Article = try await apiClient.request(
+                        Endpoint(path: "/articles", method: .POST, body: body, queryItems: [])
+                    )
+                    try localDataSource.save(article, isSynced: true)
+
+                case .update(let article):
+                    let body = try encoder.encode(article)
+                    let _: Article = try await apiClient.request(
+                        Endpoint(path: "/articles/\(article.id)", method: .PUT, body: body, queryItems: [])
+                    )
+                    try localDataSource.save(article, isSynced: true)
+
+                case .delete(let id):
+                    let _: EmptyResponse = try await apiClient.request(
+                        Endpoint(path: "/articles/\(id)", method: .DELETE, body: nil, queryItems: [])
+                    )
+                }
+            } catch {
+                // Re-enqueue failed operations
+                await syncQueue.enqueue(operation)
+            }
         }
     }
 }
+
+struct EmptyResponse: Decodable {}
 ```
 
----
-
-## Mock Repository for Testing
+## Error Types
 
 ```swift
-class MockArticleRepository: ArticleRepositoryProtocol {
-    var articles: [Article] = []
-    var error: Error?
-    var fetchAllCallCount = 0
-    var saveCallCount = 0
-
-    func fetchAll() async throws -> [Article] {
-        fetchAllCallCount += 1
-        if let error { throw error }
-        return articles
-    }
-
-    func fetch(id: UUID) async throws -> Article {
-        if let error { throw error }
-        guard let article = articles.first(where: { $0.id == id }) else {
-            throw RepositoryError.notFound
-        }
-        return article
-    }
-
-    func save(_ article: Article) async throws {
-        saveCallCount += 1
-        if let error { throw error }
-        if let index = articles.firstIndex(where: { $0.id == article.id }) {
-            articles[index] = article
-        } else {
-            articles.append(article)
-        }
-    }
-
-    func delete(id: UUID) async throws {
-        if let error { throw error }
-        articles.removeAll { $0.id == id }
-    }
-
-    func search(query: String) async throws -> [Article] {
-        articles.filter { $0.title.localizedCaseInsensitiveContains(query) }
-    }
-}
+// MARK: - Repository Errors
 
 enum RepositoryError: LocalizedError {
     case notFound
-    case networkError(statusCode: Int)
-    case localStorageError(Error)
+    case offline
+    case invalidResponse
+    case httpError(statusCode: Int, data: Data)
+    case syncFailed(underlyingErrors: [Error])
 
     var errorDescription: String? {
         switch self {
-        case .notFound: "Item not found."
-        case .networkError(let code): "Network error (HTTP \(code))."
-        case .localStorageError(let e): "Storage error: \(e.localizedDescription)"
+        case .notFound: "The requested item was not found."
+        case .offline: "You are offline. Please check your connection."
+        case .invalidResponse: "Received an unexpected response from the server."
+        case .httpError(let code, _): "Server error (HTTP \(code))."
+        case .syncFailed: "Some changes could not be synced."
         }
     }
 }
 ```
 
----
-
-## Usage in ViewModel
+## Connectivity Monitor
 
 ```swift
+import Network
+
+// MARK: - Connectivity Monitor
+
 @Observable
-class ArticleListViewModel {
-    var articles: [Article] = []
-    var isLoading = false
+final class ConnectivityMonitor: Sendable {
+    private(set) var isConnected: Bool = true
+    private let monitor = NWPathMonitor()
 
-    private let repository: ArticleRepositoryProtocol
-
-    init(repository: ArticleRepositoryProtocol) {
-        self.repository = repository
+    init() {
+        monitor.pathUpdateHandler = { [weak self] path in
+            Task { @MainActor in
+                self?.isConnected = (path.status == .satisfied)
+            }
+        }
+        monitor.start(queue: DispatchQueue(label: "connectivity"))
     }
 
-    func load() async {
-        isLoading = true
-        defer { isLoading = false }
-        articles = (try? await repository.fetchAll()) ?? []
-    }
-
-    func toggleFavorite(_ article: Article) async {
-        var updated = article
-        updated.isFavorite.toggle()
-        try? await repository.save(updated)
-        await load()
+    deinit {
+        monitor.cancel()
     }
 }
 ```
 
----
+## Usage in a ViewModel
 
-## Data Source Strategy Summary
+```swift
+@MainActor
+@Observable
+final class ArticleListViewModel {
+    private(set) var articles: [Article] = []
+    private(set) var isLoading = false
+    private(set) var error: RepositoryError?
 
-| Strategy | Use When |
-|----------|----------|
-| Remote-first | Data must always be fresh (financial, real-time) |
-| Cache-first | Speed matters, staleness tolerable (feeds, catalogs) |
-| Local-first | Offline support required (notes, tasks) |
-| Write-through | Writes go to both local and remote simultaneously |
-| Write-behind | Writes go to local; sync to remote in background |
+    private let repository: ArticleRepository
+
+    init(repository: ArticleRepository) {
+        self.repository = repository
+    }
+
+    func loadArticles() async {
+        isLoading = true
+        defer { isLoading = false }
+
+        do {
+            articles = try await repository.getAll()
+            error = nil
+        } catch let err as RepositoryError {
+            error = err
+        } catch {
+            self.error = .invalidResponse
+        }
+    }
+
+    func deleteArticle(_ article: Article) async {
+        do {
+            try await repository.delete(article.id)
+            articles.removeAll { $0.id == article.id }
+        } catch {
+            // Handle error
+        }
+    }
+}
+```
+
+## Guidelines
+
+- Always return local data first, then refresh from the network. The user sees content instantly.
+- Write operations save locally before attempting the network call. If the network fails, enqueue for later sync.
+- Use the memory cache for reads within a session to avoid repeated database queries.
+- Coalesce sync operations: if an entity is updated three times offline, only the latest state needs to be pushed.
+- Keep the repository protocol generic so you can write one concrete implementation per domain entity and still mock easily in tests.

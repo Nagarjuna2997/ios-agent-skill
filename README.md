@@ -1,8 +1,8 @@
 # ios-agent-skill
 
-**Turn Claude into an expert iOS/Swift developer that writes production-ready, error-free code across all Apple platforms.**
+**Turn Claude into an expert iOS/Swift developer that writes production-ready, error-free code with stunning UIs across all Apple platforms.**
 
-This is a comprehensive Claude AI skill repository — a knowledge base, code template library, and coding standards guide that transforms Claude into a senior-level Apple platform engineer. Just clone, open with Claude Code, and start building apps.
+This is a comprehensive Claude AI skill repository — a knowledge base, design system, code template library, and coding standards guide that transforms Claude into a senior-level Apple platform engineer. Every app Claude builds will have beautiful color palettes, polished typography, smooth animations, and pixel-perfect layouts. Just clone, open with Claude Code, and start building apps.
 
 ---
 
@@ -80,6 +80,21 @@ The master skill file that makes Claude an iOS expert. Contains:
 |------|-------------------|
 | [uikit-essentials.md](docs/uikit/uikit-essentials.md) | UIViewController lifecycle, Auto Layout, UICollectionView diffable data sources & compositional layout, UINavigationController, keyboard handling |
 | [uikit-swiftui-interop.md](docs/uikit/uikit-swiftui-interop.md) | UIViewRepresentable, UIViewControllerRepresentable, UIHostingController, Coordinator pattern, data flow between UIKit and SwiftUI |
+
+### UI Design System — `docs/design/`
+
+| File | What You'll Learn |
+|------|-------------------|
+| [color-system.md](docs/design/color-system.md) | 5 pre-built color palettes (Ocean Blue, Sunset Warm, Midnight Dark, Nature Green, Violet Dream) with full hex codes, Color hex extension, 10 gradient recipes (LinearGradient, RadialGradient, MeshGradient), material effects, dark mode, vibrancy, color accessibility |
+| [typography-system.md](docs/design/typography-system.md) | Apple's 11 text styles, font weights & designs (.rounded, .serif, .monospaced), custom fonts, SF Symbols (rendering modes, variable values, effects), Dynamic Type, gradient text, shadow text, outlined text, animated text, AttributedString |
+| [stunning-ui-patterns.md](docs/design/stunning-ui-patterns.md) | 20+ production-ready UI patterns with full SwiftUI code: glassmorphism cards, neumorphic design, gradient cards, animated onboarding, parallax headers, bottom sheets, animated tab bars, profile cards, dashboard stats, floating action buttons, card stacks, shimmer loading, toast notifications, expandable cards, animated backgrounds, scroll-blur headers, chip layouts, rating stars |
+
+### Reusable UI Components — `templates/common-patterns/`
+
+| File | Components Included |
+|------|-------------------|
+| [design-system.swift](templates/common-patterns/design-system.swift) | Color hex extension, 5 theme structs (OceanBlue, SunsetWarm, MidnightDark, NatureGreen, VioletDream), ThemeManager with runtime switching, typography scale, spacing system, corner radius system, shadow styles, ViewModifiers (.cardStyle, .glassCard, .gradientBackground, .shimmer, .pressable, .slideIn) |
+| [ui-components.swift](templates/common-patterns/ui-components.swift) | GradientButton, GlassCard, AvatarView, StatCard, TagView, FlowLayout, RatingView, CircularProgress, AnimatedCounter, GradientText, CustomToggle, SkeletonView, ToastView, StepIndicator, EmptyStateView, SearchBar, SegmentedControl |
 
 ### Apple Frameworks — `docs/frameworks/`
 
@@ -222,6 +237,9 @@ Once Claude loads this skill, try these:
 | Architecture help | "Refactor this view to use MVVM with the repository pattern" |
 | App Store prep | "Review my app against the App Store submission checklist" |
 | Performance | "Profile and optimize my app's scroll performance in this list view" |
+| Stunning UI | "Build a beautiful onboarding screen with gradient backgrounds, glass cards, and smooth animations" |
+| Design system | "Create a custom theme with Ocean Blue palette and apply it across the entire app" |
+| Components | "Add a dashboard with stat cards, circular progress indicators, and animated counters" |
 
 ---
 
@@ -235,7 +253,7 @@ ios-agent-skill/
 ├── .gitignore                             # Swift/Xcode gitignore
 ├── .claude/settings.json                  # Claude Code configuration
 │
-├── docs/                                  # 28 documentation files
+├── docs/                                  # 31 documentation files
 │   ├── swift/                             # 3 files — language, concurrency, stdlib
 │   │   ├── swift-language.md
 │   │   ├── swift-concurrency.md
@@ -248,6 +266,11 @@ ios-agent-skill/
 │   │   ├── layout.md
 │   │   ├── animations.md
 │   │   └── gestures.md
+│   │
+│   ├── design/                            # 3 files — UI design system
+│   │   ├── color-system.md               # 5 color palettes, gradients, materials
+│   │   ├── typography-system.md          # Text styles, fonts, SF Symbols, effects
+│   │   └── stunning-ui-patterns.md       # 20+ beautiful UI patterns with code
 │   │
 │   ├── uikit/                             # 2 files — UIKit + SwiftUI bridging
 │   │   ├── uikit-essentials.md
@@ -275,7 +298,7 @@ ios-agent-skill/
 │       ├── tvos.md
 │       └── visionos.md
 │
-├── templates/                             # 14 Swift source files
+├── templates/                             # 16 Swift source files
 │   ├── ios-app/                           # Complete iOS MVVM app
 │   │   ├── App.swift
 │   │   ├── ContentView.swift
@@ -298,7 +321,9 @@ ios-agent-skill/
 │       ├── persistence-layer.swift
 │       ├── auth-flow.swift
 │       ├── navigation-router.swift
-│       └── dependency-injection.swift
+│       ├── dependency-injection.swift
+│       ├── design-system.swift            # Themes, colors, spacing, shadows, modifiers
+│       └── ui-components.swift            # 17 reusable beautiful UI components
 │
 ├── patterns/                              # 5 architecture guides
 │   ├── mvvm.md
@@ -314,7 +339,7 @@ ios-agent-skill/
     └── testing.md
 ```
 
-**60 files | 20,500+ lines | All Apple platforms covered**
+**65 files | 30,000+ lines | Stunning UIs + All Apple platforms covered**
 
 ---
 

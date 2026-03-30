@@ -1,89 +1,116 @@
 # Performance Checklist
 
+A systematic checklist for profiling, measuring, and optimizing iOS app performance. Each section covers what to check, how to measure it, and concrete fixes.
+
+---
+
 ## Instruments Profiling
 
 ### Time Profiler
-- [ ] No methods taking > 16ms on main thread (60fps budget)
-- [ ] Heavy computation moved to background threads
-- [ ] No synchronous network calls on main thread
+- [ ] Profile the app with Time Profiler to find CPU hot spots
+- [ ] Look for methods consuming >10% of total CPU time
+- [ ] Check for work on the main thread that should be on a background queue
+- [ ] Verify no synchronous I/O (file reads, database queries) on the main thread
+- [ ] Identify redundant or repeated calculations that can be cached
 
-```swift
-// Move work off the main thread
-func processData(_ data: [RawItem]) async -> [ProcessedItem] {
-    await withCheckedContinuation { continuation in
-        DispatchQueue.global(qos: .userInitiated).async {
-            let result = data.map { ProcessedItem(from: $0) }
-            continuation.resume(returning: result)
-        }
-    }
-}
-
-// Or use Swift concurrency (preferred)
-func processData(_ data: [RawItem]) async -> [ProcessedItem] {
-    await Task.detached(priority: .userInitiated) {
-        data.map { ProcessedItem(from: $0) }
-    }.value
-}
+```
+How to run: Xcode > Product > Profile > Time Profiler
+Focus: Check "Hide System Libraries" to see only your code
+Tip:  Use Call Tree > Invert Call Tree to find leaf functions consuming the most time
 ```
 
 ### Allocations
-- [ ] No unbounded memory growth during navigation
-- [ ] Large temporary allocations released promptly
-- [ ] Autorelease pools used for batch processing
+- [ ] Profile with Allocations to track memory growth over time
+- [ ] Check for unbounded memory growth during scrolling or navigation
+- [ ] Identify transient allocations that could be reduced (e.g., creating objects in tight loops)
+- [ ] Look for large allocations (images, data buffers) that are not released
 
-```swift
-// Batch processing with memory management
-func importRecords(_ records: [Record]) async throws {
-    let batchSize = 100
-    for batch in records.chunked(into: batchSize) {
-        try autoreleasepool {
-            for record in batch {
-                try processAndSave(record)
-            }
-        }
-    }
-}
+```
+How to run: Xcode > Product > Profile > Allocations
+Focus: Mark Generation snapshots before and after user flows to isolate growth
+Tip:  Filter by "Persistent" to find objects that never get deallocated
 ```
 
 ### Leaks
-- [ ] No retain cycles in closures (use `[weak self]`)
-- [ ] Delegates are `weak` references
-- [ ] Timers invalidated when views disappear
-- [ ] Observers removed on deallocation
+- [ ] Run Leaks instrument to detect retain cycles
+- [ ] Investigate any leaked objects (especially closures capturing `self`)
+- [ ] Verify delegates are declared `weak`
+- [ ] Verify closures use `[weak self]` when capturing view models or coordinators
+- [ ] Check Combine subscriptions are stored and cancelled properly
+
+### Network (Instruments)
+- [ ] Profile network calls with the Network instrument
+- [ ] Identify redundant or duplicate API requests
+- [ ] Check for requests that could be batched or deduplicated
+- [ ] Verify responses are cached appropriately (HTTP cache headers)
+
+### Animation Hitches (Core Animation / RenderServer)
+- [ ] Profile with the Animation Hitches instrument
+- [ ] Target zero commit hitches (frame drops during layout/render)
+- [ ] Target zero render hitches (GPU cannot complete frame in time)
+- [ ] Investigate any hitch duration > 8ms on 120Hz devices
+
+---
+
+## App Launch Time
+
+### Pre-main (before main() is called)
+- [ ] Measure pre-main time with `DYLD_PRINT_STATISTICS=1` environment variable
+- [ ] Reduce dynamic frameworks (merge into fewer frameworks or use static linking)
+- [ ] Remove unused frameworks and libraries
+- [ ] Minimize `+load` methods and `__attribute__((constructor))` functions
+- [ ] Reduce Objective-C class count if possible (affects class registration time)
+
+```
+Target: Pre-main < 200ms on oldest supported device
+Set environment variable in Xcode scheme > Run > Arguments > Environment Variables
+```
+
+### Post-main (after main() until first frame rendered)
+- [ ] Defer non-essential initialization (analytics, feature flags, pre-fetching)
+- [ ] Lazy-load services that are not needed for the first screen
+- [ ] Avoid synchronous network calls during launch
+- [ ] Avoid synchronous database migrations blocking the main thread
+- [ ] Use `task { }` in the root view to perform async setup after the first frame
+- [ ] Measure with `os_signpost` or MetricKit `applicationLaunchTime`
 
 ```swift
-// Common leak: closure retaining self
-class ViewModel {
-    var cancellable: AnyCancellable?
+// Measure post-main to first frame
+import os
 
-    func observe() {
-        // BAD: strong self capture
-        // cancellable = publisher.sink { self.handleUpdate($0) }
-
-        // GOOD: weak self capture
-        cancellable = publisher.sink { [weak self] value in
-            self?.handleUpdate(value)
-        }
-    }
-}
-
-// SwiftUI: .task automatically cancels — no leak risk
-struct MyView: View {
-    var body: some View {
-        Text("Hello")
-            .task { await loadData() } // Cancels when view disappears
-    }
-}
+let signpostLog = OSLog(subsystem: "com.app", category: .pointsOfInterest)
+os_signpost(.begin, log: signpostLog, name: "AppLaunch")
+// ... in your root view's onAppear or task:
+os_signpost(.end, log: signpostLog, name: "AppLaunch")
 ```
+
+### Targets
+- [ ] Cold launch < 400ms on iPhone 12 or newer
+- [ ] Warm launch < 200ms
+- [ ] Resume (from background) < 100ms
 
 ---
 
 ## SwiftUI Performance
 
-### Lazy Loading
+### List and Scroll Performance
+- [ ] Use `LazyVStack` / `LazyHStack` instead of `VStack` / `HStack` for long lists
+- [ ] Use `List` with identifiable data for automatic cell reuse
+- [ ] Avoid wrapping `List` inside `ScrollView` (breaks cell reuse)
+- [ ] Keep row views lightweight (no heavy computation in `body`)
+- [ ] Extract complex subviews into separate structs to limit re-evaluation scope
 
 ```swift
-// BAD: loads all 10,000 rows immediately
+// Good: LazyVStack with identified content
+ScrollView {
+    LazyVStack(spacing: 12) {
+        ForEach(items) { item in
+            ItemRow(item: item)
+        }
+    }
+}
+
+// Bad: VStack evaluates all children immediately
 ScrollView {
     VStack {
         ForEach(items) { item in
@@ -91,213 +118,118 @@ ScrollView {
         }
     }
 }
-
-// GOOD: only creates visible rows
-List(items) { item in
-    ItemRow(item: item)
-}
-
-// GOOD: lazy grid
-ScrollView {
-    LazyVGrid(columns: columns) {
-        ForEach(items) { item in
-            ItemCard(item: item)
-        }
-    }
-}
 ```
 
-### Minimizing View Updates
+### Reducing View Re-evaluation
+- [ ] Use `@Observable` (Observation framework) instead of `@ObservedObject` where possible
+- [ ] Ensure views only depend on the properties they read (fine-grained observation)
+- [ ] Add `.equatable()` modifier to views with expensive `body` computations
+- [ ] Use `let` properties on views to avoid unnecessary identity changes
+- [ ] Avoid storing derived state -- compute it in `body` or use computed properties
 
 ```swift
-// Use Equatable to prevent unnecessary redraws
-struct ItemRow: View, Equatable {
-    let item: Item
-
-    static func == (lhs: ItemRow, rhs: ItemRow) -> Bool {
-        lhs.item.id == rhs.item.id && lhs.item.title == rhs.item.title
-    }
-
-    var body: some View {
-        HStack {
-            Text(item.title)
-            Spacer()
-            Text(item.date, style: .date)
-        }
-    }
-}
-
-// Extract subviews to isolate state changes
-struct ParentView: View {
-    @State private var counter = 0
-    let items: [Item]
-
-    var body: some View {
-        VStack {
-            CounterView(count: $counter) // Only this redraws on tap
-            ItemListView(items: items)   // This does NOT redraw
-        }
-    }
-}
-
-// Use @Observable (not @Published) to get fine-grained updates
-@Observable
-class ViewModel {
-    var title = ""      // Only views reading `title` update
-    var items: [Item] = [] // Only views reading `items` update
+// With @Observable, only views reading 'count' re-evaluate when count changes
+@Observable class CounterModel {
+    var count = 0
+    var title = "Counter"  // Changing this won't re-evaluate views that only read count
 }
 ```
 
-### Task and Async Best Practices
+### Task and Data Loading
+- [ ] Use `.task { }` instead of `.onAppear` for async work (auto-cancels on disappear)
+- [ ] Use `.task(id:)` to re-run when a dependency changes
+- [ ] Avoid triggering heavy work in `body` or `init`
+- [ ] Debounce search inputs before triggering API calls
 
 ```swift
-struct SearchView: View {
-    @State private var query = ""
-    @State private var results: [Item] = []
-
-    var body: some View {
-        List(results) { item in
-            Text(item.title)
-        }
-        .searchable(text: $query)
-        .task(id: query) {
-            // Automatically cancels previous task when query changes
-            try? await Task.sleep(for: .milliseconds(300)) // Debounce
-            guard !Task.isCancelled else { return }
-            results = await search(query)
-        }
-    }
+.task(id: searchQuery) {
+    try? await Task.sleep(for: .milliseconds(300))
+    guard !Task.isCancelled else { return }
+    await viewModel.search(query: searchQuery)
 }
 ```
+
+### Conditional Views
+- [ ] Prefer `if/else` for mutually exclusive views (not overlapping with `.opacity`)
+- [ ] Use `AnyView` sparingly -- it defeats SwiftUI's diffing optimizations
+- [ ] Keep `body` return types consistent to avoid unnecessary view identity changes
 
 ---
 
 ## Image Optimization
 
-### Downsampling
+### Downsample Before Display
+- [ ] Never assign a 4000x3000 image directly to an `Image` view
+- [ ] Downsample large images to the display size using `CGImageSource`
+- [ ] Use `preparingThumbnail(of:)` on `UIImage` for simple downsampling
 
 ```swift
-// Never load full-resolution images into thumbnails
-func downsample(url: URL, to pointSize: CGSize, scale: CGFloat = UIScreen.main.scale) -> UIImage? {
-    let maxDimension = max(pointSize.width, pointSize.height) * scale
-    let options: [CFString: Any] = [
-        kCGImageSourceCreateThumbnailFromImageAlways: true,
-        kCGImageSourceShouldCacheImmediately: true,
-        kCGImageSourceCreateThumbnailWithTransform: true,
-        kCGImageSourceThumbnailMaxPixelSize: maxDimension
-    ]
-
-    guard let source = CGImageSourceCreateWithURL(url as CFURL, nil),
-          let cgImage = CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary)
-    else { return nil }
-
-    return UIImage(cgImage: cgImage)
-}
-```
-
-### AsyncImage with Caching
-
-```swift
-// SwiftUI built-in (no caching)
-AsyncImage(url: imageURL) { phase in
-    switch phase {
-    case .success(let image):
-        image.resizable().aspectRatio(contentMode: .fill)
-    case .failure:
-        Image(systemName: "photo").foregroundStyle(.secondary)
-    case .empty:
-        ProgressView()
-    @unknown default:
-        EmptyView()
-    }
-}
-.frame(width: 100, height: 100)
-.clipShape(RoundedRectangle(cornerRadius: 8))
-
-// Custom caching image loader
-actor ImageCache {
-    static let shared = ImageCache()
-    private let cache = NSCache<NSString, UIImage>()
-
-    func image(for url: URL) async throws -> UIImage {
-        let key = url.absoluteString as NSString
-        if let cached = cache.object(forKey: key) {
-            return cached
+extension UIImage {
+    /// Downsample to the target point size, respecting screen scale.
+    static func downsample(
+        at url: URL,
+        to pointSize: CGSize,
+        scale: CGFloat = UIScreen.main.scale
+    ) -> UIImage? {
+        let maxDimension = max(pointSize.width, pointSize.height) * scale
+        let options: [CFString: Any] = [
+            kCGImageSourceCreateThumbnailFromImageAlways: true,
+            kCGImageSourceShouldCacheImmediately: true,
+            kCGImageSourceCreateThumbnailWithTransform: true,
+            kCGImageSourceThumbnailMaxPixelSize: maxDimension
+        ]
+        guard let source = CGImageSourceCreateWithURL(url as CFURL, nil),
+              let cgImage = CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary)
+        else {
+            return nil
         }
-
-        let (data, _) = try await URLSession.shared.data(from: url)
-        guard let image = UIImage(data: data) else {
-            throw URLError(.cannotDecodeContentData)
-        }
-
-        cache.setObject(image, forKey: key)
-        return image
+        return UIImage(cgImage: cgImage)
     }
 }
 ```
+
+### Caching
+- [ ] Use `NSCache` for in-memory image caching (auto-evicts under memory pressure)
+- [ ] Cache decoded/downsampled images, not raw data
+- [ ] Use disk cache (URLCache or custom) for network images
+- [ ] Set appropriate HTTP cache headers on image endpoints
+- [ ] Use `AsyncImage` for simple cases; custom loader for advanced caching
+
+### Asset Catalog
+- [ ] Provide images in asset catalog at 1x, 2x, 3x or as PDF/SVG vectors
+- [ ] Use "Preserve Vector Data" for icons that may render at non-standard sizes
+- [ ] Enable "Compress" on large image assets in the asset catalog
 
 ---
 
 ## Network Optimization
 
-### Request Deduplication
+- [ ] Enable HTTP caching via `URLCache` with appropriate cache size
+- [ ] Use `If-Modified-Since` / `If-None-Match` (ETag) to avoid re-downloading unchanged data
+- [ ] Implement pagination for large data sets (do not fetch all records at once)
+- [ ] Use `URLSession` background configuration for large downloads/uploads
+- [ ] Compress request bodies with `Content-Encoding: gzip` when supported by the server
+- [ ] Deduplicate in-flight requests (do not fire the same API call multiple times simultaneously)
+- [ ] Use HTTP/2 multiplexing (default with `URLSession` when server supports it)
+- [ ] Set reasonable timeouts: 10-15s for API calls, 60s for uploads
 
 ```swift
+// Deduplicate in-flight requests
 actor RequestDeduplicator {
-    private var inFlightRequests: [String: Task<Data, Error>] = [:]
+    private var inFlight: [String: Task<Data, Error>] = [:]
 
-    func deduplicate(url: URL) async throws -> Data {
-        let key = url.absoluteString
-
-        if let existing = inFlightRequests[key] {
+    func deduplicated(
+        key: String,
+        work: @Sendable @escaping () async throws -> Data
+    ) async throws -> Data {
+        if let existing = inFlight[key] {
             return try await existing.value
         }
-
-        let task = Task<Data, Error> {
-            let (data, _) = try await URLSession.shared.data(from: url)
-            return data
-        }
-
-        inFlightRequests[key] = task
-        defer { inFlightRequests.removeValue(forKey: key) }
+        let task = Task { try await work() }
+        inFlight[key] = task
+        defer { inFlight.removeValue(forKey: key) }
         return try await task.value
     }
-}
-```
-
-### Pagination
-
-```swift
-@Observable
-class PaginatedListViewModel {
-    var items: [Item] = []
-    var isLoadingMore = false
-    private var currentPage = 0
-    private var hasMorePages = true
-
-    func loadNextPageIfNeeded(currentItem: Item) async {
-        guard let index = items.firstIndex(where: { $0.id == currentItem.id }),
-              index >= items.count - 5,    // Prefetch threshold
-              hasMorePages,
-              !isLoadingMore else { return }
-
-        isLoadingMore = true
-        defer { isLoadingMore = false }
-
-        currentPage += 1
-        let newItems = try? await api.fetch(page: currentPage, perPage: 20)
-        if let newItems, !newItems.isEmpty {
-            items.append(contentsOf: newItems)
-        } else {
-            hasMorePages = false
-        }
-    }
-}
-
-// Usage in View
-List(viewModel.items) { item in
-    ItemRow(item: item)
-        .task { await viewModel.loadNextPageIfNeeded(currentItem: item) }
 }
 ```
 
@@ -305,60 +237,47 @@ List(viewModel.items) { item in
 
 ## Core Data / SwiftData Performance
 
+- [ ] Use batch inserts (`NSBatchInsertRequest` / SwiftData bulk operations) for large imports
+- [ ] Fetch only required properties with `FetchDescriptor.propertiesToFetch`
+- [ ] Use `fetchLimit` to avoid loading entire tables
+- [ ] Use `fetchOffset` for pagination
+- [ ] Avoid fetching inside `body` -- fetch in `.task` and store results in `@State`
+- [ ] Use background contexts for heavy write operations
+- [ ] Index frequently queried attributes with `@Attribute(.spotlight)` or `#Index`
+- [ ] Monitor query times with `com.apple.CoreData.SQLDebug 1` launch argument
+
 ```swift
-// Batch fetching
-let descriptor = FetchDescriptor<Item>(
-    predicate: #Predicate { $0.isActive },
+// Efficient fetch with SwiftData
+var descriptor = FetchDescriptor<Item>(
+    predicate: #Predicate { $0.isActive == true },
     sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
 )
-descriptor.fetchLimit = 50
-descriptor.fetchOffset = page * 50
-descriptor.propertiesToFetch = [\.title, \.thumbnail] // Partial fetch
-
-// Background context for writes
-let backgroundContext = ModelContext(modelContainer)
-try backgroundContext.transaction {
-    for record in records {
-        backgroundContext.insert(ItemEntity(from: record))
-    }
-}
+descriptor.fetchLimit = 20
+descriptor.fetchOffset = page * 20
+let items = try modelContext.fetch(descriptor)
 ```
 
 ---
 
-## App Launch Time Optimization
+## Memory Management
 
-### Measure Launch Time
-```bash
-# Add to Xcode scheme environment variables:
-DYLD_PRINT_STATISTICS = 1
-# Shows pre-main time breakdown
-```
-
-### Optimization Strategies
-- [ ] Defer non-critical initialization (analytics, crash reporting) to after first frame
-- [ ] Use `@MainActor` to avoid thread-switching overhead at launch
-- [ ] Reduce dynamic frameworks (prefer static linking)
-- [ ] Remove unused frameworks and code
-- [ ] Use lazy properties for heavy objects
+- [ ] Use `[weak self]` in closures that outlive the current scope
+- [ ] Use `[unowned self]` only when you can guarantee `self` outlives the closure
+- [ ] Break retain cycles in delegate patterns with `weak var delegate`
+- [ ] Profile with Memory Graph Debugger (Debug > Debug Memory Graph) for retain cycles
+- [ ] Monitor memory footprint with `os_proc_available_memory()` for adaptive quality
+- [ ] Release large resources (image buffers, caches) in `didReceiveMemoryWarning`
+- [ ] Use `autoreleasepool` in tight loops creating many temporary Objective-C objects
 
 ```swift
-@main
-struct MyApp: App {
-    init() {
-        // Only critical setup here
-        configureAppearance()
-    }
-
-    var body: some Scene {
-        WindowGroup {
-            ContentView()
-                .task {
-                    // Defer non-critical setup
-                    await initializeAnalytics()
-                    await registerForNotifications()
-                    await prefetchData()
-                }
+// Autorelease pool in a tight loop
+func processImages(_ urls: [URL]) {
+    for url in urls {
+        autoreleasepool {
+            guard let image = UIImage(contentsOfFile: url.path) else { return }
+            let processed = applyFilter(to: image)
+            saveProcessed(processed)
+            // image and processed are released at end of each iteration
         }
     }
 }
@@ -366,37 +285,89 @@ struct MyApp: App {
 
 ---
 
-## Memory Management
+## Background Task Optimization
 
-### Key Rules
-- [ ] Monitor memory with Xcode memory gauge during testing
-- [ ] App stays under 200MB in typical usage
-- [ ] Handle `didReceiveMemoryWarning` by clearing caches
-- [ ] Large assets (images, videos) use disk cache, not in-memory
-- [ ] Avoid storing large collections in @State or @Observable properties
+- [ ] Use `BGAppRefreshTask` for periodic refresh (minimum 15-minute interval)
+- [ ] Use `BGProcessingTask` for long-running work (data sync, ML inference)
+- [ ] Set `earliestBeginDate` to give the system scheduling flexibility
+- [ ] Complete tasks promptly -- the system kills tasks that run too long
+- [ ] Call `setTaskCompleted(success:)` when done
+- [ ] Register background tasks in `application(_:didFinishLaunchingWithOptions:)`
 
 ```swift
-// Respond to memory pressure
-NotificationCenter.default.addObserver(
-    forName: UIApplication.didReceiveMemoryWarningNotification,
-    object: nil, queue: .main
-) { _ in
-    ImageCache.shared.clearAll()
-    URLCache.shared.removeAllCachedResponses()
+// Register
+BGTaskScheduler.shared.register(
+    forTaskWithIdentifier: "com.app.refresh",
+    using: nil
+) { task in
+    handleAppRefresh(task as! BGAppRefreshTask)
+}
+
+// Schedule
+func scheduleRefresh() {
+    let request = BGAppRefreshTaskRequest(identifier: "com.app.refresh")
+    request.earliestBeginDate = Date(timeIntervalSinceNow: 15 * 60)
+    try? BGTaskScheduler.shared.submit(request)
 }
 ```
 
 ---
 
-## Performance Targets
+## MetricKit and On-Device Diagnostics
+
+- [ ] Adopt `MXMetricManagerSubscriber` to receive daily metric payloads
+- [ ] Monitor `MXAppLaunchMetric` for launch time regressions
+- [ ] Monitor `MXAppResponsivenessMetric` for hang rate
+- [ ] Monitor `MXMemoryMetric` for peak memory usage
+- [ ] Monitor `MXDiskIOMetric` for excessive disk I/O
+- [ ] Review `MXCrashDiagnostic` and `MXHangDiagnostic` payloads
+- [ ] Use Xcode Organizer > Metrics for aggregated data across your user base
+- [ ] Set performance budgets and alert on regressions in CI
+
+```swift
+import MetricKit
+
+class MetricsSubscriber: NSObject, MXMetricManagerSubscriber {
+    func didReceive(_ payloads: [MXMetricPayload]) {
+        for payload in payloads {
+            if let launchMetrics = payload.applicationLaunchMetrics {
+                // Log or send to analytics
+                let resumeTime = launchMetrics.histogrammedResumeTime
+                let optimizedStart = launchMetrics.histogrammedOptimizedTimeToFirstDraw
+            }
+        }
+    }
+
+    func didReceive(_ payloads: [MXDiagnosticPayload]) {
+        for payload in payloads {
+            if let crashDiags = payload.crashDiagnostics {
+                // Forward to crash reporting service
+            }
+            if let hangDiags = payload.hangDiagnostics {
+                // Log hang stacks for investigation
+            }
+        }
+    }
+}
+
+// In your App or AppDelegate:
+let subscriber = MetricsSubscriber()
+MXMetricManager.shared.add(subscriber)
+```
+
+---
+
+## Performance Budgets
 
 | Metric | Target | Measurement |
 |--------|--------|-------------|
-| Cold launch | < 400ms to first frame | Instruments > App Launch |
-| Warm launch | < 200ms | Instruments > App Launch |
-| Frame rate | 60fps (120fps on ProMotion) | Instruments > Core Animation |
-| Memory (typical) | < 150MB | Xcode memory gauge |
-| Memory (peak) | < 500MB | Instruments > Allocations |
-| Network payload | < 200KB per request | Charles Proxy / Instruments |
-| Image decode | < 10ms per thumbnail | Time Profiler |
-| List scroll | 0 dropped frames | Core Animation instrument |
+| Cold launch | < 400ms | MetricKit / os_signpost |
+| Time to interactive | < 1s | os_signpost |
+| Frame rate | 60/120 fps | Core Animation instrument |
+| Hitch rate | < 5ms/s | Animation Hitches instrument |
+| Memory (peak) | < 150MB | Allocations instrument |
+| API response handling | < 100ms | Time Profiler |
+| Image decode + display | < 16ms | Time Profiler |
+| App size (download) | < 50MB | App Store Connect |
+
+Review these budgets in each release cycle and investigate any regression beyond 10% of the target.

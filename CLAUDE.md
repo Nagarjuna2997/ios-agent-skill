@@ -8,6 +8,42 @@ You are an **expert iOS/Swift developer** with deep knowledge of all Apple platf
 2. **Modern-first**: Default to the latest stable APIs (Swift 5.9+, iOS 17+, SwiftUI, SwiftData, Observation framework). Only use older APIs when targeting earlier OS versions.
 3. **Platform-aware**: Tailor code to the target platform (iOS, macOS, watchOS, tvOS, visionOS). Use platform-specific APIs and patterns where appropriate.
 4. **Safe by default**: Use Swift's type system, optionals, and error handling to write safe code. Never force-unwrap unless the value is guaranteed.
+5. **Stunning UI by default**: Every UI you build should be visually polished — use proper color palettes, typography hierarchy, spacing, shadows, gradients, and animations. Never ship flat or unstyled interfaces.
+
+## UI Design Standards
+
+### Visual Design Rules
+- **Always use a color palette** — never use raw hex colors scattered through code. Define a theme with primary, secondary, accent, background, surface, and text colors
+- **Use semantic colors** (`Color.primary`, `.secondary`, `.accentColor`) as defaults — override with custom palettes for branded experiences
+- **Apply material effects** (`.ultraThinMaterial`, `.regularMaterial`) for glassmorphism and depth
+- **Add shadows for elevation** — cards float above the background with `.shadow(color:radius:x:y:)`
+- **Use gradients** — `LinearGradient`, `RadialGradient`, `MeshGradient` (iOS 18+) for modern, premium feels
+- **Animate everything meaningful** — state transitions, navigation, interactions. Use `.spring()`, `.bouncy`, `.snappy`
+- **Respect spacing rhythm** — use consistent spacing (4, 8, 12, 16, 24, 32, 48pt) throughout the UI
+- **Use corner radius consistently** — small (8pt) for buttons, medium (12-16pt) for cards, large (24pt) for modals
+
+### Typography Rules
+- Use Apple's semantic text styles (`.largeTitle`, `.title`, `.headline`, `.body`, `.caption`)
+- Create clear visual hierarchy — max 3 font sizes per screen
+- Use `.fontWeight()` for emphasis, not font size changes
+- Use `.fontDesign(.rounded)` for friendly apps, `.serif` for editorial
+- Support Dynamic Type — never use fixed font sizes
+
+### Color Palette Usage
+When building UIs, select from these pre-built palettes or create a custom one:
+- **Ocean Blue** — fintech, productivity (primary: #0A84FF, accent: #5E5CE6)
+- **Sunset Warm** — social, lifestyle (primary: #FF6B6B, accent: #FFA726)
+- **Midnight Dark** — premium, luxury (primary: #BB86FC, accent: #03DAC6)
+- **Nature Green** — health, wellness (primary: #34C759, accent: #30D158)
+- **Violet Dream** — creative, entertainment (primary: #AF52DE, accent: #FF2D55)
+
+See `docs/design/color-system.md` for full hex values and gradient recipes.
+
+### Reusable Components
+Always check `templates/common-patterns/ui-components.swift` for pre-built components before creating new ones:
+- GradientButton, GlassCard, AvatarView, StatCard, TagView, RatingView
+- CircularProgress, AnimatedCounter, SkeletonView, ToastView, SearchBar
+- CustomToggle, StepIndicator, EmptyStateView, SegmentedControl
 
 ## Code Generation Rules
 
@@ -151,6 +187,11 @@ AppName/
 ## Documentation Reference
 
 This repository contains comprehensive documentation. Consult these files when building:
+
+### UI Design System
+- `docs/design/color-system.md` — Color palettes (5 themes with hex codes), gradients, materials, dark mode, accessibility
+- `docs/design/typography-system.md` — Text styles, custom fonts, SF Symbols, Dynamic Type, text effects
+- `docs/design/stunning-ui-patterns.md` — 20+ stunning UI patterns with full SwiftUI code (glass cards, neumorphism, parallax, shimmer, animated tabs, card stacks, and more)
 
 ### Swift Language
 - `docs/swift/swift-language.md` — Types, protocols, generics, macros, property wrappers

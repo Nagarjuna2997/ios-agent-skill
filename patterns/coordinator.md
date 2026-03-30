@@ -1,448 +1,447 @@
-# Coordinator Pattern
+# Coordinator Pattern in SwiftUI
 
-## Overview
+The Coordinator pattern decouples navigation logic from views and ViewModels, centralizing flow control so that screens remain reusable and unaware of where they live in the navigation hierarchy.
 
-The Coordinator pattern extracts navigation logic from views into dedicated coordinator objects. This enables deep linking, testable navigation, and complex flow management.
-
-```
-┌──────────────┐     ┌──────────────┐     ┌──────────────┐
-│  AppCoordinator │──▶│ AuthCoordinator │   │ TabCoordinator │
-└──────────────┘     └──────────────┘     └──────┬───────┘
-                                                  │
-                                   ┌──────────────┼──────────────┐
-                                   ▼              ▼              ▼
-                            HomeCoordinator  SearchCoordinator  ProfileCoordinator
-```
-
----
-
-## Coordinator Protocol
+## Core Protocol
 
 ```swift
 import SwiftUI
 
+// MARK: - Coordinator Protocol
+
 @MainActor
-protocol Coordinator: AnyObject, Observable {
-    associatedtype Route: Hashable
-    var path: NavigationPath { get set }
-    var sheet: Route? { get set }
-    var fullScreenCover: Route? { get set }
-    func navigate(to route: Route)
-    func pop()
-    func popToRoot()
+protocol Coordinator: AnyObject, ObservableObject {
+    associatedtype Content: View
+
+    var navigationPath: NavigationPath { get set }
+    var childCoordinators: [any Coordinator] { get set }
+
+    @ViewBuilder func start() -> Content
 }
 
 extension Coordinator {
-    func pop() {
-        guard !path.isEmpty else { return }
-        path.removeLast()
+    func addChild(_ coordinator: some Coordinator) {
+        childCoordinators.append(coordinator)
+    }
+
+    func removeChild(_ coordinator: some Coordinator) {
+        childCoordinators.removeAll { $0 === coordinator }
     }
 
     func popToRoot() {
-        path = NavigationPath()
+        navigationPath = NavigationPath()
     }
 }
 ```
 
----
+## Route Definition
 
-## App Coordinator
+Define routes as an enum that the coordinator resolves into views.
 
 ```swift
-@Observable
-@MainActor
-class AppCoordinator {
-    var isAuthenticated = false
-    var selectedTab: AppTab = .home
-    var deepLinkPending: DeepLink?
+// MARK: - App Routes
 
-    // Child coordinators
-    let homeCoordinator = HomeCoordinator()
-    let searchCoordinator = SearchCoordinator()
-    let profileCoordinator = ProfileCoordinator()
-
-    func handleDeepLink(_ url: URL) {
-        guard let deepLink = DeepLink(url: url) else { return }
-
-        if !isAuthenticated {
-            deepLinkPending = deepLink
-            return
-        }
-
-        switch deepLink {
-        case .product(let id):
-            selectedTab = .home
-            homeCoordinator.navigate(to: .productDetail(id: id))
-        case .search(let query):
-            selectedTab = .search
-            searchCoordinator.navigate(to: .results(query: query))
-        case .profile:
-            selectedTab = .profile
-        case .settings:
-            selectedTab = .profile
-            profileCoordinator.navigate(to: .settings)
-        }
-    }
-
-    func didAuthenticate() {
-        isAuthenticated = true
-        if let pending = deepLinkPending {
-            deepLinkPending = nil
-            handleDeepLink(pending)
-        }
-    }
-}
-
-enum AppTab: Hashable {
-    case home, search, profile
-}
-
-enum DeepLink {
-    case product(id: String)
-    case search(query: String)
-    case profile
+enum AppRoute: Hashable {
+    case home
+    case profile(userId: String)
     case settings
+    case detail(itemId: String)
+}
 
-    init?(url: URL) {
-        let path = url.pathComponents.filter { $0 != "/" }
-        switch path.first {
-        case "product": self = .product(id: path[safe: 1] ?? "")
-        case "search":
-            let query = URLComponents(url: url, resolvingAgainstBaseURL: false)?
-                .queryItems?.first(where: { $0.name == "q" })?.value ?? ""
-            self = .search(query: query)
-        case "profile": self = .profile
-        case "settings": self = .settings
-        default: return nil
-        }
-    }
+enum AuthRoute: Hashable {
+    case login
+    case register
+    case forgotPassword(email: String?)
+    case verifyOTP(phoneNumber: String)
+}
 
-    // Reconstruct as URL for forwarding
-    func handleDeepLink(_ deepLink: DeepLink) {
-        // handled in AppCoordinator
-    }
+enum OnboardingRoute: Hashable {
+    case welcome
+    case permissions
+    case profileSetup
+    case complete
 }
 ```
 
----
+## AppCoordinator (Root)
 
-## Child Coordinator (Home)
+The root coordinator owns top-level navigation and manages child coordinators for feature flows.
 
 ```swift
-@Observable
+// MARK: - AppCoordinator
+
 @MainActor
-class HomeCoordinator: Coordinator {
-    var path = NavigationPath()
-    var sheet: HomeRoute?
-    var fullScreenCover: HomeRoute?
+final class AppCoordinator: Coordinator, ObservableObject {
+    @Published var navigationPath = NavigationPath()
+    @Published var childCoordinators: [any Coordinator] = []
+    @Published var currentFlow: AppFlow = .loading
 
-    enum HomeRoute: Hashable {
-        case productDetail(id: String)
-        case category(name: String)
-        case cart
-        case checkout
-        case orderConfirmation(orderId: String)
+    enum AppFlow {
+        case loading
+        case onboarding
+        case auth
+        case main
     }
 
-    func navigate(to route: HomeRoute) {
-        switch route {
-        case .cart:
-            sheet = .cart
-        case .checkout:
-            sheet = nil  // Dismiss cart first
-            fullScreenCover = .checkout
-        default:
-            path.append(route)
+    private let authService: AuthServiceProtocol
+    private let userDefaults: UserDefaults
+
+    init(authService: AuthServiceProtocol, userDefaults: UserDefaults = .standard) {
+        self.authService = authService
+        self.userDefaults = userDefaults
+    }
+
+    func start() -> some View {
+        AppCoordinatorView(coordinator: self)
+    }
+
+    func determineInitialFlow() {
+        if !userDefaults.bool(forKey: "hasCompletedOnboarding") {
+            currentFlow = .onboarding
+        } else if authService.isAuthenticated {
+            currentFlow = .main
+        } else {
+            currentFlow = .auth
         }
     }
 
-    // Flow-specific navigation
-    func startCheckoutFlow() {
-        sheet = nil
-        fullScreenCover = .checkout
+    func navigate(to route: AppRoute) {
+        navigationPath.append(route)
     }
 
-    func completeCheckout(orderId: String) {
-        fullScreenCover = nil
-        path.append(HomeRoute.orderConfirmation(orderId: orderId))
+    func completeOnboarding() {
+        userDefaults.set(true, forKey: "hasCompletedOnboarding")
+        currentFlow = .auth
+    }
+
+    func completeAuth() {
+        currentFlow = .main
+    }
+
+    func signOut() {
+        navigationPath = NavigationPath()
+        childCoordinators.removeAll()
+        currentFlow = .auth
+    }
+
+    @ViewBuilder
+    func resolve(route: AppRoute) -> some View {
+        switch route {
+        case .home:
+            HomeView(coordinator: self)
+        case .profile(let userId):
+            ProfileView(userId: userId, coordinator: self)
+        case .settings:
+            SettingsView(coordinator: self)
+        case .detail(let itemId):
+            DetailView(itemId: itemId, coordinator: self)
+        }
     }
 }
 ```
 
----
-
-## Coordinator-Driven Views
-
-### Root View
+## AppCoordinator View
 
 ```swift
-struct AppRootView: View {
-    @State private var coordinator = AppCoordinator()
+// MARK: - AppCoordinator View
+
+struct AppCoordinatorView: View {
+    @ObservedObject var coordinator: AppCoordinator
 
     var body: some View {
         Group {
-            if coordinator.isAuthenticated {
-                MainTabView()
-            } else {
-                AuthView(onAuthenticated: coordinator.didAuthenticate)
+            switch coordinator.currentFlow {
+            case .loading:
+                ProgressView("Loading...")
+                    .task { coordinator.determineInitialFlow() }
+
+            case .onboarding:
+                OnboardingCoordinatorView(
+                    coordinator: OnboardingCoordinator(
+                        parent: coordinator
+                    )
+                )
+
+            case .auth:
+                AuthCoordinatorView(
+                    coordinator: AuthCoordinator(
+                        parent: coordinator
+                    )
+                )
+
+            case .main:
+                NavigationStack(path: $coordinator.navigationPath) {
+                    HomeView(coordinator: coordinator)
+                        .navigationDestination(for: AppRoute.self) { route in
+                            coordinator.resolve(route: route)
+                        }
+                }
             }
         }
-        .environment(coordinator)
-        .onOpenURL { url in
-            coordinator.handleDeepLink(url)
-        }
-    }
-}
-
-struct MainTabView: View {
-    @Environment(AppCoordinator.self) private var appCoordinator
-
-    var body: some View {
-        @Bindable var coordinator = appCoordinator
-
-        TabView(selection: $coordinator.selectedTab) {
-            Tab("Home", systemImage: "house", value: .home) {
-                HomeCoordinatorView()
-            }
-            Tab("Search", systemImage: "magnifyingglass", value: .search) {
-                SearchCoordinatorView()
-            }
-            Tab("Profile", systemImage: "person", value: .profile) {
-                ProfileCoordinatorView()
-            }
-        }
+        .animation(.easeInOut(duration: 0.3), value: coordinator.currentFlow)
     }
 }
 ```
 
-### Home Coordinator View
+## Child Coordinator: Auth Flow
 
 ```swift
-struct HomeCoordinatorView: View {
-    @Environment(AppCoordinator.self) private var appCoordinator
+// MARK: - Auth Coordinator
+
+@MainActor
+final class AuthCoordinator: Coordinator, ObservableObject {
+    @Published var navigationPath = NavigationPath()
+    @Published var childCoordinators: [any Coordinator] = []
+
+    private weak var parent: AppCoordinator?
+
+    init(parent: AppCoordinator) {
+        self.parent = parent
+        parent.addChild(self)
+    }
+
+    func start() -> some View {
+        AuthCoordinatorView(coordinator: self)
+    }
+
+    func navigate(to route: AuthRoute) {
+        navigationPath.append(route)
+    }
+
+    func didCompleteLogin() {
+        parent?.removeChild(self)
+        parent?.completeAuth()
+    }
+
+    @ViewBuilder
+    func resolve(route: AuthRoute) -> some View {
+        switch route {
+        case .login:
+            LoginView(coordinator: self)
+        case .register:
+            RegisterView(coordinator: self)
+        case .forgotPassword(let email):
+            ForgotPasswordView(prefillEmail: email, coordinator: self)
+        case .verifyOTP(let phoneNumber):
+            OTPVerificationView(phoneNumber: phoneNumber, coordinator: self)
+        }
+    }
+}
+
+struct AuthCoordinatorView: View {
+    @ObservedObject var coordinator: AuthCoordinator
 
     var body: some View {
-        @Bindable var coordinator = appCoordinator.homeCoordinator
-
-        NavigationStack(path: $coordinator.path) {
-            HomeView()
-                .navigationDestination(for: HomeCoordinator.HomeRoute.self) { route in
-                    destinationView(for: route)
+        NavigationStack(path: $coordinator.navigationPath) {
+            LoginView(coordinator: coordinator)
+                .navigationDestination(for: AuthRoute.self) { route in
+                    coordinator.resolve(route: route)
                 }
         }
-        .sheet(item: $coordinator.sheet) { route in
-            sheetView(for: route)
-        }
-        .fullScreenCover(item: $coordinator.fullScreenCover) { route in
-            fullScreenView(for: route)
-        }
-    }
-
-    @ViewBuilder
-    private func destinationView(for route: HomeCoordinator.HomeRoute) -> some View {
-        switch route {
-        case .productDetail(let id):
-            ProductDetailView(productId: id)
-        case .category(let name):
-            CategoryView(name: name)
-        case .orderConfirmation(let orderId):
-            OrderConfirmationView(orderId: orderId)
-        default:
-            EmptyView()
-        }
-    }
-
-    @ViewBuilder
-    private func sheetView(for route: HomeCoordinator.HomeRoute) -> some View {
-        switch route {
-        case .cart:
-            CartView(onCheckout: {
-                appCoordinator.homeCoordinator.startCheckoutFlow()
-            })
-        default:
-            EmptyView()
-        }
-    }
-
-    @ViewBuilder
-    private func fullScreenView(for route: HomeCoordinator.HomeRoute) -> some View {
-        switch route {
-        case .checkout:
-            CheckoutView(onComplete: { orderId in
-                appCoordinator.homeCoordinator.completeCheckout(orderId: orderId)
-            })
-        default:
-            EmptyView()
-        }
-    }
-}
-
-// Make HomeRoute conform to Identifiable for sheet/fullScreenCover
-extension HomeCoordinator.HomeRoute: Identifiable {
-    var id: String {
-        switch self {
-        case .productDetail(let id): "product-\(id)"
-        case .category(let name): "category-\(name)"
-        case .cart: "cart"
-        case .checkout: "checkout"
-        case .orderConfirmation(let id): "order-\(id)"
-        }
     }
 }
 ```
 
----
-
-## Views Using Coordinator
+## Child Coordinator: Onboarding Flow
 
 ```swift
-struct ProductDetailView: View {
-    let productId: String
-    @Environment(AppCoordinator.self) private var appCoordinator
+// MARK: - Onboarding Coordinator
+
+@MainActor
+final class OnboardingCoordinator: Coordinator, ObservableObject {
+    @Published var navigationPath = NavigationPath()
+    @Published var childCoordinators: [any Coordinator] = []
+    @Published var currentStep: OnboardingRoute = .welcome
+
+    private weak var parent: AppCoordinator?
+
+    init(parent: AppCoordinator) {
+        self.parent = parent
+        parent.addChild(self)
+    }
+
+    func start() -> some View {
+        OnboardingCoordinatorView(coordinator: self)
+    }
+
+    func advance() {
+        switch currentStep {
+        case .welcome:      currentStep = .permissions
+        case .permissions:  currentStep = .profileSetup
+        case .profileSetup: currentStep = .complete
+        case .complete:
+            parent?.removeChild(self)
+            parent?.completeOnboarding()
+        }
+    }
+
+    func skip() {
+        parent?.removeChild(self)
+        parent?.completeOnboarding()
+    }
+}
+
+struct OnboardingCoordinatorView: View {
+    @ObservedObject var coordinator: OnboardingCoordinator
 
     var body: some View {
-        VStack {
-            Text("Product \(productId)")
-
-            Button("View Related Category") {
-                appCoordinator.homeCoordinator.navigate(to: .category(name: "Electronics"))
-            }
-
-            Button("Add to Cart & View Cart") {
-                // Add to cart logic...
-                appCoordinator.homeCoordinator.navigate(to: .cart)
-            }
-
-            Button("Go Home") {
-                appCoordinator.homeCoordinator.popToRoot()
-            }
+        TabView(selection: $coordinator.currentStep) {
+            WelcomeStepView(coordinator: coordinator)
+                .tag(OnboardingRoute.welcome)
+            PermissionsStepView(coordinator: coordinator)
+                .tag(OnboardingRoute.permissions)
+            ProfileSetupStepView(coordinator: coordinator)
+                .tag(OnboardingRoute.profileSetup)
         }
+        .tabViewStyle(.page(indexDisplayMode: .always))
+        .animation(.easeInOut, value: coordinator.currentStep)
     }
 }
 ```
 
----
-
-## Deep Linking Integration
+## Deep Linking Through Coordinators
 
 ```swift
-// SceneDelegate or SwiftUI onOpenURL
-struct DeepLinkHandler {
-    static func handle(_ url: URL, coordinator: AppCoordinator) {
-        // Universal Link: https://example.com/product/123
-        // Custom URL: myapp://product/123
+// MARK: - Deep Link Handler
 
-        let pathComponents: [String]
-        if url.scheme == "https" {
-            pathComponents = url.pathComponents.filter { $0 != "/" }
-        } else {
-            // Custom scheme: host is first component
-            pathComponents = [url.host].compactMap { $0 } + url.pathComponents.filter { $0 != "/" }
-        }
+enum DeepLink {
+    case profile(userId: String)
+    case item(itemId: String)
+    case settings
+    case auth(AuthRoute)
 
-        guard let first = pathComponents.first else { return }
+    init?(url: URL) {
+        guard let components = URLComponents(url: url, resolvingAgainstBaseURL: true),
+              let host = components.host else { return nil }
 
-        switch first {
-        case "product":
-            guard let id = pathComponents[safe: 1] else { return }
-            coordinator.selectedTab = .home
-            coordinator.homeCoordinator.popToRoot()
-            coordinator.homeCoordinator.navigate(to: .productDetail(id: id))
+        let pathComponents = components.path
+            .split(separator: "/")
+            .map(String.init)
 
-        case "search":
-            let query = URLComponents(url: url, resolvingAgainstBaseURL: false)?
-                .queryItems?.first(where: { $0.name == "q" })?.value ?? ""
-            coordinator.selectedTab = .search
-            coordinator.searchCoordinator.navigate(to: .results(query: query))
-
+        switch host {
+        case "profile":
+            guard let userId = pathComponents.first else { return nil }
+            self = .profile(userId: userId)
+        case "item":
+            guard let itemId = pathComponents.first else { return nil }
+            self = .item(itemId: itemId)
+        case "settings":
+            self = .settings
+        case "auth":
+            if pathComponents.first == "reset" {
+                let email = components.queryItems?
+                    .first(where: { $0.name == "email" })?.value
+                self = .auth(.forgotPassword(email: email))
+            } else {
+                self = .auth(.login)
+            }
         default:
-            break
+            return nil
+        }
+    }
+}
+
+extension AppCoordinator {
+    func handleDeepLink(_ deepLink: DeepLink) {
+        // Ensure user is authenticated for protected routes
+        switch deepLink {
+        case .profile(let userId):
+            guard currentFlow == .main else {
+                // Store pending deep link for after auth
+                return
+            }
+            navigationPath = NavigationPath()
+            navigate(to: .profile(userId: userId))
+
+        case .item(let itemId):
+            guard currentFlow == .main else { return }
+            navigationPath = NavigationPath()
+            navigate(to: .detail(itemId: itemId))
+
+        case .settings:
+            guard currentFlow == .main else { return }
+            navigationPath = NavigationPath()
+            navigate(to: .settings)
+
+        case .auth(let authRoute):
+            if currentFlow != .auth {
+                currentFlow = .auth
+            }
+            // The auth coordinator handles internal navigation
         }
     }
 }
 ```
 
----
-
-## Testing
+## App Entry Point with Deep Linking
 
 ```swift
-import Testing
+// MARK: - App Entry Point
 
-@Suite("HomeCoordinator")
-struct HomeCoordinatorTests {
+@main
+struct MyApp: App {
+    @StateObject private var coordinator = AppCoordinator(
+        authService: AuthService.shared
+    )
 
-    @Test("navigates to product detail via path")
-    @MainActor
-    func navigateToProduct() {
-        let coordinator = HomeCoordinator()
-        coordinator.navigate(to: .productDetail(id: "123"))
-        #expect(coordinator.path.count == 1)
-    }
-
-    @Test("cart opens as sheet")
-    @MainActor
-    func openCart() {
-        let coordinator = HomeCoordinator()
-        coordinator.navigate(to: .cart)
-        #expect(coordinator.sheet == .cart)
-        #expect(coordinator.path.isEmpty)
-    }
-
-    @Test("checkout flow dismisses cart and opens full screen")
-    @MainActor
-    func checkoutFlow() {
-        let coordinator = HomeCoordinator()
-        coordinator.navigate(to: .cart)
-        coordinator.startCheckoutFlow()
-        #expect(coordinator.sheet == nil)
-        #expect(coordinator.fullScreenCover == .checkout)
-    }
-
-    @Test("popToRoot clears navigation stack")
-    @MainActor
-    func popToRoot() {
-        let coordinator = HomeCoordinator()
-        coordinator.navigate(to: .productDetail(id: "1"))
-        coordinator.navigate(to: .category(name: "Books"))
-        coordinator.popToRoot()
-        #expect(coordinator.path.isEmpty)
-    }
-}
-
-@Suite("AppCoordinator Deep Linking")
-struct DeepLinkTests {
-
-    @Test("deep link to product selects home tab")
-    @MainActor
-    func deepLinkProduct() {
-        let coordinator = AppCoordinator()
-        coordinator.isAuthenticated = true
-        let url = URL(string: "myapp://product/456")!
-        coordinator.handleDeepLink(url)
-        #expect(coordinator.selectedTab == .home)
-    }
-
-    @Test("deep link deferred until authenticated")
-    @MainActor
-    func deferredDeepLink() {
-        let coordinator = AppCoordinator()
-        let url = URL(string: "myapp://product/456")!
-        coordinator.handleDeepLink(url)
-        #expect(coordinator.deepLinkPending != nil)
+    var body: some Scene {
+        WindowGroup {
+            coordinator.start()
+                .onOpenURL { url in
+                    if let deepLink = DeepLink(url: url) {
+                        coordinator.handleDeepLink(deepLink)
+                    }
+                }
+        }
     }
 }
 ```
 
----
+## Coordinator Lifecycle Management
 
-## When to Use the Coordinator Pattern
+```swift
+// MARK: - Lifecycle Awareness
 
-| Scenario | Use Coordinator? |
-|----------|-----------------|
-| Simple app (3-5 screens) | Probably not; NavigationStack suffices |
-| Deep linking required | Yes |
-| Complex flows (onboarding, checkout) | Yes |
-| Reusable navigation across tabs | Yes |
-| Need testable navigation logic | Yes |
-| Multiple presentation styles (push, sheet, cover) | Yes |
+extension AppCoordinator {
+    /// Call when the app enters the background.
+    func appDidEnterBackground() {
+        // Persist navigation state if needed.
+        // Cancel non-essential child coordinator work.
+        for child in childCoordinators {
+            if let cancellable = child as? CancellableCoordinator {
+                cancellable.cancelPendingWork()
+            }
+        }
+    }
+
+    /// Call when the app returns to the foreground.
+    func appWillEnterForeground() {
+        // Refresh auth state -- user session may have expired.
+        if !authService.isAuthenticated && currentFlow == .main {
+            signOut()
+        }
+    }
+
+    /// Clean up a child coordinator and its descendants.
+    func tearDown(_ coordinator: some Coordinator) {
+        for child in coordinator.childCoordinators {
+            tearDown(child)
+        }
+        coordinator.childCoordinators.removeAll()
+        removeChild(coordinator)
+    }
+}
+
+protocol CancellableCoordinator: Coordinator {
+    func cancelPendingWork()
+}
+```
+
+## Guidelines
+
+- Coordinators own `NavigationPath` and route resolution. Views never push destinations directly.
+- Use `weak` references from child to parent to avoid retain cycles.
+- Each coordinator manages its own `NavigationStack` (or contributes `navigationDestination` to a parent stack).
+- Store pending deep links when the user is not yet in the correct flow, and replay them after authentication or onboarding completes.
+- Remove child coordinators as soon as their flow finishes to free memory.
+- Keep route enums `Hashable` so they work with `NavigationPath`.

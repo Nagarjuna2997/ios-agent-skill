@@ -1,27 +1,33 @@
 # Testing Checklist
 
-## XCTest Setup and Patterns
+A comprehensive checklist covering unit, integration, UI, and snapshot testing for iOS apps. Includes setup for both XCTest and the Swift Testing framework, async testing patterns, and CI/CD integration.
 
-### Test Target Configuration
-- [ ] Test target added to project (`File > New > Target > Unit Testing Bundle`)
-- [ ] `@testable import MyApp` in test files
-- [ ] Test host set to app target (for integration tests) or None (for pure unit tests)
-- [ ] Parallel testing enabled for speed (`Edit Scheme > Test > Options`)
+---
 
-### XCTest Basics
+## XCTest Setup and Conventions
+
+- [ ] Test target added to the project (File > New > Target > Unit Testing Bundle)
+- [ ] Test target has access to app module via `@testable import YourApp`
+- [ ] Test files named `[ClassUnderTest]Tests.swift`
+- [ ] Test methods named `test_[scenario]_[expectedBehavior]`
+- [ ] Each test follows Arrange/Act/Assert (Given/When/Then) structure
+- [ ] Tests are independent -- no shared mutable state between tests
+- [ ] `setUp()` creates fresh instances; `tearDown()` cleans up resources
+- [ ] Tests run in under 1 second each (slow tests belong in integration suite)
 
 ```swift
 import XCTest
-@testable import MyApp
+@testable import YourApp
 
-final class UserServiceTests: XCTestCase {
-    var sut: UserService!  // System Under Test
-    var mockRepository: MockUserRepository!
+final class ArticleViewModelTests: XCTestCase {
+
+    private var sut: ArticleViewModel!
+    private var mockRepository: MockArticleRepository!
 
     override func setUp() {
         super.setUp()
-        mockRepository = MockUserRepository()
-        sut = UserService(repository: mockRepository)
+        mockRepository = MockArticleRepository()
+        sut = ArticleViewModel(repository: mockRepository)
     }
 
     override func tearDown() {
@@ -30,367 +36,502 @@ final class UserServiceTests: XCTestCase {
         super.tearDown()
     }
 
-    func testFetchUser_withValidID_returnsUser() async throws {
-        // Given
-        let expectedUser = User(id: "1", name: "Alice")
-        mockRepository.stubbedUser = expectedUser
+    func test_loadArticles_success_updatesArticlesList() async {
+        // Arrange
+        mockRepository.stubbedArticles = [
+            Article(id: "1", title: "Test", body: "Body", authorId: "a1",
+                    publishedAt: nil, updatedAt: Date(), tags: [])
+        ]
 
-        // When
-        let user = try await sut.fetchUser(id: "1")
+        // Act
+        await sut.loadArticles()
 
-        // Then
-        XCTAssertEqual(user.name, "Alice")
-        XCTAssertEqual(mockRepository.fetchCallCount, 1)
+        // Assert
+        XCTAssertEqual(sut.articles.count, 1)
+        XCTAssertEqual(sut.articles.first?.title, "Test")
+        XCTAssertFalse(sut.isLoading)
+        XCTAssertNil(sut.error)
     }
 
-    func testFetchUser_withInvalidID_throwsNotFound() async {
-        // Given
-        mockRepository.error = .notFound
+    func test_loadArticles_failure_setsError() async {
+        // Arrange
+        mockRepository.shouldFail = true
 
-        // When/Then
-        do {
-            _ = try await sut.fetchUser(id: "invalid")
-            XCTFail("Expected error to be thrown")
-        } catch {
-            XCTAssertEqual(error as? ServiceError, .notFound)
-        }
+        // Act
+        await sut.loadArticles()
+
+        // Assert
+        XCTAssertTrue(sut.articles.isEmpty)
+        XCTAssertNotNil(sut.error)
     }
 }
 ```
 
 ---
 
-## Swift Testing Framework (@Test, #expect)
+## Swift Testing Framework
 
-Swift Testing (available in Xcode 16+) provides a modern, expressive syntax.
+The Swift Testing framework (available from Xcode 16+) uses `@Test`, `@Suite`, `#expect`, and `#require` macros for a more expressive testing API.
+
+- [ ] Use `@Test` for test functions (replaces `func test_...` naming convention)
+- [ ] Use `@Suite` for grouping related tests (replaces `XCTestCase` subclass)
+- [ ] Use `#expect(condition)` for assertions (replaces `XCTAssert...`)
+- [ ] Use `#require(condition)` for preconditions that must pass for the test to continue
+- [ ] Use `@Test(arguments:)` for parameterized tests
+- [ ] Use `@Test(.tags(...))` to categorize tests
+- [ ] Use traits like `@Test(.timeLimit(.minutes(1)))` for timeout control
 
 ```swift
 import Testing
-@testable import MyApp
+@testable import YourApp
 
-@Suite("CartViewModel Tests")
-struct CartViewModelTests {
+@Suite("Article ViewModel")
+struct ArticleViewModelTests {
 
-    @Test("adds item to cart")
-    func addItem() async {
-        let vm = CartViewModel(repository: MockCartRepository())
-        let product = Product.sample
+    let mockRepository = MockArticleRepository()
 
-        await vm.addToCart(product, quantity: 2)
+    @Test("loads articles successfully")
+    func loadArticlesSuccess() async {
+        mockRepository.stubbedArticles = [.sample]
+        let viewModel = ArticleViewModel(repository: mockRepository)
 
-        #expect(vm.items.count == 1)
-        #expect(vm.items.first?.quantity == 2)
+        await viewModel.loadArticles()
+
+        #expect(viewModel.articles.count == 1)
+        #expect(viewModel.articles.first?.title == "Sample")
+        #expect(!viewModel.isLoading)
+        #expect(viewModel.error == nil)
     }
 
-    @Test("calculates total correctly")
-    func total() {
-        let vm = CartViewModel(repository: MockCartRepository())
-        vm.items = [
-            CartItem(product: .init(id: UUID(), name: "A", price: 10.00), quantity: 2),
-            CartItem(product: .init(id: UUID(), name: "B", price: 5.50), quantity: 1),
-        ]
+    @Test("handles load failure")
+    func loadArticlesFailure() async {
+        mockRepository.shouldFail = true
+        let viewModel = ArticleViewModel(repository: mockRepository)
 
-        #expect(vm.total == 25.50)
+        await viewModel.loadArticles()
+
+        #expect(viewModel.articles.isEmpty)
+        #expect(viewModel.error != nil)
     }
 
-    @Test("removes item from cart")
-    func removeItem() async {
-        let vm = CartViewModel(repository: MockCartRepository())
-        let product = Product.sample
-        await vm.addToCart(product, quantity: 1)
-
-        await vm.removeFromCart(product.id)
-
-        #expect(vm.items.isEmpty)
+    @Test("validates email formats", arguments: [
+        ("user@example.com", true),
+        ("invalid", false),
+        ("", false),
+        ("user@.com", false),
+        ("user@example.co.uk", true),
+    ])
+    func emailValidation(email: String, isValid: Bool) {
+        let validator = EmailValidator()
+        #expect(validator.isValid(email) == isValid)
     }
 
-    @Test("empty cart has zero total")
-    func emptyTotal() {
-        let vm = CartViewModel(repository: MockCartRepository())
-        #expect(vm.total == 0)
+    @Test("require non-nil user before profile load")
+    func loadProfile() async throws {
+        let user = try #require(await authService.currentUser())
+        // Test continues only if user is non-nil
+        let profile = await profileService.load(for: user.id)
+        #expect(profile.name.isEmpty == false)
     }
-
-    // Parameterized tests
-    @Test("validates quantity limits", arguments: [0, -1, 101])
-    func invalidQuantity(quantity: Int) async {
-        let vm = CartViewModel(repository: MockCartRepository())
-        await vm.addToCart(.sample, quantity: quantity)
-        #expect(vm.items.isEmpty)
-    }
-
-    // Tags for organizing
-    @Test("applies discount code", .tags(.checkout))
-    func discount() async {
-        let vm = CartViewModel(repository: MockCartRepository())
-        vm.items = [CartItem(product: .init(id: UUID(), name: "A", price: 100), quantity: 1)]
-
-        await vm.applyDiscount(code: "SAVE20")
-
-        #expect(vm.discount == 20.00)
-        #expect(vm.total == 80.00)
-    }
-}
-
-extension Tag {
-    @Tag static var checkout: Self
 }
 ```
 
 ---
 
-## Unit Testing ViewModels
+## Unit Testing ViewModels with Mocks
 
-### Pattern: Test State Transitions
+- [ ] Define protocols for all dependencies (repository, service, API client)
+- [ ] Create mock implementations that allow stubbing return values and tracking calls
+- [ ] Test each ViewModel method in isolation
+- [ ] Verify state changes (loading, error, data) after each action
+- [ ] Test edge cases: empty data, nil values, concurrent calls
 
 ```swift
-@Suite("LoginViewModel")
-struct LoginViewModelTests {
-    let mockAuth = MockAuthService()
+// MARK: - Mock Repository
 
-    @Test("initial state is idle")
-    func initialState() {
-        let vm = LoginViewModel(authService: mockAuth)
-        #expect(vm.state == .idle)
-        #expect(vm.email == "")
-        #expect(vm.password == "")
+final class MockArticleRepository: ArticleRepositoryProtocol, @unchecked Sendable {
+    var stubbedArticles: [Article] = []
+    var shouldFail = false
+    var createCallCount = 0
+    var lastCreatedArticle: Article?
+
+    func getAll() async throws -> [Article] {
+        if shouldFail { throw RepositoryError.offline }
+        return stubbedArticles
     }
 
-    @Test("login with valid credentials succeeds")
-    func successfulLogin() async {
-        mockAuth.shouldSucceed = true
-        let vm = LoginViewModel(authService: mockAuth)
-        vm.email = "user@example.com"
-        vm.password = "password123"
-
-        await vm.login()
-
-        #expect(vm.state == .authenticated)
-        #expect(vm.error == nil)
+    func getById(_ id: String) async throws -> Article? {
+        if shouldFail { throw RepositoryError.notFound }
+        return stubbedArticles.first { $0.id == id }
     }
 
-    @Test("login with empty email shows validation error")
-    func emptyEmail() async {
-        let vm = LoginViewModel(authService: mockAuth)
-        vm.email = ""
-        vm.password = "password123"
-
-        await vm.login()
-
-        #expect(vm.state == .idle)
-        #expect(vm.error?.localizedDescription.contains("email") == true)
+    func create(_ entity: Article) async throws -> Article {
+        if shouldFail { throw RepositoryError.invalidResponse }
+        createCallCount += 1
+        lastCreatedArticle = entity
+        stubbedArticles.append(entity)
+        return entity
     }
 
-    @Test("login failure shows error")
-    func loginFailure() async {
-        mockAuth.shouldSucceed = false
-        mockAuth.errorToThrow = AuthError.invalidCredentials
-        let vm = LoginViewModel(authService: mockAuth)
-        vm.email = "user@example.com"
-        vm.password = "wrong"
-
-        await vm.login()
-
-        #expect(vm.state == .idle)
-        #expect(vm.error != nil)
+    func update(_ entity: Article) async throws -> Article {
+        if shouldFail { throw RepositoryError.invalidResponse }
+        if let index = stubbedArticles.firstIndex(where: { $0.id == entity.id }) {
+            stubbedArticles[index] = entity
+        }
+        return entity
     }
 
-    @Test("loading state set during login")
-    func loadingState() async {
-        mockAuth.delay = 0.1
-        mockAuth.shouldSucceed = true
-        let vm = LoginViewModel(authService: mockAuth)
-        vm.email = "user@example.com"
-        vm.password = "pass"
+    func delete(_ id: String) async throws {
+        if shouldFail { throw RepositoryError.notFound }
+        stubbedArticles.removeAll { $0.id == id }
+    }
+}
 
-        let task = Task { await vm.login() }
-        try? await Task.sleep(for: .milliseconds(50))
-        #expect(vm.state == .loading)
-        await task.value
-        #expect(vm.state == .authenticated)
+// MARK: - ViewModel Tests
+
+@Suite("Create Article Flow")
+struct CreateArticleViewModelTests {
+
+    @Test("creates article and resets form")
+    func createSuccess() async {
+        let mock = MockArticleRepository()
+        let vm = CreateArticleViewModel(repository: mock)
+        vm.title = "New Article"
+        vm.body = "Content here"
+
+        await vm.save()
+
+        #expect(mock.createCallCount == 1)
+        #expect(mock.lastCreatedArticle?.title == "New Article")
+        #expect(vm.title.isEmpty) // form reset
+        #expect(vm.isSaved)
+    }
+
+    @Test("shows validation error when title is empty")
+    func validationError() async {
+        let mock = MockArticleRepository()
+        let vm = CreateArticleViewModel(repository: mock)
+        vm.title = ""
+        vm.body = "Content"
+
+        await vm.save()
+
+        #expect(mock.createCallCount == 0)
+        #expect(vm.titleError == .emptyField(fieldName: "Title"))
     }
 }
 ```
 
 ---
 
-## UI Testing with XCUITest
+## Integration Testing
+
+- [ ] Create a separate test plan or scheme for integration tests
+- [ ] Test real database operations with an in-memory SwiftData `ModelContainer`
+- [ ] Test repository layer with real local data source and mock API client
+- [ ] Verify data persistence across operations (create, read, update, delete)
+- [ ] Test sync queue behavior (enqueue offline, sync when connected)
+
+```swift
+@Suite("Article Repository Integration")
+struct ArticleRepositoryIntegrationTests {
+
+    @Test("full CRUD cycle with SwiftData")
+    @MainActor
+    func crudCycle() async throws {
+        // Set up in-memory SwiftData container
+        let config = ModelConfiguration(isStoredInMemoryOnly: true)
+        let container = try ModelContainer(
+            for: ArticleRecord.self, configurations: config
+        )
+        let context = container.mainContext
+
+        let localDataSource = ArticleLocalDataSource(modelContext: context)
+        let mockAPI = MockAPIClient()
+        let connectivity = MockConnectivityMonitor(isConnected: false)
+
+        let repository = ArticleRepository(
+            apiClient: mockAPI,
+            localDataSource: localDataSource,
+            connectivity: connectivity
+        )
+
+        // Create
+        let article = Article(
+            id: UUID().uuidString, title: "Test", body: "Body",
+            authorId: "a1", publishedAt: nil, updatedAt: Date(), tags: ["swift"]
+        )
+        let created = try await repository.create(article)
+        #expect(created.id == article.id)
+
+        // Read
+        let fetched = try await repository.getById(article.id)
+        #expect(fetched?.title == "Test")
+
+        // Update
+        var updated = article
+        updated.title = "Updated"
+        let result = try await repository.update(updated)
+        #expect(result.title == "Updated")
+
+        // Delete
+        try await repository.delete(article.id)
+        let deleted = try await repository.getById(article.id)
+        #expect(deleted == nil)
+    }
+}
+```
+
+---
+
+## UI Testing (XCUITest)
+
+- [ ] UI test target added (File > New > Target > UI Testing Bundle)
+- [ ] Set accessibility identifiers on all testable elements
+- [ ] Use `XCUIApplication().launch()` in setUp
+- [ ] Use launch arguments/environment to set test state (e.g., logged in, specific data)
+- [ ] Query elements by accessibility identifier, not text (text may be localized)
+- [ ] Wait for elements with `waitForExistence(timeout:)` -- do not use `sleep`
+- [ ] Test complete user flows (sign in, create content, navigate, sign out)
+- [ ] Test error states by injecting error conditions via launch arguments
 
 ```swift
 import XCTest
 
 final class LoginUITests: XCTestCase {
+
     let app = XCUIApplication()
 
     override func setUp() {
+        super.setUp()
         continueAfterFailure = false
-        app.launchArguments = ["--uitesting"]  // Flag to use mock data
-        app.launchEnvironment = ["DISABLE_ANIMATIONS": "1"]
+        app.launchArguments = ["--uitesting", "--reset-state"]
         app.launch()
     }
 
-    func testSuccessfulLogin() {
-        let emailField = app.textFields["email-field"]
-        let passwordField = app.secureTextFields["password-field"]
-        let loginButton = app.buttons["login-button"]
+    func test_loginFlow_validCredentials_navigatesToHome() {
+        // Elements by accessibility identifier
+        let emailField = app.textFields["login_email_field"]
+        let passwordField = app.secureTextFields["login_password_field"]
+        let loginButton = app.buttons["login_submit_button"]
 
+        // Type credentials
         emailField.tap()
         emailField.typeText("test@example.com")
 
         passwordField.tap()
         passwordField.typeText("password123")
 
+        // Submit
         loginButton.tap()
 
-        // Wait for navigation
-        let dashboard = app.staticTexts["Welcome"]
-        XCTAssertTrue(dashboard.waitForExistence(timeout: 5))
+        // Verify navigation to home
+        let homeTitle = app.staticTexts["home_title"]
+        XCTAssertTrue(homeTitle.waitForExistence(timeout: 5))
     }
 
-    func testEmptyFieldsShowError() {
-        let loginButton = app.buttons["login-button"]
+    func test_loginFlow_invalidCredentials_showsError() {
+        let emailField = app.textFields["login_email_field"]
+        let passwordField = app.secureTextFields["login_password_field"]
+        let loginButton = app.buttons["login_submit_button"]
+
+        emailField.tap()
+        emailField.typeText("wrong@example.com")
+
+        passwordField.tap()
+        passwordField.typeText("wrongpassword")
+
         loginButton.tap()
 
-        let errorMessage = app.staticTexts["error-message"]
-        XCTAssertTrue(errorMessage.waitForExistence(timeout: 2))
-        XCTAssertTrue(errorMessage.label.contains("required"))
-    }
-
-    func testNavigationToSignUp() {
-        app.buttons["sign-up-link"].tap()
-        XCTAssertTrue(app.navigationBars["Create Account"].waitForExistence(timeout: 2))
+        let errorAlert = app.alerts.firstMatch
+        XCTAssertTrue(errorAlert.waitForExistence(timeout: 5))
+        XCTAssertTrue(errorAlert.staticTexts["Invalid email or password."].exists)
     }
 }
+```
 
-// Make views testable with accessibility identifiers
-struct LoginView: View {
-    var body: some View {
-        TextField("Email", text: $email)
-            .accessibilityIdentifier("email-field")
-        SecureField("Password", text: $password)
-            .accessibilityIdentifier("password-field")
-        Button("Log In") { /* ... */ }
-            .accessibilityIdentifier("login-button")
-    }
-}
+Setting accessibility identifiers in your views:
+
+```swift
+TextField("Email", text: $email)
+    .accessibilityIdentifier("login_email_field")
+
+SecureField("Password", text: $password)
+    .accessibilityIdentifier("login_password_field")
+
+Button("Sign In") { /* ... */ }
+    .accessibilityIdentifier("login_submit_button")
 ```
 
 ---
 
 ## Snapshot Testing
 
-Using Swift Snapshot Testing (pointfreeco/swift-snapshot-testing):
+- [ ] Consider a snapshot testing library (e.g., swift-snapshot-testing by Point-Free)
+- [ ] Create snapshots for key screens in both light and dark mode
+- [ ] Create snapshots for multiple device sizes (iPhone SE, iPhone 15, iPad)
+- [ ] Create snapshots for Dynamic Type sizes (accessibility large, extra small)
+- [ ] Record reference snapshots on CI to avoid cross-machine rendering differences
+- [ ] Review snapshot diffs in pull requests
 
 ```swift
 import SnapshotTesting
 import SwiftUI
 import XCTest
-@testable import MyApp
+@testable import YourApp
 
-final class ComponentSnapshotTests: XCTestCase {
+final class ProfileViewSnapshotTests: XCTestCase {
 
-    func testProfileCard_light() {
-        let view = ProfileCardView(user: .sample)
-            .frame(width: 375)
+    func test_profileView_lightMode() {
+        let view = ProfileView(user: .sample)
             .environment(\.colorScheme, .light)
 
         let controller = UIHostingController(rootView: view)
+        controller.view.frame = UIScreen.main.bounds
+
         assertSnapshot(of: controller, as: .image(on: .iPhone13))
     }
 
-    func testProfileCard_dark() {
-        let view = ProfileCardView(user: .sample)
-            .frame(width: 375)
+    func test_profileView_darkMode() {
+        let view = ProfileView(user: .sample)
             .environment(\.colorScheme, .dark)
 
         let controller = UIHostingController(rootView: view)
+        controller.view.frame = UIScreen.main.bounds
+
         assertSnapshot(of: controller, as: .image(on: .iPhone13))
     }
 
-    func testProfileCard_dynamicType() {
-        let view = ProfileCardView(user: .sample)
-            .frame(width: 375)
-            .environment(\.sizeCategory, .accessibilityExtraExtraLarge)
+    func test_profileView_accessibilityLargeText() {
+        let view = ProfileView(user: .sample)
+            .environment(\.sizeCategory, .accessibilityExtraLarge)
 
         let controller = UIHostingController(rootView: view)
+        controller.view.frame = UIScreen.main.bounds
+
         assertSnapshot(of: controller, as: .image(on: .iPhone13))
-    }
-
-    // Record new snapshots when UI changes intentionally
-    func testProfileCard_record() {
-        let view = ProfileCardView(user: .sample).frame(width: 375)
-        let controller = UIHostingController(rootView: view)
-        // Set record = true to update reference images
-        assertSnapshot(of: controller, as: .image(on: .iPhone13), record: false)
     }
 }
 ```
 
 ---
 
-## Network Mocking
+## Network Mocking with URLProtocol
 
-### URLProtocol-Based Mocking
+- [ ] Create a custom `URLProtocol` subclass for intercepting network requests
+- [ ] Register mock responses keyed by URL path or request
+- [ ] Use a dedicated `URLSession` with the mock protocol in tests
+- [ ] Test success responses, error responses, and timeouts
+- [ ] Remove mock protocol in tearDown to avoid cross-test contamination
 
 ```swift
-class MockURLProtocol: URLProtocol {
-    static var requestHandler: ((URLRequest) throws -> (HTTPURLResponse, Data))?
+// MARK: - Mock URL Protocol
 
-    override class func canInit(with request: URLRequest) -> Bool { true }
-    override class func canonicalRequest(for request: URLRequest) -> URLRequest { request }
+final class MockURLProtocol: URLProtocol {
+
+    /// Map of URL path to (response data, status code, error)
+    nonisolated(unsafe) static var mockResponses: [String: MockResponse] = [:]
+
+    struct MockResponse {
+        let data: Data
+        let statusCode: Int
+        let error: Error?
+    }
+
+    override class func canInit(with request: URLRequest) -> Bool {
+        true // Intercept all requests
+    }
+
+    override class func canonicalRequest(for request: URLRequest) -> URLRequest {
+        request
+    }
 
     override func startLoading() {
-        guard let handler = Self.requestHandler else {
-            client?.urlProtocolDidFinishLoading(self)
+        guard let url = request.url,
+              let mock = Self.mockResponses[url.path] else {
+            client?.urlProtocol(self, didFailWithError: URLError(.fileDoesNotExist))
             return
         }
-        do {
-            let (response, data) = try handler(request)
-            client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
-            client?.urlProtocol(self, didLoad: data)
-            client?.urlProtocolDidFinishLoading(self)
-        } catch {
+
+        if let error = mock.error {
             client?.urlProtocol(self, didFailWithError: error)
+            return
         }
+
+        let response = HTTPURLResponse(
+            url: url, statusCode: mock.statusCode,
+            httpVersion: "HTTP/1.1",
+            headerFields: ["Content-Type": "application/json"]
+        )!
+
+        client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+        client?.urlProtocol(self, didLoad: mock.data)
+        client?.urlProtocolDidFinishLoading(self)
     }
 
     override func stopLoading() {}
 }
 
-// Usage in tests
-@Suite("APIClient")
-struct APIClientTests {
-    @Test("fetches products successfully")
-    func fetchProducts() async throws {
+// MARK: - Usage in Tests
+
+@Suite("API Client with Mock Network")
+struct APIClientNetworkTests {
+
+    @Test("fetches articles successfully")
+    func fetchArticles() async throws {
+        // Register mock response
+        let articles = [Article.sample]
+        let data = try JSONEncoder().encode(articles)
+        MockURLProtocol.mockResponses["/articles"] = .init(
+            data: data, statusCode: 200, error: nil
+        )
+
+        // Create session with mock protocol
         let config = URLSessionConfiguration.ephemeral
         config.protocolClasses = [MockURLProtocol.self]
         let session = URLSession(configuration: config)
-        let client = APIClient(session: session)
 
-        let responseData = try JSONEncoder().encode([ProductDTO.sample])
-        MockURLProtocol.requestHandler = { request in
-            let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!
-            return (response, responseData)
-        }
+        let client = URLSessionAPIClient(
+            baseURL: URL(string: "https://api.example.com")!,
+            session: session
+        )
 
-        let products: [ProductDTO] = try await client.get("/products")
-        #expect(products.count == 1)
+        let result: [Article] = try await client.request(
+            Endpoint(path: "/articles", method: .GET, body: nil, queryItems: [])
+        )
+
+        #expect(result.count == 1)
+        #expect(result.first?.title == "Sample")
+
+        // Clean up
+        MockURLProtocol.mockResponses.removeAll()
     }
 
-    @Test("handles 404 error")
-    func notFound() async {
+    @Test("handles server error")
+    func serverError() async {
+        MockURLProtocol.mockResponses["/articles"] = .init(
+            data: Data(), statusCode: 500, error: nil
+        )
+
         let config = URLSessionConfiguration.ephemeral
         config.protocolClasses = [MockURLProtocol.self]
         let session = URLSession(configuration: config)
-        let client = APIClient(session: session)
 
-        MockURLProtocol.requestHandler = { request in
-            let response = HTTPURLResponse(url: request.url!, statusCode: 404, httpVersion: nil, headerFields: nil)!
-            return (response, Data())
+        let client = URLSessionAPIClient(
+            baseURL: URL(string: "https://api.example.com")!,
+            session: session
+        )
+
+        do {
+            let _: [Article] = try await client.request(
+                Endpoint(path: "/articles", method: .GET, body: nil, queryItems: [])
+            )
+            Issue.record("Expected error to be thrown")
+        } catch {
+            // Expected
         }
 
-        await #expect(throws: NetworkError.self) {
-            let _: ProductDTO = try await client.get("/products/unknown")
-        }
+        MockURLProtocol.mockResponses.removeAll()
     }
 }
 ```
@@ -399,39 +540,56 @@ struct APIClientTests {
 
 ## Code Coverage
 
-### Configuration
-- [ ] Enable code coverage in Test scheme: `Edit Scheme > Test > Options > Code Coverage`
-- [ ] Set minimum coverage targets per module
-
-### Coverage Targets
-
-| Layer | Minimum | Ideal |
-|-------|---------|-------|
-| ViewModels / Use Cases | 80% | 95% |
-| Repository / Network | 70% | 85% |
-| Models / Utilities | 90% | 100% |
-| Views | 30% | 50% |
-| Overall | 60% | 80% |
+- [ ] Enable code coverage in test scheme (Edit Scheme > Test > Options > Code Coverage)
+- [ ] Target minimum 70% coverage for business logic (ViewModels, services, repositories)
+- [ ] Target 90%+ coverage for critical paths (authentication, payments)
+- [ ] Do not chase 100% coverage on views or trivial code
+- [ ] Review coverage report in Xcode (Editor > Show Code Coverage)
+- [ ] Add coverage reporting to CI (use `xcodebuild` with `-resultBundlePath` and `xcresulttool`)
 
 ```bash
-# Generate coverage report from CLI
-xcodebuild test -scheme MyApp -destination 'platform=iOS Simulator,name=iPhone 16' \
+# Generate coverage report in CI
+xcodebuild test \
+  -scheme YourApp \
+  -destination 'platform=iOS Simulator,name=iPhone 16' \
   -enableCodeCoverage YES \
   -resultBundlePath TestResults.xcresult
 
-# Extract coverage data
-xcrun xccov view --report TestResults.xcresult
+# Extract coverage percentage
+xcrun xcresulttool get --path TestResults.xcresult --format json \
+  | jq '.metrics.lineCoverage'
 ```
 
 ---
 
 ## CI/CD Integration
 
-### GitHub Actions Example
+### Xcode Cloud
+- [ ] Create workflow in App Store Connect > Xcode Cloud
+- [ ] Configure start conditions (push to main, PR opened)
+- [ ] Add test action that runs unit and UI tests
+- [ ] Add archive action for release builds
+- [ ] Configure post-actions (TestFlight upload, Slack notification)
+- [ ] Add `ci_scripts/ci_post_clone.sh` for dependency installation if needed
+
+### GitHub Actions
+- [ ] Create `.github/workflows/test.yml`
+- [ ] Use `macos-latest` or pinned macOS runner with Xcode
+- [ ] Select Xcode version with `sudo xcode-select -s`
+- [ ] Cache Swift Package Manager dependencies
+- [ ] Run tests with `xcodebuild test`
+- [ ] Upload test results as artifacts
+- [ ] Fail the workflow if tests fail
 
 ```yaml
+# .github/workflows/test.yml
 name: Tests
-on: [push, pull_request]
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
   test:
@@ -440,30 +598,115 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Select Xcode
-        run: sudo xcode-select -s /Applications/Xcode_16.app
+        run: sudo xcode-select -s /Applications/Xcode_16.2.app
+
+      - name: Cache SPM
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Caches/org.swift.swiftpm
+            .build
+          key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
 
       - name: Run Tests
         run: |
           xcodebuild test \
-            -scheme MyApp \
-            -destination 'platform=iOS Simulator,name=iPhone 16,OS=18.0' \
+            -scheme YourApp \
+            -destination 'platform=iOS Simulator,name=iPhone 16,OS=18.2' \
             -enableCodeCoverage YES \
             -resultBundlePath TestResults.xcresult \
             | xcbeautify
 
       - name: Upload Results
-        uses: actions/upload-artifact@v4
         if: always()
+        uses: actions/upload-artifact@v4
         with:
           name: test-results
           path: TestResults.xcresult
 ```
 
-### Testing Best Practices
-- [ ] Tests run in CI on every PR
-- [ ] Test suite completes in under 5 minutes
-- [ ] Flaky tests identified and fixed (not skipped)
-- [ ] UI tests run on multiple device sizes
-- [ ] Tests do not depend on network or external services
-- [ ] Each test is independent (no shared mutable state between tests)
-- [ ] Test names describe the scenario, not the implementation
+---
+
+## Testing Async Code and MainActor
+
+- [ ] Use `async` test methods for testing async functions
+- [ ] Use `await fulfillment(of:)` (XCTest) for callback-based APIs
+- [ ] Test `@MainActor`-isolated ViewModels from `@MainActor` test context
+- [ ] Use `Task` and `await` to test concurrent operations
+- [ ] Test cancellation behavior by cancelling tasks mid-flight
+- [ ] Set timeouts on async expectations to catch hangs
+
+```swift
+// Testing @MainActor ViewModel
+@Suite("Search ViewModel")
+@MainActor
+struct SearchViewModelTests {
+
+    @Test("debounces search input")
+    func debounce() async throws {
+        let mock = MockSearchService()
+        let vm = SearchViewModel(service: mock)
+
+        // Type multiple characters quickly
+        vm.query = "s"
+        vm.query = "sw"
+        vm.query = "swi"
+        vm.query = "swift"
+
+        // Wait for debounce (300ms + buffer)
+        try await Task.sleep(for: .milliseconds(500))
+
+        // Should only have made one API call (debounced)
+        #expect(mock.searchCallCount == 1)
+        #expect(mock.lastQuery == "swift")
+    }
+
+    @Test("cancels previous search on new input")
+    func cancellation() async throws {
+        let mock = MockSearchService()
+        mock.artificialDelay = .milliseconds(200)
+        let vm = SearchViewModel(service: mock)
+
+        vm.query = "first"
+        try await Task.sleep(for: .milliseconds(100))
+        vm.query = "second" // Should cancel "first"
+
+        try await Task.sleep(for: .milliseconds(500))
+
+        #expect(vm.results.isEmpty == false)
+        // Only "second" results should be displayed
+    }
+}
+
+// XCTest: testing callback-based APIs with expectations
+final class NotificationTests: XCTestCase {
+
+    func test_notificationPosted() async {
+        let expectation = expectation(
+            forNotification: .init("DataDidUpdate"),
+            object: nil
+        )
+
+        // Trigger the notification
+        NotificationCenter.default.post(
+            name: .init("DataDidUpdate"), object: nil
+        )
+
+        await fulfillment(of: [expectation], timeout: 2.0)
+    }
+}
+```
+
+---
+
+## Test Organization Summary
+
+| Test Type | Location | Runs On | Speed Target |
+|-----------|----------|---------|-------------|
+| Unit tests | `YourAppTests/` | Every commit, every PR | < 1s each |
+| Integration tests | `YourAppIntegrationTests/` | Every PR, nightly | < 5s each |
+| UI tests | `YourAppUITests/` | Every PR (can be nightly for large suites) | < 30s each |
+| Snapshot tests | `YourAppSnapshotTests/` | Every PR | < 2s each |
+| Performance tests | `YourAppPerfTests/` | Nightly or weekly | Varies |
+
+Use Xcode Test Plans to organize these into separate configurations, each with its own scheme and CI trigger.

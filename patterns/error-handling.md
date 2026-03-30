@@ -1,112 +1,197 @@
 # Error Handling Patterns
 
+Robust error handling means defining clear error types, propagating them through layers, presenting user-friendly messages, and providing recovery paths. This guide covers all of these with working SwiftUI examples.
+
 ## Custom Error Types
 
-### Layered Error Hierarchy
-
 ```swift
-// Domain-level errors
-enum AppError: LocalizedError {
+import Foundation
+
+// MARK: - App Error Hierarchy
+
+/// Top-level error that the UI layer works with.
+enum AppError: LocalizedError, Equatable {
     case network(NetworkError)
-    case storage(StorageError)
     case validation(ValidationError)
+    case storage(StorageError)
     case auth(AuthError)
-    case unknown(Error)
+    case unexpected(message: String)
 
     var errorDescription: String? {
         switch self {
-        case .network(let e): e.errorDescription
-        case .storage(let e): e.errorDescription
-        case .validation(let e): e.errorDescription
-        case .auth(let e): e.errorDescription
-        case .unknown(let e): e.localizedDescription
+        case .network(let e):    return e.errorDescription
+        case .validation(let e): return e.errorDescription
+        case .storage(let e):    return e.errorDescription
+        case .auth(let e):       return e.errorDescription
+        case .unexpected(let m): return m
         }
     }
 
-    /// User-facing message (never includes technical details)
-    var userMessage: String {
+    var recoverySuggestion: String? {
         switch self {
-        case .network(let e): e.userMessage
-        case .storage: "Unable to save your data. Please try again."
-        case .validation(let e): e.userMessage
-        case .auth(let e): e.userMessage
-        case .unknown: "Something went wrong. Please try again."
+        case .network(let e):    return e.recoverySuggestion
+        case .validation(let e): return e.recoverySuggestion
+        case .storage(let e):    return e.recoverySuggestion
+        case .auth(let e):       return e.recoverySuggestion
+        case .unexpected:        return "Please restart the app and try again."
         }
     }
 
     var isRetryable: Bool {
         switch self {
-        case .network(let e): e.isRetryable
-        case .storage: true
-        case .validation: false
-        case .auth: false
-        case .unknown: false
+        case .network(let e): return e.isRetryable
+        case .auth(.sessionExpired): return true
+        default: return false
+        }
+    }
+}
+
+// MARK: - Network Errors
+
+enum NetworkError: LocalizedError, Equatable {
+    case noConnection
+    case timeout
+    case serverError(statusCode: Int)
+    case decodingFailed(context: String)
+    case rateLimited(retryAfter: TimeInterval)
+    case cancelled
+
+    var errorDescription: String? {
+        switch self {
+        case .noConnection:
+            return "No internet connection."
+        case .timeout:
+            return "The request timed out."
+        case .serverError(let code):
+            return "Server error (\(code)). Please try again later."
+        case .decodingFailed(let ctx):
+            return "Failed to process server response: \(ctx)"
+        case .rateLimited:
+            return "Too many requests. Please wait a moment."
+        case .cancelled:
+            return "Request was cancelled."
         }
     }
 
-    init(from error: Error) {
-        if let appError = error as? AppError {
-            self = appError
-        } else if let networkError = error as? NetworkError {
-            self = .network(networkError)
-        } else if let urlError = error as? URLError {
-            self = .network(NetworkError(from: urlError))
-        } else {
-            self = .unknown(error)
+    var recoverySuggestion: String? {
+        switch self {
+        case .noConnection:  return "Check your Wi-Fi or cellular connection."
+        case .timeout:       return "Try again when your connection improves."
+        case .serverError:   return "Our servers are experiencing issues. Try again shortly."
+        case .decodingFailed:return "Update the app to the latest version."
+        case .rateLimited:   return "Wait a few seconds and try again."
+        case .cancelled:     return nil
+        }
+    }
+
+    var isRetryable: Bool {
+        switch self {
+        case .noConnection, .timeout, .serverError, .rateLimited: return true
+        case .decodingFailed, .cancelled: return false
+        }
+    }
+}
+
+// MARK: - Validation Errors
+
+enum ValidationError: LocalizedError, Equatable {
+    case emptyField(fieldName: String)
+    case invalidEmail
+    case passwordTooShort(minimum: Int)
+    case passwordMissingRequirements
+    case valueTooLong(fieldName: String, maxLength: Int)
+    case invalidFormat(fieldName: String, expectedFormat: String)
+    case custom(message: String)
+
+    var errorDescription: String? {
+        switch self {
+        case .emptyField(let name):
+            return "\(name) cannot be empty."
+        case .invalidEmail:
+            return "Please enter a valid email address."
+        case .passwordTooShort(let min):
+            return "Password must be at least \(min) characters."
+        case .passwordMissingRequirements:
+            return "Password must include uppercase, lowercase, and a number."
+        case .valueTooLong(let name, let max):
+            return "\(name) must be \(max) characters or fewer."
+        case .invalidFormat(let name, let fmt):
+            return "\(name) must match the format: \(fmt)"
+        case .custom(let msg):
+            return msg
+        }
+    }
+
+    var recoverySuggestion: String? {
+        "Please correct the highlighted field and try again."
+    }
+}
+
+// MARK: - Storage Errors
+
+enum StorageError: LocalizedError, Equatable {
+    case saveFailed(reason: String)
+    case loadFailed(reason: String)
+    case migrationFailed
+    case diskFull
+
+    var errorDescription: String? {
+        switch self {
+        case .saveFailed(let r):  return "Could not save data: \(r)"
+        case .loadFailed(let r):  return "Could not load data: \(r)"
+        case .migrationFailed:    return "Database migration failed."
+        case .diskFull:           return "Your device storage is full."
+        }
+    }
+
+    var recoverySuggestion: String? {
+        switch self {
+        case .diskFull: return "Free up space and try again."
+        default: return "Restart the app. If the problem persists, reinstall."
+        }
+    }
+}
+
+// MARK: - Auth Errors
+
+enum AuthError: LocalizedError, Equatable {
+    case invalidCredentials
+    case sessionExpired
+    case accountLocked
+    case unauthorized
+    case biometricFailed(reason: String)
+
+    var errorDescription: String? {
+        switch self {
+        case .invalidCredentials:     return "Invalid email or password."
+        case .sessionExpired:         return "Your session has expired."
+        case .accountLocked:          return "Account locked due to too many attempts."
+        case .unauthorized:           return "You do not have permission for this action."
+        case .biometricFailed(let r): return "Authentication failed: \(r)"
+        }
+    }
+
+    var recoverySuggestion: String? {
+        switch self {
+        case .invalidCredentials: return "Double-check your email and password."
+        case .sessionExpired:     return "Please sign in again."
+        case .accountLocked:      return "Try again in 30 minutes or reset your password."
+        case .unauthorized:       return "Contact support if you believe this is an error."
+        case .biometricFailed:    return "Try again or use your passcode."
         }
     }
 }
 ```
 
-### Network Errors
+## Error Propagation Chain
+
+Map low-level errors into `AppError` at each layer boundary.
 
 ```swift
-enum NetworkError: LocalizedError {
-    case noConnection
-    case timeout
-    case serverError(statusCode: Int, message: String?)
-    case decodingFailed(Error)
-    case unauthorized
-    case forbidden
-    case notFound
-    case rateLimited(retryAfter: TimeInterval?)
-    case cancelled
+// MARK: - Error Mapping
 
-    var errorDescription: String? {
-        switch self {
-        case .noConnection: "No internet connection."
-        case .timeout: "Request timed out."
-        case .serverError(let code, let msg): "Server error \(code): \(msg ?? "Unknown")"
-        case .decodingFailed(let e): "Data parsing error: \(e.localizedDescription)"
-        case .unauthorized: "Authentication required."
-        case .forbidden: "Access denied."
-        case .notFound: "Resource not found."
-        case .rateLimited: "Too many requests."
-        case .cancelled: "Request cancelled."
-        }
-    }
-
-    var userMessage: String {
-        switch self {
-        case .noConnection: "You appear to be offline. Check your connection and try again."
-        case .timeout: "The request took too long. Please try again."
-        case .serverError: "Our servers are having trouble. Please try again later."
-        case .decodingFailed: "We received unexpected data. Please update the app."
-        case .unauthorized: "Please sign in again."
-        case .forbidden: "You don't have permission to access this."
-        case .notFound: "The content you're looking for isn't available."
-        case .rateLimited: "Please slow down and try again in a moment."
-        case .cancelled: "Request was cancelled."
-        }
-    }
-
-    var isRetryable: Bool {
-        switch self {
-        case .noConnection, .timeout, .serverError, .rateLimited: true
-        default: false
-        }
-    }
-
+extension NetworkError {
+    /// Map a URLSession error into a NetworkError.
     init(from urlError: URLError) {
         switch urlError.code {
         case .notConnectedToInternet, .networkConnectionLost:
@@ -116,453 +201,399 @@ enum NetworkError: LocalizedError {
         case .cancelled:
             self = .cancelled
         default:
-            self = .serverError(statusCode: urlError.errorCode, message: urlError.localizedDescription)
-        }
-    }
-
-    init(statusCode: Int, data: Data? = nil) {
-        switch statusCode {
-        case 401: self = .unauthorized
-        case 403: self = .forbidden
-        case 404: self = .notFound
-        case 429:
-            self = .rateLimited(retryAfter: nil)
-        case 500..<600:
-            let message = data.flatMap { String(data: $0, encoding: .utf8) }
-            self = .serverError(statusCode: statusCode, message: message)
-        default:
-            self = .serverError(statusCode: statusCode, message: nil)
+            self = .serverError(statusCode: 0)
         }
     }
 }
-```
 
-### Validation Errors
-
-```swift
-enum ValidationError: LocalizedError {
-    case empty(field: String)
-    case tooShort(field: String, minimum: Int)
-    case tooLong(field: String, maximum: Int)
-    case invalidFormat(field: String, expected: String)
-    case outOfRange(field: String, min: Any, max: Any)
-    case multiple([ValidationError])
-
-    var errorDescription: String? {
-        switch self {
-        case .empty(let f): "\(f) is required."
-        case .tooShort(let f, let min): "\(f) must be at least \(min) characters."
-        case .tooLong(let f, let max): "\(f) must be no more than \(max) characters."
-        case .invalidFormat(let f, let e): "\(f) must be a valid \(e)."
-        case .outOfRange(let f, let min, let max): "\(f) must be between \(min) and \(max)."
-        case .multiple(let errors): errors.map { $0.localizedDescription }.joined(separator: " ")
-        }
-    }
-
-    var userMessage: String { errorDescription ?? "Invalid input." }
-}
-```
-
----
-
-## Error Propagation
-
-### Result Type for Explicit Error Handling
-
-```swift
-enum DataResult<T> {
-    case success(T)
-    case failure(AppError)
-    case loading
-    case idle
-
-    var value: T? {
-        if case .success(let v) = self { return v }
-        return nil
-    }
-
-    var error: AppError? {
-        if case .failure(let e) = self { return e }
-        return nil
-    }
-
-    var isLoading: Bool {
-        if case .loading = self { return true }
-        return false
-    }
-}
-
-// Usage in ViewModel
-@Observable
-class ProfileViewModel {
-    var profileState: DataResult<UserProfile> = .idle
-
-    func loadProfile() async {
-        profileState = .loading
-        do {
-            let profile = try await repository.fetchProfile()
-            profileState = .success(profile)
-        } catch {
-            profileState = .failure(AppError(from: error))
-        }
-    }
-}
-```
-
-### Typed Throws (Swift 6)
-
-```swift
-func fetchUser(id: UUID) throws(NetworkError) -> User {
-    let (data, response) = try await URLSession.shared.data(from: url)
-    guard let http = response as? HTTPURLResponse else {
-        throw NetworkError.serverError(statusCode: -1, message: nil)
-    }
-    guard (200..<300).contains(http.statusCode) else {
-        throw NetworkError(statusCode: http.statusCode, data: data)
-    }
+/// Wraps a throwing async closure and maps any error to AppError.
+func mapToAppError<T>(_ work: () async throws -> T) async throws -> T {
     do {
-        return try JSONDecoder().decode(User.self, from: data)
+        return try await work()
+    } catch let error as AppError {
+        throw error
+    } catch let error as NetworkError {
+        throw AppError.network(error)
+    } catch let error as ValidationError {
+        throw AppError.validation(error)
+    } catch let error as URLError {
+        throw AppError.network(NetworkError(from: error))
+    } catch let error as DecodingError {
+        throw AppError.network(.decodingFailed(context: error.localizedDescription))
     } catch {
-        throw .decodingFailed(error)
+        throw AppError.unexpected(message: error.localizedDescription)
     }
 }
 ```
 
----
-
-## User-Facing Error Presentation
-
-### Error Alert View Modifier
+## Network Retry with Exponential Backoff
 
 ```swift
-struct ErrorAlert: ViewModifier {
-    @Binding var error: AppError?
-    var onRetry: (() async -> Void)?
+// MARK: - Retry Logic
 
-    func body(content: Content) -> some View {
-        content.alert(
-            "Error",
-            isPresented: Binding(
-                get: { error != nil },
-                set: { if !$0 { error = nil } }
-            )
-        ) {
-            Button("OK", role: .cancel) {}
-            if let error, error.isRetryable, let onRetry {
-                Button("Retry") { Task { await onRetry() } }
-            }
-        } message: {
-            if let error {
-                Text(error.userMessage)
-            }
-        }
-    }
+struct RetryConfiguration {
+    var maxAttempts: Int = 3
+    var initialDelay: TimeInterval = 1.0
+    var maxDelay: TimeInterval = 30.0
+    var multiplier: Double = 2.0
+
+    static let `default` = RetryConfiguration()
+    static let aggressive = RetryConfiguration(maxAttempts: 5, initialDelay: 0.5)
 }
 
-extension View {
-    func errorAlert(_ error: Binding<AppError?>, onRetry: (() async -> Void)? = nil) -> some View {
-        modifier(ErrorAlert(error: error, onRetry: onRetry))
-    }
-}
-
-// Usage
-struct ContentView: View {
-    @State private var viewModel = MyViewModel()
-
-    var body: some View {
-        List { /* content */ }
-            .errorAlert($viewModel.error) {
-                await viewModel.load()
-            }
-    }
-}
-```
-
-### Inline Error Banner
-
-```swift
-struct ErrorBanner: View {
-    let error: AppError
-    let onRetry: (() -> Void)?
-    let onDismiss: () -> Void
-
-    var body: some View {
-        HStack {
-            Image(systemName: "exclamationmark.triangle.fill")
-                .foregroundStyle(.yellow)
-            Text(error.userMessage)
-                .font(.subheadline)
-            Spacer()
-            if error.isRetryable, let onRetry {
-                Button("Retry", action: onRetry)
-                    .buttonStyle(.bordered)
-                    .controlSize(.small)
-            }
-            Button(action: onDismiss) {
-                Image(systemName: "xmark")
-                    .foregroundStyle(.secondary)
-            }
-        }
-        .padding()
-        .background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-        .padding(.horizontal)
-        .transition(.move(edge: .top).combined(with: .opacity))
-    }
-}
-```
-
----
-
-## Retry and Recovery Patterns
-
-### Exponential Backoff
-
-```swift
 func withRetry<T>(
-    maxAttempts: Int = 3,
-    initialDelay: TimeInterval = 1.0,
-    multiplier: Double = 2.0,
+    config: RetryConfiguration = .default,
     operation: () async throws -> T
 ) async throws -> T {
     var lastError: Error?
-    var delay = initialDelay
+    var delay = config.initialDelay
 
-    for attempt in 1...maxAttempts {
+    for attempt in 1...config.maxAttempts {
         do {
             return try await operation()
         } catch {
             lastError = error
 
-            let appError = AppError(from: error)
-            guard appError.isRetryable, attempt < maxAttempts else { break }
+            // Check if error is retryable
+            let appError: AppError
+            if let ae = error as? AppError {
+                appError = ae
+            } else if let ne = error as? NetworkError {
+                appError = .network(ne)
+            } else {
+                throw error  // Non-retryable
+            }
 
-            // Handle rate limiting
-            if case .network(.rateLimited(let retryAfter)) = appError,
-               let retryAfter {
+            guard appError.isRetryable, attempt < config.maxAttempts else {
+                throw error
+            }
+
+            // Handle rate limiting with server-specified delay
+            if case .network(.rateLimited(let retryAfter)) = appError {
                 try await Task.sleep(for: .seconds(retryAfter))
             } else {
-                let jitter = Double.random(in: 0...0.5)
-                try await Task.sleep(for: .seconds(delay + jitter))
-                delay *= multiplier
+                try await Task.sleep(for: .seconds(delay))
+                delay = min(delay * config.multiplier, config.maxDelay)
             }
         }
     }
+
     throw lastError!
 }
-
-// Usage
-func fetchData() async throws -> [Item] {
-    try await withRetry(maxAttempts: 3) {
-        try await apiClient.get("/items")
-    }
-}
 ```
 
-### Circuit Breaker
+## Error Logging and Reporting
 
 ```swift
-actor CircuitBreaker {
-    enum State { case closed, open, halfOpen }
+// MARK: - Error Reporter
 
-    private var state: State = .closed
-    private var failureCount = 0
-    private var lastFailureTime: Date?
-    private let failureThreshold: Int
-    private let resetTimeout: TimeInterval
-
-    init(failureThreshold: Int = 5, resetTimeout: TimeInterval = 30) {
-        self.failureThreshold = failureThreshold
-        self.resetTimeout = resetTimeout
-    }
-
-    func execute<T>(_ operation: () async throws -> T) async throws -> T {
-        switch state {
-        case .open:
-            if let lastFailure = lastFailureTime,
-               Date.now.timeIntervalSince(lastFailure) > resetTimeout {
-                state = .halfOpen
-            } else {
-                throw AppError.network(.serverError(statusCode: 503, message: "Circuit breaker open"))
-            }
-        case .closed, .halfOpen:
-            break
-        }
-
-        do {
-            let result = try await operation()
-            onSuccess()
-            return result
-        } catch {
-            onFailure()
-            throw error
-        }
-    }
-
-    private func onSuccess() {
-        failureCount = 0
-        state = .closed
-    }
-
-    private func onFailure() {
-        failureCount += 1
-        lastFailureTime = .now
-        if failureCount >= failureThreshold {
-            state = .open
-        }
-    }
-}
-```
-
----
-
-## Logging and Error Reporting
-
-```swift
-import OSLog
-
-enum AppLogger {
-    private static let subsystem = Bundle.main.bundleIdentifier ?? "com.app"
-
-    static let network = Logger(subsystem: subsystem, category: "Network")
-    static let storage = Logger(subsystem: subsystem, category: "Storage")
-    static let auth = Logger(subsystem: subsystem, category: "Auth")
-    static let general = Logger(subsystem: subsystem, category: "General")
-}
-
-// Error reporter protocol (for Sentry, Crashlytics, etc.)
 protocol ErrorReporter: Sendable {
-    func report(_ error: Error, context: [String: String])
-    func addBreadcrumb(_ message: String, category: String)
+    func log(_ error: AppError, context: ErrorContext)
 }
 
-struct ErrorReportingService: ErrorReporter {
-    func report(_ error: Error, context: [String: String] = [:]) {
-        // Log locally
-        AppLogger.general.error("Error: \(error.localizedDescription, privacy: .public)")
+struct ErrorContext: Sendable {
+    let file: String
+    let function: String
+    let line: Int
+    let userInfo: [String: String]
 
-        // Send to crash reporting service
-        // CrashlyticsSDK.record(error: error, userInfo: context)
+    init(
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line,
+        userInfo: [String: String] = [:]
+    ) {
+        self.file = file
+        self.function = function
+        self.line = line
+        self.userInfo = userInfo
+    }
+}
+
+final class AppErrorReporter: ErrorReporter {
+    static let shared = AppErrorReporter()
+
+    func log(_ error: AppError, context: ErrorContext) {
+        let filename = (context.file as NSString).lastPathComponent
+        let entry = """
+        [ERROR] \(filename):\(context.line) \(context.function)
+          Type: \(errorCategory(error))
+          Message: \(error.localizedDescription)
+          UserInfo: \(context.userInfo)
+        """
 
         #if DEBUG
-        print("[ERROR] \(error) | Context: \(context)")
+        print(entry)
         #endif
+
+        // In production: send to your crash reporting service
+        // CrashlyticsService.shared.recordError(error, userInfo: context.userInfo)
     }
 
-    func addBreadcrumb(_ message: String, category: String) {
-        AppLogger.general.info("[\(category, privacy: .public)] \(message, privacy: .public)")
-    }
-}
-
-// Extension for convenient error handling
-extension Error {
-    func report(context: [String: String] = [:], file: String = #file, line: Int = #line) {
-        let fileContext = context.merging(["file": file, "line": "\(line)"]) { $1 }
-        ErrorReportingService().report(self, context: fileContext)
+    private func errorCategory(_ error: AppError) -> String {
+        switch error {
+        case .network:    return "Network"
+        case .validation: return "Validation"
+        case .storage:    return "Storage"
+        case .auth:       return "Auth"
+        case .unexpected: return "Unexpected"
+        }
     }
 }
 ```
 
----
+## User-Facing Error Alerts in SwiftUI
+
+```swift
+import SwiftUI
+
+// MARK: - Error Alert State
+
+@Observable
+final class ErrorAlertState {
+    var currentError: AppError?
+    var isPresented: Bool = false
+    var retryAction: (() async -> Void)?
+
+    func show(_ error: AppError, retry: (() async -> Void)? = nil) {
+        self.currentError = error
+        self.retryAction = retry
+        self.isPresented = true
+    }
+
+    func dismiss() {
+        isPresented = false
+        currentError = nil
+        retryAction = nil
+    }
+}
+
+// MARK: - Error Alert Modifier
+
+struct ErrorAlertModifier: ViewModifier {
+    @Bindable var state: ErrorAlertState
+
+    func body(content: Content) -> some View {
+        content
+            .alert(
+                "Something Went Wrong",
+                isPresented: $state.isPresented,
+                presenting: state.currentError
+            ) { error in
+                if error.isRetryable, state.retryAction != nil {
+                    Button("Retry") {
+                        Task { await state.retryAction?() }
+                    }
+                }
+                Button("Dismiss", role: .cancel) {
+                    state.dismiss()
+                }
+            } message: { error in
+                VStack {
+                    Text(error.localizedDescription)
+                    if let suggestion = error.recoverySuggestion {
+                        Text(suggestion)
+                    }
+                }
+            }
+    }
+}
+
+extension View {
+    func errorAlert(state: ErrorAlertState) -> some View {
+        modifier(ErrorAlertModifier(state: state))
+    }
+}
+```
+
+## Inline Validation Errors in Forms
+
+```swift
+// MARK: - Validated Field
+
+struct ValidatedField: View {
+    let label: String
+    @Binding var text: String
+    let error: ValidationError?
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            TextField(label, text: $text)
+                .textFieldStyle(.roundedBorder)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(error != nil ? Color.red : Color.clear, lineWidth: 1)
+                )
+
+            if let error {
+                Text(error.localizedDescription)
+                    .font(.caption)
+                    .foregroundStyle(.red)
+                    .transition(.opacity.combined(with: .move(edge: .top)))
+            }
+        }
+        .animation(.easeInOut(duration: 0.2), value: error)
+    }
+}
+```
 
 ## Complete Working Example
 
 ```swift
+// MARK: - Full Example: Login Flow
+
+@MainActor
 @Observable
-class OrderViewModel {
-    var items: [OrderItem] = []
-    var error: AppError?
-    var isSubmitting = false
-    var orderConfirmation: OrderConfirmation?
+final class LoginViewModel {
+    var email = ""
+    var password = ""
+    var emailError: ValidationError?
+    var passwordError: ValidationError?
+    var isLoading = false
+    let errorAlert = ErrorAlertState()
 
-    private let repository: OrderRepositoryProtocol
-    private let reporter: ErrorReporter
+    private let authService: AuthServiceProtocol
+    private let errorReporter: ErrorReporter
 
-    init(repository: OrderRepositoryProtocol, reporter: ErrorReporter = ErrorReportingService()) {
-        self.repository = repository
-        self.reporter = reporter
+    init(
+        authService: AuthServiceProtocol,
+        errorReporter: ErrorReporter = AppErrorReporter.shared
+    ) {
+        self.authService = authService
+        self.errorReporter = errorReporter
     }
 
-    func submitOrder() async {
-        // Validate
-        do {
-            try validate()
-        } catch {
-            self.error = AppError(from: error)
-            return
+    // MARK: - Validation
+
+    func validateEmail() -> Bool {
+        if email.trimmingCharacters(in: .whitespaces).isEmpty {
+            emailError = .emptyField(fieldName: "Email")
+            return false
         }
+        let emailRegex = /^[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/
+        guard email.wholeMatch(of: emailRegex) != nil else {
+            emailError = .invalidEmail
+            return false
+        }
+        emailError = nil
+        return true
+    }
 
-        isSubmitting = true
-        defer { isSubmitting = false }
+    func validatePassword() -> Bool {
+        if password.isEmpty {
+            passwordError = .emptyField(fieldName: "Password")
+            return false
+        }
+        if password.count < 8 {
+            passwordError = .passwordTooShort(minimum: 8)
+            return false
+        }
+        passwordError = nil
+        return true
+    }
+
+    func validateAll() -> Bool {
+        // Run all validations (do not short-circuit)
+        let results = [validateEmail(), validatePassword()]
+        return results.allSatisfy { $0 }
+    }
+
+    // MARK: - Login
+
+    func login() async {
+        guard validateAll() else { return }
+
+        isLoading = true
+        defer { isLoading = false }
 
         do {
-            orderConfirmation = try await withRetry(maxAttempts: 2) {
-                try await repository.submitOrder(items: items)
+            try await withRetry(config: .default) {
+                try await self.authService.login(
+                    email: self.email,
+                    password: self.password
+                )
             }
-            reporter.addBreadcrumb("Order submitted", category: "Order")
+        } catch let error as AuthError {
+            let appError = AppError.auth(error)
+            errorReporter.log(appError, context: ErrorContext())
+            errorAlert.show(appError, retry: error == .sessionExpired ? { [weak self] in
+                await self?.login()
+            } : nil)
+        } catch let error as NetworkError {
+            let appError = AppError.network(error)
+            errorReporter.log(appError, context: ErrorContext())
+            errorAlert.show(appError, retry: { [weak self] in
+                await self?.login()
+            })
         } catch {
-            let appError = AppError(from: error)
-            self.error = appError
-            appError.report(context: ["itemCount": "\(items.count)"])
-            AppLogger.network.error("Order submission failed: \(error.localizedDescription)")
-        }
-    }
-
-    private func validate() throws {
-        var errors: [ValidationError] = []
-        if items.isEmpty {
-            errors.append(.empty(field: "Cart"))
-        }
-        for item in items where item.quantity < 1 {
-            errors.append(.outOfRange(field: item.name, min: 1, max: 99))
-        }
-        if !errors.isEmpty {
-            throw AppError.validation(.multiple(errors))
+            let appError = AppError.unexpected(message: error.localizedDescription)
+            errorReporter.log(appError, context: ErrorContext())
+            errorAlert.show(appError)
         }
     }
 }
 
-// View
-struct OrderView: View {
-    @State private var viewModel: OrderViewModel
+// MARK: - Login View
+
+struct LoginView: View {
+    @State private var viewModel: LoginViewModel
+
+    init(authService: AuthServiceProtocol) {
+        _viewModel = State(initialValue: LoginViewModel(authService: authService))
+    }
 
     var body: some View {
-        VStack {
-            List(viewModel.items) { item in
-                OrderItemRow(item: item)
+        Form {
+            Section {
+                ValidatedField(
+                    label: "Email",
+                    text: $viewModel.email,
+                    error: viewModel.emailError
+                )
+                .textContentType(.emailAddress)
+                .keyboardType(.emailAddress)
+                .autocapitalization(.none)
+                .onChange(of: viewModel.email) { _, _ in
+                    _ = viewModel.validateEmail()
+                }
+
+                ValidatedField(
+                    label: "Password",
+                    text: $viewModel.password,
+                    error: viewModel.passwordError
+                )
+                .textContentType(.password)
+                .onChange(of: viewModel.password) { _, _ in
+                    _ = viewModel.validatePassword()
+                }
             }
 
-            Button("Place Order") {
-                Task { await viewModel.submitOrder() }
+            Section {
+                Button {
+                    Task { await viewModel.login() }
+                } label: {
+                    if viewModel.isLoading {
+                        ProgressView()
+                            .frame(maxWidth: .infinity)
+                    } else {
+                        Text("Sign In")
+                            .frame(maxWidth: .infinity)
+                    }
+                }
+                .disabled(viewModel.isLoading)
             }
-            .disabled(viewModel.isSubmitting)
-
-            if viewModel.isSubmitting {
-                ProgressView("Placing order...")
-            }
         }
-        .errorAlert($viewModel.error) {
-            await viewModel.submitOrder()
-        }
-        .sheet(item: $viewModel.orderConfirmation) { confirmation in
-            OrderConfirmationView(confirmation: confirmation)
-        }
+        .navigationTitle("Sign In")
+        .errorAlert(state: viewModel.errorAlert)
     }
 }
 ```
 
----
+## Guidelines
 
-## Error Handling Decision Matrix
-
-| Error Type | Retry? | User Action | Log Level |
-|-----------|--------|-------------|-----------|
-| No connection | Auto-retry on reconnect | "Check connection" | info |
-| Timeout | Auto-retry (3x) | "Try again" button | warning |
-| 401 Unauthorized | No | Redirect to login | info |
-| 403 Forbidden | No | Show message | warning |
-| 404 Not Found | No | Show empty state | info |
-| 429 Rate Limited | Auto-retry after delay | Wait message | warning |
-| 500 Server Error | Auto-retry (3x) | "Try again later" | error |
-| Decoding Error | No | "Update app" | error (report) |
-| Validation Error | No | Highlight fields | debug |
+- Define domain-specific error enums that conform to `LocalizedError` with `errorDescription` and `recoverySuggestion`.
+- Map errors at layer boundaries (network layer to repository to ViewModel) so the UI only handles `AppError`.
+- Separate retryable from non-retryable errors. Only show a Retry button when it makes sense.
+- Validate form fields individually and show inline errors immediately. Do not rely solely on alert dialogs for validation.
+- Log every error with file, function, line, and relevant user info for debugging in production.
+- Use exponential backoff for network retries and respect server `Retry-After` headers.

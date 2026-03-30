@@ -1,107 +1,177 @@
 # WidgetKit
 
-## Widget Protocol and WidgetBundle
+WidgetKit enables glanceable, timely content on the Home Screen, Lock Screen, and StandBy mode. Widgets use SwiftUI for their views and a timeline-based system for updates.
+
+## Widget Protocol and Configuration
 
 ```swift
 import WidgetKit
 import SwiftUI
 
-// Single widget
-struct MyWidget: Widget {
-    let kind: String = "MyWidget"
+// Static configuration (no user configuration needed)
+struct SimpleWidget: Widget {
+    let kind: String = "SimpleWidget"
 
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: MyTimelineProvider()) { entry in
-            MyWidgetEntryView(entry: entry)
+        StaticConfiguration(kind: kind, provider: SimpleProvider()) { entry in
+            SimpleWidgetView(entry: entry)
                 .containerBackground(.fill.tertiary, for: .widget)
         }
-        .configurationDisplayName("My Widget")
-        .description("Shows important information at a glance.")
-        .supportedFamilies([.systemSmall, .systemMedium, .systemLarge,
-                            .accessoryCircular, .accessoryRectangular, .accessoryInline])
+        .configurationDisplayName("Daily Summary")
+        .description("Shows your daily progress at a glance.")
+        .supportedFamilies([
+            .systemSmall, .systemMedium, .systemLarge,
+            .accessoryCircular, .accessoryRectangular, .accessoryInline
+        ])
+        .contentMarginsDisabled()  // iOS 17+: opt out of default content margins
     }
 }
 
-// Multiple widgets bundled together
-@main
-struct MyWidgetBundle: WidgetBundle {
-    var body: some Widget {
-        MyWidget()
-        StatsWidget()
-        QuoteWidget()
+// App Intent configuration (iOS 17+ user-configurable widget)
+struct ConfigurableWidget: Widget {
+    let kind: String = "ConfigurableWidget"
+
+    var body: some WidgetConfiguration {
+        AppIntentConfiguration(
+            kind: kind,
+            intent: SelectCategoryIntent.self,
+            provider: ConfigurableProvider()
+        ) { entry in
+            ConfigurableWidgetView(entry: entry)
+                .containerBackground(.fill.tertiary, for: .widget)
+        }
+        .configurationDisplayName("Category Widget")
+        .description("Shows items from a selected category.")
+        .supportedFamilies([.systemSmall, .systemMedium])
     }
 }
 ```
 
-## TimelineProvider
+## TimelineProvider (Placeholder, Snapshot, Timeline)
 
 ```swift
 struct SimpleEntry: TimelineEntry {
     let date: Date
     let title: String
     let value: Int
-    let trend: Trend
-
-    enum Trend {
-        case up, down, flat
-    }
+    let icon: String
 }
 
-struct MyTimelineProvider: TimelineProvider {
-
-    // Placeholder for widget gallery
+struct SimpleProvider: TimelineProvider {
+    // Shown while widget is loading. Must return synchronously.
     func placeholder(in context: Context) -> SimpleEntry {
-        SimpleEntry(date: Date(), title: "Loading...", value: 0, trend: .flat)
+        SimpleEntry(date: .now, title: "Loading...", value: 0, icon: "star")
     }
 
-    // Quick snapshot for transitions and gallery preview
+    // Shown in the widget gallery and transient situations.
     func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> Void) {
         if context.isPreview {
-            // Use sample data for preview
-            completion(SimpleEntry(date: Date(), title: "Steps", value: 8432, trend: .up))
+            // Return sample data for the gallery preview
+            completion(SimpleEntry(date: .now, title: "Steps Today", value: 8432, icon: "figure.walk"))
         } else {
-            // Fetch real data
-            Task {
-                let entry = await fetchCurrentEntry()
-                completion(entry)
-            }
+            // Fetch real data for transient display
+            let entry = SimpleEntry(date: .now, title: "Steps Today", value: fetchStepCount(), icon: "figure.walk")
+            completion(entry)
         }
     }
 
-    // Timeline of entries for the widget to display over time
+    // Provides the timeline of entries that drive the widget's display.
     func getTimeline(in context: Context, completion: @escaping (Timeline<SimpleEntry>) -> Void) {
-        Task {
-            let currentEntry = await fetchCurrentEntry()
+        var entries: [SimpleEntry] = []
+        let currentDate = Date()
 
-            // Create entries for the next few hours
-            var entries: [SimpleEntry] = [currentEntry]
-
-            for hourOffset in 1...4 {
-                let futureDate = Calendar.current.date(byAdding: .hour, value: hourOffset, to: Date())!
-                let entry = SimpleEntry(date: futureDate, title: "Steps", value: currentEntry.value, trend: .flat)
-                entries.append(entry)
-            }
-
-            // Refresh policy: after the last entry, or at a specific date
-            let timeline = Timeline(entries: entries, policy: .atEnd)
-            // .atEnd — refresh when all entries consumed
-            // .after(date) — refresh at specific date
-            // .never — don't refresh automatically
-            completion(timeline)
+        // Create entries for the next 5 hours
+        for hourOffset in 0..<5 {
+            let entryDate = Calendar.current.date(byAdding: .hour, value: hourOffset, to: currentDate)!
+            let entry = SimpleEntry(
+                date: entryDate,
+                title: "Steps Today",
+                value: fetchStepCount() + (hourOffset * 500),
+                icon: "figure.walk"
+            )
+            entries.append(entry)
         }
+
+        // Timeline reload policies:
+        // .atEnd     - reload after the last entry's date passes
+        // .after(d)  - reload after a specific date
+        // .never     - only reload when the app explicitly requests it
+        let timeline = Timeline(entries: entries, policy: .atEnd)
+        completion(timeline)
     }
 
-    private func fetchCurrentEntry() async -> SimpleEntry {
-        // Fetch from shared data (App Groups, network, etc.)
-        SimpleEntry(date: Date(), title: "Steps", value: 8432, trend: .up)
+    private func fetchStepCount() -> Int { return 8432 }
+}
+
+// Async provider using AppIntentTimelineProvider (cleaner async/await API)
+struct ConfigurableProvider: AppIntentTimelineProvider {
+    typealias Entry = SimpleEntry
+    typealias Intent = SelectCategoryIntent
+
+    func placeholder(in context: Context) -> SimpleEntry {
+        SimpleEntry(date: .now, title: "Loading...", value: 0, icon: "star")
+    }
+
+    func snapshot(for configuration: SelectCategoryIntent, in context: Context) async -> SimpleEntry {
+        SimpleEntry(date: .now, title: configuration.category?.name ?? "All", value: 42, icon: "star")
+    }
+
+    func timeline(for configuration: SelectCategoryIntent, in context: Context) async -> Timeline<SimpleEntry> {
+        let entries = [
+            SimpleEntry(
+                date: .now,
+                title: configuration.category?.name ?? "All",
+                value: 42,
+                icon: "star"
+            )
+        ]
+        return Timeline(entries: entries, policy: .after(.now.addingTimeInterval(3600)))
     }
 }
 ```
 
-## Widget View and Families
+## TimelineEntry Design
 
 ```swift
-struct MyWidgetEntryView: View {
+// Rich timeline entry with multiple data points
+struct DashboardEntry: TimelineEntry {
+    let date: Date
+    let tasks: [TaskItem]
+    let completedCount: Int
+    let totalCount: Int
+    let streakDays: Int
+
+    var completionPercentage: Double {
+        guard totalCount > 0 else { return 0 }
+        return Double(completedCount) / Double(totalCount)
+    }
+
+    static var preview: DashboardEntry {
+        DashboardEntry(
+            date: .now,
+            tasks: [
+                TaskItem(name: "Morning workout", isComplete: true),
+                TaskItem(name: "Read 30 minutes", isComplete: false),
+                TaskItem(name: "Meditate", isComplete: true)
+            ],
+            completedCount: 5,
+            totalCount: 8,
+            streakDays: 12
+        )
+    }
+}
+
+struct TaskItem: Identifiable {
+    let id = UUID()
+    let name: String
+    let isComplete: Bool
+}
+```
+
+## Widget Families (systemSmall, Medium, Large, ExtraLarge)
+
+```swift
+struct SimpleWidgetView: View {
     var entry: SimpleEntry
 
     @Environment(\.widgetFamily) var family
@@ -109,179 +179,218 @@ struct MyWidgetEntryView: View {
     var body: some View {
         switch family {
         case .systemSmall:
-            smallWidget
+            smallView
         case .systemMedium:
-            mediumWidget
+            mediumView
         case .systemLarge:
-            largeWidget
+            largeView
+        case .systemExtraLarge:
+            extraLargeView  // iPad only
         case .accessoryCircular:
-            circularWidget
+            circularView
         case .accessoryRectangular:
-            rectangularWidget
+            rectangularView
         case .accessoryInline:
-            inlineWidget
-        default:
-            smallWidget
+            inlineView
+        @unknown default:
+            smallView
         }
     }
 
-    var smallWidget: some View {
-        VStack(alignment: .leading) {
+    // Home Screen small (~169x169 pt)
+    var smallView: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Image(systemName: entry.icon)
+                .font(.title2)
+                .foregroundStyle(.blue)
+            Spacer()
             Text(entry.title)
                 .font(.caption)
                 .foregroundStyle(.secondary)
             Text("\(entry.value)")
-                .font(.system(.title, design: .rounded, weight: .bold))
-            Spacer()
-            HStack {
-                Image(systemName: trendIcon)
-                Text(entry.date, style: .time)
-                    .font(.caption2)
-            }
-            .foregroundStyle(.secondary)
+                .font(.title.bold())
+                .contentTransition(.numericText())
         }
         .padding()
+        .widgetURL(URL(string: "myapp://steps"))
     }
 
-    var mediumWidget: some View {
+    // Home Screen medium (~360x169 pt)
+    var mediumView: some View {
         HStack {
-            smallWidget
-            Divider()
-            // Additional content for medium
-            VStack {
-                Text("Today's Goal")
+            smallView
+            Spacer()
+            VStack(alignment: .trailing) {
+                Text("Goal: 10,000")
                     .font(.caption)
-                ProgressView(value: Double(entry.value) / 10000)
-                    .tint(.green)
-                Text("\(entry.value) / 10,000")
+                ProgressView(value: Double(entry.value), total: 10000)
+                    .tint(.blue)
+                Text("\(10000 - entry.value) remaining")
                     .font(.caption2)
+                    .foregroundStyle(.secondary)
             }
             .padding()
         }
     }
 
-    var largeWidget: some View {
+    // Home Screen large (~360x376 pt)
+    var largeView: some View {
         VStack(alignment: .leading, spacing: 12) {
-            mediumWidget
+            mediumView
             Divider()
-            Text("Weekly Summary")
+            Text("Hourly Breakdown")
                 .font(.headline)
-            // Chart or detailed data
+            ForEach(0..<4) { hour in
+                HStack {
+                    Text("\(hour + 9):00")
+                        .font(.caption.monospacedDigit())
+                    ProgressView(value: Double.random(in: 0.2...1.0))
+                        .tint(.blue)
+                }
+            }
+            Spacer()
         }
+        .padding()
     }
 
-    private var trendIcon: String {
-        switch entry.trend {
-        case .up: return "arrow.up.right"
-        case .down: return "arrow.down.right"
-        case .flat: return "arrow.right"
-        }
+    var extraLargeView: some View {
+        largeView // Customize further for iPad extra large
     }
 }
 ```
 
-## Lock Screen Widgets
+## Lock Screen Widgets (Accessory Families)
 
 ```swift
-// Accessory widgets for Lock Screen and Apple Watch
-var circularWidget: some View {
-    ZStack {
-        AccessoryWidgetBackground()
-        VStack(spacing: 0) {
-            Image(systemName: "figure.walk")
-                .font(.caption)
-            Text("\(entry.value)")
-                .font(.system(.body, design: .rounded, weight: .bold))
-                .minimumScaleFactor(0.5)
+extension SimpleWidgetView {
+    // Lock Screen circular gauge
+    var circularView: some View {
+        Gauge(value: Double(entry.value), in: 0...10000) {
+            Image(systemName: entry.icon)
+        } currentValueLabel: {
+            Text("\(entry.value / 1000)k")
+                .font(.caption2)
         }
+        .gaugeStyle(.accessoryCircular)
     }
-}
 
-var rectangularWidget: some View {
-    VStack(alignment: .leading) {
-        HStack {
-            Image(systemName: "figure.walk")
+    // Lock Screen rectangular
+    var rectangularView: some View {
+        VStack(alignment: .leading) {
+            Label("\(entry.value)", systemImage: entry.icon)
+                .font(.headline)
             Text(entry.title)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            ProgressView(value: Double(entry.value), total: 10000)
         }
-        .font(.caption)
-        Text("\(entry.value)")
-            .font(.system(.title3, design: .rounded, weight: .bold))
-        ProgressView(value: Double(entry.value) / 10000)
+    }
+
+    // Lock Screen inline (single line of text beside clock)
+    var inlineView: some View {
+        Label("\(entry.value) \(entry.title)", systemImage: entry.icon)
     }
 }
 
-var inlineWidget: some View {
-    HStack {
-        Image(systemName: "figure.walk")
-        Text("\(entry.value) steps")
+// Rendering mode for lock screen
+// Lock Screen widgets are rendered in one of three modes:
+// - .vibrant: tinted semi-transparent material (iOS Lock Screen)
+// - .accented: tinted with user's chosen accent color (watchOS)
+// - .fullColor: standard colors (Home Screen)
+// Use @Environment(\.widgetRenderingMode) to adapt
+```
+
+## WidgetBundle for Multiple Widgets
+
+```swift
+@main
+struct MyWidgets: WidgetBundle {
+    var body: some Widget {
+        SimpleWidget()
+        ConfigurableWidget()
+        DashboardWidget()
+
+        if #available(iOS 18, *) {
+            ControlWidget()
+        }
     }
 }
 ```
 
-## IntentConfiguration for Configurable Widgets
+## Interactive Widgets (iOS 17+ Button/Toggle)
+
+iOS 17 introduced interactive widgets with Button and Toggle that perform AppIntents directly from the widget.
 
 ```swift
 import AppIntents
 
-// Define the configuration intent
-struct SelectCategoryIntent: WidgetConfigurationIntent {
-    static var title: LocalizedStringResource = "Select Category"
-    static var description = IntentDescription("Choose which category to display.")
+// App Intent for toggling a task
+struct ToggleTaskIntent: AppIntent {
+    static var title: LocalizedStringResource = "Toggle Task"
 
-    @Parameter(title: "Category", default: .steps)
-    var category: HealthCategory
-}
+    @Parameter(title: "Task ID")
+    var taskID: String
 
-enum HealthCategory: String, AppEnum {
-    case steps, calories, distance, heartRate
+    init() {}
 
-    static var typeDisplayRepresentation = TypeDisplayRepresentation(name: "Category")
-    static var caseDisplayRepresentations: [HealthCategory: DisplayRepresentation] = [
-        .steps: "Steps",
-        .calories: "Calories",
-        .distance: "Distance",
-        .heartRate: "Heart Rate",
-    ]
-}
-
-// Configurable timeline provider
-struct ConfigurableProvider: AppIntentTimelineProvider {
-    func placeholder(in context: Context) -> SimpleEntry {
-        SimpleEntry(date: Date(), title: "Loading...", value: 0, trend: .flat)
+    init(taskID: String) {
+        self.taskID = taskID
     }
 
-    func snapshot(for configuration: SelectCategoryIntent, in context: Context) async -> SimpleEntry {
-        SimpleEntry(date: Date(), title: configuration.category.rawValue, value: 8432, trend: .up)
-    }
+    func perform() async throws -> some IntentResult {
+        let store = TaskStore.shared
+        store.toggleTask(id: taskID)
 
-    func timeline(for configuration: SelectCategoryIntent, in context: Context) async -> Timeline<SimpleEntry> {
-        let entry = SimpleEntry(
-            date: Date(),
-            title: configuration.category.rawValue,
-            value: await fetchValue(for: configuration.category),
-            trend: .up
-        )
-        return Timeline(entries: [entry], policy: .after(Date().addingTimeInterval(3600)))
-    }
+        // Reload the widget timeline to reflect the change
+        WidgetCenter.shared.reloadTimelines(ofKind: "TaskWidget")
 
-    private func fetchValue(for category: HealthCategory) async -> Int {
-        // Fetch real data
-        return 8432
+        return .result()
     }
 }
 
-// Configurable widget
-struct ConfigurableWidget: Widget {
-    let kind = "ConfigurableWidget"
+struct IncrementCountIntent: AppIntent {
+    static var title: LocalizedStringResource = "Increment Counter"
 
-    var body: some WidgetConfiguration {
-        AppIntentConfiguration(kind: kind, intent: SelectCategoryIntent.self, provider: ConfigurableProvider()) { entry in
-            MyWidgetEntryView(entry: entry)
-                .containerBackground(.fill.tertiary, for: .widget)
+    func perform() async throws -> some IntentResult {
+        CounterStore.shared.increment()
+        WidgetCenter.shared.reloadTimelines(ofKind: "CounterWidget")
+        return .result()
+    }
+}
+
+// Widget view with interactive elements
+struct InteractiveTaskWidget: View {
+    let entry: DashboardEntry
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Tasks")
+                .font(.headline)
+
+            ForEach(entry.tasks) { task in
+                HStack {
+                    // Interactive toggle button
+                    Button(intent: ToggleTaskIntent(taskID: task.id.uuidString)) {
+                        Image(systemName: task.isComplete ? "checkmark.circle.fill" : "circle")
+                            .foregroundStyle(task.isComplete ? .green : .secondary)
+                    }
+                    .buttonStyle(.plain)
+
+                    Text(task.name)
+                        .strikethrough(task.isComplete)
+                        .font(.subheadline)
+                }
+            }
+
+            Spacer()
+
+            // Interactive toggle
+            Toggle(isOn: entry.completedCount > 0, intent: IncrementCountIntent()) {
+                Text("Focus Mode")
+            }
+            .toggleStyle(.switch)
         }
-        .configurationDisplayName("Health Stats")
-        .description("Choose a health metric to track.")
-        .supportedFamilies([.systemSmall, .systemMedium])
+        .padding()
     }
 }
 ```
@@ -291,79 +400,122 @@ struct ConfigurableWidget: Widget {
 ```swift
 import ActivityKit
 
-// Define activity attributes
+// Define the attributes for the Live Activity
 struct DeliveryAttributes: ActivityAttributes {
-    public struct ContentState: Codable, Hashable {
+    // Dynamic content that changes over time
+    struct ContentState: Codable, Hashable {
         var status: String
         var estimatedArrival: Date
         var driverName: String
-        var currentStep: Int
+        var currentStep: Int  // 0: preparing, 1: picked up, 2: nearby, 3: delivered
     }
 
-    var orderNumber: String
-    var restaurantName: String
+    // Static content set at creation
+    let orderNumber: String
+    let restaurantName: String
 }
 
-// Start a Live Activity
-func startDeliveryActivity(orderNumber: String, restaurant: String) throws -> Activity<DeliveryAttributes>? {
-    guard ActivityAuthorizationInfo().areActivitiesEnabled else { return nil }
+class LiveActivityManager {
+    var currentActivity: Activity<DeliveryAttributes>?
 
-    let attributes = DeliveryAttributes(orderNumber: orderNumber, restaurantName: restaurant)
-    let initialState = DeliveryAttributes.ContentState(
-        status: "Preparing",
-        estimatedArrival: Date().addingTimeInterval(2400),
-        driverName: "Alex",
-        currentStep: 1
-    )
+    func startDeliveryTracking(orderNumber: String, restaurant: String) throws {
+        guard ActivityAuthorizationInfo().areActivitiesEnabled else {
+            print("Live Activities not enabled")
+            return
+        }
 
-    let content = ActivityContent(state: initialState, staleDate: Date().addingTimeInterval(3600))
-    return try Activity.request(attributes: attributes, content: content, pushType: .token)
+        let attributes = DeliveryAttributes(
+            orderNumber: orderNumber,
+            restaurantName: restaurant
+        )
+
+        let initialState = DeliveryAttributes.ContentState(
+            status: "Preparing your order",
+            estimatedArrival: .now.addingTimeInterval(1800),
+            driverName: "Alex",
+            currentStep: 0
+        )
+
+        let content = ActivityContent(state: initialState, staleDate: nil)
+
+        currentActivity = try Activity.request(
+            attributes: attributes,
+            content: content,
+            pushType: .token  // .token for server push updates, nil for local-only
+        )
+
+        // Observe push token for server-driven updates
+        if let activity = currentActivity {
+            Task {
+                for await token in activity.pushTokenUpdates {
+                    let tokenString = token.map { String(format: "%02x", $0) }.joined()
+                    print("Live Activity push token: \(tokenString)")
+                    // Send this token to your server
+                }
+            }
+        }
+    }
+
+    // Update the Live Activity locally
+    func updateDelivery(status: String, step: Int, eta: Date) async {
+        let updatedState = DeliveryAttributes.ContentState(
+            status: status,
+            estimatedArrival: eta,
+            driverName: "Alex",
+            currentStep: step
+        )
+        let content = ActivityContent(state: updatedState, staleDate: nil)
+        await currentActivity?.update(content)
+    }
+
+    // End the Live Activity
+    func endDelivery() async {
+        let finalState = DeliveryAttributes.ContentState(
+            status: "Delivered!",
+            estimatedArrival: .now,
+            driverName: "Alex",
+            currentStep: 3
+        )
+        let content = ActivityContent(state: finalState, staleDate: nil)
+
+        // Dismissal policies:
+        // .default          - user can dismiss manually
+        // .immediate        - disappears right away
+        // .after(date)      - auto-dismiss after the specified date
+        await currentActivity?.end(content, dismissalPolicy: .after(.now.addingTimeInterval(300)))
+    }
 }
 
-// Update a Live Activity
-func updateDeliveryActivity(activity: Activity<DeliveryAttributes>, newStatus: String, step: Int) async {
-    let updatedState = DeliveryAttributes.ContentState(
-        status: newStatus,
-        estimatedArrival: Date().addingTimeInterval(1200),
-        driverName: "Alex",
-        currentStep: step
-    )
-    let content = ActivityContent(state: updatedState, staleDate: nil)
-    await activity.update(content)
-}
-
-// End a Live Activity
-func endDeliveryActivity(activity: Activity<DeliveryAttributes>) async {
-    let finalState = DeliveryAttributes.ContentState(
-        status: "Delivered",
-        estimatedArrival: Date(),
-        driverName: "Alex",
-        currentStep: 4
-    )
-    let content = ActivityContent(state: finalState, staleDate: nil)
-    await activity.end(content, dismissalPolicy: .after(.now + 300))
-}
-
-// Live Activity widget UI
+// Live Activity UI (defined in your Widget extension target)
 struct DeliveryLiveActivity: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: DeliveryAttributes.self) { context in
-            // Lock Screen / Banner UI
-            VStack(alignment: .leading, spacing: 8) {
+            // Lock Screen and banner presentation
+            VStack(spacing: 12) {
                 HStack {
                     Text(context.attributes.restaurantName)
                         .font(.headline)
                     Spacer()
-                    Text(context.state.status)
-                        .font(.subheadline)
+                    Text("Order #\(context.attributes.orderNumber)")
+                        .font(.caption)
                         .foregroundStyle(.secondary)
                 }
-                ProgressView(value: Double(context.state.currentStep) / 4.0)
+
+                ProgressView(value: Double(context.state.currentStep), total: 3)
                     .tint(.green)
-                Text("ETA: \(context.state.estimatedArrival, style: .timer)")
-                    .font(.caption)
+
+                HStack {
+                    Label(context.state.status, systemImage: "bicycle")
+                        .font(.subheadline)
+                    Spacer()
+                    Text(context.state.estimatedArrival, style: .timer)
+                        .font(.subheadline.monospacedDigit())
+                }
             }
             .padding()
+            .activityBackgroundTint(.black.opacity(0.8))
+            .activitySystemActionForegroundColor(.white)
+
         } dynamicIsland: { context in
             DynamicIsland {
                 DynamicIslandExpandedRegion(.leading) {
@@ -372,17 +524,25 @@ struct DeliveryLiveActivity: Widget {
                 }
                 DynamicIslandExpandedRegion(.trailing) {
                     Text(context.state.estimatedArrival, style: .timer)
-                        .font(.caption)
+                        .font(.caption.monospacedDigit())
+                }
+                DynamicIslandExpandedRegion(.center) {
+                    Text(context.attributes.restaurantName)
+                        .font(.headline)
                 }
                 DynamicIslandExpandedRegion(.bottom) {
-                    ProgressView(value: Double(context.state.currentStep) / 4.0)
-                        .tint(.green)
+                    VStack(spacing: 8) {
+                        Text(context.state.status)
+                            .font(.subheadline)
+                        ProgressView(value: Double(context.state.currentStep), total: 3)
+                            .tint(.green)
+                    }
                 }
             } compactLeading: {
                 Image(systemName: "bicycle")
             } compactTrailing: {
                 Text(context.state.estimatedArrival, style: .timer)
-                    .font(.caption)
+                    .font(.caption.monospacedDigit())
             } minimal: {
                 Image(systemName: "bicycle")
             }
@@ -391,73 +551,99 @@ struct DeliveryLiveActivity: Widget {
 }
 ```
 
-## Interactive Widgets (iOS 17+)
+## App Intent Configuration
 
 ```swift
 import AppIntents
-import SwiftUI
+
+// Define a configurable entity for widget parameters
+struct CategoryEntity: AppEntity {
+    static var typeDisplayRepresentation = TypeDisplayRepresentation(name: "Category")
+    static var defaultQuery = CategoryQuery()
+
+    var id: String
+    var name: String
+
+    var displayRepresentation: DisplayRepresentation {
+        DisplayRepresentation(title: "\(name)")
+    }
+}
+
+struct CategoryQuery: EntityQuery {
+    func entities(for identifiers: [String]) async throws -> [CategoryEntity] {
+        allCategories().filter { identifiers.contains($0.id) }
+    }
+
+    func suggestedEntities() async throws -> [CategoryEntity] {
+        allCategories()
+    }
+
+    func defaultResult() async -> CategoryEntity? {
+        allCategories().first
+    }
+
+    private func allCategories() -> [CategoryEntity] {
+        [
+            CategoryEntity(id: "work", name: "Work"),
+            CategoryEntity(id: "personal", name: "Personal"),
+            CategoryEntity(id: "health", name: "Health")
+        ]
+    }
+}
+
+// Widget configuration intent
+struct SelectCategoryIntent: WidgetConfigurationIntent {
+    static var title: LocalizedStringResource = "Select Category"
+    static var description = IntentDescription("Choose which category to display in the widget.")
+
+    @Parameter(title: "Category")
+    var category: CategoryEntity?
+
+    @Parameter(title: "Show Completed", default: true)
+    var showCompleted: Bool
+}
+```
+
+## Reloading Widgets from the Main App
+
+```swift
 import WidgetKit
 
-// Define an app intent for the button action
-struct ToggleTaskIntent: AppIntent {
-    static var title: LocalizedStringResource = "Toggle Task"
-
-    @Parameter(title: "Task ID")
-    var taskID: String
-
-    func perform() async throws -> some IntentResult {
-        // Toggle the task in your data store
-        let store = SharedDataStore.shared
-        store.toggleTask(id: taskID)
-
-        // Reload widget timeline
+class WidgetReloadManager {
+    // Reload a specific widget by kind
+    func reloadTaskWidget() {
         WidgetCenter.shared.reloadTimelines(ofKind: "TaskWidget")
-        return .result()
     }
-}
 
-// Interactive widget view with Button and Toggle
-struct InteractiveTaskWidget: View {
-    let tasks: [TaskItem]
+    // Reload all widgets belonging to this app
+    func reloadAllWidgets() {
+        WidgetCenter.shared.reloadAllTimelines()
+    }
 
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Tasks")
-                .font(.headline)
-            ForEach(tasks) { task in
-                HStack {
-                    // Interactive button inside widget
-                    Button(intent: ToggleTaskIntent(taskID: task.id)) {
-                        Image(systemName: task.isCompleted ? "checkmark.circle.fill" : "circle")
-                            .foregroundStyle(task.isCompleted ? .green : .secondary)
-                    }
-                    .buttonStyle(.plain)
-
-                    Text(task.title)
-                        .strikethrough(task.isCompleted)
-                        .foregroundStyle(task.isCompleted ? .secondary : .primary)
+    // Get current widget configurations on the user's device
+    func getWidgetInfo() {
+        WidgetCenter.shared.getCurrentConfigurations { result in
+            switch result {
+            case .success(let widgets):
+                for widget in widgets {
+                    print("Kind: \(widget.kind), Family: \(widget.family)")
                 }
+            case .failure(let error):
+                print("Error fetching configurations: \(error)")
             }
         }
-        .padding()
     }
 }
 
-// Reload widgets from the main app
-func notifyWidgets() {
-    WidgetCenter.shared.reloadAllTimelines()
-    // Or specific widget:
-    // WidgetCenter.shared.reloadTimelines(ofKind: "TaskWidget")
-}
+// Sharing data between the app and widget extension using App Groups.
+// 1. Enable App Groups capability in both the app target and widget extension target
+// 2. Use the shared container:
 
-struct TaskItem: Identifiable {
-    let id: String
-    let title: String
-    let isCompleted: Bool
-}
+let sharedDefaults = UserDefaults(suiteName: "group.com.yourapp.shared")
+sharedDefaults?.set(42, forKey: "stepCount")
 
-class SharedDataStore {
-    static let shared = SharedDataStore()
-    func toggleTask(id: String) { /* Update via App Groups UserDefaults or SwiftData */ }
-}
+let sharedContainer = FileManager.default.containerURL(
+    forSecurityApplicationGroupIdentifier: "group.com.yourapp.shared"
+)
+// Write/read files in sharedContainer for larger data sets
 ```
