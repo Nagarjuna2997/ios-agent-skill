@@ -1,5 +1,7 @@
 # ios-agent-skill
 
+> Created by [**Nagarjuna Reddy**](https://www.linkedin.com/in/nagarjuna-reddy-97836a193/) — iOS Developer & AI Engineer
+
 **Turn Claude into an expert iOS/Swift developer that writes production-ready, error-free code with stunning UIs across all Apple platforms.**
 
 This is a comprehensive Claude AI skill repository — a knowledge base, design system, code template library, and coding standards guide that transforms Claude into a senior-level Apple platform engineer. Every app Claude builds will have beautiful color palettes, polished typography, smooth animations, and pixel-perfect layouts. Just clone, open with Claude Code, and start building apps.
@@ -343,6 +345,15 @@ ios-agent-skill/
 
 ---
 
+## Author
+
+**Nagarjuna Reddy** — iOS Developer & AI Engineer
+
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Nagarjuna%20Reddy-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/nagarjuna-reddy-97836a193/)
+[![GitHub](https://img.shields.io/badge/GitHub-Nagarjuna2997-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Nagarjuna2997)
+
+---
+
 ## Contributing
 
 1. Fork this repository
@@ -355,3 +366,5 @@ ios-agent-skill/
 ## License
 
 MIT License
+
+Copyright (c) 2026 Nagarjuna Reddy
