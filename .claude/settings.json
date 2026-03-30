@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Read",
+      "Glob",
+      "Grep"
+    ]
+  },
+  "project": {
+    "name": "ios-agent-skill",
+    "description": "Claude AI Expert iOS/Swift Developer Skill — comprehensive knowledge base and code templates for all Apple platforms"
+  }
+}
