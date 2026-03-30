@@ -23,6 +23,10 @@
 
 ---
 
+## :book: [Complete AI Setup Guide (Mac + Windows) for ALL 28 Tools](docs/ai-setup-guide.md)
+
+---
+
 ## :zap: One-Line Install
 
 ```bash
