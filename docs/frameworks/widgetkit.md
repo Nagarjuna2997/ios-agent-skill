@@ -647,3 +647,244 @@ let sharedContainer = FileManager.default.containerURL(
 )
 // Write/read files in sharedContainer for larger data sets
 ```
+
+## iOS 18+ Additions
+
+### Controls API (ControlWidget)
+
+iOS 18 introduces `ControlWidget` for adding interactive controls to Control Center and the Lock Screen. Controls are small, actionable widgets that can toggle states or trigger actions.
+
+```swift
+import WidgetKit
+import SwiftUI
+import AppIntents
+
+// MARK: - Toggle Control (e.g., a light switch)
+
+struct LightToggleControl: ControlWidget {
+    var body: some ControlWidgetConfiguration {
+        StaticControlConfiguration(kind: "com.app.light-toggle") {
+            ControlWidgetToggle(
+                "Living Room",
+                isOn: LightManager.shared.isLivingRoomOn,
+                action: ToggleLightIntent(room: "living-room")
+            ) { isOn in
+                // The view displayed in the control
+                Label(isOn ? "On" : "Off", systemImage: isOn ? "lightbulb.fill" : "lightbulb")
+            }
+            .tint(.yellow)
+        }
+        .displayName("Light Toggle")
+        .description("Toggle a light on or off.")
+    }
+}
+
+// App Intent that the toggle invokes
+struct ToggleLightIntent: SetValueIntent {
+    static var title: LocalizedStringResource = "Toggle Light"
+
+    @Parameter(title: "Room")
+    var room: String
+
+    @Parameter(title: "Is On")
+    var value: Bool
+
+    init() {
+        self.room = "living-room"
+        self.value = false
+    }
+
+    init(room: String) {
+        self.room = room
+        self.value = false
+    }
+
+    func perform() async throws -> some IntentResult {
+        LightManager.shared.setLight(room: room, isOn: value)
+        return .result()
+    }
+}
+
+// MARK: - Button Control (e.g., trigger an action)
+
+struct CaffeineLogControl: ControlWidget {
+    var body: some ControlWidgetConfiguration {
+        StaticControlConfiguration(kind: "com.app.caffeine-log") {
+            ControlWidgetButton(action: LogCaffeineIntent()) {
+                Label("Log Coffee", systemImage: "cup.and.saucer.fill")
+            }
+        }
+        .displayName("Log Caffeine")
+        .description("Quickly log a coffee.")
+    }
+}
+
+struct LogCaffeineIntent: AppIntent {
+    static var title: LocalizedStringResource = "Log Caffeine"
+
+    func perform() async throws -> some IntentResult {
+        CaffeineStore.shared.logCoffee()
+        return .result()
+    }
+}
+
+// MARK: - Configurable Control with AppIntentControlConfiguration
+
+struct ConfigurableLightControl: ControlWidget {
+    var body: some ControlWidgetConfiguration {
+        AppIntentControlConfiguration(
+            kind: "com.app.configurable-light",
+            intent: SelectRoomIntent.self
+        ) { configuration in
+            ControlWidgetToggle(
+                configuration.room?.name ?? "Light",
+                isOn: LightManager.shared.isOn(room: configuration.room?.id ?? ""),
+                action: ToggleLightIntent(room: configuration.room?.id ?? "")
+            ) { isOn in
+                Label(isOn ? "On" : "Off", systemImage: isOn ? "lightbulb.fill" : "lightbulb")
+            }
+            .tint(.orange)
+        }
+        .displayName("Room Light")
+        .description("Toggle a specific room's light.")
+    }
+}
+
+struct SelectRoomIntent: ControlConfigurationIntent {
+    static var title: LocalizedStringResource = "Select Room"
+
+    @Parameter(title: "Room")
+    var room: RoomEntity?
+}
+
+// MARK: - Registering Controls in WidgetBundle
+
+@main
+struct MyWidgets: WidgetBundle {
+    var body: some Widget {
+        SimpleWidget()
+        DashboardWidget()
+
+        // iOS 18+ Control Center widgets
+        if #available(iOS 18, *) {
+            LightToggleControl()
+            CaffeineLogControl()
+            ConfigurableLightControl()
+        }
+    }
+}
+```
+
+### Control Center Placement and Sizing
+
+Controls appear in the redesigned iOS 18 Control Center. Users add them from the Control Center gallery, just like Home Screen widgets.
+
+Key characteristics:
+- **Small footprint**: Controls occupy a single Control Center cell (similar to the existing toggles like Wi-Fi, Bluetooth)
+- **Two types**: `ControlWidgetToggle` for on/off state, `ControlWidgetButton` for one-shot actions
+- **Lock Screen access**: Controls can also be placed on the Lock Screen as quick-action buttons (replacing the default flashlight/camera shortcuts)
+- **Tinting**: Use `.tint()` to set the active color of a toggle control
+- **Static vs Configurable**: Use `StaticControlConfiguration` for fixed controls, `AppIntentControlConfiguration` for user-configurable controls with parameters
+- **Value providers**: For toggles, provide a value source that returns the current state; SwiftData or App Groups work well for shared state
+
+### Live Activity Intents (iOS 18)
+
+iOS 18 enables Live Activities to include App Intent-driven buttons and toggles directly on the Lock Screen and Dynamic Island.
+
+```swift
+import ActivityKit
+import AppIntents
+import SwiftUI
+import WidgetKit
+
+// Live Activity with interactive intent-driven buttons
+struct OrderTrackingLiveActivity: Widget {
+    var body: some WidgetConfiguration {
+        ActivityConfiguration(for: OrderAttributes.self) { context in
+            // Lock Screen / banner view with interactive buttons
+            VStack(spacing: 12) {
+                HStack {
+                    Text(context.attributes.storeName)
+                        .font(.headline)
+                    Spacer()
+                    Text(context.state.status)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+
+                ProgressView(value: context.state.progress)
+                    .tint(.blue)
+
+                HStack(spacing: 16) {
+                    // Intent-driven button on the Live Activity
+                    Button(intent: ContactDriverIntent(orderID: context.attributes.orderID)) {
+                        Label("Contact Driver", systemImage: "phone.fill")
+                            .font(.caption)
+                    }
+                    .buttonStyle(.bordered)
+                    .tint(.green)
+
+                    Button(intent: CancelOrderIntent(orderID: context.attributes.orderID)) {
+                        Label("Cancel", systemImage: "xmark.circle")
+                            .font(.caption)
+                    }
+                    .buttonStyle(.bordered)
+                    .tint(.red)
+                }
+            }
+            .padding()
+
+        } dynamicIsland: { context in
+            DynamicIsland {
+                DynamicIslandExpandedRegion(.bottom) {
+                    Button(intent: ContactDriverIntent(orderID: context.attributes.orderID)) {
+                        Label("Contact Driver", systemImage: "phone.fill")
+                    }
+                    .buttonStyle(.bordered)
+                }
+                DynamicIslandExpandedRegion(.center) {
+                    Text(context.state.status)
+                }
+                DynamicIslandExpandedRegion(.leading) {
+                    Image(systemName: "bag.fill")
+                }
+                DynamicIslandExpandedRegion(.trailing) {
+                    Text(context.state.eta, style: .timer)
+                }
+            } compactLeading: {
+                Image(systemName: "bag.fill")
+            } compactTrailing: {
+                Text(context.state.eta, style: .timer)
+                    .font(.caption2)
+            } minimal: {
+                Image(systemName: "bag.fill")
+            }
+        }
+    }
+}
+
+struct ContactDriverIntent: AppIntent {
+    static var title: LocalizedStringResource = "Contact Driver"
+
+    @Parameter(title: "Order ID")
+    var orderID: String
+
+    init() { self.orderID = "" }
+    init(orderID: String) { self.orderID = orderID }
+
+    func perform() async throws -> some IntentResult {
+        // Open the call screen or in-app chat for the driver
+        return .result()
+    }
+}
+
+struct OrderAttributes: ActivityAttributes {
+    struct ContentState: Codable, Hashable {
+        var status: String
+        var progress: Double
+        var eta: Date
+    }
+    let orderID: String
+    let storeName: String
+}
+```

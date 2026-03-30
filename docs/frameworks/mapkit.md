@@ -352,3 +352,144 @@ struct LookAroundPreview: View {
     }
 }
 ```
+
+## iOS 18+ Additions
+
+### AnyMapContent
+
+`AnyMapContent` provides type-erased map content, enabling dynamic and conditional map building without complex generic constraints. This is useful when composing map content from heterogeneous sources or building map content conditionally at runtime.
+
+```swift
+import SwiftUI
+import MapKit
+
+struct DynamicMapView: View {
+    let places: [Place]
+    let routes: [MKRoute]
+    @State private var showOverlays = true
+
+    var body: some View {
+        Map {
+            // Use AnyMapContent for conditional content composition
+            ForEach(places) { place in
+                if place.category == "landmark" {
+                    AnyMapContent(
+                        Marker(place.name, coordinate: place.coordinate)
+                            .tint(.orange)
+                    )
+                } else {
+                    AnyMapContent(
+                        Annotation(place.name, coordinate: place.coordinate) {
+                            Image(systemName: "mappin.circle.fill")
+                                .foregroundStyle(.blue)
+                        }
+                    )
+                }
+            }
+
+            if showOverlays {
+                ForEach(routes, id: \.self) { route in
+                    AnyMapContent(
+                        MapPolyline(route.polyline)
+                            .stroke(.blue, lineWidth: 4)
+                    )
+                }
+            }
+        }
+    }
+}
+
+// Building map content dynamically from a heterogeneous collection
+struct MapContentBuilder {
+    enum MapItem {
+        case marker(name: String, coordinate: CLLocationCoordinate2D, tint: Color)
+        case circle(center: CLLocationCoordinate2D, radius: Double)
+        case polyline(coordinates: [CLLocationCoordinate2D])
+    }
+
+    @MapContentBuilder
+    static func content(for items: [MapItem]) -> some MapContent {
+        ForEach(Array(items.enumerated()), id: \.offset) { _, item in
+            switch item {
+            case .marker(let name, let coordinate, let tint):
+                AnyMapContent(
+                    Marker(name, coordinate: coordinate)
+                        .tint(tint)
+                )
+            case .circle(let center, let radius):
+                AnyMapContent(
+                    MapCircle(center: center, radius: radius)
+                        .foregroundStyle(.blue.opacity(0.2))
+                        .stroke(.blue, lineWidth: 2)
+                )
+            case .polyline(let coordinates):
+                AnyMapContent(
+                    MapPolyline(coordinates: coordinates)
+                        .stroke(.red, lineWidth: 3)
+                )
+            }
+        }
+    }
+}
+```
+
+### MapSelection
+
+iOS 18 enhances map selection handling with `MapSelection`, enabling richer interaction with map features including automatic selection of points of interest, physical features (mountains, lakes), and custom annotations.
+
+```swift
+import SwiftUI
+import MapKit
+
+struct SelectableMapView: View {
+    @State private var selection: MapSelection<MKMapItem>?
+
+    var body: some View {
+        Map(selection: $selection) {
+            Marker("Apple Park", coordinate: CLLocationCoordinate2D(latitude: 37.3349, longitude: -122.0090))
+                .tag(MapSelection<MKMapItem>.tag(for: "apple-park"))
+        }
+        // Enable automatic selection of built-in map features
+        .mapFeatureSelectionAccessory(.automatic)
+        // React to selection changes
+        .onChange(of: selection) { _, newSelection in
+            if let selection = newSelection {
+                handleSelection(selection)
+            }
+        }
+        .sheet(item: $selection) { selectedItem in
+            // Present details for the selected map feature
+            MapItemDetailView(selection: selectedItem)
+        }
+    }
+
+    private func handleSelection(_ selection: MapSelection<MKMapItem>) {
+        // Handle different selection types
+        print("Map item selected")
+    }
+}
+
+// Detailed view for selected map features
+struct MapItemDetailView: View {
+    let selection: MapSelection<MKMapItem>
+
+    var body: some View {
+        VStack {
+            Text("Selected Location")
+                .font(.headline)
+            // Display details about the selected feature
+        }
+        .padding()
+        .presentationDetents([.medium])
+    }
+}
+```
+
+### MapKit Improvements Summary
+
+Additional iOS 18 MapKit enhancements:
+
+- **Unified Maps URLs**: `MKMapItem.openMaps(with:launchOptions:)` now generates universal map links that work consistently across iOS, macOS, and the web, making it easier to share locations across platforms.
+- **Improved `.mapStyle()` options**: Additional customization for map rendering styles including finer control over point-of-interest filtering and label density.
+- **MapFeature selection**: Tap on built-in map features (parks, transit stops, businesses) to get details without custom annotation overlays via `.mapFeatureSelectionAccessory()`.
+- **Performance**: MapKit rendering and tile-loading performance improvements for large numbers of annotations and overlays.

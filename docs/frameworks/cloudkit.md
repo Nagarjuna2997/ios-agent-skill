@@ -502,3 +502,301 @@ extension CloudKitManager {
     }
 }
 ```
+
+## Modern CloudKit (iOS 17+)
+
+### CKSyncEngine
+
+`CKSyncEngine` is Apple's recommended sync engine that replaces manual change token management, zone fetching, and subscription handling. It encapsulates the full sync lifecycle -- scheduling, batching, retry logic, conflict resolution, and account change handling -- into a single, delegate-driven API.
+
+**Why CKSyncEngine replaces manual change token fetching**: Previously, developers had to manually manage `CKServerChangeToken` objects, handle `CKFetchRecordZoneChangesOperation`, process `CKModifyRecordZonesOperation`, manage retry and error logic, and track database subscriptions. `CKSyncEngine` handles all of this automatically, dramatically reducing boilerplate and the surface area for sync bugs.
+
+```swift
+import CloudKit
+
+// MARK: - CKSyncEngine Setup
+
+class SyncManager: CKSyncEngineDelegate {
+    let syncEngine: CKSyncEngine
+
+    init() {
+        // Load any previously persisted sync engine state
+        let lastKnownState = Self.loadSyncEngineState()
+
+        // Configure the sync engine
+        let configuration = CKSyncEngine.Configuration(
+            database: CKContainer.default().privateCloudDatabase,
+            stateSerialization: lastKnownState,
+            delegate: self
+        )
+
+        syncEngine = CKSyncEngine(configuration)
+    }
+
+    // MARK: - CKSyncEngineDelegate Methods
+
+    // Called when the sync engine has events to process
+    func handleEvent(_ event: CKSyncEngine.Event, syncEngine: CKSyncEngine) async {
+        switch event {
+        case .stateUpdate(let stateUpdate):
+            // Persist the sync engine state so it can resume after app relaunch
+            Self.saveSyncEngineState(stateUpdate.stateSerialization)
+
+        case .accountChange(let event):
+            handleAccountChange(event)
+
+        case .fetchedDatabaseChanges(let event):
+            // New zones discovered or zones deleted on the server
+            for modification in event.modifications {
+                print("Zone modified: \(modification.zoneID)")
+            }
+            for deletion in event.deletions {
+                print("Zone deleted: \(deletion.zoneID)")
+                // Remove local data for this zone
+            }
+
+        case .fetchedRecordZoneChanges(let event):
+            handleFetchedChanges(event)
+
+        case .sentDatabaseChanges(let event):
+            // Confirmation that zone creates/deletes were sent
+            for saved in event.savedZones {
+                print("Zone saved to server: \(saved.zoneID)")
+            }
+
+        case .sentRecordZoneChanges(let event):
+            handleSentChanges(event)
+
+        case .willFetchChanges:
+            // Prepare for incoming changes (e.g., show sync indicator)
+            break
+
+        case .didFetchChanges:
+            // All fetched changes have been processed
+            break
+
+        case .willSendChanges:
+            break
+
+        case .didSendChanges:
+            break
+
+        @unknown default:
+            break
+        }
+    }
+
+    // Called when the engine needs the next batch of records to send
+    func nextRecordZoneChangeBatch(
+        _ context: CKSyncEngine.SendChangesContext,
+        syncEngine: CKSyncEngine
+    ) async -> CKSyncEngine.RecordZoneChangeBatch? {
+        // Get pending changes from the engine's state
+        let pendingChanges = syncEngine.state.pendingRecordZoneChanges
+
+        // Build a batch from your local data
+        let batch = await CKSyncEngine.RecordZoneChangeBatch(pendingChanges: pendingChanges) { recordID in
+            // Return the CKRecord for this ID from your local store
+            return self.buildRecord(for: recordID)
+        }
+
+        return batch
+    }
+
+    // MARK: - Handling Fetched Changes
+
+    private func handleFetchedChanges(_ event: CKSyncEngine.Event.FetchedRecordZoneChanges) {
+        // Process modifications (inserts and updates from the server)
+        for modification in event.modifications {
+            let record = modification.record
+            // Upsert into your local store
+            saveLocally(record)
+            print("Fetched: \(record.recordType) - \(record.recordID.recordName)")
+        }
+
+        // Process deletions
+        for deletion in event.deletions {
+            deleteLocally(recordID: deletion.recordID)
+            print("Deleted remotely: \(deletion.recordID.recordName)")
+        }
+    }
+
+    // MARK: - Handling Sent Changes and Conflicts
+
+    private func handleSentChanges(_ event: CKSyncEngine.Event.SentRecordZoneChanges) {
+        // Records successfully saved to the server
+        for saved in event.savedRecords {
+            // Update local store with server-assigned system fields
+            updateLocalSystemFields(saved)
+            print("Sent to server: \(saved.recordID.recordName)")
+        }
+
+        // Records that failed to save
+        for failed in event.failedRecordSaves {
+            let recordID = failed.record.recordID
+
+            switch failed.error.code {
+            case .serverRecordChanged:
+                // CONFLICT: The server has a newer version
+                // Resolve by merging or choosing server/client wins
+                if let serverRecord = failed.error.serverRecord {
+                    resolveConflict(
+                        clientRecord: failed.record,
+                        serverRecord: serverRecord
+                    )
+                }
+
+            case .zoneNotFound:
+                // Zone doesn't exist yet; the engine will auto-create it on next sync
+                break
+
+            case .unknownItem:
+                // Record was already deleted on the server
+                deleteLocally(recordID: recordID)
+
+            default:
+                print("Failed to save \(recordID): \(failed.error)")
+            }
+        }
+
+        // Deletions confirmed
+        for deletedID in event.deletedRecordIDs {
+            print("Server confirmed deletion: \(deletedID.recordName)")
+        }
+    }
+
+    // MARK: - Conflict Resolution
+
+    private func resolveConflict(clientRecord: CKRecord, serverRecord: CKRecord) {
+        // Strategy: merge non-conflicting fields, server wins for conflicts
+        let mergedRecord = serverRecord
+
+        // Example: merge by taking the latest modification date per field
+        // Or implement custom logic per record type
+        if let clientModified = clientRecord.modificationDate,
+           let serverModified = serverRecord.modificationDate,
+           clientModified > serverModified {
+            // Client is newer for this field — apply client changes
+            for key in clientRecord.allKeys() {
+                mergedRecord[key] = clientRecord[key]
+            }
+        }
+
+        // Tell the engine to retry with the merged record
+        syncEngine.state.add(pendingRecordZoneChanges: [
+            .saveRecord(mergedRecord.recordID)
+        ])
+    }
+
+    // MARK: - Account Changes
+
+    private func handleAccountChange(_ event: CKSyncEngine.Event.AccountChange) {
+        switch event.changeType {
+        case .signIn:
+            // User signed into iCloud — start syncing
+            print("iCloud account signed in")
+
+        case .switchAccounts:
+            // Different iCloud account — clear local cache and re-sync
+            clearLocalData()
+            print("iCloud account switched")
+
+        case .signOut:
+            // User signed out — optionally keep local data or clear it
+            print("iCloud account signed out")
+
+        @unknown default:
+            break
+        }
+    }
+
+    // MARK: - Scheduling Sync
+
+    func addPendingChange(recordID: CKRecord.ID) {
+        // Tell the engine there's a local change to sync
+        syncEngine.state.add(pendingRecordZoneChanges: [
+            .saveRecord(recordID)
+        ])
+    }
+
+    func addPendingDeletion(recordID: CKRecord.ID) {
+        syncEngine.state.add(pendingRecordZoneChanges: [
+            .deleteRecord(recordID)
+        ])
+    }
+
+    // MARK: - State Persistence
+
+    private static func saveSyncEngineState(_ state: CKSyncEngine.State.Serialization) {
+        if let data = try? JSONEncoder().encode(state) {
+            UserDefaults.standard.set(data, forKey: "ckSyncEngineState")
+        }
+    }
+
+    private static func loadSyncEngineState() -> CKSyncEngine.State.Serialization? {
+        guard let data = UserDefaults.standard.data(forKey: "ckSyncEngineState") else { return nil }
+        return try? JSONDecoder().decode(CKSyncEngine.State.Serialization.self, from: data)
+    }
+
+    // MARK: - Local Store Helpers (implement with your persistence layer)
+
+    private func buildRecord(for recordID: CKRecord.ID) -> CKRecord? {
+        // Fetch your local model and convert to CKRecord
+        return nil
+    }
+
+    private func saveLocally(_ record: CKRecord) {
+        // Insert or update in your local database (SwiftData, CoreData, etc.)
+    }
+
+    private func deleteLocally(recordID: CKRecord.ID) {
+        // Delete from your local database
+    }
+
+    private func updateLocalSystemFields(_ record: CKRecord) {
+        // Store the server's changeTag and other system fields locally
+    }
+
+    private func clearLocalData() {
+        // Clear all local synced data on account switch
+    }
+}
+```
+
+### CKSystemSharingUIObserver
+
+`CKSystemSharingUIObserver` provides modern observation of CloudKit sharing UI events, allowing your app to react when the system sharing controller saves a share or encounters an error.
+
+```swift
+import CloudKit
+
+class SharingManager {
+    private var sharingObserver: CKSystemSharingUIObserver?
+
+    func observeSharingUI(for container: CKContainer) {
+        sharingObserver = CKSystemSharingUIObserver(container)
+
+        // Observe when a share is saved from the system UI
+        sharingObserver?.systemSharingUIDidSaveShareBlock = { recordID, result in
+            switch result {
+            case .success(let share):
+                print("Share saved: \(share.url?.absoluteString ?? "no URL")")
+                // Update your UI to reflect the share
+            case .failure(let error):
+                print("Share save failed: \(error)")
+            }
+        }
+
+        // Observe when a share is stopped from the system UI
+        sharingObserver?.systemSharingUIDidStopSharingBlock = { recordID, result in
+            switch result {
+            case .success:
+                print("Sharing stopped for record: \(recordID)")
+                // Update your UI to remove sharing indicators
+            case .failure(let error):
+                print("Stop sharing failed: \(error)")
+            }
+        }
+    }
+}
+```

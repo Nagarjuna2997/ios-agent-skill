@@ -489,3 +489,165 @@ struct SimplePaywall: View {
     }
 }
 ```
+
+## iOS 18+ & Marketplace Additions
+
+### PaymentMethodBinding
+
+`PaymentMethodBinding` allows apps to bind a payment method to an Apple Account for streamlined purchasing, particularly useful for services that manage recurring billing outside of the App Store.
+
+```swift
+import StoreKit
+
+// Request payment method binding for an Apple Account
+func bindPaymentMethod() async {
+    do {
+        let binding = try await PaymentMethodBinding.request(
+            // Provide your app-specific payment method configuration
+        )
+        print("Payment method bound successfully: \(binding)")
+    } catch {
+        print("Payment method binding failed: \(error)")
+    }
+}
+```
+
+### AdAttributionKit
+
+`AdAttributionKit` is the modern replacement for `SKAdNetwork`, providing privacy-preserving ad attribution for app install campaigns. It supports both StoreKit-rendered ads and view-through attribution.
+
+```swift
+import AdAttributionKit
+
+// Register an app impression for attribution
+func registerAdImpression() async {
+    do {
+        // Create an impression for a displayed ad
+        let impression = try AdImpression(
+            adNetworkID: "example123.adnetwork",
+            sourceIdentifier: 5678,
+            advertisedItemIdentifier: 1234567890,
+            adType: .banner,
+            adPurchaserName: "AdNetwork Inc.",
+            impressionType: .view // or .storeKitRendered
+        )
+
+        // Register the impression with the system
+        try await impression.handleImpression()
+        print("Ad impression registered for attribution")
+    } catch {
+        print("Failed to register impression: \(error)")
+    }
+}
+
+// For postbacks (server-side), AdAttributionKit sends cryptographically signed
+// postbacks to ad networks after a conversion, similar to SKAdNetwork but with:
+// - Improved reengagement attribution
+// - Support for multiple postback windows
+// - Developer postbacks for your own analytics
+```
+
+### External Purchases / Alternative Marketplaces (EU DMA)
+
+For apps distributed in the EU, iOS 18 introduces APIs for external purchase links and alternative marketplace support under the Digital Markets Act (DMA).
+
+```swift
+import StoreKit
+
+// MARK: - External Purchase Link (EU only)
+
+// Present an external purchase link that navigates the user
+// to your website for completing the purchase
+func presentExternalPurchaseLink() async {
+    do {
+        // Check if external purchases are available (EU region only)
+        guard ExternalPurchaseLink.canOpen else {
+            print("External purchase links not available in this region")
+            return
+        }
+
+        // Open the external purchase flow
+        // The system shows a confirmation sheet before navigating to your URL
+        try await ExternalPurchaseLink.open(
+            url: URL(string: "https://yourapp.com/subscribe")!
+        )
+    } catch {
+        print("Failed to open external purchase link: \(error)")
+    }
+}
+
+// MARK: - External Purchase (Alternative Billing)
+
+// For apps that use alternative payment processing
+func processExternalPurchase() async {
+    do {
+        guard ExternalPurchase.canMakePayments else {
+            print("External purchases not available")
+            return
+        }
+
+        // Notify the system about an external purchase for compliance tracking
+        let token = try await ExternalPurchase.token
+        // Send this token to your server for validation and to report
+        // the transaction to Apple (required for commission compliance)
+        print("External purchase token: \(token)")
+    } catch {
+        print("External purchase failed: \(error)")
+    }
+}
+```
+
+### MarketplaceKit
+
+`MarketplaceKit` supports alternative app marketplace distribution in the EU. Marketplace apps can distribute third-party apps outside of the App Store.
+
+```swift
+import MarketplaceKit
+
+// MARK: - Alternative Marketplace Distribution
+
+// Check if the current app was installed from an alternative marketplace
+func checkMarketplaceInstallation() async {
+    do {
+        let appInstallation = try await AppInstallation.current
+
+        // Verify the marketplace that distributed this app
+        print("Marketplace: \(appInstallation.marketplace)")
+        print("Install date: \(appInstallation.installDate)")
+
+        // Marketplace-distributed apps can:
+        // 1. Use alternative payment processors
+        // 2. Distribute apps not available on the App Store
+        // 3. Set their own curation and review policies
+    } catch {
+        print("Failed to check installation: \(error)")
+    }
+}
+
+// For building a marketplace app itself:
+// 1. Request the Marketplace entitlement from Apple
+// 2. Implement app distribution via MarketplaceKit APIs
+// 3. Handle app installation, updates, and license verification
+// 4. Comply with Apple's marketplace requirements (notarization, etc.)
+
+// Marketplace apps must handle:
+struct MarketplaceAppManager {
+    // Install an app from the marketplace catalog
+    func installApp(bundleID: String, licenseToken: Data) async throws {
+        // MarketplaceKit handles the installation flow
+        // Apps must be notarized by Apple before distribution
+    }
+
+    // Check for and deliver app updates
+    func checkForUpdates() async throws -> [AppUpdate] {
+        // Query your marketplace server for available updates
+        return []
+    }
+}
+
+struct AppUpdate {
+    let bundleID: String
+    let version: String
+    let downloadURL: URL
+}
+```

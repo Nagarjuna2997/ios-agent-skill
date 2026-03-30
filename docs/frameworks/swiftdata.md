@@ -442,3 +442,227 @@ class CloudTask {
     }
 }
 ```
+
+## iOS 18+ Additions
+
+### History API
+
+The SwiftData History API enables tracking time-based model changes (inserts, updates, deletes) for server sync, auditing, or undo support. It uses `HistoryDescriptor` and the `ModelContext` history-fetching methods to retrieve changes since a given point in time.
+
+```swift
+import SwiftData
+
+// Fetching model history for sync
+func fetchChangesSinceLastSync(context: ModelContext, lastToken: DefaultHistoryToken?) async throws -> DefaultHistoryToken? {
+    // Build a descriptor starting from the last known sync point
+    var descriptor = HistoryDescriptor<DefaultHistoryTransaction>()
+    if let lastToken {
+        descriptor.predicate = #Predicate { transaction in
+            transaction.token > lastToken
+        }
+    }
+
+    // Fetch transactions from history
+    let transactions = try context.fetchHistory(descriptor)
+
+    for transaction in transactions {
+        // Each transaction contains changes grouped atomically
+        for change in transaction.changes {
+            switch change {
+            case let change as DefaultHistoryInsert<Task>:
+                let modelID = change.persistentIdentifier
+                print("Inserted Task: \(modelID)")
+                // Sync insert to server
+
+            case let change as DefaultHistoryUpdate<Task>:
+                let modelID = change.persistentIdentifier
+                let updatedProperties = change.updatedProperties
+                print("Updated Task: \(modelID), fields: \(updatedProperties)")
+                // Sync update to server
+
+            case let change as DefaultHistoryDelete<Task>:
+                let modelID = change.persistentIdentifier
+                print("Deleted Task: \(modelID)")
+                // Sync delete to server
+
+            default:
+                break
+            }
+        }
+    }
+
+    // Return the latest token to persist for next sync
+    return transactions.last?.token
+}
+
+// Persisting the sync token
+class SyncManager {
+    private let tokenKey = "lastHistorySyncToken"
+
+    func saveToken(_ token: DefaultHistoryToken) {
+        let data = try? JSONEncoder().encode(token)
+        UserDefaults.standard.set(data, forKey: tokenKey)
+    }
+
+    func loadToken() -> DefaultHistoryToken? {
+        guard let data = UserDefaults.standard.data(forKey: tokenKey) else { return nil }
+        return try? JSONDecoder().decode(DefaultHistoryToken.self, from: data)
+    }
+
+    func performSync(context: ModelContext) async throws {
+        let lastToken = loadToken()
+        if let newToken = try await fetchChangesSinceLastSync(context: context, lastToken: lastToken) {
+            saveToken(newToken)
+        }
+    }
+}
+```
+
+### @Index Macro
+
+The `#Index` macro defines database indexes on model properties, improving query performance for frequently searched or sorted fields.
+
+```swift
+import SwiftData
+
+@Model
+class Task {
+    var id: UUID
+    var title: String
+    var isCompleted: Bool
+    var priority: Int
+    var createdAt: Date
+    var dueDate: Date?
+    var category: String
+
+    // Single-property index for fast lookups by title
+    #Index<Task>([\.title])
+
+    // Compound index for queries that filter by completion status and sort by priority
+    #Index<Task>([\.isCompleted, \.priority])
+
+    // Index on createdAt for time-based sorting queries
+    #Index<Task>([\.createdAt])
+
+    // Compound index for category-based filtered and sorted queries
+    #Index<Task>([\.category, \.dueDate])
+
+    init(title: String, priority: Int = 0, category: String = "general") {
+        self.id = UUID()
+        self.title = title
+        self.isCompleted = false
+        self.priority = priority
+        self.createdAt = Date()
+        self.category = category
+    }
+}
+
+// The indexes above optimize queries like:
+// @Query(filter: #Predicate<Task> { !$0.isCompleted }, sort: \.priority)
+// @Query(filter: #Predicate<Task> { $0.category == "work" }, sort: \.dueDate)
+```
+
+### Custom Data Stores
+
+The `DataStore` protocol allows SwiftData to use custom storage backends beyond the default SQLite/CoreData store. You can back SwiftData models with JSON files, remote APIs, or any custom persistence layer.
+
+```swift
+import SwiftData
+
+// A custom data store backed by JSON files
+actor JSONDataStore: DataStore {
+    typealias Snapshot = DefaultSnapshot
+
+    let configuration: DataStoreConfiguration
+    let fileURL: URL
+
+    init(_ configuration: DataStoreConfiguration, fileURL: URL) {
+        self.configuration = configuration
+        self.fileURL = fileURL
+    }
+
+    // Fetch models from the custom store
+    func fetch<T: PersistentModel>(_ descriptor: FetchDescriptor<T>) throws -> [T] {
+        // Read from your custom backend (JSON file, API, etc.)
+        let data = try Data(contentsOf: fileURL)
+        let snapshots = try JSONDecoder().decode([DefaultSnapshot].self, from: data)
+        // Convert snapshots back to models
+        // Implementation depends on your storage format
+        return []
+    }
+
+    // Save changes to the custom store
+    func save(_ insert: [DefaultSnapshot], _ update: [DefaultSnapshot], _ delete: [PersistentIdentifier]) throws {
+        // Persist inserts, updates, and deletes to your custom backend
+        var existing = loadExistingSnapshots()
+
+        // Apply inserts
+        existing.append(contentsOf: insert)
+
+        // Apply updates
+        for updated in update {
+            if let index = existing.firstIndex(where: { $0.persistentIdentifier == updated.persistentIdentifier }) {
+                existing[index] = updated
+            }
+        }
+
+        // Apply deletes
+        existing.removeAll { snapshot in
+            delete.contains(snapshot.persistentIdentifier)
+        }
+
+        // Write back to storage
+        let data = try JSONEncoder().encode(existing)
+        try data.write(to: fileURL)
+    }
+
+    private func loadExistingSnapshots() -> [DefaultSnapshot] {
+        guard let data = try? Data(contentsOf: fileURL) else { return [] }
+        return (try? JSONDecoder().decode([DefaultSnapshot].self, from: data)) ?? []
+    }
+}
+
+// Custom configuration for the data store
+struct JSONStoreConfiguration: DataStoreConfiguration {
+    var name: String
+    var schema: Schema?
+    var fileURL: URL
+
+    init(name: String, schema: Schema? = nil, fileURL: URL) {
+        self.name = name
+        self.schema = schema
+        self.fileURL = fileURL
+    }
+}
+
+// Using the custom data store with ModelContainer
+@main
+struct MyApp: App {
+    let container: ModelContainer
+
+    init() {
+        let schema = Schema([Task.self, Category.self])
+        let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        let storeURL = documentsURL.appendingPathComponent("data.json")
+
+        let config = JSONStoreConfiguration(
+            name: "JSONStore",
+            schema: schema,
+            fileURL: storeURL
+        )
+
+        do {
+            container = try ModelContainer(for: schema, configurations: [config])
+        } catch {
+            fatalError("Failed to create ModelContainer with custom store: \(error)")
+        }
+    }
+
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+        }
+        .modelContainer(container)
+    }
+}
+```
