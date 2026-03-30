@@ -27,6 +27,93 @@
 
 ---
 
+## :warning: Important: Create Your Xcode Project FIRST
+
+> **This skill generates Swift files, not a full Xcode project.** You must create the Xcode project first, then use your AI agent to build features inside it.
+
+### Step 1: Create the Xcode Project
+
+1. Open **Xcode** (macOS only — required for iOS development)
+2. Click **File → New → Project** (or press `Cmd + Shift + N`)
+3. Select **App** under iOS (or Multiplatform for cross-platform)
+4. Fill in the project details:
+   - **Product Name:** `YourAppName`
+   - **Team:** Select your Apple Developer account (or Personal Team)
+   - **Organization Identifier:** `com.yourname` (e.g., `com.nagarjuna`)
+   - **Interface:** **SwiftUI**
+   - **Language:** **Swift**
+   - **Storage:** **SwiftData** (or None if you don't need persistence)
+5. Click **Next** → Choose a folder → Click **Create**
+6. Xcode creates the full project structure:
+   ```
+   YourAppName/
+   ├── YourAppName.xcodeproj     ← Xcode project file
+   ├── YourAppName/
+   │   ├── YourAppNameApp.swift  ← App entry point
+   │   ├── ContentView.swift     ← Main view
+   │   ├── Assets.xcassets       ← App icons, colors, images
+   │   ├── Preview Content/      ← Preview assets
+   │   └── Info.plist            ← (if visible)
+   └── YourAppNameTests/
+       └── ...
+   ```
+
+### Step 2: Clone This Skill Into Your Project
+
+```bash
+cd /path/to/YourAppName
+git clone https://github.com/Nagarjuna2997/ios-agent-skill.git .ios-skill
+```
+
+### Step 3: Open Your AI Agent and Start Building
+
+Now open your project folder in your preferred AI coding tool:
+
+```bash
+# Claude Code
+cd /path/to/YourAppName && claude
+
+# Codex
+cd /path/to/YourAppName && codex
+
+# Cursor — just open the folder in Cursor
+
+# Any other tool — open the folder in your IDE
+```
+
+### Step 4: Ask the AI to Build Features
+
+The AI will create/modify `.swift` files inside your Xcode project:
+
+```
+"Add a login screen with email and password fields"
+"Create a settings page with dark mode toggle"
+"Add a tab bar with Home, Search, and Profile tabs"
+"Implement a networking layer to fetch data from my API"
+```
+
+### Step 5: Run in Xcode
+
+Go back to Xcode → Press `Cmd + R` (or click the Play button) to build and run on the simulator.
+
+> **Why this workflow?** AI agents generate Swift source files (`.swift`), but iOS apps need a proper Xcode project (`.xcodeproj`) with build settings, signing, asset catalogs, and simulator configuration. Xcode is the only tool that can compile, sign, and run iOS apps. Your AI agent writes the code — Xcode builds and runs it.
+
+### Alternative: Use the Template
+
+If you want to skip Xcode project creation, copy our ready-made template files into a new Xcode project:
+
+```bash
+# After creating Xcode project, copy template files
+cp ios-agent-skill/templates/ios-app/*.swift /path/to/YourAppName/YourAppName/
+cp -r ios-agent-skill/templates/ios-app/Views/ /path/to/YourAppName/YourAppName/Views/
+cp -r ios-agent-skill/templates/ios-app/ViewModels/ /path/to/YourAppName/YourAppName/ViewModels/
+cp -r ios-agent-skill/templates/ios-app/Models/ /path/to/YourAppName/YourAppName/Models/
+```
+
+Then open Xcode → Right-click the project → **Add Files to "YourAppName"** → Select the new folders.
+
+---
+
 ## :zap: One-Line Install
 
 ```bash
