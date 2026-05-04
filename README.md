@@ -284,6 +284,8 @@ Auto-reads `.aiassistant/rules/ios-skill.md` or `.junie/guidelines.md`
 | :bell: | [usernotifications.md](docs/frameworks/usernotifications.md) | Local/remote notifications, actions |
 | :card_index_dividers: | [widgetkit.md](docs/frameworks/widgetkit.md) | Widgets, Live Activities, Control Center |
 | :wheelchair: | [accessibility.md](docs/frameworks/accessibility.md) | VoiceOver, Dynamic Type, contrast |
+| :iphone: | [arkit.md](docs/frameworks/arkit.md) | World/face/body/image/object/geo tracking, mesh, anchors |
+| :eyeglasses: | [realitykit.md](docs/frameworks/realitykit.md) | ECS, RealityView, ARView, PBR materials, physics, USDZ |
 
 ### :robot: AI & Machine Learning — `docs/frameworks/ml/`
 
@@ -356,6 +358,7 @@ templates/ios-app/
  |- Models/Item.swift      # Data model
  |- Views/                 # HomeView, ProfileView, SettingsView
  |- ViewModels/            # @Observable view models
+ |- Tests/                 # Swift Testing + XCTest examples
  |- Info.plist
 ```
 
