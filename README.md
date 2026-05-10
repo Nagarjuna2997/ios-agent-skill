@@ -10,8 +10,8 @@
 <h1 align="center">ios-agent-skill</h1>
 
 <p align="center">
-  <strong>The ultimate AI skill that turns any coding agent into a senior iOS/Swift developer.</strong><br>
-  Production-ready code. Stunning UIs. Zero errors. All Apple platforms.
+  <strong>An Agent Skill for production-oriented iOS, Swift, and SwiftUI development.</strong><br>
+  Helps AI coding assistants generate safer Swift code, follow modern Apple APIs, and work inside existing Xcode projects.
 </p>
 
 <p align="center">
@@ -19,9 +19,16 @@
   <a href="https://github.com/Nagarjuna2997"><img src="https://img.shields.io/badge/GitHub-Nagarjuna2997-181717?style=flat-square&logo=github" alt="GitHub"></a>
   <img src="https://img.shields.io/github/license/Nagarjuna2997/ios-agent-skill?style=flat-square" alt="License">
   <img src="https://img.shields.io/github/stars/Nagarjuna2997/ios-agent-skill?style=flat-square" alt="Stars">
+  <img src="https://img.shields.io/github/v/release/Nagarjuna2997/ios-agent-skill?style=flat-square" alt="Release">
 </p>
 
 ---
+
+## Adoption and Community Usage
+
+This repository tracks public adoption evidence in [`ADOPTION.md`](ADOPTION.md), including repository metrics, public mentions, user feedback, and projects built with the skill.
+
+If you use this skill in a public project, tutorial, or workflow, please open an issue or discussion so it can be listed as community evidence.
 
 ## :book: [Complete AI Setup Guide (Mac + Windows) for ALL 28 Tools](docs/ai-setup-guide.md)
 
