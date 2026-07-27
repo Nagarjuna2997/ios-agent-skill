@@ -19,6 +19,8 @@ is executable.
 Establish:
 1. **Target and toolchain** — deployment target from the project file or
    `Package.swift`, Swift language mode, whether strict concurrency is on.
+   Current toolchain baseline is **Swift 6.4 / Xcode 27 / iOS 27 SDK**; read the
+   project rather than assuming it has been updated.
 2. **Existing architecture** — MVVM, Clean Architecture, TCA, or ad hoc. Match
    it. Do not import a new architecture into a codebase that already has one.
 3. **Existing seams** — which protocols already exist that the new code should
@@ -40,6 +42,25 @@ These come from this repository's `SKILL.md` and are not negotiable:
 
 If the existing codebase violates these, say so in `RISKS` — do not silently
 plan a migration nobody asked for.
+
+## Version compatibility
+
+Every plan states the versions it assumes and flags anything that raises a
+floor. Raising a deployment target is a product decision, never a side effect
+of a plan.
+
+- **Swift 6.4 / Xcode 27 / iOS 27 SDK** is the current toolchain.
+- **Guard on the version where a symbol became available, not the newest version
+  you are building with.** Liquid Glass is iOS 26+; Foundation Models baseline is
+  iOS 26+; Private Cloud Compute, Dynamic Profiles, image attachments, and custom
+  `LanguageModel` providers are iOS 27+. Writing `#available(iOS 27, *)` around an
+  iOS 26 API silently drops a large installed base.
+- **This skill's baseline is iOS 17+.** Anything newer is additive: the app must
+  still work without it. If a plan requires a newer floor, say so explicitly in
+  `RISKS` with what it costs.
+- Swift 6.4 ergonomics worth planning for: `weak let` and `~Sendable` instead of
+  `@unchecked Sendable`, `@diagnose` to ratchet strictness file by file, and the
+  new unhandled-task-error warning.
 
 ## What you return
 

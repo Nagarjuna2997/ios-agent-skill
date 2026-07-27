@@ -1,7 +1,7 @@
 {
   "name": "ios-agent-skill",
-  "version": "1.2.0",
-  "description": "Expert iOS/Swift developer skill for Claude — 100 files covering all Apple platforms, frameworks, design systems, architecture patterns, and concurrency isolation rules",
+  "version": "1.3.0",
+  "description": "Expert iOS/Swift developer skill for Claude — 106 files covering all Apple platforms, frameworks, Foundation Models and Apple Intelligence, design systems, architecture patterns, and agent orchestration",
   "author": "Nagarjuna Reddy",
   "homepage": "https://github.com/Nagarjuna2997/ios-agent-skill",
   "license": "MIT",
@@ -22,16 +22,52 @@
   "skill": {
     "entry": "SKILL.md",
     "type": "system-prompt",
-    "platforms": ["ios", "macos", "watchos", "tvos", "visionos"],
-    "languages": ["swift"],
+    "platforms": [
+      "ios",
+      "macos",
+      "watchos",
+      "tvos",
+      "visionos"
+    ],
+    "languages": [
+      "swift"
+    ],
     "frameworks": [
-      "swiftui", "uikit", "foundation", "combine", "swiftdata",
-      "coredata", "coreml", "vision", "arkit", "realitykit",
-      "mapkit", "healthkit", "storekit", "cloudkit", "widgetkit",
-      "activitykit", "appintents", "tipkit", "corelocation",
-      "avfoundation", "corebluetooth", "coremotion", "corenfc",
-      "homekit", "passkit", "weatherkit", "eventkit", "cryptokit"
-    ]
+      "appleintelligence",
+      "foundationmodels",
+      "swiftui",
+      "uikit",
+      "foundation",
+      "combine",
+      "swiftdata",
+      "coredata",
+      "coreml",
+      "vision",
+      "arkit",
+      "realitykit",
+      "mapkit",
+      "healthkit",
+      "storekit",
+      "cloudkit",
+      "widgetkit",
+      "activitykit",
+      "appintents",
+      "tipkit",
+      "corelocation",
+      "avfoundation",
+      "corebluetooth",
+      "coremotion",
+      "corenfc",
+      "homekit",
+      "passkit",
+      "weatherkit",
+      "eventkit",
+      "cryptokit"
+    ],
+    "swift-version": "6.4",
+    "xcode-version": "27",
+    "ios-sdk-version": "27",
+    "minimum-ios": "17.0"
   },
   "resources": {
     "docs": "docs/",

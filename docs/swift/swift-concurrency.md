@@ -428,6 +428,7 @@ or a `nonisolated` async function.
 | `nonisolated func … async` | Runs on the cooperative pool | CPU work inside a `@MainActor` type |
 | `actor` | Own serial executor | Shared mutable state |
 | `@concurrent func … async` (Swift 6.2+) | Always offloads to the pool | Explicitly parallel work |
+| `nonisolated(nonsending) func … async` | Runs in the caller's isolation | Library APIs that should not hop |
 | `Task.detached` | No actor, no priority, no task-locals | Almost never in app code |
 
 ```swift
@@ -560,6 +561,169 @@ struct ContentView: View {
 
 Every method reachable from `.task` must therefore treat `CancellationError` as a
 normal outcome, not a failure to display.
+
+### Swift 6.4 concurrency ergonomics
+
+Swift 6.4 (Xcode 27) removes several reasons people historically reached for
+`@unchecked Sendable`. Prefer these over the escape hatch.
+
+**`weak let` — a weak reference that no longer blocks `Sendable`.**
+
+```swift
+// BEFORE — a weak var forced @unchecked Sendable on an otherwise safe type.
+final class Coordinator: @unchecked Sendable {
+    weak var delegate: (any FlowDelegate)?
+}
+
+// SWIFT 6.4 — immutable weak reference; the type is Sendable with no escape hatch.
+final class Coordinator: Sendable {
+    weak let delegate: (any FlowDelegate)?
+    init(delegate: any FlowDelegate) { self.delegate = delegate }
+}
+```
+
+**`~Sendable` — state explicitly that a type must not cross actors.**
+
+```swift
+// Documents the constraint AND enforces it, instead of relying on a comment.
+struct RenderContext: ~Sendable {
+    let cgContext: CGContext        // genuinely not safe to share
+}
+```
+
+**Unhandled task errors now warn.** An error thrown out of a `Task` used to
+vanish silently — a very common source of "nothing happened and nothing was
+logged".
+
+```swift
+// WARNS in Swift 6.4 — the error is discarded.
+Task {
+    try await sync.run()
+}
+
+// Handle it in the task…
+Task {
+    do { try await sync.run() }
+    catch { Logger.sync.error("sync failed: \(error)") }
+}
+
+// …or keep the task and check later.
+let task = Task { try await sync.run() }
+// …
+do { try await task.value } catch { … }
+```
+
+This warning maps directly onto the repo rule *every `catch` produces a
+user-visible outcome or a documented no-op*. Do not silence it with `try?`.
+
+**`async` calls are allowed in `defer`.** The old restriction is gone, so cleanup
+that needs an await no longer has to be duplicated on every exit path.
+
+```swift
+func process() async throws {
+    let handle = try await pool.acquire()
+    defer { await pool.release(handle) }        // now legal
+    try await work(using: handle)
+}
+```
+
+**`@diagnose` — per-declaration warning control.** During an incremental
+migration you can suppress a warning in one place, or promote it to an error
+where you want strict enforcement, without changing project-wide settings.
+
+```swift
+// Promote to an error in code you have already migrated.
+@diagnose(error, "StrictConcurrency")
+final class PaymentProcessor { … }
+
+// Suppress narrowly in code you have not, with a comment and a ticket.
+// TODO(#412): remove once LegacyBridge is actor-isolated.
+@diagnose(ignore, "StrictConcurrency")
+func legacyBridge() { … }
+```
+
+Use it to ratchet strictness **upward** file by file. Using it to silence the
+concurrency diagnostics across a module is how a codebase stays unsafe while
+appearing to build cleanly — the warning was the only thing telling you about a
+real race.
+
+### Actor Isolation Review Checklist
+
+Run this against any concurrent Swift you write or review.
+
+- [ ] Every `@Observable` type the UI renders is also `@MainActor`.
+- [ ] Observable model classes are `final`.
+- [ ] No `DispatchQueue.main.async` or `await MainActor.run` inside an
+      already-isolated type.
+- [ ] No `Task.detached` used merely to "get off the main thread" — a
+      `nonisolated` async function or an actor instead.
+- [ ] Every `Task { }` that can outlive its owner is stored and cancelled.
+- [ ] `.task` / `.task(id:)` used instead of `Task { }` in `onAppear`.
+- [ ] `CancellationError` handled as a deliberate no-op, not a user-facing error.
+- [ ] No index, count, or `first(where:)` result captured before an `await` and
+      used after it.
+- [ ] Overlapping async calls that write shared state are guarded by a single
+      in-flight `Task`.
+- [ ] CPU-heavy work is on an `actor` or a `nonisolated async` function, not on
+      the main actor.
+- [ ] Delegate and completion-handler callbacks hop explicitly, or use
+      `MainActor.assumeIsolated` with a verified guarantee.
+- [ ] No `@unchecked Sendable` that `weak let`, an `actor`, or `~Sendable` would
+      have solved.
+- [ ] No `nonisolated(unsafe)` without a comment saying what protects it.
+- [ ] No model object or managed-object context crosses an actor boundary —
+      identifiers only (`docs/frameworks/data-concurrency.md`).
+- [ ] Errors thrown inside a `Task` are handled or awaited, not discarded.
+- [ ] `@diagnose(ignore,)` appears only with a comment and a tracking issue.
+
+### Foundation Models and thread safety
+
+The on-device and Private Cloud Compute model APIs are `async` throughout and
+interact with these rules in three specific ways.
+
+**A session is stateful and effectively single-flight.** Overlapping prompts
+interleave into one transcript. Guard with `isResponding` or one in-flight task:
+
+```swift
+@MainActor
+@Observable
+final class ChatModel {
+    private let session: LanguageModelSession
+    private var responseTask: Task<Void, Never>?
+
+    func send(_ text: String) async {
+        responseTask?.cancel()                      // supersede, don't overlap
+        let task = Task { await stream(text) }
+        responseTask = task
+        await task.value
+    }
+}
+```
+
+**Tools run off the main actor.** A `Tool` is `Sendable` and its `call` is
+invoked concurrently, so its dependencies must be safe to share:
+
+```swift
+// WRONG — non-Sendable mutable state captured in a tool.
+struct SearchTool: Tool {
+    let cache: NSMutableDictionary          // data race
+}
+
+// RIGHT — an actor, or an immutable value.
+struct SearchTool: Tool {
+    let store: RecipeStore                  // actor
+    func call(arguments: Arguments) async throws -> String {
+        try await store.search(arguments.query).joined(separator: ", ")
+    }
+}
+```
+
+**Streaming loops must honour cancellation.** `.task` cancels on disappear, so a
+`for try await` over a response stream needs `Task.checkCancellation()` or a
+`catch is CancellationError` — otherwise dismissing the screen surfaces an error
+alert on a view that is already gone.
+
+Full reference: `docs/frameworks/foundation-models.md`.
 
 ### Sendable across the SwiftUI boundary
 
