@@ -410,11 +410,20 @@ ScrollView { content }
 | `.thickMaterial` | heavy | Modal scrims |
 | `.bar` | system | Custom nav/tab bars |
 
-### Liquid Glass (iOS 26+)
+### Liquid Glass (iOS 26+, refined in iOS 27)
 
 Liquid Glass is a dynamic material that refracts and reflects what is behind it
 and responds to motion. It supersedes hand-rolled "glassmorphism" (a blur plus a
 white stroke plus a gradient), which you should stop writing.
+
+> **Availability: guard on iOS 26, not iOS 27.** The Liquid Glass APIs
+> (`glassEffect`, `GlassEffectContainer`, `glassEffectID`, `.buttonStyle(.glass)`)
+> were introduced in **iOS 26**. iOS 27 continues and refines the design system,
+> but it did not reintroduce the API. Writing `if #available(iOS 27, *)` around
+> `glassEffect` would drop every iOS 26 device to the fallback path for no reason
+> — a silent regression for a large installed base. **Guard on the version where
+> the symbol became available, never on the newest version you happen to be
+> building with.** That rule holds for every API, not just this one.
 
 ```swift
 if #available(iOS 26.0, *) {

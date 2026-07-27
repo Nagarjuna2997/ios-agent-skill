@@ -54,21 +54,48 @@ pretend a build passed. Do not describe what the build "would" do.
 
 1. **Correctness** — does it do what was asked? Off-by-one, wrong branch,
    inverted condition, unhandled nil.
-2. **Concurrency and isolation**
+2. **Concurrency and isolation** (Swift 6.4)
    - Is every `@Observable` the UI renders also `@MainActor final class`?
    - `Task.detached` inside an isolated type?
    - Any index or value captured before an `await` and used after it?
    - `CancellationError` swallowed as a user-facing failure, or treated as one?
    - `DispatchQueue.main.async` or `MainActor.run` inside an already-isolated type?
-3. **Boundaries and testability**
+   - An error thrown inside a `Task` and discarded? (Swift 6.4 warns on this.)
+   - `@unchecked Sendable` where `weak let`, `~Sendable`, or an `actor` would do?
+   - `@diagnose(ignore,)` used to silence a real diagnostic, with no comment or
+     tracking issue?
+   - `nonisolated(unsafe)` with no comment saying what protects it?
+
+3. **Availability**
+   - Does every guard use the version where the symbol was **introduced**, rather
+     than the newest SDK? (Liquid Glass and the Foundation Models baseline are
+     iOS 26+; PCC, Dynamic Profiles, attachments, and custom `LanguageModel`
+     providers are iOS 27+.)
+   - Is a newer API used with no guard at all, against an iOS 17+ baseline?
+   - Is a newer-OS feature load-bearing rather than additive?
+
+4. **Foundation Models and Apple Intelligence**, when present
+   - Is `SystemLanguageModel.default.availability` checked at runtime before the
+     entry point is shown — not just an `@available` guard?
+   - Does the feature degrade to a working non-AI path?
+   - Structured output via `@Generable` + `@Guide`, or hand-parsed JSON?
+   - Is a `Tool`'s `description` specific enough to route to, and is the tool
+     `Sendable` with actor-safe dependencies?
+   - `.required` tool calling with no exit condition?
+   - One session reused across unrelated tasks, or overlapping prompts on one
+     session with no in-flight guard?
+   - Guardrail violations and context-window overflow handled as product states?
+   - Do privacy claims in the UI match the actual execution path, including any
+     third-party model?
+5. **Boundaries and testability**
    - Does the presentation layer name a concrete repository, use case, or client?
    - Any `init(dep: Thing = LiveThing())` default that constructs a live impl?
    - Can every touched screen render in `#Preview` with no network?
-4. **Error handling** — any `catch { }`, `try!`, `error = nil`, or force unwrap
+6. **Error handling** — any `catch { }`, `try!`, `error = nil`, or force unwrap
    without a compile-time guarantee?
-5. **UI standards** — literal colors/spacing/radii instead of tokens; material
+7. **UI standards** — literal colors/spacing/radii instead of tokens; material
    over a solid background; fixed font sizes; text/background contrast.
-6. **Tests** — do the new tests actually exercise the new behavior, including
+8. **Tests** — do the new tests actually exercise the new behavior, including
    the failure path? A test that passes against both the old and new code tests
    nothing.
 

@@ -212,6 +212,40 @@ Auto-reads `.aiassistant/rules/ios-skill.md` or `.junie/guidelines.md`
 
 ---
 
+## :gear: Supported Platforms
+
+**Write against:** Swift 6.4 · Xcode 27 · iOS 27 SDK — **deploy to:** iOS 17–27
+
+| | |
+|---|---|
+| **Swift** | 6.4+ (minimum 5.9) |
+| **Xcode** | 27+ |
+| **iOS / iPadOS** | 17 – 27 |
+| **macOS** | 14 – 27 |
+| **watchOS / tvOS** | 10 – 27 |
+| **visionOS** | 2+ |
+
+> **Guard on the version where an API was introduced, not the newest SDK.** Liquid Glass and the Foundation Models baseline are **iOS 26+**; Private Cloud Compute, Dynamic Profiles, and image attachments are **iOS 27+**. Writing `#available(iOS 27, *)` around an iOS 26 API silently drops every iOS 26 device to your fallback.
+
+Everything above the iOS 17 floor is **additive** — a newer-OS feature must degrade to a working path, never disappear.
+
+---
+
+## :sparkles: What's New in 1.3
+
+**Apple Intelligence and the iOS 27 toolchain.**
+
+| | Feature | What it gives you |
+|:---:|---------|-------------------|
+| :brain: | **[Foundation Models](docs/frameworks/foundation-models.md)** | On-device + Private Cloud Compute LLMs, `@Generable`/`@Guide` structured output, tool calling, Dynamic Profiles, multimodal prompts, custom `LanguageModel` providers |
+| :sparkles: | **[Apple Intelligence](docs/frameworks/apple-intelligence.md)** | Which framework to reach for, the privacy model and what you may claim, App Intents, Image Playground, features that degrade |
+| :hammer_and_wrench: | **[Xcode 27 agents](docs/tooling/xcode-27-agents.md)** | Coding agents vs. Claude Code, agent-assisted localization and testing, the Swift Concurrency instrument |
+| :iphone: | **[Device Hub](docs/tooling/device-hub.md)** | The device/config test matrix, iOS 27 app resizability, accessibility passes |
+| :ocean: | **Swift 6.4** | `weak let`, `~Sendable`, `@diagnose`, async in `defer`, unhandled-task-error warnings, plus an actor isolation review checklist |
+| :busts_in_silhouette: | **4 new subagents** | `foundation-models`, `swiftui-modernization`, `accessibility-reviewer`, `performance-reviewer` — 10 total |
+
+---
+
 ## :sparkles: What's New in 1.2
 
 **The agent-operations layer.** Earlier versions taught the model *what* to write. This release adds *how it should work* — how to split a job, verify it, and scale it out.
@@ -277,6 +311,10 @@ Two rules do most of the work:
 | [`swift-debugger`](.claude/agents/swift-debugger.md) | read + Bash + Edit | Reproduce → isolate → fix → prove |
 | [`swift-refactorer`](.claude/agents/swift-refactorer.md) | read + write + Bash | Behavior-preserving cleanups against a green baseline |
 | [`ios-docs`](.claude/agents/ios-docs.md) | read + write + Bash | Docs, DocC, README, CHANGELOG |
+| [`foundation-models`](.claude/agents/foundation-models.md) | read + write + Bash | On-device / PCC LLM features, availability gating, graceful degradation |
+| [`swiftui-modernization`](.claude/agents/swiftui-modernization.md) | read + write + Bash | Legacy → modern API migration, behavior-preserving |
+| [`accessibility-reviewer`](.claude/agents/accessibility-reviewer.md) | read-only | VoiceOver, Dynamic Type, contrast, tap targets, motion |
+| [`performance-reviewer`](.claude/agents/performance-reviewer.md) | read + Bash | Hitches, memory, main-actor contention — measures before concluding |
 
 **Drop-in hooks for your iOS project** — [`templates/hooks/`](templates/hooks/)
 
@@ -285,6 +323,13 @@ Two rules do most of the work:
 | :art: | [swift-format.sh](templates/hooks/swift-format.sh) | PostToolUse | SwiftFormat + SwiftLint autocorrect on the edited file |
 | :no_entry: | [forbid-antipatterns.sh](templates/hooks/forbid-antipatterns.sh) | PostToolUse | Blocks `DispatchQueue.main.async`, `Task.detached`, `@Observable` without `@MainActor`, empty `catch`, `try!`, `NavigationView`, `AnyView`, fixed font sizes, `print()`, a type named `Task` |
 | :hammer: | [build-check.sh](templates/hooks/build-check.sh) | Stop | Builds and tests before the turn ends; blocks a "done" that does not compile |
+
+### :hammer_and_wrench: Tooling — `docs/tooling/`
+
+| | File | Topics |
+|:---:|------|--------|
+| :robot: | [xcode-27-agents.md](docs/tooling/xcode-27-agents.md) | Xcode coding agents, routing vs. Claude Code, agent-assisted localization and testing, Instruments |
+| :iphone: | [device-hub.md](docs/tooling/device-hub.md) | Device Hub, the test matrix, iOS 27 app resizability, accessibility passes |
 
 ### :orange_book: Swift Language — `docs/swift/`
 
@@ -358,6 +403,8 @@ Two rules do most of the work:
 
 | | File | Framework |
 |:---:|------|-----------|
+| :sparkles: | [foundation-models.md](docs/frameworks/foundation-models.md) | On-device + PCC LLMs, `@Generable`, tool calling, Dynamic Profiles, multimodal prompts |
+| :star2: | [apple-intelligence.md](docs/frameworks/apple-intelligence.md) | Framework routing, privacy model, App Intents, Image Playground, graceful degradation |
 | :brain: | [coreml.md](docs/frameworks/ml/coreml.md) | Model loading, prediction, Neural Engine |
 | :eye: | [vision.md](docs/frameworks/ml/vision.md) | OCR, face detection, barcode, segmentation |
 | :speech_balloon: | [natural-language.md](docs/frameworks/ml/natural-language.md) | Tokenization, sentiment, embeddings |

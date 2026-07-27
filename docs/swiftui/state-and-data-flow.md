@@ -73,7 +73,16 @@ Toggle("Dark Mode", isOn: binding)
 
 ## @Observable (iOS 17+, Observation Framework)
 
-The modern way to create observable data models. Replaces `ObservableObject` and `@Published`.
+**The Observation framework is the default for all new code.** `ObservableObject`
++ `@Published` is legacy: it is coarser (any published change invalidates every
+observing view), it needs a wrapper on every property, and it forces
+`@StateObject`/`@ObservedObject` distinctions that `@State` handles on its own.
+Use it only when you must support iOS 16 or earlier, or when integrating with an
+existing Combine pipeline — and label those as legacy where they appear.
+
+Every sample in this document uses `@Observable` with `@MainActor` on any type
+the UI renders. That pairing is not stylistic: see *@Observable and Actor
+Isolation* below for why the annotation is required rather than optional.
 
 ```swift
 import Observation

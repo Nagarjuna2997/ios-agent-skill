@@ -25,6 +25,10 @@ Work top to bottom. Take the first row that matches.
 | Is a failure whose cause is not obvious | `swift-debugger` | `subagents.md` |
 | Is a behavior-preserving cleanup | `swift-refactorer` | `subagents.md` |
 | Is documentation, README, or CHANGELOG work | `ios-docs` | `subagents.md` |
+| Involves Foundation Models, Apple Intelligence, or on-device LLM work | `foundation-models` | `../frameworks/foundation-models.md` |
+| Is an accessibility audit — VoiceOver, Dynamic Type, contrast | `accessibility-reviewer` | `../frameworks/accessibility.md` |
+| Is a performance investigation — hitches, memory, main-actor contention | `performance-reviewer` | `../../checklists/performance.md` |
+| Is migrating legacy SwiftUI/UIKit to modern APIs | `swiftui-modernization` | `subagents.md` |
 | Must repeat until a condition holds | A **loop** with a stop condition | `looping.md` |
 | Is 5–30 isolated changes each wanting its own PR | `/batch` | `dynamic-workflows.md` |
 | Is dozens of units with branching or dependencies | A **dynamic workflow** | `dynamic-workflows.md` |
@@ -171,14 +175,18 @@ These hold no matter which path you took:
 ## 7. Quick reference
 
 ```
-inline            1–2 files, context already loaded          ← the default
-ios-explore       "where is X" across many files             read-only, parallel
-ios-plan          multi-file feature or migration            read-only
-swift-reviewer    verify work you or another agent did       no write tools
-swift-debugger    something is broken, cause unclear         reproduce → fix → prove
-swift-refactorer  cleanup with no behavior change            green baseline required
-ios-docs          prose about code                           enforces doc structure
-loop              repeat until a measured condition          needs GOAL/CHECK/MAX
-/batch            5–30 isolated PRs                          worktree per unit
-dynamic workflow  dozens of units, branching logic           orchestration in a script
+inline                   1–2 files, context already loaded    ← the default
+ios-explore              "where is X" across many files       read-only, parallel
+ios-plan                 multi-file feature or migration      read-only
+swift-reviewer           verify work you or another agent did no write tools
+swift-debugger           something is broken, cause unclear   reproduce → fix → prove
+swift-refactorer         cleanup with no behavior change      green baseline required
+ios-docs                 prose about code                     enforces doc structure
+foundation-models        on-device / PCC LLM work             availability-aware
+swiftui-modernization    legacy → modern API migration        behavior-preserving
+accessibility-reviewer   VoiceOver, Dynamic Type, contrast    read-only audit
+performance-reviewer     hitches, memory, actor contention    measures, never guesses
+loop                     repeat until a measured condition    needs GOAL/CHECK/MAX
+/batch                   5–30 isolated PRs                    worktree per unit
+dynamic workflow         dozens of units, branching logic     orchestration in a script
 ```

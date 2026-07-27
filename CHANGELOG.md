@@ -6,6 +6,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+### Added -- 1.3.0 Apple Intelligence and the iOS 27 toolchain
+
+Content verified against Apple's current developer documentation (Xcode 27 beta, Swift 6.4, WWDC26 sessions) rather than written from model memory -- the API surface below post-dates the authoring model's training data.
+
+- **`docs/frameworks/foundation-models.md`** -- the framework reference: `LanguageModelSession` lifecycle, `@Generable`/`@Guide` structured output, `PartiallyGenerated` streaming, the `Tool` protocol, built-in Vision-backed system tools, model selection (`SystemLanguageModel` vs. `PrivateCloudComputeLanguageModel`), the open `LanguageModel`/`LanguageModelExecutor` provider protocols, Dynamic Profiles with baton-pass and phone-a-friend orchestration, multimodal `Attachment` prompts, context/token/usage APIs, concurrency rules, error handling, the two-layer availability model, and testing that asserts shape rather than exact output.
+- **`docs/frameworks/apple-intelligence.md`** -- which framework to reach for (App Intents vs. Foundation Models is the most common mistake), the privacy model for on-device / Private Cloud Compute / third-party models and what may honestly be claimed in UI, App Intents, Image Playground, Visual Intelligence, and designing features that degrade when no model is available.
+- **`docs/tooling/xcode-27-agents.md`** -- Xcode coding agents, routing between an in-Xcode agent and Claude Code, agent-assisted localization (and what still needs a human: plurals, RTL, truncation), agent-assisted testing, the Swift Concurrency instrument for actor contention, and keeping non-Claude agents bound by this skill's rules via hooks.
+- **`docs/tooling/device-hub.md`** -- Device Hub, the device/configuration test matrix, **iOS 27 app resizability** (rebuilding against the SDK auto-opts you in), accessibility passes, and reproducing device-specific bugs on their exact configuration.
+- **Four new subagents** -- `foundation-models` (availability gating and graceful degradation), `swiftui-modernization` (behavior-preserving legacy migration with an ordered migration table), `accessibility-reviewer` (read-only VoiceOver/Dynamic Type/contrast audit with greps), `performance-reviewer` (measures before recommending; never optimizes on suspicion). Ten subagents total.
+
+### Changed -- 1.3.0
+- `SKILL.md` frontmatter: added `swift-version: 6.4`, `xcode-version: 27`, `ios-sdk-version: 27`, and a `supports` list (Foundation Models, Apple Intelligence, Private Cloud Compute, Xcode Coding Agents, Device Hub, Liquid Glass, SwiftData, Swift 6 strict concurrency). Deployment floor stays `minimum-ios: 17.0` / `minimum-swift: 5.9` -- the toolchain version and the deployment floor are different things and are now named separately. Version 1.3.0.
+- `SKILL.md`: new **Target Platforms and Toolchain** section with a per-feature version-floor table, and the rule that availability guards use the version where a symbol was *introduced*, not the newest SDK.
+- `SKILL.md`: new **Xcode 27 agent integration** subsection under How You Operate -- routing between Xcode agents and Claude Code, and the three rules that hold regardless of which agent wrote the code. This propagates to `AGENTS.md` and the other 23 mirrors, which is the only way to add a section to `AGENTS.md` (it is generated).
+- `docs/swift/swift-concurrency.md`: Swift 6.4 ergonomics (`weak let`, `~Sendable`, unhandled-task-error warnings, async in `defer`, `@diagnose` for ratcheting strictness), a 16-point **Actor Isolation Review Checklist**, and a Foundation Models thread-safety section (single-flight sessions, off-main-actor tools, cancellation in streaming loops).
+- `docs/swiftui/state-and-data-flow.md`: states explicitly that Observation is the default for new code and why `ObservableObject` is legacy.
+- `docs/design/design-tokens.md`: Liquid Glass noted as refined in iOS 27, with the availability guard deliberately **kept at iOS 26** -- bumping it to 27 would drop every iOS 26 device to the fallback for no reason.
+- `docs/orchestration/router.md`: routes for Foundation Models, accessibility, performance, and modernization work.
+- `.claude/agents/ios-plan.md`: a Version compatibility section -- Swift 6.4 / Xcode 27 / iOS 27 SDK baseline, per-symbol availability floors, and the rule that raising a deployment target is a product decision.
+- `.claude/agents/swift-reviewer.md`: review checks for Swift 6.4 isolation (discarded task errors, `@unchecked Sendable` that `weak let`/`~Sendable` would solve, unexplained `@diagnose(ignore,)`), availability correctness, and Foundation Models / Apple Intelligence usage including privacy-claim accuracy.
+- README: a **Supported Platforms** section and a What's New in 1.3 section; tooling and AI documentation index entries; the subagent table extended to ten.
+
 ### Added -- 1.2.0 agent-operations layer
 
 The repository taught the main agent what to write but never how to operate. This release adds the orchestration layer: how to split work, verify it, and scale it out. Because `AGENTS.md` and the other 23 rule files are generated from `SKILL.md`, the operating model lands in all of them.

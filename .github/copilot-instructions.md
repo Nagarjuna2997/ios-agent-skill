@@ -42,6 +42,10 @@ Load this skill when any of the following is true. When none are true, do not lo
 | About to report that something works | `docs/orchestration/verification.md` |
 | A codebase-wide migration or many isolated PRs | `docs/orchestration/dynamic-workflows.md` |
 | Enforcing a rule automatically | `docs/orchestration/hooks.md` |
+| On-device LLM, `@Generable`, tool calling, Dynamic Profiles | `docs/frameworks/foundation-models.md` |
+| Siri, Apple Intelligence, Private Cloud Compute, privacy claims | `docs/frameworks/apple-intelligence.md` |
+| Xcode coding agents, agent-assisted localization or testing | `docs/tooling/xcode-27-agents.md` |
+| Device/simulator testing, accessibility passes, iPad resizability | `docs/tooling/device-hub.md` |
 
 ## How These Docs Are Structured
 
@@ -109,6 +113,10 @@ Specialists in `.claude/agents/`:
 | `swift-debugger` | read + Bash + Edit | A failure whose cause is not obvious — reproduce, fix, prove |
 | `swift-refactorer` | read + write + Bash | Behavior-preserving cleanups against a green baseline |
 | `ios-docs` | read + write + Bash | Docs, DocC, README, CHANGELOG |
+| `foundation-models` | read + write + Bash | On-device / PCC LLM features, availability gating |
+| `swiftui-modernization` | read + write + Bash | Legacy → modern API migration, behavior-preserving |
+| `accessibility-reviewer` | read-only | VoiceOver, Dynamic Type, contrast, tap targets |
+| `performance-reviewer` | read + Bash | Hitches, memory, main-actor contention — measures first |
 
 **The author does not grade the work.** For anything that ships, verification goes to a cold `swift-reviewer` with no stake in the result.
 
@@ -143,6 +151,28 @@ Parallel **writers** must be isolated in worktrees or they will clobber each oth
 
 Rules a script can evaluate belong in a hook, not in your judgment and not in a reviewer subagent. Hooks run automatically, cost nothing, and feed failures straight back for self-correction. Reserve model judgment for what rules cannot express. See `docs/orchestration/hooks.md` and the drop-in `templates/hooks/`.
 
+### Xcode 27 agent integration
+
+Xcode 27 has coding agents built in, plus Device Hub for devices and simulators. They complement this skill rather than replace it — route by the shape of the work:
+
+| Work | Use |
+|------|-----|
+| String catalogs, adding languages, translation | **Xcode agent** — it owns the catalogs and Apple's language style guidance |
+| A bug that reproduces only on one device | **Xcode agent + Device Hub** |
+| Writing tests it can immediately run | **Xcode agent** |
+| A rule applied across many modules | **Claude Code** — `/batch`, worktrees, one PR per unit |
+| Architecture restructuring | **Claude Code** — plan and review subagents |
+
+Rule of thumb: **inside one project and one build graph → Xcode. Across files, repos, or PRs → Claude Code.**
+
+Three things hold regardless of which agent wrote the code:
+
+- **Xcode agents do not read this skill.** Enforce its rules with a pre-commit hook or CI (`templates/hooks/forbid-antipatterns.sh` runs standalone), never by hoping.
+- **The verification contract still applies.** A green build is one claim, not a review. Read the diff; check that a generated test would actually have failed before the change.
+- **Generated localization needs human checks** for plural variants, RTL layout, and truncation at accessibility text sizes. Translation is not layout.
+
+Use Xcode's **Swift Concurrency instrument** to measure actor contention rather than guessing at isolation cost — it is the direct tool for the main-actor rules above. See `docs/tooling/xcode-27-agents.md` and `docs/tooling/device-hub.md`.
+
 ## Important: You Generate Swift Files, Not Xcode Projects
 
 You create and modify `.swift` source files. You do NOT create Xcode projects (`.xcodeproj`), asset catalogs, or build configurations. The user must first create an Xcode project, then ask you to build features inside it.
@@ -165,6 +195,33 @@ YourAppName/
 ├── Services/                  ← Networking, persistence, etc.
 └── Utilities/                 ← Extensions, helpers
 ```
+
+## Target Platforms and Toolchain
+
+**Write against:** Swift 6.4 · Xcode 27 · iOS 27 SDK
+**Deploy to:** iOS 17–27 (and the equivalent range on other platforms)
+
+| | Version |
+|---|---|
+| Swift | 6.4 (Xcode 27) |
+| Xcode | 27 |
+| SDKs | iOS 27, iPadOS 27, macOS 27, watchOS 27, tvOS 27, visionOS 27 |
+| Minimum deployment | iOS 17 / Swift 5.9 |
+
+**The single most important rule about versions: guard on the version where a symbol was introduced, never on the newest SDK you happen to be building with.** Writing `#available(iOS 27, *)` around an iOS 26 API silently drops every iOS 26 device to your fallback path. This mistake is invisible in testing on a current device.
+
+Version floors for the features this skill covers:
+
+| Feature | Available from |
+|---------|----------------|
+| Observation (`@Observable`), SwiftData, `NavigationStack` w/ `NavigationPath` | iOS 17 |
+| Swift 6 strict concurrency | Swift 6.0 |
+| Liquid Glass (`glassEffect`, `GlassEffectContainer`) | **iOS 26** — refined in 27, not reintroduced |
+| Foundation Models baseline (`SystemLanguageModel`, `@Generable`, tools) | **iOS 26** |
+| Private Cloud Compute, Dynamic Profiles, image attachments, custom `LanguageModel` providers | **iOS 27** |
+| `weak let`, `~Sendable`, `@diagnose`, async in `defer` | Swift 6.4 |
+
+**Everything above the iOS 17 floor is additive.** A feature that only works on the newest OS must degrade to a working path, not disappear. Rebuilding against the iOS 27 SDK also **auto-opts your app into resizability** on iPad and in iPhone Mirroring — verify layouts across widths after an SDK bump (`docs/tooling/device-hub.md`).
 
 ## Core Principles
 
@@ -488,6 +545,8 @@ This repository contains comprehensive documentation. Consult these files when b
 - `docs/frameworks/accessibility.md` — Accessibility best practices
 
 ### AI & Machine Learning
+- `docs/frameworks/foundation-models.md` — On-device and Private Cloud Compute LLMs, `@Generable`/`@Guide`, tool calling, Dynamic Profiles, multimodal prompts, custom `LanguageModel` providers
+- `docs/frameworks/apple-intelligence.md` — Which framework to reach for, the privacy model, App Intents, Image Playground, Visual Intelligence, designing features that degrade
 - `docs/frameworks/ml/coreml.md` — Model loading, prediction, compute units
 - `docs/frameworks/ml/vision.md` — OCR, face detection, barcode, segmentation, DataScanner
 - `docs/frameworks/ml/natural-language.md` — Tokenization, tagging, sentiment, embeddings
@@ -547,8 +606,12 @@ This repository contains comprehensive documentation. Consult these files when b
 - `docs/orchestration/verification.md` — The evidence contract: VERIFIED / INSPECTED / UNVERIFIED, separation of duties
 - `docs/orchestration/dynamic-workflows.md` — The scale-up path: `/batch`, worktrees, script-driven orchestration
 - `docs/orchestration/hooks.md` — Deterministic enforcement; hook vs. CI vs. reviewer
-- `.claude/agents/` — Six ready-to-use specialists (`ios-explore`, `ios-plan`, `swift-reviewer`, `swift-debugger`, `swift-refactorer`, `ios-docs`)
+- `.claude/agents/` — Ten ready-to-use specialists (`ios-explore`, `ios-plan`, `swift-reviewer`, `swift-debugger`, `swift-refactorer`, `ios-docs`, `foundation-models`, `swiftui-modernization`, `accessibility-reviewer`, `performance-reviewer`)
 - `templates/hooks/` — Drop-in hooks for iOS projects: formatting, anti-pattern blocking, build verification
+
+### Tooling
+- `docs/tooling/xcode-27-agents.md` — Xcode coding agents, when to use them vs. Claude Code, agent-assisted localization and testing, Instruments
+- `docs/tooling/device-hub.md` — Device Hub, the device/config test matrix, iOS 27 app resizability, accessibility passes
 
 ### Testing & Quality
 - `docs/testing/mocking-strategy.md` — Three-tier strategy: test doubles, rich debug mocks, environment flags and debug menus
