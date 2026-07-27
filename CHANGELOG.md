@@ -6,6 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+### Added -- 1.4.0 adoption and maintenance
+
+Shifts focus from adding documentation to making the repository verifiable and easy to adopt. The headline change is that the skill's core patterns are now **compile-checked in CI** rather than asserted in prose -- the standing caveat from every previous release.
+
+- **`samples/SkillPatterns/`** -- an SPM package implementing the skill's core patterns as real, buildable Swift: `@MainActor @Observable` view models, inbound/outbound boundary protocols, a protocol composition root, typed `Hashable`/`Codable` routes, pure deep-link parsing, and actor test doubles. Strict concurrency is enabled, so an isolation regression fails the build. Several tests exist specifically to fail when a rule is broken -- a stale-index revert after an `await`, a `CancellationError` surfaced as a user-facing error, a launch-time deep link dropped instead of queued. Scoped deliberately to stable APIs (iOS 17 / macOS 14, no SwiftUI view code) so it builds on standard runners with `swift build`.
+- **`docs/compatibility-matrix.md`** -- the canonical version reference. Separates the three things that get conflated (toolchain version, SDK version, deployment target), lists per-feature availability floors for iOS 17/18/26/27 and Swift 5.9-6.4, framework minimums, and the rule that a compile-time `@available` guard does not replace a runtime availability check.
+- **`docs/migration/swift-6-migration.md`** -- Swift 5.9 -> 6 -> 6.4, organized around the compiler errors you actually hit (main-actor isolation, `Sendable` conformance, `@Sendable` capture, non-concurrency-safe statics, non-Sendable across actor boundaries, delegate callbacks) with the fix for each, a recommended migration order, and what not to do.
+- **`docs/migration/ios-deployment-migration.md`** -- separates rebuilding against a newer SDK from raising a deployment target, since they are independent decisions. Covers the iOS 26 Liquid Glass adoption and the iOS 27 **app resizability** opt-in that happens without a code change.
+- **`docs/migration/xcode-migration.md`** -- Xcode 15 -> 16 -> 27, explicitly built modules, the stricter Previews engine, and an ordered procedure for diagnosing a post-upgrade failure.
+
+### Changed -- 1.4.0
+- CI (`docs-consistency.yml`) extended repo-wide: relative markdown links, backtick path references, code-fence languages and closure, and frontmatter consistency -- previously only `SKILL.md` and `README.md` were checked. All four checks are fence-aware and skip placeholder paths, so Swift like `[UInt8](data)` and template ellipses do not produce false positives.
+- CI gained a **`sample-package`** job on `macos-latest` that runs `swift build` and `swift test` against `samples/SkillPatterns`.
+- `SKILL.md`: routing-table entries for the compatibility matrix and the three migration guides; the toolchain section now points at the matrix as canonical rather than restating floors; new **Versions & Migration** and **Samples & Templates** index sections. Version 1.4.0.
+- README: **What's New in 1.4**, a Versions & Migration documentation index, a Compile-Checked Sample section, and a link from Supported Platforms to the canonical matrix.
+
 ### Added -- 1.3.0 Apple Intelligence and the iOS 27 toolchain
 
 Content verified against Apple's current developer documentation (Xcode 27 beta, Swift 6.4, WWDC26 sessions) rather than written from model memory -- the API surface below post-dates the authoring model's training data.
