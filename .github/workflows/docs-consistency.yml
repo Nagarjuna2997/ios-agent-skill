@@ -77,6 +77,81 @@ jobs:
           print("OK - every referenced path exists")
           PY
 
+      - name: Subagent definitions are valid
+        run: |
+          python3 - <<'PY'
+          import glob, re, sys
+
+          paths = sorted(glob.glob(".claude/agents/*.md"))
+          if not paths:
+              sys.exit(".claude/agents/ contains no subagent definitions")
+
+          problems, names = [], {}
+          for path in paths:
+              text = open(path, encoding="utf-8").read()
+              match = re.match(r"^---\n(.*?)\n---\n", text, re.DOTALL)
+              if not match:
+                  problems.append(f"{path}: missing YAML frontmatter")
+                  continue
+
+              block = match.group(1)
+              keys = set(re.findall(r"^([A-Za-z][A-Za-z0-9_-]*):", block, re.MULTILINE))
+              for required in ("name", "description"):
+                  if required not in keys:
+                      problems.append(f"{path}: frontmatter missing '{required}'")
+
+              name_match = re.search(r"^name:\s*(.+)$", block, re.MULTILINE)
+              if name_match:
+                  name = name_match.group(1).strip()
+                  if not re.fullmatch(r"[a-z0-9-]+", name):
+                      problems.append(f"{path}: name must be lowercase-kebab-case, got {name!r}")
+                  if name in names:
+                      problems.append(f"{path}: duplicate name {name!r} (also in {names[name]})")
+                  names[name] = path
+
+              # The description is the routing signal - a vague one never gets invoked.
+              desc_match = re.search(r"^description:\s*(.+(?:\n\s+.+)*)$", block, re.MULTILINE)
+              if desc_match and len(desc_match.group(1).strip()) < 40:
+                  problems.append(f"{path}: description must state when to use the agent (>= 40 chars)")
+
+          if problems:
+              print("\n".join(problems))
+              sys.exit(1)
+          print(f"OK - {len(paths)} subagent definitions valid: {', '.join(sorted(names))}")
+          PY
+
+      - name: Hook scripts are executable and parse
+        run: |
+          status=0
+          for script in scripts/*.sh scripts/hooks/*.sh templates/hooks/*.sh; do
+            [ -e "$script" ] || continue
+            if [ ! -x "$script" ]; then
+              echo "NOT EXECUTABLE: $script"
+              status=1
+            fi
+            if ! bash -n "$script"; then
+              echo "SYNTAX ERROR: $script"
+              status=1
+            fi
+          done
+          [ $status -eq 0 ] && echo "OK - all shell scripts executable and syntactically valid"
+          exit $status
+
+      - name: Repo hooks behave correctly
+        run: |
+          # The guard hook must block a generated file and allow the source.
+          if echo '{"tool_input":{"file_path":"'"$PWD"'/CLAUDE.md"}}' \
+             | ./scripts/hooks/guard-generated-files.sh 2>/dev/null; then
+            echo "FAIL: guard hook did not block an edit to a generated mirror"
+            exit 1
+          fi
+          if ! echo '{"tool_input":{"file_path":"'"$PWD"'/SKILL.md"}}' \
+             | ./scripts/hooks/guard-generated-files.sh; then
+            echo "FAIL: guard hook blocked an edit to SKILL.md"
+            exit 1
+          fi
+          echo "OK - guard hook blocks mirrors and allows SKILL.md"
+
       - name: Swift templates have no placeholder stubs
         run: |
           if grep -rn --include='*.swift' -E '^\s*(// TODO|// FIXME|<#.*#>)' templates/; then

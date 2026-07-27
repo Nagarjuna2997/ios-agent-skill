@@ -36,6 +36,12 @@ Load this skill when any of the following is true. When none are true, do not lo
 | Colors, spacing, theming, glass effects | `docs/design/design-tokens.md`, `docs/design/color-system.md` |
 | A named Apple framework | the matching `docs/frameworks/**` file |
 | A named platform | the matching `docs/platforms/*.md` file |
+| Deciding how to execute — delegate, loop, or scale out | `docs/orchestration/router.md` |
+| Defining or invoking a subagent | `docs/orchestration/subagents.md` |
+| Repeating work until a condition holds | `docs/orchestration/looping.md` |
+| About to report that something works | `docs/orchestration/verification.md` |
+| A codebase-wide migration or many isolated PRs | `docs/orchestration/dynamic-workflows.md` |
+| Enforcing a rule automatically | `docs/orchestration/hooks.md` |
 
 ## How These Docs Are Structured
 
@@ -55,6 +61,87 @@ The anti-pattern blocks are the point. Boilerplate-by-default is the failure mod
 - Every screen can render in `#Preview` with no network and no disk.
 - Every `catch` produces a user-visible outcome or a documented deliberate no-op. Never `catch { }`, never `error = nil`.
 - Every design value comes from a token. No literal colors, spacing, or radii at a call site.
+
+## How You Operate: Delegation, Loops, and Verification
+
+The rules above govern the code you write. This section governs **how you execute work** — when to do it yourself, when to delegate, when to loop, and what you must prove before saying it is done. Full detail is in `docs/orchestration/`; `docs/orchestration/router.md` is the entry point.
+
+### The verification evidence rule
+
+**This is the single most important operating rule. Never assert that something works — show the output that proves it.**
+
+"The tests pass" is a claim. This is evidence:
+
+```
+$ swift test
+Executed 47 tests, with 0 failures (0 unexpected) in 2.314 seconds
+```
+
+Every factual claim you make is labelled with one of three states:
+
+- **VERIFIED** — you ran a command; you are pasting its real output.
+- **INSPECTED** — you read the code and reasoned about it. Cite `file:line`.
+- **UNVERIFIED** — you could not check it. Say why (no Xcode, no simulator, no scheme).
+
+A report with no VERIFIED claims and no explanation of why is a failed report, however confident it sounds. **UNVERIFIED is a legitimate result** — "I could not build this; there is no Xcode in this environment" is honest and useful. Implying a build you never ran is not.
+
+When a grep is the check, show that it returned nothing. An empty result you did not display is indistinguishable from a check you never ran. Never reach a passing check by deleting a test, skipping it, widening a `catch`, or loosening an assertion — if that is the only route to green, stop and report the failure instead.
+
+### When to delegate to a subagent
+
+**The default is to do the work yourself.** Delegation is an exception that must earn its cost: every subagent starts cold, with none of your conversation, and must be told everything it needs.
+
+Delegate when at least one is true:
+- **Context cost** — the investigation would read more files than you want in context
+- **Independence** — the work needs judging by something that did not write it
+- **Parallelism** — several genuinely independent read-only investigations
+- **Isolation** — the work belongs in a separate worktree
+
+Do **not** delegate because a task sounds big. "Thorough", "multiple angles", and "several parts" describe ordinary work, not a delegation trigger.
+
+Specialists in `.claude/agents/`:
+
+| Subagent | Tools | Use for |
+|----------|-------|---------|
+| `ios-explore` | read-only | "Where is X?" across a Swift codebase — parallel-safe |
+| `ios-plan` | read-only | Multi-file features, migrations, architecture decisions |
+| `swift-reviewer` | read + Bash | Verifying work — no write tools, so it cannot fix what it should report |
+| `swift-debugger` | read + Bash + Edit | A failure whose cause is not obvious — reproduce, fix, prove |
+| `swift-refactorer` | read + write + Bash | Behavior-preserving cleanups against a green baseline |
+| `ios-docs` | read + write + Bash | Docs, DocC, README, CHANGELOG |
+
+**The author does not grade the work.** For anything that ships, verification goes to a cold `swift-reviewer` with no stake in the result.
+
+**Subagents cannot talk to each other.** They report only to you. If one discovers something another needs, *you* carry it across. Peer-to-peer worker communication is the separate agent-teams feature — experimental and disabled by default; do not assume it.
+
+### When to loop
+
+A loop repeats until a **stop condition** is met. Before starting one, state four things:
+
+```
+GOAL:      an outcome, not an activity ("swift test exits 0")
+CHECK:     the exact command run every iteration
+MAX:       a hard iteration cap
+ON-STALL:  identical failure twice, or oscillation -> stop and report
+```
+
+One change per iteration, so you can attribute the result to a cause. Stopping with "I could not get past this, here is the failure and what I tried" is a good outcome; twenty iterations ending in a success claim usually is not. Never poll with `sleep` for work that will notify you.
+
+### When to scale out
+
+| Scale | Approach |
+|-------|----------|
+| 1–2 files | Do it inline |
+| 3–8 related units | Subagents in one session |
+| Repeat until a condition | A loop, ideally with a separate verifier |
+| 5–30 isolated changes, each its own PR | `/batch` — subagents plus a git worktree per unit |
+| Dozens of units with branching or dependencies | A dynamic workflow: orchestration in a script |
+
+Parallel **writers** must be isolated in worktrees or they will clobber each other. Units that share files are not a batch — sequence them.
+
+### Let hooks decide what hooks can decide
+
+Rules a script can evaluate belong in a hook, not in your judgment and not in a reviewer subagent. Hooks run automatically, cost nothing, and feed failures straight back for self-correction. Reserve model judgment for what rules cannot express. See `docs/orchestration/hooks.md` and the drop-in `templates/hooks/`.
 
 ## Important: You Generate Swift Files, Not Xcode Projects
 
@@ -452,6 +539,16 @@ This repository contains comprehensive documentation. Consult these files when b
 - `patterns/repository.md` — Repository pattern
 - `patterns/tca.md` — The Composable Architecture
 - `patterns/error-handling.md` — Error handling strategies
+
+### Agent Operations (Orchestration)
+- `docs/orchestration/router.md` — **Start here.** When the main agent should do it inline, delegate, loop, or scale out
+- `docs/orchestration/subagents.md` — Defining subagents, tool restriction, parallelism, delegation prompts, subagents vs. agent teams
+- `docs/orchestration/looping.md` — Turn-based, goal-based, time-based, and proactive loops; stop conditions and stall detection
+- `docs/orchestration/verification.md` — The evidence contract: VERIFIED / INSPECTED / UNVERIFIED, separation of duties
+- `docs/orchestration/dynamic-workflows.md` — The scale-up path: `/batch`, worktrees, script-driven orchestration
+- `docs/orchestration/hooks.md` — Deterministic enforcement; hook vs. CI vs. reviewer
+- `.claude/agents/` — Six ready-to-use specialists (`ios-explore`, `ios-plan`, `swift-reviewer`, `swift-debugger`, `swift-refactorer`, `ios-docs`)
+- `templates/hooks/` — Drop-in hooks for iOS projects: formatting, anti-pattern blocking, build verification
 
 ### Testing & Quality
 - `docs/testing/mocking-strategy.md` — Three-tier strategy: test doubles, rich debug mocks, environment flags and debug menus

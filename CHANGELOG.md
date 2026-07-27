@@ -6,6 +6,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+### Added -- 1.2.0 agent-operations layer
+
+The repository taught the main agent what to write but never how to operate. This release adds the orchestration layer: how to split work, verify it, and scale it out. Because `AGENTS.md` and the other 23 rule files are generated from `SKILL.md`, the operating model lands in all of them.
+
+- **`docs/orchestration/`** -- six documents forming the agent-ops layer:
+  - `router.md` -- the entry point. One table deciding inline vs. delegate vs. loop vs. `/batch` vs. dynamic workflow, plus standard sequences (feature, bug, drive-a-red-suite-green, codebase-wide change) and what the main agent stays accountable for after delegating.
+  - `subagents.md` -- why delegate (context preservation, independent verification, parallelism), frontmatter reference, why the `description` is the routing interface, tool restriction as a correctness feature, writing delegation prompts for a cold agent, and the distinction between subagents (hub-and-spoke, report only to the main agent) and agent teams (peer-to-peer, experimental, disabled by default).
+  - `looping.md` -- turn-based, goal-based, time-based, and proactive patterns; the GOAL / CHECK / MAX / ON-STALL contract every loop declares up front; stall detection (identical failure, oscillation, growing blast radius); and the rule against reaching a stop condition by weakening the check.
+  - `verification.md` -- the evidence contract. Every claim labelled VERIFIED, INSPECTED, or UNVERIFIED; what counts as evidence and what does not; iOS-specific verification commands; separation of duties so the author never grades the work; and the three enforcement layers ordered cheapest-first.
+  - `dynamic-workflows.md` -- the scale ladder, when `/batch` fits (5-30 isolated PRs, worktree per unit) and when it does not (shared files, ordering constraints, exploratory work), script-driven orchestration, failure policies, and cold-start cost control.
+  - `hooks.md` -- hook vs. CI vs. reviewer subagent, lifecycle events, the exit-code contract, and design rules including graceful degradation.
+- **`.claude/agents/`** -- six subagent definitions with restricted tool sets and explicit return formats: `ios-explore` (read-only, parallel-safe search), `ios-plan` (read-only planner), `swift-reviewer` (read + Bash, deliberately no write tools), `swift-debugger` (reproduce -> isolate -> fix -> prove, with a Swift failure-pattern table), `swift-refactorer` (behavior-preserving, requires a green baseline), and `ios-docs` (enforces the doc structure and mirror sync). Names are prefixed `ios-`/`swift-` so they cannot shadow Claude Code's built-in subagents.
+- **Hooks in this repository** -- `.claude/settings.json` now wires three hooks implemented in `scripts/hooks/`: `guard-generated-files.sh` (PreToolUse -- denies edits to the 24 generated mirrors and points at `SKILL.md`), `sync-mirrors-on-edit.sh` (PostToolUse -- regenerates mirrors whenever `SKILL.md` changes), and `verify-repo.sh` (Stop -- runs the CI checks before a turn can end).
+- **`templates/hooks/`** -- drop-in hooks for real iOS projects: `swift-format.sh` (SwiftFormat + SwiftLint autocorrect), `forbid-antipatterns.sh` (blocks the `SKILL.md` anti-patterns at write time with line numbers and the fix; exempts test/mock/preview files from app-code-only rules), `build-check.sh` (Stop-time build and test verification that reports UNVERIFIED rather than implying a build it could not run), plus `settings.json.example` and installation notes.
+- **`SKILL.md` -- "How You Operate" section** -- the verification evidence rule, when to delegate and when not to, the subagent roster, the loop contract, the scale-up table, and the instruction to let hooks decide what hooks can decide. This propagates to `AGENTS.md`, `CLAUDE.md`, `.cursorrules`, and the other 21 mirrors.
+- CI (`docs-consistency.yml`) and the Stop hook now also validate subagent frontmatter (`name`, `description`, kebab-case naming).
+
+### Changed
+- `SKILL.md` version bumped to 1.2.0; `skill.json` follows.
+- `SKILL.md` document-routing table extended with the six orchestration triggers.
+- README gained a "What's New in 1.2" section and an Agent Operations documentation index covering the orchestration docs, the six subagents, and the three hook templates.
+
 ### Added -- 1.1.0 skill revision
 - `docs/design/design-tokens.md` -- three-tier token architecture (primitive -> semantic -> component), swappable themes via `@Environment`, dark-mode elevation rules, a Dynamic Type compliance checklist, materials vs. Liquid Glass (`glassEffect`, `GlassEffectContainer`) with an availability fallback, and a WCAG contrast helper you can assert in tests.
 - `docs/swiftui/deep-linking-and-routing.md` -- typed `Route` enums, a `@MainActor` `Router`, deep-link parsing split into a pure testable parser plus an applier, universal links via `onContinueUserActivity`, queuing links that arrive before the app is ready, `NavigationPath` state restoration through `@SceneStorage`, and per-tab stacks.

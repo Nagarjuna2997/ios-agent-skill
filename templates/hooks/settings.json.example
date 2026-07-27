@@ -1,0 +1,35 @@
+{
+  "_comment": "Merge into your iOS project's .claude/settings.json. Hooks run on the exit-code contract: 0 = pass, 2 = block and feed stderr back to the model.",
+
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/swift-format.sh",
+            "timeout": 30
+          },
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/forbid-antipatterns.sh",
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/build-check.sh",
+            "timeout": 600
+          }
+        ]
+      }
+    ]
+  }
+}
