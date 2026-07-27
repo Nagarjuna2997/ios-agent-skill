@@ -1,7 +1,7 @@
 ---
 name: ios-agent-skill
 description: Expert iOS/Swift developer behavior for AI coding agents. Use when writing, reviewing, or refactoring Swift, SwiftUI, UIKit, or SwiftData code; when designing iOS app architecture (MVVM, Clean Architecture, coordinators, routing); when building UI that must meet Apple's Human Interface Guidelines, contrast, dark-mode, and Dynamic Type standards; when working with any Apple framework (SwiftData, Core Data, CloudKit, StoreKit, HealthKit, WidgetKit, App Intents, CoreML, Vision, ARKit, and 30+ more); or when targeting iOS, macOS, watchOS, tvOS, or visionOS. Also use for Swift concurrency questions — actors, @MainActor isolation, Sendable, structured concurrency.
-version: 1.3.0
+version: 1.4.0
 license: MIT
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 metadata:
@@ -76,6 +76,10 @@ Load this skill when any of the following is true. When none are true, do not lo
 | Siri, Apple Intelligence, Private Cloud Compute, privacy claims | `docs/frameworks/apple-intelligence.md` |
 | Xcode coding agents, agent-assisted localization or testing | `docs/tooling/xcode-27-agents.md` |
 | Device/simulator testing, accessibility passes, iPad resizability | `docs/tooling/device-hub.md` |
+| Choosing a deployment target or writing an availability guard | `docs/compatibility-matrix.md` |
+| Enabling Swift 6 mode, or fixing strict-concurrency errors | `docs/migration/swift-6-migration.md` |
+| Raising a deployment target, or rebuilding on a new SDK | `docs/migration/ios-deployment-migration.md` |
+| Upgrading Xcode, or a build that broke right after one | `docs/migration/xcode-migration.md` |
 
 ## How These Docs Are Structured
 
@@ -230,6 +234,8 @@ YourAppName/
 
 **Write against:** Swift 6.4 · Xcode 27 · iOS 27 SDK
 **Deploy to:** iOS 17–27 (and the equivalent range on other platforms)
+
+> Full per-feature version floors, framework minimums, and toolchain support live in `docs/compatibility-matrix.md` — the canonical reference. The summary below is the part you need most often.
 
 | | Version |
 |---|---|
@@ -616,7 +622,8 @@ This repository contains comprehensive documentation. Consult these files when b
 - `docs/platforms/tvos.md` — tvOS development
 - `docs/platforms/visionos.md` — visionOS spatial computing
 
-### Templates
+### Samples & Templates
+- `samples/SkillPatterns/` — **Compile-checked** reference implementation of this skill's core patterns. CI builds and tests it, which is what makes those patterns VERIFIED rather than INSPECTED
 - `templates/ios-app/` — Ready-to-use iOS SwiftUI app template
 - `templates/multiplatform-app/` — Multi-platform SwiftUI template
 - `templates/common-patterns/` — Networking, persistence, auth, navigation, DI patterns
@@ -638,6 +645,12 @@ This repository contains comprehensive documentation. Consult these files when b
 - `docs/orchestration/hooks.md` — Deterministic enforcement; hook vs. CI vs. reviewer
 - `.claude/agents/` — Ten ready-to-use specialists (`ios-explore`, `ios-plan`, `swift-reviewer`, `swift-debugger`, `swift-refactorer`, `ios-docs`, `foundation-models`, `swiftui-modernization`, `accessibility-reviewer`, `performance-reviewer`)
 - `templates/hooks/` — Drop-in hooks for iOS projects: formatting, anti-pattern blocking, build verification
+
+### Versions & Migration
+- `docs/compatibility-matrix.md` — **Canonical.** Deployment targets, SDKs, tested Xcode/Swift, per-feature availability floors
+- `docs/migration/swift-6-migration.md` — Swift 5.9 → 6 → 6.4, organized by the compiler errors you actually hit
+- `docs/migration/ios-deployment-migration.md` — iOS 17 → 26 → 27, separating SDK rebuilds from target raises
+- `docs/migration/xcode-migration.md` — Xcode 15 → 16 → 27, and diagnosing post-upgrade failures
 
 ### Tooling
 - `docs/tooling/xcode-27-agents.md` — Xcode coding agents, when to use them vs. Claude Code, agent-assisted localization and testing, Instruments

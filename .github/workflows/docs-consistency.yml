@@ -154,8 +154,189 @@ jobs:
 
       - name: Swift templates have no placeholder stubs
         run: |
-          if grep -rn --include='*.swift' -E '^\s*(// TODO|// FIXME|<#.*#>)' templates/; then
-            echo "Template Swift files must be complete and compilable."
+          if grep -rn --include='*.swift' -E '^\s*(// TODO|// FIXME|<#.*#>)' templates/ samples/; then
+            echo "Template and sample Swift files must be complete and compilable."
             exit 1
           fi
-          echo "OK - no placeholder stubs in templates"
+          echo "OK - no placeholder stubs"
+
+      - name: Markdown links resolve
+        run: |
+          python3 - <<'PY'
+          import os, re, sys
+
+          # Relative markdown links: [text](path) — skip http(s), anchors, mailto.
+          # Code is skipped in both forms, because Swift like `[UInt8](data)` is
+          # not a link: fenced blocks by tracking state, inline spans by stripping
+          # them from the line before matching.
+          link = re.compile(r"\[([^\]]*)\]\(([^)]+)\)")
+          inline_code = re.compile(r"`[^`]*`")
+          broken = []
+
+          for root, dirs, files in os.walk("."):
+              dirs[:] = [d for d in dirs if d not in {".git", ".build", "node_modules"}]
+              for name in files:
+                  if not name.endswith(".md"):
+                      continue
+                  path = os.path.join(root, name)
+                  in_fence = False
+                  for number, line in enumerate(open(path, encoding="utf-8"), 1):
+                      if line.startswith("```"):
+                          in_fence = not in_fence
+                          continue
+                      if in_fence:
+                          continue
+                      line = inline_code.sub("", line)
+                      for text, target in link.findall(line):
+                          if target.startswith(("http://", "https://", "#", "mailto:")):
+                              continue
+                          target = target.split("#")[0].strip()
+                          if not target or "..." in target:
+                              continue          # placeholder path
+                          resolved = os.path.normpath(os.path.join(root, target))
+                          if not (os.path.isfile(resolved) or os.path.isdir(resolved)):
+                              broken.append(f"{path}:{number}: [{text}]({target})")
+
+          if broken:
+              print("Broken relative markdown links:")
+              print("\n".join(broken))
+              sys.exit(1)
+          print("OK - all relative markdown links resolve")
+          PY
+
+      - name: Backtick path references resolve
+        run: |
+          python3 - <<'PY'
+          import os, re, sys
+
+          # `docs/foo.md` style references, resolved relative to the file AND repo root.
+          ref = re.compile(r"`((?:docs|patterns|checklists|templates|scripts|samples|\.claude)/[^`\s]+)`")
+          broken = []
+
+          for root, dirs, files in os.walk("."):
+              dirs[:] = [d for d in dirs if d not in {".git", ".build", "node_modules"}]
+              for name in files:
+                  if not name.endswith(".md"):
+                      continue
+                  path = os.path.join(root, name)
+                  for number, line in enumerate(open(path, encoding="utf-8"), 1):
+                      for target in ref.findall(line):
+                          if "*" in target or "..." in target:
+                              continue          # deliberate glob or placeholder
+                          target = target.rstrip("/")
+                          from_root = os.path.normpath(target)
+                          from_here = os.path.normpath(os.path.join(root, target))
+                          if any(os.path.isfile(p) or os.path.isdir(p) for p in (from_root, from_here)):
+                              continue
+                          broken.append(f"{path}:{number}: `{target}`")
+
+          if broken:
+              print("Backtick path references that do not exist:")
+              print("\n".join(broken))
+              sys.exit(1)
+          print("OK - all backtick path references resolve")
+          PY
+
+      - name: Code fences declare a language
+        run: |
+          python3 - <<'PY'
+          import os, re, sys
+
+          KNOWN = {
+              "swift", "bash", "sh", "shell", "json", "yaml", "yml", "xml",
+              "python", "ruby", "text", "objc", "objective-c", "c", "cpp",
+              "markdown", "md", "diff", "console", "toml", "ini", "html", "css",
+              "js", "javascript", "ts", "typescript", "sql", "mermaid",
+          }
+
+          problems = []
+          for root, dirs, files in os.walk("."):
+              dirs[:] = [d for d in dirs if d not in {".git", ".build", "node_modules"}]
+              for name in files:
+                  if not name.endswith(".md"):
+                      continue
+                  path = os.path.join(root, name)
+                  lines = open(path, encoding="utf-8").read().split("\n")
+                  in_fence = False
+                  fence_line = 0
+                  for number, line in enumerate(lines, 1):
+                      if not line.startswith("```"):
+                          continue
+                      if not in_fence:
+                          in_fence = True
+                          fence_line = number
+                          # Fences may use 3+ backticks (a 4-backtick fence wraps
+                          # a block that itself contains a 3-backtick fence).
+                          info = line.lstrip("`").strip()
+                          lang = info.split()[0].lower() if info else ""
+                          # A bare fence is allowed for plain output blocks, but a
+                          # declared language must be one we recognize (catches typos
+                          # like ```swfit).
+                          if lang and lang not in KNOWN:
+                              problems.append(f"{path}:{number}: unknown fence language '{lang}'")
+                      else:
+                          in_fence = False
+                  if in_fence:
+                      problems.append(f"{path}:{fence_line}: unclosed code fence")
+
+          if problems:
+              print("Code fence problems:")
+              print("\n".join(problems))
+              sys.exit(1)
+          print("OK - all code fences closed with recognized languages")
+          PY
+
+      - name: Docs frontmatter is consistent
+        run: |
+          python3 - <<'PY'
+          import glob, re, sys
+
+          # SKILL.md, subagent definitions, and GitHub issue templates legitimately
+          # carry frontmatter. Any OTHER doc starting with '---' is almost certainly
+          # an accident (a stray fence or a copy-paste) that renders as raw YAML.
+          allowed = {"./SKILL.md"}
+          allowed.update(glob.glob("./.claude/agents/*.md"))
+          allowed.update(glob.glob("./.github/ISSUE_TEMPLATE/*.md"))
+          allowed.update(glob.glob("./.github/*.md"))
+
+          import os
+          problems = []
+          for root, dirs, files in os.walk("."):
+              dirs[:] = [d for d in dirs if d not in {".git", ".build", "node_modules"}]
+              for name in files:
+                  if not name.endswith(".md"):
+                      continue
+                  path = os.path.join(root, name)
+                  with open(path, encoding="utf-8") as handle:
+                      first = handle.readline().rstrip("\n")
+                  if first == "---" and path not in allowed:
+                      problems.append(f"{path}: unexpected YAML frontmatter")
+
+          if problems:
+              print("Unexpected frontmatter:")
+              print("\n".join(problems))
+              sys.exit(1)
+          print("OK - frontmatter only where expected")
+          PY
+
+  sample-package:
+    name: Sample package builds and tests
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Toolchain versions
+        run: |
+          swift --version
+          xcodebuild -version || true
+
+      # This job is the point: it turns the skill's patterns from INSPECTED
+      # into VERIFIED. Strict concurrency is on, so an isolation regression
+      # fails the build.
+      - name: Build
+        working-directory: samples/SkillPatterns
+        run: swift build 2>&1 | tail -40
+
+      - name: Test
+        working-directory: samples/SkillPatterns
+        run: swift test 2>&1 | tail -60

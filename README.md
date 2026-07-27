@@ -225,9 +225,24 @@ Auto-reads `.aiassistant/rules/ios-skill.md` or `.junie/guidelines.md`
 | **watchOS / tvOS** | 10 – 27 |
 | **visionOS** | 2+ |
 
+Full per-feature floors, framework minimums, and toolchain support: **[docs/compatibility-matrix.md](docs/compatibility-matrix.md)**.
+
 > **Guard on the version where an API was introduced, not the newest SDK.** Liquid Glass and the Foundation Models baseline are **iOS 26+**; Private Cloud Compute, Dynamic Profiles, and image attachments are **iOS 27+**. Writing `#available(iOS 27, *)` around an iOS 26 API silently drops every iOS 26 device to your fallback.
 
 Everything above the iOS 17 floor is **additive** — a newer-OS feature must degrade to a working path, never disappear.
+
+---
+
+## :sparkles: What's New in 1.4
+
+**Adoption and maintenance.** The repo now proves its own patterns compile.
+
+| | Feature | What it gives you |
+|:---:|---------|-------------------|
+| :white_check_mark: | **[Compile-checked sample](samples/SkillPatterns/)** | An SPM package implementing the skill's core patterns, built and tested in CI on every push — the patterns are now VERIFIED, not INSPECTED |
+| :bookmark_tabs: | **[Compatibility matrix](docs/compatibility-matrix.md)** | One canonical table: deployment targets, SDKs, tested toolchains, per-feature availability floors |
+| :arrow_up: | **[Migration guides](docs/migration/)** | Swift 5.9→6→6.4 organized by the compiler errors you actually hit; iOS 17→26→27; Xcode 15→16→27 |
+| :mag: | **Expanded CI** | Markdown links, backtick path references, code-fence languages, frontmatter consistency — repo-wide, not just SKILL.md |
 
 ---
 
@@ -323,6 +338,15 @@ Two rules do most of the work:
 | :art: | [swift-format.sh](templates/hooks/swift-format.sh) | PostToolUse | SwiftFormat + SwiftLint autocorrect on the edited file |
 | :no_entry: | [forbid-antipatterns.sh](templates/hooks/forbid-antipatterns.sh) | PostToolUse | Blocks `DispatchQueue.main.async`, `Task.detached`, `@Observable` without `@MainActor`, empty `catch`, `try!`, `NavigationView`, `AnyView`, fixed font sizes, `print()`, a type named `Task` |
 | :hammer: | [build-check.sh](templates/hooks/build-check.sh) | Stop | Builds and tests before the turn ends; blocks a "done" that does not compile |
+
+### :bookmark_tabs: Versions & Migration
+
+| | File | Topics |
+|:---:|------|--------|
+| :straight_ruler: | [compatibility-matrix.md](docs/compatibility-matrix.md) | **Canonical.** Deployment targets, SDKs, tested Xcode/Swift, per-feature availability floors |
+| :ocean: | [swift-6-migration.md](docs/migration/swift-6-migration.md) | Swift 5.9→6→6.4, organized by the compiler errors you hit and the fix for each |
+| :iphone: | [ios-deployment-migration.md](docs/migration/ios-deployment-migration.md) | iOS 17→26→27, separating SDK rebuilds from deployment-target raises |
+| :hammer: | [xcode-migration.md](docs/migration/xcode-migration.md) | Xcode 15→16→27, and how to diagnose a post-upgrade failure |
 
 ### :hammer_and_wrench: Tooling — `docs/tooling/`
 
@@ -458,6 +482,18 @@ Two rules do most of the work:
 | :watch: | [watchos.md](docs/platforms/watchos.md) | watchOS — complications, workouts |
 | :tv: | [tvos.md](docs/platforms/tvos.md) | tvOS — focus engine, Siri Remote |
 | :eyeglasses: | [visionos.md](docs/platforms/visionos.md) | visionOS — spatial computing, RealityKit |
+
+---
+
+## :white_check_mark: Compile-Checked Sample
+
+[`samples/SkillPatterns/`](samples/SkillPatterns/) is an SPM package implementing this skill's core patterns — `@MainActor @Observable` view models, protocol-injected dependencies, typed routes with pure deep-link parsing, actor test doubles. CI builds and tests it on macOS on every push, with strict concurrency enabled.
+
+```bash
+cd samples/SkillPatterns && swift build && swift test
+```
+
+Several tests exist specifically to fail if a rule is broken — a stale-index revert, a `CancellationError` treated as user-facing, a dropped launch-time deep link. That is what makes the documented patterns verified rather than asserted.
 
 ---
 
