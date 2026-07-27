@@ -1,0 +1,78 @@
+name: Release
+
+# Pushing a v* tag cuts the GitHub Release automatically, with notes taken from
+# CHANGELOG.md. Keeping the notes in one place means the release and the
+# changelog can never disagree.
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  release:
+    name: Publish GitHub Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Never cut a release from a tree that does not pass its own checks.
+      - name: Verify repository consistency
+        run: ./scripts/hooks/verify-repo.sh
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Verify MCP server builds and tests
+        working-directory: mcp-server
+        run: |
+          npm ci || npm install
+          npm run build
+          npm test
+
+      - name: Extract release notes from CHANGELOG
+        id: notes
+        run: |
+          python3 - <<'PY' > release-notes.md
+          import os, re
+
+          tag = os.environ["GITHUB_REF_NAME"]          # e.g. v2.0.0
+          version = tag.lstrip("v")
+          text = open("CHANGELOG.md", encoding="utf-8").read()
+
+          # Collect every "### <Section> -- <version> …" block for this version.
+          pattern = re.compile(
+              r"^### ([A-Za-z]+) -- " + re.escape(version) + r"\b.*?$(.*?)(?=^### |\Z)",
+              re.MULTILINE | re.DOTALL,
+          )
+          blocks = pattern.findall(text)
+
+          if blocks:
+              for heading, body in blocks:
+                  print(f"## {heading}\n")
+                  print(body.strip() + "\n")
+          else:
+              print(f"Release {tag}. See CHANGELOG.md for details.")
+
+          print("\n---\n")
+          print(f"**Full changelog:** https://github.com/{os.environ['GITHUB_REPOSITORY']}/blob/{tag}/CHANGELOG.md")
+          PY
+          echo "Extracted $(wc -l < release-notes.md) lines of notes"
+
+      - name: Create the release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --title "$GITHUB_REF_NAME" \
+            --notes-file release-notes.md \
+            --verify-tag
