@@ -152,6 +152,46 @@ jobs:
           fi
           echo "OK - guard hook blocks mirrors and allows SKILL.md"
 
+      - name: Piped CI steps set pipefail
+        run: |
+          python3 - <<'PY'
+          import glob, re, sys
+
+          # GitHub runs `run:` under `bash -e` WITHOUT pipefail, so `cmd | tail`
+          # reports tail's exit code and the step passes on failure — a check that
+          # cannot fail. Any piped run block must opt in explicitly.
+          problems = []
+          for path in sorted(glob.glob(".github/workflows/*.yml")):
+              lines = open(path, encoding="utf-8").read().split("\n")
+              in_run = False
+              indent = 0
+              block, start = [], 0
+              for number, line in enumerate(lines, 1):
+                  match = re.match(r"^(\s*)- ?name:|^(\s*)run: \|", line)
+                  if re.match(r"^\s*run: \|", line):
+                      in_run, start, block = True, number, []
+                      indent = len(line) - len(line.lstrip())
+                      continue
+                  if in_run:
+                      if line.strip() and (len(line) - len(line.lstrip())) <= indent:
+                          in_run = False
+                          text = "\n".join(block)
+                          if "|" in text and "pipefail" not in text and "<<'PY'" not in text:
+                              problems.append(f"{path}:{start}: piped run block without `set -o pipefail`")
+                      else:
+                          block.append(line)
+              if in_run:
+                  text = "\n".join(block)
+                  if "|" in text and "pipefail" not in text and "<<'PY'" not in text:
+                      problems.append(f"{path}:{start}: piped run block without `set -o pipefail`")
+
+          if problems:
+              print("Steps whose failures would be masked by a pipe:")
+              print("\n".join(problems))
+              sys.exit(1)
+          print("OK - piped steps set pipefail")
+          PY
+
       - name: Swift templates have no placeholder stubs
         run: |
           if grep -rn --include='*.swift' -E '^\s*(// TODO|// FIXME|<#.*#>)' templates/ samples/; then
@@ -333,10 +373,19 @@ jobs:
       # This job is the point: it turns the skill's patterns from INSPECTED
       # into VERIFIED. Strict concurrency is on, so an isolation regression
       # fails the build.
+      #
+      # `set -o pipefail` is load-bearing. GitHub runs `run:` under `bash -e`
+      # WITHOUT pipefail, so `swift test | tail` would report the exit code of
+      # `tail` (always 0) and the job would pass on a failing test run — a check
+      # that cannot fail. See docs/orchestration/hooks.md.
       - name: Build
         working-directory: samples/SkillPatterns
-        run: swift build 2>&1 | tail -40
+        run: |
+          set -o pipefail
+          swift build 2>&1 | tail -40
 
       - name: Test
         working-directory: samples/SkillPatterns
-        run: swift test 2>&1 | tail -60
+        run: |
+          set -o pipefail
+          swift test 2>&1 | tail -60

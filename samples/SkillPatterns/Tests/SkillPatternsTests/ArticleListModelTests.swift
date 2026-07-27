@@ -192,7 +192,10 @@ final class DomainTests: XCTestCase {
         let repository = InMemoryArticleRepository(articles: Article.samples)
         let useCase = DefaultFetchArticlesUseCase(repository: repository)
 
-        XCTAssertFalse(try await useCase.execute().isEmpty)
+        // Hoisted out of the assertion: XCTAssert* takes an autoclosure, which
+        // cannot contain `await`.
+        let initial = try await useCase.execute()
+        XCTAssertFalse(initial.isEmpty)
 
         await repository.setFailure(DomainError.offline)
 
