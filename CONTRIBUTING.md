@@ -27,23 +27,25 @@ Thanks for your interest! This skill is community-maintained and PRs are welcome
 
 ## Updating the agent brain
 
-`SKILL.md`, `CLAUDE.md`, `AGENTS.md`, `GEMINI.md`, `CONVENTIONS.md`, `replit.md`, `.cursorrules`, `.clinerules`, `.continuerules`, `.kilocoderules`, `.roorules`, `.rules`, `.windsurfrules`, and the rule files under `.aiassistant/`, `.amazonq/`, `.augment/`, `.continue/`, `.cursor/`, `.junie/`, `.kilocode/`, `.roo/`, `.tabnine/`, `.trae/`, `.windsurf/`, and `.github/copilot-instructions.md` are **all identical**. If you change one, run:
+`SKILL.md` is the **single source of truth**. `CLAUDE.md`, `AGENTS.md`, `GEMINI.md`, `CONVENTIONS.md`, `replit.md`, `.cursorrules`, `.clinerules`, `.continuerules`, `.kilocoderules`, `.roorules`, `.rules`, `.windsurfrules`, and the rule files under `.aiassistant/`, `.amazonq/`, `.augment/`, `.continue/`, `.cursor/`, `.junie/`, `.kilocode/`, `.roo/`, `.tabnine/`, `.trae/`, and `.windsurf/`, plus `.github/copilot-instructions.md`, are generated copies of `SKILL.md` **with the YAML frontmatter stripped** — those formats are plain instruction files and would render the frontmatter as body text.
+
+Never edit a mirror by hand. Edit `SKILL.md`, then run:
 
 ```bash
-# From repo root
-SRC=SKILL.md
-for f in CLAUDE.md AGENTS.md GEMINI.md CONVENTIONS.md replit.md \
-         .cursorrules .clinerules .continuerules .kilocoderules .roorules .rules .windsurfrules \
-         .github/copilot-instructions.md \
-         .aiassistant/rules/ios-skill.md .amazonq/rules/ios-skill.md .augment/rules/ios-skill.md \
-         .continue/rules/ios-skill.md .cursor/rules/ios-skill.md .junie/guidelines.md \
-         .kilocode/rules/ios-skill.md .roo/rules/ios-skill.md .tabnine/guidelines/ios-skill.md \
-         .trae/rules/ios-skill.md .windsurf/rules/ios-skill.md; do
-  cp "$SRC" "$f"
-done
+./scripts/sync-mirrors.sh          # regenerate all 24 mirrors
+./scripts/sync-mirrors.sh --check  # verify they are current (what CI runs)
 ```
 
-Otherwise the agents fall out of sync and the skill becomes inconsistent across tools.
+The `docs-consistency` GitHub Actions workflow fails any PR whose mirrors are stale, so run the sync before you push.
+
+To support a new AI tool, add its path to the `MIRRORS` array in `scripts/sync-mirrors.sh` and re-run the script — do not add another `cp` line anywhere else.
+
+### House rules for `SKILL.md` itself
+
+- Frontmatter must stay valid YAML with `name` and `description` present. The `description` is what agents match on to decide whether to load the skill, so it should name concrete triggers (frameworks, task types), not adjectives.
+- Bump `version` on any behavioral change to the rules.
+- Every documentation file referenced in the index must exist. CI checks this.
+- New docs follow **Context → Pattern → Anti-Patterns**: state the trigger, show complete compiling Swift, then show the `// WRONG` forms with the failure each one causes. The anti-pattern block is not optional — it is the part that stops an agent from emitting plausible-but-wrong boilerplate.
 
 ## Reporting bugs
 

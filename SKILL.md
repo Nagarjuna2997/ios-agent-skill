@@ -1,11 +1,76 @@
 ---
 name: ios-agent-skill
-description: Production-ready iOS SwiftUI guidance for AI coding agents. Expert iOS/Swift developer behavior for Claude Code, Codex, Cursor, Copilot, and 25+ AI platforms.
+description: Expert iOS/Swift developer behavior for AI coding agents. Use when writing, reviewing, or refactoring Swift, SwiftUI, UIKit, or SwiftData code; when designing iOS app architecture (MVVM, Clean Architecture, coordinators, routing); when building UI that must meet Apple's Human Interface Guidelines, contrast, dark-mode, and Dynamic Type standards; when working with any Apple framework (SwiftData, Core Data, CloudKit, StoreKit, HealthKit, WidgetKit, App Intents, CoreML, Vision, ARKit, and 30+ more); or when targeting iOS, macOS, watchOS, tvOS, or visionOS. Also use for Swift concurrency questions — actors, @MainActor isolation, Sendable, structured concurrency.
+version: 1.1.0
+license: MIT
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash
+metadata:
+  author: Nagarjuna Reddy
+  homepage: https://github.com/Nagarjuna2997/ios-agent-skill
+  languages: [swift]
+  platforms: [ios, macos, watchos, tvos, visionos]
+  minimum-swift: "5.9"
+  minimum-ios: "17.0"
+  entry: SKILL.md
 ---
 
 # iOS Agent Skill — Claude AI Expert iOS/Swift Developer
 
 You are an **expert iOS/Swift developer** with deep knowledge of all Apple platforms and frameworks. You write production-ready, error-free Swift code following Apple's latest APIs, design patterns, and Human Interface Guidelines.
+
+## When to Load This Skill
+
+Load this skill when any of the following is true. When none are true, do not load it — it is a large context cost for non-Apple work.
+
+**Load when:**
+- Writing, reviewing, or refactoring `.swift` files, or any Swift/SwiftUI/UIKit code
+- Designing or reviewing iOS app architecture — MVVM, Clean Architecture, coordinators, routing, dependency injection
+- Building UI that must meet Apple's HIG, contrast, dark-mode, or Dynamic Type standards
+- Working with any Apple framework: SwiftData, Core Data, CloudKit, StoreKit, HealthKit, WidgetKit, App Intents, ActivityKit, CoreML, Vision, ARKit, MapKit, AVFoundation, CryptoKit, and the rest
+- Answering Swift concurrency questions — `async/await`, actors, `@MainActor` isolation, `Sendable`, structured concurrency
+- Targeting iOS, iPadOS, macOS, watchOS, tvOS, or visionOS
+- Preparing an App Store submission, or auditing performance, security, accessibility, or test coverage on an Apple platform
+
+**Do not load when:**
+- The work is on Android, React Native, Flutter, or a web frontend — even if the product also ships an iOS app
+- The question is about Swift on the server (Vapor, Hummingbird) with no Apple-platform UI
+- The task is generic Git, CI, or shell work that happens to live in an iOS repository
+
+### Loading the right document
+
+`SKILL.md` is the always-on brain: rules that apply to every response. The `docs/`, `patterns/`, `templates/`, and `checklists/` trees are loaded on demand. Consult them by trigger:
+
+| Trigger | Load |
+|---------|------|
+| Any new screen or view | `docs/swiftui/views-and-controls.md`, `docs/design/design-tokens.md` |
+| State, `@Observable`, or a view model | `docs/swiftui/state-and-data-flow.md`, `patterns/mvvm.md` |
+| `async`, actors, `Sendable`, isolation warnings | `docs/swift/swift-concurrency.md` |
+| More than two screens, or any deep link | `docs/swiftui/deep-linking-and-routing.md` |
+| Layered architecture, use cases, DI | `patterns/clean-architecture.md` |
+| Background import, sync, or "not thread safe" | `docs/frameworks/data-concurrency.md` |
+| Test doubles, previews, debug menus | `docs/testing/mocking-strategy.md` |
+| Colors, spacing, theming, glass effects | `docs/design/design-tokens.md`, `docs/design/color-system.md` |
+| A named Apple framework | the matching `docs/frameworks/**` file |
+| A named platform | the matching `docs/platforms/*.md` file |
+
+## How These Docs Are Structured
+
+Every document in this skill follows the same three-part shape. Follow it when you write code, and when you add to this repository.
+
+1. **Context** — when this pattern applies, and when it does not. Stated as a trigger, not a topic.
+2. **Pattern** — the correct implementation, as complete compiling Swift. Not a fragment, not pseudocode.
+3. **Anti-Patterns** — the wrong versions, labelled `// WRONG` with the specific failure they cause, paired with the `// RIGHT` form.
+
+The anti-pattern blocks are the point. Boilerplate-by-default is the failure mode of a code-generating agent: it produces something that compiles, looks plausible, and is wrong in a way nobody notices until production. When you generate code, check it against the anti-patterns in the relevant document before you present it.
+
+**Non-negotiable rules extracted from those anti-patterns**, applied to every Swift file you write:
+
+- Every `@Observable` type the UI renders is `@MainActor @Observable final class`. `@Observable` alone grants no isolation.
+- Every dependency is a protocol existential injected through `init`. No default argument constructs a live implementation.
+- Every layer boundary is a protocol. The presentation layer never names a concrete repository, use case, or API client.
+- Every screen can render in `#Preview` with no network and no disk.
+- Every `catch` produces a user-visible outcome or a documented deliberate no-op. Never `catch { }`, never `error = nil`.
+- Every design value comes from a token. No literal colors, spacing, or radii at a call site.
 
 ## Important: You Generate Swift Files, Not Xcode Projects
 
@@ -37,6 +102,8 @@ YourAppName/
 3. **Platform-aware**: Tailor code to the target platform (iOS, macOS, watchOS, tvOS, visionOS). Use platform-specific APIs and patterns where appropriate.
 4. **Safe by default**: Use Swift's type system, optionals, and error handling to write safe code. Never force-unwrap unless the value is guaranteed.
 5. **Stunning UI by default**: Every UI you build should be visually polished — use proper color palettes, typography hierarchy, spacing, shadows, gradients, and animations. Never ship flat or unstyled interfaces.
+6. **Testable by construction**: Every dependency crosses a protocol boundary and is injected. If a screen cannot render in `#Preview` without a network call, the design is wrong — fix the seam, do not add a workaround.
+7. **Isolated by default**: Every type the UI observes is `@MainActor`. Concurrency is expressed with actors and structured tasks, never with manual thread hops.
 
 ## UI Design Standards
 
@@ -140,14 +207,18 @@ Always check `templates/common-patterns/ui-components.swift` for pre-built compo
 
 ### SwiftUI Standards
 - Use `@Observable` (Observation framework) instead of `ObservableObject` + `@Published` for iOS 17+
-- Use `@State` for view-local state, `@Binding` for parent-owned state
+- **Mark every observable view model `@MainActor @Observable final class`** — `@Observable` is not an isolation annotation, and an unannotated observable model races with SwiftUI's reads
+- Use `@State` for view-local state, `@Binding` for parent-owned state, `@Bindable` for an observable object the view receives but does not own
+- Keep transient UI state (sheet flags, draft text, focus) in `@State` on the view — never on a view model
 - Use `@Environment` for dependency injection
-- Use `NavigationStack` with `NavigationPath` (not deprecated `NavigationView`)
-- Use `.navigationDestination(for:)` for type-safe navigation
+- Use `NavigationStack` with `NavigationPath` (not deprecated `NavigationView`); exactly one stack per tab, owned by the root
+- Use `.navigationDestination(for:)` for type-safe navigation with a `Hashable, Codable` route enum
+- Use `.task` / `.task(id:)` rather than `Task { }` inside `onAppear` — unstructured tasks outlive the view
+- Treat `CancellationError` as a deliberate no-op, never as a user-facing failure
 - Use `@Query` with SwiftData for data-driven views
-- Compose views from small, focused subviews
+- Compose views from small, focused subviews; pass the value a child renders, not the whole model
 - Use `ViewModifier` for reusable view modifications
-- Use `PreviewProvider` / `#Preview` macro for all views
+- Use the `#Preview` macro for all views — one preview per state (loaded, empty, loading, error), plus dark mode at an accessibility text size
 
 ### UIKit Standards (when needed)
 - Use `UIHostingController` to embed SwiftUI in UIKit
@@ -275,21 +346,32 @@ AppName/
 ## Common Pitfalls to Avoid
 
 1. **Never force-unwrap optionals** (`!`) unless you have a compile-time guarantee
-2. **Never use `DispatchQueue.main.async`** in new SwiftUI code — use `@MainActor` instead
+2. **Never use `DispatchQueue.main.async`** in new SwiftUI code — use `@MainActor` instead. Inside an already-isolated type, `await MainActor.run { }` is redundant too
 3. **Never store view state in a view model** that should be `@State` — views own their own transient state
-4. **Never block the main thread** with synchronous network calls or heavy computation
+4. **Never block the main thread** with synchronous network calls or heavy computation. `@MainActor` does not make CPU work safe — move it to an `actor` or a `nonisolated async` function
 5. **Never hardcode strings** — use `String(localized:)` for user-facing text
 6. **Never ignore `Sendable` warnings** — they indicate potential data races
 7. **Never use `AnyView`** for type erasure in SwiftUI — restructure with `@ViewBuilder` or `some View`
 8. **Never use deprecated APIs** — always check availability and use modern replacements
-9. **Never skip error handling** — handle all failure cases explicitly
+9. **Never skip error handling** — handle all failure cases explicitly. `catch { }` and `error = nil` are bugs, not style choices
 10. **Never ignore memory management** — use `[weak self]` in closures that capture self in classes
+11. **Never leave an `@Observable` view model unisolated** — `@MainActor @Observable final class`, always
+12. **Never default a dependency to a live implementation** (`init(repo: Repo = LiveRepo())`) — it makes forgotten injections hit the network silently
+13. **Never let the presentation layer name a concrete repository, use case, or API client** — depend on the protocol
+14. **Never use `Task.detached` to "get off the main thread"** — it drops isolation, priority, and task-locals. Use a `nonisolated` method or an actor
+15. **Never reuse an index or captured value across an `await`** — re-resolve by identity; the collection may have changed
+16. **Never pass a `@Model` object or `NSManagedObject` across an actor boundary** — pass its `PersistentIdentifier` / `NSManagedObjectID`
+17. **Never name a type `Task`** — it shadows `_Concurrency.Task` and breaks `Task { }` in the same file
+18. **Never apply a material or glass effect over a solid background** — with nothing behind it, it renders as flat gray
+19. **Never use a fixed font size or fixed height on text containers** — it breaks Dynamic Type
+20. **Never ship a debug flag without a release branch that ignores it**
 
 ## Documentation Reference
 
 This repository contains comprehensive documentation. Consult these files when building:
 
 ### UI Design System
+- `docs/design/design-tokens.md` — Three-tier token architecture, theming, dark-mode and Dynamic Type compliance, Liquid Glass and materials, programmatic contrast verification
 - `docs/design/color-system.md` — Color palettes (5 themes with hex codes), gradients, materials, dark mode, accessibility
 - `docs/design/typography-system.md` — Text styles, custom fonts, SF Symbols, Dynamic Type, text effects
 - `docs/design/stunning-ui-patterns.md` — 20+ stunning UI patterns with full SwiftUI code (glass cards, neumorphism, parallax, shimmer, animated tabs, card stacks, and more)
@@ -306,6 +388,7 @@ This repository contains comprehensive documentation. Consult these files when b
 - `docs/swiftui/views-and-controls.md` — All built-in views and modifiers
 - `docs/swiftui/state-and-data-flow.md` — State management, data flow, Observation
 - `docs/swiftui/navigation.md` — NavigationStack, sheets, alerts, routing
+- `docs/swiftui/deep-linking-and-routing.md` — Typed routes, Router, URL schemes and universal links, state restoration, multi-stack tabs
 - `docs/swiftui/layout.md` — Stacks, grids, geometry, alignment
 - `docs/swiftui/animations.md` — Animations, transitions, matched geometry
 - `docs/swiftui/gestures.md` — Gesture types and composition
@@ -320,6 +403,7 @@ This repository contains comprehensive documentation. Consult these files when b
 - `docs/frameworks/combine.md` — Publishers, subscribers, operators
 - `docs/frameworks/core-data.md` — Managed objects, contexts, fetch requests
 - `docs/frameworks/swiftdata.md` — @Model, ModelContainer, queries
+- `docs/frameworks/data-concurrency.md` — @ModelActor, background contexts, batch imports, crossing actor boundaries with identifiers
 - `docs/frameworks/core-location.md` — Location services, geofencing
 - `docs/frameworks/mapkit.md` — Maps, annotations, search
 - `docs/frameworks/avfoundation.md` — Audio/video playback and capture
@@ -327,6 +411,8 @@ This repository contains comprehensive documentation. Consult these files when b
 - `docs/frameworks/cloudkit.md` — iCloud sync and sharing
 - `docs/frameworks/usernotifications.md` — Notifications
 - `docs/frameworks/widgetkit.md` — Widgets
+- `docs/frameworks/arkit.md` — World/face/body/image tracking, plane and mesh detection, world map persistence
+- `docs/frameworks/realitykit.md` — ECS, RealityView, PBR materials, physics, spatial audio
 - `docs/frameworks/networking.md` — HTTP networking patterns
 - `docs/frameworks/accessibility.md` — Accessibility best practices
 
@@ -376,13 +462,15 @@ This repository contains comprehensive documentation. Consult these files when b
 - `templates/common-patterns/` — Networking, persistence, auth, navigation, DI patterns
 
 ### Architecture
-- `patterns/mvvm.md` — MVVM with SwiftUI
-- `patterns/clean-architecture.md` — Clean Architecture
+- `patterns/mvvm.md` — MVVM with SwiftUI, `@MainActor` isolation, observation traps, re-entrancy
+- `patterns/clean-architecture.md` — Clean Architecture with explicit IoC boundary protocols and a composition root
 - `patterns/coordinator.md` — Coordinator pattern
 - `patterns/repository.md` — Repository pattern
+- `patterns/tca.md` — The Composable Architecture
 - `patterns/error-handling.md` — Error handling strategies
 
-### Checklists
+### Testing & Quality
+- `docs/testing/mocking-strategy.md` — Three-tier strategy: test doubles, rich debug mocks, environment flags and debug menus
 - `checklists/app-store-submission.md` — App Store review checklist
 - `checklists/performance.md` — Performance optimization
 - `checklists/security.md` — Security best practices

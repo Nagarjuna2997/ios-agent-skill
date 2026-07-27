@@ -244,6 +244,7 @@ Auto-reads `.aiassistant/rules/ios-skill.md` or `.junie/guidelines.md`
 | :jigsaw: | [views-and-controls.md](docs/swiftui/views-and-controls.md) | Text, Image, Button, List, ScrollView, Form, Menu, ViewModifier, lifecycle |
 | :floppy_disk: | [state-and-data-flow.md](docs/swiftui/state-and-data-flow.md) | @State, @Binding, @Observable, @Environment, @Query |
 | :compass: | [navigation.md](docs/swiftui/navigation.md) | NavigationStack, sheets, TabView, deep linking, iOS 18 zoom transitions |
+| :link: | [deep-linking-and-routing.md](docs/swiftui/deep-linking-and-routing.md) | Typed routes, Router, URL schemes, universal links, state restoration, multi-stack tabs |
 | :triangular_ruler: | [layout.md](docs/swiftui/layout.md) | Stacks, Grid, GeometryReader, LazyVGrid, custom Layout protocol |
 | :sparkles: | [animations.md](docs/swiftui/animations.md) | Spring, transitions, matchedGeometry, PhaseAnimator, MeshGradient, TextRenderer |
 | :point_up_2: | [gestures.md](docs/swiftui/gestures.md) | Tap, drag, magnify, rotate, gesture composition |
@@ -260,6 +261,7 @@ Auto-reads `.aiassistant/rules/ios-skill.md` or `.junie/guidelines.md`
 
 | | File | Topics |
 |:---:|------|--------|
+| :abacus: | [design-tokens.md](docs/design/design-tokens.md) | 3-tier token architecture, theming, dark mode, Dynamic Type, Liquid Glass, contrast tests |
 | :art: | [color-system.md](docs/design/color-system.md) | 5 color palettes, hex codes, 10 gradient recipes, materials, dark mode |
 | :capital_abcd: | [typography-system.md](docs/design/typography-system.md) | Text styles, SF Symbols, Dynamic Type, gradient/animated text effects |
 | :star2: | [stunning-ui-patterns.md](docs/design/stunning-ui-patterns.md) | 20+ UI patterns: glassmorphism, neumorphism, parallax, shimmer, card stacks |
@@ -282,6 +284,7 @@ Auto-reads `.aiassistant/rules/ios-skill.md` or `.junie/guidelines.md`
 | :ocean: | [combine.md](docs/frameworks/combine.md) | Publishers, operators, error handling |
 | :floppy_disk: | [core-data.md](docs/frameworks/core-data.md) | NSManagedObject, fetch requests, migration |
 | :sparkle: | [swiftdata.md](docs/frameworks/swiftdata.md) | @Model, @Query, #Predicate, History API, custom DataStore |
+| :twisted_rightwards_arrows: | [data-concurrency.md](docs/frameworks/data-concurrency.md) | @ModelActor, background contexts, batch imports, crossing actor boundaries |
 | :satellite: | [networking.md](docs/frameworks/networking.md) | API client, auth tokens, WebSocket |
 | :round_pushpin: | [core-location.md](docs/frameworks/core-location.md) | GPS, geofencing, iBeacon |
 | :world_map: | [mapkit.md](docs/frameworks/mapkit.md) | Map views, annotations, directions, LookAround |
@@ -395,8 +398,8 @@ templates/multiplatform-app/
 
 | | Pattern | Guide |
 |:---:|---------|-------|
-| :arrows_counterclockwise: | **MVVM** | [@Observable, DI, testing](patterns/mvvm.md) |
-| :bricks: | **Clean Architecture** | [Domain/Data/Presentation layers](patterns/clean-architecture.md) |
+| :arrows_counterclockwise: | **MVVM** | [@MainActor @Observable, isolation, DI, testing](patterns/mvvm.md) |
+| :bricks: | **Clean Architecture** | [Layers, IoC boundary protocols, composition root](patterns/clean-architecture.md) |
 | :compass: | **Coordinator** | [NavigationPath, deep linking](patterns/coordinator.md) |
 | :file_cabinet: | **Repository** | [Offline-first, caching](patterns/repository.md) |
 | :warning: | **Error Handling** | [Custom errors, retry, circuit breaker](patterns/error-handling.md) |
@@ -421,6 +424,7 @@ templates/multiplatform-app/
 | :racing_car: | [Performance](checklists/performance.md) | Instruments, SwiftUI perf, image optimization |
 | :shield: | [Security](checklists/security.md) | Keychain, pinning, biometrics, encryption |
 | :test_tube: | [Testing](checklists/testing.md) | XCTest, Swift Testing, UI tests, CI/CD |
+| :performing_arts: | [Mocking & Debugging Strategy](docs/testing/mocking-strategy.md) | Tier 1 test doubles, Tier 2 rich debug mocks, Tier 3 environment flags and debug menus |
 
 ---
 

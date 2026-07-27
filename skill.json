@@ -1,7 +1,7 @@
 {
   "name": "ios-agent-skill",
-  "version": "1.0.0",
-  "description": "Expert iOS/Swift developer skill for Claude — 93 files covering all Apple platforms, frameworks, design systems, and architecture patterns",
+  "version": "1.1.0",
+  "description": "Expert iOS/Swift developer skill for Claude — 100 files covering all Apple platforms, frameworks, design systems, architecture patterns, and concurrency isolation rules",
   "author": "Nagarjuna Reddy",
   "homepage": "https://github.com/Nagarjuna2997/ios-agent-skill",
   "license": "MIT",
@@ -37,6 +37,7 @@
     "docs": "docs/",
     "templates": "templates/",
     "patterns": "patterns/",
-    "checklists": "checklists/"
+    "checklists": "checklists/",
+    "scripts": "scripts/"
   }
 }
