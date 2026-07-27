@@ -322,35 +322,41 @@ actor SettingsStore: CustomStringConvertible {
 ### GlobalActor and @MainActor
 
 ```swift
-// @MainActor — ensures code runs on the main thread
+// @MainActor — isolates state and code to the main actor
 @MainActor
-class ViewModel: ObservableObject {
-    @Published var items: [Item] = []
-    @Published var isLoading = false
+@Observable
+final class ViewModel {
+    private(set) var items: [Item] = []
+    private(set) var isLoading = false
+
+    private let service: any ItemService
+    init(service: any ItemService) { self.service = service }
 
     func load() async {
         isLoading = true
+        defer { isLoading = false }
         do {
-            // URLSession.data is NOT MainActor — automatically hops off
-            let items = try await fetchItems()
-            // Back on MainActor — safe to update @Published
-            self.items = items
+            // service.fetch() is NOT MainActor — automatically hops off
+            let fetched = try await service.fetch()
+            // Back on the main actor — safe to write observed state
+            items = fetched
+        } catch is CancellationError {
+            return
         } catch {
-            print(error)
+            // handle
         }
-        isLoading = false
     }
 }
 
 // Marking individual methods
-class DataService {
+final class DataService {
     @MainActor
     func updateUI(with data: [Item]) {
-        // Guaranteed to run on main thread
+        // Guaranteed to run on the main actor
     }
 
     func fetchInBackground() async throws -> [Item] {
-        // Runs on cooperative thread pool
+        // Runs on the cooperative thread pool
         try await URLSession.shared.data(from: url).0.decoded()
     }
 }
@@ -362,12 +368,218 @@ actor DatabaseActor {
 }
 
 @DatabaseActor
-class DatabaseService {
+final class DatabaseService {
     // All methods isolated to DatabaseActor
     func save(_ record: Record) throws { /* ... */ }
     func fetch(query: String) throws -> [Record] { /* ... */ }
 }
 ```
+
+---
+
+## Isolation in SwiftUI Code
+
+This section covers the concurrency edge cases that actually break SwiftUI apps.
+Read it alongside `docs/swiftui/state-and-data-flow.md`.
+
+### `@Observable` grants no isolation
+
+`@Observable` is a macro that generates observation plumbing. It says nothing
+about which actor owns the state. An unannotated `@Observable` class is
+`nonisolated`, so any task may mutate it while SwiftUI reads it.
+
+```swift
+@Observable final class Model { var items: [Item] = [] }     // nonisolated — racy
+@MainActor @Observable final class Model { … }               // correct
+```
+
+Under Swift 6 language mode the first form produces isolation errors as soon as
+you touch it from an async context. Under Swift 5 mode with strict concurrency
+checking set to `minimal`, it compiles silently and races at runtime.
+
+### `@MainActor` is not "run on the main thread"
+
+Marking a type `@MainActor` isolates *its own statements* to the main actor. Any
+`async` call it makes still runs wherever that callee is isolated:
+
+```swift
+@MainActor
+final class Loader {
+    func run() async throws {
+        // Main actor is FREE during this await — URLSession runs elsewhere.
+        let (data, _) = try await URLSession.shared.data(from: url)
+        // Main actor reacquired here.
+        decoded = try JSONDecoder().decode([Item].self, from: data)
+        //  ^ this DOES occupy the main actor. Large decodes belong off it.
+    }
+}
+```
+
+The mistake is assuming the annotation makes things slow (it does not — awaits
+release the actor) or that it makes CPU work safe (it does not — your own
+synchronous statements block the UI). Move heavy synchronous work to an `actor`
+or a `nonisolated` async function.
+
+### Escaping the main actor deliberately
+
+| Technique | Effect | Use when |
+|-----------|--------|----------|
+| `nonisolated func` (sync) | Runs in the caller's context; may not touch isolated state | Pure helpers |
+| `nonisolated func … async` | Runs on the cooperative pool | CPU work inside a `@MainActor` type |
+| `actor` | Own serial executor | Shared mutable state |
+| `@concurrent func … async` (Swift 6.2+) | Always offloads to the pool | Explicitly parallel work |
+| `Task.detached` | No actor, no priority, no task-locals | Almost never in app code |
+
+```swift
+@MainActor
+@Observable
+final class ReportModel {
+    private(set) var summary: Summary?
+
+    // Off the main actor, but still structured and cancellable.
+    nonisolated private static func compute(_ rows: [Row]) async -> Summary {
+        Summary(rows: rows)
+    }
+
+    func build(_ rows: [Row]) async {
+        summary = await Self.compute(rows)   // assignment back on the main actor
+    }
+}
+```
+
+### Isolation leaks: the four common shapes
+
+```swift
+// LEAK 1 — Task.detached drops the actor, so `self.items = …` is a cross-actor
+// write. Swift 6 rejects it; Swift 5 races.
+Task.detached { self.items = await load() }
+Task { self.items = await load() }              // inherits @MainActor — correct
+
+// LEAK 2 — a delegate callback arrives on an arbitrary thread.
+func locationManager(_ m: CLLocationManager, didUpdateLocations l: [CLLocation]) {
+    self.location = l.last                       // NOT main-actor isolated
+}
+// Correct: hop explicitly at the boundary you do not control.
+nonisolated func locationManager(_ m: CLLocationManager, didUpdateLocations l: [CLLocation]) {
+    let last = l.last
+    Task { @MainActor in self.location = last }
+}
+
+// LEAK 3 — a completion handler captured inside an isolated type.
+service.fetch { result in
+    self.items = result                          // callback thread is unknown
+}
+// Correct: wrap the callback API in a continuation and await it, or hop.
+
+// LEAK 4 — a `nonisolated` computed property that reads isolated state.
+nonisolated var displayName: String { user.name }   // compile error in Swift 6
+// Correct: leave it isolated, or make the backing storage `let`.
+```
+
+### `MainActor.assumeIsolated` for known-main-thread callbacks
+
+Some framework callbacks are documented to arrive on the main thread but are not
+annotated. `assumeIsolated` asserts that at runtime instead of introducing an
+extra hop (which would delay the update by a turn of the run loop):
+
+```swift
+nonisolated func controllerDidChangeContent(_ controller: NSFetchedResultsController<…>) {
+    MainActor.assumeIsolated {
+        self.rows = controller.fetchedObjects ?? []
+    }
+}
+```
+
+It traps if the assumption is wrong, which is what you want — a crash in debug
+beats a silent race in production. Never use it to silence a warning you have not
+verified.
+
+### `nonisolated(unsafe)` is a last resort
+
+```swift
+// Only for storage you are protecting by other means (a lock, documented
+// single-threaded init, a C API contract). Always comment WHY.
+nonisolated(unsafe) private var cCallbackContext: UnsafeMutableRawPointer?
+```
+
+If you are reaching for this on a view model property, the answer is `@MainActor`
+instead.
+
+### Re-entrancy: the guarantee actors do *not* give
+
+Actor isolation is mutual exclusion **between** suspension points. Two calls to
+the same async method interleave freely across `await`s.
+
+```swift
+// BROKEN — a slow first load can land after a fast second one.
+func load() async {
+    items = try await service.fetch()
+}
+
+// FIXED — one in-flight task; later callers await the same result.
+private var inFlight: Task<[Item], Error>?
+
+func load() async throws -> [Item] {
+    if let inFlight { return try await inFlight.value }
+    let task = Task { try await service.fetch() }
+    inFlight = task
+    defer { inFlight = nil }
+    return try await task.value
+}
+```
+
+Corollary: **anything captured before an `await` may be stale after it.** Indices,
+counts, and `first(where:)` results must be re-resolved on the far side.
+
+```swift
+// BROKEN — index computed before the suspension.
+let index = items.firstIndex(of: item)!
+try await service.save(item)
+items[index].isSynced = true          // array may have changed — wrong row or crash
+
+// FIXED
+try await service.save(item)
+guard let index = items.firstIndex(where: { $0.id == item.id }) else { return }
+items[index].isSynced = true
+```
+
+### `.task` inherits isolation; `Task.detached` does not
+
+```swift
+struct ContentView: View {
+    @State private var model = Model()      // @MainActor
+
+    var body: some View {
+        List(model.items) { … }
+            // `.task` runs on the main actor (View bodies are @MainActor) and
+            // is cancelled automatically when the view disappears.
+            .task { await model.load() }
+    }
+}
+```
+
+Every method reachable from `.task` must therefore treat `CancellationError` as a
+normal outcome, not a failure to display.
+
+### Sendable across the SwiftUI boundary
+
+Types stored on a `@MainActor` model but produced elsewhere must be `Sendable`:
+
+```swift
+struct Item: Identifiable, Sendable { … }               // value type — free
+protocol ItemService: Sendable {                        // dependency crosses actors
+    func fetch() async throws -> [Item]
+}
+final class LiveItemService: ItemService {              // must justify Sendable
+    private let session: URLSession                     // Sendable
+    init(session: URLSession = .shared) { self.session = session }
+    func fetch() async throws -> [Item] { … }
+}
+```
+
+A `final class` with only `let` properties of `Sendable` type is implicitly
+`Sendable`. If yours is not, make it an `actor` rather than reaching for
+`@unchecked Sendable`.
 
 ---
 
@@ -778,10 +990,11 @@ func loadData() async throws -> [Item] {
     }
 }
 
-// 2. Mark view models @MainActor for UI safety
+// 2. Mark view models @MainActor for UI safety — @Observable alone is NOT isolation
 @MainActor
-class ItemListViewModel: ObservableObject {
-    @Published var items: [Item] = []
+@Observable
+final class ItemListViewModel {
+    private(set) var items: [Item] = []
 }
 
 // 3. Use async let for a fixed number of parallel tasks
@@ -829,10 +1042,14 @@ for item in hugeArray {
 
 ### Common Pitfalls
 
-1. **Actor reentrancy**: After an `await` inside an actor, state may have changed. Always re-validate assumptions after suspension points.
+1. **Actor reentrancy**: After an `await` inside an actor, state may have changed. Always re-validate assumptions after suspension points — especially array indices.
 2. **Sendable violations**: Passing non-Sendable types across actor boundaries causes compiler warnings (errors in Swift 6).
 3. **Priority inversion**: A low-priority task holding actor isolation can block high-priority tasks waiting for the same actor.
 4. **Over-parallelization**: Creating thousands of tasks in a TaskGroup can exhaust the cooperative thread pool. Batch work appropriately.
+5. **Assuming `@Observable` implies `@MainActor`**: it does not. An unannotated observable model is nonisolated and races with SwiftUI's reads.
+6. **Assuming `@MainActor` means "on the main thread throughout"**: awaits release the actor, and your own synchronous statements still block the UI.
+7. **Unstructured tasks outliving their view**: `Task { }` in `onAppear` is never cancelled. Use `.task` / `.task(id:)`.
+8. **Silently swallowing `CancellationError`** as a user-facing failure — or worse, catching it and showing an alert every time a screen is dismissed.
 
 ---
 
@@ -845,7 +1062,11 @@ for item in hugeArray {
 | `async let` | Fixed number of parallel operations |
 | `TaskGroup` | Dynamic number of parallel operations |
 | `actor` | Protecting mutable state from data races |
-| `@MainActor` | UI updates and view model logic |
+| `@MainActor` | UI updates and view model logic — required on every `@Observable` the UI renders |
+| `nonisolated func … async` | CPU work inside a `@MainActor` type |
+| `MainActor.assumeIsolated` | Framework callbacks documented as main-thread but unannotated |
+| `nonisolated(unsafe)` | Last resort for storage protected by other means — always comment why |
 | `Sendable` | Types that cross concurrency boundaries |
 | `AsyncStream` | Bridging callback/delegate patterns |
 | `Continuation` | Wrapping single completion handlers |
+| `.task` / `.task(id:)` | View-scoped async work that must cancel on disappear |
