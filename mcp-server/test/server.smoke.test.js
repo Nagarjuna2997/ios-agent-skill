@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { mkdtemp, writeFile, mkdir, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { spawnSync } from "node:child_process";
 
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
@@ -58,6 +59,35 @@ before(async () => {
 after(async () => {
   await client?.close();
   if (fixture) await rm(fixture, { recursive: true, force: true });
+});
+
+describe("cli flags", () => {
+  const bin = new URL("../dist/index.js", import.meta.url).pathname;
+
+  // Regression: without flag handling, `--help` started the stdio server and
+  // blocked on stdin forever — indistinguishable from a hang, and the first
+  // thing anyone tries after installing.
+  test("--help prints usage and exits 0", () => {
+    const result = spawnSync("node", [bin, "--help"], { encoding: "utf8", timeout: 10_000 });
+    assert.equal(result.status, 0);
+    assert.match(result.stdout, /ios-agent-mcp/);
+    assert.match(result.stdout, /analyze_swift_project/);
+    assert.match(result.stdout, /claude mcp add/);
+  });
+
+  test("--version prints just the version and exits 0", () => {
+    const result = spawnSync("node", [bin, "--version"], { encoding: "utf8", timeout: 10_000 });
+    assert.equal(result.status, 0);
+    assert.match(result.stdout.trim(), /^\d+\.\d+\.\d+$/);
+  });
+
+  test("-h and -v are accepted too", () => {
+    for (const flag of ["-h", "-v"]) {
+      const result = spawnSync("node", [bin, flag], { encoding: "utf8", timeout: 10_000 });
+      assert.equal(result.status, 0, `${flag} should exit 0`);
+      assert.ok(result.stdout.length > 0, `${flag} should print something`);
+    }
+  });
 });
 
 describe("mcp server", () => {

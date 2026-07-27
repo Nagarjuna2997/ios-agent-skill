@@ -147,6 +147,18 @@ type definitions for node? Try `npm i --save-dev @types/node`
 
 That is the guard working as intended — it refuses to publish an unbuilt package — but the fix is `npm install`, not disabling the hook.
 
+After publishing, verify:
+
+```bash
+npm view ios-agent-mcp version     # registry has it
+npx -y ios-agent-mcp --version     # 1.0.0
+npx -y ios-agent-mcp --help        # usage, tool list, setup commands
+```
+
+`--help` and `--version` print and exit. Every other invocation starts the
+stdio server and blocks waiting for a client, which is correct but looks like a
+hang if you run it by hand.
+
 To see exactly what would ship before committing to it:
 
 ```bash
