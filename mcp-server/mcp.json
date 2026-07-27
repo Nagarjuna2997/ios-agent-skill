@@ -1,0 +1,35 @@
+{
+  "name": "ios-agent-mcp",
+  "displayName": "iOS Agent",
+  "version": "1.0.0",
+  "description": "Static analysis for modern iOS/Swift projects — Swift 6 actor isolation, architecture boundaries, SwiftUI, availability guards, and App Store readiness.",
+  "author": "Nagarjuna Reddy",
+  "license": "MIT",
+  "homepage": "https://github.com/Nagarjuna2997/ios-agent-skill",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Nagarjuna2997/ios-agent-skill.git",
+    "directory": "mcp-server"
+  },
+  "keywords": ["ios", "swift", "swiftui", "xcode", "apple", "static-analysis", "code-review"],
+  "runtime": {
+    "type": "node",
+    "minimumVersion": "18",
+    "transport": "stdio",
+    "command": "npx",
+    "args": ["-y", "ios-agent-mcp"]
+  },
+  "permissions": {
+    "filesystem": "read",
+    "network": "none",
+    "notes": "Reads .swift, Info.plist, Package.swift, and project.pbxproj files under the path you pass to a tool. Makes no network requests and writes nothing."
+  },
+  "tools": [
+    { "name": "analyze_swift_project", "summary": "Project overview plus a finding count for every rule category." },
+    { "name": "review_swift_concurrency", "summary": "Swift 6 actor isolation and concurrency defects." },
+    { "name": "review_swift_architecture", "summary": "Architecture boundaries, dependency injection, testability." },
+    { "name": "review_swiftui", "summary": "SwiftUI view and state defects, Dynamic Type, design tokens." },
+    { "name": "check_availability_guards", "summary": "Missing and over-restrictive @available guards." },
+    { "name": "audit_app_store_readiness", "summary": "Purpose strings, privacy manifest, accessibility, localization." }
+  ]
+}

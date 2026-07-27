@@ -212,6 +212,33 @@ Auto-reads `.aiassistant/rules/ios-skill.md` or `.junie/guidelines.md`
 
 ---
 
+## :electric_plug: MCP Server — analyze your Swift project
+
+Beyond teaching agents how to *write* iOS code, this repo ships an MCP server that lets them *check* it.
+
+```bash
+claude mcp add ios-agent -- npx -y ios-agent-mcp
+```
+
+> **You:** Review my Swift project for concurrency problems.
+>
+> 🔴 `Sources/FeedModel.swift:3` — **@Observable type is not @MainActor-isolated.**
+> **Why it matters:** @Observable grants no isolation. SwiftUI reads this state during layout while any task may write it — a data race under Swift 5 mode, a compile error under Swift 6.
+> **Fix:** Annotate the type: `@MainActor @Observable final class …`
+
+| Tool | Finds |
+|------|-------|
+| `analyze_swift_project` | Structure, plus finding counts per category. **Start here.** |
+| `review_swift_concurrency` | `@Observable` without `@MainActor`, `Task.detached`, `@unchecked Sendable`, empty `catch`, a type named `Task` |
+| `review_swift_architecture` | Live-implementation defaults, presentation naming `URLSession`/`APIClient`, singletons in view models, domain importing SwiftUI |
+| `review_swiftui` | Fixed font sizes, `AnyView`, literal spacing, `@EnvironmentObject`, `try!` |
+| `check_availability_guards` | Missing **and over-restrictive** guards — an iOS 26 API guarded at iOS 27 silently drops every iOS 26 device |
+| `audit_app_store_readiness` | Missing purpose strings, privacy manifest, unlabeled icon buttons |
+
+Setup for Claude Desktop and Cursor: **[docs/mcp/installation.md](docs/mcp/installation.md)** · Tool reference: **[docs/mcp/tools.md](docs/mcp/tools.md)** · Worked sessions: **[docs/mcp/examples.md](docs/mcp/examples.md)**
+
+---
+
 ## :gear: Supported Platforms
 
 **Write against:** Swift 6.4 · Xcode 27 · iOS 27 SDK — **deploy to:** iOS 17–27
@@ -230,6 +257,20 @@ Full per-feature floors, framework minimums, and toolchain support: **[docs/comp
 > **Guard on the version where an API was introduced, not the newest SDK.** Liquid Glass and the Foundation Models baseline are **iOS 26+**; Private Cloud Compute, Dynamic Profiles, and image attachments are **iOS 27+**. Writing `#available(iOS 27, *)` around an iOS 26 API silently drops every iOS 26 device to your fallback.
 
 Everything above the iOS 17 floor is **additive** — a newer-OS feature must degrade to a working path, never disappear.
+
+---
+
+## :sparkles: What's New in 2.0
+
+**The repo is now installable, not just readable.**
+
+| | Feature | What it gives you |
+|:---:|---------|-------------------|
+| :electric_plug: | **[MCP server](mcp-server/)** | Six Swift analysis tools usable from Claude Code, Claude Desktop, and Cursor. `npx -y ios-agent-mcp` |
+| :white_check_mark: | **38 tests, incl. real protocol round-trips** | Unit tests for the analyzers, plus a smoke test that launches the server and speaks MCP over stdio |
+| :books: | **[MCP docs](docs/mcp/)** | Installation, full tool and rule reference, worked sessions |
+
+The analysis engine is the same rule set as `templates/hooks/forbid-antipatterns.sh` — this productizes it rather than reinventing it.
 
 ---
 

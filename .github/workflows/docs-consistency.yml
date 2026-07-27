@@ -352,6 +352,64 @@ jobs:
           print("OK - frontmatter only where expected")
           PY
 
+  mcp-server:
+    name: MCP server builds and tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mcp-server
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install
+        run: npm ci || npm install
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build
+        run: npm run build
+
+      # Unit tests cover the analyzers; the smoke test launches the real server
+      # and speaks the real MCP protocol over stdio, which unit tests cannot.
+      - name: Test
+        run: npm test
+
+      - name: Manifest is valid
+        run: |
+          python3 - <<'PY'
+          import json, sys
+          manifest = json.load(open("mcp.json"))
+          for key in ("name", "description", "version", "runtime", "tools"):
+              if key not in manifest:
+                  sys.exit(f"mcp.json missing required key: {key}")
+          if not manifest["tools"]:
+              sys.exit("mcp.json declares no tools")
+          print(f"OK - {manifest['name']} v{manifest['version']}, {len(manifest['tools'])} tools")
+          PY
+
+      # The manifest and the server must not drift apart: a tool advertised in
+      # mcp.json but not registered would be a broken promise to any client.
+      - name: Manifest matches registered tools
+        run: |
+          node -e "
+            const fs = require('fs');
+            const manifest = JSON.parse(fs.readFileSync('mcp.json', 'utf8'));
+            const src = fs.readFileSync('src/index.ts', 'utf8');
+            const registered = [...src.matchAll(/registerTool\(\s*[\"']([\w_]+)[\"']/g)].map(m => m[1]).sort();
+            const declared = manifest.tools.map(t => t.name).sort();
+            if (JSON.stringify(registered) !== JSON.stringify(declared)) {
+              console.error('mcp.json tools:', declared);
+              console.error('registered:    ', registered);
+              process.exit(1);
+            }
+            console.log('OK - manifest matches ' + registered.length + ' registered tools');
+          "
+
   sample-package:
     name: Sample package builds and tests
     runs-on: macos-latest

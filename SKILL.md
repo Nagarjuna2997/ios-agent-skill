@@ -1,7 +1,7 @@
 ---
 name: ios-agent-skill
 description: Expert iOS/Swift developer behavior for AI coding agents. Use when writing, reviewing, or refactoring Swift, SwiftUI, UIKit, or SwiftData code; when designing iOS app architecture (MVVM, Clean Architecture, coordinators, routing); when building UI that must meet Apple's Human Interface Guidelines, contrast, dark-mode, and Dynamic Type standards; when working with any Apple framework (SwiftData, Core Data, CloudKit, StoreKit, HealthKit, WidgetKit, App Intents, CoreML, Vision, ARKit, and 30+ more); or when targeting iOS, macOS, watchOS, tvOS, or visionOS. Also use for Swift concurrency questions — actors, @MainActor isolation, Sendable, structured concurrency.
-version: 1.4.0
+version: 2.0.0
 license: MIT
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 metadata:
@@ -80,6 +80,7 @@ Load this skill when any of the following is true. When none are true, do not lo
 | Enabling Swift 6 mode, or fixing strict-concurrency errors | `docs/migration/swift-6-migration.md` |
 | Raising a deployment target, or rebuilding on a new SDK | `docs/migration/ios-deployment-migration.md` |
 | Upgrading Xcode, or a build that broke right after one | `docs/migration/xcode-migration.md` |
+| Reviewing an existing Swift project for defects | `docs/mcp/tools.md` — the MCP server analyzes it directly |
 
 ## How These Docs Are Structured
 
@@ -645,6 +646,12 @@ This repository contains comprehensive documentation. Consult these files when b
 - `docs/orchestration/hooks.md` — Deterministic enforcement; hook vs. CI vs. reviewer
 - `.claude/agents/` — Ten ready-to-use specialists (`ios-explore`, `ios-plan`, `swift-reviewer`, `swift-debugger`, `swift-refactorer`, `ios-docs`, `foundation-models`, `swiftui-modernization`, `accessibility-reviewer`, `performance-reviewer`)
 - `templates/hooks/` — Drop-in hooks for iOS projects: formatting, anti-pattern blocking, build verification
+
+### MCP Server
+- `mcp-server/` — `ios-agent-mcp`, an MCP server exposing six Swift analysis tools (concurrency, architecture, SwiftUI, availability, App Store readiness, project overview)
+- `docs/mcp/installation.md` — Claude Code, Claude Desktop, Cursor, and from-source setup
+- `docs/mcp/tools.md` — Tool reference, every rule and its severity, and the limits of static analysis
+- `docs/mcp/examples.md` — Worked sessions, and how the tools pair with the subagents
 
 ### Versions & Migration
 - `docs/compatibility-matrix.md` — **Canonical.** Deployment targets, SDKs, tested Xcode/Swift, per-feature availability floors
