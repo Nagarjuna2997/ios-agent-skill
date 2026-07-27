@@ -19,7 +19,8 @@
   "scripts": {
     "build": "tsc",
     "test": "node --test test/*.test.js",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build && npm test"
   },
   "keywords": [
     "mcp",
@@ -37,5 +38,14 @@
   "devDependencies": {
     "typescript": "^5.6.0",
     "@types/node": "^22.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Nagarjuna2997/ios-agent-skill.git",
+    "directory": "mcp-server"
+  },
+  "homepage": "https://github.com/Nagarjuna2997/ios-agent-skill/tree/main/mcp-server",
+  "bugs": {
+    "url": "https://github.com/Nagarjuna2997/ios-agent-skill/issues"
   }
 }

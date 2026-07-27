@@ -1,26 +1,96 @@
 <p align="center">
-  <img src="https://img.shields.io/badge/Swift-5.9+-F05138?style=for-the-badge&logo=swift&logoColor=white" alt="Swift">
-  <img src="https://img.shields.io/badge/SwiftUI-blue?style=for-the-badge&logo=swift&logoColor=white" alt="SwiftUI">
-  <img src="https://img.shields.io/badge/iOS%2017+-000000?style=for-the-badge&logo=apple&logoColor=white" alt="iOS">
-  <img src="https://img.shields.io/badge/visionOS-8B5CF6?style=for-the-badge&logo=apple&logoColor=white" alt="visionOS">
+  <img src="https://img.shields.io/badge/Swift-6.4-F05138?style=for-the-badge&logo=swift&logoColor=white" alt="Swift">
+  <img src="https://img.shields.io/badge/Xcode-27-147EFB?style=for-the-badge&logo=xcode&logoColor=white" alt="Xcode">
+  <img src="https://img.shields.io/badge/iOS%2017--27-000000?style=for-the-badge&logo=apple&logoColor=white" alt="iOS">
+  <img src="https://img.shields.io/badge/MCP%20Server-6%20tools-8B5CF6?style=for-the-badge" alt="MCP">
   <img src="https://img.shields.io/badge/AI%20Agents-25+-00D084?style=for-the-badge" alt="AI Agents">
-  <img src="https://img.shields.io/badge/Lines-50K+-FF6B6B?style=for-the-badge" alt="Lines">
 </p>
 
-<h1 align="center">ios-agent-skill</h1>
+<h1 align="center">iOS Agent Skill</h1>
 
 <p align="center">
-  <strong>An Agent Skill for production-oriented iOS, Swift, and SwiftUI development.</strong><br>
-  Helps AI coding assistants generate safer Swift code, follow modern Apple APIs, and work inside existing Xcode projects.
+  <strong>Teach your AI coding agent to write iOS code like a senior engineer — then let it check its own work.</strong><br>
+  An Agent Skill + MCP server for Swift 6.4, SwiftUI, Foundation Models, and Apple Intelligence.
 </p>
 
 <p align="center">
-  <a href="https://www.linkedin.com/in/nagarjuna-reddy-97836a193/"><img src="https://img.shields.io/badge/Created%20by-Nagarjuna%20Reddy-0A66C2?style=flat-square&logo=linkedin" alt="Author"></a>
-  <a href="https://github.com/Nagarjuna2997"><img src="https://img.shields.io/badge/GitHub-Nagarjuna2997-181717?style=flat-square&logo=github" alt="GitHub"></a>
+  <a href="https://github.com/Nagarjuna2997/ios-agent-skill/actions/workflows/docs-consistency.yml"><img src="https://github.com/Nagarjuna2997/ios-agent-skill/actions/workflows/docs-consistency.yml/badge.svg" alt="CI"></a>
   <img src="https://img.shields.io/github/license/Nagarjuna2997/ios-agent-skill?style=flat-square" alt="License">
   <img src="https://img.shields.io/github/stars/Nagarjuna2997/ios-agent-skill?style=flat-square" alt="Stars">
   <img src="https://img.shields.io/github/v/release/Nagarjuna2997/ios-agent-skill?style=flat-square" alt="Release">
+  <a href="https://www.linkedin.com/in/nagarjuna-reddy-97836a193/"><img src="https://img.shields.io/badge/by-Nagarjuna%20Reddy-0A66C2?style=flat-square&logo=linkedin" alt="Author"></a>
 </p>
+
+---
+
+## Why
+
+AI agents write Swift that compiles. They are much worse at the things that decide whether an app ships:
+
+| | Without this skill | With it |
+|---|---|---|
+| **Concurrency** | `@Observable` with no `@MainActor` — a data race SwiftUI hits during layout | Isolation enforced, and checked by a tool |
+| **Architecture** | View models holding `URLSession` and singletons | Protocol boundaries; every screen previewable with no network |
+| **Availability** | `#available(iOS 27, *)` around an iOS 26 API — silently drops every iOS 26 device | Guards on the version the symbol was *introduced* |
+| **Error handling** | `catch { }` and `try!` | Every failure surfaces or is a documented no-op |
+| **Verification** | "It should work now" | Commands run, output pasted, claims labelled |
+
+It encodes how senior iOS engineers actually work — **and 100+ anti-patterns with the specific failure each one causes**, because a code generator that has only seen correct examples still emits plausible, wrong code.
+
+## Install
+
+**As a skill** — teaches the agent how to write iOS code:
+
+```bash
+npx skills add Nagarjuna2997/ios-agent-skill
+```
+
+Or clone into any project — 25+ agents auto-detect their own rule file (`CLAUDE.md`, `AGENTS.md`, `.cursorrules`, …):
+
+```bash
+git clone https://github.com/Nagarjuna2997/ios-agent-skill.git .ios-skill
+```
+
+**As an MCP server** — lets the agent review Swift you already have:
+
+```bash
+claude mcp add ios-agent -- npx -y ios-agent-mcp
+```
+
+<sub>Claude Desktop, Cursor, and Windows/Linux setup: **[docs/mcp/installation.md](docs/mcp/installation.md)**</sub>
+
+## What it looks like
+
+> **You:** Review my Swift project for concurrency problems.
+
+```
+🔴 Sources/FeedModel.swift:3 — @Observable type is not @MainActor-isolated.
+
+   Why it matters: @Observable grants no isolation. SwiftUI reads this state
+   during layout while any task may write it — a data race under Swift 5 mode,
+   a compile error under Swift 6.
+
+   Fix: Annotate the type: `@MainActor @Observable final class …`
+
+   Rule `observable-without-mainactor` · see docs/swift/swift-concurrency.md
+```
+
+Every finding carries a file, a line, the consequence, the fix, and a link to the doc that explains it.
+
+## What's in it
+
+| | |
+|---|---|
+| 🧠 **The skill** | 100+ files — Swift 6.4 concurrency, SwiftUI, Clean Architecture, 40+ Apple frameworks, design tokens, App Store checklists |
+| 🔌 **[MCP server](mcp-server/)** | 6 tools: concurrency, architecture, SwiftUI, availability guards, App Store readiness, project overview |
+| 🤖 **[10 subagents](.claude/agents/)** | explore, plan, review, debug, refactor, docs, Foundation Models, modernization, accessibility, performance |
+| ⚙️ **[Orchestration](docs/orchestration/)** | When to delegate, loop, or scale out — and the evidence rule that stops "it works" without proof |
+| 🪝 **[Hooks](templates/hooks/)** | Deterministic enforcement at write time, plus CI |
+| ✅ **[Compile-checked sample](samples/SkillPatterns/)** | An SPM package CI builds and tests on every push — the patterns are verified, not asserted |
+
+## Works with
+
+Claude Code · Claude Desktop · Cursor · Codex · GitHub Copilot · Windsurf · Gemini CLI · Cline · Roo · Zed · JetBrains AI · Amazon Q · Trae · Continue · Aider · Replit · **and 10+ more** — [full list](docs/ai-setup-guide.md)
 
 ---
 

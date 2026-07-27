@@ -42,6 +42,71 @@ Restart Claude Desktop. The tools appear under the connectors icon.
 `.cursor/mcp.json` (per project) or `~/.cursor/mcp.json` (global) — same shape
 as above.
 
+---
+
+## Platform notes
+
+Config file locations differ by OS. The command itself is the same everywhere.
+
+| | Claude Desktop config |
+|---|---|
+| **macOS** | `~/Library/Application Support/Claude/claude_desktop_config.json` |
+| **Windows** | `%APPDATA%\Claude\claude_desktop_config.json` |
+| **Linux** | `~/.config/Claude/claude_desktop_config.json` |
+
+### Windows
+
+`npx` is a shell script, not an executable, so some MCP clients cannot spawn it
+directly. If the server fails to start with no error, wrap it in `cmd`:
+
+```json
+{
+  "mcpServers": {
+    "ios-agent": {
+      "command": "cmd",
+      "args": ["/c", "npx", "-y", "ios-agent-mcp"]
+    }
+  }
+}
+```
+
+Use forward slashes or escaped backslashes in any absolute path — raw `\` in
+JSON is an escape character:
+
+```json
+"args": ["C:/Users/you/ios-agent-skill/mcp-server/dist/index.js"]
+```
+
+### macOS and Linux
+
+The plain `npx` form works. If `npx` is not on the client's `PATH` (GUI apps do
+not inherit your shell profile), use an absolute path to `node`:
+
+```bash
+which node    # e.g. /opt/homebrew/bin/node
+```
+
+```json
+{
+  "command": "/opt/homebrew/bin/node",
+  "args": ["/absolute/path/to/mcp-server/dist/index.js"]
+}
+```
+
+This is the single most common cause of "the server won't start" on macOS.
+
+### Avoiding a fetch on every launch
+
+`npx -y` re-resolves the package each time. Install once instead:
+
+```bash
+npm install -g ios-agent-mcp
+```
+
+```json
+{ "command": "ios-agent-mcp", "args": [] }
+```
+
 ## From source
 
 ```bash
