@@ -129,6 +129,43 @@ A test that passes either way is not a test.
 
 ---
 
+## Publishing (maintainers)
+
+```bash
+cd mcp-server
+npm install          # REQUIRED FIRST — see below
+npm login
+npm publish
+```
+
+**`npm install` is not optional.** `prepublishOnly` runs `npm run build && npm test`, and `build` is `tsc`. On a fresh clone there is no `node_modules`, so the compiler is not present and publish fails with:
+
+```
+error TS2591: Cannot find name 'node:fs/promises'. Do you need to install
+type definitions for node? Try `npm i --save-dev @types/node`
+```
+
+That is the guard working as intended — it refuses to publish an unbuilt package — but the fix is `npm install`, not disabling the hook.
+
+To see exactly what would ship before committing to it:
+
+```bash
+npm pack --dry-run
+```
+
+Expect ~31 files: `dist/`, `mcp.json`, `README.md`, `LICENSE`, `package.json`. If `dist/` is missing, the build did not run.
+
+### Version numbering
+
+The npm package version and the repository version are **independent**:
+
+| | Version | Why |
+|---|---|---|
+| `ios-agent-mcp` on npm | `1.0.0` | First release of this package |
+| `ios-agent-skill` repo / `SKILL.md` | `2.0.0` | Its own release history |
+
+This is not a mismatch. Bump the npm version only when the server changes.
+
 ## License
 
-MIT — see [LICENSE](../LICENSE).
+MIT — see [LICENSE](./LICENSE).
