@@ -9,6 +9,14 @@ on:
 permissions:
   contents: read
 
+# GitHub's default shell is `bash -e` WITHOUT pipefail, so `cmd | tail` reports
+# tail's exit code and a step passes on a failing command — a check that cannot
+# fail. `shell: bash` maps to `bash --noprofile --norc -eo pipefail`, which fixes
+# it for every step at once rather than relying on per-step discipline.
+defaults:
+  run:
+    shell: bash
+
 jobs:
   consistency:
     runs-on: ubuntu-latest
@@ -152,44 +160,29 @@ jobs:
           fi
           echo "OK - guard hook blocks mirrors and allows SKILL.md"
 
-      - name: Piped CI steps set pipefail
+      - name: Workflows enable pipefail
         run: |
           python3 - <<'PY'
-          import glob, re, sys
+          import glob, sys, yaml
 
-          # GitHub runs `run:` under `bash -e` WITHOUT pipefail, so `cmd | tail`
-          # reports tail's exit code and the step passes on failure — a check that
-          # cannot fail. Any piped run block must opt in explicitly.
+          # A workflow must set `defaults.run.shell: bash` (which is
+          # `bash -eo pipefail`), otherwise a piped step reports the exit code of
+          # the LAST command in the pipeline's tail and can never fail.
+          # Checking for the declared default is reliable; parsing shell for
+          # pipelines is not — `||`, regex alternation, and pipes inside `if`
+          # conditions are all false positives.
           problems = []
           for path in sorted(glob.glob(".github/workflows/*.yml")):
-              lines = open(path, encoding="utf-8").read().split("\n")
-              in_run = False
-              indent = 0
-              block, start = [], 0
-              for number, line in enumerate(lines, 1):
-                  match = re.match(r"^(\s*)- ?name:|^(\s*)run: \|", line)
-                  if re.match(r"^\s*run: \|", line):
-                      in_run, start, block = True, number, []
-                      indent = len(line) - len(line.lstrip())
-                      continue
-                  if in_run:
-                      if line.strip() and (len(line) - len(line.lstrip())) <= indent:
-                          in_run = False
-                          text = "\n".join(block)
-                          if "|" in text and "pipefail" not in text and "<<'PY'" not in text:
-                              problems.append(f"{path}:{start}: piped run block without `set -o pipefail`")
-                      else:
-                          block.append(line)
-              if in_run:
-                  text = "\n".join(block)
-                  if "|" in text and "pipefail" not in text and "<<'PY'" not in text:
-                      problems.append(f"{path}:{start}: piped run block without `set -o pipefail`")
+              data = yaml.safe_load(open(path, encoding="utf-8"))
+              shell = (data.get("defaults", {}).get("run", {}) or {}).get("shell")
+              if shell != "bash":
+                  problems.append(f"{path}: missing `defaults.run.shell: bash` (enables pipefail)")
 
           if problems:
-              print("Steps whose failures would be masked by a pipe:")
+              print("Workflows where a piped step could silently pass:")
               print("\n".join(problems))
               sys.exit(1)
-          print("OK - piped steps set pipefail")
+          print("OK - all workflows enable pipefail")
           PY
 
       - name: Swift templates have no placeholder stubs
