@@ -6,6 +6,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+### Added -- 2.0.0 MCP server
+
+Turns the repository from something you read into something you install. The skill teaches an agent how to *write* iOS code; the MCP server lets it *check* code that already exists.
+
+- **`mcp-server/`** -- `ios-agent-mcp`, a TypeScript MCP server (stdio transport) exposing six iOS-specific tools:
+  - `analyze_swift_project` -- structure (file/line counts, deployment target, Swift tools version, frameworks, test presence) plus a finding count per category with the tool that explains each.
+  - `review_swift_concurrency` -- `@Observable` without `@MainActor`, `Task.detached`, `DispatchQueue.main.async`, `await MainActor.run` inside an isolated type, `@unchecked Sendable`, `nonisolated(unsafe)`, unstructured `Task` in `onAppear`, empty `catch`, non-final observable classes, and types named `Task` that shadow `_Concurrency.Task`.
+  - `review_swift_architecture` -- initializers defaulting to live implementations, presentation code naming `URLSession`/`APIClient`/`ModelContext`, singletons resolved inside view models, the domain layer importing SwiftUI, nested `NavigationStack`s, and `NavigationView`.
+  - `review_swiftui` -- fixed font sizes and heights, `AnyView`, deprecated `.cornerRadius`, literal spacing instead of tokens, materials over solid backgrounds, transient view state on models, `ObservableObject`, `@EnvironmentObject`, and `try!`.
+  - `check_availability_guards` -- missing guards **and over-restrictive ones**: an iOS 26 API guarded at `#available(iOS 27, *)` compiles, ships, and silently drops every iOS 26 device to the fallback. Also flags Foundation Models used without a runtime `SystemLanguageModel.availability` check.
+  - `audit_app_store_readiness` -- permission-gated frameworks with no Info.plist purpose string, a missing `PrivacyInfo.xcprivacy` (apps only -- libraries are never submitted), unlocalized user-facing strings, unlabeled icon-only buttons, and `print()` used for diagnostics.
+- Every finding carries a file, a line, the severity, the consequence, the specific fix, and a link into this repo's docs. Analyzers are pure `(path, content) -> Finding[]` functions, so they are unit-testable without the MCP transport.
+- **38 tests** -- unit coverage for every analyzer plus `test/server.smoke.test.js`, which launches the real server and speaks the real MCP protocol over stdio. Unit tests cannot tell you whether the server actually starts; that one can.
+- **`docs/mcp/`** -- `installation.md` (Claude Code, Claude Desktop, Cursor, from source, troubleshooting, privacy), `tools.md` (every rule with its severity, and the limits of static analysis), `examples.md` (worked sessions, including how the tools pair with the subagents).
+- **`mcp-server/mcp.json`** -- manifest declaring runtime, transport, filesystem-read-only permissions, and the tool list.
+- CI gained an **`mcp-server`** job: install, typecheck, build, test, validate the manifest, and verify the manifest's tool list matches the tools actually registered in `src/index.ts` -- a tool advertised but not registered would be a broken promise to any client.
+
+### Fixed -- 2.0.0
+- Dogfooding the server against this repo's own `samples/SkillPatterns` surfaced two false positives in the analyzers, both fixed with regression tests: `empty-catch` matched `catch { }` inside a doc comment because that one check used a raw regex instead of the comment-stripping line walker every other rule uses; and `missing-privacy-manifest` fired on an SPM library, which has no Info.plist and is never submitted to App Review.
+- `Package.swift` is no longer analyzed as application source -- it is build configuration, and including it inflated file counts and produced findings against code that is not part of the app.
+- A `line` field in the availability analyzer held the matched source *string* rather than the line *number*; it type-checked only because of an unsafe `as unknown as` cast. Fixed, cast removed, regression test added.
+
 ### Added -- 1.4.0 adoption and maintenance
 
 Shifts focus from adding documentation to making the repository verifiable and easy to adopt. The headline change is that the skill's core patterns are now **compile-checked in CI** rather than asserted in prose -- the standing caveat from every previous release.
