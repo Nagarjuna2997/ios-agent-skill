@@ -212,22 +212,79 @@ Auto-reads `.aiassistant/rules/ios-skill.md` or `.junie/guidelines.md`
 
 ---
 
+## :sparkles: What's New in 1.2
+
+**The agent-operations layer.** Earlier versions taught the model *what* to write. This release adds *how it should work* — how to split a job, verify it, and scale it out.
+
+| | Feature | What it gives you |
+|:---:|---------|-------------------|
+| :busts_in_silhouette: | **6 custom subagents** in [`.claude/agents/`](.claude/agents/) | `ios-explore`, `ios-plan`, `swift-reviewer`, `swift-debugger`, `swift-refactorer`, `ios-docs` — each with its own fresh context and a restricted tool set |
+| :receipt: | **The verification evidence rule** | Agents must show command output, test results, or `file:line` citations. Every claim is labelled VERIFIED / INSPECTED / UNVERIFIED — no more "it should work now" |
+| :repeat: | **Loop contracts** | Every loop declares GOAL, CHECK, MAX, and ON-STALL. Turn-based, goal-based, time-based, and proactive patterns, with stall detection |
+| :chart_with_upwards_trend: | **A scale-up path** | Inline → subagents → loop → `/batch` (worktree per unit) → script-driven dynamic workflows |
+| :lock: | **Hooks for deterministic enforcement** | This repo blocks edits to generated files and auto-syncs mirrors. [`templates/hooks/`](templates/hooks/) drops the same idea into your iOS project |
+| :compass: | **A main-agent router** | [`docs/orchestration/router.md`](docs/orchestration/router.md) — one table deciding inline vs. delegate vs. loop vs. batch |
+
+Two rules do most of the work:
+
+- **The author does not grade the work.** Verification goes to a cold `swift-reviewer` with no write tools, so it cannot fix what it should report.
+- **Subagents report only to the main agent.** They cannot talk to each other — that is the separate, experimental agent-teams feature, and this skill does not assume it.
+
+**Also in 1.1:** design tokens + Liquid Glass, typed routing and deep links, SwiftData/Core Data concurrency, a three-tier mocking strategy, IoC boundary protocols in Clean Architecture, and `@MainActor` isolation rules throughout. See [CHANGELOG.md](CHANGELOG.md).
+
+---
+
 ## :brain: What's Inside
 
 ### :gear: The Skill Brain
 
-> `CLAUDE.md` / `SKILL.md` / `AGENTS.md` / `GEMINI.md` — all identical
+> `CLAUDE.md` / `SKILL.md` / `AGENTS.md` / `GEMINI.md` — all generated from `SKILL.md`
 
 - :white_check_mark: Zero-error Swift code generation rules
 - :white_check_mark: Framework selection guide (SwiftUI vs UIKit, SwiftData vs CoreData)
 - :white_check_mark: MVVM project structure with naming conventions
 - :white_check_mark: Platform-specific guidance (iOS, macOS, watchOS, tvOS, visionOS)
 - :white_check_mark: UI design standards (colors, typography, spacing, animations)
-- :white_check_mark: Top 10 pitfalls and how to avoid them
+- :white_check_mark: 20 pitfalls and how to avoid them
+- :white_check_mark: **Operating model — delegation, loops, verification evidence, hooks**
+
+> The 24 agent rule files are **generated** from `SKILL.md` by `./scripts/sync-mirrors.sh`. Edit `SKILL.md`, never a mirror — a hook blocks it, and CI fails a stale one.
 
 ---
 
 ## :books: Documentation Reference
+
+### :robot: Agent Operations — `docs/orchestration/`
+
+> How Claude should split, verify, and scale work. Start with `router.md`.
+
+| | File | Topics |
+|:---:|------|--------|
+| :compass: | [router.md](docs/orchestration/router.md) | **Start here.** Inline vs. delegate vs. loop vs. batch; standard sequences; what the main agent stays responsible for |
+| :busts_in_silhouette: | [subagents.md](docs/orchestration/subagents.md) | Defining subagents, frontmatter, tool restriction, delegation prompts, parallelism, subagents vs. agent teams |
+| :repeat: | [looping.md](docs/orchestration/looping.md) | Turn/goal/time/proactive loops, GOAL–CHECK–MAX–ON-STALL, stall detection, never faking termination |
+| :receipt: | [verification.md](docs/orchestration/verification.md) | The evidence contract, VERIFIED/INSPECTED/UNVERIFIED, separation of duties, report format |
+| :chart_with_upwards_trend: | [dynamic-workflows.md](docs/orchestration/dynamic-workflows.md) | The scale ladder, `/batch` + worktrees, script-driven orchestration, failure policies |
+| :lock: | [hooks.md](docs/orchestration/hooks.md) | Hook vs. CI vs. reviewer, events, the exit-code contract, design rules |
+
+**Ready-to-use specialists** — [`.claude/agents/`](.claude/agents/)
+
+| Subagent | Tools | Use for |
+|----------|-------|---------|
+| [`ios-explore`](.claude/agents/ios-explore.md) | read-only | "Where is X?" across a Swift codebase — parallel-safe |
+| [`ios-plan`](.claude/agents/ios-plan.md) | read-only | Multi-file features, migrations, architecture decisions |
+| [`swift-reviewer`](.claude/agents/swift-reviewer.md) | read + Bash | Independent verification — no write tools |
+| [`swift-debugger`](.claude/agents/swift-debugger.md) | read + Bash + Edit | Reproduce → isolate → fix → prove |
+| [`swift-refactorer`](.claude/agents/swift-refactorer.md) | read + write + Bash | Behavior-preserving cleanups against a green baseline |
+| [`ios-docs`](.claude/agents/ios-docs.md) | read + write + Bash | Docs, DocC, README, CHANGELOG |
+
+**Drop-in hooks for your iOS project** — [`templates/hooks/`](templates/hooks/)
+
+| | File | Event | Effect |
+|:---:|------|-------|--------|
+| :art: | [swift-format.sh](templates/hooks/swift-format.sh) | PostToolUse | SwiftFormat + SwiftLint autocorrect on the edited file |
+| :no_entry: | [forbid-antipatterns.sh](templates/hooks/forbid-antipatterns.sh) | PostToolUse | Blocks `DispatchQueue.main.async`, `Task.detached`, `@Observable` without `@MainActor`, empty `catch`, `try!`, `NavigationView`, `AnyView`, fixed font sizes, `print()`, a type named `Task` |
+| :hammer: | [build-check.sh](templates/hooks/build-check.sh) | Stop | Builds and tests before the turn ends; blocks a "done" that does not compile |
 
 ### :orange_book: Swift Language — `docs/swift/`
 

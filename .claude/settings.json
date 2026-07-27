@@ -3,11 +3,50 @@
     "allow": [
       "Read",
       "Glob",
-      "Grep"
+      "Grep",
+      "Bash(./scripts/sync-mirrors.sh:*)",
+      "Bash(./scripts/hooks/verify-repo.sh:*)"
     ]
   },
   "project": {
     "name": "ios-agent-skill",
     "description": "Claude AI Expert iOS/Swift Developer Skill — comprehensive knowledge base and code templates for all Apple platforms"
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/scripts/hooks/guard-generated-files.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/scripts/hooks/sync-mirrors-on-edit.sh",
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/scripts/hooks/verify-repo.sh",
+            "timeout": 60
+          }
+        ]
+      }
+    ]
   }
 }
