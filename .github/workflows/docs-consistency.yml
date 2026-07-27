@@ -1,0 +1,86 @@
+name: Docs Consistency
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  consistency:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Mirrors are in sync with SKILL.md
+        run: ./scripts/sync-mirrors.sh --check
+
+      - name: SKILL.md frontmatter is valid
+        run: |
+          python3 - <<'PY'
+          import sys, re
+
+          text = open("SKILL.md", encoding="utf-8").read()
+          match = re.match(r"^---\n(.*?)\n---\n", text, re.DOTALL)
+          if not match:
+              sys.exit("SKILL.md is missing its YAML frontmatter block")
+
+          block = match.group(1)
+          keys = set(re.findall(r"^([A-Za-z][A-Za-z0-9_-]*):", block, re.MULTILINE))
+
+          required = {"name", "description", "version", "license"}
+          missing = required - keys
+          if missing:
+              sys.exit(f"SKILL.md frontmatter is missing: {', '.join(sorted(missing))}")
+
+          name = re.search(r"^name:\s*(.+)$", block, re.MULTILINE).group(1).strip()
+          if not re.fullmatch(r"[a-z0-9-]+", name):
+              sys.exit(f"skill name must be lowercase-kebab-case, got: {name!r}")
+
+          description = re.search(r"^description:\s*(.+)$", block, re.MULTILINE).group(1).strip()
+          if len(description) < 40:
+              sys.exit("description must state concrete trigger conditions (>= 40 chars)")
+
+          print(f"OK - {name} v{re.search(r'^version:\s*(.+)$', block, re.MULTILINE).group(1).strip()}")
+          PY
+
+      - name: Referenced documentation files exist
+        run: |
+          python3 - <<'PY'
+          import os, re, sys
+
+          # Every `path/to/doc.md` in a backticked reference inside the index files.
+          sources = ["SKILL.md", "README.md"]
+          pattern = re.compile(r"`((?:docs|patterns|checklists|templates|scripts)/[^`\s]+)`")
+
+          missing = []
+          for source in sources:
+              if not os.path.exists(source):
+                  continue
+              for line_number, line in enumerate(open(source, encoding="utf-8"), 1):
+                  for path in pattern.findall(line):
+                      if "*" in path:
+                          continue          # deliberate glob, e.g. docs/frameworks/**
+                      # Directory references end in a slash.
+                      target = path.rstrip("/")
+                      if os.path.isdir(target) or os.path.isfile(target):
+                          continue
+                      missing.append(f"{source}:{line_number}: {path}")
+
+          if missing:
+              print("Referenced paths that do not exist:")
+              print("\n".join(missing))
+              sys.exit(1)
+          print("OK - every referenced path exists")
+          PY
+
+      - name: Swift templates have no placeholder stubs
+        run: |
+          if grep -rn --include='*.swift' -E '^\s*(// TODO|// FIXME|<#.*#>)' templates/; then
+            echo "Template Swift files must be complete and compilable."
+            exit 1
+          fi
+          echo "OK - no placeholder stubs in templates"
