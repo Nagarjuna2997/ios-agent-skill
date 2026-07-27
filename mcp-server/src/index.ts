@@ -17,9 +17,69 @@ import {
 } from "./scan.js";
 import { renderFindings } from "./report.js";
 
+const VERSION = "1.0.0";
+
+/**
+ * Handle CLI flags before starting the stdio transport.
+ *
+ * Without this, `ios-agent-mcp --help` starts the server and blocks on stdin
+ * forever — indistinguishable from a hang, and the first thing someone tries
+ * after installing. MCP clients spawn the binary with no arguments, so this
+ * never interferes with normal operation.
+ */
+function handleCLIFlags(argv: string[]): boolean {
+  if (argv.includes("--version") || argv.includes("-v")) {
+    process.stdout.write(`${VERSION}\n`);
+    return true;
+  }
+
+  if (argv.includes("--help") || argv.includes("-h")) {
+    process.stdout.write(
+      [
+        `ios-agent-mcp ${VERSION}`,
+        "",
+        "An MCP server that reviews Swift projects for iOS-specific defects.",
+        "",
+        "This is a Model Context Protocol server. It speaks JSON-RPC over stdio",
+        "and is meant to be launched by an MCP client, not run directly.",
+        "",
+        "USAGE",
+        "  ios-agent-mcp              Start the server (stdio transport)",
+        "  ios-agent-mcp --help       Show this message",
+        "  ios-agent-mcp --version    Print the version",
+        "",
+        "SETUP",
+        "  Claude Code     claude mcp add ios-agent -- npx -y ios-agent-mcp",
+        "  Claude Desktop  add to claude_desktop_config.json",
+        "  Cursor          add to .cursor/mcp.json",
+        "",
+        "TOOLS",
+        "  analyze_swift_project        Overview plus findings per category",
+        "  review_swift_concurrency     Actor isolation and Swift 6 concurrency",
+        "  review_swift_architecture    Layer boundaries and testability",
+        "  review_swiftui               Views, state, Dynamic Type, tokens",
+        "  check_availability_guards    Missing and over-restrictive @available",
+        "  audit_app_store_readiness    Purpose strings, privacy, accessibility",
+        "",
+        "Each tool takes one argument: an absolute path to a Swift project root.",
+        "",
+        "DOCS  https://github.com/Nagarjuna2997/ios-agent-skill/tree/main/docs/mcp",
+        "",
+      ].join("\n"),
+    );
+    return true;
+  }
+
+  return false;
+}
+
+if (handleCLIFlags(process.argv.slice(2))) {
+  process.exit(0);
+}
+
 const server = new McpServer({
   name: "ios-agent-mcp",
-  version: "1.0.0",
+  version: VERSION,
 });
 
 const pathInput = {
