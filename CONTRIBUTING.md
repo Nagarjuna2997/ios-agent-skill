@@ -25,6 +25,45 @@ Thanks for your interest! This skill is community-maintained and PRs are welcome
 3. Make your change. Keep the diff focused -- one concern per PR.
 4. Open a PR using the template. Explain *why*, not just *what*.
 
+## Commit signing
+
+Signed commits are **preferred but not required**. GitHub shows them as
+*Verified*, which tells reviewers a commit came from who it claims to.
+
+Some commits in this repository's history are unsigned — they predate signing
+being configured. That history is left as-is deliberately: rewriting merged
+commits to change a badge means force pushes, changed SHAs, and broken
+references in issues and PRs, for no gain in correctness.
+
+To sign your contributions, using an SSH key:
+
+```bash
+# 1. Generate a key (or reuse an existing one).
+ssh-keygen -t ed25519 -C "your-email@example.com" -f ~/.ssh/git_signing_key
+
+# 2. Add the PUBLIC key to GitHub as a SIGNING key.
+#    Settings -> SSH and GPG keys -> New SSH key -> Key type: "Signing Key"
+#    An authentication key is NOT enough — the type matters.
+cat ~/.ssh/git_signing_key.pub
+
+# 3. Configure git.
+git config --global gpg.format ssh
+git config --global user.signingkey ~/.ssh/git_signing_key.pub
+git config --global commit.gpgsign true
+```
+
+Verify it actually worked before relying on it — a misconfigured key produces
+unsigned commits **without an error**:
+
+```bash
+git commit --allow-empty -m "signing check"
+git log -1 --format='%G?'    # G = good signature; N = not signed
+```
+
+`N` means signing silently did not happen. The usual causes are a key path that
+does not exist, an empty key file, or a key registered as an authentication key
+rather than a signing key.
+
 ## Updating the agent brain
 
 `SKILL.md` is the **single source of truth**. `CLAUDE.md`, `AGENTS.md`, `GEMINI.md`, `CONVENTIONS.md`, `replit.md`, `.cursorrules`, `.clinerules`, `.continuerules`, `.kilocoderules`, `.roorules`, `.rules`, `.windsurfrules`, and the rule files under `.aiassistant/`, `.amazonq/`, `.augment/`, `.continue/`, `.cursor/`, `.junie/`, `.kilocode/`, `.roo/`, `.tabnine/`, `.trae/`, and `.windsurf/`, plus `.github/copilot-instructions.md`, are generated copies of `SKILL.md` **with the YAML frontmatter stripped** — those formats are plain instruction files and would render the frontmatter as body text.
