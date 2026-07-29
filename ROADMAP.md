@@ -122,12 +122,43 @@ v3.0 lands.
 
 ## How this gets prioritized
 
-1. **v2.0.0 ships and gets used.** Downloads, issues, and install problems come first.
-2. **Demand decides v2.1's order.** Every feature above has an issue. The ones with 👍 get built.
-3. **v3.0 starts with the spike**, not with features.
+In order. Each step depends on the one before it.
+
+1. **Release v2.0.0** — publish to npm, push the tag, cut the GitHub Release,
+   and verify the install in Claude Desktop plus one other MCP client.
+2. **Gather feedback for one to two weeks** — fix bugs, improve docs, and watch
+   what people actually ask for.
+3. **Enable Discussions**, then use them for ideas and voting. Issues stay for
+   actionable work; a feature request becomes an issue once it has demand behind
+   it and someone can start on it.
+4. **Open a focused backlog** — five to eight epics, not a long list of
+   speculative tickets:
+
+   - Simulator automation (`simctl` tier)
+   - UI automation driver research *(spike — blocks the rest of v3.0)*
+   - Screen recording
+   - App management (install, uninstall, reset)
+   - Deep links
+   - Device state simulation (appearance, location, status bar, privacy)
+   - OCR and UI inspection
+   - AI automation
+
+   Split an epic into individual issues **when work on it starts**, not before.
 
 The failure mode this avoids: building ten automation tools on the wrong
 backend, then discovering the first real user needed something else entirely.
+A backlog written before anyone has installed the thing is a list of
+assumptions.
+
+### Where the issues live
+
+Everything stays in **this repository** until the architecture settles.
+
+`ios-simulator-mcp` is planned as a separate npm package — that much is decided,
+because the runtime contract differs. Whether it also needs a separate
+*repository* is not, and that only becomes clear once the UI driver spike lands.
+Transferring issues later is possible; splitting prematurely is churn for no
+gain.
 
 ## Contributing
 
