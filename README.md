@@ -88,6 +88,12 @@ Every finding carries a file, a line, the consequence, the fix, and a link to th
 | 🪝 **[Hooks](templates/hooks/)** | Deterministic enforcement at write time, plus CI |
 | ✅ **[Compile-checked sample](samples/SkillPatterns/)** | An SPM package CI builds and tests on every push — the patterns are verified, not asserted |
 
+## Roadmap
+
+v2.0.0 is the static analysis server — no Xcode, no simulator, runs anywhere.
+
+Simulator automation (screen recording, deep links, app management, then UI driving) ships as a **separate** package so a Swift linter never requires a 15 GB Xcode install. **[ROADMAP.md](ROADMAP.md)** has the phasing and the feasibility notes — every item has an issue, so 👍 the ones you want built.
+
 ## Works with
 
 Claude Code · Claude Desktop · Cursor · Codex · GitHub Copilot · Windsurf · Gemini CLI · Cline · Roo · Zed · JetBrains AI · Amazon Q · Trae · Continue · Aider · Replit · **and 10+ more** — [full list](docs/ai-setup-guide.md)

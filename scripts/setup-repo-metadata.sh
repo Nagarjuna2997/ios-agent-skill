@@ -79,6 +79,10 @@ label "ios"              000000 "iOS, iPadOS, and Apple platform specifics"
 label "swiftui"          2396f3 "SwiftUI views, state, and layout"
 label "false-positive"   fbca04 "An analyzer rule fired when it should not have"
 label "install"          d4c5f9 "Installation and client setup problems"
+label "automation"       0e8a16 "Simulator and device automation (ios-simulator-mcp)"
+label "simctl"           c2e0c6 "Implementable as an xcrun simctl wrapper"
+label "ui-driver"        5319e7 "Blocked on the UI automation backend decision"
+label "spike"            e99695 "Investigation to make a decision, not a feature"
 
 echo ""
 if [[ $DRY_RUN -eq 1 ]]; then
