@@ -585,6 +585,7 @@ Two rules do most of the work:
 
 | | File | Framework |
 |:---:|------|-----------|
+| :key: | [authentication-services.md](docs/frameworks/authentication-services.md) | Sign in with Apple, passkeys, OAuth, revocation, Keychain storage |
 | :lock: | [cryptokit.md](docs/frameworks/cryptokit.md) | SHA256, AES-GCM, Secure Enclave |
 | :mag: | [oslog.md](docs/frameworks/oslog.md) | Logger, MetricKit diagnostics |
 | :hourglass_flowing_sand: | [background-tasks.md](docs/frameworks/background-tasks.md) | BGTaskScheduler |

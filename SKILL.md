@@ -63,6 +63,7 @@ Load this skill when any of the following is true. When none are true, do not lo
 | Layered architecture, use cases, DI | `patterns/clean-architecture.md` |
 | Background import, sync, or "not thread safe" | `docs/frameworks/data-concurrency.md` |
 | Test doubles, previews, debug menus | `docs/testing/mocking-strategy.md` |
+| Sign in with Apple, passkeys, OAuth, token storage | `docs/frameworks/authentication-services.md` |
 | Colors, spacing, theming, glass effects | `docs/design/design-tokens.md`, `docs/design/color-system.md` |
 | A named Apple framework | the matching `docs/frameworks/**` file |
 | A named platform | the matching `docs/platforms/*.md` file |
@@ -611,6 +612,7 @@ This repository contains comprehensive documentation. Consult these files when b
 - `docs/frameworks/services/contacts.md` — Contact access and picker
 
 ### Security & Engineering
+- `docs/frameworks/authentication-services.md` — Sign in with Apple, passkeys, `ASWebAuthenticationSession`, revocation, token storage
 - `docs/frameworks/cryptokit.md` — Hashing, encryption, signing, Secure Enclave
 - `docs/frameworks/oslog.md` — Structured logging, MetricKit diagnostics
 - `docs/frameworks/background-tasks.md` — BGTaskScheduler, background refresh

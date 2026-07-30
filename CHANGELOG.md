@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+### Added -- unreleased
+- `docs/frameworks/authentication-services.md` -- Sign in with Apple, passkeys, and `ASWebAuthenticationSession`. Closes a gap where `SKILL.md`'s framework selection table named AuthenticationServices for auth but no documentation existed behind it. Covers the three failure modes that only surface in production: name and email are returned on the first authorization *only*, the user can revoke access from Settings so `getCredentialState` must be checked on launch, and the identity token -- not the user identifier -- is the only value a server may trust. Also the delegate-to-`async` bridge with its resume-exactly-once requirement, nonce generation for replay protection, passkey registration and assertion, OAuth via `ASWebAuthenticationSession` with PKCE, Keychain storage, and 13 anti-patterns.
+
 ### Added -- 2.0.0 MCP server
 
 Turns the repository from something you read into something you install. The skill teaches an agent how to *write* iOS code; the MCP server lets it *check* code that already exists.
