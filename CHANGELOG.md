@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+### Fixed -- 2.0.1
+
+- `ios-agent-mcp` reported version `1.0.0` from `--version` and, more consequentially, from the MCP `initialize` handshake -- so every connected client saw a version that did not match the package it had just installed. The version was a hardcoded constant in `mcp-server/src/index.ts` and nothing read `package.json` at runtime, so publishing under a new version could not correct it on its own. The constant, `mcp-server/package.json`, `skill.json`, and the `SKILL.md` frontmatter are now aligned on a single version.
+
 ### Added -- 2.0.0 MCP server
 
 Turns the repository from something you read into something you install. The skill teaches an agent how to *write* iOS code; the MCP server lets it *check* code that already exists.

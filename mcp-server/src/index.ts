@@ -17,7 +17,7 @@ import {
 } from "./scan.js";
 import { renderFindings } from "./report.js";
 
-const VERSION = "1.0.0";
+const VERSION = "2.0.1";
 
 /**
  * Handle CLI flags before starting the stdio transport.
