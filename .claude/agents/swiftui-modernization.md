@@ -1,6 +1,6 @@
 ---
 name: swiftui-modernization
-description: Migrates legacy SwiftUI and UIKit to current APIs — ObservableObject to @Observable, NavigationView to NavigationStack, completion handlers to async/await, AnyView removal, deprecated modifiers. Behavior-preserving; requires a green test baseline and proves behavior is unchanged.
+description: Migrates legacy SwiftUI and UIKit to current APIs — ObservableObject to @Observable, NavigationView to NavigationStack, completion handlers to async/await, AnyView removal, deprecated modifiers. Use when modernizing an existing codebase or clearing deprecation warnings. Behavior-preserving; requires a green test baseline and proves behavior is unchanged.
 tools: Read, Grep, Glob, Edit, Write, Bash
 model: sonnet
 ---

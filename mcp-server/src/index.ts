@@ -9,15 +9,16 @@ import { analyzeArchitecture } from "./analyzers/architecture.js";
 import { analyzeSwiftUI } from "./analyzers/swiftui.js";
 import { analyzeAvailability } from "./analyzers/availability.js";
 import { analyzeAppStore, analyzeProjectLevelAppStore } from "./analyzers/appstore.js";
+import { lintSkill } from "./analyzers/skill.js";
 import {
   readProjectContext,
   readSwiftFiles,
   resolveProjectRoot,
   summarizeProject,
 } from "./scan.js";
-import { renderFindings } from "./report.js";
+import { renderFindings, renderSkillLint } from "./report.js";
 
-const VERSION = "1.0.0";
+const VERSION = "1.1.0";
 
 /**
  * Handle CLI flags before starting the stdio transport.
@@ -60,8 +61,10 @@ function handleCLIFlags(argv: string[]): boolean {
         "  review_swiftui               Views, state, Dynamic Type, tokens",
         "  check_availability_guards    Missing and over-restrictive @available",
         "  audit_app_store_readiness    Purpose strings, privacy, accessibility",
+        "  lint_skill                   Skill metadata, agent tool grants, mirrors",
         "",
-        "Each tool takes one argument: an absolute path to a Swift project root.",
+        "Each tool takes one argument: an absolute path. The first six want a",
+        "Swift project root; lint_skill wants an Agent Skill repository root.",
         "",
         "DOCS  https://github.com/Nagarjuna2997/ios-agent-skill/tree/main/docs/mcp",
         "",
@@ -307,6 +310,39 @@ server.registerTool(
           {
             type: "text" as const,
             text: `Analysis failed: ${error instanceof Error ? error.message : String(error)}`,
+          },
+        ],
+        isError: true,
+      };
+    }
+  },
+);
+
+server.registerTool(
+  "lint_skill",
+  {
+    title: "Lint an Agent Skill repository",
+    description:
+      "Validate the metadata of an Agent Skill repository rather than Swift source: SKILL.md frontmatter (required keys, kebab-case name, semver version, description length limits), subagent definitions in .claude/agents/ (name matches filename, unknown tool names, and read-only agents that are nonetheless granted Edit or Write), whether generated mirror files such as CLAUDE.md and AGENTS.md have drifted from SKILL.md, and backtick-quoted doc paths that do not resolve. Use when authoring or reviewing a skill, before publishing a release, or when a subagent or skill is not being invoked as expected.",
+    inputSchema: {
+      path: z
+        .string()
+        .describe(
+          "Absolute path to the skill repository root (the folder containing SKILL.md).",
+        ),
+    },
+  },
+  async ({ path }) => {
+    try {
+      const root = await resolveProjectRoot(path);
+      const result = await lintSkill(root);
+      return { content: [{ type: "text" as const, text: renderSkillLint(result) }] };
+    } catch (error) {
+      return {
+        content: [
+          {
+            type: "text" as const,
+            text: `Lint failed: ${error instanceof Error ? error.message : String(error)}`,
           },
         ],
         isError: true,

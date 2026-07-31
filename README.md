@@ -82,7 +82,7 @@ Every finding carries a file, a line, the consequence, the fix, and a link to th
 | | |
 |---|---|
 | 🧠 **The skill** | 100+ files — Swift 6.4 concurrency, SwiftUI, Clean Architecture, 40+ Apple frameworks, design tokens, App Store checklists |
-| 🔌 **[MCP server](mcp-server/)** | 6 tools: concurrency, architecture, SwiftUI, availability guards, App Store readiness, project overview |
+| 🔌 **[MCP server](mcp-server/)** | 7 tools: concurrency, architecture, SwiftUI, availability guards, App Store readiness, project overview, skill lint |
 | 🤖 **[10 subagents](.claude/agents/)** | explore, plan, review, debug, refactor, docs, Foundation Models, modernization, accessibility, performance |
 | ⚙️ **[Orchestration](docs/orchestration/)** | When to delegate, loop, or scale out — and the evidence rule that stops "it works" without proof |
 | 🪝 **[Hooks](templates/hooks/)** | Deterministic enforcement at write time, plus CI |

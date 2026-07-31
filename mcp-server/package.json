@@ -1,6 +1,6 @@
 {
   "name": "ios-agent-mcp",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "MCP server for modern iOS/Swift development \u2014 concurrency isolation, architecture boundaries, SwiftUI, and App Store readiness analysis",
   "license": "MIT",
   "type": "module",

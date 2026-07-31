@@ -1,8 +1,8 @@
 {
   "name": "ios-agent-mcp",
   "displayName": "iOS Agent",
-  "version": "1.0.0",
-  "description": "Static analysis for modern iOS/Swift projects — Swift 6 actor isolation, architecture boundaries, SwiftUI, availability guards, and App Store readiness.",
+  "version": "1.1.0",
+  "description": "Static analysis for modern iOS/Swift projects — Swift 6 actor isolation, architecture boundaries, SwiftUI, availability guards, and App Store readiness — plus a linter for Agent Skill repositories.",
   "author": "Nagarjuna Reddy",
   "license": "MIT",
   "homepage": "https://github.com/Nagarjuna2997/ios-agent-skill",
@@ -11,7 +11,7 @@
     "url": "https://github.com/Nagarjuna2997/ios-agent-skill.git",
     "directory": "mcp-server"
   },
-  "keywords": ["ios", "swift", "swiftui", "xcode", "apple", "static-analysis", "code-review"],
+  "keywords": ["ios", "swift", "swiftui", "xcode", "apple", "static-analysis", "code-review", "agent-skills"],
   "runtime": {
     "type": "node",
     "minimumVersion": "18",
@@ -30,6 +30,7 @@
     { "name": "review_swift_architecture", "summary": "Architecture boundaries, dependency injection, testability." },
     { "name": "review_swiftui", "summary": "SwiftUI view and state defects, Dynamic Type, design tokens." },
     { "name": "check_availability_guards", "summary": "Missing and over-restrictive @available guards." },
-    { "name": "audit_app_store_readiness", "summary": "Purpose strings, privacy manifest, accessibility, localization." }
+    { "name": "audit_app_store_readiness", "summary": "Purpose strings, privacy manifest, accessibility, localization." },
+    { "name": "lint_skill", "summary": "Agent Skill metadata: frontmatter, subagent tool grants, mirror sync, doc references." }
   ]
 }

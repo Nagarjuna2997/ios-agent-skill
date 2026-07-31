@@ -98,6 +98,7 @@ describe("mcp server", () => {
       "analyze_swift_project",
       "audit_app_store_readiness",
       "check_availability_guards",
+      "lint_skill",
       "review_swift_architecture",
       "review_swift_concurrency",
       "review_swiftui",
@@ -138,6 +139,25 @@ describe("mcp server", () => {
     assert.match(text, /Swift files:\*\* 1/);
     assert.match(text, /Concurrency/);
     assert.match(text, /review_swift_concurrency/);
+  });
+
+  test("lint_skill reports over the wire on this repository", async () => {
+    const result = await client.callTool({
+      name: "lint_skill",
+      arguments: { path: new URL("../../", import.meta.url).pathname },
+    });
+    const text = result.content[0].text;
+    assert.match(text, /# Skill Repository Lint/);
+    assert.match(text, /\*\*Subagent definitions:\*\* 10/);
+    assert.match(text, /No findings/);
+  });
+
+  test("lint_skill on a non-skill directory says so rather than passing silently", async () => {
+    const result = await client.callTool({
+      name: "lint_skill",
+      arguments: { path: fixture },
+    });
+    assert.match(result.content[0].text, /skill-file-missing|not found/);
   });
 
   test("a bad path returns an error, not a false clean bill of health", async () => {

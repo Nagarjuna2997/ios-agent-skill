@@ -5,7 +5,8 @@ An MCP server that reviews Swift projects against the rules in
 
 The skill teaches an agent how to *write* iOS code. This server lets an agent
 *check* it — six tools that read a Swift project and report defects with a file,
-a line, the consequence, and the fix.
+a line, the consequence, and the fix, plus one that lints a skill repository's
+own metadata.
 
 ```
 You:  Review my Swift project for concurrency problems.
@@ -80,12 +81,16 @@ npm install && npm run build
 | `review_swiftui` | Fixed font sizes and heights, `AnyView`, `.cornerRadius`, literal spacing, materials over solid backgrounds, view state on models, `ObservableObject`, `@EnvironmentObject`, `try!` |
 | `check_availability_guards` | Missing guards, **over-restrictive guards** (an iOS 26 API guarded at iOS 27 silently drops every iOS 26 device), Foundation Models without a runtime availability check |
 | `audit_app_store_readiness` | Permission frameworks with no Info.plist purpose string, missing `PrivacyInfo.xcprivacy`, unlocalized strings, unlabeled icon buttons, `print()` |
+| `lint_skill` | **Skill metadata, not Swift.** `SKILL.md` frontmatter, subagent `name`/filename mismatches, misspelled tool names, **read-only agents granted `Edit` or `Write`**, mirror files drifted from `SKILL.md`, broken doc references |
 
 Every tool takes one argument:
 
 ```json
 { "path": "/absolute/path/to/your/project" }
 ```
+
+The first six want a Swift project root. `lint_skill` wants an Agent Skill
+repository root — the folder containing `SKILL.md`.
 
 ---
 
@@ -173,7 +178,7 @@ The npm package version and the repository version are **independent**:
 
 | | Version | Why |
 |---|---|---|
-| `ios-agent-mcp` on npm | `1.0.0` | First release of this package |
+| `ios-agent-mcp` on npm | `1.1.0` | Adds `lint_skill`; `1.0.0` was the first release |
 | `ios-agent-skill` repo / `SKILL.md` | `2.0.0` | Its own release history |
 
 This is not a mismatch. Bump the npm version only when the server changes.

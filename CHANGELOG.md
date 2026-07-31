@@ -7,7 +7,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ## [Unreleased]
 
 ### Added -- unreleased
+- **`lint_skill`** -- a seventh MCP tool, and the first that does not read Swift. It validates a skill repository's own metadata: `SKILL.md` frontmatter (required keys, kebab-case name, semver version, and the description length limits either side of which the skill stops triggering reliably), subagent definitions in `.claude/agents/`, generated mirror drift, and backtick-quoted doc paths that do not resolve. `ios-agent-mcp` goes to **1.1.0**; the `v2.0.0` tag predates this, so the pending release is unaffected.
+
+  Three of its rules exist because the failure is otherwise **silent**: `agent-read-only-holds-write-tool` catches a subagent whose description promises read-only while its frontmatter grants `Edit` or `Write` -- the main agent delegates on that promise, and a reviewer that can edit will fix what it was supposed to report; `agent-name-filename-mismatch` catches a rename that leaves every delegation prompt pointing at an identifier the loader never registered; and `agent-unknown-tool` catches a misspelled tool name, which is not granted *and not reported*.
+
+  Mirror checking is self-calibrating -- mirrors are compared only when at least one already matches `SKILL.md` byte-for-byte, so a project with a hand-written `CLAUDE.md` is not told all 24 mirrors have drifted. Every report opens with what it inspected, because a clean report that never states its scope is indistinguishable from a check that never ran.
+
+  **31 new tests** (41 -> 72), including a mutation check: neutering the read-only boundary rule fails two of them. Dogfooding it against this repository immediately found one real defect -- see below.
+
 - `docs/frameworks/authentication-services.md` -- Sign in with Apple, passkeys, and `ASWebAuthenticationSession`. Closes a gap where `SKILL.md`'s framework selection table named AuthenticationServices for auth but no documentation existed behind it. Covers the three failure modes that only surface in production: name and email are returned on the first authorization *only*, the user can revoke access from Settings so `getCredentialState` must be checked on launch, and the identity token -- not the user identifier -- is the only value a server may trust. Also the delegate-to-`async` bridge with its resume-exactly-once requirement, nonce generation for replay protection, passkey registration and assertion, OAuth via `ASWebAuthenticationSession` with PKCE, Keychain storage, and 13 anti-patterns.
+
+### Fixed -- unreleased
+- `.claude/agents/swiftui-modernization.md` was the only one of the ten subagents whose description stated what the agent *is* without stating when to *use* it. Delegation is decided by matching a task against that text, so the agent was measurably less likely to be selected than its nine peers. Found by running the new `lint_skill` against this repository.
 
 ### Added -- 2.0.0 MCP server
 
