@@ -101,6 +101,10 @@ describe("mcp server", () => {
       "lint_skill",
       "review_swift_architecture",
       "review_swift_concurrency",
+      "review_swift_memory",
+      "review_swift_performance",
+      "review_swift_security",
+      "review_swift_testing",
       "review_swiftui",
     ]);
   });
@@ -139,6 +143,35 @@ describe("mcp server", () => {
     assert.match(text, /Swift files:\*\* 1/);
     assert.match(text, /Concurrency/);
     assert.match(text, /review_swift_concurrency/);
+  });
+
+  test("review tools return structuredContent, not only prose", async () => {
+    const result = await client.callTool({
+      name: "review_swift_concurrency",
+      arguments: { path: fixture },
+    });
+    const structured = result.structuredContent;
+    assert.ok(structured, "expected structuredContent alongside the markdown");
+    assert.equal(typeof structured.score, "number");
+    assert.equal(typeof structured.files_checked, "number");
+    assert.ok(Array.isArray(structured.issues));
+    assert.ok(structured.issues.length > 0, "the fixture has planted defects");
+    assert.equal(typeof structured.counts.total, "number");
+    // The markdown half must still be there — both audiences, always.
+    assert.match(result.content[0].text, /observable-without-mainactor/);
+  });
+
+  test("the project overview reports architecture with its evidence", async () => {
+    const result = await client.callTool({
+      name: "analyze_swift_project",
+      arguments: { path: fixture },
+    });
+    const project = result.structuredContent?.project;
+    assert.ok(project, "expected a project block");
+    assert.equal(typeof project.architecture, "string");
+    assert.ok(Array.isArray(project.architecture_evidence));
+    assert.ok(Array.isArray(project.dependencies));
+    assert.match(result.content[0].text, /## Shape/);
   });
 
   test("lint_skill reports over the wire on this repository", async () => {

@@ -9,7 +9,7 @@ Every tool takes one argument — an **absolute** path to the project root:
 { "path": "/Users/you/Projects/MyApp" }
 ```
 
-Six of the seven analyze Swift source. `lint_skill` is the exception: it reads a
+Ten of the eleven analyze Swift source. `lint_skill` is the exception: it reads a
 skill repository's own metadata, so its path is the folder containing
 `SKILL.md`.
 
@@ -25,10 +25,14 @@ skill repository's own metadata, so its path is the folder containing
 | Review SwiftUI views and state | `review_swiftui` |
 | Check before shipping, or after an SDK bump | `check_availability_guards` |
 | Prepare an App Store submission | `audit_app_store_readiness` |
+| Memory grows, or `deinit` never runs | `review_swift_memory` |
+| Handle credentials, or run a security pass | `review_swift_security` |
+| Tests are flaky, or a green suite looks too easy | `review_swift_testing` |
+| Scrolling stutters or launch is slow | `review_swift_performance` |
 | Author or review an Agent Skill, or work out why a subagent never gets invoked | `lint_skill` |
 
 Start with `analyze_swift_project` — it reports counts per category and names
-the tool to run for each, so you do not run all six blindly. `lint_skill` sits
+the tool to run for each, so you do not run all ten blindly. `lint_skill` sits
 outside that flow; it inspects skill metadata, not Swift.
 
 ---
@@ -50,6 +54,18 @@ Findings are sorted most severe first.
 Structure — Swift file count, line count, deployment target, Swift tools
 version, frameworks in use, whether tests exist — plus a finding count for every
 category with the tool that explains it.
+
+It also reports the project's **shape**: UI framework, inferred architecture,
+third-party dependencies, and whether dependency injection is in use.
+
+The architecture read always ships its **evidence**. "MVVM" alone is a guess
+presented as a fact; "MVVM — 12 ViewModel types, Views/ and ViewModels/
+directories" is a claim you can check. When the signals are weak it says
+`not determined` rather than picking the most popular answer.
+
+Dependency injection is detected from `any Protocol` parameters in initializers,
+not from a directory named `DI/` — a project that only ever constructs concrete
+types has no seam, whatever it calls itself.
 
 ## `review_swift_concurrency`
 
@@ -129,6 +145,70 @@ Background: `../../checklists/app-store-submission.md`, `../frameworks/accessibi
 
 ---
 
+## `review_swift_memory`
+
+| Rule | Severity |
+|------|----------|
+| `timer-retain-cycle`, `notification-observer-retain`, `sink-retain-cycle` | 🟠 |
+| `strong-delegate`, `stored-closure-captures-self`, `long-lived-task-captures-self` | 🟠 |
+| `unowned-self` | 🟠 |
+
+Deliberately narrow. A closure capturing `self` is **not** a leak — most closures
+are consumed immediately. A leak needs the closure to be *stored* by something
+the object itself owns, so these rules fire on the specific storing APIs rather
+than on `self.` inside any closure, which would bury the real findings.
+
+`unowned-self` is a crash rather than a leak: unlike `weak` it does not nil out,
+so an escaping closure running after deallocation traps instead of no-oping.
+
+## `review_swift_security`
+
+| Rule | Severity |
+|------|----------|
+| `hardcoded-secret`, `secret-in-userdefaults`, `ats-disabled` | 🔴 |
+| `tls-validation-bypassed`, `keychain-always-accessible` | 🔴 |
+| `cleartext-http`, `weak-hash`, `non-cryptographic-randomness`, `secret-logged` | 🟠 |
+| `javascript-string-interpolation` | 🟠 |
+| `keychain-migrates-to-new-device` | 🟡 |
+
+`hardcoded-secret` skips the placeholders people legitimately commit
+(`YOUR_API_KEY`, `<your-key>`, `changeme`) and values under 8 characters —
+flagging those trains readers to ignore the rule, which is worse than not having
+it. `cleartext-http` allows `localhost` and loopback.
+
+## `review_swift_testing`
+
+The inverse of every other analyzer: it runs **only** on test files.
+
+| Rule | Severity |
+|------|----------|
+| `await-inside-xctassert` | 🔴 |
+| `test-sleeps`, `test-without-assertion`, `network-in-test`, `no-tests` | 🟠 |
+| `force-try-in-test`, `shared-mutable-test-state`, `long-test-timeout` | 🟡 |
+| `assert-true-on-equality`, `sparse-tests` | 🟡 |
+
+A flaky or vacuous test is worse than a missing one: it costs the same to run
+and reports success either way. `test-without-assertion` catches the case that
+passes as long as nothing throws; `await-inside-xctassert` catches code that
+does not compile at all, because `XCTAssert` takes an autoclosure.
+
+## `review_swift_performance`
+
+| Rule | Severity |
+|------|----------|
+| `blocking-io-in-body` | 🔴 |
+| `formatter-allocated-in-body`, `collection-work-in-body`, `foreach-over-indices` | 🟠 |
+| `eager-stack-in-scrollview`, `image-decode-in-body` | 🟠 |
+| `asyncimage-without-frame`, `geometryreader-wraps-body`, `formatter-allocated-repeatedly` | 🟡 |
+
+The unifying rule: `body` runs many times per second, on the main actor, for
+reasons you do not control. Anything expensive inside it is multiplied by a
+number nobody measured. Rules that only matter on that path are scoped to the
+`var body: some View` block and are silent elsewhere — the same `DateFormatter()`
+is 🟠 inside `body` and 🟡 outside it.
+
+---
+
 ## `lint_skill`
 
 The one tool that does not read Swift. It checks whether an Agent Skill
@@ -171,6 +251,39 @@ mirrors compared, references resolved — because a clean report that never stat
 its scope is indistinguishable from a check that never ran.
 
 Background: `../orchestration/subagents.md`, `../orchestration/verification.md`.
+
+---
+
+## Structured output
+
+Every review tool returns **both** halves of a result:
+
+- `content` — markdown, for a human reading the transcript.
+- `structuredContent` — typed data, declared via `outputSchema`, for a workflow
+  that must branch on the result without regexing prose.
+
+```jsonc
+{
+  "summary": "Security Review: 1 blocker, 2 serious across 34 files.",
+  "score": 91,
+  "counts": { "blocker": 1, "serious": 2, "minor": 0, "total": 3 },
+  "files_checked": 34,
+  "issues": [ { "file": "…", "line": 12, "severity": "blocker", "rule": "…", "fix": "…" } ],
+  "suggestions": [ "hardcoded-secret: Move it server-side…" ]
+}
+```
+
+**About `score`.** It is a defect *density*, computed as
+`100 × (1 − penalty / capacity)` where `penalty = 10·blockers + 3·serious +
+1·minor` and `capacity = files × 10`, clamped to 0–100. The formula is fixed and
+published so the number is reproducible rather than a vibe.
+
+It is **not comparable between projects** — a UI-heavy app and a networking
+library have different rule surfaces. Use it as a direction of travel for one
+codebase, and use `counts` for anything that matters.
+
+`suggestions` deduplicates by rule rather than restating every issue's `fix`:
+forty literal-spacing findings produce one instruction, not forty.
 
 ---
 

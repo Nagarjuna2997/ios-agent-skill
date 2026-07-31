@@ -58,10 +58,41 @@ export function isSupportFile(path: string): boolean {
   );
 }
 
-/** Strip `//` line comments so commented-out code is not reported. */
+/**
+ * Strip `//` line comments so commented-out code is not reported.
+ *
+ * String-literal aware. A naive `indexOf("//")` truncates
+ * `let base = "http://api.example.com"` at the scheme separator, which made
+ * every rule blind to the rest of any line containing a URL — including the
+ * cleartext-HTTP check, which could therefore never fire. Escapes are honoured
+ * so `"a\"//b"` does not end the literal early.
+ */
 export function stripComment(line: string): string {
-  const index = line.indexOf("//");
-  return index === -1 ? line : line.slice(0, index);
+  let inString = false;
+
+  for (let index = 0; index < line.length; index += 1) {
+    const character = line[index];
+
+    if (inString) {
+      if (character === "\\") {
+        index += 1; // skip the escaped character
+      } else if (character === '"') {
+        inString = false;
+      }
+      continue;
+    }
+
+    if (character === '"') {
+      inString = true;
+      continue;
+    }
+
+    if (character === "/" && line[index + 1] === "/") {
+      return line.slice(0, index);
+    }
+  }
+
+  return line;
 }
 
 /** Walk lines with 1-indexed numbers, skipping comment-only content. */
@@ -88,4 +119,42 @@ export function eachLine(
     if (code.trim() === "") continue;
     visit(code, index + 1, raw);
   }
+}
+
+/**
+ * Blank the contents of string literals, preserving the quotes and length.
+ *
+ * For rules that must not match words appearing in user-facing text. The
+ * `await-inside-xctassert` rule fired on
+ * `XCTAssertTrue(x, "set before the await")` — the word was in the assertion
+ * *message*, not the expression. Keeping the delimiters means column offsets
+ * and any surrounding syntax still line up.
+ */
+export function withoutStringLiterals(line: string): string {
+  let result = "";
+  let inString = false;
+
+  for (let index = 0; index < line.length; index += 1) {
+    const character = line[index];
+
+    if (inString) {
+      if (character === "\\") {
+        result += "  ";
+        index += 1;
+      } else if (character === '"') {
+        inString = false;
+        result += '"';
+      } else {
+        result += " ";
+      }
+      continue;
+    }
+
+    if (character === '"') {
+      inString = true;
+    }
+    result += character;
+  }
+
+  return result;
 }

@@ -1,7 +1,7 @@
 ---
 name: ios-agent-skill
 description: Expert iOS/Swift developer behavior for AI coding agents. Use when writing, reviewing, or refactoring Swift, SwiftUI, UIKit, or SwiftData code; when designing iOS app architecture (MVVM, Clean Architecture, coordinators, routing); when building UI that must meet Apple's Human Interface Guidelines, contrast, dark-mode, and Dynamic Type standards; when working with any Apple framework (SwiftData, Core Data, CloudKit, StoreKit, HealthKit, WidgetKit, App Intents, CoreML, Vision, ARKit, and 30+ more); or when targeting iOS, macOS, watchOS, tvOS, or visionOS. Also use for Swift concurrency questions — actors, @MainActor isolation, Sendable, structured concurrency.
-version: 2.0.0
+version: 2.1.0
 license: MIT
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 metadata:
@@ -85,6 +85,7 @@ Load this skill when any of the following is true. When none are true, do not lo
 | Raising a deployment target, or rebuilding on a new SDK | `docs/migration/ios-deployment-migration.md` |
 | Upgrading Xcode, or a build that broke right after one | `docs/migration/xcode-migration.md` |
 | Reviewing an existing Swift project for defects | `docs/mcp/tools.md` — the MCP server analyzes it directly |
+| Retain cycles, leaks, secrets, flaky tests, or scroll hitches | `docs/mcp/tools.md` — `review_swift_memory`, `_security`, `_testing`, `_performance` |
 | Authoring or reviewing an Agent Skill, or a subagent that will not invoke | `docs/mcp/tools.md` — `lint_skill` checks frontmatter, tool grants, and mirrors |
 
 ## How These Docs Are Structured
@@ -661,7 +662,7 @@ This repository contains comprehensive documentation. Consult these files when b
 - `scripts/eval-agents.sh` — Verifies every subagent's tool grant against the instructions relying on it; `--table` prints the grant matrix, `--self-test` proves the checks are not vacuous
 
 ### MCP Server
-- `mcp-server/` — `ios-agent-mcp`, an MCP server exposing seven tools: six that analyze Swift (concurrency, architecture, SwiftUI, availability, App Store readiness, project overview) and `lint_skill`, which checks a skill repository's own metadata
+- `mcp-server/` — `ios-agent-mcp`, an MCP server exposing eleven tools: ten that analyze Swift (concurrency, architecture, SwiftUI, availability, memory, security, testing, performance, App Store readiness, project overview) and `lint_skill`, which checks a skill repository's own metadata
 - `docs/mcp/installation.md` — Claude Code, Claude Desktop, Cursor, and from-source setup
 - `docs/mcp/tools.md` — Tool reference, every rule and its severity, and the limits of static analysis
 - `docs/mcp/examples.md` — Worked sessions, and how the tools pair with the subagents

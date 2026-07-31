@@ -1,7 +1,7 @@
 {
   "name": "ios-agent-mcp",
   "displayName": "iOS Agent",
-  "version": "2.0.2",
+  "version": "2.1.0",
   "description": "Static analysis for modern iOS/Swift projects — Swift 6 actor isolation, architecture boundaries, SwiftUI, availability guards, and App Store readiness — plus a linter for Agent Skill repositories.",
   "author": "Nagarjuna Reddy",
   "license": "MIT",
@@ -60,6 +60,22 @@
     {
       "name": "audit_app_store_readiness",
       "summary": "Purpose strings, privacy manifest, accessibility, localization."
+    },
+    {
+      "name": "review_swift_memory",
+      "summary": "Retain cycles, weak/unowned usage, closure and Task lifetime."
+    },
+    {
+      "name": "review_swift_security",
+      "summary": "Hardcoded secrets, insecure storage, ATS, TLS, weak crypto, Keychain accessibility."
+    },
+    {
+      "name": "review_swift_testing",
+      "summary": "Flaky patterns, vacuous tests, live network in tests, missing coverage."
+    },
+    {
+      "name": "review_swift_performance",
+      "summary": "Work inside body, eager stacks, unstable ForEach identity, blocking I/O."
     },
     {
       "name": "lint_skill",
