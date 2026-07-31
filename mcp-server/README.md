@@ -156,7 +156,7 @@ After publishing, verify:
 
 ```bash
 npm view ios-agent-mcp version     # registry has it
-npx -y ios-agent-mcp --version     # 1.0.0
+npx -y ios-agent-mcp --version     # 2.0.2
 npx -y ios-agent-mcp --help        # usage, tool list, setup commands
 ```
 
@@ -178,8 +178,17 @@ The npm package version and the repository version are **independent**:
 
 | | Version | Why |
 |---|---|---|
-| `ios-agent-mcp` on npm | `1.1.0` | Adds `lint_skill`; `1.0.0` was the first release |
+| `ios-agent-mcp` on npm | `2.0.2` | Generated from `package.json` — see below |
 | `ios-agent-skill` repo / `SKILL.md` | `2.0.0` | Its own release history |
+
+**The version lives in `package.json` and nowhere else.** `mcp.json`,
+`package-lock.json`, the CLI, and the MCP handshake are all generated from it by
+`npm run sync-version`, which `build` and `typecheck` run automatically.
+
+This exists because **2.0.1 shipped to npm with an `mcp.json` declaring
+`1.0.0`** — the version was maintained by hand in four places, so one was always
+wrong and nothing checked. CI runs `sync-version --check`, so a hand-edit fails
+the build rather than reaching the registry.
 
 This is not a mismatch. Bump the npm version only when the server changes.
 

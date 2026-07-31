@@ -377,6 +377,9 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
+      - name: Versions agree with package.json
+        run: node scripts/sync-version.mjs --check
+
       - name: Build
         run: npm run build
 

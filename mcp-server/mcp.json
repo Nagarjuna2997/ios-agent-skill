@@ -1,7 +1,7 @@
 {
   "name": "ios-agent-mcp",
   "displayName": "iOS Agent",
-  "version": "1.1.0",
+  "version": "2.0.2",
   "description": "Static analysis for modern iOS/Swift projects — Swift 6 actor isolation, architecture boundaries, SwiftUI, availability guards, and App Store readiness — plus a linter for Agent Skill repositories.",
   "author": "Nagarjuna Reddy",
   "license": "MIT",
@@ -11,13 +11,25 @@
     "url": "https://github.com/Nagarjuna2997/ios-agent-skill.git",
     "directory": "mcp-server"
   },
-  "keywords": ["ios", "swift", "swiftui", "xcode", "apple", "static-analysis", "code-review", "agent-skills"],
+  "keywords": [
+    "ios",
+    "swift",
+    "swiftui",
+    "xcode",
+    "apple",
+    "static-analysis",
+    "code-review",
+    "agent-skills"
+  ],
   "runtime": {
     "type": "node",
     "minimumVersion": "18",
     "transport": "stdio",
     "command": "npx",
-    "args": ["-y", "ios-agent-mcp"]
+    "args": [
+      "-y",
+      "ios-agent-mcp"
+    ]
   },
   "permissions": {
     "filesystem": "read",
@@ -25,12 +37,33 @@
     "notes": "Reads .swift, Info.plist, Package.swift, and project.pbxproj files under the path you pass to a tool. Makes no network requests and writes nothing."
   },
   "tools": [
-    { "name": "analyze_swift_project", "summary": "Project overview plus a finding count for every rule category." },
-    { "name": "review_swift_concurrency", "summary": "Swift 6 actor isolation and concurrency defects." },
-    { "name": "review_swift_architecture", "summary": "Architecture boundaries, dependency injection, testability." },
-    { "name": "review_swiftui", "summary": "SwiftUI view and state defects, Dynamic Type, design tokens." },
-    { "name": "check_availability_guards", "summary": "Missing and over-restrictive @available guards." },
-    { "name": "audit_app_store_readiness", "summary": "Purpose strings, privacy manifest, accessibility, localization." },
-    { "name": "lint_skill", "summary": "Agent Skill metadata: frontmatter, subagent tool grants, mirror sync, doc references." }
+    {
+      "name": "analyze_swift_project",
+      "summary": "Project overview plus a finding count for every rule category."
+    },
+    {
+      "name": "review_swift_concurrency",
+      "summary": "Swift 6 actor isolation and concurrency defects."
+    },
+    {
+      "name": "review_swift_architecture",
+      "summary": "Architecture boundaries, dependency injection, testability."
+    },
+    {
+      "name": "review_swiftui",
+      "summary": "SwiftUI view and state defects, Dynamic Type, design tokens."
+    },
+    {
+      "name": "check_availability_guards",
+      "summary": "Missing and over-restrictive @available guards."
+    },
+    {
+      "name": "audit_app_store_readiness",
+      "summary": "Purpose strings, privacy manifest, accessibility, localization."
+    },
+    {
+      "name": "lint_skill",
+      "summary": "Agent Skill metadata: frontmatter, subagent tool grants, mirror sync, doc references."
+    }
   ]
 }

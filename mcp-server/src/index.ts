@@ -3,6 +3,8 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 
+import { VERSION } from "./version.js";
+
 import { Finding } from "./analyzers/types.js";
 import { analyzeConcurrency } from "./analyzers/concurrency.js";
 import { analyzeArchitecture } from "./analyzers/architecture.js";
@@ -17,8 +19,6 @@ import {
   summarizeProject,
 } from "./scan.js";
 import { renderFindings, renderSkillLint } from "./report.js";
-
-const VERSION = "1.1.0";
 
 /**
  * Handle CLI flags before starting the stdio transport.
