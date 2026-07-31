@@ -64,6 +64,9 @@ Load this skill when any of the following is true. When none are true, do not lo
 | Background import, sync, or "not thread safe" | `docs/frameworks/data-concurrency.md` |
 | Test doubles, previews, debug menus | `docs/testing/mocking-strategy.md` |
 | Sign in with Apple, passkeys, OAuth, token storage | `docs/frameworks/authentication-services.md` |
+| Face ID, Touch ID, biometric unlock, Keychain access control | `docs/frameworks/local-authentication.md` |
+| Any chart, graph, or plot | `docs/frameworks/swift-charts.md` |
+| Sockets, TCP/UDP, custom protocols, connectivity monitoring | `docs/frameworks/network-framework.md` |
 | Colors, spacing, theming, glass effects | `docs/design/design-tokens.md`, `docs/design/color-system.md` |
 | A named Apple framework | the matching `docs/frameworks/**` file |
 | A named platform | the matching `docs/platforms/*.md` file |
@@ -467,6 +470,9 @@ AppName/
 | Calendar | **EventKit** | Calendar events, reminders |
 | Contacts | **Contacts** | Contact access and picker |
 | Crypto | **CryptoKit** | Hashing, encryption, signing, Secure Enclave |
+| Biometrics | **LocalAuthentication** | Face ID, Touch ID, Optic ID, biometric Keychain gating |
+| Charts | **Swift Charts** | Declarative charts with accessibility and Dynamic Type |
+| Sockets | **Network.framework** | TCP/UDP, custom protocols, TLS, path monitoring |
 | Logging | **OSLog** | Structured logging, performance profiling |
 | Background | **BackgroundTasks** | BGTaskScheduler, background refresh |
 | Integrity | **DeviceCheck + AppAttest** | Device verification, API security |
@@ -581,6 +587,7 @@ This repository contains comprehensive documentation. Consult these files when b
 - `docs/frameworks/arkit.md` — World/face/body/image tracking, plane and mesh detection, world map persistence
 - `docs/frameworks/realitykit.md` — ECS, RealityView, PBR materials, physics, spatial audio
 - `docs/frameworks/networking.md` — HTTP networking patterns
+- `docs/frameworks/swift-charts.md` — Marks, scales, axes, selection, `AXChartDescriptor`, peak-preserving downsampling for large datasets
 - `docs/frameworks/accessibility.md` — Accessibility best practices
 
 ### AI & Machine Learning
@@ -615,6 +622,8 @@ This repository contains comprehensive documentation. Consult these files when b
 ### Security & Engineering
 - `docs/frameworks/authentication-services.md` — Sign in with Apple, passkeys, `ASWebAuthenticationSession`, revocation, token storage
 - `docs/frameworks/cryptokit.md` — Hashing, encryption, signing, Secure Enclave
+- `docs/frameworks/local-authentication.md` — `LAContext`, biometry policies, Keychain access control as the real boundary, lockout and fallback
+- `docs/frameworks/network-framework.md` — `NWConnection`, `NWListener`, message framing, TLS pinning, `NWPathMonitor`, actor ownership
 - `docs/frameworks/oslog.md` — Structured logging, MetricKit diagnostics
 - `docs/frameworks/background-tasks.md` — BGTaskScheduler, background refresh
 - `docs/frameworks/device-integrity.md` — DeviceCheck, AppAttest
