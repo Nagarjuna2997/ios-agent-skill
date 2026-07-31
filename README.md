@@ -2,7 +2,7 @@
   <img src="https://img.shields.io/badge/Swift-6.4-F05138?style=for-the-badge&logo=swift&logoColor=white" alt="Swift">
   <img src="https://img.shields.io/badge/Xcode-27-147EFB?style=for-the-badge&logo=xcode&logoColor=white" alt="Xcode">
   <img src="https://img.shields.io/badge/iOS%2017--27-000000?style=for-the-badge&logo=apple&logoColor=white" alt="iOS">
-  <img src="https://img.shields.io/badge/MCP%20Server-6%20tools-8B5CF6?style=for-the-badge" alt="MCP">
+  <img src="https://img.shields.io/badge/MCP%20Server-7%20tools-8B5CF6?style=for-the-badge" alt="MCP">
   <img src="https://img.shields.io/badge/AI%20Agents-25+-00D084?style=for-the-badge" alt="AI Agents">
 </p>
 
@@ -605,7 +605,7 @@ Two rules do most of the work:
 
 ## :white_check_mark: Compile-Checked Sample
 
-[`samples/SkillPatterns/`](samples/SkillPatterns/) is an SPM package implementing this skill's core patterns — `@MainActor @Observable` view models, protocol-injected dependencies, typed routes with pure deep-link parsing, actor test doubles. CI builds and tests it on macOS on every push, with strict concurrency enabled.
+[`samples/SkillPatterns/`](samples/SkillPatterns/) is an SPM package implementing this skill's core patterns — `@MainActor @Observable` view models, protocol-injected dependencies, typed routes with pure deep-link parsing, actor test doubles, SwiftData persistence behind a `@ModelActor`, and `AsyncSequence` consumption. CI builds and tests it on macOS on every push, with strict concurrency enabled.
 
 ```bash
 cd samples/SkillPatterns && swift build && swift test

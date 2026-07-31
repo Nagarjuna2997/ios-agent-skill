@@ -106,4 +106,36 @@ public final class ArticleListModel {
     public func dismissError() {
         errorMessage = nil
     }
+
+    // MARK: Streamed updates
+    //
+    // Must live in this file: `articles` is `private(set)`, so only code in the
+    // same file can write it. That is the seam working as intended — a stream
+    // consumer bolted on from another file would have needed the setter opened
+    // up for everyone.
+
+    /// Applies pushed updates by identity until the sequence ends or the task
+    /// is cancelled.
+    ///
+    /// Two rules are load-bearing here:
+    ///
+    /// - **Match by `id`, never by position.** Elements arrive interleaved with
+    ///   whatever else mutates `articles`; an index captured before the `await`
+    ///   points somewhere else by the time the next element lands.
+    /// - **Cancellation is not a failure.** `AsyncStream`'s iterator returns
+    ///   `nil` when the surrounding task is cancelled, so the loop simply ends.
+    ///   Setting `errorMessage` here would surface "something went wrong" every
+    ///   time the user navigates away mid-stream.
+    ///
+    /// An update for an unknown article is dropped rather than appended: this
+    /// screen shows a fetched list, and inserting a row nothing asked for is a
+    /// worse outcome than missing one.
+    public func consumeUpdates(from source: any ArticleUpdateStream) async {
+        for await update in source.updates() {
+            guard let index = articles.firstIndex(where: { $0.id == update.id }) else {
+                continue
+            }
+            articles[index] = update
+        }
+    }
 }

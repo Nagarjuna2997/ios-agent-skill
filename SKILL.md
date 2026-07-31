@@ -627,7 +627,7 @@ This repository contains comprehensive documentation. Consult these files when b
 - `docs/platforms/visionos.md` — visionOS spatial computing
 
 ### Samples & Templates
-- `samples/SkillPatterns/` — **Compile-checked** reference implementation of this skill's core patterns. CI builds and tests it, which is what makes those patterns VERIFIED rather than INSPECTED
+- `samples/SkillPatterns/` — **Compile-checked** reference implementation of this skill's core patterns, including SwiftData (`@Model`, `@ModelActor`, container injection) and `AsyncSequence` consumption. CI builds and tests it, which is what makes those patterns VERIFIED rather than INSPECTED
 - `templates/ios-app/` — Ready-to-use iOS SwiftUI app template
 - `templates/multiplatform-app/` — Multi-platform SwiftUI template
 - `templates/common-patterns/` — Networking, persistence, auth, navigation, DI patterns

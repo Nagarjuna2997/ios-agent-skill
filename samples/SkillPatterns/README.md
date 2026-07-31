@@ -28,18 +28,34 @@ swift test
 | Typed `Hashable, Codable` routes | `Router.swift` |
 | Deep-link parsing as a pure, testable function | `Router.swift` |
 | Actor test doubles reconfigurable after injection | `Composition.swift` |
+| `@Model` kept distinct from the Sendable domain entity | `Persistence.swift` |
+| `@ModelActor` for background work, converting to value types inside | `Persistence.swift` |
+| `PersistentIdentifier` crosses the actor boundary; the model never does | `Persistence.swift` |
+| One `ModelContainer`, owned by the composition root | `Persistence.swift` |
+| A push source behind an `AsyncSequence` protocol | `Streaming.swift` |
+| Streamed updates matched by identity, cancellation as a no-op | `ArticleListModel.consumeUpdates` |
 
 The tests are the interesting part: several exist specifically to fail if a rule
 is violated. `testToggleBookmarkRevertsOnFailure` fails if the revert uses a
 stale index. `testCancellationIsNotReportedAsError` fails if `CancellationError`
 is treated as user-facing. `testLinkBeforeReadyIsQueuedThenFlushed` fails if a
-launch-time deep link is dropped.
+launch-time deep link is dropped. `testImportIsIdempotent` fails if the upsert
+degrades into a blind insert, which the `@Attribute(.unique)` constraint only
+punishes later, at save time. `testTheSameViewModelDrivesSwiftDataUnchanged`
+fails if the boundary protocols were decorative — it runs the *same*
+`ArticleListModel` over a real `ModelContainer` with nothing changed.
+
+Timing-sensitive transitions go through `Gate` (`Streaming.swift`), which makes
+the suspension deterministic. Tests that sleep and hope pass locally and flake
+in CI, which is worse than no test: they teach people to re-run until green.
 
 ## Scope
 
 Deliberately limited to **stable APIs** — iOS 17 / macOS 14, no SwiftUI view
 code, no beta SDKs — so it builds on standard CI runners with `swift build`
-and no simulator.
+and no simulator. SwiftData qualifies: it shipped in iOS 17, and every container
+here is `isStoredInMemoryOnly`, so the suite needs no disk and leaves nothing
+behind.
 
 Consequences, stated plainly:
 

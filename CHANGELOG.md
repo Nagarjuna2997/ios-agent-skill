@@ -22,6 +22,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
   Building it surfaced the same false-positive trap three times, each caught by running against the real definitions: read-only status must be read from the description, not the body, because bodies carry scoped prohibitions that mean something else (`ios-docs`: "never edit a *generated* file"; `swift-refactorer`: "do not change *access levels*"); a shell command counts only inside a fence or after a `$` prompt, since `ios-plan` discusses "Swift Testing" the framework and runs nothing; and a `$ ` prefix is decisive on its own, because `foundation-models` mandates a literal `$ <build/test command>` in its output template. All four phrasings are now regression cases in `--self-test`. A planned over-grant rule for `Edit`/`Write` was **dropped rather than shipped wrong** -- "extract subviews, introduce protocol seams" all mean editing, and no regex generalizes over that.
 
+- **SwiftData and `AsyncSequence` in `samples/SkillPatterns/`** -- `Persistence.swift` adds `@Model`, a `@ModelActor` store, and `ModelContainer` injection through a composition root; `Streaming.swift` adds a push source behind an `AsyncSequence` protocol plus a `Gate` actor for deterministic suspension in tests. **24 tests -> 49.**
+
+  The store conforms to the `ArticleRepository` protocol that already existed in the domain layer, which is the point of adding it here: `testTheSameViewModelDrivesSwiftDataUnchanged` runs the *same* `ArticleListModel` over a real `ModelContainer` with nothing changed. If that had required touching the view model, the boundary protocols were decorative.
+
+  Rules the new code exists to pin down: `@Model` is a persistence type and never the entity the UI renders -- conflating them compiles and then corrupts data the first time a background import touches a model the UI is reading; everything leaving the actor is converted to value types *inside* it; a `PersistentIdentifier` may cross the boundary but the model object may not; and one container is created in one place, because a second container over the same store is a second source of truth whose symptoms (writes that vanish, stale reads) look nothing like the cause.
+
+  Timing-sensitive transitions (`isLoading` while in flight, a second load superseding a first) go through `Gate` rather than sleeping. A test that sleeps and hopes passes locally and flakes in CI, which is worse than no test -- it teaches people to re-run until green.
+
 
 ### Fixed -- unreleased
 - `.claude/agents/swift-reviewer.md` and `performance-reviewer.md` were enforced read-only by their tool grants but never said so in their descriptions. Since the main agent decides delegation from the description alone, the guarantee that made them safe to delegate verification to was invisible at the point of the decision. Both now state it.
