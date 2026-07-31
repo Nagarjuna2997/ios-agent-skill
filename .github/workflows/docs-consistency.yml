@@ -128,6 +128,12 @@ jobs:
           print(f"OK - {len(paths)} subagent definitions valid: {', '.join(sorted(names))}")
           PY
 
+      - name: Subagent tool boundaries hold
+        run: ./scripts/eval-agents.sh
+
+      - name: Boundary checks are not vacuous
+        run: ./scripts/eval-agents.sh --self-test
+
       - name: Hook scripts are executable and parse
         run: |
           status=0

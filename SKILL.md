@@ -649,6 +649,7 @@ This repository contains comprehensive documentation. Consult these files when b
 - `docs/orchestration/hooks.md` — Deterministic enforcement; hook vs. CI vs. reviewer
 - `.claude/agents/` — Ten ready-to-use specialists (`ios-explore`, `ios-plan`, `swift-reviewer`, `swift-debugger`, `swift-refactorer`, `ios-docs`, `foundation-models`, `swiftui-modernization`, `accessibility-reviewer`, `performance-reviewer`)
 - `templates/hooks/` — Drop-in hooks for iOS projects: formatting, anti-pattern blocking, build verification
+- `scripts/eval-agents.sh` — Verifies every subagent's tool grant against the instructions relying on it; `--table` prints the grant matrix, `--self-test` proves the checks are not vacuous
 
 ### MCP Server
 - `mcp-server/` — `ios-agent-mcp`, an MCP server exposing seven tools: six that analyze Swift (concurrency, architecture, SwiftUI, availability, App Store readiness, project overview) and `lint_skill`, which checks a skill repository's own metadata

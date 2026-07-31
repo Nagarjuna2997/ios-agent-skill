@@ -95,6 +95,11 @@ PY
   FAILURES+=("Subagent definitions:\n$AGENT_OUT")
 fi
 
+# 5. Every subagent's tool grant matches what its instructions actually do.
+if ! EVAL_OUT="$(./scripts/eval-agents.sh 2>&1)"; then
+  FAILURES+=("Subagent tool boundaries:\n$EVAL_OUT")
+fi
+
 if (( ${#FAILURES[@]} > 0 )); then
   echo "Repository consistency checks failed:" >&2
   echo "" >&2
