@@ -227,3 +227,89 @@ describe("mcp server", () => {
     await rm(clean, { recursive: true, force: true });
   });
 });
+
+describe("resources", () => {
+  let resourceClient;
+  let resourceTransport;
+
+  before(async () => {
+    // A second server instance, launched with --project pointed at this repo's
+    // own sample package — the resource root is a launch-time decision, so it
+    // cannot be exercised by the shared client above.
+    resourceTransport = new StdioClientTransport({
+      command: "node",
+      args: [
+        new URL("../dist/index.js", import.meta.url).pathname,
+        "--project",
+        new URL("../../samples/SkillPatterns/", import.meta.url).pathname,
+      ],
+    });
+    resourceClient = new Client({ name: "resource-test", version: "1.0.0" });
+    await resourceClient.connect(resourceTransport);
+  });
+
+  after(async () => {
+    await resourceClient?.close();
+  });
+
+  test("advertises the project resources", async () => {
+    const { resources } = await resourceClient.listResources();
+    const uris = resources.map((r) => r.uri).sort();
+    assert.deepEqual(uris, [
+      "ios://project/dependencies",
+      "ios://project/info",
+      "ios://project/issues",
+    ]);
+  });
+
+  test("project/info reports architecture with its evidence", async () => {
+    const result = await resourceClient.readResource({ uri: "ios://project/info" });
+    const body = JSON.parse(result.contents[0].text);
+    assert.equal(body.available, true);
+    assert.ok(body.swift_files > 0);
+    assert.equal(typeof body.architecture, "string");
+    assert.ok(Array.isArray(body.architecture_evidence));
+    assert.ok(body.architecture_evidence.length > 0, "a verdict must ship its evidence");
+    // The root is implicit, so every payload must say which one it used.
+    assert.match(body.project_root, /SkillPatterns/);
+  });
+
+  test("project/issues reports counts and categories", async () => {
+    const result = await resourceClient.readResource({ uri: "ios://project/issues" });
+    const body = JSON.parse(result.contents[0].text);
+    assert.equal(body.available, true);
+    assert.equal(typeof body.counts.total, "number");
+    assert.ok(Array.isArray(body.issues));
+    assert.ok(body.by_category.concurrency !== undefined);
+  });
+
+  test("project/dependencies distinguishes third-party from Apple frameworks", async () => {
+    const result = await resourceClient.readResource({
+      uri: "ios://project/dependencies",
+    });
+    const body = JSON.parse(result.contents[0].text);
+    assert.ok(Array.isArray(body.third_party));
+    assert.ok(Array.isArray(body.apple_frameworks));
+    assert.ok(body.apple_frameworks.includes("Foundation"));
+  });
+});
+
+describe("project root resolution", () => {
+  test("--project wins over the environment", async () => {
+    const { projectRootFrom } = await import("../dist/resources.js");
+    assert.equal(
+      projectRootFrom(["--project", "/tmp/explicit"], { IOS_AGENT_PROJECT: "/tmp/env" }),
+      "/tmp/explicit",
+    );
+  });
+
+  test("the environment is used when no flag is given", async () => {
+    const { projectRootFrom } = await import("../dist/resources.js");
+    assert.equal(projectRootFrom([], { IOS_AGENT_PROJECT: "/tmp/env" }), "/tmp/env");
+  });
+
+  test("falls back to the working directory rather than throwing", async () => {
+    const { projectRootFrom } = await import("../dist/resources.js");
+    assert.equal(projectRootFrom([], { PWD: "/tmp/cwd" }), "/tmp/cwd");
+  });
+});

@@ -3,8 +3,13 @@
 **Load this when:** setting up `ios-agent-mcp` in Claude Code, Claude Desktop,
 Cursor, or another MCP client.
 
-The server exposes six Swift analysis tools plus `lint_skill`, which checks a
+The server exposes ten Swift analysis tools plus `lint_skill`, which checks a
 skill repository's own metadata. Full tool reference: `tools.md`.
+
+It also serves three **resources** (`ios://project/info`, `.../dependencies`,
+`.../issues`), which need a project root — pass `--project PATH` in the client
+config, or set `IOS_AGENT_PROJECT`. Tools take an explicit path argument and need
+no configuration.
 Worked sessions: `examples.md`.
 
 ---

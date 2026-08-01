@@ -2,7 +2,7 @@
   "name": "ios-agent-mcp",
   "displayName": "iOS Agent",
   "version": "2.1.0",
-  "description": "Static analysis for modern iOS/Swift projects — Swift 6 actor isolation, architecture boundaries, SwiftUI, availability guards, and App Store readiness — plus a linter for Agent Skill repositories.",
+  "description": "Static analysis for modern iOS/Swift projects \u2014 Swift 6 actor isolation, architecture boundaries, SwiftUI, availability guards, and App Store readiness \u2014 plus a linter for Agent Skill repositories.",
   "author": "Nagarjuna Reddy",
   "license": "MIT",
   "homepage": "https://github.com/Nagarjuna2997/ios-agent-skill",
@@ -81,5 +81,20 @@
       "name": "lint_skill",
       "summary": "Agent Skill metadata: frontmatter, subagent tool grants, mirror sync, doc references."
     }
-  ]
+  ],
+  "resources": [
+    {
+      "uri": "ios://project/info",
+      "summary": "Structure, architecture with evidence, DI, frameworks."
+    },
+    {
+      "uri": "ios://project/dependencies",
+      "summary": "Third-party packages and Apple frameworks."
+    },
+    {
+      "uri": "ios://project/issues",
+      "summary": "Every finding across all nine categories."
+    }
+  ],
+  "notes": "Resources require a project root: pass --project PATH or set IOS_AGENT_PROJECT. Tools take an explicit path argument and need no configuration."
 }

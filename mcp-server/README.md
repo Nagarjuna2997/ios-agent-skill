@@ -4,7 +4,7 @@ An MCP server that reviews Swift projects against the rules in
 [ios-agent-skill](https://github.com/Nagarjuna2997/ios-agent-skill).
 
 The skill teaches an agent how to *write* iOS code. This server lets an agent
-*check* it — six tools that read a Swift project and report defects with a file,
+*check* it — ten tools that read a Swift project and report defects with a file,
 a line, the consequence, and the fix, plus one that lints a skill repository's
 own metadata.
 
@@ -81,6 +81,10 @@ npm install && npm run build
 | `review_swiftui` | Fixed font sizes and heights, `AnyView`, `.cornerRadius`, literal spacing, materials over solid backgrounds, view state on models, `ObservableObject`, `@EnvironmentObject`, `try!` |
 | `check_availability_guards` | Missing guards, **over-restrictive guards** (an iOS 26 API guarded at iOS 27 silently drops every iOS 26 device), Foundation Models without a runtime availability check |
 | `audit_app_store_readiness` | Permission frameworks with no Info.plist purpose string, missing `PrivacyInfo.xcprivacy`, unlocalized strings, unlabeled icon buttons, `print()` |
+| `review_swift_memory` | Repeating `Timer` and `NotificationCenter` blocks capturing self, Combine sinks, non-`weak` delegates, stored closures, `unowned self` |
+| `review_swift_security` | Hardcoded secrets, credentials in `UserDefaults`, disabled ATS, cleartext HTTP, TLS trust accepted without evaluation, MD5/SHA-1, Keychain accessibility |
+| `review_swift_testing` | **Test files only.** Sleeping, tests with no assertion, live `URLSession`, `await` in an `XCTAssert` autoclosure, order-dependent static state |
+| `review_swift_performance` | Formatters and collection work inside `body`, `ForEach` over indices, eager stacks in a `ScrollView`, blocking I/O on the render path |
 | `lint_skill` | **Skill metadata, not Swift.** `SKILL.md` frontmatter, subagent `name`/filename mismatches, misspelled tool names, **read-only agents granted `Edit` or `Write`**, mirror files drifted from `SKILL.md`, broken doc references |
 
 Every tool takes one argument:
@@ -89,8 +93,46 @@ Every tool takes one argument:
 { "path": "/absolute/path/to/your/project" }
 ```
 
-The first six want a Swift project root. `lint_skill` wants an Agent Skill
+The first ten want a Swift project root. `lint_skill` wants an Agent Skill
 repository root — the folder containing `SKILL.md`.
+
+Every review tool also returns `structuredContent` — typed data with `summary`,
+`score`, `counts`, `files_checked`, `issues`, and `suggestions` — alongside the
+markdown, so a workflow can branch on a result without regexing prose.
+
+---
+
+## Resources
+
+Tools are verbs the model chooses to call. Resources are nouns a client can read
+without being asked, so a project's shape can be attached to context up front.
+
+```jsonc
+{
+  "mcpServers": {
+    "ios-agent": {
+      "command": "npx",
+      "args": ["-y", "ios-agent-mcp", "--project", "/absolute/path/to/project"]
+    }
+  }
+}
+```
+
+| Resource | Contains |
+|---|---|
+| `ios://project/info` | Counts, deployment target, UI framework, inferred architecture **with its evidence**, DI detection, frameworks |
+| `ios://project/dependencies` | Third-party packages from `Package.swift` / `Package.resolved` / `Podfile`, plus Apple frameworks |
+| `ios://project/issues` | Every finding across all nine categories, with counts by severity and category |
+
+The root comes from `--project`, then `IOS_AGENT_PROJECT`, then the working
+directory the client spawned the server in. **Every payload reports which root it
+used**, so an empty project is never mistaken for a wrong path.
+
+**There is deliberately no `ios://project/build-status`.** It would have to run
+`xcodebuild`, which needs macOS and Xcode and breaks the
+`filesystem: read, network: none` contract that lets this package install
+anywhere in ~26 KB. Build and simulator state belong in the separate package that
+already requires a full toolchain — see [ROADMAP.md](../ROADMAP.md).
 
 ---
 
@@ -120,7 +162,7 @@ Test, mock, stub, and preview files are exempt from the app-code-only rules, and
 ```bash
 npm install
 npm run build        # tsc
-npm test             # 38 tests: unit + end-to-end over real MCP stdio
+npm test             # 123 tests: unit + end-to-end over real MCP stdio
 npm run typecheck
 ```
 
@@ -156,7 +198,7 @@ After publishing, verify:
 
 ```bash
 npm view ios-agent-mcp version     # registry has it
-npx -y ios-agent-mcp --version     # 2.0.2
+npx -y ios-agent-mcp --version     # 2.1.0
 npx -y ios-agent-mcp --help        # usage, tool list, setup commands
 ```
 
@@ -178,8 +220,8 @@ The npm package version and the repository version are **independent**:
 
 | | Version | Why |
 |---|---|---|
-| `ios-agent-mcp` on npm | `2.0.2` | Generated from `package.json` — see below |
-| `ios-agent-skill` repo / `SKILL.md` | `2.0.0` | Its own release history |
+| `ios-agent-mcp` on npm | `2.1.0` | Generated from `package.json` — see below |
+| `ios-agent-skill` repo / `SKILL.md` | `2.1.0` | Kept in lockstep since 2.1.0 |
 
 **The version lives in `package.json` and nowhere else.** `mcp.json`,
 `package-lock.json`, the CLI, and the MCP handshake are all generated from it by
@@ -190,7 +232,8 @@ This exists because **2.0.1 shipped to npm with an `mcp.json` declaring
 wrong and nothing checked. CI runs `sync-version --check`, so a hand-edit fails
 the build rather than reaching the registry.
 
-This is not a mismatch. Bump the npm version only when the server changes.
+Since 2.1.0 the skill and the server share a version. They were independent
+before, which is exactly how 2.0.1 shipped with a manifest reading 1.0.0.
 
 ## License
 

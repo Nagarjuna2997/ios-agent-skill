@@ -24,6 +24,12 @@ import {
 } from "./scan.js";
 import { renderFindings, renderSkillLint } from "./report.js";
 import { buildReviewOutput, reviewOutputShape } from "./result.js";
+import {
+  projectDependenciesResource,
+  projectInfoResource,
+  projectIssuesResource,
+  projectRootFrom,
+} from "./resources.js";
 
 /**
  * Handle CLI flags before starting the stdio transport.
@@ -51,6 +57,7 @@ function handleCLIFlags(argv: string[]): boolean {
         "",
         "USAGE",
         "  ios-agent-mcp              Start the server (stdio transport)",
+        "  ios-agent-mcp --project P  Serve ios:// resources for project P",
         "  ios-agent-mcp --help       Show this message",
         "  ios-agent-mcp --version    Print the version",
         "",
@@ -74,6 +81,11 @@ function handleCLIFlags(argv: string[]): boolean {
         "",
         "Each tool takes one argument: an absolute path. The first ten want a",
         "Swift project root; lint_skill wants an Agent Skill repository root.",
+        "",
+        "RESOURCES  (require --project or IOS_AGENT_PROJECT)",
+        "  ios://project/info           Structure, architecture, DI, frameworks",
+        "  ios://project/dependencies   Third-party packages and Apple frameworks",
+        "  ios://project/issues         Every finding, all categories",
         "",
         "DOCS  https://github.com/Nagarjuna2997/ios-agent-skill/tree/main/docs/mcp",
         "",
@@ -478,6 +490,56 @@ server.registerTool(
     ),
 );
 
+// Resources: nouns a client can read without the model deciding to ask.
+//
+// The root comes from --project, IOS_AGENT_PROJECT, or the working directory
+// the client spawned the server in. Every payload reports which one won, so an
+// empty project is never mistaken for a wrong path.
+const PROJECT_ROOT = projectRootFrom(process.argv.slice(2), process.env);
+
+server.registerResource(
+  "project-info",
+  "ios://project/info",
+  {
+    title: "iOS project info",
+    description:
+      "Structure and shape of the configured Swift project: file and line counts, deployment target, UI framework, inferred architecture with the evidence behind it, whether dependency injection is in use, and which Apple frameworks it imports.",
+    mimeType: "application/json",
+  },
+  async (uri) => ({
+    contents: [await projectInfoResource(uri.href, PROJECT_ROOT)],
+  }),
+);
+
+server.registerResource(
+  "project-dependencies",
+  "ios://project/dependencies",
+  {
+    title: "iOS project dependencies",
+    description:
+      "Third-party packages resolved from Package.swift, Package.resolved, or a Podfile, plus the Apple frameworks the project imports.",
+    mimeType: "application/json",
+  },
+  async (uri) => ({
+    contents: [await projectDependenciesResource(uri.href, PROJECT_ROOT)],
+  }),
+);
+
+server.registerResource(
+  "project-issues",
+  "ios://project/issues",
+  {
+    title: "iOS project issues",
+    description:
+      "Every finding across all nine analysis categories for the configured project, with counts by severity and by category. Capped at 100 issues, with the remainder reported as a count.",
+    mimeType: "application/json",
+  },
+  async (uri) => ({
+    contents: [await projectIssuesResource(uri.href, PROJECT_ROOT)],
+  }),
+);
+
 const transport = new StdioServerTransport();
+
 
 await server.connect(transport);
