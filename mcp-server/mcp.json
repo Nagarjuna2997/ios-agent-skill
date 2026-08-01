@@ -2,7 +2,7 @@
   "name": "ios-agent-mcp",
   "displayName": "iOS Agent",
   "version": "2.1.0",
-  "description": "Static analysis for modern iOS/Swift projects \u2014 Swift 6 actor isolation, architecture boundaries, SwiftUI, availability guards, and App Store readiness \u2014 plus a linter for Agent Skill repositories.",
+  "description": "Static analysis for modern iOS/Swift projects — Swift 6 actor isolation, architecture boundaries, SwiftUI, availability guards, and App Store readiness — plus a linter for Agent Skill repositories.",
   "author": "Nagarjuna Reddy",
   "license": "MIT",
   "homepage": "https://github.com/Nagarjuna2997/ios-agent-skill",
