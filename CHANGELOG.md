@@ -69,6 +69,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - `.claude/agents/swift-reviewer.md` and `performance-reviewer.md` were enforced read-only by their tool grants but never said so in their descriptions. Since the main agent decides delegation from the description alone, the guarantee that made them safe to delegate verification to was invisible at the point of the decision. Both now state it.
 - `.claude/agents/swiftui-modernization.md` was the only one of the ten subagents whose description stated what the agent *is* without stating when to *use* it. Delegation is decided by matching a task against that text, so the agent was measurably less likely to be selected than its nine peers. Found by running the new `lint_skill` against this repository.
 
+### Fixed -- 2.0.1
+
+- `ios-agent-mcp` reported version `1.0.0` from `--version` and, more consequentially, from the MCP `initialize` handshake -- so every connected client saw a version that did not match the package it had just installed. The version was a hardcoded constant in `mcp-server/src/index.ts` and nothing read `package.json` at runtime, so publishing under a new version could not correct it on its own. The constant, `mcp-server/package.json`, `skill.json`, and the `SKILL.md` frontmatter are now aligned on a single version.
+
+  **Superseded by the generator described above.** Aligning the four files by hand fixed the symptom; it did not stop the next hand-edit from re-introducing it, which is what `scripts/sync-version.mjs` does by generating three of the four from `package.json`.
+
 ### Added -- 2.0.0 MCP server
 
 Turns the repository from something you read into something you install. The skill teaches an agent how to *write* iOS code; the MCP server lets it *check* code that already exists.

@@ -18,6 +18,7 @@
   <img src="https://img.shields.io/github/license/Nagarjuna2997/ios-agent-skill?style=flat-square" alt="License">
   <img src="https://img.shields.io/github/stars/Nagarjuna2997/ios-agent-skill?style=flat-square" alt="Stars">
   <img src="https://img.shields.io/github/v/release/Nagarjuna2997/ios-agent-skill?style=flat-square" alt="Release">
+  <a href="https://www.npmjs.com/package/ios-agent-mcp"><img src="https://img.shields.io/npm/v/ios-agent-mcp?style=flat-square&logo=npm&label=ios-agent-mcp" alt="npm"></a>
   <a href="https://www.linkedin.com/in/nagarjuna-reddy-97836a193/"><img src="https://img.shields.io/badge/by-Nagarjuna%20Reddy-0A66C2?style=flat-square&logo=linkedin" alt="Author"></a>
 </p>
 
