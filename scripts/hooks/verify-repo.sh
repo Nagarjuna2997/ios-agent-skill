@@ -107,7 +107,48 @@ PY
   FAILURES+=("Subagent definitions:\n$AGENT_OUT")
 fi
 
-# 5. Every subagent's tool grant matches what its instructions actually do.
+# 5. Code fences declare a recognized language.
+#
+# Mirrors the CI check. A local hook weaker than CI means a red run for
+# something that could have been caught before pushing.
+if ! FENCE_OUT="$(python3 - <<'FENCEPY' 2>&1
+import os, re, sys
+
+KNOWN = {
+    "swift", "bash", "sh", "shell", "json", "jsonc", "yaml", "yml", "xml",
+    "python", "ruby", "text", "objc", "objective-c", "c", "cpp",
+    "markdown", "md", "diff", "console", "toml", "ini", "html", "css",
+    "js", "javascript", "ts", "typescript", "sql", "mermaid",
+}
+
+problems = []
+for root, dirs, files in os.walk("."):
+    dirs[:] = [d for d in dirs if d not in {".git", ".build", "node_modules", "dist"}]
+    for name in files:
+        if not name.endswith(".md"):
+            continue
+        path = os.path.join(root, name)
+        in_fence = False
+        for number, line in enumerate(open(path, encoding="utf-8"), 1):
+            match = re.match(r"^\s*(`{3,})\s*([A-Za-z0-9_+-]*)", line)
+            if not match:
+                continue
+            if not in_fence:
+                in_fence = True
+                lang = match.group(2).lower()
+                if lang and lang not in KNOWN:
+                    problems.append(f"{path}:{number}: unknown fence language '{lang}'")
+            else:
+                in_fence = False
+
+if problems:
+    sys.exit("Code fence problems:\n" + "\n".join(problems))
+FENCEPY
+)"; then
+  FAILURES+=("Code fences:\n$FENCE_OUT")
+fi
+
+# 6. Every subagent's tool grant matches what its instructions actually do.
 if ! EVAL_OUT="$(./scripts/eval-agents.sh 2>&1)"; then
   FAILURES+=("Subagent tool boundaries:\n$EVAL_OUT")
 fi

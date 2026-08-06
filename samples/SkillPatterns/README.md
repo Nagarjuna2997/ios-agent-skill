@@ -28,8 +28,8 @@ swift test
 | Typed `Hashable, Codable` routes | `Router.swift` |
 | Deep-link parsing as a pure, testable function | `Router.swift` |
 | Actor test doubles reconfigurable after injection | `Composition.swift` |
+| Fixtures with **stable** identity — a computed `var` re-randomises `id` | `Composition.swift` |
 | `@Model` kept distinct from the Sendable domain entity | `Persistence.swift` |
-| Identity stored as a `String` — `#Predicate` on `UUID` matches nothing | `Persistence.swift` |
 | `@ModelActor` for background work, converting to value types inside | `Persistence.swift` |
 | `PersistentIdentifier` crosses the actor boundary; the model never does | `Persistence.swift` |
 | One `ModelContainer`, owned by the composition root | `Persistence.swift` |

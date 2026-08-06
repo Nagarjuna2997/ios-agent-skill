@@ -286,6 +286,7 @@ jobs:
               "python", "ruby", "text", "objc", "objective-c", "c", "cpp",
               "markdown", "md", "diff", "console", "toml", "ini", "html", "css",
               "js", "javascript", "ts", "typescript", "sql", "mermaid",
+              "jsonc",   # JSON with comments — MCP client config samples
           }
 
           problems = []

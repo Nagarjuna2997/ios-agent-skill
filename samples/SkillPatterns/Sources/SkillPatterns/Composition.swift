@@ -109,25 +109,49 @@ public struct StubToggleBookmark: ToggleBookmarkUseCase {
 }
 
 extension Article {
+    /// A deterministic identifier for a fixture.
+    ///
+    /// `UUID(uuid:)` takes a tuple and cannot fail, so this needs neither a
+    /// force-unwrap nor a `?? UUID()` fallback that would silently reintroduce
+    /// the very randomness this exists to remove.
+    private static func fixtureID(_ byte: UInt8) -> UUID {
+        UUID(uuid: (0xA1, 0x5E, 0x00, 0x00, 0x00, 0x00, 0x40, 0x00,
+                    0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, byte))
+    }
+
     /// Realistic fixtures, including the edge cases that break layouts.
-    public static var samples: [Article] {
-        [
+    ///
+    /// A `static let` with **fixed** identifiers, not a computed `var`.
+    ///
+    /// As a computed property this rebuilt the array on every access, and
+    /// `Article.init` defaults `id` to `UUID()` — so `Article.samples` handed
+    /// out different identities each time it was read. A test that imported
+    /// `Article.samples` and then looked up `Article.samples.first!.id` was
+    /// searching for a row that had never been written.
+    ///
+    /// It cost six SwiftData test failures, all reporting `notFound` against
+    /// data that was demonstrably in the store, and it sent the first fix after
+    /// the wrong cause entirely. A fixture whose identity changes per access is
+    /// unusable for any test that turns on identity.
+    public static let samples: [Article] = [
             Article(
+                id: fixtureID(1),
                 title: "Understanding Actor Isolation",
                 summary: "Why @Observable alone is not enough.",
                 publishedAt: Date(timeIntervalSince1970: 1_760_000_000),
                 isBookmarked: true
             ),
             Article(
+                id: fixtureID(2),
                 title: "Inversion of Control in SwiftUI",
                 summary: "Protocol boundaries that make previews free.",
                 publishedAt: Date(timeIntervalSince1970: 1_750_000_000)
             ),
             Article(
+                id: fixtureID(3),
                 title: String(repeating: "A very long headline that wraps ", count: 4),
                 summary: "Ünïcödé — 日本語 — العربية",
                 publishedAt: Date(timeIntervalSince1970: 1_740_000_000)
             )
-        ]
-    }
+    ]
 }
