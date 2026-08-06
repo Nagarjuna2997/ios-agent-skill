@@ -58,7 +58,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
   `analyze_swift_project` gained project shape: UI framework, inferred architecture, dependencies, and DI detection. The architecture read always ships its **evidence**, and says `not determined` rather than guessing when signals are weak. DI is detected from `any Protocol` initializer parameters, not from a directory name.
 
 ### Fixed -- unreleased
-- **SwiftData `#Predicate` comparing a `UUID` matches nothing.** `samples/SkillPatterns/Persistence.swift` stored its domain identity as a `UUID` and queried it with `#Predicate<StoredArticle> { $0.remoteID == id }`. That compiles, runs, and silently returns an empty result -- so every lookup by identity failed while `fetchAll()` kept working perfectly. The symptom is an upsert that always inserts and a `fetch(id:)` that always throws `notFound`, against rows visibly present in the store.
+- **SwiftData `#Predicate` comparing a `UUID` matches nothing.** `samples/SkillPatterns/Sources/SkillPatterns/Persistence.swift` stored its domain identity as a `UUID` and queried it with `#Predicate<StoredArticle> { $0.remoteID == id }`. That compiles, runs, and silently returns an empty result -- so every lookup by identity failed while `fetchAll()` kept working perfectly. The symptom is an upsert that always inserts and a `fetch(id:)` that always throws `notFound`, against rows visibly present in the store.
 
   Six of twelve `PersistenceTests` failed on the first CI run; the six that passed were exactly the ones using `fetchAll` or `count` rather than the predicate. The identity is now stored as a `String`, which translates correctly, and the reason is documented on the property.
 
@@ -73,7 +73,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 - `ios-agent-mcp` reported version `1.0.0` from `--version` and, more consequentially, from the MCP `initialize` handshake -- so every connected client saw a version that did not match the package it had just installed. The version was a hardcoded constant in `mcp-server/src/index.ts` and nothing read `package.json` at runtime, so publishing under a new version could not correct it on its own. The constant, `mcp-server/package.json`, `skill.json`, and the `SKILL.md` frontmatter are now aligned on a single version.
 
-  **Superseded by the generator described above.** Aligning the four files by hand fixed the symptom; it did not stop the next hand-edit from re-introducing it, which is what `scripts/sync-version.mjs` does by generating three of the four from `package.json`.
+  **Superseded by the generator described above.** Aligning the four files by hand fixed the symptom; it did not stop the next hand-edit from re-introducing it, which is what `mcp-server/scripts/sync-version.mjs` does by generating three of the four from `package.json`.
 
 ### Added -- 2.0.0 MCP server
 

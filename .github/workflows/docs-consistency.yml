@@ -448,4 +448,19 @@ jobs:
         working-directory: samples/SkillPatterns
         run: |
           set -o pipefail
-          swift test 2>&1 | tail -60
+          swift test 2>&1 | tee /tmp/swift-test.log | tail -60
+
+      # `| tail -60` keeps the log readable on success, and hides the failures
+      # on the runs that matter: with 49 tests the failing assertions scroll off
+      # the top and the job reports "6 failures" with no indication which six.
+      # This step exists so a red run says what broke.
+      - name: Show test failures
+        if: failure()
+        working-directory: samples/SkillPatterns
+        run: |
+          echo "::group::Failing assertions"
+          grep -E "error:|: failed|XCTAssert|Fatal error" /tmp/swift-test.log | head -60 || true
+          echo "::endgroup::"
+          echo "::group::Failing test names"
+          grep -E "' failed \(" /tmp/swift-test.log | head -40 || true
+          echo "::endgroup::"

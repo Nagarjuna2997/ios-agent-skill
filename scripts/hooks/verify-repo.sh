@@ -48,18 +48,30 @@ fi
 if ! PATH_OUT="$(python3 - <<'PY' 2>&1
 import os, re, sys
 
-pattern = re.compile(r"`((?:docs|patterns|checklists|templates|scripts)/[^`\s]+)`")
+# Every markdown file, not just SKILL.md and README.md.
+#
+# CI scans the whole tree. When this hook scanned only two files it passed
+# locally while CI failed on two broken paths in CHANGELOG.md — a local check
+# weaker than the remote one is worse than no local check, because it converts
+# "verified" into a guess.
+pattern = re.compile(r"`((?:docs|patterns|checklists|templates|scripts|samples|\.claude)/[^`\s]+)`")
 missing = []
-for source in ("SKILL.md", "README.md"):
-    if not os.path.exists(source):
-        continue
+sources = []
+for root, dirs, files in os.walk("."):
+    dirs[:] = [d for d in dirs if d not in {".git", ".build", "node_modules", "dist"}]
+    sources.extend(os.path.join(root, f) for f in files if f.endswith(".md"))
+
+for source in sorted(sources):
     for number, line in enumerate(open(source, encoding="utf-8"), 1):
         for path in pattern.findall(line):
-            if "*" in path:
+            if "*" in path or "..." in path:
                 continue
             target = path.rstrip("/")
-            if not (os.path.isfile(target) or os.path.isdir(target)):
-                missing.append(f"{source}:{number}: {path}")
+            from_root = os.path.normpath(target)
+            from_here = os.path.normpath(os.path.join(os.path.dirname(source), target))
+            if any(os.path.isfile(p) or os.path.isdir(p) for p in (from_root, from_here)):
+                continue
+            missing.append(f"{source}:{number}: {path}")
 
 if missing:
     sys.exit("Referenced paths that do not exist:\n" + "\n".join(missing))
