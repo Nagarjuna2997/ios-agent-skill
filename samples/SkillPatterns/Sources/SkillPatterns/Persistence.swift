@@ -14,16 +14,27 @@ import SwiftData
 
 @Model
 public final class StoredArticle {
-    /// The domain identity. Distinct from `persistentModelID`, which is
-    /// SwiftData's own and is not stable across stores.
-    @Attribute(.unique) public var remoteID: UUID
+    /// The domain identity, stored as a **string, not a `UUID`**.
+    ///
+    /// SwiftData's `#Predicate` does not reliably translate `UUID` equality.
+    /// The fetch compiles, runs, and returns *nothing* — so every lookup by
+    /// identity silently fails while `fetchAll()` keeps working perfectly. The
+    /// symptom is an upsert that always inserts and a `fetch(id:)` that always
+    /// throws `notFound`, against rows you can see in the store.
+    ///
+    /// This cost six CI failures on the first run of this file. String equality
+    /// translates correctly, which is why the identity is stored as one.
+    ///
+    /// Distinct from `persistentModelID`, which is SwiftData's own and is not
+    /// stable across stores.
+    @Attribute(.unique) public var remoteID: String
     public var title: String
     public var summary: String
     public var publishedAt: Date
     public var isBookmarked: Bool
 
     public init(
-        remoteID: UUID,
+        remoteID: String,
         title: String,
         summary: String,
         publishedAt: Date,
@@ -43,7 +54,7 @@ extension StoredArticle {
     /// alongside it is a needless fight with the macro.
     static func make(from article: Article) -> StoredArticle {
         StoredArticle(
-            remoteID: article.id,
+            remoteID: article.id.uuidString,
             title: article.title,
             summary: article.summary,
             publishedAt: article.publishedAt,
@@ -52,9 +63,17 @@ extension StoredArticle {
     }
 
     /// The boundary crossing. Everything leaving the store goes through here.
-    var asArticle: Article {
-        Article(
-            id: remoteID,
+    ///
+    /// Throws rather than inventing an identifier. A row whose `remoteID` will
+    /// not parse is corrupt, and `UUID(uuidString:) ?? UUID()` would hand the
+    /// caller a plausible-looking article that matches nothing — a silent data
+    /// bug in place of a loud one.
+    func article() throws -> Article {
+        guard let id = UUID(uuidString: remoteID) else {
+            throw DomainError.rejected(reason: "A stored article has an unreadable identifier.")
+        }
+        return Article(
+            id: id,
             title: title,
             summary: summary,
             publishedAt: publishedAt,
@@ -91,17 +110,17 @@ public actor ArticleStore: ArticleRepository {
         let descriptor = FetchDescriptor<StoredArticle>(
             sortBy: [SortDescriptor<StoredArticle>(\.publishedAt, order: .reverse)]
         )
-        // .map(\.asArticle) is load-bearing: it converts to value types *inside*
-        // the actor. Returning [StoredArticle] would hand the caller reference
+        // The map is load-bearing: it converts to value types *inside* the
+        // actor. Returning [StoredArticle] would hand the caller reference
         // types tied to this actor's context.
-        return try modelContext.fetch(descriptor).map(\.asArticle)
+        return try modelContext.fetch(descriptor).map { try $0.article() }
     }
 
     public func fetch(id: UUID) async throws -> Article {
         guard let stored = try first(matching: id) else {
             throw DomainError.notFound(id: id)
         }
-        return stored.asArticle
+        return try stored.article()
     }
 
     public func setBookmark(_ isBookmarked: Bool, for id: UUID) async throws {
@@ -164,14 +183,17 @@ public actor ArticleStore: ArticleRepository {
         guard let stored = modelContext.model(for: identifier) as? StoredArticle else {
             throw DomainError.rejected(reason: "That article is no longer in the local store.")
         }
-        return stored.asArticle
+        return try stored.article()
     }
 
     // MARK: Private
 
     private func first(matching id: UUID) throws -> StoredArticle? {
+        // Captured as a plain local String. Comparing `$0.remoteID == id` with
+        // a UUID here is the bug documented on `remoteID` — it matches nothing.
+        let key = id.uuidString
         var descriptor = FetchDescriptor<StoredArticle>(
-            predicate: #Predicate<StoredArticle> { $0.remoteID == id }
+            predicate: #Predicate<StoredArticle> { $0.remoteID == key }
         )
         descriptor.fetchLimit = 1
         return try modelContext.fetch(descriptor).first
