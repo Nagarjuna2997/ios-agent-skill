@@ -5,6 +5,10 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  # Without this, work on a branch with no open PR gets no CI at all — which is
+  # how eleven commits once accumulated with zero runs. Lets any branch be
+  # checked on demand, including against the macOS runner.
+  workflow_dispatch:
 
 permissions:
   contents: read
