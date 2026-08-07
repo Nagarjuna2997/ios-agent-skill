@@ -18,8 +18,8 @@ Claude calls `analyze_swift_project`:
 
 ## Structure
 
-- **Swift files:** 10
-- **Lines:** 1,691
+- **Swift files:** 12
+- **Lines:** 1,998
 - **Deployment target:** iOS 17
 - **Swift tools version:** 5.9
 - **Test files:** found
@@ -32,7 +32,7 @@ Claude calls `analyze_swift_project`:
 - **Dependency injection:** protocol existentials injected through init
 - **Third-party dependencies:** none detected
 
-- **Frameworks:** Foundation, Observation, SwiftData, XCTest
+- **Frameworks:** Accelerate, Foundation, Observation, SwiftData, XCTest
 
 ## Findings by category
 

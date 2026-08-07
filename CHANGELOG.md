@@ -7,6 +7,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ## [Unreleased]
 
 ### Added -- unreleased
+- **`docs/frameworks/accelerate.md`** -- Accelerate, and the first framework doc whose central point is an isolation rule rather than an API surface.
+
+  Accelerate functions are synchronous C: they inherit whatever isolation calls them and never yield. A `@MainActor @Observable` view model calling `vDSP` blocks the main thread for the entire computation, and **nothing in that code looks wrong** -- there is no warning, no runtime check, and the vDSP call itself is correct. It is the concrete case of the pitfall `SKILL.md` already states abstractly, so that rule now names the synchronous C frameworks it applies to.
+
+  Routing first, because reaching for the wrong sub-library is the common failure and it goes both ways: hand-writing a loop over 100,000 samples wastes the vector unit, and calling `vDSP.add` on a three-element vector costs more in call overhead than the loop it replaced -- that is what `simd` is for. Then depth on the two that matter, vDSP and vImage.
+
+  The FFT section documents the two things that produce a spectrum that looks right and is wrong: **bin 0 is not purely DC** (the real-to-complex transform packs the Nyquist term into its imaginary part), and the output carries a **factor of two** that never moves a peak and invalidates every absolute magnitude. Plus the rule that catches both -- test transforms against a *known answer*, not a snapshot. A signal with eight periods across the frame must peak in bin eight; that fails when the transform is wrong rather than when the numbers change.
+
+  vImage is covered as an ownership problem, because that is what it is: `vImageBuffer_Init` hands you `malloc`ed memory nothing will free, and per video frame the result is a jetsam kill that reads as the OS killing the app for no reason.
+
+  8 anti-patterns, a 19-item checklist, and honest scoping -- BLAS/LAPACK gets the one fact that actually bites (they are column-major, so a row-major Swift array solves the transposed system and returns a plausible wrong answer), and BNNS routes to Core ML, since hand-building a network on a CPU-only library gives up the Neural Engine entirely.
+
+- **`samples/SkillPatterns/Sources/SkillPatterns/SignalProcessing.swift`** -- the Accelerate patterns, compile-checked. `AccelerateSpectrumAnalyzer` is an `actor` for a stated reason: `vDSP.FFT` is expensive to construct and is not `Sendable`, so it cannot be stored in a `Sendable` value type -- the same shape as owning an `NWConnection` or a `ModelContext`. The protocol requirement is `async` because that is the only part of the signature preventing a caller from doing the work on the main actor by accident, and a synchronous stub witnesses it, so a preview needs no audio and no Accelerate at all.
+
+  Behind `#if canImport(Accelerate)` so the package still builds on Linux. **13 new tests**, four of them known-answer transforms.
+
 - **`docs/design/liquid-glass-adoption.md`** -- the migration half of Liquid Glass. `design-tokens.md` covered applying the material to a view you own; nothing covered what an SDK rebuild does to an app you already shipped, which is the part that actually costs time.
 
   A coverage check found the gap was near-total: `UIDesignRequiresCompatibility`, `backgroundExtensionEffect`, `tabBarMinimizeBehavior`, `Tab(role: .search)`, `ToolbarSpacer`, `ConcentricRectangle`, `safeAreaBar`, the scroll edge effect, and Icon Composer appeared in **zero** files.

@@ -37,6 +37,7 @@ Load this skill when any of the following is true. When none are true, do not lo
 | Face ID, Touch ID, biometric unlock, Keychain access control | `docs/frameworks/local-authentication.md` |
 | Any chart, graph, or plot | `docs/frameworks/swift-charts.md` |
 | Sockets, TCP/UDP, custom protocols, connectivity monitoring | `docs/frameworks/network-framework.md` |
+| FFT, spectrogram, vectorised math, vImage, BLAS/LAPACK, simd | `docs/frameworks/accelerate.md` |
 | Colors, spacing, theming, glass effects | `docs/design/design-tokens.md`, `docs/design/color-system.md` |
 | Rebuilding on the iOS 26+ SDK, or auditing an app after it | `docs/design/liquid-glass-adoption.md` |
 | A named Apple framework | the matching `docs/frameworks/**` file |
@@ -445,6 +446,8 @@ AppName/
 | Biometrics | **LocalAuthentication** | Face ID, Touch ID, Optic ID, biometric Keychain gating |
 | Charts | **Swift Charts** | Declarative charts with accessibility and Dynamic Type |
 | Sockets | **Network.framework** | TCP/UDP, custom protocols, TLS, path monitoring |
+| Signal/image math | **Accelerate** | FFT, vectorised arithmetic, vImage, BLAS/LAPACK, sparse solvers |
+| Small vector math | **simd** | 2–4 element vectors, matrices, quaternions — not vDSP |
 | Logging | **OSLog** | Structured logging, performance profiling |
 | Background | **BackgroundTasks** | BGTaskScheduler, background refresh |
 | Integrity | **DeviceCheck + AppAttest** | Device verification, API security |
@@ -493,7 +496,7 @@ AppName/
 1. **Never force-unwrap optionals** (`!`) unless you have a compile-time guarantee
 2. **Never use `DispatchQueue.main.async`** in new SwiftUI code — use `@MainActor` instead. Inside an already-isolated type, `await MainActor.run { }` is redundant too
 3. **Never store view state in a view model** that should be `@State` — views own their own transient state
-4. **Never block the main thread** with synchronous network calls or heavy computation. `@MainActor` does not make CPU work safe — move it to an `actor` or a `nonisolated async` function
+4. **Never block the main thread** with synchronous network calls or heavy computation. `@MainActor` does not make CPU work safe — move it to an `actor` or a `nonisolated async` function. Accelerate, Core ML, image decoding, and JSON over a large payload are all synchronous and all inherit the caller's isolation
 5. **Never hardcode strings** — use `String(localized:)` for user-facing text
 6. **Never ignore `Sendable` warnings** — they indicate potential data races
 7. **Never use `AnyView`** for type erasure in SwiftUI — restructure with `@ViewBuilder` or `some View`
@@ -597,6 +600,7 @@ This repository contains comprehensive documentation. Consult these files when b
 - `docs/frameworks/cryptokit.md` — Hashing, encryption, signing, Secure Enclave
 - `docs/frameworks/local-authentication.md` — `LAContext`, biometry policies, Keychain access control as the real boundary, lockout and fallback
 - `docs/frameworks/network-framework.md` — `NWConnection`, `NWListener`, message framing, TLS pinning, `NWPathMonitor`, actor ownership
+- `docs/frameworks/accelerate.md` — vDSP, vForce, vImage, BLAS/LAPACK, sparse solvers, simd and Spatial; the isolation rule for heavy CPU work, FFT packing and scaling, vImage buffer ownership
 - `docs/frameworks/oslog.md` — Structured logging, MetricKit diagnostics
 - `docs/frameworks/background-tasks.md` — BGTaskScheduler, background refresh
 - `docs/frameworks/device-integrity.md` — DeviceCheck, AppAttest
@@ -609,7 +613,7 @@ This repository contains comprehensive documentation. Consult these files when b
 - `docs/platforms/visionos.md` — visionOS spatial computing
 
 ### Samples & Templates
-- `samples/SkillPatterns/` — **Compile-checked** reference implementation of this skill's core patterns, including SwiftData (`@Model`, `@ModelActor`, container injection) and `AsyncSequence` consumption. CI builds and tests it, which is what makes those patterns VERIFIED rather than INSPECTED
+- `samples/SkillPatterns/` — **Compile-checked** reference implementation of this skill's core patterns, including SwiftData (`@Model`, `@ModelActor`, container injection), `AsyncSequence` consumption, and Accelerate/vDSP behind an `async` boundary. CI builds and tests it, which is what makes those patterns VERIFIED rather than INSPECTED
 - `templates/ios-app/` — Ready-to-use iOS SwiftUI app template
 - `templates/multiplatform-app/` — Multi-platform SwiftUI template
 - `templates/common-patterns/` — Networking, persistence, auth, navigation, DI patterns
