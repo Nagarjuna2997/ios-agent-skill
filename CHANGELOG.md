@@ -7,6 +7,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ## [Unreleased]
 
 ### Added -- unreleased
+- **`cli/` -- `ios-agent`, a scaffolding CLI, and `docs/tooling/project-scaffolding.md`, the design behind it.** A generated project shows the user three entries; everything the tool owns lives in a hidden `.ios-agent/`.
+
+  **The rule that decides where anything goes is authorship, not importance.** If a human writes it, it is visible; if the tool writes it, it is hidden. Importance is the tempting axis and has no edge -- everything feels important to whoever added it, so a layout sorted that way grows a root directory per release. Authorship has a sharp edge, and two things fall out of it that are worth more than the tidiness: `clean` needs no confirmation prompt because nothing in there was authored, and "delete `.ios-agent/` and re-run" becomes structurally safe advice rather than a risk.
+
+  The leverage is not the directory name, it is that **one declaration produces four behaviours**. A row in `INTERNAL_ENTRIES` automatically yields its line in the generated `.ios-agent/.gitignore`, its inclusion in or exclusion from `clean`, its path in `where --json`, and a `doctor` check that it has not leaked to the project root. The alternative -- a constant here, a gitignore line there, a clean list elsewhere -- is three places that must be edited together and eventually are not, and the failure is quiet: a new cache directory that `clean` skips and git happily commits. The test asserting the two sets are complements does not care what the entries are; it fails the day someone adds a row that is both tracked and deletable.
+
+  `.ios-agent/` doubles as a **root marker**, the way `.git/` does, which is how the CLI and the MCP server agree on a project without either configuring the other. Both now report *how* the root was resolved, not just what it is -- an implicit root is unfalsifiable, and without it "0 Swift files" is identical whether the project is empty or the tool is pointed somewhere else.
+
+  **`ios-agent-mcp` stays read-only.** It reads the marker and never creates it, so the `filesystem: read, network: none` contract is unchanged. Scaffolding writes, so it is a separate package rather than a quiet turn from analyzer into something that mutates your project.
+
+  Cross-platform throughout: user-level caches use each platform's own location (not `~/.ios-agent`, which is on no platform's list), Windows reserved device names are rejected everywhere so a Mac-created project still checks out on Windows, and tracked config stores POSIX paths because that file crosses machines by design. CI runs the CLI on ubuntu, macOS, and Windows, and asserts end to end that the project root contains exactly `App`, `LICENSE`, `README.md`.
+
+  **42 CLI tests**, plus **7 in `ios-agent-mcp`** (123 -> 130) covering marker discovery -- including the case that a *file* named `.ios-agent` is not a marker. `doctor`'s checks are mutation-tested: each one is shown to fail when the layout is actually broken.
+
+  Notably **not** included: an `.xcodeproj` generator. That is a build-system artifact whose format Xcode owns, and a generated one drifts from what Xcode would have made.
+
 - **`docs/frameworks/accelerate.md`** -- Accelerate, and the first framework doc whose central point is an isolation rule rather than an API surface.
 
   Accelerate functions are synchronous C: they inherit whatever isolation calls them and never yield. A `@MainActor @Observable` view model calling `vDSP` blocks the main thread for the entire computation, and **nothing in that code looks wrong** -- there is no warning, no runtime check, and the vDSP call itself is correct. It is the concrete case of the pitfall `SKILL.md` already states abstractly, so that rule now names the synchronous C frameworks it applies to.

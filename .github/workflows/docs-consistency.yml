@@ -424,6 +424,61 @@ jobs:
             console.log('OK - manifest matches ' + registered.length + ' registered tools');
           "
 
+  cli:
+    name: CLI builds and tests
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      # The layout is path-shaped, so it has to be exercised on a case-insensitive
+      # filesystem and on Windows separators, not just on the Linux runner.
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    defaults:
+      run:
+        working-directory: cli
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install
+        run: npm ci || npm install
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build
+        run: npm run build
+
+      - name: Test
+        run: npm test
+
+      # The scaffold's central promise is what the user sees at the project
+      # root. Asserting it end to end catches a regression that unit tests on
+      # the layout table would not: a command that writes somewhere unexpected.
+      - name: Scaffold a project and check what is visible
+        shell: bash
+        run: |
+          workdir="$(mktemp -d)"
+          node dist/index.js new CIProbe --into "$workdir"
+
+          visible="$(ls "$workdir/CIProbe" | sort | tr '\n' ' ')"
+          echo "visible at root: $visible"
+          if [ "$visible" != "App LICENSE README.md " ]; then
+            echo "Unexpected visible entries at the project root."
+            exit 1
+          fi
+
+          test -d "$workdir/CIProbe/.ios-agent" || { echo "missing .ios-agent"; exit 1; }
+          test -f "$workdir/CIProbe/App/CIProbe/CIProbeApp.swift" || { echo "missing entry point"; exit 1; }
+
+          cd "$workdir/CIProbe/App/CIProbe"
+          node "$GITHUB_WORKSPACE/cli/dist/index.js" doctor
+          node "$GITHUB_WORKSPACE/cli/dist/index.js" where --json > /dev/null
+          echo "OK - scaffold, discovery from a nested directory, and doctor all pass"
+
   sample-package:
     name: Sample package builds and tests
     runs-on: macos-latest

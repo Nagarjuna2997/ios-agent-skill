@@ -1,4 +1,5 @@
-import { resolve } from "node:path";
+import { statSync } from "node:fs";
+import { dirname, join, resolve } from "node:path";
 
 import { analyzeConcurrency } from "./analyzers/concurrency.js";
 import { analyzeArchitecture } from "./analyzers/architecture.js";
@@ -41,16 +42,78 @@ import {
  * that already requires a full toolchain — see ROADMAP.md.
  */
 
-/** Resolve the project root from an explicit flag, the environment, or cwd. */
-export function projectRootFrom(argv: string[], env: NodeJS.ProcessEnv): string {
+/**
+ * The directory `ios-agent` keeps its internal files in.
+ *
+ * Read-only here: this server never creates it. Its presence is used purely as
+ * a project-root marker, the same way git treats `.git` — which is what lets
+ * the CLI and this server agree on a root without either configuring the other.
+ */
+export const INTERNAL_DIR = ".ios-agent";
+
+/** How far up the tree to look. Guards against a symlink loop. */
+const MAX_ASCENT = 64;
+
+/**
+ * Walk up from `start` looking for a directory containing `.ios-agent/`.
+ *
+ * Returns `undefined` rather than a fallback, so the caller decides what an
+ * absent marker means. Guessing here is how a server ends up analyzing a user's
+ * home directory because it was launched from the wrong place.
+ */
+export function findProjectRootUpwards(start: string): string | undefined {
+  let current = resolve(start);
+  for (let step = 0; step < MAX_ASCENT; step += 1) {
+    try {
+      if (statSync(join(current, INTERNAL_DIR)).isDirectory()) return current;
+    } catch {
+      // Not here; keep walking.
+    }
+    const parent = dirname(current);
+    if (parent === current) return undefined;
+    current = parent;
+  }
+  return undefined;
+}
+
+export type RootSource = "flag" | "environment" | "marker" | "cwd";
+
+export interface ResolvedRoot {
+  readonly root: string;
+  readonly source: RootSource;
+}
+
+/**
+ * Resolve the project root, and say how.
+ *
+ * Order: `--project`, then `IOS_AGENT_PROJECT`, then the nearest ancestor with
+ * a `.ios-agent/` marker, then cwd. The marker step is what makes the server
+ * work when a client spawns it from a nested directory — previously that
+ * silently analyzed whatever subtree it happened to land in.
+ *
+ * The `source` travels with the root because an implicit root is unfalsifiable:
+ * an empty result looks identical whether the project has no Swift or the
+ * server is pointed somewhere else entirely.
+ */
+export function resolveRootFrom(argv: string[], env: NodeJS.ProcessEnv): ResolvedRoot {
   const flagIndex = argv.indexOf("--project");
   if (flagIndex !== -1 && argv[flagIndex + 1]) {
-    return resolve(argv[flagIndex + 1]);
+    return { root: resolve(argv[flagIndex + 1]), source: "flag" };
   }
   if (env.IOS_AGENT_PROJECT) {
-    return resolve(env.IOS_AGENT_PROJECT);
+    return { root: resolve(env.IOS_AGENT_PROJECT), source: "environment" };
   }
-  return resolve(env.PWD ?? process.cwd());
+
+  const cwd = resolve(env.PWD ?? process.cwd());
+  const marker = findProjectRootUpwards(cwd);
+  if (marker) return { root: marker, source: "marker" };
+
+  return { root: cwd, source: "cwd" };
+}
+
+/** Resolve the project root from an explicit flag, the environment, a marker, or cwd. */
+export function projectRootFrom(argv: string[], env: NodeJS.ProcessEnv): string {
+  return resolveRootFrom(argv, env).root;
 }
 
 export interface ResourcePayload {
@@ -96,6 +159,7 @@ async function snapshot(root: string) {
 export async function projectInfoResource(
   uri: string,
   root: string,
+  source?: RootSource,
 ): Promise<ResourcePayload> {
   try {
     const { resolved, files } = await snapshot(root);
@@ -106,6 +170,7 @@ export async function projectInfoResource(
     const summary = await summarizeProject(resolved, files);
     return payload(uri, {
       project_root: resolved,
+      resolved_from: source ?? "cwd",
       available: true,
       swift_files: summary.swiftFileCount,
       lines: summary.lineCount,

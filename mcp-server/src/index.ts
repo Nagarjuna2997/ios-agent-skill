@@ -28,7 +28,7 @@ import {
   projectDependenciesResource,
   projectInfoResource,
   projectIssuesResource,
-  projectRootFrom,
+  resolveRootFrom,
 } from "./resources.js";
 
 /**
@@ -495,7 +495,8 @@ server.registerTool(
 // The root comes from --project, IOS_AGENT_PROJECT, or the working directory
 // the client spawned the server in. Every payload reports which one won, so an
 // empty project is never mistaken for a wrong path.
-const PROJECT_ROOT = projectRootFrom(process.argv.slice(2), process.env);
+const RESOLVED_ROOT = resolveRootFrom(process.argv.slice(2), process.env);
+const PROJECT_ROOT = RESOLVED_ROOT.root;
 
 server.registerResource(
   "project-info",
@@ -507,7 +508,7 @@ server.registerResource(
     mimeType: "application/json",
   },
   async (uri) => ({
-    contents: [await projectInfoResource(uri.href, PROJECT_ROOT)],
+    contents: [await projectInfoResource(uri.href, PROJECT_ROOT, RESOLVED_ROOT.source)],
   }),
 );
 

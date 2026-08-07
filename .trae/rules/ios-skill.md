@@ -38,6 +38,7 @@ Load this skill when any of the following is true. When none are true, do not lo
 | Any chart, graph, or plot | `docs/frameworks/swift-charts.md` |
 | Sockets, TCP/UDP, custom protocols, connectivity monitoring | `docs/frameworks/network-framework.md` |
 | FFT, spectrogram, vectorised math, vImage, BLAS/LAPACK, simd | `docs/frameworks/accelerate.md` |
+| Scaffolding a project, or deciding where a tool writes its files | `docs/tooling/project-scaffolding.md` |
 | Colors, spacing, theming, glass effects | `docs/design/design-tokens.md`, `docs/design/color-system.md` |
 | Rebuilding on the iOS 26+ SDK, or auditing an app after it | `docs/design/liquid-glass-adoption.md` |
 | A named Apple framework | the matching `docs/frameworks/**` file |
@@ -638,6 +639,7 @@ This repository contains comprehensive documentation. Consult these files when b
 - `scripts/eval-agents.sh` — Verifies every subagent's tool grant against the instructions relying on it; `--table` prints the grant matrix, `--self-test` proves the checks are not vacuous
 
 ### MCP Server
+- `cli/` — `ios-agent`, the scaffolding CLI. Generates a project whose root is `App/` plus a README and a licence; everything tool-owned lives in a hidden `.ios-agent/`. `where --json` is the interop contract other tools query instead of hardcoding the directory name. See `docs/tooling/project-scaffolding.md`
 - `mcp-server/` — `ios-agent-mcp`, an MCP server exposing eleven tools: ten that analyze Swift (concurrency, architecture, SwiftUI, availability, memory, security, testing, performance, App Store readiness, project overview) and `lint_skill`, which checks a skill repository's own metadata
 - `docs/mcp/installation.md` — Claude Code, Claude Desktop, Cursor, and from-source setup
 - `docs/mcp/tools.md` — Tool reference, every rule and its severity, and the limits of static analysis
@@ -652,6 +654,7 @@ This repository contains comprehensive documentation. Consult these files when b
 ### Tooling
 - `docs/tooling/xcode-27-agents.md` — Xcode coding agents, when to use them vs. Claude Code, agent-assisted localization and testing, Instruments
 - `docs/tooling/device-hub.md` — Device Hub, the device/config test matrix, iOS 27 app resizability, accessibility passes
+- `docs/tooling/project-scaffolding.md` — The generated project layout, the authorship rule for hiding tool-owned files, one-declaration derivation of gitignore and `clean`, root discovery via a `.ios-agent` marker, cross-platform cache locations
 
 ### Testing & Quality
 - `docs/testing/mocking-strategy.md` — Three-tier strategy: test doubles, rich debug mocks, environment flags and debug menus
