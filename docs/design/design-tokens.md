@@ -412,6 +412,13 @@ ScrollView { content }
 
 ### Liquid Glass (iOS 26+, refined in iOS 27)
 
+> **Adopting it in an existing app is a different job.** This section is about
+> applying the material to a view you own. For what an SDK rebuild changes on
+> its own — custom bar backgrounds that now fight the system, the scroll edge
+> effect, title-case section headers, layered app icons, and the
+> `UIDesignRequiresCompatibility` escape hatch — see
+> `docs/design/liquid-glass-adoption.md`.
+
 Liquid Glass is a dynamic material that refracts and reflects what is behind it
 and responds to motion. It supersedes hand-rolled "glassmorphism" (a blur plus a
 white stroke plus a gradient), which you should stop writing.

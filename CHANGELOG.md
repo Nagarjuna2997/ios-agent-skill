@@ -4,6 +4,21 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added -- unreleased
+- **`docs/design/liquid-glass-adoption.md`** -- the migration half of Liquid Glass. `design-tokens.md` covered applying the material to a view you own; nothing covered what an SDK rebuild does to an app you already shipped, which is the part that actually costs time.
+
+  A coverage check found the gap was near-total: `UIDesignRequiresCompatibility`, `backgroundExtensionEffect`, `tabBarMinimizeBehavior`, `Tab(role: .search)`, `ToolbarSpacer`, `ConcentricRectangle`, `safeAreaBar`, the scroll edge effect, and Icon Composer appeared in **zero** files.
+
+  The organising rule: **the system now owns the background of controls and navigation.** Custom backgrounds on bars, split views, sheets, and popovers no longer just look dated -- they sit on top of Liquid Glass and defeat the scroll edge effect, so content scrolling underneath loses the contrast the system would have supplied.
+
+  Two changes ship silently and are worth the doc on their own. Rebuilding adopts the new design with **no code change**, so an unaudited app ships a changed interface; `UIDesignRequiresCompatibility` is the escape hatch, documented as a stopgap with a removal date rather than a decision. And **section headers are no longer force-capitalised** -- a header written `"recently played"` used to render `RECENTLY PLAYED` and now renders exactly as typed. Nothing warns; it just ships.
+
+  8 anti-patterns, an 18-item checklist, and a per-setting test matrix (Reduce Transparency, Reduce Motion, Increase Contrast, dark mode, accessibility text sizes). The last anti-pattern is the one this skill flags most often: a blanket `#available(iOS 26, *)` around every new API. Liquid Glass arrived in iOS 26 but these APIs did not all land together, so each symbol's floor gets checked in Xcode rather than assumed -- `check_availability_guards` catches the over-restrictive direction.
+
+  Cross-linked from `design-tokens.md` §4 and `ios-deployment-migration.md`, so whichever door you come in by leads to the other half.
+
 ## [2.1.0] -- 2026-08-06
 
 **Eleven MCP tools, three resources, and a version identity that cannot drift.**

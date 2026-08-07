@@ -38,6 +38,7 @@ Load this skill when any of the following is true. When none are true, do not lo
 | Any chart, graph, or plot | `docs/frameworks/swift-charts.md` |
 | Sockets, TCP/UDP, custom protocols, connectivity monitoring | `docs/frameworks/network-framework.md` |
 | Colors, spacing, theming, glass effects | `docs/design/design-tokens.md`, `docs/design/color-system.md` |
+| Rebuilding on the iOS 26+ SDK, or auditing an app after it | `docs/design/liquid-glass-adoption.md` |
 | A named Apple framework | the matching `docs/frameworks/**` file |
 | A named platform | the matching `docs/platforms/*.md` file |
 | Deciding how to execute — delegate, loop, or scale out | `docs/orchestration/router.md` |
@@ -516,6 +517,7 @@ This repository contains comprehensive documentation. Consult these files when b
 
 ### UI Design System
 - `docs/design/design-tokens.md` — Three-tier token architecture, theming, dark-mode and Dynamic Type compliance, Liquid Glass and materials, programmatic contrast verification
+- `docs/design/liquid-glass-adoption.md` — What an SDK rebuild changes for free and what it breaks: custom bar backgrounds, scroll edge effect, `Tab(role: .search)`, `ToolbarSpacer`, concentric shapes, title-case section headers, layered app icons, and the `UIDesignRequiresCompatibility` escape hatch
 - `docs/design/color-system.md` — Color palettes (5 themes with hex codes), gradients, materials, dark mode, accessibility
 - `docs/design/typography-system.md` — Text styles, custom fonts, SF Symbols, Dynamic Type, text effects
 - `docs/design/stunning-ui-patterns.md` — 20+ stunning UI patterns with full SwiftUI code (glass cards, neumorphism, parallax, shimmer, animated tabs, card stacks, and more)
