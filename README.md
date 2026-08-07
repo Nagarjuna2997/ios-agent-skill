@@ -89,11 +89,34 @@ Every finding carries a file, a line, the consequence, the fix, and a link to th
 | 🪝 **[Hooks](templates/hooks/)** | Deterministic enforcement at write time, plus CI |
 | ✅ **[Compile-checked sample](samples/SkillPatterns/)** | An SPM package CI builds and tests on every push — the patterns are verified, not asserted |
 
+## Resources
+
+Tools are verbs the agent chooses to call. Resources are nouns your client can read up front, so the project's shape reaches context before the model thinks to ask:
+
+```jsonc
+{
+  "mcpServers": {
+    "ios-agent": {
+      "command": "npx",
+      "args": ["-y", "ios-agent-mcp", "--project", "/path/to/project"]
+    }
+  }
+}
+```
+
+| Resource | Contains |
+|---|---|
+| `ios://project/info` | Deployment target, UI framework, inferred architecture **with its evidence**, DI detection, frameworks |
+| `ios://project/dependencies` | Third-party packages from SwiftPM or CocoaPods, plus Apple frameworks |
+| `ios://project/issues` | Every finding across all nine categories, counted by severity |
+
+Every review tool also returns `structuredContent` — `summary`, `score`, `counts`, `files_checked`, `issues`, `suggestions` — next to the markdown, so a workflow can branch on a result without parsing prose.
+
 ## Roadmap
 
-v2.0.0 is the static analysis server — no Xcode, no simulator, runs anywhere.
+**v2.1.0 finishes the analysis server:** eleven tools, three resources, structured output. No Xcode, no simulator, no network, ~26 KB — it runs on macOS, Linux, and Windows.
 
-Simulator automation (screen recording, deep links, app management, then UI driving) ships as a **separate** package so a Swift linter never requires a 15 GB Xcode install. **[ROADMAP.md](ROADMAP.md)** has the phasing and the feasibility notes — every item has an issue, so 👍 the ones you want built.
+Simulator automation (screen recording, deep links, app management, then UI driving) ships as a **separate** package, so a Swift linter never requires a 15 GB Xcode install. **[ROADMAP.md](ROADMAP.md)** has the phasing and the feasibility notes, including which parts are blocked on choosing a UI-automation backend. Nothing is filed as an issue yet — open one for the piece you want and it moves up.
 
 ## Works with
 

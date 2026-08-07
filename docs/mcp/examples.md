@@ -18,12 +18,21 @@ Claude calls `analyze_swift_project`:
 
 ## Structure
 
-- **Swift files:** 6
-- **Lines:** 848
+- **Swift files:** 10
+- **Lines:** 1,691
 - **Deployment target:** iOS 17
 - **Swift tools version:** 5.9
 - **Test files:** found
-- **Frameworks:** Foundation, Observation, XCTest
+
+## Shape
+
+- **UI framework:** unknown
+- **Architecture:** Clean Architecture
+  - evidence: 1 use-case protocol(s) or a UseCases/ directory; 1 repository protocol(s)
+- **Dependency injection:** protocol existentials injected through init
+- **Third-party dependencies:** none detected
+
+- **Frameworks:** Foundation, Observation, SwiftData, XCTest
 
 ## Findings by category
 
@@ -33,16 +42,24 @@ Claude calls `analyze_swift_project`:
 | Architecture | 0 | 0 | 0 | `review_swift_architecture` |
 | SwiftUI | 0 | 0 | 0 | `review_swiftui` |
 | Availability | 0 | 0 | 0 | `check_availability_guards` |
+| Memory | 0 | 0 | 0 | `review_swift_memory` |
+| Security | 0 | 0 | 0 | `review_swift_security` |
+| Performance | 0 | 0 | 0 | `review_swift_performance` |
+| Testing | 0 | 0 | 0 | `review_swift_testing` |
 | App Store | 0 | 0 | 0 | `audit_app_store_readiness` |
 
 **No findings in any category.**
 ```
 
-That is the real result of running the server against this repo's own
-`samples/SkillPatterns` — the package CI compiles on every push.
+That is genuinely the current output of running the server against this repo's
+own `samples/SkillPatterns`, pasted rather than composed — the package builds
+and its 49 tests pass on macOS CI on every push.
 
-**Why start here:** the table tells you which of the five tools is worth running.
-Running all six on a large project buries the signal.
+`UI framework: unknown` is correct, not a gap: the sample deliberately contains
+no SwiftUI view code so it can build on a plain runner with no simulator.
+
+**Why start here:** the table tells you which of the ten tools is worth running.
+Running all of them on a large project buries the signal.
 
 ---
 
@@ -145,7 +162,181 @@ check substitutes for the other. See `../orchestration/verification.md`.
 
 ---
 
-## 6. In CI
+## 6. The four checks people run after something goes wrong
+
+These were added in 2.1.0, and each answers a question the first six could not.
+
+### Memory — "the screen is gone but it is still updating"
+
+> **You:** deinit never runs on my ClockModel.
+
+```
+Claude → review_swift_memory
+
+🟠 Sources/ClockModel.swift:12 — Repeating Timer captures self strongly.
+   Why: the run loop retains the timer, the timer retains the block, and the
+        block retains self. The cycle is self -> Timer -> closure -> self, and
+        ARC cannot break it.
+   Fix: capture `[weak self]`, and invalidate() when the owner goes away.
+```
+
+Deliberately narrow: a closure capturing `self` is **not** a leak, and flagging
+every one would bury the handful that are. The rules fire only on APIs that
+*store* the closure — repeating `Timer`, block `NotificationCenter` observers,
+Combine `sink`, stored closure properties, non-`weak` delegates.
+
+### Security — before handling credentials
+
+> **You:** security pass before we ship the login screen.
+
+```
+Claude → review_swift_security
+
+🔴 Sources/Session.swift:31 — Credential written to UserDefaults.
+   Why: UserDefaults is an unencrypted plist in the app container. It is
+        readable on a jailbroken device AND included in unencrypted backups,
+        so the token leaves the device entirely.
+   Fix: Keychain with kSecAttrAccessibleWhenUnlockedThisDeviceOnly.
+```
+
+`hardcoded-secret` skips the placeholders people legitimately commit —
+`YOUR_API_KEY`, `<your-key>`, `changeme`. A rule that cries wolf on those is a
+rule everyone learns to ignore.
+
+### Testing — when the suite is green and you do not believe it
+
+The inverse of every other tool: it runs **only** on test files.
+
+```
+Claude → review_swift_testing
+
+🟠 Tests/FeedTests.swift:22 — Test contains no assertion.
+   Why: it passes as long as nothing throws, so it reports success whether the
+        behavior is right or wrong.
+   Fix: assert the outcome, or delete it. A test that cannot fail is not a test.
+
+🔴 Tests/FeedTests.swift:41 — `await` inside an XCTAssert autoclosure.
+   Why: XCTAssert takes an autoclosure, which cannot contain an await. This
+        does not compile.
+   Fix: `let value = try await subject.run()`, then assert on `value`.
+```
+
+### Performance — when scrolling stutters
+
+```
+Claude → review_swift_performance
+
+🟠 Sources/FeedView.swift:24 — Formatter allocated inside `body`.
+   Why: body re-runs on every state change, and constructing a DateFormatter is
+        one of the most expensive routine operations on the platform. In a list
+        this is the hitch.
+   Fix: hoist to a `static let`, or use `.formatted()`.
+```
+
+Rules that only matter on the render path are scoped to `var body: some View`
+and stay quiet elsewhere — the same `DateFormatter()` is 🟠 inside `body` and
+🟡 outside it.
+
+---
+
+## 7. Branching on a result without parsing prose
+
+Every review tool returns `structuredContent` next to the markdown, so a
+workflow can act on the numbers:
+
+```jsonc
+{
+  "summary": "Security Review: 1 blocker, 2 serious across 34 files.",
+  "score": 91,
+  "counts": { "blocker": 1, "serious": 2, "minor": 0, "total": 3 },
+  "files_checked": 34,
+  "issues": [ /* file, line, severity, rule, consequence, fix */ ],
+  "suggestions": ["hardcoded-secret: Move it server-side…"]
+}
+```
+
+`suggestions` groups by rule rather than repeating every issue's fix — forty
+literal-spacing findings produce one instruction, not forty.
+
+**On `score`:** it is a published formula, not a judgement —
+`100 × (1 − penalty/capacity)` where `penalty = 10·blockers + 3·serious +
+1·minor` and `capacity = files × 10`. Because it is a *density*, it is
+comparable across runs on one project and **not** between projects: a UI-heavy
+app and a networking library have different rule surfaces. Use `counts` for
+anything that matters.
+
+---
+
+## 8. Reading the project without asking
+
+Point the server at a project once, in the client config:
+
+```jsonc
+{
+  "mcpServers": {
+    "ios-agent": {
+      "command": "npx",
+      "args": ["-y", "ios-agent-mcp", "--project", "/Users/you/Projects/MyApp"]
+    }
+  }
+}
+```
+
+Then `ios://project/info` is readable without the model deciding to call
+anything:
+
+```json
+{
+  "project_root": "/Users/you/Projects/MyApp",
+  "available": true,
+  "swift_files": 84,
+  "deployment_target": "17.0",
+  "ui_framework": "SwiftUI",
+  "architecture": "MVVM",
+  "architecture_evidence": ["12 ViewModel/Model type(s)", "Views/ and ViewModels/ directories"],
+  "uses_dependency_injection": true,
+  "has_tests": true
+}
+```
+
+The **evidence** ships with the verdict. "MVVM" alone is a guess presented as a
+fact; the list underneath is a claim you can check. When the signals are weak it
+says `not determined` rather than picking the most popular answer.
+
+Every payload also reports `project_root`, because the root is implicit — it
+comes from `--project`, `IOS_AGENT_PROJECT`, or the directory the client
+happened to spawn the server in, and a reader who cannot see which one won has
+no way to tell an empty project from a wrong path.
+
+**There is no `ios://project/build-status`.** It would have to run `xcodebuild`,
+which needs macOS and Xcode and breaks the `filesystem: read, network: none`
+contract that lets this install anywhere in ~26 KB.
+
+---
+
+## 9. Checking the skill itself
+
+`lint_skill` is the one tool that does not read Swift. Use it when a subagent
+never gets invoked, or before publishing a skill:
+
+```
+Claude → lint_skill
+
+🔴 .claude/agents/swift-reviewer.md:4 — described as read-only but granted Write.
+   Why: the main agent delegates on the strength of that promise. A reviewer
+        that can edit will fix what it was meant to report, and the separation
+        of duties the review depends on is gone with nothing in the output to
+        show it.
+   Fix: remove Write from `tools`, or stop describing the agent as read-only.
+```
+
+Run against this repository it found a real defect on its first run: one of the
+ten subagents described what it *is* without saying when to *use* it, making it
+measurably less likely to be selected than its nine peers.
+
+---
+
+## 10. In CI
 
 The server is for interactive use, but the same rules run headless via
 `templates/hooks/forbid-antipatterns.sh` — the analyzers were derived from it.
@@ -164,4 +355,9 @@ from directory names. A project that does not use `Views/` or `Domain/` gets
 fewer architecture findings — not wrong ones.
 
 **Test and mock files are exempt** from app-code-only rules, deliberately. So is
-`Package.swift`.
+`Package.swift`. `review_swift_testing` is the exception that proves it — it is
+the only tool that runs *exclusively* on test files.
+
+**`score` is a density, not a grade.** Comparable across runs on one project,
+meaningless between projects. The formula is published in `tools.md` so the
+number is reproducible rather than a vibe.

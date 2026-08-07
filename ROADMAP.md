@@ -2,32 +2,47 @@
 
 What is planned, what it costs, and what is deliberately not decided yet.
 
-**Priority is set by demand, not by this document.** Issues are open for
-everything below — 👍 the ones you want. If nobody asks for a feature, it does
-not get built.
+**Priority is set by demand, not by this document.** If nobody asks for a
+feature, it does not get built. Nothing below has an issue filed yet — that is
+deliberate, and step 4 explains when they get opened.
 
 ---
 
-## v2.0.0 — shipping now
+## Shipped
 
-The static analysis server. Reads Swift, reports defects, runs anywhere.
+### v2.1.0 — the analysis server, finished
 
-- [x] Six analysis tools (concurrency, architecture, SwiftUI, availability, App Store, overview)
-- [x] 41 tests including real MCP protocol round-trips
-- [x] Compile-checked sample package in CI
-- [ ] Published to npm
+- [x] **Ten Swift analysis tools** — concurrency, architecture, SwiftUI,
+      availability, memory, security, testing, performance, App Store, overview
+- [x] **`lint_skill`** — the eleventh, and the only one that reads skill
+      metadata rather than Swift
+- [x] **Three resources** — `ios://project/info`, `.../dependencies`,
+      `.../issues`
+- [x] **Structured output** on every review tool via `outputSchema` /
+      `structuredContent`, alongside the markdown
+- [x] **Project shape** in `analyze_swift_project` — UI framework, inferred
+      architecture *with its evidence*, dependencies, DI detection
+- [x] **123 tests**, including real MCP protocol round-trips
+- [x] Version generated from `package.json`; CI fails on drift
+- [x] Compile-checked sample package — 49 Swift tests green on macOS CI
+
+### v2.0.0 / v2.0.1 — first public release
+
+- [x] Six analysis tools, 41 tests
+- [x] Published to npm as `ios-agent-mcp`
 - [ ] GitHub Release tagged
 - [ ] Verified in a real Claude Code / Claude Desktop / Cursor install
 
-**Design constraint that defines this release:** no Xcode, no simulator, no
-network, no writes. `npx -y ios-agent-mcp` works on macOS, Linux, and Windows.
-Everything below breaks that constraint, which is why it ships separately.
+**Design constraint that defines this line of releases:** no Xcode, no
+simulator, no network, no writes. `npx -y ios-agent-mcp` works on macOS, Linux,
+and Windows, in about 26 KB. Everything below breaks that constraint, which is
+why it ships separately.
 
 ---
 
 ## The split: analysis vs. automation
 
-Everything after v2.0.0 drives a **booted iOS Simulator**. That is a different
+Everything after the v2.x analysis line drives a **booted iOS Simulator**. That is a different
 product with different requirements:
 
 | | `ios-agent-mcp` (v2.0.0) | `ios-simulator-mcp` (planned) |
@@ -124,8 +139,10 @@ v3.0 lands.
 
 In order. Each step depends on the one before it.
 
-1. **Release v2.0.0** — publish to npm, push the tag, cut the GitHub Release,
-   and verify the install in Claude Desktop plus one other MCP client.
+1. ~~**Release the analysis server**~~ — done: `ios-agent-mcp` is on npm and
+   2.1.0 finishes the tool set. Still outstanding: push the git tag, cut the
+   GitHub Release, and verify the install in Claude Desktop plus one other MCP
+   client.
 2. **Gather feedback for one to two weeks** — fix bugs, improve docs, and watch
    what people actually ask for.
 3. **Enable Discussions**, then use them for ideas and voting. Issues stay for

@@ -4,10 +4,15 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.1.0] -- 2026-08-06
 
-### Added -- unreleased
-- **`lint_skill`** -- a seventh MCP tool, and the first that does not read Swift. It validates a skill repository's own metadata: `SKILL.md` frontmatter (required keys, kebab-case name, semver version, and the description length limits either side of which the skill stops triggering reliably), subagent definitions in `.claude/agents/`, generated mirror drift, and backtick-quoted doc paths that do not resolve. `ios-agent-mcp` goes to **1.1.0**; the `v2.0.0` tag predates this, so the pending release is unaffected.
+**Eleven MCP tools, three resources, and a version identity that cannot drift.**
+Tests 41 -> 123. The first release where every claim below was checked by CI
+rather than asserted -- including the Swift, which had never been compiled
+before this cycle.
+
+### Added -- 2.1.0
+- **`lint_skill`** -- a seventh MCP tool, and the first that does not read Swift. It validates a skill repository's own metadata: `SKILL.md` frontmatter (required keys, kebab-case name, semver version, and the description length limits either side of which the skill stops triggering reliably), subagent definitions in `.claude/agents/`, generated mirror drift, and backtick-quoted doc paths that do not resolve. Shipped as part of `ios-agent-mcp` **2.1.0**.
 
   Three of its rules exist because the failure is otherwise **silent**: `agent-read-only-holds-write-tool` catches a subagent whose description promises read-only while its frontmatter grants `Edit` or `Write` -- the main agent delegates on that promise, and a reviewer that can edit will fix what it was supposed to report; `agent-name-filename-mismatch` catches a rename that leaves every delegation prompt pointing at an identifier the loader never registered; and `agent-unknown-tool` catches a misspelled tool name, which is not granted *and not reported*.
 
@@ -46,7 +51,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
   7 new tests (116 -> 123), including a second server instance launched with `--project` -- the root is a launch-time decision, so the shared test client cannot exercise it.
 
-- **Four new review tools and structured output** -- `ios-agent-mcp` **2.1.0**, 7 tools -> 11, 72 tests -> 116.
+- **Four new review tools and structured output** -- 7 tools -> 11, 72 tests -> 116.
 
   - `review_swift_memory` -- retain cycles and lifetime. Deliberately narrow: a closure capturing `self` is *not* a leak, since most closures are consumed immediately. A leak needs the closure to be **stored** by something the object owns, so the rules fire on the storing APIs (repeating `Timer`, block-based `NotificationCenter` observers, Combine `sink`, stored closure properties, non-`weak` delegates) rather than on `self.` anywhere, which would bury the real findings. `unowned-self` is included as a *crash*, not a leak -- unlike `weak` it does not nil out, so an escaping closure running after deallocation traps.
   - `review_swift_security` -- hardcoded secrets, credentials in `UserDefaults`, disabled ATS, cleartext HTTP, TLS trust accepted without evaluation, MD5/SHA-1, over-permissive Keychain accessibility, non-cryptographic randomness for nonces, secrets in logs, and interpolation into evaluated JavaScript. `hardcoded-secret` skips the placeholders people legitimately commit (`YOUR_API_KEY`, `<your-key>`, `changeme`) -- flagging those trains readers to ignore the rule, which is worse than not having it.
@@ -57,7 +62,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
   `analyze_swift_project` gained project shape: UI framework, inferred architecture, dependencies, and DI detection. The architecture read always ships its **evidence**, and says `not determined` rather than guessing when signals are weak. DI is detected from `any Protocol` initializer parameters, not from a directory name.
 
-### Fixed -- unreleased
+### Fixed -- 2.1.0
 - **A test fixture with unstable identity.** Six `PersistenceTests` failed in CI reporting `notFound` against rows that were demonstrably in the store. `Article.samples` was a computed `static var`, so it rebuilt the array on every access -- and `Article.init` defaults `id` to `UUID()`. Reading it twice produced two disjoint sets of identifiers, so a test that imported `Article.samples` and then looked up `Article.samples.first` was searching for a row that had never been written. It is now a `static let` with fixed identifiers derived from `UUID(uuid:)`, which is total and needs no force-unwrap.
 
   Worth recording honestly: **the first fix went after the wrong cause.** From the truncated CI log the failures looked like SwiftData failing to translate a `UUID` in `#Predicate`, and the identity was changed to a `String` on that theory. It did not help, because the predicate was never the problem. That change has been reverted rather than kept as a harmless-looking extra -- it carried a doc comment asserting a SwiftData limitation there is no evidence for, and folklore in a teaching repository is worse than no comment at all.
