@@ -38,10 +38,45 @@ ios-agent new <Name>          Scaffold a project
   --force                     Scaffold into a non-empty directory
 
 ios-agent init [dir]          Adopt an existing directory
-ios-agent where [--json]      Print resolved paths
+ios-agent where               Print resolved paths
 ios-agent info                Summarise the project
 ios-agent clean [--dry-run]   Delete disposable internal files
-ios-agent doctor              Check the layout
+ios-agent doctor [--fix]      Check the layout, and repair what is safe to repair
+ios-agent completions <shell> Print a bash or zsh completion script
+```
+
+`--json` works on `where`, `info`, `clean`, and `doctor`. `--project <dir>`
+skips discovery on any command that reads a project.
+
+`help` and the completion scripts are generated from the same table the parser
+dispatches on, so they cannot describe a flag the CLI does not accept.
+
+### Exit codes
+
+| Code | Meaning |
+|---|---|
+| 0 | Success |
+| 1 | Usage error, or no project found |
+| 2 | `doctor` found problems |
+
+`doctor` is 2 rather than 1 so a script can tell "the project is unhealthy" from
+"you called it wrong" without parsing stderr.
+
+### What `--fix` will and will not do
+
+It repairs defects with a *derivable* correct value: a stale
+`.ios-agent/.gitignore`, a missing internal directory, a config behind the
+current layout version.
+
+It will not create a missing `App/`. There is no safe automatic answer — the
+tool would be inventing a project structure nobody asked for — so it stays
+reported and untouched. A `--fix` that guesses is worse than no `--fix`.
+
+### Shell completions
+
+```
+ios-agent completions zsh  > ~/.zfunc/_ios-agent
+ios-agent completions bash > /etc/bash_completion.d/ios-agent
 ```
 
 ## What is in `.ios-agent/`

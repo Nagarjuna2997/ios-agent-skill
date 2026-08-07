@@ -142,7 +142,7 @@ function unavailable(uri: string, root: string, reason: string): ResourcePayload
     project_root: root,
     available: false,
     reason,
-    fix: "Launch the server with `--project /path/to/project`, or set IOS_AGENT_PROJECT. MCP clients usually set this in the per-project config file.",
+    fix: "Launch the server with `--project /path/to/project`, set IOS_AGENT_PROJECT, or run it from a directory under one holding a `.ios-agent/` marker. MCP clients usually set this in the per-project config file.",
   });
 }
 

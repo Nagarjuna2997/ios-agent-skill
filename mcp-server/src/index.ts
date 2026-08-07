@@ -82,7 +82,7 @@ function handleCLIFlags(argv: string[]): boolean {
         "Each tool takes one argument: an absolute path. The first ten want a",
         "Swift project root; lint_skill wants an Agent Skill repository root.",
         "",
-        "RESOURCES  (require --project or IOS_AGENT_PROJECT)",
+        "RESOURCES  (root: --project, IOS_AGENT_PROJECT, or a .ios-agent/ marker)",
         "  ios://project/info           Structure, architecture, DI, frameworks",
         "  ios://project/dependencies   Third-party packages and Apple frameworks",
         "  ios://project/issues         Every finding, all categories",
@@ -492,7 +492,8 @@ server.registerTool(
 
 // Resources: nouns a client can read without the model deciding to ask.
 //
-// The root comes from --project, IOS_AGENT_PROJECT, or the working directory
+// The root comes from --project, IOS_AGENT_PROJECT, the nearest ancestor
+// holding a .ios-agent/ marker, or the working directory
 // the client spawned the server in. Every payload reports which one won, so an
 // empty project is never mistaken for a wrong path.
 const RESOLVED_ROOT = resolveRootFrom(process.argv.slice(2), process.env);

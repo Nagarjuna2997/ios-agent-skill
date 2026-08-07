@@ -4,7 +4,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 
-import { run, diagnose } from "../dist/commands.js";
+import { run, diagnose, commandNames, EXIT_OK, EXIT_USAGE, EXIT_UNHEALTHY } from "../dist/commands.js";
 import { discoverProject } from "../dist/discover.js";
 import { layoutFor, gitignoreContents } from "../dist/layout.js";
 import { scaffoldProject } from "../dist/scaffold.js";
@@ -144,7 +144,9 @@ test("doctor catches a stale gitignore", () => {
   fs.writeFileSync(layout.gitignore, "*\n");
 
   const results = diagnose(layout, {});
-  assert.ok(results.some((r) => !r.ok && /stale/.test(r.message)));
+  const failed = results.find((r) => r.check === "gitignore");
+  assert.equal(failed?.ok, false);
+  assert.equal(failed?.remedy, "regenerate-internal", "a stale gitignore has a derivable correct value");
 });
 
 test("doctor catches a tool-owned directory leaking to the root", () => {
@@ -171,7 +173,10 @@ test("doctor exits non-zero when a check fails", () => {
   fs.writeFileSync(layout.gitignore, "nonsense");
 
   const { io } = capture(layout.root);
-  assert.equal(run(["doctor"], io), 1);
+  // 2, not 1: a script must be able to tell "the project is unhealthy" from
+  // "you called it wrong".
+  assert.equal(run(["doctor"], io), EXIT_UNHEALTHY);
+  assert.equal(run(["doctor", "--project", "/nonexistent-xyz"], capture(layout.root).io), EXIT_UNHEALTHY);
 });
 
 // MARK: init and refusal to guess
@@ -220,4 +225,131 @@ test("help exits zero", () => {
   const { io, out } = capture(tempDir());
   assert.equal(run([], io), 0);
   assert.match(out.join("\n"), /ios-agent/);
+});
+
+// MARK: - doctor --fix
+
+test("doctor --fix repairs a stale gitignore", () => {
+  const parent = tempDir();
+  const { layout } = scaffoldProject({ name: "Fixable", parentDir: parent });
+  fs.writeFileSync(layout.gitignore, "wrong");
+
+  const { io } = capture(layout.root);
+  assert.equal(run(["doctor", "--fix"], io), EXIT_OK);
+  assert.equal(fs.readFileSync(layout.gitignore, "utf8"), gitignoreContents());
+});
+
+test("doctor --fix migrates an older layout version forward", () => {
+  const parent = tempDir();
+  const { layout } = scaffoldProject({ name: "Old", parentDir: parent });
+  const config = JSON.parse(fs.readFileSync(layout.config, "utf8"));
+  fs.writeFileSync(layout.config, JSON.stringify({ ...config, layoutVersion: 0 }, null, 2));
+
+  assert.ok(diagnose(layout, {}).some((r) => r.check === "layout-version" && !r.ok));
+
+  const { io } = capture(layout.root);
+  assert.equal(run(["doctor", "--fix"], io), EXIT_OK);
+  assert.equal(JSON.parse(fs.readFileSync(layout.config, "utf8")).layoutVersion, 1);
+});
+
+// The point of a --fix flag is that it does NOT guess. A missing App/ has no
+// safe automatic answer, so it must stay reported and unrepaired.
+test("doctor --fix refuses to invent a missing App directory", () => {
+  const parent = tempDir();
+  const { layout } = scaffoldProject({ name: "NoApp", parentDir: parent });
+  fs.rmSync(layout.app, { recursive: true });
+
+  const { io } = capture(layout.root);
+  assert.equal(run(["doctor", "--fix"], io), EXIT_UNHEALTHY);
+  assert.ok(!fs.existsSync(layout.app), "--fix must not fabricate project structure");
+});
+
+test("doctor --fix on a healthy project changes nothing", () => {
+  const parent = tempDir();
+  const { layout } = scaffoldProject({ name: "Fine", parentDir: parent });
+  const before = fs.readFileSync(layout.config, "utf8");
+
+  const { io, out } = capture(layout.root);
+  assert.equal(run(["doctor", "--fix"], io), EXIT_OK);
+  assert.equal(fs.readFileSync(layout.config, "utf8"), before);
+  assert.ok(!out.join("\n").includes("applied"));
+});
+
+test("every fixable finding actually reports a remedy", () => {
+  const parent = tempDir();
+  const { layout } = scaffoldProject({ name: "Remedies", parentDir: parent });
+
+  for (const result of diagnose(layout, {})) {
+    assert.ok(typeof result.check === "string" && result.check.length > 0, "every check is named");
+    assert.ok(result.remedy === null || typeof result.remedy === "string");
+  }
+});
+
+// MARK: - --json everywhere
+
+test("info, clean, and doctor all emit JSON", () => {
+  const parent = tempDir();
+  const { layout } = scaffoldProject({ name: "Jsonic", parentDir: parent });
+
+  for (const argv of [["info", "--json"], ["clean", "--json"], ["doctor", "--json"]]) {
+    const { io, out } = capture(layout.root);
+    run(argv, io);
+    const parsed = JSON.parse(out.join("\n"));
+    assert.equal(parsed.project_root, layout.root, `${argv[0]} --json must name its root`);
+  }
+});
+
+test("doctor --json reports health and per-check detail", () => {
+  const parent = tempDir();
+  const { layout } = scaffoldProject({ name: "Detailed", parentDir: parent });
+  fs.writeFileSync(layout.gitignore, "broken");
+
+  const { io, out } = capture(layout.root);
+  run(["doctor", "--json"], io);
+
+  const parsed = JSON.parse(out.join("\n"));
+  assert.equal(parsed.healthy, false);
+  const gitignore = parsed.checks.find((c) => c.check === "gitignore");
+  assert.equal(gitignore.ok, false);
+  assert.equal(gitignore.fixable, true);
+});
+
+test("--json before the subcommand still parses", () => {
+  const parent = tempDir();
+  const { layout } = scaffoldProject({ name: "FlagFirst", parentDir: parent });
+
+  const { io, out } = capture(layout.root);
+  assert.equal(run(["doctor", "--json"], io), EXIT_OK);
+  assert.doesNotThrow(() => JSON.parse(out.join("\n")));
+});
+
+// MARK: - completions
+
+test("completions cover every dispatchable command", () => {
+  for (const shell of ["bash", "zsh"]) {
+    const { io, out } = capture(tempDir());
+    assert.equal(run(["completions", shell], io), EXIT_OK);
+    const script = out.join("\n");
+    for (const name of commandNames()) {
+      assert.ok(script.includes(name), `${shell} completions omit "${name}"`);
+    }
+  }
+});
+
+test("completions reject an unknown shell instead of emitting nothing", () => {
+  const { io } = capture(tempDir());
+  assert.equal(run(["completions", "fish"], io), EXIT_USAGE);
+  assert.equal(run(["completions"], io), EXIT_USAGE);
+});
+
+// MARK: - help is generated, not maintained
+
+test("help lists every command", () => {
+  const { io, out } = capture(tempDir());
+  assert.equal(run([], io), EXIT_OK);
+  const help = out.join("\n");
+  for (const name of commandNames()) {
+    assert.ok(help.includes(name), `help omits "${name}"`);
+  }
+  assert.match(help, /EXIT CODES/);
 });

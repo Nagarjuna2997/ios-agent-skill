@@ -475,9 +475,26 @@ jobs:
           test -f "$workdir/CIProbe/App/CIProbe/CIProbeApp.swift" || { echo "missing entry point"; exit 1; }
 
           cd "$workdir/CIProbe/App/CIProbe"
-          node "$GITHUB_WORKSPACE/cli/dist/index.js" doctor
-          node "$GITHUB_WORKSPACE/cli/dist/index.js" where --json > /dev/null
-          echo "OK - scaffold, discovery from a nested directory, and doctor all pass"
+          cli="$GITHUB_WORKSPACE/cli/dist/index.js"
+          node "$cli" doctor
+          node "$cli" where --json > /dev/null
+
+          # Exit codes are part of the interface, so they are asserted rather
+          # than assumed: 2 means unhealthy, 1 means called wrong.
+          printf 'broken' > "$workdir/CIProbe/.ios-agent/.gitignore"
+          set +e
+          node "$cli" doctor > /dev/null 2>&1
+          unhealthy=$?
+          set -e
+          [ "$unhealthy" -eq 2 ] || { echo "doctor should exit 2 when unhealthy, got $unhealthy"; exit 1; }
+
+          node "$cli" doctor --fix > /dev/null
+          node "$cli" doctor > /dev/null || { echo "--fix did not restore health"; exit 1; }
+
+          node "$cli" completions zsh | grep -q "_ios_agent" || { echo "zsh completions missing"; exit 1; }
+          node "$cli" completions bash | grep -q "complete -F" || { echo "bash completions missing"; exit 1; }
+
+          echo "OK - scaffold, nested discovery, doctor, --fix, exit codes, completions"
 
   sample-package:
     name: Sample package builds and tests

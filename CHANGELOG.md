@@ -23,6 +23,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
   Notably **not** included: an `.xcodeproj` generator. That is a build-system artifact whose format Xcode owns, and a generated one drifts from what Xcode would have made.
 
+  Second pass, applying the same one-declaration move to the command surface: `COMMANDS` drives dispatch, `help`, and the bash and zsh completion scripts, so help cannot describe a flag the parser rejects. `--json` on `where`, `info`, `clean`, and `doctor`; exit codes split so a script can tell "the project is unhealthy" (2) from "you called it wrong" (1) without parsing stderr; and `doctor --fix`, which repairs only defects with a **derivable** correct value -- a stale generated gitignore, a config behind the current layout version. It deliberately will **not** create a missing `App/`: there is no safe automatic answer, and a `--fix` that guesses turns the safe command into a source of surprise changes. A test asserts exactly that. 42 -> 53 CLI tests.
+
 - **`docs/frameworks/accelerate.md`** -- Accelerate, and the first framework doc whose central point is an isolation rule rather than an API surface.
 
   Accelerate functions are synchronous C: they inherit whatever isolation calls them and never yield. A `@MainActor @Observable` view model calling `vDSP` blocks the main thread for the entire computation, and **nothing in that code looks wrong** -- there is no warning, no runtime check, and the vDSP call itself is correct. It is the concrete case of the pitfall `SKILL.md` already states abstractly, so that rule now names the synchronous C frameworks it applies to.

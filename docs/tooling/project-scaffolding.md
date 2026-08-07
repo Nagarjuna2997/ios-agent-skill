@@ -162,6 +162,49 @@ That test does not care what the entries are. It fails the day someone adds a
 row that is both tracked and deletable, which is the bug that would cost a user
 their template overrides.
 
+### The same move, applied to the command surface
+
+`COMMANDS` in `cli/src/commands.ts` is the second instance of the pattern.
+Dispatch, `help`, and the bash and zsh completion scripts all read one table, so
+help text cannot describe a flag the parser rejects and completions cannot offer
+a command that no longer exists. Hand-maintained help drifts, and the drift is
+invisible until a user follows the documentation and gets an error.
+
+The test is the same shape as the layout one — it asserts coverage rather than
+content:
+
+```js
+test("completions cover every dispatchable command", () => {
+  for (const shell of ["bash", "zsh"]) {
+    const script = capture(run(["completions", shell]));
+    for (const name of commandNames()) assert.ok(script.includes(name));
+  }
+});
+```
+
+### Exit codes are part of the interface
+
+| Code | Meaning |
+|---|---|
+| 0 | Success |
+| 1 | Usage error, or no project found |
+| 2 | `doctor` found problems |
+
+`doctor` returns 2 rather than 1 so a caller can distinguish "the project is
+unhealthy" from "you invoked it wrong". Collapsing both into 1 forces scripts to
+parse stderr, which is exactly what `--json` exists to prevent.
+
+### What a `--fix` flag may repair
+
+Only defects with a **derivable correct value**: a stale generated gitignore, a
+missing internal directory, a config behind the current layout version. A
+missing `App/` is reported and left alone — creating it would invent a project
+structure the user never asked for.
+
+The line is worth stating explicitly because it is easy to cross by accident: a
+`--fix` that guesses turns a diagnostic into a source of surprise changes, and
+users stop trusting the command that was supposed to be the safe one.
+
 ---
 
 ## 5. Root discovery — how two processes agree
@@ -381,3 +424,7 @@ if (existing.length > 0 && !force) throw new ScaffoldError(…);
 - [ ] Config carries a layout version, and a newer one is refused rather than rewritten
 - [ ] Lists are lists from day one where more than one is coming
 - [ ] `doctor` fails when the layout is broken — proven by mutation tests
+- [ ] `--fix` repairs only what has a derivable correct value, and never invents structure
+- [ ] Help text and shell completions are generated from the command table, not maintained
+- [ ] Exit codes distinguish usage errors from an unhealthy project
+- [ ] `--json` is available on every command a script would call
