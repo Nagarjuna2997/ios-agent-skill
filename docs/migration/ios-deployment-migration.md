@@ -23,6 +23,8 @@ which SDK you linked against.
 
 ### iOS 26 SDK: Liquid Glass
 
+> Full audit list for the rebuild: `docs/design/liquid-glass-adoption.md`.
+
 Rebuilding against the iOS 26 SDK adopts the new design system for standard
 controls: navigation bars, tab bars, toolbars, sheets. You do not opt in.
 

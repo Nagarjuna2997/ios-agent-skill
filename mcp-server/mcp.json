@@ -1,8 +1,8 @@
 {
   "name": "ios-agent-mcp",
   "displayName": "iOS Agent",
-  "version": "1.0.0",
-  "description": "Static analysis for modern iOS/Swift projects — Swift 6 actor isolation, architecture boundaries, SwiftUI, availability guards, and App Store readiness.",
+  "version": "2.1.0",
+  "description": "Static analysis for modern iOS/Swift projects — Swift 6 actor isolation, architecture boundaries, SwiftUI, availability guards, and App Store readiness — plus a linter for Agent Skill repositories.",
   "author": "Nagarjuna Reddy",
   "license": "MIT",
   "homepage": "https://github.com/Nagarjuna2997/ios-agent-skill",
@@ -11,13 +11,25 @@
     "url": "https://github.com/Nagarjuna2997/ios-agent-skill.git",
     "directory": "mcp-server"
   },
-  "keywords": ["ios", "swift", "swiftui", "xcode", "apple", "static-analysis", "code-review"],
+  "keywords": [
+    "ios",
+    "swift",
+    "swiftui",
+    "xcode",
+    "apple",
+    "static-analysis",
+    "code-review",
+    "agent-skills"
+  ],
   "runtime": {
     "type": "node",
     "minimumVersion": "18",
     "transport": "stdio",
     "command": "npx",
-    "args": ["-y", "ios-agent-mcp"]
+    "args": [
+      "-y",
+      "ios-agent-mcp"
+    ]
   },
   "permissions": {
     "filesystem": "read",
@@ -25,11 +37,64 @@
     "notes": "Reads .swift, Info.plist, Package.swift, and project.pbxproj files under the path you pass to a tool. Makes no network requests and writes nothing."
   },
   "tools": [
-    { "name": "analyze_swift_project", "summary": "Project overview plus a finding count for every rule category." },
-    { "name": "review_swift_concurrency", "summary": "Swift 6 actor isolation and concurrency defects." },
-    { "name": "review_swift_architecture", "summary": "Architecture boundaries, dependency injection, testability." },
-    { "name": "review_swiftui", "summary": "SwiftUI view and state defects, Dynamic Type, design tokens." },
-    { "name": "check_availability_guards", "summary": "Missing and over-restrictive @available guards." },
-    { "name": "audit_app_store_readiness", "summary": "Purpose strings, privacy manifest, accessibility, localization." }
-  ]
+    {
+      "name": "analyze_swift_project",
+      "summary": "Project overview plus a finding count for every rule category."
+    },
+    {
+      "name": "review_swift_concurrency",
+      "summary": "Swift 6 actor isolation and concurrency defects."
+    },
+    {
+      "name": "review_swift_architecture",
+      "summary": "Architecture boundaries, dependency injection, testability."
+    },
+    {
+      "name": "review_swiftui",
+      "summary": "SwiftUI view and state defects, Dynamic Type, design tokens."
+    },
+    {
+      "name": "check_availability_guards",
+      "summary": "Missing and over-restrictive @available guards."
+    },
+    {
+      "name": "audit_app_store_readiness",
+      "summary": "Purpose strings, privacy manifest, accessibility, localization."
+    },
+    {
+      "name": "review_swift_memory",
+      "summary": "Retain cycles, weak/unowned usage, closure and Task lifetime."
+    },
+    {
+      "name": "review_swift_security",
+      "summary": "Hardcoded secrets, insecure storage, ATS, TLS, weak crypto, Keychain accessibility."
+    },
+    {
+      "name": "review_swift_testing",
+      "summary": "Flaky patterns, vacuous tests, live network in tests, missing coverage."
+    },
+    {
+      "name": "review_swift_performance",
+      "summary": "Work inside body, eager stacks, unstable ForEach identity, blocking I/O."
+    },
+    {
+      "name": "lint_skill",
+      "summary": "Agent Skill metadata: frontmatter, subagent tool grants, mirror sync, doc references."
+    }
+  ],
+  "resources": [
+    {
+      "uri": "ios://project/info",
+      "summary": "Structure, architecture with evidence, DI, frameworks."
+    },
+    {
+      "uri": "ios://project/dependencies",
+      "summary": "Third-party packages and Apple frameworks."
+    },
+    {
+      "uri": "ios://project/issues",
+      "summary": "Every finding across all nine categories."
+    }
+  ],
+  "notes": "Resources require a project root: pass --project PATH or set IOS_AGENT_PROJECT. Tools take an explicit path argument and need no configuration."
 }

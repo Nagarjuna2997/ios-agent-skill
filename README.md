@@ -2,7 +2,7 @@
   <img src="https://img.shields.io/badge/Swift-6.4-F05138?style=for-the-badge&logo=swift&logoColor=white" alt="Swift">
   <img src="https://img.shields.io/badge/Xcode-27-147EFB?style=for-the-badge&logo=xcode&logoColor=white" alt="Xcode">
   <img src="https://img.shields.io/badge/iOS%2017--27-000000?style=for-the-badge&logo=apple&logoColor=white" alt="iOS">
-  <img src="https://img.shields.io/badge/MCP%20Server-6%20tools-8B5CF6?style=for-the-badge" alt="MCP">
+  <img src="https://img.shields.io/badge/MCP%20Server-11%20tools-8B5CF6?style=for-the-badge" alt="MCP">
   <img src="https://img.shields.io/badge/AI%20Agents-25+-00D084?style=for-the-badge" alt="AI Agents">
 </p>
 
@@ -82,12 +82,41 @@ Every finding carries a file, a line, the consequence, the fix, and a link to th
 
 | | |
 |---|---|
-| 🧠 **The skill** | 100+ files — Swift 6.4 concurrency, SwiftUI, Clean Architecture, 40+ Apple frameworks, design tokens, App Store checklists |
-| 🔌 **[MCP server](mcp-server/)** | 6 tools: concurrency, architecture, SwiftUI, availability guards, App Store readiness, project overview |
+| 🧠 **The skill** | 100+ files — Swift 6.4 concurrency, SwiftUI, Clean Architecture, 45 Apple framework guides, design tokens, App Store checklists |
+| 🔌 **[MCP server](mcp-server/)** | 11 tools: concurrency, architecture, SwiftUI, availability, memory, security, testing, performance, App Store readiness, project overview, skill lint |
 | 🤖 **[10 subagents](.claude/agents/)** | explore, plan, review, debug, refactor, docs, Foundation Models, modernization, accessibility, performance |
 | ⚙️ **[Orchestration](docs/orchestration/)** | When to delegate, loop, or scale out — and the evidence rule that stops "it works" without proof |
 | 🪝 **[Hooks](templates/hooks/)** | Deterministic enforcement at write time, plus CI |
 | ✅ **[Compile-checked sample](samples/SkillPatterns/)** | An SPM package CI builds and tests on every push — the patterns are verified, not asserted |
+
+## Resources
+
+Tools are verbs the agent chooses to call. Resources are nouns your client can read up front, so the project's shape reaches context before the model thinks to ask:
+
+```jsonc
+{
+  "mcpServers": {
+    "ios-agent": {
+      "command": "npx",
+      "args": ["-y", "ios-agent-mcp", "--project", "/path/to/project"]
+    }
+  }
+}
+```
+
+| Resource | Contains |
+|---|---|
+| `ios://project/info` | Deployment target, UI framework, inferred architecture **with its evidence**, DI detection, frameworks |
+| `ios://project/dependencies` | Third-party packages from SwiftPM or CocoaPods, plus Apple frameworks |
+| `ios://project/issues` | Every finding across all nine categories, counted by severity |
+
+Every review tool also returns `structuredContent` — `summary`, `score`, `counts`, `files_checked`, `issues`, `suggestions` — next to the markdown, so a workflow can branch on a result without parsing prose.
+
+## Roadmap
+
+**v2.1.0 finishes the analysis server:** eleven tools, three resources, structured output. No Xcode, no simulator, no network, ~26 KB — it runs on macOS, Linux, and Windows.
+
+Simulator automation (screen recording, deep links, app management, then UI driving) ships as a **separate** package, so a Swift linter never requires a 15 GB Xcode install. **[ROADMAP.md](ROADMAP.md)** has the phasing and the feasibility notes, including which parts are blocked on choosing a UI-automation backend. Nothing is filed as an issue yet — open one for the piece you want and it moves up.
 
 ## Works with
 
@@ -580,6 +609,7 @@ Two rules do most of the work:
 
 | | File | Framework |
 |:---:|------|-----------|
+| :key: | [authentication-services.md](docs/frameworks/authentication-services.md) | Sign in with Apple, passkeys, OAuth, revocation, Keychain storage |
 | :lock: | [cryptokit.md](docs/frameworks/cryptokit.md) | SHA256, AES-GCM, Secure Enclave |
 | :mag: | [oslog.md](docs/frameworks/oslog.md) | Logger, MetricKit diagnostics |
 | :hourglass_flowing_sand: | [background-tasks.md](docs/frameworks/background-tasks.md) | BGTaskScheduler |
@@ -599,7 +629,7 @@ Two rules do most of the work:
 
 ## :white_check_mark: Compile-Checked Sample
 
-[`samples/SkillPatterns/`](samples/SkillPatterns/) is an SPM package implementing this skill's core patterns — `@MainActor @Observable` view models, protocol-injected dependencies, typed routes with pure deep-link parsing, actor test doubles. CI builds and tests it on macOS on every push, with strict concurrency enabled.
+[`samples/SkillPatterns/`](samples/SkillPatterns/) is an SPM package implementing this skill's core patterns — `@MainActor @Observable` view models, protocol-injected dependencies, typed routes with pure deep-link parsing, actor test doubles, SwiftData persistence behind a `@ModelActor`, and `AsyncSequence` consumption. CI builds and tests it on macOS on every push, with strict concurrency enabled.
 
 ```bash
 cd samples/SkillPatterns && swift build && swift test

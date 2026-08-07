@@ -96,6 +96,50 @@ what makes it safe to run several in parallel.
 Giving every subagent every tool defeats the point. A reviewer with `Edit` will
 eventually fix what it should have reported.
 
+#### Verifying the restriction actually holds
+
+Run `./scripts/eval-agents.sh`. It prints the grant matrix and fails when a
+declaration contradicts the instructions that rely on it:
+
+```
+$ ./scripts/eval-agents.sh
+AGENT                   TOOLS                                BOUNDARY
+ios-explore             Read, Grep, Glob                     read-only (enforced + declared)
+swift-reviewer          Read, Grep, Glob, Bash               read-only (enforced + declared)
+swift-refactorer        Read, Grep, Glob, Edit, Write, Bash  read-write
+…
+OK — 10 agents, every declared boundary is consistent with its instructions.
+```
+
+The tempting design is to prompt each agent to edit something and check that it
+refuses. **That does not test the boundary.** Tool restriction is enforced by
+the harness from the `tools:` line before the model is consulted, so a prompt
+check passes for an agent whose frontmatter wrongly grants `Write` — the model
+simply chose not to use it — and it is non-deterministic besides. What decides
+the boundary is the declaration, so that is what gets checked, against the
+prompt depending on it:
+
+| Rule | Catches |
+|------|---------|
+| `read-only-holds-write-tool` | A description promising read-only while `tools` grants `Edit`/`Write` |
+| `write-instruction-without-write-tool` | Instructions to modify files with no write tool granted |
+| `command-without-bash` | A command in the prompt the agent cannot run |
+| `bash-never-used` | `Bash` granted with nothing in the prompt to run |
+| `unknown-tool` | A misspelled tool name — not granted, and not reported |
+| `name-filename-mismatch` | Delegation prompts pointing at an unregistered identifier |
+| `no-tools` | No `tools:` at all, which inherits everything |
+
+Read-only status is taken from the **description**, never the body. Bodies are
+full of scoped prohibitions that mean something else — `ios-docs` says "never
+edit a *generated* file", `swift-refactorer` says "do not change *access
+levels*" — and reading those as a read-only contract flags three correctly
+configured agents. The description is what the main agent reads when it decides
+to delegate, so it is the only place the promise counts.
+
+`./scripts/eval-agents.sh --self-test` builds agents each broken in exactly one
+way and asserts every rule fires, including a regression case for the four real
+phrasings above. A check that cannot fail is not a check.
+
 ### Model selection
 
 - `inherit` — matches the main agent. Use for reasoning-heavy work: planning,
@@ -243,3 +287,4 @@ assume it in a workflow you expect to work today.
 - [ ] The system prompt includes the evidence contract (`verification.md`).
 - [ ] The system prompt states what is out of scope.
 - [ ] It does not assume access to the main agent's conversation.
+- [ ] `./scripts/eval-agents.sh` passes — the grant matches what the prompt does.

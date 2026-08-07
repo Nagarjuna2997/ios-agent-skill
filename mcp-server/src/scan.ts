@@ -131,6 +131,116 @@ export interface ProjectSummary {
   hasTests: boolean;
   hasPackageSwift: boolean;
   hasXcodeProject: boolean;
+  /** SwiftUI, UIKit, both, or neither — inferred from imports. */
+  uiFramework: "SwiftUI" | "UIKit" | "SwiftUI + UIKit" | "unknown";
+  /** Best-effort architecture read. Evidence is reported alongside it. */
+  architecture: string;
+  architectureEvidence: string[];
+  /** Third-party packages, from Package.swift / Podfile / project.pbxproj. */
+  dependencies: string[];
+  /** True when at least one dependency crosses an injected protocol boundary. */
+  usesDependencyInjection: boolean;
+}
+
+/**
+ * Infer the architecture from file naming and type shape.
+ *
+ * Deliberately reports EVIDENCE rather than a bare verdict. "MVVM" with nothing
+ * behind it is a guess presented as a fact; "MVVM — 12 *ViewModel/*Model types,
+ * Views/ and ViewModels/ directories" is a claim the reader can check. When the
+ * signals are weak it says so instead of picking the most popular answer.
+ */
+function inferArchitecture(files: SourceFile[]): {
+  architecture: string;
+  evidence: string[];
+} {
+  const paths = files.map((f) => f.path);
+  const evidence: string[] = [];
+
+  const count = (test: RegExp) => paths.filter((p) => test.test(p)).length;
+  const typeCount = (test: RegExp) =>
+    files.filter((f) => test.test(f.content)).length;
+
+  const viewModels = typeCount(/\b(?:final\s+)?class\s+\w*(?:ViewModel|Model)\b/);
+  const useCases = count(/UseCases?\//i) + typeCount(/protocol\s+\w*UseCase\b/);
+  const repositories = typeCount(/protocol\s+\w*Repository\b/);
+  const coordinators = typeCount(/\bclass\s+\w*Coordinator\b/);
+  const stores = typeCount(/\b(?:struct|enum)\s+\w*(?:Reducer|Feature)\b/) +
+    typeCount(/import\s+ComposableArchitecture/);
+
+  const hasLayerDirs =
+    count(/(^|\/)(Domain|Data|Presentation)\//i) >= 2;
+  const hasMVVMDirs = count(/(^|\/)ViewModels?\//i) > 0 && count(/(^|\/)Views?\//i) > 0;
+
+  if (stores > 0) {
+    evidence.push(`${stores} Reducer/Feature type(s) or a ComposableArchitecture import`);
+    return { architecture: "The Composable Architecture", evidence };
+  }
+
+  if (hasLayerDirs || (useCases > 0 && repositories > 0)) {
+    if (hasLayerDirs) evidence.push("Domain/, Data/, and Presentation/ directories");
+    if (useCases > 0) evidence.push(`${useCases} use-case protocol(s) or a UseCases/ directory`);
+    if (repositories > 0) evidence.push(`${repositories} repository protocol(s)`);
+    return { architecture: "Clean Architecture", evidence };
+  }
+
+  if (coordinators > 0) {
+    evidence.push(`${coordinators} Coordinator type(s)`);
+    if (viewModels > 0) evidence.push(`${viewModels} view-model type(s)`);
+    return { architecture: "MVVM + Coordinator", evidence };
+  }
+
+  if (viewModels > 0 || hasMVVMDirs) {
+    if (viewModels > 0) evidence.push(`${viewModels} ViewModel/Model type(s)`);
+    if (hasMVVMDirs) evidence.push("Views/ and ViewModels/ directories");
+    return { architecture: "MVVM", evidence };
+  }
+
+  return {
+    architecture: "not determined",
+    evidence: ["no view-model, use-case, repository, or coordinator types found"],
+  };
+}
+
+/** Third-party package names from whichever manifest the project uses. */
+async function readDependencies(root: string): Promise<string[]> {
+  const found = new Set<string>();
+
+  for (const path of await walk(root, (p) => p.endsWith("Package.swift"), 5)) {
+    try {
+      const content = await readFile(path, "utf8");
+      for (const match of content.matchAll(/url:\s*"https?:\/\/[^"]*\/([\w.-]+?)(?:\.git)?"/g)) {
+        found.add(match[1]);
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  // SwiftPM through Xcode records resolved packages here.
+  for (const path of await walk(root, (p) => p.endsWith("Package.resolved"), 5)) {
+    try {
+      const content = await readFile(path, "utf8");
+      for (const match of content.matchAll(/"(?:identity|package)"\s*:\s*"([^"]+)"/g)) {
+        found.add(match[1]);
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  for (const path of await walk(root, (p) => /(^|\/)Podfile$/.test(p), 3)) {
+    try {
+      const content = await readFile(path, "utf8");
+      for (const match of content.matchAll(/^\s*pod\s+['"]([^'"\/]+)/gm)) {
+        found.add(match[1]);
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  return [...found].sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
 }
 
 /** A structural overview of the project, independent of rule violations. */
@@ -175,6 +285,24 @@ export async function summarizeProject(
   }
 
   const xcodeprojs = await walk(root, (p) => p.endsWith(".pbxproj"), 3);
+  const { architecture, evidence } = inferArchitecture(files);
+  const dependencies = await readDependencies(root);
+
+  const usesSwiftUI = frameworks.has("SwiftUI");
+  const usesUIKit = frameworks.has("UIKit");
+  const uiFramework = usesSwiftUI && usesUIKit
+    ? "SwiftUI + UIKit"
+    : usesSwiftUI
+      ? "SwiftUI"
+      : usesUIKit
+        ? "UIKit"
+        : "unknown";
+
+  // An injected protocol existential in an initializer is the signal. A project
+  // that only ever constructs concrete types has no seam, whatever it is called.
+  const usesDependencyInjection = files.some((file) =>
+    /init\s*\([^)]*:\s*any\s+\w+/.test(file.content),
+  );
 
   return {
     swiftFileCount: files.length,
@@ -185,5 +313,10 @@ export async function summarizeProject(
     hasTests: files.some((f) => /Tests?\.swift$/.test(f.path)),
     hasPackageSwift: packages.length > 0,
     hasXcodeProject: xcodeprojs.length > 0,
+    uiFramework,
+    architecture,
+    architectureEvidence: evidence,
+    dependencies,
+    usesDependencyInjection,
   };
 }

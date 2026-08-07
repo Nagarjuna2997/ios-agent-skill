@@ -98,8 +98,13 @@ describe("mcp server", () => {
       "analyze_swift_project",
       "audit_app_store_readiness",
       "check_availability_guards",
+      "lint_skill",
       "review_swift_architecture",
       "review_swift_concurrency",
+      "review_swift_memory",
+      "review_swift_performance",
+      "review_swift_security",
+      "review_swift_testing",
       "review_swiftui",
     ]);
   });
@@ -140,6 +145,54 @@ describe("mcp server", () => {
     assert.match(text, /review_swift_concurrency/);
   });
 
+  test("review tools return structuredContent, not only prose", async () => {
+    const result = await client.callTool({
+      name: "review_swift_concurrency",
+      arguments: { path: fixture },
+    });
+    const structured = result.structuredContent;
+    assert.ok(structured, "expected structuredContent alongside the markdown");
+    assert.equal(typeof structured.score, "number");
+    assert.equal(typeof structured.files_checked, "number");
+    assert.ok(Array.isArray(structured.issues));
+    assert.ok(structured.issues.length > 0, "the fixture has planted defects");
+    assert.equal(typeof structured.counts.total, "number");
+    // The markdown half must still be there — both audiences, always.
+    assert.match(result.content[0].text, /observable-without-mainactor/);
+  });
+
+  test("the project overview reports architecture with its evidence", async () => {
+    const result = await client.callTool({
+      name: "analyze_swift_project",
+      arguments: { path: fixture },
+    });
+    const project = result.structuredContent?.project;
+    assert.ok(project, "expected a project block");
+    assert.equal(typeof project.architecture, "string");
+    assert.ok(Array.isArray(project.architecture_evidence));
+    assert.ok(Array.isArray(project.dependencies));
+    assert.match(result.content[0].text, /## Shape/);
+  });
+
+  test("lint_skill reports over the wire on this repository", async () => {
+    const result = await client.callTool({
+      name: "lint_skill",
+      arguments: { path: new URL("../../", import.meta.url).pathname },
+    });
+    const text = result.content[0].text;
+    assert.match(text, /# Skill Repository Lint/);
+    assert.match(text, /\*\*Subagent definitions:\*\* 10/);
+    assert.match(text, /No findings/);
+  });
+
+  test("lint_skill on a non-skill directory says so rather than passing silently", async () => {
+    const result = await client.callTool({
+      name: "lint_skill",
+      arguments: { path: fixture },
+    });
+    assert.match(result.content[0].text, /skill-file-missing|not found/);
+  });
+
   test("a bad path returns an error, not a false clean bill of health", async () => {
     const result = await client.callTool({
       name: "review_swiftui",
@@ -172,5 +225,91 @@ describe("mcp server", () => {
     });
     assert.match(result.content[0].text, /No findings/);
     await rm(clean, { recursive: true, force: true });
+  });
+});
+
+describe("resources", () => {
+  let resourceClient;
+  let resourceTransport;
+
+  before(async () => {
+    // A second server instance, launched with --project pointed at this repo's
+    // own sample package — the resource root is a launch-time decision, so it
+    // cannot be exercised by the shared client above.
+    resourceTransport = new StdioClientTransport({
+      command: "node",
+      args: [
+        new URL("../dist/index.js", import.meta.url).pathname,
+        "--project",
+        new URL("../../samples/SkillPatterns/", import.meta.url).pathname,
+      ],
+    });
+    resourceClient = new Client({ name: "resource-test", version: "1.0.0" });
+    await resourceClient.connect(resourceTransport);
+  });
+
+  after(async () => {
+    await resourceClient?.close();
+  });
+
+  test("advertises the project resources", async () => {
+    const { resources } = await resourceClient.listResources();
+    const uris = resources.map((r) => r.uri).sort();
+    assert.deepEqual(uris, [
+      "ios://project/dependencies",
+      "ios://project/info",
+      "ios://project/issues",
+    ]);
+  });
+
+  test("project/info reports architecture with its evidence", async () => {
+    const result = await resourceClient.readResource({ uri: "ios://project/info" });
+    const body = JSON.parse(result.contents[0].text);
+    assert.equal(body.available, true);
+    assert.ok(body.swift_files > 0);
+    assert.equal(typeof body.architecture, "string");
+    assert.ok(Array.isArray(body.architecture_evidence));
+    assert.ok(body.architecture_evidence.length > 0, "a verdict must ship its evidence");
+    // The root is implicit, so every payload must say which one it used.
+    assert.match(body.project_root, /SkillPatterns/);
+  });
+
+  test("project/issues reports counts and categories", async () => {
+    const result = await resourceClient.readResource({ uri: "ios://project/issues" });
+    const body = JSON.parse(result.contents[0].text);
+    assert.equal(body.available, true);
+    assert.equal(typeof body.counts.total, "number");
+    assert.ok(Array.isArray(body.issues));
+    assert.ok(body.by_category.concurrency !== undefined);
+  });
+
+  test("project/dependencies distinguishes third-party from Apple frameworks", async () => {
+    const result = await resourceClient.readResource({
+      uri: "ios://project/dependencies",
+    });
+    const body = JSON.parse(result.contents[0].text);
+    assert.ok(Array.isArray(body.third_party));
+    assert.ok(Array.isArray(body.apple_frameworks));
+    assert.ok(body.apple_frameworks.includes("Foundation"));
+  });
+});
+
+describe("project root resolution", () => {
+  test("--project wins over the environment", async () => {
+    const { projectRootFrom } = await import("../dist/resources.js");
+    assert.equal(
+      projectRootFrom(["--project", "/tmp/explicit"], { IOS_AGENT_PROJECT: "/tmp/env" }),
+      "/tmp/explicit",
+    );
+  });
+
+  test("the environment is used when no flag is given", async () => {
+    const { projectRootFrom } = await import("../dist/resources.js");
+    assert.equal(projectRootFrom([], { IOS_AGENT_PROJECT: "/tmp/env" }), "/tmp/env");
+  });
+
+  test("falls back to the working directory rather than throwing", async () => {
+    const { projectRootFrom } = await import("../dist/resources.js");
+    assert.equal(projectRootFrom([], { PWD: "/tmp/cwd" }), "/tmp/cwd");
   });
 });

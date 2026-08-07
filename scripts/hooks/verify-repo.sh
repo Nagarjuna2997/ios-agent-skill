@@ -48,18 +48,30 @@ fi
 if ! PATH_OUT="$(python3 - <<'PY' 2>&1
 import os, re, sys
 
-pattern = re.compile(r"`((?:docs|patterns|checklists|templates|scripts)/[^`\s]+)`")
+# Every markdown file, not just SKILL.md and README.md.
+#
+# CI scans the whole tree. When this hook scanned only two files it passed
+# locally while CI failed on two broken paths in CHANGELOG.md — a local check
+# weaker than the remote one is worse than no local check, because it converts
+# "verified" into a guess.
+pattern = re.compile(r"`((?:docs|patterns|checklists|templates|scripts|samples|\.claude)/[^`\s]+)`")
 missing = []
-for source in ("SKILL.md", "README.md"):
-    if not os.path.exists(source):
-        continue
+sources = []
+for root, dirs, files in os.walk("."):
+    dirs[:] = [d for d in dirs if d not in {".git", ".build", "node_modules", "dist"}]
+    sources.extend(os.path.join(root, f) for f in files if f.endswith(".md"))
+
+for source in sorted(sources):
     for number, line in enumerate(open(source, encoding="utf-8"), 1):
         for path in pattern.findall(line):
-            if "*" in path:
+            if "*" in path or "..." in path:
                 continue
             target = path.rstrip("/")
-            if not (os.path.isfile(target) or os.path.isdir(target)):
-                missing.append(f"{source}:{number}: {path}")
+            from_root = os.path.normpath(target)
+            from_here = os.path.normpath(os.path.join(os.path.dirname(source), target))
+            if any(os.path.isfile(p) or os.path.isdir(p) for p in (from_root, from_here)):
+                continue
+            missing.append(f"{source}:{number}: {path}")
 
 if missing:
     sys.exit("Referenced paths that do not exist:\n" + "\n".join(missing))
@@ -93,6 +105,52 @@ if problems:
 PY
 )"; then
   FAILURES+=("Subagent definitions:\n$AGENT_OUT")
+fi
+
+# 5. Code fences declare a recognized language.
+#
+# Mirrors the CI check. A local hook weaker than CI means a red run for
+# something that could have been caught before pushing.
+if ! FENCE_OUT="$(python3 - <<'FENCEPY' 2>&1
+import os, re, sys
+
+KNOWN = {
+    "swift", "bash", "sh", "shell", "json", "jsonc", "yaml", "yml", "xml",
+    "python", "ruby", "text", "objc", "objective-c", "c", "cpp",
+    "markdown", "md", "diff", "console", "toml", "ini", "html", "css",
+    "js", "javascript", "ts", "typescript", "sql", "mermaid",
+}
+
+problems = []
+for root, dirs, files in os.walk("."):
+    dirs[:] = [d for d in dirs if d not in {".git", ".build", "node_modules", "dist"}]
+    for name in files:
+        if not name.endswith(".md"):
+            continue
+        path = os.path.join(root, name)
+        in_fence = False
+        for number, line in enumerate(open(path, encoding="utf-8"), 1):
+            match = re.match(r"^\s*(`{3,})\s*([A-Za-z0-9_+-]*)", line)
+            if not match:
+                continue
+            if not in_fence:
+                in_fence = True
+                lang = match.group(2).lower()
+                if lang and lang not in KNOWN:
+                    problems.append(f"{path}:{number}: unknown fence language '{lang}'")
+            else:
+                in_fence = False
+
+if problems:
+    sys.exit("Code fence problems:\n" + "\n".join(problems))
+FENCEPY
+)"; then
+  FAILURES+=("Code fences:\n$FENCE_OUT")
+fi
+
+# 6. Every subagent's tool grant matches what its instructions actually do.
+if ! EVAL_OUT="$(./scripts/eval-agents.sh 2>&1)"; then
+  FAILURES+=("Subagent tool boundaries:\n$EVAL_OUT")
 fi
 
 if (( ${#FAILURES[@]} > 0 )); then

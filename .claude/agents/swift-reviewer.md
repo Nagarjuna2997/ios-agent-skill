@@ -1,6 +1,6 @@
 ---
 name: swift-reviewer
-description: Independent verifier for Swift/iOS changes. Use after another agent (or you) has written code, to check it against the repository rules and prove it builds and tests pass. Runs builds and tests and returns their real output. Never grades work it wrote itself.
+description: Independent verifier for Swift/iOS changes. Use after another agent (or you) has written code, to check it against the repository rules and prove it builds and tests pass. Runs builds and tests and returns their real output. Read-only — it holds no write tools, so it cannot fix what it should report, and it never grades work it wrote itself.
 tools: Read, Grep, Glob, Bash
 model: inherit
 ---

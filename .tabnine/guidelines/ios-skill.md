@@ -33,7 +33,12 @@ Load this skill when any of the following is true. When none are true, do not lo
 | Layered architecture, use cases, DI | `patterns/clean-architecture.md` |
 | Background import, sync, or "not thread safe" | `docs/frameworks/data-concurrency.md` |
 | Test doubles, previews, debug menus | `docs/testing/mocking-strategy.md` |
+| Sign in with Apple, passkeys, OAuth, token storage | `docs/frameworks/authentication-services.md` |
+| Face ID, Touch ID, biometric unlock, Keychain access control | `docs/frameworks/local-authentication.md` |
+| Any chart, graph, or plot | `docs/frameworks/swift-charts.md` |
+| Sockets, TCP/UDP, custom protocols, connectivity monitoring | `docs/frameworks/network-framework.md` |
 | Colors, spacing, theming, glass effects | `docs/design/design-tokens.md`, `docs/design/color-system.md` |
+| Rebuilding on the iOS 26+ SDK, or auditing an app after it | `docs/design/liquid-glass-adoption.md` |
 | A named Apple framework | the matching `docs/frameworks/**` file |
 | A named platform | the matching `docs/platforms/*.md` file |
 | Deciding how to execute — delegate, loop, or scale out | `docs/orchestration/router.md` |
@@ -51,6 +56,8 @@ Load this skill when any of the following is true. When none are true, do not lo
 | Raising a deployment target, or rebuilding on a new SDK | `docs/migration/ios-deployment-migration.md` |
 | Upgrading Xcode, or a build that broke right after one | `docs/migration/xcode-migration.md` |
 | Reviewing an existing Swift project for defects | `docs/mcp/tools.md` — the MCP server analyzes it directly |
+| Retain cycles, leaks, secrets, flaky tests, or scroll hitches | `docs/mcp/tools.md` — `review_swift_memory`, `_security`, `_testing`, `_performance` |
+| Authoring or reviewing an Agent Skill, or a subagent that will not invoke | `docs/mcp/tools.md` — `lint_skill` checks frontmatter, tool grants, and mirrors |
 
 ## How These Docs Are Structured
 
@@ -435,6 +442,9 @@ AppName/
 | Calendar | **EventKit** | Calendar events, reminders |
 | Contacts | **Contacts** | Contact access and picker |
 | Crypto | **CryptoKit** | Hashing, encryption, signing, Secure Enclave |
+| Biometrics | **LocalAuthentication** | Face ID, Touch ID, Optic ID, biometric Keychain gating |
+| Charts | **Swift Charts** | Declarative charts with accessibility and Dynamic Type |
+| Sockets | **Network.framework** | TCP/UDP, custom protocols, TLS, path monitoring |
 | Logging | **OSLog** | Structured logging, performance profiling |
 | Background | **BackgroundTasks** | BGTaskScheduler, background refresh |
 | Integrity | **DeviceCheck + AppAttest** | Device verification, API security |
@@ -507,6 +517,7 @@ This repository contains comprehensive documentation. Consult these files when b
 
 ### UI Design System
 - `docs/design/design-tokens.md` — Three-tier token architecture, theming, dark-mode and Dynamic Type compliance, Liquid Glass and materials, programmatic contrast verification
+- `docs/design/liquid-glass-adoption.md` — What an SDK rebuild changes for free and what it breaks: custom bar backgrounds, scroll edge effect, `Tab(role: .search)`, `ToolbarSpacer`, concentric shapes, title-case section headers, layered app icons, and the `UIDesignRequiresCompatibility` escape hatch
 - `docs/design/color-system.md` — Color palettes (5 themes with hex codes), gradients, materials, dark mode, accessibility
 - `docs/design/typography-system.md` — Text styles, custom fonts, SF Symbols, Dynamic Type, text effects
 - `docs/design/stunning-ui-patterns.md` — 20+ stunning UI patterns with full SwiftUI code (glass cards, neumorphism, parallax, shimmer, animated tabs, card stacks, and more)
@@ -549,6 +560,7 @@ This repository contains comprehensive documentation. Consult these files when b
 - `docs/frameworks/arkit.md` — World/face/body/image tracking, plane and mesh detection, world map persistence
 - `docs/frameworks/realitykit.md` — ECS, RealityView, PBR materials, physics, spatial audio
 - `docs/frameworks/networking.md` — HTTP networking patterns
+- `docs/frameworks/swift-charts.md` — Marks, scales, axes, selection, `AXChartDescriptor`, peak-preserving downsampling for large datasets
 - `docs/frameworks/accessibility.md` — Accessibility best practices
 
 ### AI & Machine Learning
@@ -581,7 +593,10 @@ This repository contains comprehensive documentation. Consult these files when b
 - `docs/frameworks/services/contacts.md` — Contact access and picker
 
 ### Security & Engineering
+- `docs/frameworks/authentication-services.md` — Sign in with Apple, passkeys, `ASWebAuthenticationSession`, revocation, token storage
 - `docs/frameworks/cryptokit.md` — Hashing, encryption, signing, Secure Enclave
+- `docs/frameworks/local-authentication.md` — `LAContext`, biometry policies, Keychain access control as the real boundary, lockout and fallback
+- `docs/frameworks/network-framework.md` — `NWConnection`, `NWListener`, message framing, TLS pinning, `NWPathMonitor`, actor ownership
 - `docs/frameworks/oslog.md` — Structured logging, MetricKit diagnostics
 - `docs/frameworks/background-tasks.md` — BGTaskScheduler, background refresh
 - `docs/frameworks/device-integrity.md` — DeviceCheck, AppAttest
@@ -594,7 +609,7 @@ This repository contains comprehensive documentation. Consult these files when b
 - `docs/platforms/visionos.md` — visionOS spatial computing
 
 ### Samples & Templates
-- `samples/SkillPatterns/` — **Compile-checked** reference implementation of this skill's core patterns. CI builds and tests it, which is what makes those patterns VERIFIED rather than INSPECTED
+- `samples/SkillPatterns/` — **Compile-checked** reference implementation of this skill's core patterns, including SwiftData (`@Model`, `@ModelActor`, container injection) and `AsyncSequence` consumption. CI builds and tests it, which is what makes those patterns VERIFIED rather than INSPECTED
 - `templates/ios-app/` — Ready-to-use iOS SwiftUI app template
 - `templates/multiplatform-app/` — Multi-platform SwiftUI template
 - `templates/common-patterns/` — Networking, persistence, auth, navigation, DI patterns
@@ -616,9 +631,10 @@ This repository contains comprehensive documentation. Consult these files when b
 - `docs/orchestration/hooks.md` — Deterministic enforcement; hook vs. CI vs. reviewer
 - `.claude/agents/` — Ten ready-to-use specialists (`ios-explore`, `ios-plan`, `swift-reviewer`, `swift-debugger`, `swift-refactorer`, `ios-docs`, `foundation-models`, `swiftui-modernization`, `accessibility-reviewer`, `performance-reviewer`)
 - `templates/hooks/` — Drop-in hooks for iOS projects: formatting, anti-pattern blocking, build verification
+- `scripts/eval-agents.sh` — Verifies every subagent's tool grant against the instructions relying on it; `--table` prints the grant matrix, `--self-test` proves the checks are not vacuous
 
 ### MCP Server
-- `mcp-server/` — `ios-agent-mcp`, an MCP server exposing six Swift analysis tools (concurrency, architecture, SwiftUI, availability, App Store readiness, project overview)
+- `mcp-server/` — `ios-agent-mcp`, an MCP server exposing eleven tools: ten that analyze Swift (concurrency, architecture, SwiftUI, availability, memory, security, testing, performance, App Store readiness, project overview) and `lint_skill`, which checks a skill repository's own metadata
 - `docs/mcp/installation.md` — Claude Code, Claude Desktop, Cursor, and from-source setup
 - `docs/mcp/tools.md` — Tool reference, every rule and its severity, and the limits of static analysis
 - `docs/mcp/examples.md` — Worked sessions, and how the tools pair with the subagents

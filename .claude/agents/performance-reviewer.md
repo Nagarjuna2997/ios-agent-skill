@@ -1,6 +1,6 @@
 ---
 name: performance-reviewer
-description: Investigates iOS performance problems — scroll hitches, slow launch, memory growth, main-actor contention, over-invalidating SwiftUI views. Measures before concluding and never optimizes on suspicion. Read plus Bash; reports findings with evidence.
+description: Investigates iOS performance problems — scroll hitches, slow launch, memory growth, main-actor contention, over-invalidating SwiftUI views. Measures before concluding and never optimizes on suspicion. Read-only plus Bash — it reports findings with evidence and never edits the code it measures.
 tools: Read, Grep, Glob, Bash
 model: inherit
 ---
