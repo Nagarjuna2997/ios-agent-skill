@@ -58,6 +58,12 @@ git clone https://github.com/Nagarjuna2997/ios-agent-skill.git .ios-skill
 claude mcp add ios-agent -- npx -y ios-agent-mcp
 ```
 
+**As a CLI** — scaffolds a project that hides its own plumbing:
+
+```bash
+npx ios-agent new MyApp
+```
+
 <sub>Claude Desktop, Cursor, and Windows/Linux setup: **[docs/mcp/installation.md](docs/mcp/installation.md)**</sub>
 
 ## What it looks like
@@ -84,6 +90,7 @@ Every finding carries a file, a line, the consequence, the fix, and a link to th
 |---|---|
 | 🧠 **The skill** | 100+ files — Swift 6.4 concurrency, SwiftUI, Clean Architecture, 45 Apple framework guides, design tokens, App Store checklists |
 | 🔌 **[MCP server](mcp-server/)** | 11 tools: concurrency, architecture, SwiftUI, availability, memory, security, testing, performance, App Store readiness, project overview, skill lint |
+| 🛠️ **[CLI](cli/)** | `ios-agent new MyApp` — scaffolds a project whose root is `App/`, a README, and a licence. Caches, logs, state, and build artifacts live in a hidden `.ios-agent/` |
 | 🤖 **[10 subagents](.claude/agents/)** | explore, plan, review, debug, refactor, docs, Foundation Models, modernization, accessibility, performance |
 | ⚙️ **[Orchestration](docs/orchestration/)** | When to delegate, loop, or scale out — and the evidence rule that stops "it works" without proof |
 | 🪝 **[Hooks](templates/hooks/)** | Deterministic enforcement at write time, plus CI |
@@ -359,6 +366,15 @@ Full per-feature floors, framework minimums, and toolchain support: **[docs/comp
 Everything above the iOS 17 floor is **additive** — a newer-OS feature must degrade to a working path, never disappear.
 
 ---
+
+## :sparkles: What's New in 2.1
+
+| | Feature | What it gives you |
+|:---:|---------|-------------------|
+| :mag: | **Eleven MCP tools** | Memory, security, testing, and performance reviews joined the original six; every review also returns structured JSON, so a workflow can branch on the numbers instead of parsing prose |
+| :file_folder: | **[`ios-agent` CLI](cli/)** | `ios-agent new MyApp` scaffolds a project whose root is `App/`, a README, and a licence. Everything tool-owned lives in a hidden `.ios-agent/` — and deleting it loses nothing |
+| :satellite: | **Three MCP resources** | `ios://project/info`, `/dependencies`, `/issues`, readable without the model deciding to call anything |
+| :label: | **Version identity that cannot drift** | `package.json` is the only place a human edits; `mcp.json`, the lockfile, and the handshake are generated from it and checked in CI |
 
 ## :sparkles: What's New in 2.0
 

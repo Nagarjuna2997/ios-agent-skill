@@ -7,9 +7,21 @@ The server exposes ten Swift analysis tools plus `lint_skill`, which checks a
 skill repository's own metadata. Full tool reference: `tools.md`.
 
 It also serves three **resources** (`ios://project/info`, `.../dependencies`,
-`.../issues`), which need a project root — pass `--project PATH` in the client
-config, or set `IOS_AGENT_PROJECT`. Tools take an explicit path argument and need
-no configuration.
+`.../issues`), which need a project root. Resolution order:
+
+1. `--project PATH` in the client config
+2. `IOS_AGENT_PROJECT`
+3. the nearest ancestor of the working directory holding a `.ios-agent/`
+   directory — the marker `ios-agent` writes (`docs/tooling/project-scaffolding.md`)
+4. the working directory itself
+
+The server only **reads** that marker; it never creates one, so its
+`filesystem: read, network: none` contract is unchanged. `ios://project/info`
+reports `resolved_from` alongside the path, because an implicit root is
+otherwise unfalsifiable — "no Swift files" reads identically whether the project
+is empty or the server is pointed at the wrong directory.
+
+Tools take an explicit path argument and need no configuration.
 Worked sessions: `examples.md`.
 
 ---

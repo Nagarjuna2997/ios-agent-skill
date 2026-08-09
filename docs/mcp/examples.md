@@ -53,7 +53,7 @@ Claude calls `analyze_swift_project`:
 
 That is genuinely the current output of running the server against this repo's
 own `samples/SkillPatterns`, pasted rather than composed — the package builds
-and its 49 tests pass on macOS CI on every push.
+and its tests pass on macOS CI on every push.
 
 `UI framework: unknown` is correct, not a gap: the sample deliberately contains
 no SwiftUI view code so it can build on a plain runner with no simulator.

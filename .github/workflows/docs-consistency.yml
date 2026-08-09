@@ -458,42 +458,51 @@ jobs:
       # The scaffold's central promise is what the user sees at the project
       # root. Asserting it end to end catches a regression that unit tests on
       # the layout table would not: a command that writes somewhere unexpected.
+      #
+      # Every path here is RELATIVE, deliberately. On the Windows runner `bash`
+      # is Git Bash, whose `/tmp/x` is not the `/tmp/x` a native Windows
+      # node.exe resolves — an absolute path from `mktemp -d` would have the
+      # shell and the CLI writing to two different directories, and the failure
+      # would look like the scaffold silently producing nothing.
       - name: Scaffold a project and check what is visible
         shell: bash
         run: |
-          workdir="$(mktemp -d)"
-          node dist/index.js new CIProbe --into "$workdir"
+          rm -rf .probe && mkdir -p .probe
+          node dist/index.js new CIProbe --into .probe
 
-          visible="$(ls "$workdir/CIProbe" | sort | tr '\n' ' ')"
+          visible="$(ls .probe/CIProbe | sort | tr '\n' ' ')"
           echo "visible at root: $visible"
           if [ "$visible" != "App LICENSE README.md " ]; then
             echo "Unexpected visible entries at the project root."
             exit 1
           fi
 
-          test -d "$workdir/CIProbe/.ios-agent" || { echo "missing .ios-agent"; exit 1; }
-          test -f "$workdir/CIProbe/App/CIProbe/CIProbeApp.swift" || { echo "missing entry point"; exit 1; }
+          test -d .probe/CIProbe/.ios-agent || { echo "missing .ios-agent"; exit 1; }
+          test -f .probe/CIProbe/App/CIProbe/CIProbeApp.swift || { echo "missing entry point"; exit 1; }
 
-          cd "$workdir/CIProbe/App/CIProbe"
-          cli="$GITHUB_WORKSPACE/cli/dist/index.js"
-          node "$cli" doctor
-          node "$cli" where --json > /dev/null
+          # Discovery must work from a nested source directory, so this runs
+          # from one — reaching back to the CLI relatively for the same reason.
+          ( cd .probe/CIProbe/App/CIProbe \
+            && node ../../../../dist/index.js doctor \
+            && node ../../../../dist/index.js where --json > /dev/null )
 
           # Exit codes are part of the interface, so they are asserted rather
           # than assumed: 2 means unhealthy, 1 means called wrong.
-          printf 'broken' > "$workdir/CIProbe/.ios-agent/.gitignore"
+          printf 'broken' > .probe/CIProbe/.ios-agent/.gitignore
           set +e
-          node "$cli" doctor > /dev/null 2>&1
+          node dist/index.js doctor --project .probe/CIProbe > /dev/null 2>&1
           unhealthy=$?
           set -e
           [ "$unhealthy" -eq 2 ] || { echo "doctor should exit 2 when unhealthy, got $unhealthy"; exit 1; }
 
-          node "$cli" doctor --fix > /dev/null
-          node "$cli" doctor > /dev/null || { echo "--fix did not restore health"; exit 1; }
+          node dist/index.js doctor --project .probe/CIProbe --fix > /dev/null
+          node dist/index.js doctor --project .probe/CIProbe > /dev/null \
+            || { echo "--fix did not restore health"; exit 1; }
 
-          node "$cli" completions zsh | grep -q "_ios_agent" || { echo "zsh completions missing"; exit 1; }
-          node "$cli" completions bash | grep -q "complete -F" || { echo "bash completions missing"; exit 1; }
+          node dist/index.js completions zsh | grep -q "_ios_agent" || { echo "zsh completions missing"; exit 1; }
+          node dist/index.js completions bash | grep -q "complete -F" || { echo "bash completions missing"; exit 1; }
 
+          rm -rf .probe
           echo "OK - scaffold, nested discovery, doctor, --fix, exit codes, completions"
 
   sample-package:

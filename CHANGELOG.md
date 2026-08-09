@@ -23,6 +23,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
   Notably **not** included: an `.xcodeproj` generator. That is a build-system artifact whose format Xcode owns, and a generated one drifts from what Xcode would have made.
 
+  Repo surfaces caught up with what ships: the README gained a CLI row, an install line, and a *What's New in 2.1* section (2.1.0 had shipped with no entry), and `docs/mcp/installation.md` documents the four-step root resolution including the `.ios-agent/` marker. One stale claim removed rather than updated -- `examples.md` pinned a Swift test count this environment cannot verify, and writing a number I have not seen reported is worse than writing none.
+
   Second pass, applying the same one-declaration move to the command surface: `COMMANDS` drives dispatch, `help`, and the bash and zsh completion scripts, so help cannot describe a flag the parser rejects. `--json` on `where`, `info`, `clean`, and `doctor`; exit codes split so a script can tell "the project is unhealthy" (2) from "you called it wrong" (1) without parsing stderr; and `doctor --fix`, which repairs only defects with a **derivable** correct value -- a stale generated gitignore, a config behind the current layout version. It deliberately will **not** create a missing `App/`: there is no safe automatic answer, and a `--fix` that guesses turns the safe command into a source of surprise changes. A test asserts exactly that. 42 -> 53 CLI tests.
 
 - **`docs/frameworks/accelerate.md`** -- Accelerate, and the first framework doc whose central point is an isolation rule rather than an API surface.
