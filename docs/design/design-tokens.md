@@ -60,7 +60,17 @@ enum Primitive {
     static let radiusL: CGFloat = 24
 }
 
+// THE canonical hex initialiser for this skill. Defined here, in the token
+// layer, and nowhere else — `color-system.md` and
+// `templates/common-patterns/design-system.swift` reference this file rather
+// than redeclaring it. Two files declaring `init(hex: String)` with different
+// bodies is not a style disagreement: copy both into one target and the
+// compiler rejects it with `invalid redeclaration of 'init(hex:)'`.
 extension Color {
+    /// Hex as an integer literal: `Color(hex: 0x6C63FF)`.
+    ///
+    /// Preferred over the string form because a typo is a compile error rather
+    /// than a runtime surprise — `0x6C63FZ` does not build, `"6C63FZ"` does.
     init(hex: UInt32, opacity: Double = 1) {
         self.init(
             .sRGB,
@@ -69,6 +79,35 @@ extension Color {
             blue:  Double( hex        & 0xFF) / 255,
             opacity: opacity
         )
+    }
+
+    /// Hex as a string: `Color(hex: "6C63FF")`, with or without `#`,
+    /// 6 digits (RGB) or 8 (RRGGBBAA).
+    ///
+    /// Exists because designers hand over strings and remote themes arrive as
+    /// JSON. A malformed value traps in DEBUG and renders **magenta** in
+    /// release — never black. The earlier versions of this initialiser fell
+    /// back to black, which is indistinguishable from a deliberate colour and
+    /// so shipped unnoticed; magenta appears nowhere in any of these palettes
+    /// and is impossible to mistake for intent.
+    init(hex string: String, opacity: Double = 1) {
+        let cleaned = string
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .replacingOccurrences(of: "#", with: "")
+
+        var value: UInt64 = 0
+        let scanned = Scanner(string: cleaned).scanHexInt64(&value)
+
+        switch (scanned, cleaned.count) {
+        case (true, 6):
+            self.init(hex: UInt32(truncatingIfNeeded: value), opacity: opacity)
+        case (true, 8):
+            let alpha = Double(value & 0xFF) / 255
+            self.init(hex: UInt32(truncatingIfNeeded: value >> 8), opacity: opacity * alpha)
+        default:
+            assertionFailure("Malformed hex colour literal: \(string)")
+            self.init(hex: 0xFF00FF, opacity: opacity)
+        }
     }
 }
 ```

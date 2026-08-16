@@ -37,6 +37,8 @@ Load this skill when any of the following is true. When none are true, do not lo
 | Face ID, Touch ID, biometric unlock, Keychain access control | `docs/frameworks/local-authentication.md` |
 | Any chart, graph, or plot | `docs/frameworks/swift-charts.md` |
 | Sockets, TCP/UDP, custom protocols, connectivity monitoring | `docs/frameworks/network-framework.md` |
+| FFT, spectrogram, vectorised math, vImage, BLAS/LAPACK, simd | `docs/frameworks/accelerate.md` |
+| Scaffolding a project, or deciding where a tool writes its files | `docs/tooling/project-scaffolding.md` |
 | Colors, spacing, theming, glass effects | `docs/design/design-tokens.md`, `docs/design/color-system.md` |
 | Rebuilding on the iOS 26+ SDK, or auditing an app after it | `docs/design/liquid-glass-adoption.md` |
 | A named Apple framework | the matching `docs/frameworks/**` file |
@@ -256,7 +258,7 @@ These rules are NON-NEGOTIABLE. Every UI must be readable and accessible:
 2. **NEVER use gray text on gray backgrounds** — if the background is light gray, use dark text (`.primary` or black). If the background is dark, use white text
 3. **NEVER use low-opacity text on colored backgrounds** — use full-opacity white or dark text, not `.secondary` or `.opacity(0.6)` on colored surfaces
 4. **Card backgrounds must contrast with the page background** — if page is white/light gray, cards should be pure white with a visible shadow OR a distinctly different shade. Never gray-on-gray
-5. **Colored category pills/tags must have readable text** — use white text on dark-colored pills, or dark text on light-colored pills. The pill color itself must be vivid and saturated, not washed out
+5. **Colored category pills/tags must have readable text** — the pill color itself must be vivid and saturated, not washed out. **Choose the foreground by measurement, not by assumption.** A saturated mid-tone brand color usually needs *black* text, not white: of the 40 colors in this skill's own five palettes, **34 reach 4.5:1 against black and only 6 against white.** `#34C759` with white text is 2.22:1 — a third of the required ratio, on a color that looks like it should take white.
 6. **Test both light and dark mode** — every color pairing must work in both. Use `Color(.systemBackground)` for page backgrounds, `Color(.secondarySystemBackground)` for cards
 7. **Use Apple's semantic colors for guaranteed readability:**
    - Page background: `Color(.systemBackground)` — white in light, black in dark
@@ -278,12 +280,14 @@ When applying colors to UI elements, follow these exact rules:
 - Headlines/titles → `Color(.label)` with `.fontWeight(.bold)` — always full opacity, always readable
 - Body text → `Color(.label)` — never reduce opacity below 0.87
 - Captions/metadata → `Color(.secondaryLabel)` — already dimmed by the system, don't add more opacity
-- Text on colored buttons → `.white` (on dark buttons) or `Color(.label)` (on light buttons)
+- Text on colored buttons → whichever of white or black measures higher against that specific fill. "Dark button" is not a reliable proxy: `#0A6EBD` takes white at 5.28:1, while `#3DA5F4` — three shades lighter and still plainly "a blue button" — takes black at 7.89:1 and manages only 2.66:1 with white
 
 **Interactive Elements (buttons, pills, tags, chips):**
 - Use VIVID, SATURATED colors — not pastel or washed out
-- Category pills → use your theme's primary/secondary/accent colors at FULL saturation with white text
-- Example: `.background(Color.blue)` with `.foregroundStyle(.white)` — NOT `.background(Color.blue.opacity(0.3))` with `.foregroundStyle(.blue)`
+- Category pills → use your theme's primary/secondary/accent colors at FULL saturation
+- **Pick the label color by contrast ratio, per color.** White-on-saturated is the intuition and it is wrong far more often than it is right — run `node scripts/check-contrast.mjs` or read the published ratio in `docs/design/color-system.md`, where every palette entry states its measured foreground
+- Example: `.background(Color.blue)` with a *measured* foreground — NOT `.background(Color.blue.opacity(0.3))` with `.foregroundStyle(.blue)`, which looks disabled
+- When a brand color cannot reach 4.5:1 with either black or white, **darken the background** rather than accepting the ratio. A pill is small text; it does not qualify for the 3:1 large-text allowance
 - Disabled state → reduce to `.opacity(0.4)` but never make active elements look disabled
 
 **Stat cards / number displays:**
@@ -445,6 +449,8 @@ AppName/
 | Biometrics | **LocalAuthentication** | Face ID, Touch ID, Optic ID, biometric Keychain gating |
 | Charts | **Swift Charts** | Declarative charts with accessibility and Dynamic Type |
 | Sockets | **Network.framework** | TCP/UDP, custom protocols, TLS, path monitoring |
+| Signal/image math | **Accelerate** | FFT, vectorised arithmetic, vImage, BLAS/LAPACK, sparse solvers |
+| Small vector math | **simd** | 2–4 element vectors, matrices, quaternions — not vDSP |
 | Logging | **OSLog** | Structured logging, performance profiling |
 | Background | **BackgroundTasks** | BGTaskScheduler, background refresh |
 | Integrity | **DeviceCheck + AppAttest** | Device verification, API security |
@@ -493,7 +499,7 @@ AppName/
 1. **Never force-unwrap optionals** (`!`) unless you have a compile-time guarantee
 2. **Never use `DispatchQueue.main.async`** in new SwiftUI code — use `@MainActor` instead. Inside an already-isolated type, `await MainActor.run { }` is redundant too
 3. **Never store view state in a view model** that should be `@State` — views own their own transient state
-4. **Never block the main thread** with synchronous network calls or heavy computation. `@MainActor` does not make CPU work safe — move it to an `actor` or a `nonisolated async` function
+4. **Never block the main thread** with synchronous network calls or heavy computation. `@MainActor` does not make CPU work safe — move it to an `actor` or a `nonisolated async` function. Accelerate, Core ML, image decoding, and JSON over a large payload are all synchronous and all inherit the caller's isolation
 5. **Never hardcode strings** — use `String(localized:)` for user-facing text
 6. **Never ignore `Sendable` warnings** — they indicate potential data races
 7. **Never use `AnyView`** for type erasure in SwiftUI — restructure with `@ViewBuilder` or `some View`
@@ -597,6 +603,7 @@ This repository contains comprehensive documentation. Consult these files when b
 - `docs/frameworks/cryptokit.md` — Hashing, encryption, signing, Secure Enclave
 - `docs/frameworks/local-authentication.md` — `LAContext`, biometry policies, Keychain access control as the real boundary, lockout and fallback
 - `docs/frameworks/network-framework.md` — `NWConnection`, `NWListener`, message framing, TLS pinning, `NWPathMonitor`, actor ownership
+- `docs/frameworks/accelerate.md` — vDSP, vForce, vImage, BLAS/LAPACK, sparse solvers, simd and Spatial; the isolation rule for heavy CPU work, FFT packing and scaling, vImage buffer ownership
 - `docs/frameworks/oslog.md` — Structured logging, MetricKit diagnostics
 - `docs/frameworks/background-tasks.md` — BGTaskScheduler, background refresh
 - `docs/frameworks/device-integrity.md` — DeviceCheck, AppAttest
@@ -609,7 +616,7 @@ This repository contains comprehensive documentation. Consult these files when b
 - `docs/platforms/visionos.md` — visionOS spatial computing
 
 ### Samples & Templates
-- `samples/SkillPatterns/` — **Compile-checked** reference implementation of this skill's core patterns, including SwiftData (`@Model`, `@ModelActor`, container injection) and `AsyncSequence` consumption. CI builds and tests it, which is what makes those patterns VERIFIED rather than INSPECTED
+- `samples/SkillPatterns/` — **Compile-checked** reference implementation of this skill's core patterns, including SwiftData (`@Model`, `@ModelActor`, container injection), `AsyncSequence` consumption, and Accelerate/vDSP behind an `async` boundary. CI builds and tests it, which is what makes those patterns VERIFIED rather than INSPECTED
 - `templates/ios-app/` — Ready-to-use iOS SwiftUI app template
 - `templates/multiplatform-app/` — Multi-platform SwiftUI template
 - `templates/common-patterns/` — Networking, persistence, auth, navigation, DI patterns
@@ -634,6 +641,7 @@ This repository contains comprehensive documentation. Consult these files when b
 - `scripts/eval-agents.sh` — Verifies every subagent's tool grant against the instructions relying on it; `--table` prints the grant matrix, `--self-test` proves the checks are not vacuous
 
 ### MCP Server
+- `cli/` — `ios-agent`, the scaffolding CLI. Generates a project whose root is `App/` plus a README and a licence; everything tool-owned lives in a hidden `.ios-agent/`. `where --json` is the interop contract other tools query instead of hardcoding the directory name. See `docs/tooling/project-scaffolding.md`
 - `mcp-server/` — `ios-agent-mcp`, an MCP server exposing eleven tools: ten that analyze Swift (concurrency, architecture, SwiftUI, availability, memory, security, testing, performance, App Store readiness, project overview) and `lint_skill`, which checks a skill repository's own metadata
 - `docs/mcp/installation.md` — Claude Code, Claude Desktop, Cursor, and from-source setup
 - `docs/mcp/tools.md` — Tool reference, every rule and its severity, and the limits of static analysis
@@ -648,6 +656,7 @@ This repository contains comprehensive documentation. Consult these files when b
 ### Tooling
 - `docs/tooling/xcode-27-agents.md` — Xcode coding agents, when to use them vs. Claude Code, agent-assisted localization and testing, Instruments
 - `docs/tooling/device-hub.md` — Device Hub, the device/config test matrix, iOS 27 app resizability, accessibility passes
+- `docs/tooling/project-scaffolding.md` — The generated project layout, the authorship rule for hiding tool-owned files, one-declaration derivation of gitignore and `clean`, root discovery via a `.ios-agent` marker, cross-platform cache locations
 
 ### Testing & Quality
 - `docs/testing/mocking-strategy.md` — Three-tier strategy: test doubles, rich debug mocks, environment flags and debug menus

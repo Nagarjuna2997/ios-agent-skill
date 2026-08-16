@@ -5,6 +5,10 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  # Without this, work on a branch with no open PR gets no CI at all — which is
+  # how eleven commits once accumulated with zero runs. Lets any branch be
+  # checked on demand, including against the macOS runner.
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -359,6 +363,12 @@ jobs:
           print("OK - frontmatter only where expected")
           PY
 
+      # SKILL.md states a 4.5:1 body-text rule; nothing verified the shipped
+      # palettes against it until now. They pass — but 34 of the 40 colours
+      # need black text, not the white the pill guidance used to prescribe.
+      - name: Palette contrast ratios are published and correct
+        run: node scripts/check-contrast.mjs
+
   mcp-server:
     name: MCP server builds and tests
     runs-on: ubuntu-latest
@@ -419,6 +429,87 @@ jobs:
             }
             console.log('OK - manifest matches ' + registered.length + ' registered tools');
           "
+
+  cli:
+    name: CLI builds and tests
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      # The layout is path-shaped, so it has to be exercised on a case-insensitive
+      # filesystem and on Windows separators, not just on the Linux runner.
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    defaults:
+      run:
+        working-directory: cli
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install
+        run: npm ci || npm install
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build
+        run: npm run build
+
+      - name: Test
+        run: npm test
+
+      # The scaffold's central promise is what the user sees at the project
+      # root. Asserting it end to end catches a regression that unit tests on
+      # the layout table would not: a command that writes somewhere unexpected.
+      #
+      # Every path here is RELATIVE, deliberately. On the Windows runner `bash`
+      # is Git Bash, whose `/tmp/x` is not the `/tmp/x` a native Windows
+      # node.exe resolves — an absolute path from `mktemp -d` would have the
+      # shell and the CLI writing to two different directories, and the failure
+      # would look like the scaffold silently producing nothing.
+      - name: Scaffold a project and check what is visible
+        shell: bash
+        run: |
+          rm -rf .probe && mkdir -p .probe
+          node dist/index.js new CIProbe --into .probe
+
+          visible="$(ls .probe/CIProbe | sort | tr '\n' ' ')"
+          echo "visible at root: $visible"
+          if [ "$visible" != "App LICENSE README.md " ]; then
+            echo "Unexpected visible entries at the project root."
+            exit 1
+          fi
+
+          test -d .probe/CIProbe/.ios-agent || { echo "missing .ios-agent"; exit 1; }
+          test -f .probe/CIProbe/App/CIProbe/CIProbeApp.swift || { echo "missing entry point"; exit 1; }
+
+          # Discovery must work from a nested source directory, so this runs
+          # from one — reaching back to the CLI relatively for the same reason.
+          ( cd .probe/CIProbe/App/CIProbe \
+            && node ../../../../dist/index.js doctor \
+            && node ../../../../dist/index.js where --json > /dev/null )
+
+          # Exit codes are part of the interface, so they are asserted rather
+          # than assumed: 2 means unhealthy, 1 means called wrong.
+          printf 'broken' > .probe/CIProbe/.ios-agent/.gitignore
+          set +e
+          node dist/index.js doctor --project .probe/CIProbe > /dev/null 2>&1
+          unhealthy=$?
+          set -e
+          [ "$unhealthy" -eq 2 ] || { echo "doctor should exit 2 when unhealthy, got $unhealthy"; exit 1; }
+
+          node dist/index.js doctor --project .probe/CIProbe --fix > /dev/null
+          node dist/index.js doctor --project .probe/CIProbe > /dev/null \
+            || { echo "--fix did not restore health"; exit 1; }
+
+          node dist/index.js completions zsh | grep -q "_ios_agent" || { echo "zsh completions missing"; exit 1; }
+          node dist/index.js completions bash | grep -q "complete -F" || { echo "bash completions missing"; exit 1; }
+
+          rm -rf .probe
+          echo "OK - scaffold, nested discovery, doctor, --fix, exit codes, completions"
 
   sample-package:
     name: Sample package builds and tests

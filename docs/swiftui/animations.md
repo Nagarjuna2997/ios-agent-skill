@@ -732,6 +732,60 @@ The `.scrollTransition` modifier animates views as they enter and leave the visi
 - `.identity` -- the view is fully within the visible area.
 - `.bottomTrailing` -- the view is below or to the trailing side of the viewport (about to exit bottom/trailing).
 
+**The closure receives a `VisualEffect`, not a `View`.** This is the single most
+important fact about the modifier and it is easy to miss, because the parameter
+is conventionally named `content` and every example uses it like a view.
+
+`VisualEffect` supports only effects that can be applied to already-rendered
+content on the GPU:
+
+| Supported inside `scrollTransition` | Not supported |
+|---|---|
+| `.opacity(_:)` | `.shadow(...)` |
+| `.scaleEffect(_:anchor:)` | `.background(...)` / `.overlay(...)` |
+| `.rotationEffect(_:anchor:)` | `.blur(radius:)` on some OS versions |
+| `.rotation3DEffect(_:axis:anchor:perspective:)` | `.foregroundStyle(...)` |
+| `.offset(x:y:)` | `.clipShape(...)` / `.mask(...)` |
+| `.brightness`, `.saturation`, `.contrast`, `.grayscale`, `.hueRotation` | any layout modifier |
+| `.blendMode(_:)` | anything that changes the view's identity or size |
+
+Reaching for `.shadow` inside the closure — the obvious way to make scrolling
+cards read as receding — produces one of Swift's worst diagnostics:
+
+```swift
+// WRONG — .shadow is not a VisualEffect member.
+.scrollTransition { content, phase in
+    content
+        .opacity(phase.isIdentity ? 1 : 0.4)
+        .shadow(radius: phase.isIdentity ? 20 : 4)
+}
+
+// error: the compiler is unable to type-check this expression
+//        in reasonable time; try breaking up the expression into
+//        distinct sub-expressions
+```
+
+That message points at expression complexity, which is not the problem. The
+problem is a missing overload, and no amount of breaking up the expression will
+fix it.
+
+```swift
+// RIGHT — the shadow lives outside the transition, driven by the same phase
+// through a plain modifier on the view itself.
+RoundedRectangle(cornerRadius: 16)
+    .fill(.blue.gradient)
+    .shadow(color: .black.opacity(0.15), radius: 12, y: 6)
+    .scrollTransition { content, phase in
+        content
+            .opacity(phase.isIdentity ? 1 : 0.4)
+            .scaleEffect(phase.isIdentity ? 1 : 0.92)
+    }
+```
+
+If a shadow genuinely has to change with scroll position, drive it from
+`GeometryReader` or `onScrollGeometryChange` and apply it as a normal modifier —
+it will cost more, which is precisely why `VisualEffect` excludes it.
+
 ```swift
 // Basic fade and scale on scroll
 ScrollView {

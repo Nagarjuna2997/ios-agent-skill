@@ -17,41 +17,70 @@ echo -e "${BLUE}Installing ${SKILL_NAME}...${NC}"
 echo ""
 
 # Detect installation target
+#
+# Two rules, both learned the hard way:
+#
+# 1. These are `elif`, not four sequential `if`s. As separate ifs the LAST
+#    match won, so a stray ~/.codex silently overrode a correctly detected
+#    Claude Code project and the skill landed somewhere the agent never reads.
+#
+# 2. INSTALL_DIR is NEVER the user's project root. It used to be `$(pwd)` when
+#    a .claude directory was present, and the clone-or-update branch below then
+#    ran `git pull --ff-only` INSIDE THE USER'S OWN REPOSITORY against an
+#    unrelated remote — or, on the clone path, aborted the script under `set -e`
+#    because the directory was not empty. Both outcomes are wrong and one of
+#    them touches work that is not ours.
 INSTALL_DIR=""
 
-# Check for Claude Code project directory
 if [ -d ".claude" ]; then
-    INSTALL_DIR="$(pwd)"
+    INSTALL_DIR="$(pwd)/.claude/skills/$SKILL_NAME"
     echo -e "  Detected ${GREEN}Claude Code${NC} project"
-fi
-
-# Check for Codex skills directory
-if [ -d "$HOME/.codex" ]; then
-    CODEX_SKILLS_DIR="$HOME/.codex/skills"
-    mkdir -p "$CODEX_SKILLS_DIR"
-    INSTALL_DIR="$CODEX_SKILLS_DIR/$SKILL_NAME"
-    echo -e "  Detected ${GREEN}Codex${NC} at: $CODEX_SKILLS_DIR"
-fi
-
-# Check for Antigravity
-if [ -d "$HOME/.antigravity" ]; then
-    AG_SKILLS_DIR="$HOME/.antigravity/skills"
-    mkdir -p "$AG_SKILLS_DIR"
-    INSTALL_DIR="$AG_SKILLS_DIR/$SKILL_NAME"
-    echo -e "  Detected ${GREEN}Antigravity${NC} at: $AG_SKILLS_DIR"
-fi
-
-# Default: install in current directory
-if [ -z "$INSTALL_DIR" ]; then
+elif [ -d "$HOME/.codex" ]; then
+    INSTALL_DIR="$HOME/.codex/skills/$SKILL_NAME"
+    echo -e "  Detected ${GREEN}Codex${NC}"
+elif [ -d "$HOME/.antigravity" ]; then
+    INSTALL_DIR="$HOME/.antigravity/skills/$SKILL_NAME"
+    echo -e "  Detected ${GREEN}Antigravity${NC}"
+else
     INSTALL_DIR="$(pwd)/$SKILL_NAME"
+    echo -e "  No agent directory detected — installing into the current directory"
 fi
 
-# Clone or update
-if [ -d "$INSTALL_DIR/.git" ]; then
-    echo ""
-    echo "Updating existing installation..."
-    cd "$INSTALL_DIR"
-    git pull --ff-only
+mkdir -p "$(dirname "$INSTALL_DIR")"
+
+# Refuse to touch anything that is not our own checkout.
+#
+# The guard is the remote URL, not the presence of .git: a directory can be a
+# git repository and still be someone else's work, which is exactly the case
+# this used to get wrong.
+if [ -e "$INSTALL_DIR" ]; then
+    if [ -d "$INSTALL_DIR/.git" ]; then
+        EXISTING_REMOTE="$(git -C "$INSTALL_DIR" remote get-url origin 2>/dev/null || echo "")"
+        if [ "$EXISTING_REMOTE" = "$REPO_URL" ]; then
+            echo ""
+            echo "Updating existing installation..."
+            git -C "$INSTALL_DIR" pull --ff-only
+        else
+            echo ""
+            echo -e "${YELLOW}Refusing to touch $INSTALL_DIR${NC}"
+            echo "It is a git repository, but its origin is:"
+            echo "  ${EXISTING_REMOTE:-<none>}"
+            echo "Expected: $REPO_URL"
+            echo ""
+            echo "Move it aside, or install elsewhere:"
+            echo "  git clone $REPO_URL /path/of/your/choosing"
+            exit 1
+        fi
+    elif [ -n "$(ls -A "$INSTALL_DIR" 2>/dev/null)" ]; then
+        echo ""
+        echo -e "${YELLOW}Refusing to overwrite $INSTALL_DIR${NC}"
+        echo "The directory already exists and is not empty."
+        exit 1
+    else
+        echo ""
+        echo "Cloning skill repository..."
+        git clone "$REPO_URL" "$INSTALL_DIR"
+    fi
 else
     echo ""
     echo "Cloning skill repository..."

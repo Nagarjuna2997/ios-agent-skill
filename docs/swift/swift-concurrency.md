@@ -420,6 +420,11 @@ release the actor) or that it makes CPU work safe (it does not — your own
 synchronous statements block the UI). Move heavy synchronous work to an `actor`
 or a `nonisolated` async function.
 
+This bites hardest with synchronous C frameworks, which inherit the caller's
+isolation and never yield — Accelerate, Core ML, and image decoding are all in
+this category. `docs/frameworks/accelerate.md` §2 works the pattern through end
+to end, and the sample package compiles it.
+
 ### Escaping the main actor deliberately
 
 | Technique | Effect | Use when |

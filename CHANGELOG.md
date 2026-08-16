@@ -6,7 +6,71 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+### Fixed -- unreleased
+
+**A field report from building a SwiftData notes app with a RealityKit gallery against this skill (Xcode 26.6 / iOS 26.5) found thirteen defects.** Every claim was verified against the repository before anything changed. Three came back different from the report in ways that changed the fix, and one came back considerably worse.
+
+- **F1 -- `Color(hex:)` fragmentation.** Confirmed: 329 string call sites, 7 integer ones, three definitions. The mechanism is not quite "cannot coexist" -- the `UInt32` and `String` forms are distinct overloads and would compile side by side. The actual compile error is that `color-system.md` and `design-system.swift` both declared `init(hex: String)` with **different bodies**: copy both into one target and you get `invalid redeclaration of 'init(hex:)'`. Separately, `SKILL.md` routes agents to `design-tokens.md`, which carried only the `UInt32` form, so a project that follows the routing table breaks all 329 string sites.
+
+  One canonical definition now lives in `design-tokens.md` accepting both forms. The string form no longer falls back to **black** on a malformed literal -- black is indistinguishable from a deliberate colour and so shipped unnoticed. It traps in DEBUG and renders magenta in release, which appears in none of the palettes.
+
+- **F2 -- `install.sh` could `git pull` inside the user's own repository.** Confirmed exactly, sequential `if`s included. Detection is an `elif` chain; `INSTALL_DIR` is never the project root; and the update path now checks the **remote URL** rather than the presence of `.git`, because a directory can be a git repository and still be someone else's work -- which is precisely the case this got wrong. Regression-tested against a fake user repo with a stubbed `git`.
+
+- **F3 -- the shipped template violated the skill's own non-negotiables.** Confirmed, and **three more templates** had the same `@Observable`-without-`@MainActor` defect. The template now has a typed error, an injected repository, `CancellationError` as the deliberate no-op, five previews (one per state, none touching the network), and a composition root. It also dropped a `.font(.system(size: 64))` that the repo's own hook rejects.
+
+- **F4 -- RealityKit pitfall 7 was factually wrong**, contradicting the platform table eight lines below it. Narrowed to `ImmersiveSpace` and hand/eye input, which genuinely are visionOS-only.
+
+- **F5-F8 -- no non-AR RealityKit guidance existed.** All nine search terms returned zero files; verified. New section 16 covers `content.camera = .virtual` and why omitting it starts an AR session behind your scene, the light rig a virtual scene needs, the **~27 degree portrait horizontal field** with the arithmetic and the depth-not-width rule it implies, both forms of the orbit-control camera override, the `ImageRenderer` texture route since `generateText` is not in the iOS SDK, and the `SwiftUI.Scene` ambiguity.
+
+- **F9 -- the SortDescriptor section did not merely omit the `Bool` constraint, it demonstrated it.** `SortDescriptor(\Task.isCompleted)` was a shipped example that does not compile. Fixed, with both workarounds and an explanation of why the `NSObject` diagnostic points somewhere else entirely.
+
+- **F10 -- `VisualEffect`'s supported surface** documented as a table, with the `.shadow` case and why "unable to type-check in reasonable time" misdirects.
+
+- **F13 -- worse than reported, and the fix is the opposite of re-picking hexes.** The report found one palette colour failing 4.5:1. Measuring all forty found that **34 of them fail against white** -- and that all forty *pass* against **black**. The defect was never the palettes; it was `SKILL.md` telling agents to put white text on saturated pills. `#34C759` with white is 2.22:1, a third of the required ratio, on a colour that looks like it should take white.
+
+  The rule now says to choose the foreground by measurement, every palette row publishes its measured foreground and ratio, and `scripts/check-contrast.mjs` keeps them honest in CI. Mutation-tested both ways: a falsified ratio and an omitted one each fail the build.
+
+Four new checks, all mutation-tested, so none of the above can regress: one `Color.init(hex:)` definition; no template with `@Observable` lacking `@MainActor` or a dependency defaulted to a live implementation; and every published contrast ratio matching its measurement.
+
+The template check's first draft had two false positives -- it read Swift attribute order as significant and flagged a doc comment quoting the anti-pattern -- which is why the two files it accused were inspected rather than "fixed".
+
 ### Added -- unreleased
+- **`cli/` -- `ios-agent`, a scaffolding CLI, and `docs/tooling/project-scaffolding.md`, the design behind it.** A generated project shows the user three entries; everything the tool owns lives in a hidden `.ios-agent/`.
+
+  **The rule that decides where anything goes is authorship, not importance.** If a human writes it, it is visible; if the tool writes it, it is hidden. Importance is the tempting axis and has no edge -- everything feels important to whoever added it, so a layout sorted that way grows a root directory per release. Authorship has a sharp edge, and two things fall out of it that are worth more than the tidiness: `clean` needs no confirmation prompt because nothing in there was authored, and "delete `.ios-agent/` and re-run" becomes structurally safe advice rather than a risk.
+
+  The leverage is not the directory name, it is that **one declaration produces four behaviours**. A row in `INTERNAL_ENTRIES` automatically yields its line in the generated `.ios-agent/.gitignore`, its inclusion in or exclusion from `clean`, its path in `where --json`, and a `doctor` check that it has not leaked to the project root. The alternative -- a constant here, a gitignore line there, a clean list elsewhere -- is three places that must be edited together and eventually are not, and the failure is quiet: a new cache directory that `clean` skips and git happily commits. The test asserting the two sets are complements does not care what the entries are; it fails the day someone adds a row that is both tracked and deletable.
+
+  `.ios-agent/` doubles as a **root marker**, the way `.git/` does, which is how the CLI and the MCP server agree on a project without either configuring the other. Both now report *how* the root was resolved, not just what it is -- an implicit root is unfalsifiable, and without it "0 Swift files" is identical whether the project is empty or the tool is pointed somewhere else.
+
+  **`ios-agent-mcp` stays read-only.** It reads the marker and never creates it, so the `filesystem: read, network: none` contract is unchanged. Scaffolding writes, so it is a separate package rather than a quiet turn from analyzer into something that mutates your project.
+
+  Cross-platform throughout: user-level caches use each platform's own location (not `~/.ios-agent`, which is on no platform's list), Windows reserved device names are rejected everywhere so a Mac-created project still checks out on Windows, and tracked config stores POSIX paths because that file crosses machines by design. CI runs the CLI on ubuntu, macOS, and Windows, and asserts end to end that the project root contains exactly `App`, `LICENSE`, `README.md`.
+
+  **42 CLI tests**, plus **7 in `ios-agent-mcp`** (123 -> 130) covering marker discovery -- including the case that a *file* named `.ios-agent` is not a marker. `doctor`'s checks are mutation-tested: each one is shown to fail when the layout is actually broken.
+
+  Notably **not** included: an `.xcodeproj` generator. That is a build-system artifact whose format Xcode owns, and a generated one drifts from what Xcode would have made.
+
+  Repo surfaces caught up with what ships: the README gained a CLI row, an install line, and a *What's New in 2.1* section (2.1.0 had shipped with no entry), and `docs/mcp/installation.md` documents the four-step root resolution including the `.ios-agent/` marker. One stale claim removed rather than updated -- `examples.md` pinned a Swift test count this environment cannot verify, and writing a number I have not seen reported is worse than writing none.
+
+  Second pass, applying the same one-declaration move to the command surface: `COMMANDS` drives dispatch, `help`, and the bash and zsh completion scripts, so help cannot describe a flag the parser rejects. `--json` on `where`, `info`, `clean`, and `doctor`; exit codes split so a script can tell "the project is unhealthy" (2) from "you called it wrong" (1) without parsing stderr; and `doctor --fix`, which repairs only defects with a **derivable** correct value -- a stale generated gitignore, a config behind the current layout version. It deliberately will **not** create a missing `App/`: there is no safe automatic answer, and a `--fix` that guesses turns the safe command into a source of surprise changes. A test asserts exactly that. 42 -> 53 CLI tests.
+
+- **`docs/frameworks/accelerate.md`** -- Accelerate, and the first framework doc whose central point is an isolation rule rather than an API surface.
+
+  Accelerate functions are synchronous C: they inherit whatever isolation calls them and never yield. A `@MainActor @Observable` view model calling `vDSP` blocks the main thread for the entire computation, and **nothing in that code looks wrong** -- there is no warning, no runtime check, and the vDSP call itself is correct. It is the concrete case of the pitfall `SKILL.md` already states abstractly, so that rule now names the synchronous C frameworks it applies to.
+
+  Routing first, because reaching for the wrong sub-library is the common failure and it goes both ways: hand-writing a loop over 100,000 samples wastes the vector unit, and calling `vDSP.add` on a three-element vector costs more in call overhead than the loop it replaced -- that is what `simd` is for. Then depth on the two that matter, vDSP and vImage.
+
+  The FFT section documents the two things that produce a spectrum that looks right and is wrong: **bin 0 is not purely DC** (the real-to-complex transform packs the Nyquist term into its imaginary part), and the output carries a **factor of two** that never moves a peak and invalidates every absolute magnitude. Plus the rule that catches both -- test transforms against a *known answer*, not a snapshot. A signal with eight periods across the frame must peak in bin eight; that fails when the transform is wrong rather than when the numbers change.
+
+  vImage is covered as an ownership problem, because that is what it is: `vImageBuffer_Init` hands you `malloc`ed memory nothing will free, and per video frame the result is a jetsam kill that reads as the OS killing the app for no reason.
+
+  8 anti-patterns, a 19-item checklist, and honest scoping -- BLAS/LAPACK gets the one fact that actually bites (they are column-major, so a row-major Swift array solves the transposed system and returns a plausible wrong answer), and BNNS routes to Core ML, since hand-building a network on a CPU-only library gives up the Neural Engine entirely.
+
+- **`samples/SkillPatterns/Sources/SkillPatterns/SignalProcessing.swift`** -- the Accelerate patterns, compile-checked. `AccelerateSpectrumAnalyzer` is an `actor` for a stated reason: `vDSP.FFT` is expensive to construct and is not `Sendable`, so it cannot be stored in a `Sendable` value type -- the same shape as owning an `NWConnection` or a `ModelContext`. The protocol requirement is `async` because that is the only part of the signature preventing a caller from doing the work on the main actor by accident, and a synchronous stub witnesses it, so a preview needs no audio and no Accelerate at all.
+
+  Behind `#if canImport(Accelerate)` so the package still builds on Linux. **13 new tests**, four of them known-answer transforms.
+
 - **`docs/design/liquid-glass-adoption.md`** -- the migration half of Liquid Glass. `design-tokens.md` covered applying the material to a view you own; nothing covered what an SDK rebuild does to an app you already shipped, which is the part that actually costs time.
 
   A coverage check found the gap was near-total: `UIDesignRequiresCompatibility`, `backgroundExtensionEffect`, `tabBarMinimizeBehavior`, `Tab(role: .search)`, `ToolbarSpacer`, `ConcentricRectangle`, `safeAreaBar`, the scroll edge effect, and Icon Composer appeared in **zero** files.

@@ -1,6 +1,10 @@
 import Foundation
 import Observation
 
+// @MainActor on the TYPE. `@Observable` grants no isolation of its own, so
+// without this the stored properties are non-isolated and any task may mutate
+// them while SwiftUI reads — a data race Swift 6 rejects and Swift 5 ships.
+@MainActor
 @Observable
 final class ProfileViewModel {
     private(set) var userName: String = "John Doe"
