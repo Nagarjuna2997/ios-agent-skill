@@ -60,5 +60,9 @@ playground.xcworkspace
 .env
 *.env.local
 
+# Node
+node_modules/
+dist/
+
 # Archives
 *.xcarchive

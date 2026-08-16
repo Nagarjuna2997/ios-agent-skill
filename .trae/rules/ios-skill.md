@@ -62,7 +62,7 @@ Load this skill when any of the following is true. When none are true, do not lo
 | App Intents schemas, semantic indexing, View Annotations | `docs/frameworks/app-intents-intelligence.md`, `docs/frameworks/app-intents.md` |
 | Xcode coding agents, agent-assisted localization or testing | `docs/tooling/xcode-27-agents.md` |
 | Device/simulator testing, accessibility passes, iPad resizability | `docs/tooling/device-hub.md` |
-| Runtime simulator automation, screenshots, video, logs, UI driving | `docs/tooling/ios-simulator-mcp.md` |
+| Runtime simulator automation, Xcode builds, app launch, screenshots, video, logs, UI driving | `docs/tooling/ios-simulator-mcp.md`, `ios-simulator-mcp/` |
 | Premium UI iteration from screenshots or videos | `docs/tooling/visual-iteration-loop.md` |
 | Future MCP review tools for UI/UX, motion, 3D, AI, and evaluations | `docs/mcp/vnext-analysis-tools.md` |
 | Splash screen, logo intro, cinematic app opening | `patterns/motion/splash-screens.md` |
@@ -729,7 +729,8 @@ This repository contains comprehensive documentation. Consult these files when b
 - `docs/tooling/device-hub.md` — Device Hub, the device/config test matrix, iOS 27 app resizability, accessibility passes
 - `docs/tooling/fm-cli.md` — Foundation Models terminal experiments with the `fm` CLI, safe transcript handling, promotion to evaluations
 - `docs/tooling/foundation-models-instruments.md` — Foundation Models Instruments profiling for tokens, latency, tools, Dynamic Profiles
-- `docs/tooling/ios-simulator-mcp.md` — Planned separate runtime MCP for Xcode builds, simulator launch, screenshots, video, logs, gestures, and accessibility-tree inspection
+- `ios-simulator-mcp/` — Separate runtime MCP package for macOS + Xcode: build, test, simulator boot/shutdown, app install/launch/terminate, deep links, and screenshots
+- `docs/tooling/ios-simulator-mcp.md` — Runtime MCP contract for current simulator tools plus planned video, logs, gestures, and accessibility-tree inspection
 - `docs/tooling/visual-iteration-loop.md` — Design -> Build -> See -> Improve loop for premium UI iteration with runtime artifacts
 - `docs/tooling/project-scaffolding.md` — The generated project layout, the authorship rule for hiding tool-owned files, one-declaration derivation of gitignore and `clean`, root discovery via a `.ios-agent` marker, cross-platform cache locations
 - `docs/web/native-vs-web-animation.md` — Routing web animation/3D vocabulary to native SwiftUI, UIKit, RealityKit, SpriteKit, Metal, or WKWebView

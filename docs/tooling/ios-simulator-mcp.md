@@ -15,22 +15,42 @@ Do not add these tools to `ios-agent-mcp`. The existing package is intentionally
 
 The split keeps a Swift linter lightweight while still giving agents a path to runtime validation.
 
-## Planned Tool Surface
+## Current Package
 
-Start with deterministic wrappers over Apple tooling:
+The first executable slice now lives in `ios-simulator-mcp/`. It is deliberately
+separate from `ios-agent-mcp` because it requires macOS, Xcode, and simulator
+side effects.
+
+Install from source:
+
+```bash
+cd ios-simulator-mcp
+npm install
+npm run build
+node dist/index.js --help
+```
+
+Implemented tools:
 
 | Tool | Purpose | Backend |
 |---|---|---|
 | `simulator_list` | List available runtimes and devices | `xcrun simctl list --json` |
-| `simulator_boot` | Boot a simulator by id or device name | `xcrun simctl boot` |
+| `simulator_boot` | Boot a simulator by UDID | `xcrun simctl boot` |
 | `simulator_shutdown` | Shut down a booted simulator | `xcrun simctl shutdown` |
-| `build_project` | Build an app or test target | `xcodebuild` |
+| `build_project` | Build an app or test target | `xcodebuild build` |
 | `run_tests` | Run tests with captured result output | `xcodebuild test` |
 | `install_app` | Install an `.app` bundle | `xcrun simctl install` |
 | `launch_app` | Launch by bundle identifier | `xcrun simctl launch` |
 | `terminate_app` | Terminate by bundle identifier | `xcrun simctl terminate` |
 | `open_deep_link` | Open a URL or universal link | `xcrun simctl openurl` |
 | `screenshot` | Capture a PNG for review | `xcrun simctl io screenshot` |
+
+## Planned Tool Surface
+
+Next, extend the deterministic Apple-tooling tier:
+
+| Tool | Purpose | Backend |
+|---|---|---|
 | `record_video` | Record and stop simulator video | `xcrun simctl io recordVideo` |
 | `stream_logs` | Capture app logs with predicates | `xcrun simctl spawn log stream` |
 | `reset_app_state` | Reset one app's container and permissions | app uninstall/install or container cleanup |

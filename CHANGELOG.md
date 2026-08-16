@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+### Added -- 4.0.0 seed
+- **`ios-simulator-mcp/`** -- the first executable slice of the v4 Build -> Run -> See -> Fix loop. It is a separate MCP package from `ios-agent-mcp`, with a macOS + Xcode runtime contract instead of a lightweight static-analysis contract.
+- Implemented safe runtime tools for `simulator_list`, `simulator_boot`, `simulator_shutdown`, `build_project`, `run_tests`, `install_app`, `launch_app`, `terminate_app`, `open_deep_link`, and `screenshot`.
+- The package wraps `xcrun simctl` and `xcodebuild` with typed command construction, bounded timeouts, structured MCP output, and tests that pin the generated command arguments. Destructive simulator erase/reset remains intentionally absent.
+- README, `SKILL.md`, `ROADMAP.md`, and `docs/tooling/ios-simulator-mcp.md` now distinguish the implemented first package from the planned video/log/UI-driving tier.
+
 ### Added -- 3.0.0
 - **Apple Platform Intelligence** -- the v3.0 release direction. The repository now has a generated Apple technology catalog (`frameworks.json` -> `docs/apple-framework-index.md`), README coverage statistics derived from that catalog, and CI/hook checks that fail stale catalog output.
 - **P0 domain hubs** for AI, professional UI/UX, animation, graphics/3D/spatial, data, networking, WebKit, security, performance, and XCUIAutomation. These are routing guides with decision matrices, examples, anti-patterns, production checklists, and links to existing deep framework guides rather than empty placeholder files.

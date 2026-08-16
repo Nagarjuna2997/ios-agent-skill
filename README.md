@@ -3,7 +3,7 @@
   <img src="https://img.shields.io/badge/Xcode-27-147EFB?style=for-the-badge&logo=xcode&logoColor=white" alt="Xcode">
   <img src="https://img.shields.io/badge/iOS%2017--27-000000?style=for-the-badge&logo=apple&logoColor=white" alt="iOS">
   <img src="https://img.shields.io/badge/MCP%20Server-11%20tools-8B5CF6?style=for-the-badge" alt="MCP">
-  <img src="https://img.shields.io/badge/AI%20Agents-25+-00D084?style=for-the-badge" alt="AI Agents">
+  <img src="https://img.shields.io/badge/Subagents-24-00D084?style=for-the-badge" alt="Subagents">
 </p>
 
 <h1 align="center">iOS Agent Skill</h1>
@@ -90,6 +90,7 @@ Every finding carries a file, a line, the consequence, the fix, and a link to th
 |---|---|
 | 🧠 **The skill** | 100+ files — Swift 6.4 concurrency, SwiftUI, Clean Architecture, 50+ production-focused Apple framework guides, design tokens, App Store checklists |
 | 🔌 **[MCP server](mcp-server/)** | 11 tools: concurrency, architecture, SwiftUI, availability, memory, security, testing, performance, App Store readiness, project overview, skill lint |
+| 📱 **[Simulator MCP](ios-simulator-mcp/)** | Runtime companion for macOS + Xcode: list/boot/shutdown simulators, build/test with `xcodebuild`, install/launch/terminate apps, open deep links, capture screenshots |
 | 🛠️ **[CLI](cli/)** | `ios-agent new MyApp` — scaffolds a project whose root is `App/`, a README, and a licence. Caches, logs, state, and build artifacts live in a hidden `.ios-agent/` |
 | 🤖 **[24 subagents](.claude/agents/)** | explore, plan, review, debug, refactor, docs, Foundation Models, modernization, UI/UX, motion, 3D, Core AI, App Intents, RealityKit, Metal, WebKit, testing, Xcode, security, App Store |
 | ⚙️ **[Orchestration](docs/orchestration/)** | When to delegate, loop, or scale out — and the evidence rule that stops "it works" without proof |
@@ -140,9 +141,11 @@ Every review tool also returns `structuredContent` — `summary`, `score`, `coun
 
 **v2.1.0 finishes the analysis server:** eleven tools, three resources, structured output. No Xcode, no simulator, no network, ~26 KB — it runs on macOS, Linux, and Windows.
 
-**v2.x next adds review contracts for design and AI:** `review_ui_ux`, `review_motion`, `review_accessibility`, `review_haptics`, RealityKit/Metal, Foundation Models/Core AI, App Intents, AI security, and evaluations are specified in **[docs/mcp/vnext-analysis-tools.md](docs/mcp/vnext-analysis-tools.md)** before they are implemented.
+**v4.0 starts the runtime loop:** `ios-simulator-mcp` is now a separate executable package for Build -> Run -> See evidence: `xcodebuild`, simulator boot/shutdown, app install/launch/terminate, deep links, and screenshots.
 
-Simulator automation (screen recording, deep links, app management, then UI driving) ships as a **separate** package, so a Swift linter never requires a 15 GB Xcode install. **[docs/tooling/ios-simulator-mcp.md](docs/tooling/ios-simulator-mcp.md)** defines that runtime contract, and **[docs/tooling/visual-iteration-loop.md](docs/tooling/visual-iteration-loop.md)** explains the Design -> Build -> See -> Improve workflow. **[ROADMAP.md](ROADMAP.md)** has the phasing and feasibility notes.
+**v2.x static-analysis expansion remains planned:** `review_ui_ux`, `review_motion`, `review_accessibility`, `review_haptics`, RealityKit/Metal, Foundation Models/Core AI, App Intents, AI security, and evaluations are specified in **[docs/mcp/vnext-analysis-tools.md](docs/mcp/vnext-analysis-tools.md)** before they are implemented.
+
+Simulator automation ships as a **separate** package, so a Swift linter never requires a 15 GB Xcode install. **[docs/tooling/ios-simulator-mcp.md](docs/tooling/ios-simulator-mcp.md)** defines that runtime contract, and **[docs/tooling/visual-iteration-loop.md](docs/tooling/visual-iteration-loop.md)** explains the Design -> Build -> See -> Improve workflow. **[ROADMAP.md](ROADMAP.md)** has the phasing and feasibility notes.
 
 ## Works with
 
@@ -400,7 +403,7 @@ Everything above the iOS 17 floor is **additive** — a newer-OS feature must de
 | | Feature | What it gives you |
 |:---:|---------|-------------------|
 | :art: | **Design and AI review tools** | A planned static-analysis expansion for UI/UX, motion, accessibility, haptics, RealityKit, Metal, Foundation Models, Core AI, App Intents, AI security, and evaluations. See [vNext MCP Analysis Tools](docs/mcp/vnext-analysis-tools.md) |
-| :iphone: | **Separate simulator MCP** | Runtime build, launch, screenshot, video, logs, gestures, and accessibility-tree inspection without making the static MCP depend on Xcode. See [iOS Simulator MCP](docs/tooling/ios-simulator-mcp.md) |
+| :iphone: | **[Separate simulator MCP](ios-simulator-mcp/)** | Runtime build, test, simulator boot/shutdown, install, launch, deep links, and screenshots without making the static MCP depend on Xcode. Video, logs, gestures, and accessibility-tree inspection remain next. |
 | :framed_picture: | **Visual Iteration Loop** | Design -> Build -> See -> Improve: agents modify UI, run it, capture artifacts, review pixels and accessibility state, then iterate. See [visual-iteration-loop.md](docs/tooling/visual-iteration-loop.md) |
 
 ## :sparkles: What's New in 3.0
@@ -566,7 +569,7 @@ Two rules do most of the work:
 | :iphone: | [device-hub.md](docs/tooling/device-hub.md) | Device Hub, the test matrix, iOS 27 app resizability, accessibility passes |
 | :terminal: | [fm-cli.md](docs/tooling/fm-cli.md) | Foundation Models terminal experiments, safe transcript handling, promotion to evaluations |
 | :chart_with_upwards_trend: | [foundation-models-instruments.md](docs/tooling/foundation-models-instruments.md) | Foundation Models Instruments, token use, tool latency, Dynamic Profiles profiling |
-| :camera: | [ios-simulator-mcp.md](docs/tooling/ios-simulator-mcp.md) | Planned runtime MCP contract for build, launch, screenshots, video, logs, gestures, and accessibility-tree inspection |
+| :camera: | [ios-simulator-mcp.md](docs/tooling/ios-simulator-mcp.md) | Runtime MCP contract and implemented first package for build, test, launch, deep links, screenshots, and future UI driving |
 | :repeat: | [visual-iteration-loop.md](docs/tooling/visual-iteration-loop.md) | Design -> Build -> See -> Improve workflow for premium UI iteration |
 
 ### :orange_book: Swift Language — `docs/swift/`

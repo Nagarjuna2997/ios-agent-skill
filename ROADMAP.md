@@ -45,7 +45,7 @@ why it ships separately.
 Everything after the v2.x analysis line drives a **booted iOS Simulator**. That is a different
 product with different requirements:
 
-| | `ios-agent-mcp` (v2.0.0) | `ios-simulator-mcp` (planned) |
+| | `ios-agent-mcp` (v2.0.0) | `ios-simulator-mcp` (v4.0 seed) |
 |---|---|---|
 | Runtime | Node, any OS | **macOS + Xcode + booted simulator** |
 | Permissions | `filesystem: read`, `network: none` | Controls your simulator |
@@ -120,21 +120,21 @@ dependencies belong in the core iOS skill.
 
 Release theme: **Build -> Run -> See -> Fix**.
 
-This is where `ios-simulator-mcp` becomes executable rather than just specified:
+This is where `ios-simulator-mcp` becomes executable rather than just specified.
+The first package slice is implemented in `ios-simulator-mcp/`:
 
-- build
-- test
-- boot simulator
-- install
-- launch
-- tap, swipe, long-press, type
-- open deep links
-- capture screenshots
-- record video
-- read logs
-- inspect accessibility
-- compare visual states
-- loop with UI/UX, motion, accessibility, RealityKit, Metal, and performance reviewers
+- [x] build with `xcodebuild build`
+- [x] test with `xcodebuild test`
+- [x] list, boot, and shut down simulators
+- [x] install, launch, and terminate an app bundle
+- [x] open deep links
+- [x] capture screenshots
+- [ ] tap, swipe, long-press, type
+- [ ] record video
+- [ ] read logs
+- [ ] inspect accessibility
+- [ ] compare visual states
+- [ ] loop with UI/UX, motion, accessibility, RealityKit, Metal, and performance reviewers
 
 ---
 
@@ -251,7 +251,7 @@ assumptions.
 
 Everything stays in **this repository** until the architecture settles.
 
-`ios-simulator-mcp` is planned as a separate npm package — that much is decided,
+`ios-simulator-mcp` now exists as a separate npm package in this repository,
 because the runtime contract differs. Whether it also needs a separate
 *repository* is not, and that only becomes clear once the UI driver spike lands.
 Transferring issues later is possible; splitting prematurely is churn for no

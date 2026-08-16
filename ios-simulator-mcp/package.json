@@ -1,0 +1,46 @@
+{
+  "name": "ios-simulator-mcp",
+  "version": "0.1.0",
+  "description": "MCP server for safe iOS Simulator build, launch, screenshot, and app-control workflows",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "ios-simulator-mcp": "dist/index.js"
+  },
+  "main": "dist/index.js",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc && node -e \"require('fs').chmodSync('dist/index.js', 0o755)\"",
+    "test": "node --test test/*.test.js",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build && npm test"
+  },
+  "keywords": [
+    "mcp",
+    "ios",
+    "simulator",
+    "xcode",
+    "swiftui",
+    "visual-testing"
+  ],
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Nagarjuna2997/ios-agent-skill.git",
+    "directory": "ios-simulator-mcp"
+  },
+  "homepage": "https://github.com/Nagarjuna2997/ios-agent-skill/tree/main/ios-simulator-mcp"
+}
