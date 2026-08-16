@@ -1,4 +1,4 @@
-import { statSync } from "node:fs";
+import { realpathSync, statSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 
 import { analyzeConcurrency } from "./analyzers/concurrency.js";
@@ -65,7 +65,7 @@ export function findProjectRootUpwards(start: string): string | undefined {
   let current = resolve(start);
   for (let step = 0; step < MAX_ASCENT; step += 1) {
     try {
-      if (statSync(join(current, INTERNAL_DIR)).isDirectory()) return current;
+      if (statSync(join(current, INTERNAL_DIR)).isDirectory()) return realpathSync(current);
     } catch {
       // Not here; keep walking.
     }

@@ -54,7 +54,10 @@ import os, re, sys
 # locally while CI failed on two broken paths in CHANGELOG.md — a local check
 # weaker than the remote one is worse than no local check, because it converts
 # "verified" into a guess.
-pattern = re.compile(r"`((?:docs|patterns|checklists|templates|scripts|samples|\.claude)/[^`\s]+)`")
+tick = chr(96)
+pattern = re.compile(
+    tick + r"((?:docs|patterns|checklists|templates|scripts|samples|\.claude)/[^" + tick + r"\s]+)" + tick
+)
 missing = []
 sources = []
 for root, dirs, files in os.walk("."):
@@ -118,6 +121,7 @@ KNOWN = {
     "swift", "bash", "sh", "shell", "json", "jsonc", "yaml", "yml", "xml",
     "python", "ruby", "text", "objc", "objective-c", "c", "cpp",
     "markdown", "md", "diff", "console", "toml", "ini", "html", "css",
+    "metal",
     "js", "javascript", "ts", "typescript", "sql", "mermaid",
 }
 
@@ -130,7 +134,8 @@ for root, dirs, files in os.walk("."):
         path = os.path.join(root, name)
         in_fence = False
         for number, line in enumerate(open(path, encoding="utf-8"), 1):
-            match = re.match(r"^\s*(`{3,})\s*([A-Za-z0-9_+-]*)", line)
+            tick = chr(96)
+            match = re.match(r"^\s*(" + tick + r"{3,})\s*([A-Za-z0-9_+-]*)", line)
             if not match:
                 continue
             if not in_fence:

@@ -88,7 +88,7 @@ Every finding carries a file, a line, the consequence, the fix, and a link to th
 
 | | |
 |---|---|
-| 🧠 **The skill** | 100+ files — Swift 6.4 concurrency, SwiftUI, Clean Architecture, 45 Apple framework guides, design tokens, App Store checklists |
+| 🧠 **The skill** | 100+ files — Swift 6.4 concurrency, SwiftUI, Clean Architecture, 47 Apple framework guides, design tokens, App Store checklists |
 | 🔌 **[MCP server](mcp-server/)** | 11 tools: concurrency, architecture, SwiftUI, availability, memory, security, testing, performance, App Store readiness, project overview, skill lint |
 | 🛠️ **[CLI](cli/)** | `ios-agent new MyApp` — scaffolds a project whose root is `App/`, a README, and a licence. Caches, logs, state, and build artifacts live in a hidden `.ios-agent/` |
 | 🤖 **[10 subagents](.claude/agents/)** | explore, plan, review, debug, refactor, docs, Foundation Models, modernization, accessibility, performance |
@@ -579,6 +579,8 @@ Two rules do most of the work:
 | :wheelchair: | [accessibility.md](docs/frameworks/accessibility.md) | VoiceOver, Dynamic Type, contrast |
 | :iphone: | [arkit.md](docs/frameworks/arkit.md) | World/face/body/image/object/geo tracking, mesh, anchors |
 | :eyeglasses: | [realitykit.md](docs/frameworks/realitykit.md) | ECS, RealityView, ARView, PBR materials, physics, USDZ |
+| :joystick: | [scenekit.md](docs/frameworks/scenekit.md) | Scene graph, `SCNView`, `ARSCNView`, physics, migration |
+| :zap: | [metal.md](docs/frameworks/metal.md) | `MTKView`, command buffers, shaders, compute kernels |
 
 ### :robot: AI & Machine Learning — `docs/frameworks/ml/`
 

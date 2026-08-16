@@ -10,7 +10,7 @@ Load this skill when any of the following is true. When none are true, do not lo
 - Writing, reviewing, or refactoring `.swift` files, or any Swift/SwiftUI/UIKit code
 - Designing or reviewing iOS app architecture — MVVM, Clean Architecture, coordinators, routing, dependency injection
 - Building UI that must meet Apple's HIG, contrast, dark-mode, or Dynamic Type standards
-- Working with any Apple framework: SwiftData, Core Data, CloudKit, StoreKit, HealthKit, WidgetKit, App Intents, ActivityKit, CoreML, Vision, ARKit, MapKit, AVFoundation, CryptoKit, and the rest
+- Working with any Apple framework: SwiftData, Core Data, CloudKit, StoreKit, HealthKit, WidgetKit, App Intents, ActivityKit, CoreML, Vision, ARKit, RealityKit, SceneKit, Metal, MapKit, AVFoundation, CryptoKit, and the rest
 - Answering Swift concurrency questions — `async/await`, actors, `@MainActor` isolation, `Sendable`, structured concurrency
 - Targeting iOS, iPadOS, macOS, watchOS, tvOS, or visionOS
 - Preparing an App Store submission, or auditing performance, security, accessibility, or test coverage on an Apple platform
@@ -38,6 +38,9 @@ Load this skill when any of the following is true. When none are true, do not lo
 | Any chart, graph, or plot | `docs/frameworks/swift-charts.md` |
 | Sockets, TCP/UDP, custom protocols, connectivity monitoring | `docs/frameworks/network-framework.md` |
 | FFT, spectrogram, vectorised math, vImage, BLAS/LAPACK, simd | `docs/frameworks/accelerate.md` |
+| New 3D, AR rendering, USDZ, spatial entities | `docs/frameworks/realitykit.md`, `docs/frameworks/arkit.md` |
+| Existing SceneKit scene graphs, `.scnassets`, `ARSCNView` | `docs/frameworks/scenekit.md`, then `docs/frameworks/realitykit.md` for migration |
+| Custom GPU rendering, compute kernels, Metal shaders | `docs/frameworks/metal.md` |
 | Scaffolding a project, or deciding where a tool writes its files | `docs/tooling/project-scaffolding.md` |
 | Colors, spacing, theming, glass effects | `docs/design/design-tokens.md`, `docs/design/color-system.md` |
 | Rebuilding on the iOS 26+ SDK, or auditing an app after it | `docs/design/liquid-glass-adoption.md` |
@@ -565,6 +568,8 @@ This repository contains comprehensive documentation. Consult these files when b
 - `docs/frameworks/widgetkit.md` — Widgets
 - `docs/frameworks/arkit.md` — World/face/body/image tracking, plane and mesh detection, world map persistence
 - `docs/frameworks/realitykit.md` — ECS, RealityView, PBR materials, physics, spatial audio
+- `docs/frameworks/scenekit.md` — Legacy scene graphs, `.scnassets`, `SCNView`, `ARSCNView`, migration to RealityKit
+- `docs/frameworks/metal.md` — `MTKView`, command buffers, shaders, compute kernels, AR camera texture interop
 - `docs/frameworks/networking.md` — HTTP networking patterns
 - `docs/frameworks/swift-charts.md` — Marks, scales, axes, selection, `AXChartDescriptor`, peak-preserving downsampling for large datasets
 - `docs/frameworks/accessibility.md` — Accessibility best practices
