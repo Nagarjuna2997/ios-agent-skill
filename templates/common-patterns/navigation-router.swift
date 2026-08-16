@@ -21,6 +21,10 @@ enum SettingsRoute: Hashable {
 
 // MARK: - Router
 
+// @MainActor on the TYPE. `@Observable` grants no isolation of its own, so
+// without this the stored properties are non-isolated and any task may mutate
+// them while SwiftUI reads — a data race Swift 6 rejects and Swift 5 ships.
+@MainActor
 @Observable
 @MainActor
 final class Router {

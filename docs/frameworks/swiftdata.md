@@ -237,13 +237,67 @@ func countIncompleteTasks(context: ModelContext) throws -> Int {
 
 ## SortDescriptor
 
+### `Bool` is not `Comparable`, so you cannot sort by one
+
+This is the first thing to know, because `isPinned` / `isCompleted` /
+`isFavourite` is the most common sort key there is, and the compiler's
+diagnostic sends you somewhere else entirely:
+
+```swift
+// WRONG — does not compile.
+@Query(sort: [SortDescriptor(\Note.isPinned, order: .reverse)])
+private var notes: [Note]
+
+// error: initializer 'init(_:order:)' requires that 'Note'
+//        inherit from 'NSObject'
+```
+
+`SortDescriptor.init(_:order:)` needs `Value: Comparable`. Swift's `Bool` is
+not `Comparable`, so overload resolution falls through to the `NSObject`
+key-path overload and reports *that* failure — pointing at a Core Data problem
+you do not have. Nothing in the message mentions `Bool`.
+
+Two fixes, and the second is usually the right one:
+
+```swift
+// 1. Sort in Swift after fetching. Fine for a screen's worth of rows.
+@Query(sort: \Note.updatedAt, order: .reverse) private var notes: [Note]
+
+var ordered: [Note] {
+    notes.sorted { ($0.isPinned ? 0 : 1) < ($1.isPinned ? 0 : 1) }
+}
+
+// 2. Store an Int rank alongside the Bool. This sorts in the store, so it
+//    still works with pagination and with a fetch limit — which sorting in
+//    Swift does not, because the limit is applied before your sort runs.
+@Model
+final class Note {
+    var isPinned: Bool = false
+    /// Kept in sync with `isPinned`; 0 sorts before 1.
+    private(set) var pinRank: Int = 1
+
+    func setPinned(_ pinned: Bool) {
+        isPinned = pinned
+        pinRank = pinned ? 0 : 1
+    }
+}
+
+@Query(sort: [SortDescriptor(\Note.pinRank), SortDescriptor(\Note.updatedAt, order: .reverse)])
+private var notes: [Note]
+```
+
+The same applies to any non-`Comparable` property: an enum without a
+`Comparable` conformance, or a custom struct.
+
+### The rest
+
 ```swift
 // Single sort
 @Query(sort: \Task.title) private var tasks: [Task]
 
-// Multiple sorts
+// Multiple sorts — note the Int rank, not the Bool, for the first key.
 @Query(sort: [
-    SortDescriptor(\Task.isCompleted),
+    SortDescriptor(\Task.completionRank),
     SortDescriptor(\Task.priority, order: .reverse),
     SortDescriptor(\Task.createdAt, order: .reverse),
 ])

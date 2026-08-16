@@ -5,35 +5,17 @@
 import SwiftUI
 
 // MARK: - Color Hex Initializer
-
-extension Color {
-    /// Create a Color from a hex string such as "#FF5733" or "FF5733".
-    init(hex: String) {
-        let sanitized = hex.trimmingCharacters(in: .whitespacesAndNewlines)
-            .replacingOccurrences(of: "#", with: "")
-        var rgb: UInt64 = 0
-        Scanner(string: sanitized).scanHexInt64(&rgb)
-
-        let length = sanitized.count
-        switch length {
-        case 6:
-            self.init(
-                red: Double((rgb >> 16) & 0xFF) / 255.0,
-                green: Double((rgb >> 8) & 0xFF) / 255.0,
-                blue: Double(rgb & 0xFF) / 255.0
-            )
-        case 8:
-            self.init(
-                red: Double((rgb >> 24) & 0xFF) / 255.0,
-                green: Double((rgb >> 16) & 0xFF) / 255.0,
-                blue: Double((rgb >> 8) & 0xFF) / 255.0,
-                opacity: Double(rgb & 0xFF) / 255.0
-            )
-        default:
-            self.init(white: 0.5)
-        }
-    }
-}
+//
+// Deliberately NOT declared here.
+//
+// This file previously declared `init(hex: String)`, and so did
+// docs/design/color-system.md, with a different body. Copying both into one
+// target fails to build: `invalid redeclaration of 'init(hex:)'`. The single
+// canonical definition — accepting `Color(hex: 0x6C63FF)` and
+// `Color(hex: "6C63FF")` — lives in docs/design/design-tokens.md. Copy it into
+// DesignSystem/Tokens/Color+Hex.swift once, and every file below compiles.
+//
+// scripts/hooks/verify-repo.sh fails the build if a second definition appears.
 
 // MARK: - Theme Protocol
 
@@ -158,6 +140,10 @@ struct VioletDreamTheme: AppTheme {
 
 // MARK: - Theme Manager
 
+// @MainActor on the TYPE. `@Observable` grants no isolation of its own, and a
+// theme manager is read by every view on screen — the one place a race is
+// guaranteed to be visible.
+@MainActor
 @Observable
 final class ThemeManager {
     /// All available themes.

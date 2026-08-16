@@ -338,7 +338,7 @@ Requires LiDAR for guided capture; works on Macs for cloud-quality processing.
 4. **Modifying `entity.transform` from a background thread** -- RealityKit is **main-thread only**. Schedule updates inside `RealityView.update` or a `System`.
 5. **Skipping `registerComponent()` / `registerSystem()`** -- custom ECS code silently does nothing if not registered.
 6. **Loading USDZ synchronously** -- use `try await Entity(named:)` to avoid stalling the render loop.
-7. **Confusing iOS RealityKit with visionOS RealityKit** -- some APIs (e.g., `RealityView` content, `ImmersiveSpace`) only exist on visionOS.
+7. **Confusing iOS RealityKit with visionOS RealityKit** -- `ImmersiveSpace`, hand tracking, and eye tracking are visionOS-only. **`RealityView` and its content closure are not**: they exist on iOS 18+ and macOS 15+, where the content type is `RealityViewCameraContent`. See the platform table immediately below, and section 16 for building non-AR 3D on iOS.
 
 ---
 
@@ -352,5 +352,218 @@ Requires LiDAR for guided capture; works on Macs for cloud-quality processing.
 | Hand/eye input | -- | -- | Yes |
 | Reality Composer Pro scenes | Yes | Yes | Yes |
 | Object capture | iOS 17+ | macOS 12+ | -- |
+
+---
+
+## 16. 3D Content in an Ordinary iOS Screen (non-AR)
+
+**Load this when** you want 3D in a normal app screen — a product viewer, a
+card carousel, a data sculpture — with no camera and no world tracking.
+
+This is the most common 3D request on iOS and the easiest one to get wrong,
+because **`RealityView` on iOS defaults to world tracking**. Follow the AR
+sections above for a non-AR screen and you get a camera-permission prompt and a
+live camera feed behind your content — on a screen that was never meant to see
+through the phone.
+
+### The two lines that opt out
+
+```swift
+import RealityKit
+import SwiftUI
+
+struct GalleryView: View {
+    var body: some View {
+        RealityView { content in
+            // 1. Opt out of world tracking. Without this the view starts an AR
+            //    session, prompts for camera access, and composites your scene
+            //    over the camera feed.
+            content.camera = .virtual
+
+            // 2. Having opted out, you own the camera. There is no default one,
+            //    so without this the scene renders from the origin.
+            let camera = PerspectiveCamera()
+            camera.camera.fieldOfViewInDegrees = 55
+            camera.look(at: .zero, from: [0, 0.35, 1.6], relativeTo: nil)
+            content.add(camera)
+
+            content.add(makeLightRig())
+            content.add(makeScene())
+        }
+    }
+}
+```
+
+`content.camera` and `PerspectiveCamera` require **iOS 18+**. On iOS 17 the
+equivalent is `ARView(frame:cameraMode:automaticallyConfigureSession:)` with
+`cameraMode: .nonAR`, wrapped in a `UIViewRepresentable`:
+
+```swift
+struct LegacyRealityView: UIViewRepresentable {
+    func makeUIView(context: Context) -> ARView {
+        // .nonAR is the iOS 17 equivalent of `content.camera = .virtual`.
+        let view = ARView(frame: .zero, cameraMode: .nonAR, automaticallyConfigureSession: false)
+        view.environment.background = .color(.clear)
+        return view
+    }
+
+    func updateUIView(_ view: ARView, context: Context) {}
+}
+```
+
+### A light rig, because non-AR scenes have no environment
+
+An AR scene inherits real-world lighting estimation. A virtual one inherits
+nothing, so `PhysicallyBasedMaterial` renders black until you light it. The
+minimum that reads well:
+
+```swift
+private func makeLightRig() -> Entity {
+    let rig = Entity()
+
+    let key = DirectionalLight()
+    key.light.intensity = 2_500
+    key.light.color = .white
+    key.look(at: .zero, from: [1.2, 1.8, 1.4], relativeTo: nil)
+    rig.addChild(key)
+
+    let fill = DirectionalLight()
+    fill.light.intensity = 800
+    fill.look(at: .zero, from: [-1.5, 0.4, 1.0], relativeTo: nil)
+    rig.addChild(fill)
+
+    return rig
+}
+```
+
+### Framing on a phone: you have about 27 degrees, not 55
+
+`PerspectiveCamera.camera.fieldOfViewInDegrees` is the **vertical** field.
+Horizontal is derived from the aspect ratio, and a portrait iPhone is roughly
+0.46 wide-to-tall:
+
+```
+horizontal = 2 · atan( tan(vertical / 2) · aspect )
+           = 2 · atan( tan(55° / 2) · 0.46 )
+           ≈ 27°
+```
+
+**Twenty-seven degrees is narrow.** The natural first idea — a ring of cards
+around the camera — puts all but one of them outside the frustum: you see one
+card face and the backs of its neighbours. There is no warning; the content is
+simply not there.
+
+The rule that follows: **on iPhone, spend depth and height, not width.** A
+vertical stack receding into the distance reads well in portrait; a horizontal
+carousel does not, unless the items are close to the camera and few.
+
+| Layout | Portrait phone | Landscape / iPad |
+|---|---|---|
+| Vertical stack, receding in Z | Works | Works |
+| Depth-sorted deck toward camera | Works | Works |
+| Horizontal ring or carousel | Falls out of frame | Works |
+
+### Orbit controls silently override your camera
+
+`.realityViewCameraControls(.orbit)` is the quickest way to make a scene
+inspectable. Combined with `content.cameraTarget`, it **auto-frames the
+target's bounds and discards the `PerspectiveCamera` transform you just set.**
+
+Two failures follow, both easy to hit:
+
+```swift
+// WRONG — the target is assigned before its contents exist.
+// Entities built in an async task have not been added yet, so the target has
+// no bounds. The camera frames nothing and parks at the origin, inside the
+// scene, looking at the backs of the cards.
+content.cameraTarget = gallery
+Task { await populate(gallery) }
+
+// RIGHT — populate first, then hand it over.
+await populate(gallery)
+content.cameraTarget = gallery
+```
+
+```swift
+// WRONG — auto-framing with no floor on scene size.
+// With one small entity the bounds are tiny, so the camera zooms in until that
+// single card fills the screen.
+content.cameraTarget = gallery
+
+// RIGHT — give the target a minimum extent so small scenes frame sanely.
+let bounds = gallery.visualBounds(relativeTo: nil)
+if bounds.boundingRadius < 0.25 {
+    gallery.addChild(makeInvisibleFramingBox(radius: 0.25))
+}
+content.cameraTarget = gallery
+```
+
+### Text in 3D: `MeshResource.generateText` does not exist on iOS
+
+It is macOS and visionOS only — it is not in the iOS SDK at all, so the fix is
+not an availability guard, it is a different approach. Render a SwiftUI view to
+an image and use it as a texture:
+
+```swift
+@MainActor
+func makeLabel(_ text: String) throws -> ModelEntity {
+    let renderer = ImageRenderer(content:
+        Text(text)
+            .font(.system(.title2, design: .rounded).weight(.semibold))
+            .foregroundStyle(.white)
+            .padding(24)
+    )
+    renderer.scale = 3
+
+    guard let cgImage = renderer.cgImage else { throw LabelError.renderFailed }
+
+    let texture = try TextureResource(image: cgImage, options: .init(semantic: .color))
+    var material = UnlitMaterial()
+    material.color = .init(texture: .init(texture))
+    material.blending = .transparent(opacity: 1)
+
+    let plane = MeshResource.generatePlane(width: 0.4, height: 0.1)
+    return ModelEntity(mesh: plane, materials: [material])
+}
+```
+
+`UnlitMaterial`, not `PhysicallyBasedMaterial`: rendered text should not pick up
+scene lighting, or it dims as the camera moves and stops looking like text.
+
+### `Scene` is ambiguous when both frameworks are imported
+
+RealityKit and SwiftUI each declare a `Scene`. The `@main` App file is where
+they collide, because that is where components and systems get registered:
+
+```swift
+// WRONG — `some Scene` no longer resolves.
+import RealityKit
+import SwiftUI
+
+@main
+struct GalleryApp: App {
+    var body: some Scene { WindowGroup { GalleryView() } }   // ambiguous
+}
+
+// RIGHT — qualify it, or keep RealityKit out of this file entirely.
+var body: some SwiftUI.Scene { WindowGroup { GalleryView() } }
+```
+
+Preferably the second: register components from the view that uses them, and
+the `@main` file never imports RealityKit.
+
+### Checklist for non-AR 3D on iOS
+
+- [ ] `content.camera = .virtual` set — no camera prompt, no live feed
+- [ ] A `PerspectiveCamera` added, since opting out removes the default
+- [ ] A light rig added; PBR materials render black without one
+- [ ] Layout spends depth and height, not width, on portrait phones
+- [ ] `cameraTarget` assigned only after the target has contents
+- [ ] Small scenes given a minimum framing extent
+- [ ] No `MeshResource.generateText` — texture route for labels
+- [ ] `SwiftUI.Scene` qualified, or RealityKit kept out of the `@main` file
+- [ ] iOS 17 fallback via `ARView(cameraMode: .nonAR)` if the target allows it
+
+---
 
 See also: `docs/frameworks/arkit.md`, `docs/platforms/visionos.md`.

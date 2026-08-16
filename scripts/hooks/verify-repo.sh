@@ -153,6 +153,76 @@ if ! EVAL_OUT="$(./scripts/eval-agents.sh 2>&1)"; then
   FAILURES+=("Subagent tool boundaries:\n$EVAL_OUT")
 fi
 
+# 7. Exactly one definition of Color.init(hex:).
+#
+# Three files once declared it, two of them with the SAME signature and
+# different bodies — copy both into one target and the compiler rejects it with
+# `invalid redeclaration of 'init(hex:)'`. A reader has no way to know which of
+# three to trust, so the rule is that there is only ever one.
+HEX_DEFS="$(grep -rn --include='*.md' --include='*.swift' -E '^\s*init\(hex[ :]' docs/ templates/ patterns/ 2>/dev/null || true)"
+HEX_COUNT="$(printf '%s' "$HEX_DEFS" | grep -c . || true)"
+if [ "$HEX_COUNT" -ne 2 ]; then
+  FAILURES+=("Color hex initialiser:\nExpected exactly 2 declarations (UInt32 and String overloads, both in docs/design/design-tokens.md), found $HEX_COUNT:\n$HEX_DEFS")
+else
+  if ! printf '%s' "$HEX_DEFS" | grep -q 'docs/design/design-tokens.md'; then
+    FAILURES+=("Color hex initialiser:\nThe canonical definition must live in docs/design/design-tokens.md:\n$HEX_DEFS")
+  fi
+  if printf '%s' "$HEX_DEFS" | grep -v 'docs/design/design-tokens.md' | grep -q .; then
+    FAILURES+=("Color hex initialiser:\nRedeclared outside design-tokens.md:\n$(printf '%s' "$HEX_DEFS" | grep -v 'docs/design/design-tokens.md')")
+  fi
+fi
+
+# 8. Shipped templates obey the skill's own non-negotiables.
+#
+# A template that contradicts SKILL.md is worse than a missing one: an agent
+# reads the rules, copies the template, and produces code the rules forbid.
+# Whichever it follows it is wrong somewhere, and nothing in the repo notices.
+if ! TEMPLATE_OUT="$(python3 - <<'TPLPY' 2>&1
+import pathlib, re, sys
+
+problems = []
+for path in sorted(pathlib.Path("templates").rglob("*.swift")):
+    lines = path.read_text(encoding="utf-8").splitlines()
+
+    # SKILL.md: "Every @Observable type the UI renders is
+    # @MainActor @Observable final class."
+    #
+    # Attribute ORDER is not significant in Swift, so the whole contiguous
+    # attribute block around @Observable is examined rather than only the line
+    # above it. Checking one direction reports @Observable/@MainActor as a
+    # violation, which is correct code.
+    for index, line in enumerate(lines):
+        if not line.strip().startswith("@Observable"):
+            continue
+        start = index
+        while start > 0 and lines[start - 1].lstrip().startswith("@"):
+            start -= 1
+        end = index
+        while end + 1 < len(lines) and lines[end + 1].lstrip().startswith("@"):
+            end += 1
+        block = "\n".join(lines[start:end + 1])
+        if "@MainActor" not in block:
+            problems.append(f"{path}:{index + 1}: @Observable without @MainActor on the type")
+
+    # SKILL.md: "No default argument constructs a live implementation."
+    #
+    # Comment lines are skipped: the docs quote this anti-pattern in order to
+    # warn about it, and flagging the warning is how a check trains people to
+    # ignore it.
+    for number, line in enumerate(lines, 1):
+        stripped = line.lstrip()
+        if stripped.startswith("//") or stripped.startswith("///") or stripped.startswith("*"):
+            continue
+        if re.search(r"init\([^)]*:\s*any\s+\w+\s*=\s*[A-Z]\w*\(", line):
+            problems.append(f"{path}:{number}: dependency defaulted to a live implementation")
+
+if problems:
+    sys.exit("Template rule violations:\n" + "\n".join(problems))
+TPLPY
+)"; then
+  FAILURES+=("Shipped templates:\n$TEMPLATE_OUT")
+fi
+
 if (( ${#FAILURES[@]} > 0 )); then
   echo "Repository consistency checks failed:" >&2
   echo "" >&2
