@@ -200,6 +200,19 @@ export function disposableEntries(): readonly InternalEntry[] {
  * npm, Cargo, and pub all keep one user-level store. Each platform has its own
  * documented location and none of them is `~/.ios-agent`.
  */
+/**
+ * `platform` and `home` are parameters so tests can exercise all three branches
+ * on one machine. They do NOT make the result platform-independent: `path` uses
+ * the **host's** rules throughout, so asking for the linux branch on Windows
+ * returns a Windows-shaped string. Production never does that — the defaults
+ * are the host — but a test that hardcodes an expected string will pass on
+ * Linux and fail on Windows.
+ *
+ * Concretely: `path.resolve("/xdg")` yields `/xdg` on Linux and `D:\xdg` on a
+ * Windows runner, because resolve anchors a drive-less path to the current
+ * drive. Expectations must therefore be built with the same call this function
+ * makes, not with a literal.
+ */
 export function globalCacheDir(
   env: NodeJS.ProcessEnv = process.env,
   platform: NodeJS.Platform = process.platform,

@@ -69,9 +69,15 @@ test("global cache follows each platform's own convention", () => {
     globalCacheDir({ LOCALAPPDATA: "C:\\Users\\x\\AppData\\Local" }, "win32", "C:\\Users\\x"),
     path.join("C:\\Users\\x\\AppData\\Local", "ios-agent", "Cache"),
   );
+  // path.resolve, not path.join, because that is what globalCacheDir uses on
+  // the XDG value — and on Windows `path.resolve("/xdg")` anchors to the
+  // current drive (`D:\\xdg`) while `path.join` does not (`\\xdg`). A literal
+  // expectation here passes on Linux and macOS and fails on Windows, which is
+  // exactly how this got through three local runs and one CI run before the
+  // windows-latest job existed.
   assert.equal(
     globalCacheDir({ XDG_CACHE_HOME: "/xdg" }, "linux", "/home/x"),
-    path.join("/xdg", "ios-agent"),
+    path.join(path.resolve("/xdg"), "ios-agent"),
   );
   assert.equal(globalCacheDir({}, "linux", "/home/x"), path.join("/home/x", ".cache", "ios-agent"));
 });

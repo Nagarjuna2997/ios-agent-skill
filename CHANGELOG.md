@@ -7,6 +7,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ## [Unreleased]
 
 ### Fixed -- unreleased
+- **The `cli` job's first run on Windows failed, and the defect was in the test, not the product.** `globalCacheDir` resolves the `XDG_CACHE_HOME` value with `path.resolve`, which anchors a drive-less absolute path to the current drive: `/xdg` becomes `D:\xdg` on a Windows runner and stays `/xdg` on Linux. The expectation was built with `path.join`, which does not anchor, so it passed on Linux and macOS and failed on Windows.
+
+  Reproduced exactly with `path.win32` against a drive-rooted cwd before changing anything -- old expectation `\xdg\ios-agent`, function returns `D:\xdg\ios-agent`. The expectation now uses the same call the function makes, so the two agree by construction on any host rather than by coincidence on most of them.
+
+  The trap is documented on `globalCacheDir` itself: its `platform` and `home` parameters let one machine exercise all three branches, but `path` still uses the **host's** rules, so a hardcoded expected string is host-dependent even though the input is not.
+
+  The other five jobs passed, including the two that had never run anywhere: `samples/SkillPatterns` **compiles on macOS**, which is the first real verification of the Accelerate patterns, and the CLI passes on ubuntu and macOS.
+
 
 **A field report from building a SwiftData notes app with a RealityKit gallery against this skill (Xcode 26.6 / iOS 26.5) found thirteen defects.** Every claim was verified against the repository before anything changed. Three came back different from the report in ways that changed the fix, and one came back considerably worse.
 
