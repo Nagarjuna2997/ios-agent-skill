@@ -8,7 +8,7 @@ Thanks for your interest! This skill is community-maintained and PRs are welcome
 - **Add a new framework guide** to `docs/frameworks/` -- follow the existing "Complete Guide" structure (overview -> permissions -> setup -> code samples -> pitfalls).
 - **Add a code template** to `templates/common-patterns/` -- Swift files only, must compile against the latest stable Xcode.
 - **Add an architecture pattern** to `patterns/` -- include rationale, sample code, and trade-offs.
-- **Tighten the agent rules** in `SKILL.md` (the brain shared by `CLAUDE.md`, `AGENTS.md`, `GEMINI.md`, `.cursorrules`, etc.). Any change here propagates to 25+ AI tools, so be conservative.
+- **Tighten the agent rules** in `SKILL.md` (the brain shared by `CLAUDE.md`, `AGENTS.md`, `GEMINI.md`, `.cursorrules`, etc.). Any change here propagates to 24 mirrored instruction files, so be conservative.
 
 ## Ground rules
 
@@ -78,6 +78,16 @@ Never edit a mirror by hand. Edit `SKILL.md`, then run:
 The `docs-consistency` GitHub Actions workflow fails any PR whose mirrors are stale, so run the sync before you push.
 
 To support a new AI tool, add its path to the `MIRRORS` array in `scripts/sync-mirrors.sh` and re-run the script — do not add another `cp` line anywhere else.
+
+## Publishing
+
+Pushing a `v*` tag runs `.github/workflows/release.yml`. The workflow creates
+the GitHub Release, then publishes each npm package only when that exact package
+version is not already on npm.
+
+Do **not** put `npm login`, usernames, passwords, or raw tokens in a workflow
+file. Create an npm automation token, add it to the repository secrets as
+`NPM_TOKEN`, and let GitHub Actions pass it through `NODE_AUTH_TOKEN`.
 
 ### House rules for `SKILL.md` itself
 

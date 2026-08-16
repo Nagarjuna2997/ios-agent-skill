@@ -515,6 +515,31 @@ jobs:
           rm -rf .probe
           echo "OK - scaffold, nested discovery, doctor, --fix, exit codes, completions"
 
+  ios-simulator-mcp:
+    name: iOS Simulator MCP builds and tests
+    runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: ios-simulator-mcp
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install
+        run: npm ci || npm install
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build
+        run: npm run build
+
+      - name: Test
+        run: npm test
+
   sample-package:
     name: Sample package builds and tests
     runs-on: macos-latest
