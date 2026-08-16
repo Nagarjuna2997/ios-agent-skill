@@ -2,9 +2,11 @@
 
 ## Overview
 
-SceneKit is Apple's high-level scene graph framework for 3D content. It can load `.scn`, `.dae`, and USD-family assets, animate node hierarchies, run physics, play positional audio, and render through `SCNView`, `SceneView`, `SCNLayer`, or `SCNRenderer`.
+SceneKit is Apple's high-level scene graph framework for 3D content. It describes a scene as an `SCNScene` containing an `SCNNode` hierarchy, with geometry, cameras, lights, materials, animations, physics, and positional audio attached to nodes. SceneKit renders through `SCNView`, SwiftUI's `SceneView`, `SCNLayer`, or `SCNRenderer`.
 
-> Apple now marks SceneKit as deprecated and recommends RealityKit for new 3D and spatial work. Use SceneKit when maintaining an existing app, when a project relies on SceneKit shader modifiers or scene assets, or when migration risk is higher than the value of moving immediately.
+> Apple describes SceneKit as **soft-deprecated**: existing apps continue to work, but new capabilities and API investment are expected in RealityKit instead. Use SceneKit when maintaining an existing app, when a project relies on `.scnassets`, shader modifiers, `SCNTechnique`, or `ARSCNView`, or when migration risk is higher than the value of moving immediately.
+
+On visionOS, SceneKit content belongs in 2D views or textures. Build immersive spatial experiences with RealityKit and `RealityView`.
 
 ---
 
@@ -133,6 +135,8 @@ func loadNode(named nodeName: String, from sceneName: String) throws -> SCNNode 
 ```
 
 Store SceneKit assets in `.scnassets`. Keep asset names stable and isolate loading behind a small factory so the rest of the app does not know file names.
+
+If an asset arrives as USDZ or needs Reality Composer Pro authoring, route new work through RealityKit instead of adding more SceneKit-only surface area.
 
 ---
 
@@ -265,7 +269,7 @@ final class ARSceneController: UIViewController, ARSCNViewDelegate {
 }
 ```
 
-New AR features should usually use RealityKit's `ARView`; keep `ARSCNView` for legacy SceneKit renderers.
+New AR features should usually use RealityKit's `ARView`; keep `ARSCNView` for legacy SceneKit renderers that already depend on `SCNNode` or `SCNMaterial`.
 
 ---
 
@@ -307,11 +311,12 @@ SceneKit can coexist with Metal, but once you need deterministic command-buffer 
 
 ## 12. Common Pitfalls
 
-1. **Using SceneKit for new immersive visionOS apps** -- use RealityKit and `RealityView` instead.
-2. **Forgetting camera and microphone purpose strings in AR** -- AR sessions need `NSCameraUsageDescription`; audio capture also needs microphone text.
-3. **Creating physics bodies before final geometry setup** -- collision shapes can become stale.
-4. **Blocking the main thread while loading assets** -- load heavy assets before presentation or behind a loading state.
-5. **Letting SwiftUI recreate scenes on every body pass** -- store scene state in a model or wrapper.
+1. **Treating soft-deprecated as removed** -- existing SceneKit apps still run, but long-lived new 3D work should start in RealityKit.
+2. **Using SceneKit for new immersive visionOS apps** -- use RealityKit and `RealityView` instead.
+3. **Forgetting camera and microphone purpose strings in AR** -- AR sessions need `NSCameraUsageDescription`; audio capture also needs microphone text.
+4. **Creating physics bodies before final geometry setup** -- collision shapes can become stale.
+5. **Blocking the main thread while loading assets** -- load heavy assets before presentation or behind a loading state.
+6. **Letting SwiftUI recreate scenes on every body pass** -- store scene state in a model or wrapper.
 
 ---
 
@@ -332,13 +337,13 @@ Migrate feature by feature. Start with leaf scenes or previews before replacing 
 
 ## 14. Review Checklist
 
-- [ ] New work justified against RealityKit
+- [ ] New SceneKit work justified against RealityKit
 - [ ] `.scnassets` loading isolated behind factories
 - [ ] Scene lifecycle pauses when view disappears
 - [ ] AR usage includes camera purpose strings and device support checks
 - [ ] Materials reuse textures and avoid duplicate large allocations
 - [ ] Physics shapes match final geometry
 - [ ] SwiftUI wrappers keep SceneKit state out of `body`
-- [ ] Migration path documented for deprecated SceneKit surfaces
+- [ ] Migration path documented for soft-deprecated SceneKit surfaces
 
 See also: `docs/frameworks/realitykit.md`, `docs/frameworks/arkit.md`, `docs/frameworks/metal.md`.

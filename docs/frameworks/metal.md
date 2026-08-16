@@ -2,7 +2,7 @@
 
 ## Overview
 
-Metal gives Swift and Objective-C apps direct access to Apple GPUs for rendering, compute, machine learning support work, image processing, and custom frame pipelines. Use Metal when high-level frameworks such as RealityKit, SceneKit, SpriteKit, Core Image, or SwiftUI cannot provide the performance, visual result, or GPU scheduling control the product needs.
+Metal gives Swift and Objective-C apps direct access to Apple GPUs for rendering, compute, image processing, data-parallel work, and custom frame pipelines. Use Metal when high-level frameworks such as RealityKit, SceneKit, SpriteKit, Core Image, or SwiftUI cannot provide the performance, visual result, or GPU scheduling control the product needs.
 
 > Reach for Metal deliberately. It is powerful, but it makes the app responsible for pipeline state, memory lifetime, synchronization, shader compilation, frame pacing, and GPU debugging.
 
@@ -18,7 +18,7 @@ Metal gives Swift and Objective-C apps direct access to Apple GPUs for rendering
 | Image filters without custom kernels | Core Image |
 | Charts and UI drawing | SwiftUI / Core Graphics |
 
-Use `MetalKit` for app display setup. `MTKView` handles drawable creation and calls an `MTKViewDelegate` on the render loop.
+Use `MetalKit` for app display setup. Apple documents `MTKView` as the Metal-aware view that owns the drawable setup, render-pass descriptor creation, optional depth/stencil textures, and delegate callbacks. `MTKView` is `@MainActor`, so create and configure it on the main actor.
 
 ---
 
@@ -28,10 +28,11 @@ Use `MetalKit` for app display setup. `MTKView` handles drawable creation and ca
 import Metal
 import MetalKit
 
+@MainActor
 final class Renderer: NSObject, MTKViewDelegate {
-    private let device: MTLDevice
-    private let commandQueue: MTLCommandQueue
-    private let pipelineState: MTLRenderPipelineState
+    private let device: any MTLDevice
+    private let commandQueue: any MTLCommandQueue
+    private let pipelineState: any MTLRenderPipelineState
 
     init(view: MTKView) throws {
         guard let device = MTLCreateSystemDefaultDevice(),
@@ -45,12 +46,18 @@ final class Renderer: NSObject, MTKViewDelegate {
         view.device = device
         view.colorPixelFormat = .bgra8Unorm
         view.depthStencilPixelFormat = .depth32Float
+        view.framebufferOnly = true
         view.clearColor = MTLClearColor(red: 0.02, green: 0.03, blue: 0.05, alpha: 1)
 
         let library = try device.makeDefaultLibrary(bundle: .main)
+        guard let vertexFunction = library.makeFunction(name: "vertex_main"),
+              let fragmentFunction = library.makeFunction(name: "fragment_main") else {
+            throw RendererError.missingShaderFunction
+        }
+
         let descriptor = MTLRenderPipelineDescriptor()
-        descriptor.vertexFunction = library.makeFunction(name: "vertex_main")
-        descriptor.fragmentFunction = library.makeFunction(name: "fragment_main")
+        descriptor.vertexFunction = vertexFunction
+        descriptor.fragmentFunction = fragmentFunction
         descriptor.colorAttachments[0].pixelFormat = view.colorPixelFormat
         descriptor.depthAttachmentPixelFormat = view.depthStencilPixelFormat
         pipelineState = try device.makeRenderPipelineState(descriptor: descriptor)
@@ -80,6 +87,8 @@ final class Renderer: NSObject, MTKViewDelegate {
 
 enum RendererError: Error {
     case metalUnavailable
+    case missingShaderFunction
+    case bufferAllocationFailed
 }
 ```
 
@@ -100,6 +109,7 @@ struct MetalView: UIViewRepresentable {
 
     func makeCoordinator() -> Coordinator { Coordinator() }
 
+    @MainActor
     final class Coordinator {
         private var renderer: Renderer?
 
@@ -149,7 +159,7 @@ fragment float4 fragment_main(VertexOut in [[stage_in]]) {
 }
 ```
 
-Keep shader names stable and fail fast if a function is missing. A nil shader function usually means the file is not in the target membership or the name changed.
+Keep shader names stable and fail fast if a function is missing. A nil shader function usually means the `.metal` file is not in target membership or the Swift name no longer matches the shader function.
 
 ---
 
@@ -167,11 +177,13 @@ let vertices: [Vertex] = [
     Vertex(position: [ 0.0,  0.5, 0], color: [0, 0, 1]),
 ]
 
-let vertexBuffer = device.makeBuffer(
+guard let vertexBuffer = device.makeBuffer(
     bytes: vertices,
     length: MemoryLayout<Vertex>.stride * vertices.count,
     options: [.storageModeShared]
-)
+) else {
+    throw RendererError.bufferAllocationFailed
+}
 ```
 
 Prefer immutable buffers for static geometry. Use ring buffers or multiple in-flight buffers for per-frame uniforms so the CPU does not overwrite data the GPU is still reading.
@@ -274,7 +286,7 @@ let depthState = device.makeDepthStencilState(descriptor: depthDescriptor)
 encoder.setDepthStencilState(depthState)
 ```
 
-Pipeline state is expensive to create. Build render and compute pipeline states during initialization or asset loading, not during `draw(in:)`.
+Pipeline state is expensive to create. Apple recommends creating shared objects such as command queues, pipelines, buffers, and textures during initialization instead of time-critical paths. Build render and compute pipeline states before `draw(in:)`.
 
 ---
 
@@ -284,6 +296,7 @@ ARKit gives each `ARFrame` a camera image as a `CVPixelBuffer`. Use `CVMetalText
 
 ```swift
 import ARKit
+import CoreVideo
 import Metal
 
 var textureCache: CVMetalTextureCache?
@@ -292,13 +305,15 @@ CVMetalTextureCacheCreate(nil, nil, device, nil, &textureCache)
 func makeTexture(from pixelBuffer: CVPixelBuffer,
                  plane: Int,
                  pixelFormat: MTLPixelFormat) -> MTLTexture? {
+    guard let textureCache else { return nil }
+
     let width = CVPixelBufferGetWidthOfPlane(pixelBuffer, plane)
     let height = CVPixelBufferGetHeightOfPlane(pixelBuffer, plane)
     var cvTexture: CVMetalTexture?
 
-    CVMetalTextureCacheCreateTextureFromImage(
+    let status = CVMetalTextureCacheCreateTextureFromImage(
         nil,
-        textureCache!,
+        textureCache,
         pixelBuffer,
         nil,
         pixelFormat,
@@ -308,6 +323,7 @@ func makeTexture(from pixelBuffer: CVPixelBuffer,
         &cvTexture
     )
 
+    guard status == kCVReturnSuccess else { return nil }
     return cvTexture.flatMap(CVMetalTextureGetTexture)
 }
 ```
@@ -318,7 +334,7 @@ Use RealityKit unless the product needs custom camera compositing, segmentation,
 
 ## 10. Swift Concurrency Boundaries
 
-Metal objects are reference types that often represent GPU resources. Treat the renderer as owning them on one execution context.
+Metal objects are reference types that often represent GPU resources. Treat the renderer as owning them on one execution context. Because `MTKView` is `@MainActor`, keep view configuration and delegate attachment on the main actor.
 
 ```swift
 @MainActor
@@ -355,7 +371,7 @@ vertexBuffer.label = "Static mesh vertices"
 
 1. **Creating pipeline state during rendering** -- compile it during setup.
 2. **Forgetting target membership for `.metal` files** -- `makeDefaultLibrary()` will not contain the shader.
-3. **Writing to buffers still in use by the GPU** -- use in-flight buffers or completion handlers.
+3. **Writing to buffers still in use by the GPU** -- use in-flight buffers or command-buffer completion handlers.
 4. **Mismatched pixel formats** -- the pipeline descriptor must match the render pass.
 5. **Assuming one threadgroup fits all textures** -- bounds-check compute kernels.
 6. **Skipping labels** -- unlabeled GPU captures are slow to debug.
@@ -365,6 +381,7 @@ vertexBuffer.label = "Static mesh vertices"
 ## 13. Review Checklist
 
 - [ ] `MTLCreateSystemDefaultDevice()` failure has a user-facing fallback
+- [ ] `MTKView` setup and delegate attachment happen on the main actor
 - [ ] Pipeline states are created outside the draw loop
 - [ ] `.metal` functions are checked and failures are actionable
 - [ ] Per-frame data uses in-flight buffers or synchronization
