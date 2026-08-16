@@ -313,15 +313,15 @@ import SwiftUI
 
 ### Palette 1 -- Ocean Blue (Fintech / Productivity)
 
-| Role        | Light Hex   | Dark Hex    | Description                  |
-|-------------|-------------|-------------|------------------------------|
-| Primary     | `#0A6EBD`   | `#3DA5F4`   | Trust-inspiring blue         |
-| Secondary   | `#1E88E5`   | `#64B5F6`   | Lighter accent blue          |
-| Accent      | `#00BCD4`   | `#4DD0E1`   | Teal action highlight        |
-| Background  | `#F4F7FA`   | `#0D1117`   | Clean paper / deep night     |
-| Surface     | `#FFFFFF`   | `#161B22`   | Card surface                 |
-| Text        | `#1A2233`   | `#E6EDF3`   | High-contrast readable text  |
-| Error       | `#D32F2F`   | `#EF5350`   | Clear danger signal          |
+| Role | Light Hex | Dark Hex | Text on it (light / dark) | Description |
+|------|-----------|-----------|---------------------------|-------------|
+| Primary | `#0A6EBD` | `#3DA5F4` | white 5.28:1 / black 7.89:1 | Trust-inspiring blue |
+| Secondary | `#1E88E5` | `#64B5F6` | black 5.71:1 / black 9.48:1 | Lighter accent blue |
+| Accent | `#00BCD4` | `#4DD0E1` | black 9.14:1 / black 11.43:1 | Teal action highlight |
+| Background | `#F4F7FA` | `#0D1117` | — | Clean paper / deep night |
+| Surface | `#FFFFFF` | `#161B22` | — | Card surface |
+| Text | `#1A2233` | `#E6EDF3` | — | High-contrast readable text |
+| Error | `#D32F2F` | `#EF5350` | white 4.98:1 / black 6.02:1 | Clear danger signal |
 
 ```swift
 struct OceanBluePalette {
@@ -343,17 +343,19 @@ struct OceanBluePalette {
 }
 ```
 
+
+**Body-text pairs** — Text on Background `14.79:1` light, `16.02:1` dark · Text on Surface `15.90:1` light, `14.64:1` dark. All four clear the 4.5:1 body-text bar.
 ### Palette 2 -- Sunset Warm (Social / Lifestyle)
 
-| Role        | Light Hex   | Dark Hex    | Description                  |
-|-------------|-------------|-------------|------------------------------|
-| Primary     | `#FF6B35`   | `#FF8A5C`   | Warm energetic orange        |
-| Secondary   | `#F7C948`   | `#FFD966`   | Sunny golden yellow          |
-| Accent      | `#E84393`   | `#FD79A8`   | Playful magenta              |
-| Background  | `#FFF8F0`   | `#1A1215`   | Warm cream / warm dark       |
-| Surface     | `#FFFFFF`   | `#2D1F23`   | Card surface                 |
-| Text        | `#2D1810`   | `#F5E6D8`   | Dark warm brown / cream      |
-| Error       | `#C0392B`   | `#E74C3C`   | Red alert                    |
+| Role | Light Hex | Dark Hex | Text on it (light / dark) | Description |
+|------|-----------|-----------|---------------------------|-------------|
+| Primary | `#FF6B35` | `#FF8A5C` | black 7.41:1 / black 9.04:1 | Warm energetic orange |
+| Secondary | `#F7C948` | `#FFD966` | black 13.4:1 / black 15.37:1 | Sunny golden yellow |
+| Accent | `#E84393` | `#FD79A8` | black 5.66:1 / black 8.48:1 | Playful magenta |
+| Background | `#FFF8F0` | `#1A1215` | — | Warm cream / warm dark |
+| Surface | `#FFFFFF` | `#2D1F23` | — | Card surface |
+| Text | `#2D1810` | `#F5E6D8` | — | Dark warm brown / cream |
+| Error | `#C0392B` | `#E74C3C` | white 5.44:1 / black 5.5:1 | Red alert |
 
 ```swift
 struct SunsetWarmPalette {
@@ -375,17 +377,19 @@ struct SunsetWarmPalette {
 }
 ```
 
+
+**Body-text pairs** — Text on Background `15.95:1` light, `15.06:1` dark · Text on Surface `16.80:1` light, `12.91:1` dark. All four clear the 4.5:1 body-text bar.
 ### Palette 3 -- Midnight Dark (Premium / Luxury)
 
-| Role        | Light Hex   | Dark Hex    | Description                  |
-|-------------|-------------|-------------|------------------------------|
-| Primary     | `#6C63FF`   | `#8B83FF`   | Electric indigo              |
-| Secondary   | `#A78BFA`   | `#C4B5FD`   | Soft lavender                |
-| Accent      | `#F472B6`   | `#F9A8D4`   | Rose gold accent             |
-| Background  | `#F5F3FF`   | `#0B0B1A`   | Faint violet / pure dark     |
-| Surface     | `#FFFFFF`   | `#13132B`   | Card surface                 |
-| Text        | `#1E1B4B`   | `#E2E0F0`   | Deep indigo / soft light     |
-| Error       | `#DC2626`   | `#F87171`   | Bright red                   |
+| Role | Light Hex | Dark Hex | Text on it (light / dark) | Description |
+|------|-----------|-----------|---------------------------|-------------|
+| Primary | `#6C63FF` | `#8B83FF` | black 4.87:1 / black 6.79:1 | Electric indigo |
+| Secondary | `#A78BFA` | `#C4B5FD` | black 7.72:1 / black 11.38:1 | Soft lavender |
+| Accent | `#F472B6` | `#F9A8D4` | black 7.93:1 / black 11.58:1 | Rose gold accent |
+| Background | `#F5F3FF` | `#0B0B1A` | — | Faint violet / pure dark |
+| Surface | `#FFFFFF` | `#13132B` | — | Card surface |
+| Text | `#1E1B4B` | `#E2E0F0` | — | Deep indigo / soft light |
+| Error | `#DC2626` | `#F87171` | white 4.83:1 / black 7.59:1 | Bright red |
 
 ```swift
 struct MidnightDarkPalette {
@@ -407,17 +411,19 @@ struct MidnightDarkPalette {
 }
 ```
 
+
+**Body-text pairs** — Text on Background `14.58:1` light, `15.00:1` dark · Text on Surface `15.99:1` light, `13.98:1` dark. All four clear the 4.5:1 body-text bar.
 ### Palette 4 -- Nature Green (Health / Wellness)
 
-| Role        | Light Hex   | Dark Hex    | Description                  |
-|-------------|-------------|-------------|------------------------------|
-| Primary     | `#2D9F6F`   | `#4ADE80`   | Fresh healing green          |
-| Secondary   | `#22D3EE`   | `#67E8F9`   | Cool sky cyan                |
-| Accent      | `#F59E0B`   | `#FBBF24`   | Warm honey gold              |
-| Background  | `#F0FDF4`   | `#0A1A12`   | Faint mint / forest dark     |
-| Surface     | `#FFFFFF`   | `#112118`   | Card surface                 |
-| Text        | `#14352A`   | `#D1FAE5`   | Deep forest / soft mint      |
-| Error       | `#DC2626`   | `#FB7185`   | Alert red                    |
+| Role | Light Hex | Dark Hex | Text on it (light / dark) | Description |
+|------|-----------|-----------|---------------------------|-------------|
+| Primary | `#2D9F6F` | `#4ADE80` | black 6.3:1 / black 12.05:1 | Fresh healing green |
+| Secondary | `#22D3EE` | `#67E8F9` | black 11.62:1 / black 14.49:1 | Cool sky cyan |
+| Accent | `#F59E0B` | `#FBBF24` | black 9.78:1 / black 12.58:1 | Warm honey gold |
+| Background | `#F0FDF4` | `#0A1A12` | — | Faint mint / forest dark |
+| Surface | `#FFFFFF` | `#112118` | — | Card surface |
+| Text | `#14352A` | `#D1FAE5` | — | Deep forest / soft mint |
+| Error | `#DC2626` | `#FB7185` | white 4.83:1 / black 7.8:1 | Alert red |
 
 ```swift
 struct NatureGreenPalette {
@@ -439,17 +445,19 @@ struct NatureGreenPalette {
 }
 ```
 
+
+**Body-text pairs** — Text on Background `12.76:1` light, `15.83:1` dark · Text on Surface `13.36:1` light, `14.76:1` dark. All four clear the 4.5:1 body-text bar.
 ### Palette 5 -- Violet Dream (Creative / Entertainment)
 
-| Role        | Light Hex   | Dark Hex    | Description                  |
-|-------------|-------------|-------------|------------------------------|
-| Primary     | `#8B5CF6`   | `#A78BFA`   | Vibrant violet               |
-| Secondary   | `#EC4899`   | `#F472B6`   | Hot pink                     |
-| Accent      | `#06B6D4`   | `#22D3EE`   | Electric cyan                |
-| Background  | `#FAF5FF`   | `#0F0720`   | Lavender mist / deep purple  |
-| Surface     | `#FFFFFF`   | `#1A0F2E`   | Card surface                 |
-| Text        | `#2E1065`   | `#EDE9FE`   | Deep purple / pale lavender  |
-| Error       | `#E11D48`   | `#FB7185`   | Rose red                     |
+| Role | Light Hex | Dark Hex | Text on it (light / dark) | Description |
+|------|-----------|-----------|---------------------------|-------------|
+| Primary | `#8B5CF6` | `#A78BFA` | black 4.96:1 / black 7.72:1 | Vibrant violet |
+| Secondary | `#EC4899` | `#F472B6` | black 5.95:1 / black 7.93:1 | Hot pink |
+| Accent | `#06B6D4` | `#22D3EE` | black 8.65:1 / black 11.62:1 | Electric cyan |
+| Background | `#FAF5FF` | `#0F0720` | — | Lavender mist / deep purple |
+| Surface | `#FFFFFF` | `#1A0F2E` | — | Card surface |
+| Text | `#2E1065` | `#EDE9FE` | — | Deep purple / pale lavender |
+| Error | `#E11D48` | `#FB7185` | white 4.7:1 / black 7.8:1 | Rose red |
 
 ```swift
 struct VioletDreamPalette {
@@ -891,3 +899,6 @@ struct ColorBlindFriendlyStatus: View {
 | Scheme Override    | `.environment(\.colorScheme, .dark)`                   |
 | Asset Catalog      | `Color("AssetName")`                                   |
 | Hex Init           | `Color(hex: "FF5733")`                                 |
+
+
+**Body-text pairs** — Text on Background `14.20:1` light, `16.51:1` dark · Text on Surface `15.24:1` light, `15.36:1` dark. All four clear the 4.5:1 body-text bar.

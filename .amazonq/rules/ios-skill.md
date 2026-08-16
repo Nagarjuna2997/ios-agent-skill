@@ -258,7 +258,7 @@ These rules are NON-NEGOTIABLE. Every UI must be readable and accessible:
 2. **NEVER use gray text on gray backgrounds** — if the background is light gray, use dark text (`.primary` or black). If the background is dark, use white text
 3. **NEVER use low-opacity text on colored backgrounds** — use full-opacity white or dark text, not `.secondary` or `.opacity(0.6)` on colored surfaces
 4. **Card backgrounds must contrast with the page background** — if page is white/light gray, cards should be pure white with a visible shadow OR a distinctly different shade. Never gray-on-gray
-5. **Colored category pills/tags must have readable text** — use white text on dark-colored pills, or dark text on light-colored pills. The pill color itself must be vivid and saturated, not washed out
+5. **Colored category pills/tags must have readable text** — the pill color itself must be vivid and saturated, not washed out. **Choose the foreground by measurement, not by assumption.** A saturated mid-tone brand color usually needs *black* text, not white: of the 40 colors in this skill's own five palettes, **34 reach 4.5:1 against black and only 6 against white.** `#34C759` with white text is 2.22:1 — a third of the required ratio, on a color that looks like it should take white.
 6. **Test both light and dark mode** — every color pairing must work in both. Use `Color(.systemBackground)` for page backgrounds, `Color(.secondarySystemBackground)` for cards
 7. **Use Apple's semantic colors for guaranteed readability:**
    - Page background: `Color(.systemBackground)` — white in light, black in dark
@@ -280,12 +280,14 @@ When applying colors to UI elements, follow these exact rules:
 - Headlines/titles → `Color(.label)` with `.fontWeight(.bold)` — always full opacity, always readable
 - Body text → `Color(.label)` — never reduce opacity below 0.87
 - Captions/metadata → `Color(.secondaryLabel)` — already dimmed by the system, don't add more opacity
-- Text on colored buttons → `.white` (on dark buttons) or `Color(.label)` (on light buttons)
+- Text on colored buttons → whichever of white or black measures higher against that specific fill. "Dark button" is not a reliable proxy: `#0A6EBD` takes white at 5.28:1, while `#3DA5F4` — three shades lighter and still plainly "a blue button" — takes black at 7.89:1 and manages only 2.66:1 with white
 
 **Interactive Elements (buttons, pills, tags, chips):**
 - Use VIVID, SATURATED colors — not pastel or washed out
-- Category pills → use your theme's primary/secondary/accent colors at FULL saturation with white text
-- Example: `.background(Color.blue)` with `.foregroundStyle(.white)` — NOT `.background(Color.blue.opacity(0.3))` with `.foregroundStyle(.blue)`
+- Category pills → use your theme's primary/secondary/accent colors at FULL saturation
+- **Pick the label color by contrast ratio, per color.** White-on-saturated is the intuition and it is wrong far more often than it is right — run `node scripts/check-contrast.mjs` or read the published ratio in `docs/design/color-system.md`, where every palette entry states its measured foreground
+- Example: `.background(Color.blue)` with a *measured* foreground — NOT `.background(Color.blue.opacity(0.3))` with `.foregroundStyle(.blue)`, which looks disabled
+- When a brand color cannot reach 4.5:1 with either black or white, **darken the background** rather than accepting the ratio. A pill is small text; it does not qualify for the 3:1 large-text allowance
 - Disabled state → reduce to `.opacity(0.4)` but never make active elements look disabled
 
 **Stat cards / number displays:**

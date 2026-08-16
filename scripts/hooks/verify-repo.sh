@@ -223,6 +223,15 @@ TPLPY
   FAILURES+=("Shipped templates:\n$TEMPLATE_OUT")
 fi
 
+# 9. Every published palette colour states a contrast ratio, and it is correct.
+#
+# SKILL.md states a 4.5:1 body-text rule and nothing verified that the shipped
+# palettes could meet it. They can — but 34 of the 40 need BLACK text, which is
+# the opposite of what the pill guidance used to say.
+if ! CONTRAST_OUT="$(node scripts/check-contrast.mjs 2>&1)"; then
+  FAILURES+=("Palette contrast:\n$CONTRAST_OUT")
+fi
+
 if (( ${#FAILURES[@]} > 0 )); then
   echo "Repository consistency checks failed:" >&2
   echo "" >&2

@@ -363,6 +363,12 @@ jobs:
           print("OK - frontmatter only where expected")
           PY
 
+      # SKILL.md states a 4.5:1 body-text rule; nothing verified the shipped
+      # palettes against it until now. They pass — but 34 of the 40 colours
+      # need black text, not the white the pill guidance used to prescribe.
+      - name: Palette contrast ratios are published and correct
+        run: node scripts/check-contrast.mjs
+
   mcp-server:
     name: MCP server builds and tests
     runs-on: ubuntu-latest

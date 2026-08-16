@@ -6,6 +6,34 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+### Fixed -- unreleased
+
+**A field report from building a SwiftData notes app with a RealityKit gallery against this skill (Xcode 26.6 / iOS 26.5) found thirteen defects.** Every claim was verified against the repository before anything changed. Three came back different from the report in ways that changed the fix, and one came back considerably worse.
+
+- **F1 -- `Color(hex:)` fragmentation.** Confirmed: 329 string call sites, 7 integer ones, three definitions. The mechanism is not quite "cannot coexist" -- the `UInt32` and `String` forms are distinct overloads and would compile side by side. The actual compile error is that `color-system.md` and `design-system.swift` both declared `init(hex: String)` with **different bodies**: copy both into one target and you get `invalid redeclaration of 'init(hex:)'`. Separately, `SKILL.md` routes agents to `design-tokens.md`, which carried only the `UInt32` form, so a project that follows the routing table breaks all 329 string sites.
+
+  One canonical definition now lives in `design-tokens.md` accepting both forms. The string form no longer falls back to **black** on a malformed literal -- black is indistinguishable from a deliberate colour and so shipped unnoticed. It traps in DEBUG and renders magenta in release, which appears in none of the palettes.
+
+- **F2 -- `install.sh` could `git pull` inside the user's own repository.** Confirmed exactly, sequential `if`s included. Detection is an `elif` chain; `INSTALL_DIR` is never the project root; and the update path now checks the **remote URL** rather than the presence of `.git`, because a directory can be a git repository and still be someone else's work -- which is precisely the case this got wrong. Regression-tested against a fake user repo with a stubbed `git`.
+
+- **F3 -- the shipped template violated the skill's own non-negotiables.** Confirmed, and **three more templates** had the same `@Observable`-without-`@MainActor` defect. The template now has a typed error, an injected repository, `CancellationError` as the deliberate no-op, five previews (one per state, none touching the network), and a composition root. It also dropped a `.font(.system(size: 64))` that the repo's own hook rejects.
+
+- **F4 -- RealityKit pitfall 7 was factually wrong**, contradicting the platform table eight lines below it. Narrowed to `ImmersiveSpace` and hand/eye input, which genuinely are visionOS-only.
+
+- **F5-F8 -- no non-AR RealityKit guidance existed.** All nine search terms returned zero files; verified. New section 16 covers `content.camera = .virtual` and why omitting it starts an AR session behind your scene, the light rig a virtual scene needs, the **~27 degree portrait horizontal field** with the arithmetic and the depth-not-width rule it implies, both forms of the orbit-control camera override, the `ImageRenderer` texture route since `generateText` is not in the iOS SDK, and the `SwiftUI.Scene` ambiguity.
+
+- **F9 -- the SortDescriptor section did not merely omit the `Bool` constraint, it demonstrated it.** `SortDescriptor(\Task.isCompleted)` was a shipped example that does not compile. Fixed, with both workarounds and an explanation of why the `NSObject` diagnostic points somewhere else entirely.
+
+- **F10 -- `VisualEffect`'s supported surface** documented as a table, with the `.shadow` case and why "unable to type-check in reasonable time" misdirects.
+
+- **F13 -- worse than reported, and the fix is the opposite of re-picking hexes.** The report found one palette colour failing 4.5:1. Measuring all forty found that **34 of them fail against white** -- and that all forty *pass* against **black**. The defect was never the palettes; it was `SKILL.md` telling agents to put white text on saturated pills. `#34C759` with white is 2.22:1, a third of the required ratio, on a colour that looks like it should take white.
+
+  The rule now says to choose the foreground by measurement, every palette row publishes its measured foreground and ratio, and `scripts/check-contrast.mjs` keeps them honest in CI. Mutation-tested both ways: a falsified ratio and an omitted one each fail the build.
+
+Four new checks, all mutation-tested, so none of the above can regress: one `Color.init(hex:)` definition; no template with `@Observable` lacking `@MainActor` or a dependency defaulted to a live implementation; and every published contrast ratio matching its measurement.
+
+The template check's first draft had two false positives -- it read Swift attribute order as significant and flagged a doc comment quoting the anti-pattern -- which is why the two files it accused were inspected rather than "fixed".
+
 ### Added -- unreleased
 - **`cli/` -- `ios-agent`, a scaffolding CLI, and `docs/tooling/project-scaffolding.md`, the design behind it.** A generated project shows the user three entries; everything the tool owns lives in a hidden `.ios-agent/`.
 
