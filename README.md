@@ -88,7 +88,7 @@ Every finding carries a file, a line, the consequence, the fix, and a link to th
 
 | | |
 |---|---|
-| 🧠 **The skill** | 100+ files — Swift 6.4 concurrency, SwiftUI, Clean Architecture, 47 Apple framework guides, design tokens, App Store checklists |
+| 🧠 **The skill** | 100+ files — Swift 6.4 concurrency, SwiftUI, Clean Architecture, 50+ production-focused Apple framework guides, design tokens, App Store checklists |
 | 🔌 **[MCP server](mcp-server/)** | 11 tools: concurrency, architecture, SwiftUI, availability, memory, security, testing, performance, App Store readiness, project overview, skill lint |
 | 🛠️ **[CLI](cli/)** | `ios-agent new MyApp` — scaffolds a project whose root is `App/`, a README, and a licence. Caches, logs, state, and build artifacts live in a hidden `.ios-agent/` |
 | 🤖 **[10 subagents](.claude/agents/)** | explore, plan, review, debug, refactor, docs, Foundation Models, modernization, accessibility, performance |
@@ -511,6 +511,8 @@ Two rules do most of the work:
 |:---:|------|--------|
 | :robot: | [xcode-27-agents.md](docs/tooling/xcode-27-agents.md) | Xcode coding agents, routing vs. Claude Code, agent-assisted localization and testing, Instruments |
 | :iphone: | [device-hub.md](docs/tooling/device-hub.md) | Device Hub, the test matrix, iOS 27 app resizability, accessibility passes |
+| :terminal: | [fm-cli.md](docs/tooling/fm-cli.md) | Foundation Models terminal experiments, safe transcript handling, promotion to evaluations |
+| :chart_with_upwards_trend: | [foundation-models-instruments.md](docs/tooling/foundation-models-instruments.md) | Foundation Models Instruments, token use, tool latency, Dynamic Profiles profiling |
 
 ### :orange_book: Swift Language — `docs/swift/`
 
@@ -531,6 +533,7 @@ Two rules do most of the work:
 | :triangular_ruler: | [layout.md](docs/swiftui/layout.md) | Stacks, Grid, GeometryReader, LazyVGrid, custom Layout protocol |
 | :sparkles: | [animations.md](docs/swiftui/animations.md) | Spring, transitions, matchedGeometry, PhaseAnimator, MeshGradient, TextRenderer |
 | :point_up_2: | [gestures.md](docs/swiftui/gestures.md) | Tap, drag, magnify, rotate, gesture composition |
+| :left_right_arrow: | [ios-27-interactions.md](docs/swiftui/ios-27-interactions.md) | Reorderable containers, custom-container swipe actions, adaptive toolbars |
 
 ### :iphone: UIKit — `docs/uikit/`
 
@@ -581,6 +584,8 @@ Two rules do most of the work:
 | :eyeglasses: | [realitykit.md](docs/frameworks/realitykit.md) | ECS, RealityView, ARView, PBR materials, physics, USDZ |
 | :joystick: | [scenekit.md](docs/frameworks/scenekit.md) | Scene graph, `SCNView`, `ARSCNView`, physics, migration |
 | :zap: | [metal.md](docs/frameworks/metal.md) | `MTKView`, command buffers, shaders, compute kernels |
+| :brain: | [core-ai.md](docs/frameworks/core-ai.md) | `.aimodel`, `AIModel`, specialization, caching, `coreai-build`, debugging |
+| :mag_right: | [core-spotlight-rag.md](docs/frameworks/core-spotlight-rag.md) | `SpotlightSearchTool`, private app-local RAG, Core Spotlight indexing |
 
 ### :robot: AI & Machine Learning — `docs/frameworks/ml/`
 
@@ -588,6 +593,7 @@ Two rules do most of the work:
 |:---:|------|-----------|
 | :sparkles: | [foundation-models.md](docs/frameworks/foundation-models.md) | On-device + PCC LLMs, `@Generable`, tool calling, Dynamic Profiles, multimodal prompts |
 | :star2: | [apple-intelligence.md](docs/frameworks/apple-intelligence.md) | Framework routing, privacy model, App Intents, Image Playground, graceful degradation |
+| :speech_balloon: | [app-intents-intelligence.md](docs/frameworks/app-intents-intelligence.md) | App Intents schemas, Spotlight semantic index, View Annotations, App Intents Testing |
 | :brain: | [coreml.md](docs/frameworks/ml/coreml.md) | Model loading, prediction, Neural Engine |
 | :eye: | [vision.md](docs/frameworks/ml/vision.md) | OCR, face detection, barcode, segmentation |
 | :speech_balloon: | [natural-language.md](docs/frameworks/ml/natural-language.md) | Tokenization, sentiment, embeddings |
@@ -780,7 +786,7 @@ MIT License | Copyright (c) 2026 **Nagarjuna Reddy**
 ---
 
 <p align="center">
-  <strong>95+ files | 50,000+ lines | 25+ AI platforms | All Apple frameworks</strong><br><br>
+  <strong>100+ files | 50,000+ lines | 25+ AI platforms | 50+ production-focused Apple framework guides</strong><br><br>
   <a href="https://www.linkedin.com/in/nagarjuna-reddy-97836a193/"><img src="https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn"></a>
   <a href="https://github.com/Nagarjuna2997/ios-agent-skill"><img src="https://img.shields.io/badge/GitHub-Star%20this%20repo-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub"></a>
 </p>

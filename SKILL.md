@@ -63,17 +63,21 @@ Load this skill when any of the following is true. When none are true, do not lo
 | Layered architecture, use cases, DI | `patterns/clean-architecture.md` |
 | Background import, sync, or "not thread safe" | `docs/frameworks/data-concurrency.md` |
 | Test doubles, previews, debug menus | `docs/testing/mocking-strategy.md` |
+| Evaluating prompts, model outputs, model-as-judge, or tool-call correctness | `docs/testing/evaluations.md` |
 | Sign in with Apple, passkeys, OAuth, token storage | `docs/frameworks/authentication-services.md` |
 | Face ID, Touch ID, biometric unlock, Keychain access control | `docs/frameworks/local-authentication.md` |
 | Any chart, graph, or plot | `docs/frameworks/swift-charts.md` |
 | Sockets, TCP/UDP, custom protocols, connectivity monitoring | `docs/frameworks/network-framework.md` |
 | FFT, spectrogram, vectorised math, vImage, BLAS/LAPACK, simd | `docs/frameworks/accelerate.md` |
+| Custom `.aimodel` / `.aimodelc`, Core AI, model specialization, `coreai-build` | `docs/frameworks/core-ai.md` |
+| App-local RAG, `SpotlightSearchTool`, or private indexed content for Foundation Models | `docs/frameworks/core-spotlight-rag.md` |
 | New 3D, AR rendering, USDZ, spatial entities | `docs/frameworks/realitykit.md`, `docs/frameworks/arkit.md` |
 | Existing SceneKit scene graphs, `.scnassets`, `ARSCNView` | `docs/frameworks/scenekit.md`, then `docs/frameworks/realitykit.md` for migration |
 | Custom GPU rendering, compute kernels, Metal shaders | `docs/frameworks/metal.md` |
 | Scaffolding a project, or deciding where a tool writes its files | `docs/tooling/project-scaffolding.md` |
 | Colors, spacing, theming, glass effects | `docs/design/design-tokens.md`, `docs/design/color-system.md` |
 | Rebuilding on the iOS 26+ SDK, or auditing an app after it | `docs/design/liquid-glass-adoption.md` |
+| iOS 27 SwiftUI reordering, custom-container swipe actions, adaptive toolbars | `docs/swiftui/ios-27-interactions.md` |
 | A named Apple framework | the matching `docs/frameworks/**` file |
 | A named platform | the matching `docs/platforms/*.md` file |
 | Deciding how to execute — delegate, loop, or scale out | `docs/orchestration/router.md` |
@@ -83,7 +87,9 @@ Load this skill when any of the following is true. When none are true, do not lo
 | A codebase-wide migration or many isolated PRs | `docs/orchestration/dynamic-workflows.md` |
 | Enforcing a rule automatically | `docs/orchestration/hooks.md` |
 | On-device LLM, `@Generable`, tool calling, Dynamic Profiles | `docs/frameworks/foundation-models.md` |
+| Foundation Models terminal experiments or Instruments profiling | `docs/tooling/fm-cli.md`, `docs/tooling/foundation-models-instruments.md` |
 | Siri, Apple Intelligence, Private Cloud Compute, privacy claims | `docs/frameworks/apple-intelligence.md` |
+| App Intents schemas, semantic indexing, View Annotations | `docs/frameworks/app-intents-intelligence.md`, `docs/frameworks/app-intents.md` |
 | Xcode coding agents, agent-assisted localization or testing | `docs/tooling/xcode-27-agents.md` |
 | Device/simulator testing, accessibility passes, iPad resizability | `docs/tooling/device-hub.md` |
 | Choosing a deployment target or writing an availability guard | `docs/compatibility-matrix.md` |
@@ -577,6 +583,7 @@ This repository contains comprehensive documentation. Consult these files when b
 - `docs/swiftui/layout.md` — Stacks, grids, geometry, alignment
 - `docs/swiftui/animations.md` — Animations, transitions, matched geometry
 - `docs/swiftui/gestures.md` — Gesture types and composition
+- `docs/swiftui/ios-27-interactions.md` — Reordering in custom containers, custom-container swipe actions, adaptive toolbars
 
 ### UIKit
 - `docs/uikit/uikit-essentials.md` — View controllers, views, lifecycle, Auto Layout
@@ -600,6 +607,9 @@ This repository contains comprehensive documentation. Consult these files when b
 - `docs/frameworks/realitykit.md` — ECS, RealityView, PBR materials, physics, spatial audio
 - `docs/frameworks/scenekit.md` — Legacy scene graphs, `.scnassets`, `SCNView`, `ARSCNView`, migration to RealityKit
 - `docs/frameworks/metal.md` — `MTKView`, command buffers, shaders, compute kernels, AR camera texture interop
+- `docs/frameworks/core-ai.md` — `.aimodel` / `.aimodelc`, `AIModel`, specialization, caching, `coreai-build`, Core AI debugging
+- `docs/frameworks/core-spotlight-rag.md` — `SpotlightSearchTool`, private app-local RAG, Core Spotlight indexing for Foundation Models
+- `docs/frameworks/app-intents-intelligence.md` — App Intents schemas, Spotlight semantic index, View Annotations, App Intents Testing
 - `docs/frameworks/networking.md` — HTTP networking patterns
 - `docs/frameworks/swift-charts.md` — Marks, scales, axes, selection, `AXChartDescriptor`, peak-preserving downsampling for large datasets
 - `docs/frameworks/accessibility.md` — Accessibility best practices
@@ -691,10 +701,13 @@ This repository contains comprehensive documentation. Consult these files when b
 ### Tooling
 - `docs/tooling/xcode-27-agents.md` — Xcode coding agents, when to use them vs. Claude Code, agent-assisted localization and testing, Instruments
 - `docs/tooling/device-hub.md` — Device Hub, the device/config test matrix, iOS 27 app resizability, accessibility passes
+- `docs/tooling/fm-cli.md` — Foundation Models terminal experiments with the `fm` CLI, safe transcript handling, promotion to evaluations
+- `docs/tooling/foundation-models-instruments.md` — Foundation Models Instruments profiling for tokens, latency, tools, Dynamic Profiles
 - `docs/tooling/project-scaffolding.md` — The generated project layout, the authorship rule for hiding tool-owned files, one-declaration derivation of gitignore and `clean`, root discovery via a `.ios-agent` marker, cross-platform cache locations
 
 ### Testing & Quality
 - `docs/testing/mocking-strategy.md` — Three-tier strategy: test doubles, rich debug mocks, environment flags and debug menus
+- `docs/testing/evaluations.md` — Evaluations framework, datasets, code-based evaluators, model-as-judge, tool-call evaluation, CI gates
 - `checklists/app-store-submission.md` — App Store review checklist
 - `checklists/performance.md` — Performance optimization
 - `checklists/security.md` — Security best practices
