@@ -370,6 +370,9 @@ jobs:
       - name: Palette contrast ratios are published and correct
         run: node scripts/check-contrast.mjs
 
+      - name: Apple technology catalog is fresh
+        run: node scripts/check-framework-catalog.mjs
+
   mcp-server:
     name: MCP server builds and tests
     runs-on: ubuntu-latest

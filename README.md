@@ -105,6 +105,14 @@ Every finding carries a file, a line, the consequence, the fix, and a link to th
 | **INTELLIGENCE** | Foundation Models, Core AI, App Intents, Siri, RAG, Evaluations, MLX-ready routing |
 | **EXECUTE** | Xcode, build, test, simulator, screenshots, runtime evidence, visual validation |
 
+## Apple technology catalog
+
+<!-- apple-catalog:start -->
+Apple catalog tracked: **98** technologies. Covered: **68**. Planned: **30**. Skipped: **0**. Deprecated: **0**. Coverage: **69.4%**.
+
+Source of truth: [`frameworks.json`](frameworks.json). Human index: [`docs/apple-framework-index.md`](docs/apple-framework-index.md).
+<!-- apple-catalog:end -->
+
 ## Resources
 
 Tools are verbs the agent chooses to call. Resources are nouns your client can read up front, so the project's shape reaches context before the model thinks to ask:

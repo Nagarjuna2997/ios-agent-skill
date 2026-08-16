@@ -89,6 +89,8 @@ risks, and absent evaluation datasets.
 
 ## v3.0 — design, motion, and native 3D specialists
 
+Release name: **Apple Platform Intelligence**.
+
 This tier teaches the skill to produce polished app surfaces before the runtime
 MCP exists:
 
@@ -103,6 +105,36 @@ MCP exists:
 The rule is native iOS first: SwiftUI, UIKit, RealityKit, SceneKit migration
 guidance, ARKit, and Metal. No anime.js, Three.js, React, WebGL, or Babylon.js
 dependencies belong in the core iOS skill.
+
+### Catalog milestone
+
+- [x] `frameworks.json` is the source of truth for Apple technology coverage.
+- [x] `docs/apple-framework-index.md` is generated from the catalog.
+- [x] README framework coverage counts are generated and checked by the repo hook.
+- [x] VisionKit is covered as a meaningful UI/camera/vision gap.
+- [x] Native-vs-web animation routing is documented for Anime.js, GSAP, Framer Motion, Three.js, PixiJS, p5.js, Matter.js, WebGL, WebGPU, CSS animation, and WKWebView decisions.
+
+---
+
+## v4.0 — runtime visual automation
+
+Release theme: **Build -> Run -> See -> Fix**.
+
+This is where `ios-simulator-mcp` becomes executable rather than just specified:
+
+- build
+- test
+- boot simulator
+- install
+- launch
+- tap, swipe, long-press, type
+- open deep links
+- capture screenshots
+- record video
+- read logs
+- inspect accessibility
+- compare visual states
+- loop with UI/UX, motion, accessibility, RealityKit, Metal, and performance reviewers
 
 ---
 

@@ -237,6 +237,11 @@ if ! CONTRAST_OUT="$(node scripts/check-contrast.mjs 2>&1)"; then
   FAILURES+=("Palette contrast:\n$CONTRAST_OUT")
 fi
 
+# 10. The Apple technology catalog is valid and generated summaries are fresh.
+if ! CATALOG_OUT="$(node scripts/check-framework-catalog.mjs 2>&1)"; then
+  FAILURES+=("Apple framework catalog:\n$CATALOG_OUT")
+fi
+
 if (( ${#FAILURES[@]} > 0 )); then
   echo "Repository consistency checks failed:" >&2
   echo "" >&2

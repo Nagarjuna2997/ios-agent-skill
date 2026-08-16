@@ -103,6 +103,9 @@ Load this skill when any of the following is true. When none are true, do not lo
 | Reviewing an existing Swift project for defects | `docs/mcp/tools.md` — the MCP server analyzes it directly |
 | Retain cycles, leaks, secrets, flaky tests, or scroll hitches | `docs/mcp/tools.md` — `review_swift_memory`, `_security`, `_testing`, `_performance` |
 | Authoring or reviewing an Agent Skill, or a subagent that will not invoke | `docs/mcp/tools.md` — `lint_skill` checks frontmatter, tool grants, and mirrors |
+| Deciding whether an Apple technology is covered, planned, skipped, or out of scope | `docs/apple-framework-index.md`, `frameworks.json` |
+| VisionKit, document scanning, Live Text-style UI, system visual lookup | `docs/frameworks/visionkit.md` |
+| Anime.js, GSAP, Framer Motion, Three.js, WebGL, or WKWebView routing | `docs/web/native-vs-web-animation.md` |
 
 ## How These Docs Are Structured
 
@@ -626,6 +629,8 @@ This repository contains comprehensive documentation. Consult these files when b
 - `docs/frameworks/ml/natural-language.md` — Tokenization, tagging, sentiment, embeddings
 - `docs/frameworks/ml/speech.md` — Speech-to-text, live transcription
 - `docs/frameworks/ml/on-device-ai.md` — Foundation Models, MLX Swift, on-device LLM
+- `docs/frameworks/visionkit.md` — VisionKit system document scanning, Live Text-style UI, visual lookup routing, privacy and fallbacks
+- `docs/apple-framework-index.md` — Generated Apple technology catalog with tracked, covered, planned, skipped, deprecated, and coverage counts
 
 ### Advanced App Experience
 - `docs/frameworks/activitykit.md` — Live Activities, Dynamic Island, push-to-update
@@ -715,6 +720,7 @@ This repository contains comprehensive documentation. Consult these files when b
 - `docs/tooling/ios-simulator-mcp.md` — Planned separate runtime MCP for Xcode builds, simulator launch, screenshots, video, logs, gestures, and accessibility-tree inspection
 - `docs/tooling/visual-iteration-loop.md` — Design -> Build -> See -> Improve loop for premium UI iteration with runtime artifacts
 - `docs/tooling/project-scaffolding.md` — The generated project layout, the authorship rule for hiding tool-owned files, one-declaration derivation of gitignore and `clean`, root discovery via a `.ios-agent` marker, cross-platform cache locations
+- `docs/web/native-vs-web-animation.md` — Routing web animation/3D vocabulary to native SwiftUI, UIKit, RealityKit, SpriteKit, Metal, or WKWebView
 
 ### Testing & Quality
 - `docs/testing/mocking-strategy.md` — Three-tier strategy: test doubles, rich debug mocks, environment flags and debug menus
