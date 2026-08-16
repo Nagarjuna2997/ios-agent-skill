@@ -96,6 +96,15 @@ Every finding carries a file, a line, the consequence, the fix, and a link to th
 | 🪝 **[Hooks](templates/hooks/)** | Deterministic enforcement at write time, plus CI |
 | ✅ **[Compile-checked sample](samples/SkillPatterns/)** | An SPM package CI builds and tests on every push — the patterns are verified, not asserted |
 
+## Four pillars
+
+| Pillar | Covers |
+|---|---|
+| **ENGINEER** | Swift, SwiftUI, architecture, testing, security, performance |
+| **DESIGN** | UI/UX, motion, haptics, accessibility, 3D, RealityKit, Metal |
+| **INTELLIGENCE** | Foundation Models, Core AI, App Intents, Siri, RAG, Evaluations, MLX-ready routing |
+| **EXECUTE** | Xcode, build, test, simulator, screenshots, runtime evidence, visual validation |
+
 ## Resources
 
 Tools are verbs the agent chooses to call. Resources are nouns your client can read up front, so the project's shape reaches context before the model thinks to ask:
@@ -123,7 +132,9 @@ Every review tool also returns `structuredContent` — `summary`, `score`, `coun
 
 **v2.1.0 finishes the analysis server:** eleven tools, three resources, structured output. No Xcode, no simulator, no network, ~26 KB — it runs on macOS, Linux, and Windows.
 
-Simulator automation (screen recording, deep links, app management, then UI driving) ships as a **separate** package, so a Swift linter never requires a 15 GB Xcode install. **[ROADMAP.md](ROADMAP.md)** has the phasing and the feasibility notes, including which parts are blocked on choosing a UI-automation backend. Nothing is filed as an issue yet — open one for the piece you want and it moves up.
+**v2.x next adds review contracts for design and AI:** `review_ui_ux`, `review_motion`, `review_accessibility`, `review_haptics`, RealityKit/Metal, Foundation Models/Core AI, App Intents, AI security, and evaluations are specified in **[docs/mcp/vnext-analysis-tools.md](docs/mcp/vnext-analysis-tools.md)** before they are implemented.
+
+Simulator automation (screen recording, deep links, app management, then UI driving) ships as a **separate** package, so a Swift linter never requires a 15 GB Xcode install. **[docs/tooling/ios-simulator-mcp.md](docs/tooling/ios-simulator-mcp.md)** defines that runtime contract, and **[docs/tooling/visual-iteration-loop.md](docs/tooling/visual-iteration-loop.md)** explains the Design -> Build -> See -> Improve workflow. **[ROADMAP.md](ROADMAP.md)** has the phasing and feasibility notes.
 
 ## Works with
 
@@ -376,6 +387,14 @@ Everything above the iOS 17 floor is **additive** — a newer-OS feature must de
 | :satellite: | **Three MCP resources** | `ios://project/info`, `/dependencies`, `/issues`, readable without the model deciding to call anything |
 | :label: | **Version identity that cannot drift** | `package.json` is the only place a human edits; `mcp.json`, the lockfile, and the handshake are generated from it and checked in CI |
 
+## :sparkles: What's Next
+
+| | Feature | What it gives you |
+|:---:|---------|-------------------|
+| :art: | **Design and AI review tools** | A planned static-analysis expansion for UI/UX, motion, accessibility, haptics, RealityKit, Metal, Foundation Models, Core AI, App Intents, AI security, and evaluations. See [vNext MCP Analysis Tools](docs/mcp/vnext-analysis-tools.md) |
+| :iphone: | **Separate simulator MCP** | Runtime build, launch, screenshot, video, logs, gestures, and accessibility-tree inspection without making the static MCP depend on Xcode. See [iOS Simulator MCP](docs/tooling/ios-simulator-mcp.md) |
+| :framed_picture: | **Visual Iteration Loop** | Design -> Build -> See -> Improve: agents modify UI, run it, capture artifacts, review pixels and accessibility state, then iterate. See [visual-iteration-loop.md](docs/tooling/visual-iteration-loop.md) |
+
 ## :sparkles: What's New in 2.0
 
 **The repo is now installable, not just readable.**
@@ -513,6 +532,8 @@ Two rules do most of the work:
 | :iphone: | [device-hub.md](docs/tooling/device-hub.md) | Device Hub, the test matrix, iOS 27 app resizability, accessibility passes |
 | :terminal: | [fm-cli.md](docs/tooling/fm-cli.md) | Foundation Models terminal experiments, safe transcript handling, promotion to evaluations |
 | :chart_with_upwards_trend: | [foundation-models-instruments.md](docs/tooling/foundation-models-instruments.md) | Foundation Models Instruments, token use, tool latency, Dynamic Profiles profiling |
+| :camera: | [ios-simulator-mcp.md](docs/tooling/ios-simulator-mcp.md) | Planned runtime MCP contract for build, launch, screenshots, video, logs, gestures, and accessibility-tree inspection |
+| :repeat: | [visual-iteration-loop.md](docs/tooling/visual-iteration-loop.md) | Design -> Build -> See -> Improve workflow for premium UI iteration |
 
 ### :orange_book: Swift Language — `docs/swift/`
 

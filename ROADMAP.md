@@ -56,6 +56,54 @@ product with different requirements:
 a Swift linter needs a full Xcode install. Same repository, same rule
 philosophy, different runtime contract.
 
+See `docs/tooling/ios-simulator-mcp.md` for the runtime package contract and
+`docs/tooling/visual-iteration-loop.md` for the design-build-see-improve loop
+that becomes possible once runtime artifacts exist.
+
+---
+
+## v2.x next — design and AI static review contracts
+
+Before adding more MCP tools, define the output shape and the static/runtime
+boundary. The planned tools are documented in
+`docs/mcp/vnext-analysis-tools.md`:
+
+- `review_ui_ux`
+- `review_motion`
+- `review_accessibility`
+- `review_haptics`
+- `review_realitykit`
+- `review_metal`
+- `review_foundation_models`
+- `review_core_ai`
+- `review_app_intents`
+- `review_ai_security`
+- `review_ai_evaluations`
+
+These stay read-only and network-free. They inspect code for concrete evidence:
+Dynamic Type gaps, missing Reduce Motion paths, unsafe GPU patterns, missing
+AI availability gates, weak App Intents declarations, prompt/tool-call safety
+risks, and absent evaluation datasets.
+
+---
+
+## v3.0 — design, motion, and native 3D specialists
+
+This tier teaches the skill to produce polished app surfaces before the runtime
+MCP exists:
+
+- [x] `ui-ux-designer`
+- [x] `motion-designer`
+- [x] `3d-experience-designer`
+- [x] `patterns/ui/`
+- [x] `patterns/motion/`
+- [x] `patterns/3d/`
+- [x] Native splash guidance in `patterns/motion/splash-screens.md`
+
+The rule is native iOS first: SwiftUI, UIKit, RealityKit, SceneKit migration
+guidance, ARKit, and Metal. No anime.js, Three.js, React, WebGL, or Babylon.js
+dependencies belong in the core iOS skill.
+
 ---
 
 ## v2.1 — the `simctl` tier

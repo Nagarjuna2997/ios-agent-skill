@@ -62,6 +62,10 @@ Load this skill when any of the following is true. When none are true, do not lo
 | App Intents schemas, semantic indexing, View Annotations | `docs/frameworks/app-intents-intelligence.md`, `docs/frameworks/app-intents.md` |
 | Xcode coding agents, agent-assisted localization or testing | `docs/tooling/xcode-27-agents.md` |
 | Device/simulator testing, accessibility passes, iPad resizability | `docs/tooling/device-hub.md` |
+| Runtime simulator automation, screenshots, video, logs, UI driving | `docs/tooling/ios-simulator-mcp.md` |
+| Premium UI iteration from screenshots or videos | `docs/tooling/visual-iteration-loop.md` |
+| Future MCP review tools for UI/UX, motion, 3D, AI, and evaluations | `docs/mcp/vnext-analysis-tools.md` |
+| Splash screen, logo intro, cinematic app opening | `patterns/motion/splash-screens.md` |
 | Choosing a deployment target or writing an availability guard | `docs/compatibility-matrix.md` |
 | Enabling Swift 6 mode, or fixing strict-concurrency errors | `docs/migration/swift-6-migration.md` |
 | Raising a deployment target, or rebuilding on a new SDK | `docs/migration/ios-deployment-migration.md` |
@@ -645,6 +649,7 @@ This repository contains comprehensive documentation. Consult these files when b
 - `patterns/error-handling.md` — Error handling strategies
 - `patterns/ui/README.md` — Premium SwiftUI screen pattern briefs: onboarding, dashboards, empty states, skeletons, cards
 - `patterns/motion/README.md` — Native motion patterns: stagger, scroll reveal, matched transitions, parallax, splash flow
+- `patterns/motion/splash-screens.md` — Native launch-to-intro flow: static iOS launch screen, animated SwiftUI intro, then main app
 - `patterns/3d/README.md` — Native 3D routing patterns: Model3D, RealityKit, ARKit, SceneKit migration, Metal particles
 
 ### Agent Operations (Orchestration)
@@ -664,6 +669,7 @@ This repository contains comprehensive documentation. Consult these files when b
 - `docs/mcp/installation.md` — Claude Code, Claude Desktop, Cursor, and from-source setup
 - `docs/mcp/tools.md` — Tool reference, every rule and its severity, and the limits of static analysis
 - `docs/mcp/examples.md` — Worked sessions, and how the tools pair with the subagents
+- `docs/mcp/vnext-analysis-tools.md` — Planned static review tools for UI/UX, motion, accessibility, haptics, RealityKit, Metal, Foundation Models, Core AI, App Intents, AI security, and evaluations
 
 ### Versions & Migration
 - `docs/compatibility-matrix.md` — **Canonical.** Deployment targets, SDKs, tested Xcode/Swift, per-feature availability floors
@@ -676,6 +682,8 @@ This repository contains comprehensive documentation. Consult these files when b
 - `docs/tooling/device-hub.md` — Device Hub, the device/config test matrix, iOS 27 app resizability, accessibility passes
 - `docs/tooling/fm-cli.md` — Foundation Models terminal experiments with the `fm` CLI, safe transcript handling, promotion to evaluations
 - `docs/tooling/foundation-models-instruments.md` — Foundation Models Instruments profiling for tokens, latency, tools, Dynamic Profiles
+- `docs/tooling/ios-simulator-mcp.md` — Planned separate runtime MCP for Xcode builds, simulator launch, screenshots, video, logs, gestures, and accessibility-tree inspection
+- `docs/tooling/visual-iteration-loop.md` — Design -> Build -> See -> Improve loop for premium UI iteration with runtime artifacts
 - `docs/tooling/project-scaffolding.md` — The generated project layout, the authorship rule for hiding tool-owned files, one-declaration derivation of gitignore and `clean`, root discovery via a `.ios-agent` marker, cross-platform cache locations
 
 ### Testing & Quality
