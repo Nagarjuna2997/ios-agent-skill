@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+### Added -- 3.0.0
+- **Apple Platform Intelligence** -- the v3.0 release direction. The repository now has a generated Apple technology catalog (`frameworks.json` -> `docs/apple-framework-index.md`), README coverage statistics derived from that catalog, and CI/hook checks that fail stale catalog output.
+- **P0 domain hubs** for AI, professional UI/UX, animation, graphics/3D/spatial, data, networking, WebKit, security, performance, and XCUIAutomation. These are routing guides with decision matrices, examples, anti-patterns, production checklists, and links to existing deep framework guides rather than empty placeholder files.
+- **Native web-animation translation guidance** for Anime.js, GSAP, Framer Motion, Motion One, Three.js, PixiJS, p5.js, Matter.js, WebGL/WebGPU, and CSS animation vocabulary. Native SwiftUI/UIKit/RealityKit/SpriteKit/Metal remains preferred unless WKWebView is an intentional product requirement.
+- **Eleven new read-only specialist agents**: `swiftui-expert`, `uikit-expert`, `core-ai-expert`, `app-intents-expert`, `realitykit-expert`, `metal-expert`, `webkit-expert`, `testing-expert`, `xcode-expert`, `security-reviewer`, and `app-store-reviewer`. The repo now exposes 24 subagents, and the MCP skill linter tests assert that count.
+- **Reusable P0 pattern indexes** for animation, RealityKit, Metal, AI, WebKit, testing, and accessibility.
+- **MCP static-analysis roadmap expansion** for `review_webkit`, `review_networking`, `review_persistence`, `review_storekit`, and `review_permissions`, while keeping simulator execution documented as the future separate `ios-simulator-mcp` package.
+
 ### Fixed -- unreleased
 - **The `cli` job's first run on Windows failed, and the defect was in the test, not the product.** `globalCacheDir` resolves the `XDG_CACHE_HOME` value with `path.resolve`, which anchors a drive-less absolute path to the current drive: `/xdg` becomes `D:\xdg` on a Windows runner and stays `/xdg` on Linux. The expectation was built with `path.join`, which does not anchor, so it passed on Linux and macOS and failed on Windows.
 

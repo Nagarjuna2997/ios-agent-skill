@@ -181,7 +181,7 @@ describe("mcp server", () => {
     });
     const text = result.content[0].text;
     assert.match(text, /# Skill Repository Lint/);
-    assert.match(text, /\*\*Subagent definitions:\*\* 13/);
+    assert.match(text, /\*\*Subagent definitions:\*\* 24/);
     assert.match(text, /No findings/);
   });
 

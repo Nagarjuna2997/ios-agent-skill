@@ -227,6 +227,12 @@ test("help exits zero", () => {
   assert.match(out.join("\n"), /ios-agent/);
 });
 
+test("--version prints the CLI package version", () => {
+  const { io, out } = capture(tempDir());
+  assert.equal(run(["--version"], io), 0);
+  assert.equal(out.join("\n"), "0.1.0");
+});
+
 // MARK: - doctor --fix
 
 test("doctor --fix repairs a stale gitignore", () => {

@@ -1,7 +1,7 @@
 ---
 name: ios-agent-skill
 description: Expert iOS/Swift developer behavior for AI coding agents. Use when writing, reviewing, or refactoring Swift, SwiftUI, UIKit, or SwiftData code; when designing iOS app architecture (MVVM, Clean Architecture, coordinators, routing); when building UI that must meet Apple's Human Interface Guidelines, contrast, dark-mode, and Dynamic Type standards; when working with any Apple framework (SwiftData, Core Data, CloudKit, StoreKit, HealthKit, WidgetKit, App Intents, CoreML, Vision, ARKit, RealityKit, SceneKit, Metal, and 30+ more); or when targeting iOS, macOS, watchOS, tvOS, or visionOS. Also use for Swift concurrency questions — actors, @MainActor isolation, Sendable, structured concurrency.
-version: 2.1.0
+version: 3.0.0
 license: MIT
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 metadata:
@@ -104,8 +104,17 @@ Load this skill when any of the following is true. When none are true, do not lo
 | Retain cycles, leaks, secrets, flaky tests, or scroll hitches | `docs/mcp/tools.md` — `review_swift_memory`, `_security`, `_testing`, `_performance` |
 | Authoring or reviewing an Agent Skill, or a subagent that will not invoke | `docs/mcp/tools.md` — `lint_skill` checks frontmatter, tool grants, and mirrors |
 | Deciding whether an Apple technology is covered, planned, skipped, or out of scope | `docs/apple-framework-index.md`, `frameworks.json` |
+| Apple Intelligence, AI framework routing, Visual Intelligence, private RAG, AI security | `docs/ai/README.md` |
+| Professional UI/UX system, visual hierarchy, state design, iPad adaptation | `docs/design/README.md`, `ui-ux-designer` |
+| Native motion, animation purpose, GSAP/Anime.js-style concepts | `docs/animation/README.md`, `docs/animation/web-animation-concepts.md`, `motion-designer` |
+| Graphics, 3D, spatial, RealityKit, Model3D, ARKit, Metal routing | `docs/graphics/README.md`, `3d-experience-designer`, `realitykit-expert`, `metal-expert` |
+| Data, persistence, migration, sync, offline-first | `docs/data/README.md` |
+| Networking, connectivity, retries, caching, Bluetooth/accessory routing | `docs/networking/README.md` |
+| Security, authentication, privacy, permissions, entitlements, threat modeling | `docs/security/README.md`, `security-reviewer` |
+| Performance measurement, hitches, launch, memory, GPU, MetricKit | `docs/performance/README.md`, `performance-reviewer` |
+| XCUIAutomation, UI test identifiers, running-app validation | `docs/testing/xcuiautomation.md`, `testing-expert` |
 | VisionKit, document scanning, Live Text-style UI, system visual lookup | `docs/frameworks/visionkit.md` |
-| Anime.js, GSAP, Framer Motion, Three.js, WebGL, or WKWebView routing | `docs/web/native-vs-web-animation.md` |
+| Anime.js, GSAP, Framer Motion, Three.js, WebGL, or WKWebView routing | `docs/web/README.md`, `docs/web/native-vs-web-animation.md`, `webkit-expert` |
 
 ## How These Docs Are Structured
 
@@ -177,6 +186,20 @@ Specialists in `.claude/agents/`:
 | `swiftui-modernization` | read + write + Bash | Legacy → modern API migration, behavior-preserving |
 | `accessibility-reviewer` | read-only | VoiceOver, Dynamic Type, contrast, tap targets |
 | `performance-reviewer` | read + Bash | Hitches, memory, main-actor contention — measures first |
+| `ui-ux-designer` | read-only | Product UI/UX review, hierarchy, spacing, state design |
+| `motion-designer` | read-only | Native motion plans from SwiftUI/UIKit and web animation vocabulary |
+| `3d-experience-designer` | read-only | 3D/AR/spatial/Metal routing and review |
+| `swiftui-expert` | read-only | SwiftUI layout, state, navigation, iOS 27 interactions |
+| `uikit-expert` | read-only | UIKit lifecycle, layout, animation, interop review |
+| `core-ai-expert` | read-only | Core AI custom model routing and review |
+| `app-intents-expert` | read-only | Siri, Shortcuts, Spotlight, schemas, App Entities |
+| `realitykit-expert` | read-only | RealityKit, Model3D, ARKit integration review |
+| `metal-expert` | read-only | Metal rendering, shaders, compute, frame-loop review |
+| `webkit-expert` | read-only | WKWebView/native routing and JS bridge review |
+| `testing-expert` | read-only | Swift Testing, XCTest, XCUIAutomation, evaluations |
+| `xcode-expert` | read-only | Xcode projects, schemes, Device Hub, Instruments |
+| `security-reviewer` | read-only | Authentication, Keychain, privacy, entitlements, threat modeling |
+| `app-store-reviewer` | read-only | App Review, StoreKit, privacy manifest, release risk |
 
 **The author does not grade the work.** For anything that ships, verification goes to a cold `swift-reviewer` with no stake in the result.
 
@@ -631,6 +654,7 @@ This repository contains comprehensive documentation. Consult these files when b
 - `docs/frameworks/ml/on-device-ai.md` — Foundation Models, MLX Swift, on-device LLM
 - `docs/frameworks/visionkit.md` — VisionKit system document scanning, Live Text-style UI, visual lookup routing, privacy and fallbacks
 - `docs/apple-framework-index.md` — Generated Apple technology catalog with tracked, covered, planned, skipped, deprecated, and coverage counts
+- `docs/ai/README.md` — Apple Intelligence, Foundation Models, Core AI, App Intents, Visual Intelligence, RAG, evaluations, privacy/security routing
 
 ### Advanced App Experience
 - `docs/frameworks/activitykit.md` — Live Activities, Dynamic Island, push-to-update
@@ -662,6 +686,17 @@ This repository contains comprehensive documentation. Consult these files when b
 - `docs/frameworks/background-tasks.md` — BGTaskScheduler, background refresh
 - `docs/frameworks/device-integrity.md` — DeviceCheck, AppAttest
 
+### Domain Hubs
+- `docs/design/README.md` — Professional UI/UX review order, state design, polish rules
+- `docs/animation/README.md` — Native motion system, purpose rules, performance and Reduce Motion
+- `docs/animation/web-animation-concepts.md` — Anime.js, GSAP, Framer Motion, Three.js, PixiJS, p5.js, Matter.js, WebGL/WebGPU vocabulary mapped to native Apple APIs
+- `docs/graphics/README.md` — Core Graphics/Image, SwiftUI Canvas/shaders, SpriteKit, RealityKit, ARKit, Metal, spatial routing
+- `docs/data/README.md` — SwiftData, Core Data, CloudKit, documents, migrations, sync, offline-first routing
+- `docs/networking/README.md` — URLSession, Network framework, streaming, retries, caching, Bluetooth/accessory routing
+- `docs/security/README.md` — Authentication, Keychain, CryptoKit, DeviceCheck, privacy manifests, entitlements, threat modeling
+- `docs/performance/README.md` — Measurement-first performance routing for launch, hitches, memory, GPU, energy, MetricKit
+- `docs/web/README.md` — WebKit, WKWebView, Swift-JavaScript bridges, web/native decisions
+
 ### Platforms
 - `docs/platforms/ios.md` — iOS-specific development
 - `docs/platforms/macos.md` — macOS development
@@ -686,6 +721,13 @@ This repository contains comprehensive documentation. Consult these files when b
 - `patterns/motion/README.md` — Native motion patterns: stagger, scroll reveal, matched transitions, parallax, splash flow
 - `patterns/motion/splash-screens.md` — Native launch-to-intro flow: static iOS launch screen, animated SwiftUI intro, then main app
 - `patterns/3d/README.md` — Native 3D routing patterns: Model3D, RealityKit, ARKit, SceneKit migration, Metal particles
+- `patterns/animation/README.md` — Native animation pattern map: stagger, scroll reveal, spring card, matched transition, particles
+- `patterns/realitykit/README.md` — RealityKit pattern map for model viewers, AR placement, entity interaction, spatial onboarding
+- `patterns/metal/README.md` — Metal pattern map for shader backgrounds, particle fields, image compute, AR texture processing
+- `patterns/ai/README.md` — AI pattern map for structured generation, tool calling, app-local RAG, App Intents, evaluations
+- `patterns/webkit/README.md` — WebKit pattern map for existing web surfaces, typed JS bridges, web auth, WebGL embeds
+- `patterns/testing/README.md` — Testing pattern map for fixtures, UI launch flags, screenshots, signposts
+- `patterns/accessibility/README.md` — Accessibility pattern map for labels, actions, Dynamic Type, Reduce Motion, focus
 
 ### Agent Operations (Orchestration)
 - `docs/orchestration/router.md` — **Start here.** When the main agent should do it inline, delegate, loop, or scale out
@@ -694,7 +736,7 @@ This repository contains comprehensive documentation. Consult these files when b
 - `docs/orchestration/verification.md` — The evidence contract: VERIFIED / INSPECTED / UNVERIFIED, separation of duties
 - `docs/orchestration/dynamic-workflows.md` — The scale-up path: `/batch`, worktrees, script-driven orchestration
 - `docs/orchestration/hooks.md` — Deterministic enforcement; hook vs. CI vs. reviewer
-- `.claude/agents/` — Thirteen ready-to-use specialists (`ios-explore`, `ios-plan`, `swift-reviewer`, `swift-debugger`, `swift-refactorer`, `ios-docs`, `foundation-models`, `swiftui-modernization`, `accessibility-reviewer`, `performance-reviewer`, `ui-ux-designer`, `motion-designer`, `3d-experience-designer`)
+- `.claude/agents/` — Twenty-four ready-to-use specialists spanning engineering, UI/UX, motion, 3D, Apple Intelligence, Core AI, App Intents, RealityKit, Metal, WebKit, testing, Xcode, security, performance, accessibility, and App Store review
 - `templates/hooks/` — Drop-in hooks for iOS projects: formatting, anti-pattern blocking, build verification
 - `scripts/eval-agents.sh` — Verifies every subagent's tool grant against the instructions relying on it; `--table` prints the grant matrix, `--self-test` proves the checks are not vacuous
 
@@ -725,6 +767,7 @@ This repository contains comprehensive documentation. Consult these files when b
 ### Testing & Quality
 - `docs/testing/mocking-strategy.md` — Three-tier strategy: test doubles, rich debug mocks, environment flags and debug menus
 - `docs/testing/evaluations.md` — Evaluations framework, datasets, code-based evaluators, model-as-judge, tool-call evaluation, CI gates
+- `docs/testing/xcuiautomation.md` — Running-app UI validation, accessibility identifiers, deterministic launch state, future simulator MCP contract
 - `checklists/app-store-submission.md` — App Store review checklist
 - `checklists/performance.md` — Performance optimization
 - `checklists/security.md` — Security best practices

@@ -14,11 +14,16 @@ Use this as the contract for expanding `ios-agent-mcp` beyond the current Swift 
 | `review_haptics` | Meaningful feedback | haptics fired on appear, duplicated feedback, no reduced-sensory fallback, heavy impact for minor state |
 | `review_realitykit` | 3D scene safety and native fit | unbounded asset loads, missing collision/input components, ARKit without permission copy, no fallback |
 | `review_metal` | GPU rendering safety | per-frame allocation, missing drawable guard, unsafe buffer sizing, no pixel-format/depth consistency |
+| `review_webkit` | Web/native interop safety | untyped JS bridge, broad navigation, injected secrets, WKWebView used where native controls fit better |
 | `review_foundation_models` | Foundation Models usage | missing availability gates, no graceful fallback, unsafe prompt logging, absent evaluation path |
 | `review_core_ai` | Core AI model integration | model lifecycle, privacy boundaries, device capability checks, background work isolation |
 | `review_app_intents` | Siri/App Intents/App Shortcuts | missing parameter summaries, fragile identifiers, no localization, unavailable actions |
 | `review_ai_security` | AI privacy and misuse resistance | prompt injection surfaces, secret leakage, unbounded tool calls, unsafe retrieval context |
 | `review_ai_evaluations` | Evaluation coverage | no datasets, no code-based evaluators, no regression gate, no failure taxonomy |
+| `review_networking` | Network correctness and resilience | unbounded retries, no cancellation, live API defaults in previews/tests, missing offline state |
+| `review_persistence` | Data and storage safety | UserDefaults secrets, main-actor I/O, missing migrations, model objects crossing actor boundaries |
+| `review_storekit` | Purchase readiness | missing restore path, unverified transactions, no pending/refund handling, live StoreKit in tests |
+| `review_permissions` | Permission and entitlement correctness | missing purpose strings, overbroad entitlements, no denied/restricted state, privacy manifest gaps |
 
 ## Output Contract
 

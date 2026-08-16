@@ -91,7 +91,7 @@ Every finding carries a file, a line, the consequence, the fix, and a link to th
 | 🧠 **The skill** | 100+ files — Swift 6.4 concurrency, SwiftUI, Clean Architecture, 50+ production-focused Apple framework guides, design tokens, App Store checklists |
 | 🔌 **[MCP server](mcp-server/)** | 11 tools: concurrency, architecture, SwiftUI, availability, memory, security, testing, performance, App Store readiness, project overview, skill lint |
 | 🛠️ **[CLI](cli/)** | `ios-agent new MyApp` — scaffolds a project whose root is `App/`, a README, and a licence. Caches, logs, state, and build artifacts live in a hidden `.ios-agent/` |
-| 🤖 **[13 subagents](.claude/agents/)** | explore, plan, review, debug, refactor, docs, Foundation Models, modernization, accessibility, performance, UI/UX, motion, 3D |
+| 🤖 **[24 subagents](.claude/agents/)** | explore, plan, review, debug, refactor, docs, Foundation Models, modernization, UI/UX, motion, 3D, Core AI, App Intents, RealityKit, Metal, WebKit, testing, Xcode, security, App Store |
 | ⚙️ **[Orchestration](docs/orchestration/)** | When to delegate, loop, or scale out — and the evidence rule that stops "it works" without proof |
 | 🪝 **[Hooks](templates/hooks/)** | Deterministic enforcement at write time, plus CI |
 | ✅ **[Compile-checked sample](samples/SkillPatterns/)** | An SPM package CI builds and tests on every push — the patterns are verified, not asserted |
@@ -403,6 +403,18 @@ Everything above the iOS 17 floor is **additive** — a newer-OS feature must de
 | :iphone: | **Separate simulator MCP** | Runtime build, launch, screenshot, video, logs, gestures, and accessibility-tree inspection without making the static MCP depend on Xcode. See [iOS Simulator MCP](docs/tooling/ios-simulator-mcp.md) |
 | :framed_picture: | **Visual Iteration Loop** | Design -> Build -> See -> Improve: agents modify UI, run it, capture artifacts, review pixels and accessibility state, then iterate. See [visual-iteration-loop.md](docs/tooling/visual-iteration-loop.md) |
 
+## :sparkles: What's New in 3.0
+
+**Apple Platform Intelligence.** The skill now has a verifiable Apple technology catalog, professional design/motion/graphics hubs, native web-animation translation, VisionKit coverage, XCUIAutomation guidance, reusable P0 pattern libraries, and 24 specialized subagents.
+
+| | Feature | What it gives you |
+|:---:|---------|-------------------|
+| :map: | **Apple technology catalog** | [`frameworks.json`](frameworks.json) drives [`docs/apple-framework-index.md`](docs/apple-framework-index.md) and the README coverage count |
+| :brain: | **AI hub** | Foundation Models, Core AI, App Intents, Visual Intelligence, private RAG, evaluations, privacy, and fallback routing |
+| :art: | **Design and motion hubs** | Professional UI/UX review order, native animation purpose rules, and web-animation vocabulary mapped to Apple APIs |
+| :cube: | **Graphics hub** | SwiftUI transforms, Canvas, SpriteKit, RealityKit, Model3D, ARKit, SceneKit migration, Metal, and spatial decisions |
+| :busts_in_silhouette: | **24 subagents** | New experts for SwiftUI, UIKit, Core AI, App Intents, RealityKit, Metal, WebKit, testing, Xcode, security, and App Store review |
+
 ## :sparkles: What's New in 2.0
 
 **The repo is now installable, not just readable.**
@@ -514,6 +526,20 @@ Two rules do most of the work:
 | [`swiftui-modernization`](.claude/agents/swiftui-modernization.md) | read + write + Bash | Legacy → modern API migration, behavior-preserving |
 | [`accessibility-reviewer`](.claude/agents/accessibility-reviewer.md) | read-only | VoiceOver, Dynamic Type, contrast, tap targets, motion |
 | [`performance-reviewer`](.claude/agents/performance-reviewer.md) | read + Bash | Hitches, memory, main-actor contention — measures before concluding |
+| [`ui-ux-designer`](.claude/agents/ui-ux-designer.md) | read-only | Professional UI/UX hierarchy, layout, typography, states, platform polish |
+| [`motion-designer`](.claude/agents/motion-designer.md) | read-only | Native motion plans from SwiftUI/UIKit and web animation vocabulary |
+| [`3d-experience-designer`](.claude/agents/3d-experience-designer.md) | read-only | Native 3D, AR, RealityKit, Model3D, Metal routing |
+| [`swiftui-expert`](.claude/agents/swiftui-expert.md) | read-only | SwiftUI layout, state, navigation, iOS 27 interaction review |
+| [`uikit-expert`](.claude/agents/uikit-expert.md) | read-only | UIKit lifecycle, layout, animation, SwiftUI interop review |
+| [`core-ai-expert`](.claude/agents/core-ai-expert.md) | read-only | Core AI custom model assets, availability, privacy, on-device inference |
+| [`app-intents-expert`](.claude/agents/app-intents-expert.md) | read-only | Siri, Shortcuts, Spotlight, App Entities, schemas |
+| [`realitykit-expert`](.claude/agents/realitykit-expert.md) | read-only | RealityKit, RealityView, Model3D, ARKit integration |
+| [`metal-expert`](.claude/agents/metal-expert.md) | read-only | Metal shaders, compute, command buffers, GPU performance risks |
+| [`webkit-expert`](.claude/agents/webkit-expert.md) | read-only | WKWebView/native routing, Swift-JavaScript bridge, web security |
+| [`testing-expert`](.claude/agents/testing-expert.md) | read-only | Swift Testing, XCTest, XCUIAutomation, evaluations, flaky tests |
+| [`xcode-expert`](.claude/agents/xcode-expert.md) | read-only | Xcode projects, schemes, Device Hub, Instruments, simulator workflows |
+| [`security-reviewer`](.claude/agents/security-reviewer.md) | read-only | Authentication, Keychain, privacy, entitlements, threat modeling |
+| [`app-store-reviewer`](.claude/agents/app-store-reviewer.md) | read-only | App Review risk, StoreKit, privacy manifest, permissions, release blockers |
 
 **Drop-in hooks for your iOS project** — [`templates/hooks/`](templates/hooks/)
 

@@ -41,6 +41,13 @@ export const EXIT_OK = 0;
 export const EXIT_USAGE = 1;
 export const EXIT_UNHEALTHY = 2;
 
+function packageVersion(): string {
+  const pkg = JSON.parse(fs.readFileSync(new URL("../package.json", import.meta.url), "utf8")) as {
+    version: string;
+  };
+  return pkg.version;
+}
+
 // MARK: - Argument parsing
 
 interface ParsedArgs {
@@ -176,6 +183,11 @@ const COMMANDS: readonly CommandSpec[] = [
 
 export function run(argv: string[], io: IO = defaultIO): number {
   const args = parseArgs(argv);
+
+  if (args.command === "--version" || args.command === "-v" || args.flags.has("version")) {
+    io.out(packageVersion());
+    return EXIT_OK;
+  }
 
   if (args.command === "" || args.command === "help" || args.command === "--help") {
     io.out(helpText());
