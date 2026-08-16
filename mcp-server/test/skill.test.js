@@ -372,7 +372,7 @@ describe("dogfooding", () => {
   test("this repository's own checks actually ran", async () => {
     const { checked } = await lintSkill(REPO_ROOT);
     assert.equal(checked.skillFile, "SKILL.md");
-    assert.equal(checked.agentCount, 10);
+    assert.equal(checked.agentCount, 13);
     assert.equal(checked.mirrorCheckSkipped, false);
     assert.ok(checked.mirrorsCompared >= 24, `compared ${checked.mirrorsCompared}`);
     assert.ok(checked.referencedPaths > 100, `resolved ${checked.referencedPaths}`);

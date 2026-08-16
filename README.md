@@ -91,7 +91,7 @@ Every finding carries a file, a line, the consequence, the fix, and a link to th
 | 🧠 **The skill** | 100+ files — Swift 6.4 concurrency, SwiftUI, Clean Architecture, 50+ production-focused Apple framework guides, design tokens, App Store checklists |
 | 🔌 **[MCP server](mcp-server/)** | 11 tools: concurrency, architecture, SwiftUI, availability, memory, security, testing, performance, App Store readiness, project overview, skill lint |
 | 🛠️ **[CLI](cli/)** | `ios-agent new MyApp` — scaffolds a project whose root is `App/`, a README, and a licence. Caches, logs, state, and build artifacts live in a hidden `.ios-agent/` |
-| 🤖 **[10 subagents](.claude/agents/)** | explore, plan, review, debug, refactor, docs, Foundation Models, modernization, accessibility, performance |
+| 🤖 **[13 subagents](.claude/agents/)** | explore, plan, review, debug, refactor, docs, Foundation Models, modernization, accessibility, performance, UI/UX, motion, 3D |
 | ⚙️ **[Orchestration](docs/orchestration/)** | When to delegate, loop, or scale out — and the evidence rule that stops "it works" without proof |
 | 🪝 **[Hooks](templates/hooks/)** | Deterministic enforcement at write time, plus CI |
 | ✅ **[Compile-checked sample](samples/SkillPatterns/)** | An SPM package CI builds and tests on every push — the patterns are verified, not asserted |

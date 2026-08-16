@@ -643,6 +643,9 @@ This repository contains comprehensive documentation. Consult these files when b
 - `patterns/repository.md` — Repository pattern
 - `patterns/tca.md` — The Composable Architecture
 - `patterns/error-handling.md` — Error handling strategies
+- `patterns/ui/README.md` — Premium SwiftUI screen pattern briefs: onboarding, dashboards, empty states, skeletons, cards
+- `patterns/motion/README.md` — Native motion patterns: stagger, scroll reveal, matched transitions, parallax, splash flow
+- `patterns/3d/README.md` — Native 3D routing patterns: Model3D, RealityKit, ARKit, SceneKit migration, Metal particles
 
 ### Agent Operations (Orchestration)
 - `docs/orchestration/router.md` — **Start here.** When the main agent should do it inline, delegate, loop, or scale out
@@ -651,7 +654,7 @@ This repository contains comprehensive documentation. Consult these files when b
 - `docs/orchestration/verification.md` — The evidence contract: VERIFIED / INSPECTED / UNVERIFIED, separation of duties
 - `docs/orchestration/dynamic-workflows.md` — The scale-up path: `/batch`, worktrees, script-driven orchestration
 - `docs/orchestration/hooks.md` — Deterministic enforcement; hook vs. CI vs. reviewer
-- `.claude/agents/` — Ten ready-to-use specialists (`ios-explore`, `ios-plan`, `swift-reviewer`, `swift-debugger`, `swift-refactorer`, `ios-docs`, `foundation-models`, `swiftui-modernization`, `accessibility-reviewer`, `performance-reviewer`)
+- `.claude/agents/` — Thirteen ready-to-use specialists (`ios-explore`, `ios-plan`, `swift-reviewer`, `swift-debugger`, `swift-refactorer`, `ios-docs`, `foundation-models`, `swiftui-modernization`, `accessibility-reviewer`, `performance-reviewer`, `ui-ux-designer`, `motion-designer`, `3d-experience-designer`)
 - `templates/hooks/` — Drop-in hooks for iOS projects: formatting, anti-pattern blocking, build verification
 - `scripts/eval-agents.sh` — Verifies every subagent's tool grant against the instructions relying on it; `--table` prints the grant matrix, `--self-test` proves the checks are not vacuous
 
