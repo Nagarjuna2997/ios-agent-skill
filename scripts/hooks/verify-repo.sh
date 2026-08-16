@@ -232,6 +232,37 @@ if ! CONTRAST_OUT="$(node scripts/check-contrast.mjs 2>&1)"; then
   FAILURES+=("Palette contrast:\n$CONTRAST_OUT")
 fi
 
+# 10. No documented type shadows _Concurrency.Task.
+#
+# SKILL.md pitfall 17 forbids naming a type `Task`, and three docs did it while
+# ALSO using `Task { }` in the same file — so an agent copying a model from
+# swiftdata.md or core-data.md got code that does not compile. A block that is
+# explicitly demonstrating the mistake is allowed; a model presented as a
+# pattern to copy is not.
+if ! TASK_OUT="$(python3 - <<'TASKPY' 2>&1
+import pathlib, re, sys
+
+decl = re.compile(r"^\s*(?:public\s+|final\s+|@\w+\s+)*(?:struct|class|enum|actor|protocol)\s+Task\b")
+problems = []
+
+for path in sorted(list(pathlib.Path("docs").rglob("*.md")) + list(pathlib.Path("patterns").rglob("*.md"))):
+    lines = path.read_text(encoding="utf-8").splitlines()
+    for number, line in enumerate(lines, 1):
+        if not decl.match(line):
+            continue
+        # Allowed only when the line itself is marked as the anti-pattern.
+        window = " ".join(lines[max(0, number - 4):number + 1])
+        if re.search(r"//\s*(WRONG|BAD)|shadows", window, re.I):
+            continue
+        problems.append(f"{path}:{number}: type named `Task` shadows _Concurrency.Task (SKILL.md pitfall 17)")
+
+if problems:
+    sys.exit("Task shadowing:\n" + "\n".join(problems))
+TASKPY
+)"; then
+  FAILURES+=("Task shadowing:\n$TASK_OUT")
+fi
+
 if (( ${#FAILURES[@]} > 0 )); then
   echo "Repository consistency checks failed:" >&2
   echo "" >&2

@@ -687,7 +687,7 @@ Fetches model objects from SwiftData and keeps the view updated.
 import SwiftData
 
 @Model
-class Task {
+class TodoItem {
     var title: String
     var isComplete: Bool
     var createdAt: Date
@@ -700,13 +700,13 @@ class Task {
 }
 
 struct TaskListView: View {
-    @Query(sort: \Task.createdAt, order: .reverse)
-    private var tasks: [Task]
+    @Query(sort: \TodoItem.createdAt, order: .reverse)
+    private var tasks: [TodoItem]
 
     // With filter
-    @Query(filter: #Predicate<Task> { !$0.isComplete },
-           sort: \Task.createdAt)
-    private var pendingTasks: [Task]
+    @Query(filter: #Predicate<TodoItem> { !$0.isComplete },
+           sort: \TodoItem.createdAt)
+    private var pendingTasks: [TodoItem]
 
     @Environment(\.modelContext) private var context
 
@@ -719,13 +719,13 @@ struct TaskListView: View {
 
 // Dynamic queries with init
 struct FilteredTaskList: View {
-    @Query private var tasks: [Task]
+    @Query private var tasks: [TodoItem]
 
     init(showComplete: Bool) {
-        let predicate = #Predicate<Task> { task in
+        let predicate = #Predicate<TodoItem> { task in
             showComplete || !task.isComplete
         }
-        _tasks = Query(filter: predicate, sort: \Task.createdAt)
+        _tasks = Query(filter: predicate, sort: \TodoItem.createdAt)
     }
 
     var body: some View {
@@ -934,7 +934,7 @@ Text(model.title)                                            // correct
 // 6. Mutating observed state during body evaluation.
 var body: some View { model.prepare(); return List(…) }      // warning + UB
 
-// 7. Unstructured Task in onAppear instead of .task.
+// 7. Unstructured TodoItem in onAppear instead of .task.
 .onAppear { Task { await model.load() } }                    // leaks past dismissal
 
 // 8. Hand-rolled main-thread hops inside an already-isolated type.

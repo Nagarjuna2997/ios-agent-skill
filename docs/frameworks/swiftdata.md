@@ -6,7 +6,7 @@
 import SwiftData
 
 @Model
-class Task {
+class TodoItem {
     var id: UUID
     var title: String
     var notes: String
@@ -23,7 +23,7 @@ class Task {
     @Transient var isSelected = false
 
     // Unique constraint
-    #Unique<Task>([\.id])
+    #Unique<TodoItem>([\.id])
 
     init(title: String, priority: Int = 0) {
         self.id = UUID()
@@ -43,8 +43,8 @@ class Category {
     var color: String
 
     // Inverse relationship with cascade delete
-    @Relationship(deleteRule: .cascade, inverse: \Task.category)
-    var tasks: [Task]
+    @Relationship(deleteRule: .cascade, inverse: \TodoItem.category)
+    var tasks: [TodoItem]
 
     init(name: String, color: String = "blue") {
         self.id = UUID()
@@ -59,8 +59,8 @@ class Tag {
     var id: UUID
     var name: String
 
-    @Relationship(inverse: \Task.tags)
-    var tasks: [Task]
+    @Relationship(inverse: \TodoItem.tags)
+    var tasks: [TodoItem]
 
     init(name: String) {
         self.id = UUID()
@@ -80,7 +80,7 @@ struct MyApp: App {
         WindowGroup {
             ContentView()
         }
-        .modelContainer(for: [Task.self, Category.self, Tag.self])
+        .modelContainer(for: [TodoItem.self, Category.self, Tag.self])
     }
 }
 
@@ -90,7 +90,7 @@ struct MyApp: App {
     let container: ModelContainer
 
     init() {
-        let schema = Schema([Task.self, Category.self, Tag.self])
+        let schema = Schema([TodoItem.self, Category.self, Tag.self])
         let config = ModelConfiguration(
             "MyApp",
             schema: schema,
@@ -118,13 +118,13 @@ struct TaskListView: View {
     @Environment(\.modelContext) private var modelContext
 
     func addTask(title: String) {
-        let task = Task(title: title)
+        let task = TodoItem(title: title)
         modelContext.insert(task)
         // SwiftData auto-saves; explicit save if needed:
         // try? modelContext.save()
     }
 
-    func deleteTask(_ task: Task) {
+    func deleteTask(_ task: TodoItem) {
         modelContext.delete(task)
     }
 }
@@ -135,19 +135,19 @@ struct TaskListView: View {
 ```swift
 struct TaskListView: View {
     // Basic query with sort
-    @Query(sort: \Task.createdAt, order: .reverse)
-    private var tasks: [Task]
+    @Query(sort: \TodoItem.createdAt, order: .reverse)
+    private var tasks: [TodoItem]
 
     // Filtered and sorted query
     @Query(
-        filter: #Predicate<Task> { !$0.isCompleted },
+        filter: #Predicate<TodoItem> { !$0.isCompleted },
         sort: [
-            SortDescriptor(\Task.priority, order: .reverse),
-            SortDescriptor(\Task.createdAt, order: .reverse),
+            SortDescriptor(\TodoItem.priority, order: .reverse),
+            SortDescriptor(\TodoItem.createdAt, order: .reverse),
         ],
         animation: .default
     )
-    private var pendingTasks: [Task]
+    private var pendingTasks: [TodoItem]
 
     var body: some View {
         List(pendingTasks) { task in
@@ -158,16 +158,16 @@ struct TaskListView: View {
 
 // Dynamic query with init parameter
 struct FilteredTaskList: View {
-    @Query private var tasks: [Task]
+    @Query private var tasks: [TodoItem]
 
     init(showCompleted: Bool, searchText: String) {
-        let filter = #Predicate<Task> { task in
+        let filter = #Predicate<TodoItem> { task in
             (showCompleted || !task.isCompleted) &&
             (searchText.isEmpty || task.title.localizedStandardContains(searchText))
         }
         _tasks = Query(
             filter: filter,
-            sort: \Task.createdAt,
+            sort: \TodoItem.createdAt,
             order: .reverse
         )
     }
@@ -184,21 +184,21 @@ struct FilteredTaskList: View {
 
 ```swift
 // Simple predicate
-let highPriority = #Predicate<Task> { $0.priority >= 2 }
+let highPriority = #Predicate<TodoItem> { $0.priority >= 2 }
 
 // Compound predicate
-let urgentIncomplete = #Predicate<Task> { task in
+let urgentIncomplete = #Predicate<TodoItem> { task in
     !task.isCompleted && task.priority >= 2
 }
 
 // String search
-let searchPredicate = #Predicate<Task> { task in
+let searchPredicate = #Predicate<TodoItem> { task in
     task.title.localizedStandardContains("meeting")
 }
 
 // Date-based predicate
 let today = Calendar.current.startOfDay(for: Date())
-let dueTodayPredicate = #Predicate<Task> { task in
+let dueTodayPredicate = #Predicate<TodoItem> { task in
     if let dueDate = task.dueDate {
         return dueDate >= today
     }
@@ -206,9 +206,9 @@ let dueTodayPredicate = #Predicate<Task> { task in
 }
 
 // Using predicates with FetchDescriptor
-func fetchOverdueTasks(context: ModelContext) throws -> [Task] {
+func fetchOverdueTasks(context: ModelContext) throws -> [TodoItem] {
     let now = Date()
-    let descriptor = FetchDescriptor<Task>(
+    let descriptor = FetchDescriptor<TodoItem>(
         predicate: #Predicate { task in
             !task.isCompleted && task.dueDate != nil && task.dueDate! < now
         },
@@ -218,8 +218,8 @@ func fetchOverdueTasks(context: ModelContext) throws -> [Task] {
 }
 
 // Fetch with limit
-func fetchRecentTasks(context: ModelContext, limit: Int = 10) throws -> [Task] {
-    var descriptor = FetchDescriptor<Task>(
+func fetchRecentTasks(context: ModelContext, limit: Int = 10) throws -> [TodoItem] {
+    var descriptor = FetchDescriptor<TodoItem>(
         sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
     )
     descriptor.fetchLimit = limit
@@ -228,7 +228,7 @@ func fetchRecentTasks(context: ModelContext, limit: Int = 10) throws -> [Task] {
 
 // Count
 func countIncompleteTasks(context: ModelContext) throws -> Int {
-    let descriptor = FetchDescriptor<Task>(
+    let descriptor = FetchDescriptor<TodoItem>(
         predicate: #Predicate { !$0.isCompleted }
     )
     return try context.fetchCount(descriptor)
@@ -293,32 +293,32 @@ The same applies to any non-`Comparable` property: an enum without a
 
 ```swift
 // Single sort
-@Query(sort: \Task.title) private var tasks: [Task]
+@Query(sort: \TodoItem.title) private var tasks: [TodoItem]
 
 // Multiple sorts — note the Int rank, not the Bool, for the first key.
 @Query(sort: [
-    SortDescriptor(\Task.completionRank),
-    SortDescriptor(\Task.priority, order: .reverse),
-    SortDescriptor(\Task.createdAt, order: .reverse),
+    SortDescriptor(\TodoItem.completionRank),
+    SortDescriptor(\TodoItem.priority, order: .reverse),
+    SortDescriptor(\TodoItem.createdAt, order: .reverse),
 ])
-private var tasks: [Task]
+private var tasks: [TodoItem]
 
 // Dynamic sorting
 struct SortableTaskList: View {
-    @State private var sortOrder = [SortDescriptor(\Task.createdAt, order: .reverse)]
+    @State private var sortOrder = [SortDescriptor(\TodoItem.createdAt, order: .reverse)]
 
     var body: some View {
         TaskListContent(sort: sortOrder)
             .toolbar {
                 Menu("Sort") {
                     Button("By Date") {
-                        sortOrder = [SortDescriptor(\Task.createdAt, order: .reverse)]
+                        sortOrder = [SortDescriptor(\TodoItem.createdAt, order: .reverse)]
                     }
                     Button("By Priority") {
-                        sortOrder = [SortDescriptor(\Task.priority, order: .reverse)]
+                        sortOrder = [SortDescriptor(\TodoItem.priority, order: .reverse)]
                     }
                     Button("By Title") {
-                        sortOrder = [SortDescriptor(\Task.title)]
+                        sortOrder = [SortDescriptor(\TodoItem.title)]
                     }
                 }
             }
@@ -326,9 +326,9 @@ struct SortableTaskList: View {
 }
 
 struct TaskListContent: View {
-    @Query private var tasks: [Task]
+    @Query private var tasks: [TodoItem]
 
-    init(sort: [SortDescriptor<Task>]) {
+    init(sort: [SortDescriptor<TodoItem>]) {
         _tasks = Query(sort: sort)
     }
 
@@ -466,7 +466,7 @@ struct MyApp: App {
         WindowGroup {
             ContentView()
         }
-        .modelContainer(for: [Task.self, Category.self]) {
+        .modelContainer(for: [TodoItem.self, Category.self]) {
             // Container is configured — CloudKit syncs automatically
             // when the app's CloudKit container is set in entitlements
         }
@@ -523,20 +523,20 @@ func fetchChangesSinceLastSync(context: ModelContext, lastToken: DefaultHistoryT
         // Each transaction contains changes grouped atomically
         for change in transaction.changes {
             switch change {
-            case let change as DefaultHistoryInsert<Task>:
+            case let change as DefaultHistoryInsert<TodoItem>:
                 let modelID = change.persistentIdentifier
-                print("Inserted Task: \(modelID)")
+                print("Inserted TodoItem: \(modelID)")
                 // Sync insert to server
 
-            case let change as DefaultHistoryUpdate<Task>:
+            case let change as DefaultHistoryUpdate<TodoItem>:
                 let modelID = change.persistentIdentifier
                 let updatedProperties = change.updatedProperties
-                print("Updated Task: \(modelID), fields: \(updatedProperties)")
+                print("Updated TodoItem: \(modelID), fields: \(updatedProperties)")
                 // Sync update to server
 
-            case let change as DefaultHistoryDelete<Task>:
+            case let change as DefaultHistoryDelete<TodoItem>:
                 let modelID = change.persistentIdentifier
-                print("Deleted Task: \(modelID)")
+                print("Deleted TodoItem: \(modelID)")
                 // Sync delete to server
 
             default:
@@ -580,7 +580,7 @@ The `#Index` macro defines database indexes on model properties, improving query
 import SwiftData
 
 @Model
-class Task {
+class TodoItem {
     var id: UUID
     var title: String
     var isCompleted: Bool
@@ -590,16 +590,16 @@ class Task {
     var category: String
 
     // Single-property index for fast lookups by title
-    #Index<Task>([\.title])
+    #Index<TodoItem>([\.title])
 
     // Compound index for queries that filter by completion status and sort by priority
-    #Index<Task>([\.isCompleted, \.priority])
+    #Index<TodoItem>([\.isCompleted, \.priority])
 
     // Index on createdAt for time-based sorting queries
-    #Index<Task>([\.createdAt])
+    #Index<TodoItem>([\.createdAt])
 
     // Compound index for category-based filtered and sorted queries
-    #Index<Task>([\.category, \.dueDate])
+    #Index<TodoItem>([\.category, \.dueDate])
 
     init(title: String, priority: Int = 0, category: String = "general") {
         self.id = UUID()
@@ -612,8 +612,8 @@ class Task {
 }
 
 // The indexes above optimize queries like:
-// @Query(filter: #Predicate<Task> { !$0.isCompleted }, sort: \.priority)
-// @Query(filter: #Predicate<Task> { $0.category == "work" }, sort: \.dueDate)
+// @Query(filter: #Predicate<TodoItem> { !$0.isCompleted }, sort: \.priority)
+// @Query(filter: #Predicate<TodoItem> { $0.category == "work" }, sort: \.dueDate)
 ```
 
 ### Custom Data Stores
@@ -695,7 +695,7 @@ struct MyApp: App {
     let container: ModelContainer
 
     init() {
-        let schema = Schema([Task.self, Category.self])
+        let schema = Schema([TodoItem.self, Category.self])
         let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
         let storeURL = documentsURL.appendingPathComponent("data.json")
 

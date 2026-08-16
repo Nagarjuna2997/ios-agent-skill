@@ -7,6 +7,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ## [Unreleased]
 
 ### Fixed -- unreleased
+- **F14, found while measuring the corpus for doc compilation: three docs declared a type named `Task` and used `Task { }` in the same file.** `SKILL.md` pitfall 17 forbids exactly this -- naming a type `Task` shadows `_Concurrency.Task` -- and `swiftdata.md`, `core-data.md`, and `state-and-data-flow.md` all did it, in the two files an agent is most likely to copy a model from. The result does not compile, and the diagnostic blames the closure rather than the model.
+
+  Renamed to `TodoItem`. The rename distinguishes the model from the concurrency type by context, and asserts the count of `Task { }` / `Task.sleep` / `Task<` uses is unchanged before writing -- the first attempt silently read `class Task {` as a closure and left every declaration in place, which the assertion caught. The labelled anti-pattern in `patterns/mvvm.md` is deliberately untouched: it exists to demonstrate the mistake.
+
+  A tenth `verify-repo.sh` check now rejects any type declaration named `Task` unless the surrounding lines mark it as an anti-pattern. Mutation-tested.
+
 - **The `cli` job's first run on Windows failed, and the defect was in the test, not the product.** `globalCacheDir` resolves the `XDG_CACHE_HOME` value with `path.resolve`, which anchors a drive-less absolute path to the current drive: `/xdg` becomes `D:\xdg` on a Windows runner and stays `/xdg` on Linux. The expectation was built with `path.join`, which does not anchor, so it passed on Linux and macOS and failed on Windows.
 
   Reproduced exactly with `path.win32` against a drive-rooted cwd before changing anything -- old expectation `\xdg\ios-agent`, function returns `D:\xdg\ios-agent`. The expectation now uses the same call the function makes, so the two agree by construction on any host rather than by coincidence on most of them.
