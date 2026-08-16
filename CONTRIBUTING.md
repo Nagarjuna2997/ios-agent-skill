@@ -82,12 +82,12 @@ To support a new AI tool, add its path to the `MIRRORS` array in `scripts/sync-m
 ## Publishing
 
 Pushing a `v*` tag runs `.github/workflows/release.yml`. The workflow creates
-the GitHub Release, then publishes each npm package only when that exact package
-version is not already on npm.
+the GitHub Release. npm packages are published manually from a local trusted
+machine after the package build and tests pass.
 
 Do **not** put `npm login`, usernames, passwords, or raw tokens in a workflow
-file. Create an npm automation token, add it to the repository secrets as
-`NPM_TOKEN`, and let GitHub Actions pass it through `NODE_AUTH_TOKEN`.
+file. Use `npm login` locally, then publish from the package directory with
+`npm publish --access public`.
 
 ### House rules for `SKILL.md` itself
 
