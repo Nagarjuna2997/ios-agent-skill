@@ -65,7 +65,7 @@ Load this skill when any of the following is true. When none are true, do not lo
 | Background import, sync, or "not thread safe" | `docs/frameworks/data-concurrency.md` |
 | Test doubles, previews, debug menus | `docs/testing/mocking-strategy.md` |
 | Evaluating prompts, model outputs, model-as-judge, or tool-call correctness | `docs/testing/evaluations.md` |
-| Apple Developer Documentation navigator, 404 documentation items, Technology Overviews, Sample Code, HIG, Downloads, Technotes, Videos, Forums, or broad Apple docs memory | `docs/apple/documentation-navigator-brain.md`, `docs/apple/a-section-memory.md`, `docs/apple/b-m-section-memory.md`, `docs/apple/n-z-section-memory.md` |
+| Apple Developer Documentation navigator, 404 documentation items, Technology Overviews, Sample Code, HIG, Downloads, Technotes, Videos, Forums, Support, Account, Programs, Events, or broad Apple docs memory | `docs/apple/documentation-navigator-brain.md`, `docs/apple/a-section-memory.md`, `docs/apple/b-m-section-memory.md`, `docs/apple/n-z-section-memory.md`, `docs/apple/resources-support-memory.md`, `docs/apple/coverage-status.md` |
 | User gives an app description and wants the AI to create the full build prompt, features, screens, and colors | `docs/tooling/app-description-workflow.md`, `docs/design/design-tokens.md`, `docs/design/color-system.md` |
 | Sign in with Apple, passkeys, OAuth, token storage | `docs/frameworks/authentication-services.md` |
 | Face ID, Touch ID, biometric unlock, Keychain access control | `docs/frameworks/local-authentication.md` |
@@ -702,6 +702,8 @@ This repository contains comprehensive documentation. Consult these files when b
 - `docs/apple/a-section-memory.md` — Deep memory for A-section Apple documentation technologies: Accelerate, Accessibility, accessory APIs, account/data transfer, ads/attribution, AlarmKit, analytics, App Clips, App Intents, licensing, and App Store Connect API
 - `docs/apple/b-m-section-memory.md` — Deep memory for B-M Apple documentation technologies: background execution, browser/web engine work, CallKit, CarPlay, CloudKit, Combine, Contacts, Core frameworks, DeviceCheck, File Provider, games, HealthKit, HomeKit, localization, Metal, MetricKit, and nearby devices
 - `docs/apple/n-z-section-memory.md` — Deep memory for N-Z Apple documentation technologies: networking, notifications, Objective-C interop, OSLog, PassKit, documents, Photos, PushKit, RealityKit, Safari/WebKit, Security, StoreKit, Swift, TipKit, UserNotifications, Vision, WatchConnectivity, WeatherKit, WidgetKit, and Xcode
+- `docs/apple/resources-support-memory.md` — Apple Developer resources/support/account/programs/events memory: downloads, technotes, videos, forums, Feedback Assistant, System Status, App Store Connect, certificates, memberships, and WWDC/labs
+- `docs/apple/coverage-status.md` — Truthful status ledger for Apple documentation memory coverage: category/family coverage vs. literal per-symbol mirroring
 - `docs/apple-docs-reference.md` — Apple documentation source map for Swift language, Xcode diagnostics, memory, crash reports, MetricKit, and Metal Memory viewer routing
 - `docs/design/README.md` — Professional UI/UX review order, state design, polish rules
 - `docs/animation/README.md` — Native motion system, purpose rules, performance and Reduce Motion
