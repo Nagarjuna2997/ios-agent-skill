@@ -374,7 +374,7 @@ describe("dogfooding", () => {
     assert.equal(checked.skillFile, "SKILL.md");
     assert.equal(checked.agentCount, 24);
     assert.equal(checked.mirrorCheckSkipped, false);
-    assert.ok(checked.mirrorsCompared >= 24, `compared ${checked.mirrorsCompared}`);
+    assert.ok(checked.mirrorsCompared >= 3, `compared ${checked.mirrorsCompared}`);
     assert.ok(checked.referencedPaths > 100, `resolved ${checked.referencedPaths}`);
   });
 });

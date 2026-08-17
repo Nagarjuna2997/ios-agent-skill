@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 #
-# sync-mirrors.sh — regenerate every agent rule file from SKILL.md.
+# sync-mirrors.sh — regenerate supported agent rule files from SKILL.md.
 #
-# SKILL.md is the single source of truth. Every other agent entry point
-# (CLAUDE.md, AGENTS.md, .cursorrules, .windsurf/rules/ios-skill.md, …) is a
-# byte-identical copy of SKILL.md with the YAML frontmatter stripped, because
-# those formats are plain instruction files with no frontmatter support.
+# SKILL.md is the single source of truth. The supported agent entry points
+# (CLAUDE.md, AGENTS.md, GEMINI.md) are byte-identical copies of SKILL.md with
+# the YAML frontmatter stripped, because those formats are plain instruction
+# files with no frontmatter support.
 #
 #   ./scripts/sync-mirrors.sh          regenerate all mirrors
 #   ./scripts/sync-mirrors.sh --check  verify they are current (exit 1 if not)
@@ -19,35 +19,12 @@ cd "$REPO_ROOT"
 
 SOURCE="SKILL.md"
 
-# Every mirror target. Add new agent formats here and nowhere else.
+# Supported mirror targets. The public product direction is Claude,
+# ChatGPT/Codex, and Gemini.
 MIRRORS=(
-  # Root-level instruction files
-  "AGENTS.md"                          # Antigravity, Codex, Amp, Jules
+  "AGENTS.md"                          # ChatGPT/Codex-style agents
   "CLAUDE.md"                          # Claude Code
-  "CONVENTIONS.md"                     # Aider
   "GEMINI.md"                          # Gemini CLI
-  "replit.md"                          # Replit Agent
-  # Root-level dotfiles
-  ".clinerules"                        # Cline
-  ".continuerules"                     # Continue
-  ".cursorrules"                       # Cursor (legacy format)
-  ".kilocoderules"                     # Kilo Code
-  ".roorules"                          # Roo Code
-  ".rules"                             # Zed, generic
-  ".windsurfrules"                     # Windsurf (legacy format)
-  # Directory-scoped rule files
-  ".aiassistant/rules/ios-skill.md"    # JetBrains AI Assistant
-  ".amazonq/rules/ios-skill.md"        # Amazon Q Developer
-  ".augment/rules/ios-skill.md"        # Augment Code
-  ".continue/rules/ios-skill.md"       # Continue (modern format)
-  ".cursor/rules/ios-skill.md"         # Cursor (modern format)
-  ".github/copilot-instructions.md"    # GitHub Copilot
-  ".junie/guidelines.md"               # JetBrains Junie
-  ".kilocode/rules/ios-skill.md"       # Kilo Code (modern format)
-  ".roo/rules/ios-skill.md"            # Roo Code (modern format)
-  ".tabnine/guidelines/ios-skill.md"   # Tabnine
-  ".trae/rules/ios-skill.md"           # Trae
-  ".windsurf/rules/ios-skill.md"       # Windsurf (modern format)
 )
 
 if [[ ! -f "$SOURCE" ]]; then

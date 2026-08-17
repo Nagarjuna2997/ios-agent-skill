@@ -2,8 +2,8 @@
 #
 # PreToolUse hook — blocks direct edits to generated mirror files.
 #
-# The 24 agent rule files (CLAUDE.md, AGENTS.md, .cursorrules, …) are generated
-# from SKILL.md by scripts/sync-mirrors.sh. Editing one by hand is silently
+# The supported agent rule files (CLAUDE.md, AGENTS.md, GEMINI.md) are
+# generated from SKILL.md by scripts/sync-mirrors.sh. Editing one by hand is silently
 # undone on the next sync, so this hook denies the write and tells the model
 # where to edit instead.
 #
@@ -37,15 +37,7 @@ print(data.get("tool_input", {}).get("file_path", "") or "")
 REL="${FILE_PATH#"$REPO_ROOT"/}"
 
 GENERATED=(
-  "AGENTS.md" "CLAUDE.md" "CONVENTIONS.md" "GEMINI.md" "replit.md"
-  ".clinerules" ".continuerules" ".cursorrules" ".kilocoderules"
-  ".roorules" ".rules" ".windsurfrules"
-  ".aiassistant/rules/ios-skill.md" ".amazonq/rules/ios-skill.md"
-  ".augment/rules/ios-skill.md" ".continue/rules/ios-skill.md"
-  ".cursor/rules/ios-skill.md" ".github/copilot-instructions.md"
-  ".junie/guidelines.md" ".kilocode/rules/ios-skill.md"
-  ".roo/rules/ios-skill.md" ".tabnine/guidelines/ios-skill.md"
-  ".trae/rules/ios-skill.md" ".windsurf/rules/ios-skill.md"
+  "AGENTS.md" "CLAUDE.md" "GEMINI.md"
 )
 
 for generated in "${GENERATED[@]}"; do
@@ -53,7 +45,7 @@ for generated in "${GENERATED[@]}"; do
     cat >&2 <<EOF
 BLOCKED: $REL is a generated file.
 
-All 24 agent rule files are produced from SKILL.md by scripts/sync-mirrors.sh.
+The supported agent rule files are produced from SKILL.md by scripts/sync-mirrors.sh.
 An edit here is discarded on the next sync.
 
 Edit SKILL.md instead, then run:

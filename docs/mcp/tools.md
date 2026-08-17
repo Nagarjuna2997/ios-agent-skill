@@ -243,7 +243,7 @@ Three of these are worth calling out, because each fails **silently**:
 **Mirror checking is self-calibrating.** Files like `CLAUDE.md` and `AGENTS.md`
 are compared against `SKILL.md`'s body only when at least one of them already
 matches byte-for-byte. That proves the repository generates its mirrors; without
-it, a project with a hand-written `CLAUDE.md` would be told all 24 mirrors had
+it, a project with a hand-written `CLAUDE.md` would be told all supported mirrors had
 drifted. When no mirror matches, the check is skipped and the report says so.
 
 The report opens with what it inspected — SKILL.md found or not, agents counted,

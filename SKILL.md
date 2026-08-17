@@ -744,7 +744,7 @@ This repository contains comprehensive documentation. Consult these files when b
 ### MCP Server
 - `cli/` — `ios-agent`, the scaffolding CLI. Generates a project whose root is `App/` plus a README and a licence; everything tool-owned lives in a hidden `.ios-agent/`. `where --json` is the interop contract other tools query instead of hardcoding the directory name. See `docs/tooling/project-scaffolding.md`
 - `mcp-server/` — `ios-agent-mcp`, an MCP server exposing eleven tools: ten that analyze Swift (concurrency, architecture, SwiftUI, availability, memory, security, testing, performance, App Store readiness, project overview) and `lint_skill`, which checks a skill repository's own metadata
-- `docs/mcp/installation.md` — Claude Code, Claude Desktop, Cursor, and from-source setup
+- `docs/mcp/installation.md` — Claude Code, Claude Desktop, ChatGPT/Codex, Gemini, and from-source setup
 - `docs/mcp/tools.md` — Tool reference, every rule and its severity, and the limits of static analysis
 - `docs/mcp/examples.md` — Worked sessions, and how the tools pair with the subagents
 - `docs/mcp/vnext-analysis-tools.md` — Planned static review tools for UI/UX, motion, accessibility, haptics, RealityKit, Metal, Foundation Models, Core AI, App Intents, AI security, and evaluations

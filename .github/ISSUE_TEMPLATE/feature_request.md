@@ -14,7 +14,7 @@ What would the skill do better with this addition?
 - [ ] New template (`templates/...`)
 - [ ] New architecture pattern (`patterns/...`)
 - [ ] New checklist (`checklists/...`)
-- [ ] Update to the agent brain (`SKILL.md` and the 25+ identical rule files)
+- [ ] Update to the agent brain (`SKILL.md`, `CLAUDE.md`, `AGENTS.md`, `GEMINI.md`)
 - [ ] Other:
 
 ## Why now

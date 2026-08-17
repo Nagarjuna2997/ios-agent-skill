@@ -66,18 +66,18 @@ rather than a signing key.
 
 ## Updating the agent brain
 
-`SKILL.md` is the **single source of truth**. `CLAUDE.md`, `AGENTS.md`, `GEMINI.md`, `CONVENTIONS.md`, `replit.md`, `.cursorrules`, `.clinerules`, `.continuerules`, `.kilocoderules`, `.roorules`, `.rules`, `.windsurfrules`, and the rule files under `.aiassistant/`, `.amazonq/`, `.augment/`, `.continue/`, `.cursor/`, `.junie/`, `.kilocode/`, `.roo/`, `.tabnine/`, `.trae/`, and `.windsurf/`, plus `.github/copilot-instructions.md`, are generated copies of `SKILL.md` **with the YAML frontmatter stripped** — those formats are plain instruction files and would render the frontmatter as body text.
+`SKILL.md` is the **single source of truth**. `CLAUDE.md`, `AGENTS.md`, and `GEMINI.md` are generated copies of `SKILL.md` **with the YAML frontmatter stripped**. The repository intentionally focuses on Claude, ChatGPT/Codex-style agents, and Gemini.
 
 Never edit a mirror by hand. Edit `SKILL.md`, then run:
 
 ```bash
-./scripts/sync-mirrors.sh          # regenerate all 24 mirrors
+./scripts/sync-mirrors.sh          # regenerate supported mirrors
 ./scripts/sync-mirrors.sh --check  # verify they are current (what CI runs)
 ```
 
 The `docs-consistency` GitHub Actions workflow fails any PR whose mirrors are stale, so run the sync before you push.
 
-To support a new AI tool, add its path to the `MIRRORS` array in `scripts/sync-mirrors.sh` and re-run the script — do not add another `cp` line anywhere else.
+To support a new AI entry point, add its path to the `MIRRORS` array in `scripts/sync-mirrors.sh` and re-run the script — do not add another `cp` line anywhere else.
 
 ## Publishing
 

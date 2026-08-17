@@ -9,7 +9,7 @@ What problem does this solve, or what does it improve about the agent's output?
 - [ ] New framework guide in `docs/frameworks/`
 - [ ] New code template in `templates/`
 - [ ] New architecture pattern in `patterns/`
-- [ ] Update to the agent brain (`SKILL.md` + the 25+ rule files -- ran the sync command from `CONTRIBUTING.md`)
+- [ ] Update to the agent brain (`SKILL.md` + Claude/ChatGPT-Gemini mirrors -- ran the sync command from `CONTRIBUTING.md`)
 - [ ] Tooling / repo hygiene
 - [ ] Other:
 
@@ -19,7 +19,7 @@ What problem does this solve, or what does it improve about the agent's output?
 - [ ] N/A -- no Swift code in this PR
 
 ## Agent-brain sync
-If you touched any of the 25+ identical rule files (`SKILL.md`, `CLAUDE.md`, `AGENTS.md`, `GEMINI.md`, `.cursorrules`, etc.), confirm:
+If you touched any generated instruction file (`SKILL.md`, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`), confirm:
 - [ ] All copies updated together (see `CONTRIBUTING.md` for the sync command)
 - [ ] N/A -- did not touch agent-brain files
 

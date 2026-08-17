@@ -12,7 +12,7 @@ A one-line description of the problem.
 ## AI tool
 - Tool: <!-- Claude Code / ChatGPT-Codex / Gemini -->
 - Version:
-- Rule file the tool reads: <!-- e.g. CLAUDE.md, .cursorrules, AGENTS.md -->
+- Rule file the tool reads: <!-- CLAUDE.md / AGENTS.md / GEMINI.md -->
 
 ## Environment
 - Xcode version:

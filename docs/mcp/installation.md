@@ -1,7 +1,7 @@
 # Installing the iOS Agent MCP Server
 
 **Load this when:** setting up `ios-agent-mcp` in Claude Code, Claude Desktop,
-Cursor, or another MCP client.
+ChatGPT/Codex, Gemini, or another MCP-capable client.
 
 The server exposes ten Swift analysis tools plus `lint_skill`, which checks a
 skill repository's own metadata. Full tool reference: `tools.md`.
@@ -54,13 +54,6 @@ Edit `~/Library/Application Support/Claude/claude_desktop_config.json`:
 ```
 
 Restart Claude Desktop. The tools appear under the connectors icon.
-
-## Cursor
-
-`.cursor/mcp.json` (per project) or `~/.cursor/mcp.json` (global) — same shape
-as above.
-
----
 
 ## Platform notes
 
