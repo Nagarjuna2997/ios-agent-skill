@@ -35,6 +35,7 @@ Load this skill when any of the following is true. When none are true, do not lo
 | Background import, sync, or "not thread safe" | `docs/frameworks/data-concurrency.md` |
 | Test doubles, previews, debug menus | `docs/testing/mocking-strategy.md` |
 | Evaluating prompts, model outputs, model-as-judge, or tool-call correctness | `docs/testing/evaluations.md` |
+| Apple Developer Documentation navigator, 404 documentation items, Technology Overviews, Sample Code, HIG, Downloads, Technotes, Videos, Forums, or broad Apple docs memory | `docs/apple/documentation-navigator-brain.md`, `docs/apple/a-section-memory.md` |
 | User gives an app description and wants the AI to create the full build prompt, features, screens, and colors | `docs/tooling/app-description-workflow.md`, `docs/design/design-tokens.md`, `docs/design/color-system.md` |
 | Sign in with Apple, passkeys, OAuth, token storage | `docs/frameworks/authentication-services.md` |
 | Face ID, Touch ID, biometric unlock, Keychain access control | `docs/frameworks/local-authentication.md` |
@@ -667,6 +668,8 @@ This repository contains comprehensive documentation. Consult these files when b
 - `docs/frameworks/device-integrity.md` — DeviceCheck, AppAttest
 
 ### Domain Hubs
+- `docs/apple/documentation-navigator-brain.md` — First-load Apple Developer Documentation memory for the navigator, platforms, tools, topics, technology overviews, sample code, HIG, releases, technotes, forums, and verification
+- `docs/apple/a-section-memory.md` — Deep memory for A-section Apple documentation technologies: Accelerate, Accessibility, accessory APIs, account/data transfer, ads/attribution, AlarmKit, analytics, App Clips, App Intents, licensing, and App Store Connect API
 - `docs/apple-docs-reference.md` — Apple documentation source map for Swift language, Xcode diagnostics, memory, crash reports, MetricKit, and Metal Memory viewer routing
 - `docs/design/README.md` — Professional UI/UX review order, state design, polish rules
 - `docs/animation/README.md` — Native motion system, purpose rules, performance and Reduce Motion
