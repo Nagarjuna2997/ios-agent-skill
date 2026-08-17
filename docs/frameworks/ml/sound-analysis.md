@@ -6,8 +6,6 @@ Load this when an app needs sound classification, audio-event detection, built-i
 
 Use Sound Analysis for non-speech sounds. Use Speech for spoken-word transcription, ShazamKit for music recognition/matching, AVFoundation for capture/playback, and Core ML when the app owns a model that is not routed through `SNClassifySoundRequest`.
 
-Apple documentation: <https://developer.apple.com/documentation/soundanalysis>
-
 ## Choosing the analyzer
 
 | Need | Use |
@@ -112,3 +110,6 @@ Rules:
 - [ ] Memory and battery are measured for long sessions.
 - [ ] Privacy copy matches the audio data path.
 
+## Source anchor
+
+Use only to verify API signatures and availability: <https://developer.apple.com/documentation/soundanalysis>

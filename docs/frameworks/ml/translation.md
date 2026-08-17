@@ -6,8 +6,6 @@ Load this when an app needs in-app text translation, system translation UI, cust
 
 Use the Translation framework for text translation. Use Natural Language for text analysis, Speech for speech-to-text, and Foundation Models only when translation is part of a broader generative workflow that still needs review.
 
-Apple documentation: <https://developer.apple.com/documentation/translation>
-
 ## Choosing the API
 
 | Need | Use |
@@ -146,3 +144,6 @@ Rules:
 - [ ] Localized UI labels fit at accessibility text sizes.
 - [ ] Privacy copy matches the actual data path.
 
+## Source anchor
+
+Use only to verify API signatures and availability: <https://developer.apple.com/documentation/translation>
