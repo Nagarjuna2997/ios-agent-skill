@@ -8,8 +8,8 @@ The goal is not to mirror every Apple documentation navigator entry. The goal is
 
 | Metric | Count |
 |---|---:|
-| Tracked technologies | 98 |
-| Covered by a guide | 98 |
+| Tracked technologies | 99 |
+| Covered by a guide | 99 |
 | Planned | 0 |
 | Skipped | 0 |
 | Deprecated | 0 |
@@ -27,8 +27,9 @@ The goal is not to mirror every Apple documentation navigator entry. The goal is
 | Foundation Models | iOS, iPadOS, macOS, visionOS | active / covered | [docs/frameworks/foundation-models.md](frameworks/foundation-models.md) |
 | MLX | iOS, iPadOS, macOS | active / covered | [docs/frameworks/extended-apple-frameworks.md](frameworks/extended-apple-frameworks.md) |
 | Natural Language | iOS, iPadOS, macOS, tvOS, visionOS | active / covered | [docs/frameworks/ml/natural-language.md](frameworks/ml/natural-language.md) |
-| Sound Analysis | iOS, iPadOS, macOS, tvOS, visionOS | active / covered | [docs/frameworks/extended-apple-frameworks.md](frameworks/extended-apple-frameworks.md) |
+| Sound Analysis | iOS, iPadOS, macOS, tvOS, visionOS | active / covered | [docs/frameworks/ml/sound-analysis.md](frameworks/ml/sound-analysis.md) |
 | Speech | iOS, iPadOS, macOS, visionOS | active / covered | [docs/frameworks/ml/speech.md](frameworks/ml/speech.md) |
+| Translation | iOS, iPadOS, macOS, visionOS | active / covered | [docs/frameworks/ml/translation.md](frameworks/ml/translation.md) |
 | Vision | iOS, iPadOS, macOS, tvOS, visionOS | active / covered | [docs/frameworks/ml/vision.md](frameworks/ml/vision.md) |
 
 ## Authentication, Security, and Privacy

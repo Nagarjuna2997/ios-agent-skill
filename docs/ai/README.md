@@ -2,7 +2,7 @@
 
 ## Context
 
-Use this hub when a feature involves Apple Intelligence, Foundation Models, Core AI, Core ML, App Intents, Visual Intelligence, private RAG, evaluations, or AI privacy/security. Route to the detailed framework guides for implementation.
+Use this hub when a feature involves Apple Intelligence, Foundation Models, Core AI, Core ML, App Intents, Visual Intelligence, private RAG, evaluations, machine-learning-powered APIs, or AI privacy/security. Route to `machine-learning-brain.md` first for Apple AI & Machine Learning resource routing, then to the detailed framework guides for implementation.
 
 ## Decision Matrix
 
@@ -15,6 +15,10 @@ Use this hub when a feature involves Apple Intelligence, Foundation Models, Core
 | App schemas, semantic indexing, View Annotations | App Intents intelligence | `../frameworks/app-intents-intelligence.md` |
 | App-local private retrieval | Core Spotlight RAG | `../frameworks/core-spotlight-rag.md` |
 | OCR, object detection, image analysis | Vision | `../frameworks/ml/vision.md` |
+| Language ID, tokenization, tags, entities | Natural Language | `../frameworks/ml/natural-language.md` |
+| Speech-to-text or transcription | Speech | `../frameworks/ml/speech.md` |
+| Non-speech sound classification | Sound Analysis | `../frameworks/ml/sound-analysis.md` |
+| In-app text translation | Translation | `../frameworks/ml/translation.md` |
 | System scanning or Live Text-style UI | VisionKit | `../frameworks/visionkit.md` |
 | Quality gates for prompts and tools | Evaluations | `../testing/evaluations.md` |
 

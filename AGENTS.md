@@ -42,6 +42,7 @@ Load this skill when any of the following is true. When none are true, do not lo
 | Sockets, TCP/UDP, custom protocols, connectivity monitoring | `docs/frameworks/network-framework.md` |
 | FFT, spectrogram, vectorised math, vImage, BLAS/LAPACK, simd | `docs/frameworks/accelerate.md` |
 | Custom `.aimodel` / `.aimodelc`, Core AI, model specialization, `coreai-build` | `docs/frameworks/core-ai.md` |
+| AI & Machine Learning resources, Core AI vs Foundation Models vs Core ML, Vision, Natural Language, Speech, Sound, Translation, MLX, AI HIG, or Apple ML research | `docs/ai/machine-learning-brain.md`, `docs/ai/README.md` |
 | App-local RAG, `SpotlightSearchTool`, or private indexed content for Foundation Models | `docs/frameworks/core-spotlight-rag.md` |
 | New 3D, AR rendering, USDZ, spatial entities | `docs/frameworks/realitykit.md`, `docs/frameworks/arkit.md` |
 | Existing SceneKit scene graphs, `.scnassets`, `ARSCNView` | `docs/frameworks/scenekit.md`, then `docs/frameworks/realitykit.md` for migration |
@@ -627,9 +628,12 @@ This repository contains comprehensive documentation. Consult these files when b
 - `docs/frameworks/ml/vision.md` — OCR, face detection, barcode, segmentation, DataScanner
 - `docs/frameworks/ml/natural-language.md` — Tokenization, tagging, sentiment, embeddings
 - `docs/frameworks/ml/speech.md` — Speech-to-text, live transcription
+- `docs/frameworks/ml/sound-analysis.md` — Built-in and custom sound classification for audio files and live streams
+- `docs/frameworks/ml/translation.md` — System translation UI, custom `TranslationSession`, language availability, and translation UX/privacy
 - `docs/frameworks/ml/on-device-ai.md` — Foundation Models, MLX Swift, on-device LLM
 - `docs/frameworks/visionkit.md` — VisionKit system document scanning, Live Text-style UI, visual lookup routing, privacy and fallbacks
 - `docs/apple-framework-index.md` — Generated Apple technology catalog with tracked, covered, planned, skipped, deprecated, and coverage counts
+- `docs/ai/machine-learning-brain.md` — First-load AI & Machine Learning memory for Apple resources, framework choice, Core AI, Foundation Models, Core ML, ML-powered APIs, HIG, research/resources, privacy, performance, and verification
 - `docs/ai/README.md` — Apple Intelligence, Foundation Models, Core AI, App Intents, Visual Intelligence, RAG, evaluations, privacy/security routing
 
 ### Advanced App Experience

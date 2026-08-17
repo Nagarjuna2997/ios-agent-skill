@@ -455,7 +455,21 @@
       "covered": true,
       "appleDocumentation": "https://developer.apple.com/documentation/soundanalysis",
       "status": "active",
-      "guide": "docs/frameworks/extended-apple-frameworks.md"
+      "guide": "docs/frameworks/ml/sound-analysis.md"
+    },
+    {
+      "name": "Translation",
+      "category": "AI and Machine Learning",
+      "platforms": [
+        "iOS",
+        "iPadOS",
+        "macOS",
+        "visionOS"
+      ],
+      "covered": true,
+      "appleDocumentation": "https://developer.apple.com/documentation/translation",
+      "status": "active",
+      "guide": "docs/frameworks/ml/translation.md"
     },
     {
       "name": "SwiftData",

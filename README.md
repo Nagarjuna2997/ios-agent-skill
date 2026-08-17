@@ -192,7 +192,7 @@ Start here:
 | Swift and SwiftUI rules | [docs/swift/swift-brain.md](docs/swift/swift-brain.md), [docs/swift/swift-language.md](docs/swift/swift-language.md), [docs/swift/swift-concurrency.md](docs/swift/swift-concurrency.md), [docs/swift/memory-lifetime.md](docs/swift/memory-lifetime.md), [docs/swiftui/state-and-data-flow.md](docs/swiftui/state-and-data-flow.md), [docs/swiftui/views-and-controls.md](docs/swiftui/views-and-controls.md) |
 | Architecture | [patterns/mvvm.md](patterns/mvvm.md), [patterns/clean-architecture.md](patterns/clean-architecture.md) |
 | Design, motion, graphics | [docs/design/README.md](docs/design/README.md), [docs/animation/README.md](docs/animation/README.md), [docs/graphics/README.md](docs/graphics/README.md) |
-| AI and intelligence | [docs/ai/README.md](docs/ai/README.md), [docs/frameworks/foundation-models.md](docs/frameworks/foundation-models.md), [docs/frameworks/apple-intelligence.md](docs/frameworks/apple-intelligence.md) |
+| AI and intelligence | [docs/ai/machine-learning-brain.md](docs/ai/machine-learning-brain.md), [docs/ai/README.md](docs/ai/README.md), [docs/frameworks/foundation-models.md](docs/frameworks/foundation-models.md), [docs/frameworks/apple-intelligence.md](docs/frameworks/apple-intelligence.md) |
 | RealityKit, SceneKit, ARKit, Metal | [docs/frameworks/realitykit.md](docs/frameworks/realitykit.md), [docs/frameworks/scenekit.md](docs/frameworks/scenekit.md), [docs/frameworks/arkit.md](docs/frameworks/arkit.md), [docs/frameworks/metal.md](docs/frameworks/metal.md) |
 | Testing and verification | [docs/testing/mocking-strategy.md](docs/testing/mocking-strategy.md), [docs/testing/xcuiautomation.md](docs/testing/xcuiautomation.md), [docs/orchestration/verification.md](docs/orchestration/verification.md) |
 | Xcode and simulator workflows | [docs/tooling/xcode-27-agents.md](docs/tooling/xcode-27-agents.md), [docs/tooling/xcode-memory-debugging.md](docs/tooling/xcode-memory-debugging.md), [docs/tooling/device-hub.md](docs/tooling/device-hub.md), [docs/tooling/ios-simulator-mcp.md](docs/tooling/ios-simulator-mcp.md) |
@@ -203,7 +203,7 @@ Start here:
 ## Apple Technology Catalog
 
 <!-- apple-catalog:start -->
-Apple catalog tracked: **98** technologies. Covered: **98**. Planned: **0**. Skipped: **0**. Deprecated: **0**. Coverage: **100.0%**.
+Apple catalog tracked: **99** technologies. Covered: **99**. Planned: **0**. Skipped: **0**. Deprecated: **0**. Coverage: **100.0%**.
 
 Source of truth: [`frameworks.json`](frameworks.json). Human index: [`docs/apple-framework-index.md`](docs/apple-framework-index.md).
 <!-- apple-catalog:end -->
