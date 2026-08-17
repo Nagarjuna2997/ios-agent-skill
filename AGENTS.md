@@ -28,6 +28,7 @@ Load this skill when any of the following is true. When none are true, do not lo
 |---------|------|
 | Any new screen or view | `docs/swiftui/views-and-controls.md`, `docs/design/design-tokens.md` |
 | State, `@Observable`, or a view model | `docs/swiftui/state-and-data-flow.md`, `patterns/mvvm.md` |
+| Swift language, ARC, ownership, lifetime, or `deinit` behavior | `docs/swift/swift-language.md`, `docs/swift/memory-lifetime.md`, `docs/apple-docs-reference.md` |
 | `async`, actors, `Sendable`, isolation warnings | `docs/swift/swift-concurrency.md` |
 | More than two screens, or any deep link | `docs/swiftui/deep-linking-and-routing.md` |
 | Layered architecture, use cases, DI | `patterns/clean-architecture.md` |
@@ -72,7 +73,8 @@ Load this skill when any of the following is true. When none are true, do not lo
 | Raising a deployment target, or rebuilding on a new SDK | `docs/migration/ios-deployment-migration.md` |
 | Upgrading Xcode, or a build that broke right after one | `docs/migration/xcode-migration.md` |
 | Reviewing an existing Swift project for defects | `docs/mcp/tools.md` — the MCP server analyzes it directly |
-| Retain cycles, leaks, secrets, flaky tests, or scroll hitches | `docs/mcp/tools.md` — `review_swift_memory`, `_security`, `_testing`, `_performance` |
+| Retain cycles, leaks, secrets, flaky tests, or scroll hitches | `docs/mcp/tools.md`, `docs/swift/memory-lifetime.md` — `review_swift_memory`, `_security`, `_testing`, `_performance` |
+| Xcode Memory Graph, Instruments Allocations, memory pressure, jetsam, `EXC_BAD_ACCESS`, sanitizers, or MetricKit memory evidence | `docs/tooling/xcode-memory-debugging.md`, `docs/apple-docs-reference.md`, `docs/performance/README.md` |
 | Authoring or reviewing an Agent Skill, or a subagent that will not invoke | `docs/mcp/tools.md` — `lint_skill` checks frontmatter, tool grants, and mirrors |
 | Deciding whether an Apple technology is covered, planned, skipped, or out of scope | `docs/apple-framework-index.md`, `frameworks.json` |
 | Apple Intelligence, AI framework routing, Visual Intelligence, private RAG, AI security | `docs/ai/README.md` |
@@ -575,6 +577,7 @@ This repository contains comprehensive documentation. Consult these files when b
 - `docs/swift/swift-language.md` — Types, protocols, generics, macros, property wrappers
 - `docs/swift/swift-concurrency.md` — async/await, actors, structured concurrency, Sendable
 - `docs/swift/swift-standard-library.md` — Collections, strings, Codable, result builders
+- `docs/swift/memory-lifetime.md` — ARC, retain cycles, closure captures, task lifetime, SwiftUI model lifetime, unsafe memory, and leak verification
 
 ### SwiftUI
 - `docs/swiftui/views-and-controls.md` — All built-in views and modifiers
@@ -658,6 +661,7 @@ This repository contains comprehensive documentation. Consult these files when b
 - `docs/frameworks/device-integrity.md` — DeviceCheck, AppAttest
 
 ### Domain Hubs
+- `docs/apple-docs-reference.md` — Apple documentation source map for Swift language, Xcode diagnostics, memory, crash reports, MetricKit, and Metal Memory viewer routing
 - `docs/design/README.md` — Professional UI/UX review order, state design, polish rules
 - `docs/animation/README.md` — Native motion system, purpose rules, performance and Reduce Motion
 - `docs/animation/web-animation-concepts.md` — Anime.js, GSAP, Framer Motion, Three.js, PixiJS, p5.js, Matter.js, WebGL/WebGPU vocabulary mapped to native Apple APIs
@@ -727,6 +731,7 @@ This repository contains comprehensive documentation. Consult these files when b
 
 ### Tooling
 - `docs/tooling/xcode-27-agents.md` — Xcode coding agents, when to use them vs. Claude Code, agent-assisted localization and testing, Instruments
+- `docs/tooling/xcode-memory-debugging.md` — Xcode Debug navigator, Memory Graph, Malloc Stack, Instruments Allocations, sanitizers, crash logs, jetsam, MetricKit, and Metal Memory viewer workflow
 - `docs/tooling/app-description-workflow.md` — Turns a natural-language app description into an executable build prompt, feature plan, design system, color tokens, and feedback update loop
 - `docs/tooling/device-hub.md` — Device Hub, the device/config test matrix, iOS 27 app resizability, accessibility passes
 - `docs/tooling/fm-cli.md` — Foundation Models terminal experiments with the `fm` CLI, safe transcript handling, promotion to evaluations

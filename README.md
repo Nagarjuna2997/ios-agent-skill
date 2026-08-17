@@ -189,13 +189,14 @@ Start here:
 | Area | Read |
 |---|---|
 | MCP setup and tools | [docs/mcp/installation.md](docs/mcp/installation.md), [docs/mcp/tools.md](docs/mcp/tools.md), [docs/mcp/examples.md](docs/mcp/examples.md) |
-| Swift and SwiftUI rules | [docs/swift/swift-concurrency.md](docs/swift/swift-concurrency.md), [docs/swiftui/state-and-data-flow.md](docs/swiftui/state-and-data-flow.md), [docs/swiftui/views-and-controls.md](docs/swiftui/views-and-controls.md) |
+| Swift and SwiftUI rules | [docs/swift/swift-language.md](docs/swift/swift-language.md), [docs/swift/swift-concurrency.md](docs/swift/swift-concurrency.md), [docs/swift/memory-lifetime.md](docs/swift/memory-lifetime.md), [docs/swiftui/state-and-data-flow.md](docs/swiftui/state-and-data-flow.md), [docs/swiftui/views-and-controls.md](docs/swiftui/views-and-controls.md) |
 | Architecture | [patterns/mvvm.md](patterns/mvvm.md), [patterns/clean-architecture.md](patterns/clean-architecture.md) |
 | Design, motion, graphics | [docs/design/README.md](docs/design/README.md), [docs/animation/README.md](docs/animation/README.md), [docs/graphics/README.md](docs/graphics/README.md) |
 | AI and intelligence | [docs/ai/README.md](docs/ai/README.md), [docs/frameworks/foundation-models.md](docs/frameworks/foundation-models.md), [docs/frameworks/apple-intelligence.md](docs/frameworks/apple-intelligence.md) |
 | RealityKit, SceneKit, ARKit, Metal | [docs/frameworks/realitykit.md](docs/frameworks/realitykit.md), [docs/frameworks/scenekit.md](docs/frameworks/scenekit.md), [docs/frameworks/arkit.md](docs/frameworks/arkit.md), [docs/frameworks/metal.md](docs/frameworks/metal.md) |
 | Testing and verification | [docs/testing/mocking-strategy.md](docs/testing/mocking-strategy.md), [docs/testing/xcuiautomation.md](docs/testing/xcuiautomation.md), [docs/orchestration/verification.md](docs/orchestration/verification.md) |
-| Xcode and simulator workflows | [docs/tooling/xcode-27-agents.md](docs/tooling/xcode-27-agents.md), [docs/tooling/device-hub.md](docs/tooling/device-hub.md), [docs/tooling/ios-simulator-mcp.md](docs/tooling/ios-simulator-mcp.md) |
+| Xcode and simulator workflows | [docs/tooling/xcode-27-agents.md](docs/tooling/xcode-27-agents.md), [docs/tooling/xcode-memory-debugging.md](docs/tooling/xcode-memory-debugging.md), [docs/tooling/device-hub.md](docs/tooling/device-hub.md), [docs/tooling/ios-simulator-mcp.md](docs/tooling/ios-simulator-mcp.md) |
+| Apple docs reference | [docs/apple-docs-reference.md](docs/apple-docs-reference.md), [docs/performance/README.md](docs/performance/README.md), [docs/frameworks/metal.md](docs/frameworks/metal.md) |
 | App description to build prompt | [docs/tooling/app-description-workflow.md](docs/tooling/app-description-workflow.md), [docs/design/design-tokens.md](docs/design/design-tokens.md), [docs/design/color-system.md](docs/design/color-system.md) |
 | Version and migration guidance | [docs/compatibility-matrix.md](docs/compatibility-matrix.md), [docs/migration/swift-6-migration.md](docs/migration/swift-6-migration.md), [docs/migration/xcode-migration.md](docs/migration/xcode-migration.md) |
 
