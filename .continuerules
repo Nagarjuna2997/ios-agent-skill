@@ -34,6 +34,7 @@ Load this skill when any of the following is true. When none are true, do not lo
 | Background import, sync, or "not thread safe" | `docs/frameworks/data-concurrency.md` |
 | Test doubles, previews, debug menus | `docs/testing/mocking-strategy.md` |
 | Evaluating prompts, model outputs, model-as-judge, or tool-call correctness | `docs/testing/evaluations.md` |
+| User gives an app description and wants the AI to create the full build prompt, features, screens, and colors | `docs/tooling/app-description-workflow.md`, `docs/design/design-tokens.md`, `docs/design/color-system.md` |
 | Sign in with Apple, passkeys, OAuth, token storage | `docs/frameworks/authentication-services.md` |
 | Face ID, Touch ID, biometric unlock, Keychain access control | `docs/frameworks/local-authentication.md` |
 | Any chart, graph, or plot | `docs/frameworks/swift-charts.md` |
@@ -726,6 +727,7 @@ This repository contains comprehensive documentation. Consult these files when b
 
 ### Tooling
 - `docs/tooling/xcode-27-agents.md` — Xcode coding agents, when to use them vs. Claude Code, agent-assisted localization and testing, Instruments
+- `docs/tooling/app-description-workflow.md` — Turns a natural-language app description into an executable build prompt, feature plan, design system, color tokens, and feedback update loop
 - `docs/tooling/device-hub.md` — Device Hub, the device/config test matrix, iOS 27 app resizability, accessibility passes
 - `docs/tooling/fm-cli.md` — Foundation Models terminal experiments with the `fm` CLI, safe transcript handling, promotion to evaluations
 - `docs/tooling/foundation-models-instruments.md` — Foundation Models Instruments profiling for tokens, latency, tools, Dynamic Profiles

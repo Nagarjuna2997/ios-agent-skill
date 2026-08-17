@@ -10,7 +10,7 @@ assignees: ''
 A one-line description of the problem.
 
 ## AI tool
-- Tool: <!-- Claude Code / Codex / Cursor / Copilot / Windsurf / etc. -->
+- Tool: <!-- Claude Code / ChatGPT-Codex / Gemini -->
 - Version:
 - Rule file the tool reads: <!-- e.g. CLAUDE.md, .cursorrules, AGENTS.md -->
 

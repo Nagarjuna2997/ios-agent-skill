@@ -8,7 +8,7 @@ Thanks for your interest! This skill is community-maintained and PRs are welcome
 - **Add a new framework guide** to `docs/frameworks/` -- follow the existing "Complete Guide" structure (overview -> permissions -> setup -> code samples -> pitfalls).
 - **Add a code template** to `templates/common-patterns/` -- Swift files only, must compile against the latest stable Xcode.
 - **Add an architecture pattern** to `patterns/` -- include rationale, sample code, and trade-offs.
-- **Tighten the agent rules** in `SKILL.md` (the brain shared by `CLAUDE.md`, `AGENTS.md`, `GEMINI.md`, `.cursorrules`, etc.). Any change here propagates to 24 mirrored instruction files, so be conservative.
+- **Tighten the agent rules** in `SKILL.md` (the brain shared by Claude, ChatGPT/Codex, and Gemini entry files). Any change here propagates to mirrored instruction files, so be conservative.
 
 ## Ground rules
 
@@ -99,7 +99,7 @@ file. Use `npm login` locally, then publish from the package directory with
 ## Reporting bugs
 
 Use the GitHub issue tracker with the **bug report** template. Include:
-- AI tool you were using (Claude Code, Cursor, Codex, etc.) and version
+- AI tool you were using (Claude Code, ChatGPT/Codex, or Gemini) and version
 - The prompt that triggered the bad output
 - The actual vs. expected behavior
 - Xcode + iOS SDK versions if a code sample failed to compile

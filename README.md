@@ -196,6 +196,7 @@ Start here:
 | RealityKit, SceneKit, ARKit, Metal | [docs/frameworks/realitykit.md](docs/frameworks/realitykit.md), [docs/frameworks/scenekit.md](docs/frameworks/scenekit.md), [docs/frameworks/arkit.md](docs/frameworks/arkit.md), [docs/frameworks/metal.md](docs/frameworks/metal.md) |
 | Testing and verification | [docs/testing/mocking-strategy.md](docs/testing/mocking-strategy.md), [docs/testing/xcuiautomation.md](docs/testing/xcuiautomation.md), [docs/orchestration/verification.md](docs/orchestration/verification.md) |
 | Xcode and simulator workflows | [docs/tooling/xcode-27-agents.md](docs/tooling/xcode-27-agents.md), [docs/tooling/device-hub.md](docs/tooling/device-hub.md), [docs/tooling/ios-simulator-mcp.md](docs/tooling/ios-simulator-mcp.md) |
+| App description to build prompt | [docs/tooling/app-description-workflow.md](docs/tooling/app-description-workflow.md), [docs/design/design-tokens.md](docs/design/design-tokens.md), [docs/design/color-system.md](docs/design/color-system.md) |
 | Version and migration guidance | [docs/compatibility-matrix.md](docs/compatibility-matrix.md), [docs/migration/swift-6-migration.md](docs/migration/swift-6-migration.md), [docs/migration/xcode-migration.md](docs/migration/xcode-migration.md) |
 
 ## Apple Technology Catalog
@@ -334,9 +335,13 @@ Detailed planning lives in [ROADMAP.md](ROADMAP.md).
 
 ## Works With
 
-Claude Code, Claude Desktop, Cursor, Codex, GitHub Copilot, Windsurf, Gemini CLI, Cline, Roo, Zed, JetBrains AI, Amazon Q, Trae, Continue, Aider, Replit, and other tools that can read instruction files or connect to MCP servers.
+Primary support is intentionally focused on:
 
-See [docs/ai-setup-guide.md](docs/ai-setup-guide.md) for setup notes.
+- Claude Code and Claude Desktop
+- ChatGPT / Codex
+- Gemini CLI
+
+Other instruction-file mirrors may exist in the repo for compatibility, but the product direction is Claude, ChatGPT/Codex, and Gemini first.
 
 ## Contributing
 
