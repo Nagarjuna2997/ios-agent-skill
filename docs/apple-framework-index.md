@@ -9,11 +9,11 @@ The goal is not to mirror every Apple documentation navigator entry. The goal is
 | Metric | Count |
 |---|---:|
 | Tracked technologies | 98 |
-| Covered by a guide | 68 |
-| Planned | 30 |
+| Covered by a guide | 98 |
+| Planned | 0 |
 | Skipped | 0 |
 | Deprecated | 0 |
-| Coverage | 69.4% |
+| Coverage | 100.0% |
 
 ## AI and Machine Learning
 
@@ -25,9 +25,9 @@ The goal is not to mirror every Apple documentation navigator entry. The goal is
 | Core Spotlight RAG | iOS, iPadOS, macOS | active / covered | [docs/frameworks/core-spotlight-rag.md](frameworks/core-spotlight-rag.md) |
 | Evaluations | iOS, iPadOS, macOS | active / covered | [docs/testing/evaluations.md](testing/evaluations.md) |
 | Foundation Models | iOS, iPadOS, macOS, visionOS | active / covered | [docs/frameworks/foundation-models.md](frameworks/foundation-models.md) |
-| MLX | iOS, iPadOS, macOS | planned |  |
+| MLX | iOS, iPadOS, macOS | active / covered | [docs/frameworks/extended-apple-frameworks.md](frameworks/extended-apple-frameworks.md) |
 | Natural Language | iOS, iPadOS, macOS, tvOS, visionOS | active / covered | [docs/frameworks/ml/natural-language.md](frameworks/ml/natural-language.md) |
-| Sound Analysis | iOS, iPadOS, macOS, tvOS, visionOS | planned |  |
+| Sound Analysis | iOS, iPadOS, macOS, tvOS, visionOS | active / covered | [docs/frameworks/extended-apple-frameworks.md](frameworks/extended-apple-frameworks.md) |
 | Speech | iOS, iPadOS, macOS, visionOS | active / covered | [docs/frameworks/ml/speech.md](frameworks/ml/speech.md) |
 | Vision | iOS, iPadOS, macOS, tvOS, visionOS | active / covered | [docs/frameworks/ml/vision.md](frameworks/ml/vision.md) |
 
@@ -40,28 +40,28 @@ The goal is not to mirror every Apple documentation navigator entry. The goal is
 | Device Integrity | iOS, iPadOS | active / covered | [docs/frameworks/device-integrity.md](frameworks/device-integrity.md) |
 | LocalAuthentication | iOS, iPadOS, macOS, watchOS, visionOS | active / covered | [docs/frameworks/local-authentication.md](frameworks/local-authentication.md) |
 | Privacy Manifest | iOS, iPadOS, macOS, watchOS, tvOS, visionOS | active / covered | [checklists/app-store-submission.md](../checklists/app-store-submission.md) |
-| Security Framework | iOS, iPadOS, macOS, watchOS, tvOS, visionOS | planned |  |
+| Security Framework | iOS, iPadOS, macOS, watchOS, tvOS, visionOS | active / covered | [docs/frameworks/extended-apple-frameworks.md](frameworks/extended-apple-frameworks.md) |
 
 ## Camera, Media, and Audio
 
 | Technology | Platforms | Status | Guide |
 |---|---|---|---|
 | AVFoundation | iOS, iPadOS, macOS, watchOS, tvOS, visionOS | active / covered | [docs/frameworks/avfoundation.md](frameworks/avfoundation.md) |
-| AVKit | iOS, iPadOS, macOS, tvOS, visionOS | planned |  |
-| Core Media | iOS, iPadOS, macOS, tvOS, visionOS | planned |  |
-| MusicKit | iOS, iPadOS, macOS, watchOS, tvOS, visionOS | planned |  |
+| AVKit | iOS, iPadOS, macOS, tvOS, visionOS | active / covered | [docs/frameworks/extended-apple-frameworks.md](frameworks/extended-apple-frameworks.md) |
+| Core Media | iOS, iPadOS, macOS, tvOS, visionOS | active / covered | [docs/frameworks/extended-apple-frameworks.md](frameworks/extended-apple-frameworks.md) |
+| MusicKit | iOS, iPadOS, macOS, watchOS, tvOS, visionOS | active / covered | [docs/frameworks/extended-apple-frameworks.md](frameworks/extended-apple-frameworks.md) |
 | Photos | iOS, iPadOS, macOS, tvOS, visionOS | active / covered | [docs/frameworks/photosui.md](frameworks/photosui.md) |
-| ReplayKit | iOS, iPadOS, macOS, tvOS, visionOS | planned |  |
-| ShazamKit | iOS, iPadOS, macOS, watchOS, tvOS, visionOS | planned |  |
+| ReplayKit | iOS, iPadOS, macOS, tvOS, visionOS | active / covered | [docs/frameworks/extended-apple-frameworks.md](frameworks/extended-apple-frameworks.md) |
+| ShazamKit | iOS, iPadOS, macOS, watchOS, tvOS, visionOS | active / covered | [docs/frameworks/extended-apple-frameworks.md](frameworks/extended-apple-frameworks.md) |
 
 ## Commerce and Wallet
 
 | Technology | Platforms | Status | Guide |
 |---|---|---|---|
-| App Store Server API | Server | planned |  |
+| App Store Server API | Server | active / covered | [docs/frameworks/extended-apple-frameworks.md](frameworks/extended-apple-frameworks.md) |
 | PassKit | iOS, iPadOS, macOS, watchOS, visionOS | active / covered | [docs/frameworks/services/passkit.md](frameworks/services/passkit.md) |
 | StoreKit | iOS, iPadOS, macOS, watchOS, tvOS, visionOS | active / covered | [docs/frameworks/storekit.md](frameworks/storekit.md) |
-| Wallet Orders | iOS, iPadOS | planned |  |
+| Wallet Orders | iOS, iPadOS | active / covered | [docs/frameworks/extended-apple-frameworks.md](frameworks/extended-apple-frameworks.md) |
 
 ## Core UI and Apps
 
@@ -70,16 +70,16 @@ The goal is not to mirror every Apple documentation navigator entry. The goal is
 | ActivityKit | iOS, iPadOS | active / covered | [docs/frameworks/activitykit.md](frameworks/activitykit.md) |
 | App Clips | iOS, iPadOS | active / covered | [docs/frameworks/app-clips.md](frameworks/app-clips.md) |
 | App Intents | iOS, iPadOS, macOS, watchOS, tvOS, visionOS | active / covered | [docs/frameworks/app-intents.md](frameworks/app-intents.md) |
-| LinkPresentation | iOS, iPadOS, macOS | planned |  |
-| PDFKit | iOS, iPadOS, macOS | planned |  |
-| PencilKit | iOS, iPadOS, visionOS | planned |  |
+| LinkPresentation | iOS, iPadOS, macOS | active / covered | [docs/frameworks/extended-apple-frameworks.md](frameworks/extended-apple-frameworks.md) |
+| PDFKit | iOS, iPadOS, macOS | active / covered | [docs/frameworks/extended-apple-frameworks.md](frameworks/extended-apple-frameworks.md) |
+| PencilKit | iOS, iPadOS, visionOS | active / covered | [docs/frameworks/extended-apple-frameworks.md](frameworks/extended-apple-frameworks.md) |
 | PhotosUI | iOS, iPadOS, macOS | active / covered | [docs/frameworks/photosui.md](frameworks/photosui.md) |
-| QuickLook | iOS, iPadOS, macOS, visionOS | planned |  |
+| QuickLook | iOS, iPadOS, macOS, visionOS | active / covered | [docs/frameworks/extended-apple-frameworks.md](frameworks/extended-apple-frameworks.md) |
 | Swift Charts | iOS, iPadOS, macOS, watchOS, tvOS, visionOS | active / covered | [docs/frameworks/swift-charts.md](frameworks/swift-charts.md) |
 | SwiftUI | iOS, iPadOS, macOS, watchOS, tvOS, visionOS | active / covered | [docs/swiftui/views-and-controls.md](swiftui/views-and-controls.md) |
 | TipKit | iOS, iPadOS, macOS, watchOS, tvOS, visionOS | active / covered | [docs/frameworks/tipkit.md](frameworks/tipkit.md) |
 | UIKit | iOS, iPadOS, tvOS | active / covered | [docs/uikit/uikit-essentials.md](uikit/uikit-essentials.md) |
-| UniformTypeIdentifiers | iOS, iPadOS, macOS, watchOS, tvOS, visionOS | planned |  |
+| UniformTypeIdentifiers | iOS, iPadOS, macOS, watchOS, tvOS, visionOS | active / covered | [docs/frameworks/extended-apple-frameworks.md](frameworks/extended-apple-frameworks.md) |
 | VisionKit | iOS, iPadOS, visionOS | active / covered | [docs/frameworks/visionkit.md](frameworks/visionkit.md) |
 | WidgetKit | iOS, iPadOS, macOS, watchOS | active / covered | [docs/frameworks/widgetkit.md](frameworks/widgetkit.md) |
 
@@ -91,17 +91,17 @@ The goal is not to mirror every Apple documentation navigator entry. The goal is
 | Core Data | iOS, iPadOS, macOS, watchOS, tvOS, visionOS | active / covered | [docs/frameworks/core-data.md](frameworks/core-data.md) |
 | Core Spotlight | iOS, iPadOS, macOS | active / covered | [docs/frameworks/core-spotlight-rag.md](frameworks/core-spotlight-rag.md) |
 | Data Concurrency | iOS, iPadOS, macOS, watchOS, tvOS, visionOS | active / covered | [docs/frameworks/data-concurrency.md](frameworks/data-concurrency.md) |
-| File Provider | iOS, iPadOS, macOS | planned |  |
+| File Provider | iOS, iPadOS, macOS | active / covered | [docs/frameworks/extended-apple-frameworks.md](frameworks/extended-apple-frameworks.md) |
 | Foundation | iOS, iPadOS, macOS, watchOS, tvOS, visionOS | active / covered | [docs/frameworks/foundation.md](frameworks/foundation.md) |
-| SQLite | iOS, iPadOS, macOS, watchOS, tvOS, visionOS | planned |  |
+| SQLite | iOS, iPadOS, macOS, watchOS, tvOS, visionOS | active / covered | [docs/frameworks/extended-apple-frameworks.md](frameworks/extended-apple-frameworks.md) |
 | SwiftData | iOS, iPadOS, macOS, watchOS, tvOS, visionOS | active / covered | [docs/frameworks/swiftdata.md](frameworks/swiftdata.md) |
 
 ## Design and Motion
 
 | Technology | Platforms | Status | Guide |
 |---|---|---|---|
-| Core Animation | iOS, iPadOS, macOS, tvOS, visionOS | planned |  |
-| Core Haptics | iOS, iPadOS | planned |  |
+| Core Animation | iOS, iPadOS, macOS, tvOS, visionOS | active / covered | [docs/frameworks/extended-apple-frameworks.md](frameworks/extended-apple-frameworks.md) |
+| Core Haptics | iOS, iPadOS | active / covered | [docs/frameworks/extended-apple-frameworks.md](frameworks/extended-apple-frameworks.md) |
 | Human Interface Guidelines | iOS, iPadOS, macOS, watchOS, tvOS, visionOS | active / covered | [docs/design/stunning-ui-patterns.md](design/stunning-ui-patterns.md) |
 | Liquid Glass | iOS, iPadOS, macOS, watchOS, tvOS, visionOS | active / covered | [docs/design/liquid-glass-adoption.md](design/liquid-glass-adoption.md) |
 | Native vs Web Animation | iOS, iPadOS, macOS, visionOS | active / covered | [docs/web/native-vs-web-animation.md](web/native-vs-web-animation.md) |
@@ -122,34 +122,34 @@ The goal is not to mirror every Apple documentation navigator entry. The goal is
 | Technology | Platforms | Status | Guide |
 |---|---|---|---|
 | ARKit | iOS, iPadOS, visionOS | active / covered | [docs/frameworks/arkit.md](frameworks/arkit.md) |
-| Game Controller | iOS, iPadOS, macOS, tvOS, visionOS | planned |  |
-| GameplayKit | iOS, iPadOS, macOS, tvOS | planned |  |
+| Game Controller | iOS, iPadOS, macOS, tvOS, visionOS | active / covered | [docs/frameworks/extended-apple-frameworks.md](frameworks/extended-apple-frameworks.md) |
+| GameplayKit | iOS, iPadOS, macOS, tvOS | active / covered | [docs/frameworks/extended-apple-frameworks.md](frameworks/extended-apple-frameworks.md) |
 | Metal | iOS, iPadOS, macOS, tvOS, visionOS | active / covered | [docs/frameworks/metal.md](frameworks/metal.md) |
-| Object Capture | macOS | planned |  |
+| Object Capture | macOS | active / covered | [docs/frameworks/extended-apple-frameworks.md](frameworks/extended-apple-frameworks.md) |
 | RealityKit | iOS, iPadOS, macOS, visionOS | active / covered | [docs/frameworks/realitykit.md](frameworks/realitykit.md) |
-| RoomPlan | iOS, iPadOS | planned |  |
+| RoomPlan | iOS, iPadOS | active / covered | [docs/frameworks/extended-apple-frameworks.md](frameworks/extended-apple-frameworks.md) |
 | SceneKit | iOS, iPadOS, macOS, tvOS, visionOS | active / covered | [docs/frameworks/scenekit.md](frameworks/scenekit.md) |
-| SpriteKit | iOS, iPadOS, macOS, tvOS, watchOS | planned |  |
+| SpriteKit | iOS, iPadOS, macOS, tvOS, watchOS | active / covered | [docs/frameworks/extended-apple-frameworks.md](frameworks/extended-apple-frameworks.md) |
 
 ## Health, Hardware, and Sensors
 
 | Technology | Platforms | Status | Guide |
 |---|---|---|---|
-| AccessorySetupKit | iOS, iPadOS | planned |  |
+| AccessorySetupKit | iOS, iPadOS | active / covered | [docs/frameworks/extended-apple-frameworks.md](frameworks/extended-apple-frameworks.md) |
 | Core Motion | iOS, iPadOS, watchOS, visionOS | active / covered | [docs/frameworks/hardware/core-motion.md](frameworks/hardware/core-motion.md) |
 | Core NFC | iOS | active / covered | [docs/frameworks/hardware/core-nfc.md](frameworks/hardware/core-nfc.md) |
-| ExternalAccessory | iOS, iPadOS, macOS | planned |  |
+| ExternalAccessory | iOS, iPadOS, macOS | active / covered | [docs/frameworks/extended-apple-frameworks.md](frameworks/extended-apple-frameworks.md) |
 | HealthKit | iOS, iPadOS, watchOS, visionOS | active / covered | [docs/frameworks/hardware/healthkit.md](frameworks/hardware/healthkit.md) |
-| SensorKit | iOS, watchOS | planned |  |
+| SensorKit | iOS, watchOS | active / covered | [docs/frameworks/extended-apple-frameworks.md](frameworks/extended-apple-frameworks.md) |
 
 ## Networking and Connectivity
 
 | Technology | Platforms | Status | Guide |
 |---|---|---|---|
 | Core Bluetooth | iOS, iPadOS, macOS, watchOS, tvOS, visionOS | active / covered | [docs/frameworks/hardware/core-bluetooth.md](frameworks/hardware/core-bluetooth.md) |
-| Multipeer Connectivity | iOS, iPadOS, macOS, tvOS, visionOS | planned |  |
-| Nearby Interaction | iOS, iPadOS, watchOS | planned |  |
-| Network Extension | iOS, iPadOS, macOS | planned |  |
+| Multipeer Connectivity | iOS, iPadOS, macOS, tvOS, visionOS | active / covered | [docs/frameworks/extended-apple-frameworks.md](frameworks/extended-apple-frameworks.md) |
+| Nearby Interaction | iOS, iPadOS, watchOS | active / covered | [docs/frameworks/extended-apple-frameworks.md](frameworks/extended-apple-frameworks.md) |
+| Network Extension | iOS, iPadOS, macOS | active / covered | [docs/frameworks/extended-apple-frameworks.md](frameworks/extended-apple-frameworks.md) |
 | Network Framework | iOS, iPadOS, macOS, watchOS, tvOS, visionOS | active / covered | [docs/frameworks/network-framework.md](frameworks/network-framework.md) |
 | Networking | iOS, iPadOS, macOS, watchOS, tvOS, visionOS | active / covered | [docs/frameworks/networking.md](frameworks/networking.md) |
 | WebKit | iOS, iPadOS, macOS, visionOS | active / covered | [docs/web/native-vs-web-animation.md](web/native-vs-web-animation.md) |

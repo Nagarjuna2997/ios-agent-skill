@@ -203,7 +203,7 @@ Start here:
 ## Apple Technology Catalog
 
 <!-- apple-catalog:start -->
-Apple catalog tracked: **98** technologies. Covered: **68**. Planned: **30**. Skipped: **0**. Deprecated: **0**. Coverage: **69.4%**.
+Apple catalog tracked: **98** technologies. Covered: **98**. Planned: **0**. Skipped: **0**. Deprecated: **0**. Coverage: **100.0%**.
 
 Source of truth: [`frameworks.json`](frameworks.json). Human index: [`docs/apple-framework-index.md`](docs/apple-framework-index.md).
 <!-- apple-catalog:end -->

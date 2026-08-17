@@ -80,7 +80,7 @@ Load this skill when any of the following is true. When none are true, do not lo
 | Colors, spacing, theming, glass effects | `docs/design/design-tokens.md`, `docs/design/color-system.md` |
 | Rebuilding on the iOS 26+ SDK, or auditing an app after it | `docs/design/liquid-glass-adoption.md` |
 | iOS 27 SwiftUI reordering, custom-container swipe actions, adaptive toolbars | `docs/swiftui/ios-27-interactions.md` |
-| A named Apple framework | the matching `docs/frameworks/**` file |
+| A named Apple framework | the matching `docs/frameworks/**` file, or `docs/frameworks/extended-apple-frameworks.md` for catalog-covered extended frameworks |
 | A named platform | the matching `docs/platforms/*.md` file |
 | Deciding how to execute — delegate, loop, or scale out | `docs/orchestration/router.md` |
 | Defining or invoking a subagent | `docs/orchestration/subagents.md` |
@@ -647,6 +647,7 @@ This repository contains comprehensive documentation. Consult these files when b
 - `docs/frameworks/networking.md` — HTTP networking patterns
 - `docs/frameworks/swift-charts.md` — Marks, scales, axes, selection, `AXChartDescriptor`, peak-preserving downsampling for large datasets
 - `docs/frameworks/accessibility.md` — Accessibility best practices
+- `docs/frameworks/extended-apple-frameworks.md` — QuickLook, LinkPresentation, UTType, PDFKit, PencilKit, Core Animation, Core Haptics, MLX, Sound Analysis, File Provider, SQLite, Multipeer Connectivity, Nearby Interaction, Network Extension, SpriteKit, GameplayKit, Game Controller, RoomPlan, Object Capture, AVKit, Core Media, ReplayKit, MusicKit, ShazamKit, App Store Server API, Wallet Orders, Security, AccessorySetupKit, ExternalAccessory, and SensorKit
 
 ### AI & Machine Learning
 - `docs/frameworks/foundation-models.md` — On-device and Private Cloud Compute LLMs, `@Generable`/`@Guide`, tool calling, Dynamic Profiles, multimodal prompts, custom `LanguageModel` providers
