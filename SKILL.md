@@ -58,7 +58,7 @@ Load this skill when any of the following is true. When none are true, do not lo
 |---------|------|
 | Any new screen or view | `docs/swiftui/views-and-controls.md`, `docs/design/design-tokens.md` |
 | State, `@Observable`, or a view model | `docs/swiftui/state-and-data-flow.md`, `patterns/mvvm.md` |
-| Swift language, ARC, ownership, lifetime, or `deinit` behavior | `docs/swift/swift-language.md`, `docs/swift/memory-lifetime.md`, `docs/apple-docs-reference.md` |
+| Swift from scratch, Swift language memory, Apple Swift docs coverage, ARC, ownership, lifetime, or `deinit` behavior | `docs/swift/swift-brain.md`, `docs/swift/swift-language.md`, `docs/swift/swift-standard-library.md`, `docs/swift/memory-lifetime.md`, `docs/apple-docs-reference.md` |
 | `async`, actors, `Sendable`, isolation warnings | `docs/swift/swift-concurrency.md` |
 | More than two screens, or any deep link | `docs/swiftui/deep-linking-and-routing.md` |
 | Layered architecture, use cases, DI | `patterns/clean-architecture.md` |
@@ -604,6 +604,7 @@ This repository contains comprehensive documentation. Consult these files when b
 - `docs/design/third-party-animations.md` — Lottie and Rive integration for SwiftUI, when to use each
 
 ### Swift Language
+- `docs/swift/swift-brain.md` — First-load Swift memory for Apple Swift docs coverage, beginner-to-advanced language routing, standard library, concurrency, Observation, Distributed Actors, macros, property wrappers, interop, memory, and verification
 - `docs/swift/swift-language.md` — Types, protocols, generics, macros, property wrappers
 - `docs/swift/swift-concurrency.md` — async/await, actors, structured concurrency, Sendable
 - `docs/swift/swift-standard-library.md` — Collections, strings, Codable, result builders

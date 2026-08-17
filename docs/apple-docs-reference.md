@@ -9,6 +9,7 @@ Do not copy Apple documentation wholesale. Link to the source, summarize the rul
 ## Swift language sources
 
 - Apple Swift documentation: <https://developer.apple.com/documentation/swift>
+- Local first-load Swift brain: `docs/swift/swift-brain.md`
 - Local language guide: `docs/swift/swift-language.md`
 - Local concurrency guide: `docs/swift/swift-concurrency.md`
 - Local standard library guide: `docs/swift/swift-standard-library.md`

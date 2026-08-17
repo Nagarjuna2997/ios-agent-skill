@@ -189,7 +189,7 @@ Start here:
 | Area | Read |
 |---|---|
 | MCP setup and tools | [docs/mcp/installation.md](docs/mcp/installation.md), [docs/mcp/tools.md](docs/mcp/tools.md), [docs/mcp/examples.md](docs/mcp/examples.md) |
-| Swift and SwiftUI rules | [docs/swift/swift-language.md](docs/swift/swift-language.md), [docs/swift/swift-concurrency.md](docs/swift/swift-concurrency.md), [docs/swift/memory-lifetime.md](docs/swift/memory-lifetime.md), [docs/swiftui/state-and-data-flow.md](docs/swiftui/state-and-data-flow.md), [docs/swiftui/views-and-controls.md](docs/swiftui/views-and-controls.md) |
+| Swift and SwiftUI rules | [docs/swift/swift-brain.md](docs/swift/swift-brain.md), [docs/swift/swift-language.md](docs/swift/swift-language.md), [docs/swift/swift-concurrency.md](docs/swift/swift-concurrency.md), [docs/swift/memory-lifetime.md](docs/swift/memory-lifetime.md), [docs/swiftui/state-and-data-flow.md](docs/swiftui/state-and-data-flow.md), [docs/swiftui/views-and-controls.md](docs/swiftui/views-and-controls.md) |
 | Architecture | [patterns/mvvm.md](patterns/mvvm.md), [patterns/clean-architecture.md](patterns/clean-architecture.md) |
 | Design, motion, graphics | [docs/design/README.md](docs/design/README.md), [docs/animation/README.md](docs/animation/README.md), [docs/graphics/README.md](docs/graphics/README.md) |
 | AI and intelligence | [docs/ai/README.md](docs/ai/README.md), [docs/frameworks/foundation-models.md](docs/frameworks/foundation-models.md), [docs/frameworks/apple-intelligence.md](docs/frameworks/apple-intelligence.md) |
