@@ -430,20 +430,7 @@ jobs:
       # The manifest and the server must not drift apart: a tool advertised in
       # mcp.json but not registered would be a broken promise to any client.
       - name: Manifest matches registered tools
-        run: |
-          node -e "
-            const fs = require('fs');
-            const manifest = JSON.parse(fs.readFileSync('mcp.json', 'utf8'));
-            const src = fs.readFileSync('src/index.ts', 'utf8');
-            const registered = [...src.matchAll(/registerTool\(\s*[\"']([\w_]+)[\"']/g)].map(m => m[1]).sort();
-            const declared = manifest.tools.map(t => t.name).sort();
-            if (JSON.stringify(registered) !== JSON.stringify(declared)) {
-              console.error('mcp.json tools:', declared);
-              console.error('registered:    ', registered);
-              process.exit(1);
-            }
-            console.log('OK - manifest matches ' + registered.length + ' registered tools');
-          "
+        run: node scripts/check-tool-manifest.mjs
 
   cli:
     name: CLI builds and tests
