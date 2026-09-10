@@ -46,6 +46,13 @@ jobs:
           npm run build
           npm test
 
+      - name: Build and test simulator runtime
+        working-directory: ios-simulator-mcp
+        run: |
+          npm ci
+          npm run build
+          npm test
+
       - name: Package integrations
         run: python3 scripts/package-integrations.py
 

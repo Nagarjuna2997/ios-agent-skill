@@ -20,3 +20,5 @@ If the environment lacks filesystem or Xcode access, deliver the concrete plan/s
 ## MCP tools
 
 Use `search_local_references`, `get_reference_outline`, and `read_local_reference` for local source with bounded output. Use `search_apple_technologies`, `get_apple_technology`, and `get_apple_updates` for focused retrieval instead of loading the whole catalog. `plan_ios_app` supplies the brief workflow and safe CLI arguments; `plan_app_icon` supplies the layer specification. These knowledge tools never write files or build apps. Use the local analysis tools to review the actual Swift project, then the host coding tools to implement and validate changes.
+
+For optional local Simulator control and a browser/sidebar preview, read `docs/tooling/ios-simulator-mcp.md`. Inspect installed device profiles before claiming support for a newly announced phone; current Duo guidance is in `docs/platforms/iphone-duo.md`. Runtime control requires a local Mac with Xcode.

@@ -16,3 +16,5 @@ Turn the user's idea into a working, tested implementation in their available co
 7. Report files changed, runnable commands, test/build evidence, and anything needing credentials, hardware or user decisions. Do not publish an app or create paid service resources without the user's authorization.
 
 If the environment lacks filesystem or Xcode access, deliver the concrete plan/source artifacts it can support and explain what must run in a local coding environment. A plugin installation is not evidence that an app has been built. These bundled references are a dated snapshot; consult linked official sources for changing APIs.
+
+For optional local Simulator control and a browser/sidebar preview, read `docs/tooling/ios-simulator-mcp.md`. Inspect installed device profiles before claiming support for a newly announced phone; current Duo guidance is in `docs/platforms/iphone-duo.md`. Runtime control requires a local Mac with Xcode.

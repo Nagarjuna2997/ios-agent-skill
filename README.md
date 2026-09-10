@@ -1,5 +1,9 @@
 <p align="center">
 
+## See your running app
+
+Optional macOS runtime: `npx -y @nagarjuna2002/ios-simulator-mcp@0.2.0`. Build and launch an app, open its native Simulator, and display a private screenshot preview in your browser sidebar. See [setup and tools](docs/tooling/ios-simulator-mcp.md). [iPhone Duo guidance](docs/platforms/iphone-duo.md) distinguishes announced features from profiles actually installed in Xcode.
+
 ## Local source, not repeated browsing
 
 The repository includes complete editable Swift files, app templates, testable sample packages, and local Apple implementation guides. Search the bundled library and retrieve just the needed code or section to control context size. See [the offline source workflow](docs/tooling/offline-source-library.md) and [file inventory](docs/apple/local-library.md). Apple links remain attribution/freshness references; the 405-entry catalog does not claim 405 complete implementations or Apple's proprietary source.

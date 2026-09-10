@@ -130,3 +130,25 @@ test("buildProject and runTests construct xcodebuild commands", async () => {
     "platform=iOS Simulator,name=iPhone 17",
   ]);
 });
+
+test('environment reports installed profiles instead of inventing Duo support',async()=>{
+  const {simulatorEnvironment}=await import('../dist/simulator.js');
+  const runner={run:async(command,args)=>({command,args,exitCode:0,stderr:'',stdout:command==='xcodebuild'?'Xcode 26.6':command==='xcode-select'?'/Applications/Xcode.app/Contents/Developer':JSON.stringify({runtimes:[],devicetypes:[{name:'iPhone 17',identifier:'phone17'}],devices:{}})})};
+  const environment=await simulatorEnvironment(runner);
+  assert.deepEqual(environment.duoDeviceTypes,[]);
+  assert.equal(environment.deviceTypes[0].name,'iPhone 17');
+});
+
+test('show uses selected Xcode, waits for boot, and rejects unknown devices',async()=>{
+  const {showSimulator}=await import('../dist/simulator.js');
+  const calls=[];
+  const runner={run:async(command,args)=>{
+    calls.push([command,args]);
+    return {command,args,exitCode:0,stderr:'',stdout:command==='xcode-select'?'/Applications/Xcode Beta.app/Contents/Developer\n':args[1]==='list'?JSON.stringify({devices:{ios:[{name:'Phone',udid:'device',state:'Booted',isAvailable:true}]}}):''};
+  }};
+  await showSimulator(runner,'device');
+  assert.ok(calls.some(([cmd,args])=>cmd==='xcrun'&&args[1]==='bootstatus'));
+  assert.ok(calls.some(([cmd,args])=>cmd==='open'&&args[1]==='/Applications/Xcode Beta.app/Contents/Developer/Applications/Simulator.app'));
+  assert.ok(!calls.some(([,args])=>args[1]==='boot'));
+  await assert.rejects(()=>showSimulator(runner,'absent'),/available UDID/);
+});

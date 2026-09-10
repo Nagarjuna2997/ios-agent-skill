@@ -122,3 +122,32 @@ export function summarize(result: CommandResult): Record<string, unknown> {
     stderr: result.stderr.trim(),
   };
 }
+
+/** Discover installed tooling; never infer a device profile from a product announcement. */
+export async function simulatorEnvironment(runner: Runner) {
+  const version = assertOk(await runner.run('xcodebuild', ['-version']));
+  const selected = assertOk(await runner.run('xcode-select', ['-p']));
+  const list = assertOk(await runner.run('xcrun', ['simctl', 'list', '--json']));
+  const inventory = JSON.parse(list.stdout) as {
+    runtimes?: {name:string;identifier:string;isAvailable:boolean}[];
+    devicetypes?: {name:string;identifier:string}[];
+    devices?: Record<string,{name:string;udid:string;state:string;isAvailable?:boolean}[]>;
+  };
+  return { xcode:version.stdout.trim(), developerDirectory:selected.stdout.trim(),
+    runtimes:inventory.runtimes ?? [], deviceTypes:inventory.devicetypes ?? [],
+    devices:inventory.devices ?? {},
+    duoDeviceTypes:(inventory.devicetypes ?? []).filter(d => /duo/i.test(d.name)),
+    guidance:'Device types and runtimes are reported from this Mac. Missing profiles cannot be simulated by renaming a different device. Use Xcode Settings > Components to manage installed runtimes.' };
+}
+
+export async function showSimulator(runner: Runner, udid: string) {
+  const { devices } = await simulatorList(runner);
+  const device = devices.find(d => d.udid === udid && d.isAvailable);
+  if (!device) throw new Error('Choose an available UDID from simulator_list.');
+  if (device.state !== 'Booted') await simulatorBoot(runner,udid);
+  assertOk(await runner.run('xcrun',['simctl','bootstatus',udid,'-b'],{timeoutMs:180_000}));
+  const selected = assertOk(await runner.run('xcode-select',['-p']));
+  const application = resolve(selected.stdout.trim(),'Applications/Simulator.app');
+  assertOk(await runner.run('open',['-a',application,'--args','-CurrentDeviceUDID',udid]));
+  return {...device,state:'Booted',application};
+}

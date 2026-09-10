@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+### Added -- 3.3.0 (2026-09-10)
+
+- Publish the scoped Simulator runtime with 14 MCP tools: installed Xcode/device discovery, native Simulator display, private sidebar preview, build/test/install/launch and screenshots with optional MCP image output.
+- Add a loopback browser viewer with token-protected screenshot access, bounded refresh, pause/fit controls and cleanup on stop. Native Simulator handles touch/keyboard interaction.
+- Add dated iPhone Duo guidance grounded in Apple's September 9 announcement. Discover actual installed profiles rather than inventing Duo support; this development Mac has no Duo device type.
+- Refresh Apple technology and updates snapshots; bundle the new local guidance in MCP 2.4.0 and integration archives.
+
 ### Added -- 3.2.1 (2026-09-10)
 
 - Reduce the always-loaded skill entry point and move the full engineering rules into an on-demand guide.

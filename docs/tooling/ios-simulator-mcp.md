@@ -11,9 +11,47 @@ Do not add these tools to `ios-agent-mcp`. The existing package is intentionally
 | Package | Contract | Good for |
 |---|---|---|
 | `ios-agent-mcp` | Read project files, analyze Swift, return findings | Concurrency, architecture, SwiftUI, security, testing, performance, App Store readiness |
-| `ios-simulator-mcp` | Drive Xcode and a booted simulator | Build, install, launch, tap, type, capture, inspect, record, validate runtime behavior |
+| `ios-simulator-mcp` | Drive Xcode and a booted simulator | Build, test, install, launch, open native Simulator and preview screenshots |
 
 The split keeps a Swift linter lightweight while still giving agents a path to runtime validation.
+
+## Sidebar preview and current device discovery
+
+Published package: `@nagarjuna2002/ios-simulator-mcp@0.2.0` (the scoped name belongs to this repository; the unscoped npm name belongs to a different publisher).
+
+Use `simulator_environment` to inspect installed Xcode, runtimes and actual device types. For iPhone Duo, see `docs/platforms/iphone-duo.md`; do not claim a profile exists before discovery confirms it.
+
+1. Call `simulator_list` and choose a real UDID.
+2. Call `simulator_show` to boot, wait and open the native Simulator window.
+3. Build, install and launch the app with the existing runtime tools.
+4. Call `simulator_preview_start`. Open the returned loopback URL in the client's browser/sidebar, or any browser on the same Mac.
+5. Interact in the native Simulator window. The browser shows refreshed screenshots with pause and fit controls; it does not send taps or keyboard input.
+6. Call `simulator_preview_stop` when done. This removes preview screenshots and closes its listener; it leaves the Simulator running.
+
+From a terminal, for a device that is already booted:
+
+```bash
+npx -y @nagarjuna2002/ios-simulator-mcp@0.2.0 --viewer DEVICE-UDID
+```
+
+Open the printed URL. Stop with Ctrl-C. It is an opt-in local viewer, not a cloud simulator or a public sharing link. The browser viewer does not upload screenshots. When `screenshot` uses `includeImage: true`, pixels are sent to the MCP client and may be processed by its model/provider. The tokenized URL grants access to simulator screenshots while running, so treat it as private.
+
+### Optional MCP configuration
+
+Add this server to a local MCP-capable client (Claude Desktop/Code, Codex or Gemini CLI) on a Mac with Xcode:
+
+```json
+{
+  "mcpServers": {
+    "ios-simulator": {
+      "command": "npx",
+      "args": ["-y", "@nagarjuna2002/ios-simulator-mcp@0.2.0"]
+    }
+  }
+}
+```
+
+Adapt the surrounding configuration format to the client. The portable knowledge plugin stays independent of Xcode; simulator control is opt-in. Hosted ChatGPT cannot reach another computer's localhost just by installing this package. Use a local client for runtime control; screenshots can be returned as MCP images by calling `screenshot` with `includeImage: true`.
 
 ## Current Package
 
@@ -34,7 +72,10 @@ Implemented tools:
 
 | Tool | Purpose | Backend |
 |---|---|---|
-| `simulator_list` | List available runtimes and devices | `xcrun simctl list --json` |
+| `simulator_environment` | Inspect Xcode, runtimes and device profiles | `xcodebuild`, `xcode-select`, `simctl list` |
+| `simulator_show` | Boot, wait and open native Simulator | `bootstatus`, `open` |
+| `simulator_preview_start` / `simulator_preview_stop` | Start/stop private loopback screenshot viewer | local HTTP + `simctl io screenshot` |
+| `simulator_list` | List available device instances | `xcrun simctl list --json` |
 | `simulator_boot` | Boot a simulator by UDID | `xcrun simctl boot` |
 | `simulator_shutdown` | Shut down a booted simulator | `xcrun simctl shutdown` |
 | `build_project` | Build an app or test target | `xcodebuild build` |

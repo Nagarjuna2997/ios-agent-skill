@@ -38,8 +38,8 @@ Worked sessions: `examples.md`.
 ## Codex
 
 ```bash
-codex mcp add ios-agent -- npx -y --package=ios-agent-mcp@2.3.1 ios-agent-mcp
-codex mcp add ios-agent-knowledge -- npx -y --package=ios-agent-mcp@2.3.1 ios-agent-knowledge
+codex mcp add ios-agent -- npx -y --package=ios-agent-mcp@2.4.0 ios-agent-mcp
+codex mcp add ios-agent-knowledge -- npx -y --package=ios-agent-mcp@2.4.0 ios-agent-knowledge
 ```
 
 Equivalent `config.toml` entries:
@@ -47,11 +47,11 @@ Equivalent `config.toml` entries:
 ```toml
 [mcp_servers.ios-agent]
 command = "npx"
-args = ["-y", "--package=ios-agent-mcp@2.3.1", "ios-agent-mcp"]
+args = ["-y", "--package=ios-agent-mcp@2.4.0", "ios-agent-mcp"]
 
 [mcp_servers.ios-agent-knowledge]
 command = "npx"
-args = ["-y", "--package=ios-agent-mcp@2.3.1", "ios-agent-knowledge"]
+args = ["-y", "--package=ios-agent-mcp@2.4.0", "ios-agent-knowledge"]
 ```
 
 Pass `--project` and an absolute app path to the analyzer when project resource discovery needs an explicit root. The plugin ZIP is an alternative; avoid installing the same server via both plugin and manual configuration.
@@ -68,7 +68,7 @@ The optional [knowledge MCP server](knowledge-server.md) supports Streamable HTT
 gemini extensions install https://github.com/Nagarjuna2997/ios-agent-skill
 ```
 
-The repository’s `gemini-extension.json` registers both MCP binaries and loads `GEMINI.md`. Alternatively add the same `mcpServers` object from the Claude Desktop example to Gemini CLI settings, with an additional server named `ios-agent-knowledge` whose args are `["-y", "--package=ios-agent-mcp@2.3.1", "ios-agent-knowledge"]`. Use one installation method to avoid duplicates. The Gemini web chat is a different product and is not claimed to load CLI extensions.
+The repository’s `gemini-extension.json` registers both MCP binaries and loads `GEMINI.md`. Alternatively add the same `mcpServers` object from the Claude Desktop example to Gemini CLI settings, with an additional server named `ios-agent-knowledge` whose args are `["-y", "--package=ios-agent-mcp@2.4.0", "ios-agent-knowledge"]`. Use one installation method to avoid duplicates. The Gemini web chat is a different product and is not claimed to load CLI extensions.
 
 Official client references: [Codex MCP](https://developers.openai.com/codex/mcp), [OpenAI plugin packaging](https://developers.openai.com/plugins/build/plugins), [ChatGPT connection/testing](https://developers.openai.com/plugins/deploy/connect-chatgpt), [Gemini extension format](https://geminicli.com/docs/extensions/reference/).
 
@@ -232,3 +232,7 @@ The server reads files under the path you pass to a tool. It makes **no network
 requests** and **writes nothing**. Your source never leaves the machine, except
 insofar as your MCP client sends the tool's text output to its model — the same
 as any file you paste into a chat.
+
+## Optional Simulator sidebar access
+
+For a local Mac with Xcode, add the scoped runtime package `@nagarjuna2002/ios-simulator-mcp@0.2.0`. Setup and the exact MCP configuration are in `docs/tooling/ios-simulator-mcp.md`. This is independent of the portable knowledge server and offers a local screenshot viewer plus native Simulator control.

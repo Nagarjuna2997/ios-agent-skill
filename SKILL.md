@@ -1,7 +1,7 @@
 ---
 name: ios-agent-skill
 description: Expert iOS/Swift developer behavior for AI coding agents. Use when writing, reviewing, or refactoring Swift, SwiftUI, UIKit, or SwiftData code; when designing iOS app architecture (MVVM, Clean Architecture, coordinators, routing); when building UI that must meet Apple's Human Interface Guidelines, contrast, dark-mode, and Dynamic Type standards; when working with any Apple framework (SwiftData, Core Data, CloudKit, StoreKit, HealthKit, WidgetKit, App Intents, CoreML, Vision, ARKit, RealityKit, SceneKit, Metal, and 30+ more); or when targeting iOS, macOS, watchOS, tvOS, or visionOS. Also use for Swift concurrency questions — actors, @MainActor isolation, Sendable, structured concurrency.
-version: "3.2.1"
+version: "3.3.0"
 license: MIT
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 metadata:
@@ -64,6 +64,7 @@ Do not load the whole inventory, all technology topic maps, or the detailed engi
 | Architecture and dependencies | `patterns/clean-architecture.md`, `patterns/mvvm.md` |
 | Design, colors and typography | `docs/design/README.md`, `docs/design/design-tokens.md` |
 | Compile-tested implementations | `samples/SkillPatterns/`, `samples/AppleRecipes/` and their READMEs |
+| Run an app, see it in a sidebar, or inspect simulator/Duo availability | `docs/tooling/ios-simulator-mcp.md`, `docs/platforms/iphone-duo.md` |
 | Client setup and MCP | `docs/mcp/installation.md`, `docs/mcp/knowledge-server.md` |
 | Detailed engineering rules or a broader topic route | `docs/agent-engineering-guide.md` — search headings before reading the whole file |
 

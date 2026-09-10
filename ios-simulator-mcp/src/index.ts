@@ -1,6 +1,9 @@
 #!/usr/bin/env node
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { PreviewSessions } from "./previews.js";
+import { startViewer } from "./viewer.js";
+import { readFile } from "node:fs/promises";
 import { z } from "zod";
 
 import { ExecFileRunner } from "./runner.js";
@@ -13,12 +16,14 @@ import {
   screenshot,
   simulatorBoot,
   simulatorList,
+  simulatorEnvironment,
+  showSimulator,
   simulatorShutdown,
   summarize,
   terminateApp,
 } from "./simulator.js";
 
-const VERSION = "0.1.0";
+const VERSION = "0.2.0";
 
 function handleCLIFlags(argv: string[]): boolean {
   if (argv.includes("--version") || argv.includes("-v")) {
@@ -34,11 +39,13 @@ function handleCLIFlags(argv: string[]): boolean {
         "",
         "USAGE",
         "  ios-simulator-mcp           Start the MCP server over stdio",
+        "  ios-simulator-mcp --viewer UDID  Start a local browser preview",
         "  ios-simulator-mcp --help    Show this message",
         "  ios-simulator-mcp --version Print the version",
         "",
         "TOOLS",
-        "  simulator_list",
+        "  simulator_list / simulator_environment",
+        "  simulator_show / simulator_preview_start / simulator_preview_stop",
         "  simulator_boot",
         "  simulator_shutdown",
         "  build_project",
@@ -63,10 +70,21 @@ if (handleCLIFlags(process.argv.slice(2))) {
 }
 
 const runner = new ExecFileRunner();
+if (process.argv.includes('--viewer')) {
+  const udid = process.argv[process.argv.indexOf('--viewer')+1];
+  if (!udid || !z.string().uuid().safeParse(udid).success) throw new Error('--viewer requires a Simulator UDID');
+  const device = (await simulatorList(runner)).devices.find(d=>d.udid===udid && d.state==='Booted');
+  if (!device) throw new Error('Boot the selected simulator before starting the viewer.');
+  const viewer = await startViewer(runner,udid);
+  process.stdout.write(viewer.url+'\n');
+  const stop=async()=>{await viewer.close();process.exit(0);};
+  process.once('SIGINT',stop);process.once('SIGTERM',stop);
+  await new Promise(()=>{});
+}
 const server = new McpServer({ name: "ios-simulator-mcp", version: VERSION });
 
 const udidInput = {
-  udid: z.string().describe("Simulator UDID. Use simulator_list first when unsure."),
+  udid: z.string().uuid().describe("Simulator UDID. Use simulator_list first when unsure."),
 };
 
 function okText(title: string, payload: Record<string, unknown>) {
@@ -208,11 +226,16 @@ server.registerTool(
     title: "Capture a simulator screenshot",
     description:
       "Capture a simulator screenshot to a PNG path using xcrun simctl io screenshot. Use as evidence for visual review and before/after comparison.",
-    inputSchema: { ...udidInput, outputPath: z.string().describe("Output PNG path.") },
+    inputSchema: { ...udidInput, outputPath: z.string().describe("Output PNG path."), includeImage:z.boolean().default(false) },
   },
-  async ({ udid, outputPath }) => {
+  async ({ udid, outputPath, includeImage }) => {
     try {
-      return okText("# Screenshot Captured", summarize(await screenshot(runner, udid, outputPath)));
+      const captured = summarize(await screenshot(runner, udid, outputPath));
+      const response = okText("# Screenshot Captured",{...captured,udid,outputPath});
+      if (!includeImage) return response;
+      const bytes = await readFile(outputPath);
+      if (bytes.length > 10*1024*1024) throw new Error('Image exceeds 10 MB; use its saved file path instead.');
+      return {content:[...response.content,{type:'image' as const,mimeType:'image/png',data:bytes.toString('base64')}],structuredContent:response.structuredContent};
     } catch (error) {
       return errorText(error);
     }
@@ -267,4 +290,28 @@ server.registerTool(
   },
 );
 
-await server.connect(new StdioServerTransport());
+const previews = new PreviewSessions(udid=>startViewer(runner,udid));
+server.registerTool('simulator_environment',{title:'Installed Xcode and device support',description:'Report selected Xcode, installed runtimes and real device profiles, including Duo when installed. Does not download or update Xcode.',inputSchema:{}},async()=>{
+  try{return okText('Simulator environment',await simulatorEnvironment(runner));}catch(error){return errorText(error);}
+});
+server.registerTool('simulator_show',{title:'Show native Simulator',description:'Boot and wait for a selected available device, then open its native Simulator window for touch/keyboard interaction.',inputSchema:udidInput},async({udid})=>{
+  try{return okText('Simulator visible',await showSimulator(runner,udid));}catch(error){return errorText(error);}
+});
+server.registerTool('simulator_preview_start',{title:'Open sidebar simulator preview',description:'Start a token-protected loopback screenshot viewer for a booted device. Open the returned URL in the client sidebar/browser. Read-only visual preview; interact in the native Simulator. Not a public hosted simulator.',inputSchema:udidInput},async({udid})=>{
+  try{
+    const device=(await simulatorList(runner)).devices.find(d=>d.udid===udid && d.state==='Booted');
+    if(!device) throw new Error('Choose a booted simulator from simulator_list.');
+    const preview=await previews.start(udid);
+    return okText('Simulator preview',{url:preview.url,device,mode:'read-only screenshot preview',stopTool:'simulator_preview_stop'});
+  }catch(error){return errorText(error);}
+});
+server.registerTool('simulator_preview_stop',{title:'Close simulator preview',description:'Stop this server’s preview for a device and remove its temporary screenshots; leaves the Simulator running.',inputSchema:udidInput},async({udid})=>{
+  try{await previews.stop(udid);return okText('Preview stopped',{udid});}catch(error){return errorText(error);}
+});
+const closePreviews=()=>previews.shutdown();
+process.once('SIGINT',async()=>{await closePreviews();process.exit(0);});
+process.once('SIGTERM',async()=>{await closePreviews();process.exit(0);});
+const transport=new StdioServerTransport();
+await server.connect(transport);
+const onclose=transport.onclose;
+transport.onclose=()=>{onclose?.();void closePreviews();};

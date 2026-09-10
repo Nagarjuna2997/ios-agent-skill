@@ -12,6 +12,10 @@ workflows without leaving Xcode.
 
 ---
 
+## September 2026 Duo check
+
+Apple describes Duo support in Device Hub as upcoming. Use the runtime MCP’s `simulator_environment` to inspect the selected Xcode and installed profiles. See `docs/platforms/iphone-duo.md` for the dated source and adaptation checks; do not infer simulator availability from the hardware announcement.
+
 ## 1. What it replaces
 
 Previously these were four separate places — Devices and Simulators, the

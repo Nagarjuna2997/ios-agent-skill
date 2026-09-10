@@ -36,7 +36,7 @@ def main():
             assert 'skills/ios-builder/docs/design/icon-composer.md' in names
             json.loads(z.read('.codex-plugin/plugin.json'))
         paths.append(archive)
-    for folder in ('mcp-server','cli'):
+    for folder in ('mcp-server','cli','ios-simulator-mcp'):
         result=subprocess.run(['npm','pack','--ignore-scripts','--json','--pack-destination',str(OUT)],cwd=ROOT/folder,capture_output=True,text=True,check=True)
         path=OUT/json.loads(result.stdout)[0]['filename'];paths.append(path)
     (OUT/'SHA256SUMS').write_text(''.join(hashlib.sha256(p.read_bytes()).hexdigest()+'  '+p.name+'\n' for p in paths))

@@ -34,6 +34,7 @@ Do not load the whole inventory, all technology topic maps, or the detailed engi
 | Architecture and dependencies | `patterns/clean-architecture.md`, `patterns/mvvm.md` |
 | Design, colors and typography | `docs/design/README.md`, `docs/design/design-tokens.md` |
 | Compile-tested implementations | `samples/SkillPatterns/`, `samples/AppleRecipes/` and their READMEs |
+| Run an app, see it in a sidebar, or inspect simulator/Duo availability | `docs/tooling/ios-simulator-mcp.md`, `docs/platforms/iphone-duo.md` |
 | Client setup and MCP | `docs/mcp/installation.md`, `docs/mcp/knowledge-server.md` |
 | Detailed engineering rules or a broader topic route | `docs/agent-engineering-guide.md` — search headings before reading the whole file |
 

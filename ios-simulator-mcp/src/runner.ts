@@ -35,7 +35,7 @@ export class ExecFileRunner implements Runner {
             command,
             args,
             stdout,
-            stderr,
+            stderr: stderr || (error ? error.message : ""),
             exitCode: code,
           });
         },

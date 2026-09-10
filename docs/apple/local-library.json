@@ -2889,15 +2889,15 @@
       "path": "docs/mcp/installation.md",
       "title": "Installing the iOS Agent MCP Server",
       "kind": "guide",
-      "characters": 7980,
-      "hash": "c7b934fda290ec72e5d420191777153eb386b283e6cd08a4c00f9e72bd19909f"
+      "characters": 8323,
+      "hash": "9fd084eeb895e6cb1eaa1615286cfbd25a66d08de29585837bff63deee798321"
     },
     {
       "path": "docs/mcp/knowledge-server.md",
       "title": "Apple Knowledge MCP",
       "kind": "guide",
       "characters": 3028,
-      "hash": "11bb389211cce60df4f3e7ed71ebf6e19b550784140e9b79cdd1b089166ff0f9"
+      "hash": "66f7876ddd35cafd10226b4442369ca249953b6f4420dc71baa38bee95c0fad5"
     },
     {
       "path": "docs/mcp/tools.md",
@@ -2996,6 +2996,13 @@
       "kind": "guide",
       "characters": 11195,
       "hash": "3b9d81abf495fc15f5510ababf9e69bf4c79667b2aebc78864a5926789c600fe"
+    },
+    {
+      "path": "docs/platforms/iphone-duo.md",
+      "title": "iPhone Duo: adaptive apps and simulator readiness",
+      "kind": "guide",
+      "characters": 3908,
+      "hash": "ee0f2e8a2d23f5fd181dbcff8b98740fbbf0b4912465754304597ed7f31b0d2c"
     },
     {
       "path": "docs/platforms/macos.md",
@@ -3155,8 +3162,8 @@
       "path": "docs/tooling/device-hub.md",
       "title": "Device Hub",
       "kind": "guide",
-      "characters": 6687,
-      "hash": "0cbce9af9ea63ea4b4c1fabefdce12a9b91e60b3b15f1e7c48d59f0bbd0f6813"
+      "characters": 7019,
+      "hash": "8a508adcc3e1c389fe523443f5d39f5eb8f1b8a365fb31be2758cce2dbfe37d0"
     },
     {
       "path": "docs/tooling/fm-cli.md",
@@ -3183,8 +3190,8 @@
       "path": "docs/tooling/ios-simulator-mcp.md",
       "title": "iOS Simulator MCP",
       "kind": "guide",
-      "characters": 5168,
-      "hash": "06e68e38d87db430c55e8c7906c9a2ac2817f1b0788f7430166ca61204443f11"
+      "characters": 7719,
+      "hash": "64a3a0d63e2665a8541557fba2b8e9a03814d810c185c85ee82bfd4fbf35b8a2"
     },
     {
       "path": "docs/tooling/offline-source-library.md",
