@@ -44,6 +44,8 @@ export interface ScaffoldOptions {
   /** Allow scaffolding into a directory that already has contents. */
   readonly force?: boolean;
   readonly now?: Date;
+  readonly brief?: string;
+  readonly xcodegen?: boolean;
 }
 
 export interface ScaffoldResult {
@@ -55,6 +57,7 @@ export interface ScaffoldResult {
 export function scaffoldProject(options: ScaffoldOptions): ScaffoldResult {
   const { name, parentDir, minimal = false, license = "MIT", force = false, now = new Date() } = options;
   validateProjectName(name);
+  if (options.brief !== undefined && !options.brief.trim()) throw new ScaffoldError("--brief requires a non-empty description.");
 
   const root = path.join(path.resolve(parentDir), name);
   const layout = layoutFor(root);
@@ -69,11 +72,8 @@ export function scaffoldProject(options: ScaffoldOptions): ScaffoldResult {
     }
   }
 
-  const write = (target: string, contents: string) => {
-    fs.mkdirSync(path.dirname(target), { recursive: true });
-    fs.writeFileSync(target, contents, "utf8");
-    created.push(target);
-  };
+  const planned = new Map<string, string>();
+  const write = (target: string, contents: string) => { planned.set(target, contents); };
 
   const sourceDir = path.join(layout.app, name);
   const testDir = path.join(layout.app, `${name}Tests`);
@@ -82,12 +82,42 @@ export function scaffoldProject(options: ScaffoldOptions): ScaffoldResult {
   write(path.join(sourceDir, "ContentView.swift"), contentView(name));
   write(path.join(testDir, `${name}Tests.swift`), testStub(name));
 
+  if (options.brief !== undefined) write(path.join(layout.app, "APP_BRIEF.md"), implementationBrief(name, options.brief));
+  if (options.xcodegen) {
+    write(path.join(layout.app, "project.yml"), projectSpec(name));
+    write(path.join(layout.app, "BUILD.md"), buildInstructions(name));
+    for (const [file, contents] of Object.entries(iconLayers())) write(path.join(sourceDir, "IconLayers", file), contents);
+  }
+
   if (!minimal) {
-    write(path.join(root, "README.md"), readme(name));
+    write(path.join(root, "README.md"), options.xcodegen ? readme(name).replace(/## Opening this in Xcode[\s\S]*?## Commands/, "## Opening this in Xcode\n\nSee [App/BUILD.md](App/BUILD.md) for XcodeGen generation and simulator builds.\n\n## Commands") : readme(name));
     write(path.join(root, ".gitignore"), rootGitignore());
     if (license === "MIT") {
       write(path.join(root, "LICENSE"), mitLicense(now.getUTCFullYear()));
     }
+  }
+
+  // Preflight all authored files, even under --force, before writing anything.
+  for (const target of [...planned.keys(), ...(!minimal ? [layout.config, layout.gitignore] : [])]) {
+    let candidate = target;
+    while (candidate !== path.dirname(root)) {
+      if (fs.existsSync(candidate) || fs.lstatSync(candidate, { throwIfNoEntry: false })) {
+        const stat = fs.lstatSync(candidate);
+        if (candidate === target || stat.isSymbolicLink() || !stat.isDirectory()) {
+          throw new ScaffoldError(`Refusing to overwrite or follow existing path: ${candidate}`);
+        }
+      }
+      candidate = path.dirname(candidate);
+    }
+  }
+  if (!minimal && fs.existsSync(layout.config)) throw new ScaffoldError(`Refusing to overwrite ${layout.config}`);
+  for (const [target, contents] of planned) {
+    fs.mkdirSync(path.dirname(target), { recursive: true });
+    fs.writeFileSync(target, contents, { encoding: "utf8", flag: "wx" });
+    created.push(target);
+  }
+
+  if (!minimal) {
     for (const target of ensureInternal(layout)) {
       created.push(target);
     }
@@ -157,11 +187,17 @@ struct ${name}App: App {
 function contentView(name: string): string {
   return `import SwiftUI
 
+private enum StarterTokens {
+    static let spacing: CGFloat = 16
+    static let padding: CGFloat = 24
+    static let symbolSize: CGFloat = 48
+}
+
 struct ContentView: View {
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: StarterTokens.spacing) {
             Image(systemName: "swift")
-                .font(.system(size: 48))
+                .font(.system(size: StarterTokens.symbolSize))
                 .foregroundStyle(.tint)
 
             Text("${name}")
@@ -174,7 +210,7 @@ struct ContentView: View {
                 .foregroundStyle(Color(.secondaryLabel))
                 .multilineTextAlignment(.center)
         }
-        .padding(24)
+        .padding(StarterTokens.padding)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color(.systemBackground))
     }
@@ -193,7 +229,7 @@ struct ContentView: View {
 
 function testStub(name: string): string {
   return `import XCTest
-@testable import ${name}
+@testable import \`${name}\`
 
 final class ${name}Tests: XCTestCase {
 
@@ -287,4 +323,127 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 `;
+}
+
+function implementationBrief(name: string, brief: string): string {
+  return `# ${name} implementation brief
+
+This is an editable handoff for your coding agent. The CLI saved your description;
+it has not generated or implemented these features.
+
+## App description
+
+${brief}
+
+## Implementation checklist
+
+- Translate the description into the primary user journey and a small first release.
+- Define screens, navigation, data models, persistence, and loading/empty/error states.
+- Choose semantic colors and reusable spacing/type tokens; support Dynamic Type and dark mode.
+- Implement the app in SwiftUI, with offline previews and injected dependencies where needed.
+- Customize IconLayers, import the layers into Icon Composer, and validate the resulting icon in Xcode.
+- Build and test on an available simulator; report actual results and remaining limitations.
+`;
+}
+
+function projectSpec(name: string): string {
+  // Names have already passed the Swift/filesystem allowlist; quote YAML scalars
+  // anyway so names such as Yes, Null, and On remain strings.
+  const quoted = JSON.stringify(name);
+  const bundle = name.toLowerCase().replace(/_/g, "-");
+  return `name: ${quoted}
+options:
+  deploymentTarget:
+    iOS: "17.0"
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    GENERATE_INFOPLIST_FILE: YES
+    CURRENT_PROJECT_VERSION: "1"
+    MARKETING_VERSION: "1.0"
+targets:
+  ${quoted}:
+    type: application
+    platform: iOS
+    sources:
+      - path: ${quoted}
+        excludes:
+          - IconLayers
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: "com.example.${bundle}"
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        TARGETED_DEVICE_FAMILY: "1,2"
+  "${name}Tests":
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: "${name}Tests"
+    dependencies:
+      - target: ${quoted}
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: "com.example.${bundle}.tests"
+schemes:
+  ${quoted}:
+    build:
+      targets:
+        ${quoted}: all
+    test:
+      targets:
+        - "${name}Tests"
+`;
+}
+
+function buildInstructions(name: string): string {
+  return `# Build ${name}
+
+Prerequisites: macOS, Xcode 15 or newer with an installed iOS simulator runtime,
+and XcodeGen installed separately. The CLI does not install or run these tools.
+Icon Composer requires a compatible Xcode installation and is only needed for icon editing.
+
+From this App directory:
+
+\`\`\`sh
+xcodegen generate --spec project.yml
+open ${name}.xcodeproj
+xcodebuild -project ${name}.xcodeproj -scheme ${name} -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath ../.ios-agent/build build CODE_SIGNING_ALLOWED=NO
+xcodebuild -project ${name}.xcodeproj -scheme ${name} -showdestinations
+\`\`\`
+
+Choose an available simulator destination from that list to run tests in Xcode
+or with xcodebuild test. The starter test is a placeholder: replace it with real
+behavior assertions. Device builds require your own bundle identifier and signing team.
+Edit project.yml and regenerate when changing targets or build settings.
+No .xcodeproj is created until you run XcodeGen. The project has no shipping app
+icon yet; see ${name}/IconLayers/README.md before distribution.
+`;
+}
+
+function iconLayers(): Record<string, string> {
+  const svg = (body: string) => `<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">${body}</svg>\n`;
+  return {
+    "background.svg": svg('<rect width="1024" height="1024" fill="#2457DB"/>'),
+    "foreground.svg": svg('<path d="M512 220 L804 512 L512 804 L220 512 Z" fill="#FFFFFF"/>'),
+    "accent.svg": svg('<circle cx="512" cy="512" r="96" fill="#90E8FF"/>'),
+    "manifest.json": JSON.stringify({ format: "ios-agent-svg-layer-starter", version: 1, canvas: { width: 1024, height: 1024 }, layers: ["background.svg", "foreground.svg", "accent.svg"], nativeIconCreated: false }, null, 2) + "\n",
+    "README.md": `# Editable icon layers
+
+These are separate SVG starter assets, ordered background → foreground → accent.
+Edit their paths and colors in a vector editor to fit your app. They are generic
+placeholders, not finished branding or an Icon Composer document.
+
+1. Open Icon Composer from a compatible Xcode installation and create a new icon.
+2. Import each SVG as a separate layer, preserving the back-to-front order above.
+3. Adjust groups, materials, and appearances; preview at small sizes.
+4. Save the native .icon document under App/<Name>/ and add it to your Xcode target.
+5. Configure the app icon in Xcode and build to validate all required appearances.
+
+manifest.json describes these source layers for humans and tooling; it is not
+Apple's .icon format. No native .icon has been created or validated. The XcodeGen
+spec excludes this folder from app resources. After adding a native icon, update
+project.yml as required by your Xcode/XcodeGen versions and regenerate the project.
+`,
+  };
 }

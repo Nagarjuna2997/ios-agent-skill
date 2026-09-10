@@ -42,6 +42,45 @@ materialises the first time a command needs it.
 
 ---
 
+## Create from a description
+
+```sh
+ios-agent new TeaLog --brief 'An offline tea journal with tasting notes' --xcodegen
+cd TeaLog/App
+xcodegen generate --spec project.yml
+open TeaLog.xcodeproj
+```
+
+`--brief` saves the description and an implementation checklist in
+`App/APP_BRIEF.md` for your coding agent. It does not call an AI service or
+implement the described features. Both flags are optional and work with
+`--minimal`; the visible root remains `App/`, `README.md`, and `LICENSE`
+(or only `App/` in minimal mode).
+
+`--xcodegen` writes an editable `App/project.yml`, `App/BUILD.md`, and separate
+SVG starters under `App/<Name>/IconLayers/`. The specification includes an iOS
+17+ SwiftUI app, a unit-test target, and a shared scheme. The included test is a
+placeholder to replace before shipping. Requires macOS, Xcode 15+ with an iOS
+simulator runtime, and XcodeGen installed separately. The CLI neither installs
+nor invokes them. Use an XcodeGen version compatible with your Xcode.
+
+The layer folder contains background, foreground, and accent SVGs plus a manifest
+and import instructions. Import them into [Icon Composer](https://developer.apple.com/icon-composer/)
+using a compatible Xcode installation, customize the appearance, save a native
+icon, configure the target, and validate it in Xcode. The manifest is our source
+layer inventory, not Apple's format; no native `.icon` is generated or validated.
+The starter layers are excluded from app resources.
+
+`--force` permits a non-empty destination but refuses existing generated file
+paths or symlink destinations before writing. It never overwrites your source,
+brief, specification, README, or configuration. Choose a new app directory when
+regenerating a starter.
+
+Project configuration follows the [XcodeGen specification](https://github.com/yonaskolb/XcodeGen/blob/master/Docs/ProjectSpec.md).
+The CLI emits no `.xcodeproj`; running XcodeGen creates the real project.
+
+---
+
 ## 2. The rule that decides where anything goes
 
 **Split by authorship, not by importance.**
@@ -393,12 +432,10 @@ if (existing.length > 0 && !force) throw new ScaffoldError(…);
 ```
 
 ```
-# WRONG — generating an .xcodeproj.
-# It is a build-system artifact with a format Xcode owns. A generated one drifts
-# from what Xcode would have produced, and the drift surfaces as a build failure
-# nobody can attribute.
+# WRONG — writing a fake .xcodeproj or claiming source files are a built app.
 
-# RIGHT — generate Swift sources; let Xcode own the project.
+# RIGHT — emit Swift sources and an optional XcodeGen specification.
+# Let Xcode or XcodeGen create the real project, then verify its build.
 ```
 
 ---

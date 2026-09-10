@@ -28,10 +28,49 @@ MyApp/
 npm install -g ios-agent
 ```
 
+## Create from a description
+
+```sh
+ios-agent new TeaLog --brief 'An offline tea journal with tasting notes' --xcodegen
+cd TeaLog/App
+xcodegen generate --spec project.yml
+open TeaLog.xcodeproj
+```
+
+`--brief` saves the description and an implementation checklist in
+`App/APP_BRIEF.md` for your coding agent. It does not call an AI service or
+implement the described features. Both flags are optional and work with
+`--minimal`; the visible root remains `App/`, `README.md`, and `LICENSE`
+(or only `App/` in minimal mode).
+
+`--xcodegen` writes an editable `App/project.yml`, `App/BUILD.md`, and separate
+SVG starters under `App/<Name>/IconLayers/`. The specification includes an iOS
+17+ SwiftUI app, a unit-test target, and a shared scheme. The included test is a
+placeholder to replace before shipping. Requires macOS, Xcode 15+ with an iOS
+simulator runtime, and XcodeGen installed separately. The CLI neither installs
+nor invokes them. Use an XcodeGen version compatible with your Xcode.
+
+The layer folder contains background, foreground, and accent SVGs plus a manifest
+and import instructions. Import them into [Icon Composer](https://developer.apple.com/icon-composer/)
+using a compatible Xcode installation, customize the appearance, save a native
+icon, configure the target, and validate it in Xcode. The manifest is our source
+layer inventory, not Apple's format; no native `.icon` is generated or validated.
+The starter layers are excluded from app resources.
+
+`--force` permits a non-empty destination but refuses existing generated file
+paths or symlink destinations before writing. It never overwrites your source,
+brief, specification, README, or configuration. Choose a new app directory when
+regenerating a starter.
+
+Project configuration follows the [XcodeGen specification](https://github.com/yonaskolb/XcodeGen/blob/master/Docs/ProjectSpec.md).
+The CLI emits no `.xcodeproj`; running XcodeGen creates the real project.
+
 ## Commands
 
 ```
 ios-agent new <Name>          Scaffold a project
+  --brief <description>       Save an implementation brief
+  --xcodegen                  Write project.yml and SVG icon layer starters
   --minimal                   Only App/
   --into <dir>                Parent directory (default: cwd)
   --no-license                Skip LICENSE
@@ -123,6 +162,6 @@ The user-level cache defaults to `~/Library/Caches/ios-agent` on macOS,
 
 ## What this does not do
 
-It does not create an `.xcodeproj`. That is a build-system artifact Xcode should
-own, and a generated one drifts from the project Xcode would have made. The
-scaffold writes Swift sources; you make the project in Xcode and add them.
+It does not implement features from the description, invoke an AI model, install
+build tools, run XcodeGen, or create a native Icon Composer document. Without
+`--xcodegen`, create the project in Xcode and add the generated sources.

@@ -148,3 +148,50 @@ test("scaffold reports every path it created", () => {
     assert.ok(fs.existsSync(target), `${target} was reported but does not exist`);
   }
 });
+
+test("brief and xcodegen keep editable artifacts in App and quote YAML names", () => {
+  const { layout } = scaffoldProject({ name: "Yes", parentDir: tempDir(), brief: 'Track "tea"\nOffline first', xcodegen: true });
+  assert.deepEqual(fs.readdirSync(layout.root).filter(e => !e.startsWith('.')).sort(), ['App', 'LICENSE', 'README.md']);
+  assert.match(fs.readFileSync(path.join(layout.app, 'APP_BRIEF.md'), 'utf8'), /Track "tea"\nOffline first/);
+  const spec = fs.readFileSync(path.join(layout.app, 'project.yml'), 'utf8');
+  assert.match(spec, /name: "Yes"/);
+  assert.match(spec, /path: "YesTests"/);
+  assert.match(spec, /target: "Yes"/);
+  assert.match(spec, /GENERATE_INFOPLIST_FILE: YES/);
+  assert.match(spec, /excludes:\n          - IconLayers/);
+  assert.ok(!fs.existsSync(path.join(layout.app, 'Yes.xcodeproj')));
+  const dir = path.join(layout.app, 'Yes', 'IconLayers');
+  const manifest = JSON.parse(fs.readFileSync(path.join(dir, 'manifest.json'), 'utf8'));
+  assert.equal(manifest.nativeIconCreated, false);
+  assert.equal(manifest.layers.length, 3);
+  for (const layer of manifest.layers) assert.match(fs.readFileSync(path.join(dir, layer), 'utf8'), /<svg.*viewBox="0 0 1024 1024"/);
+});
+
+test("optional artifacts also respect minimal mode", () => {
+  const { layout } = scaffoldProject({ name: "Tiny", parentDir: tempDir(), minimal: true, brief: 'A timer', xcodegen: true });
+  assert.deepEqual(fs.readdirSync(layout.root), ['App']);
+  assert.ok(fs.existsSync(path.join(layout.app, 'BUILD.md')));
+});
+
+test("force never overwrites an authored file or partially writes on collision", () => {
+  const parentDir = tempDir();
+  const app = path.join(parentDir, 'Keep', 'App');
+  fs.mkdirSync(app, { recursive: true });
+  fs.writeFileSync(path.join(app, 'project.yml'), 'my project');
+  assert.throws(() => scaffoldProject({ name: 'Keep', parentDir, force: true, xcodegen: true }), /Refusing to overwrite/);
+  assert.equal(fs.readFileSync(path.join(app, 'project.yml'), 'utf8'), 'my project');
+  assert.deepEqual(fs.readdirSync(app), ['project.yml']);
+});
+
+test("force refuses symlink destinations including internals", () => {
+  for (const folder of ['App', '.ios-agent']) {
+    const parentDir = tempDir();
+    const root = path.join(parentDir, 'Link');
+    const external = tempDir();
+    fs.mkdirSync(root);
+    fs.symlinkSync(external, path.join(root, folder), 'dir');
+    assert.throws(() => scaffoldProject({ name: 'Link', parentDir, force: true }), /Refusing/);
+    assert.deepEqual(fs.readdirSync(external), []);
+    assert.deepEqual(fs.readdirSync(root), [folder]);
+  }
+});

@@ -58,7 +58,7 @@ interface ParsedArgs {
 }
 
 /** Flags that take a value. Everything else is boolean, so `--json doctor` parses. */
-const VALUE_FLAGS = new Set(["into", "project"]);
+const VALUE_FLAGS = new Set(["into", "project", "brief"]);
 
 function parseArgs(argv: string[]): ParsedArgs {
   const positionals: string[] = [];
@@ -116,6 +116,8 @@ const COMMANDS: readonly CommandSpec[] = [
     usage: "ios-agent new <Name>",
     summary: "Scaffold a project",
     flags: [
+      { name: "brief", takesValue: true, summary: "Save an app implementation brief (no AI generation)" },
+      { name: "xcodegen", takesValue: false, summary: "Write App/project.yml and editable icon layer starters" },
       { name: "minimal", takesValue: false, summary: "Only App/; .ios-agent/ appears when first needed" },
       { name: "into", takesValue: true, summary: "Parent directory (default: cwd)" },
       { name: "no-license", takesValue: false, summary: "Skip LICENSE" },
@@ -242,11 +244,17 @@ function commandNew(args: ParsedArgs, io: IO): number {
     return EXIT_USAGE;
   }
 
+  if (args.flags.has("brief") || (args.values.has("brief") && !args.values.get("brief")?.trim())) {
+    throw new ScaffoldError("--brief requires a non-empty description.");
+  }
+  if (args.values.has("xcodegen")) throw new ScaffoldError("--xcodegen is a boolean flag; omit its value.");
   const minimal = args.flags.has("minimal");
   const result = scaffoldProject({
     name,
     parentDir: args.values.get("into") ?? io.cwd(),
     minimal,
+    brief: args.values.get("brief"),
+    xcodegen: args.flags.has("xcodegen"),
     license: args.flags.has("no-license") ? "none" : "MIT",
     force: args.flags.has("force"),
   });
@@ -260,7 +268,10 @@ function commandNew(args: ParsedArgs, io: IO): number {
       "",
       renderTree(result.layout, minimal),
       "",
-      `Next: open Xcode, create an App project inside App/, and add App/${name}/ to it.`,
+      args.flags.has("xcodegen")
+        ? `Next: in ${path.join(result.layout.root, "App")}, run xcodegen generate, then open ${name}.xcodeproj. Requires macOS, Xcode, and XcodeGen installed separately.`
+        : `Next: open Xcode, create an App project inside App/, and add App/${name}/ to it.`,
+      ...(args.values.has("brief") ? ["Implementation brief: App/APP_BRIEF.md. The starter does not implement the description."] : []),
     ],
   );
   return EXIT_OK;

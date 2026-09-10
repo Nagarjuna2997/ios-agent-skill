@@ -359,3 +359,33 @@ test("help lists every command", () => {
   }
   assert.match(help, /EXIT CODES/);
 });
+
+test("new accepts brief and xcodegen and reports their next steps", () => {
+  const parent = tempDir();
+  const { io, out } = capture(parent);
+  assert.equal(run(['new', 'Planner', '--brief', 'A weekly meal planner', '--xcodegen'], io), EXIT_OK);
+  assert.match(out.join('\n'), /xcodegen generate/);
+  assert.match(out.join('\n'), /does not implement the description/);
+  assert.match(fs.readFileSync(path.join(parent, 'Planner', 'App', 'APP_BRIEF.md'), 'utf8'), /A weekly meal planner/);
+});
+
+test("new rejects missing brief and invalid xcodegen values before writing", () => {
+  for (const flags of [['--brief'], ['--brief='], ['--brief', '  '], ['--xcodegen=false']]) {
+    const parent = tempDir();
+    const { io } = capture(parent);
+    assert.equal(run(['new', 'Invalid', ...flags], io), EXIT_USAGE);
+    assert.deepEqual(fs.readdirSync(parent), []);
+  }
+});
+
+test("new brief equals syntax and new flags appear in help/completions", () => {
+  const parent = tempDir();
+  assert.equal(run(['new', 'Equal', '--brief=A journal', '--minimal'], capture(parent).io), EXIT_OK);
+  assert.match(fs.readFileSync(path.join(parent, 'Equal', 'App', 'APP_BRIEF.md'), 'utf8'), /A journal/);
+  for (const args of [['help'], ['completions', 'bash'], ['completions', 'zsh']]) {
+    const { io, out } = capture(parent);
+    run(args, io);
+    assert.match(out.join('\n'), /--brief/);
+    assert.match(out.join('\n'), /--xcodegen/);
+  }
+});
