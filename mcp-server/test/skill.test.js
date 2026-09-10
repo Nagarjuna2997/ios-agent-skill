@@ -378,3 +378,11 @@ describe("dogfooding", () => {
     assert.ok(checked.referencedPaths > 100, `resolved ${checked.referencedPaths}`);
   });
 });
+
+test("lints references preserved in the optional detailed engineering guide", async () => {
+  const root = await mkdtemp(join(scratch, "detailed-guide-"));
+  await mkdir(join(root, "docs"));
+  await writeFile(join(root, "docs", "agent-engineering-guide.md"), "Read `docs/missing-engineering-rule.md`.\n");
+  const result = await lintSkill(root);
+  assert.ok(result.findings.some(f => f.rule === "broken-doc-reference" && f.file === "docs/agent-engineering-guide.md"));
+});

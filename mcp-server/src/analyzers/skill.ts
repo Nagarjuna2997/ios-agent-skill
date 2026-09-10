@@ -582,7 +582,7 @@ export async function lintSkill(root: string): Promise<SkillLintResult> {
     : { compared: 0, skipped: true };
   const referencedPaths = await lintReferences(
     root,
-    ["SKILL.md", "README.md"],
+    ["SKILL.md", "README.md", "docs/agent-engineering-guide.md"],
     findings,
   );
 

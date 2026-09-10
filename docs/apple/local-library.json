@@ -2890,14 +2890,14 @@
       "title": "Installing the iOS Agent MCP Server",
       "kind": "guide",
       "characters": 7980,
-      "hash": "aa82c3a818556d0b30de0d4fef519c12838611cc2184e4ba90c1f159a4ae707e"
+      "hash": "c7b934fda290ec72e5d420191777153eb386b283e6cd08a4c00f9e72bd19909f"
     },
     {
       "path": "docs/mcp/knowledge-server.md",
       "title": "Apple Knowledge MCP",
       "kind": "guide",
       "characters": 3028,
-      "hash": "87057966c10f78ad47bdfba1a42a336b31643f14a5807de622c28392c0d9da88"
+      "hash": "11bb389211cce60df4f3e7ed71ebf6e19b550784140e9b79cdd1b089166ff0f9"
     },
     {
       "path": "docs/mcp/tools.md",

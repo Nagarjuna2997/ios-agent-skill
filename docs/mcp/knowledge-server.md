@@ -2,7 +2,7 @@
 
 ## Context
 
-`ios-agent-knowledge` is the public-reference companion to `ios-agent-mcp`. Both binaries ship in `ios-agent-mcp@2.3.0`. The analyzer keeps its eleven local-project tools; the knowledge server has eight separate tools and never exposes project paths over HTTP.
+`ios-agent-knowledge` is the public-reference companion to `ios-agent-mcp`. Both binaries ship in `ios-agent-mcp@2.3.1`. The analyzer keeps its eleven local-project tools; the knowledge server has eight separate tools and never exposes project paths over HTTP.
 
 ## Pattern
 
@@ -20,13 +20,13 @@
 Start a local MCP connection:
 
 ```bash
-npx -y --package=ios-agent-mcp@2.3.0 ios-agent-knowledge
+npx -y --package=ios-agent-mcp@2.3.1 ios-agent-knowledge
 ```
 
 For a remotely hosted ChatGPT MCP connection, run the HTTP transport behind your host’s HTTPS ingress:
 
 ```bash
-npx -y --package=ios-agent-mcp@2.3.0 ios-agent-knowledge --http --host 0.0.0.0 --port 3000
+npx -y --package=ios-agent-mcp@2.3.1 ios-agent-knowledge --http --host 0.0.0.0 --port 3000
 ```
 
 The MCP route is `/mcp`; readiness is `/health`. Without `--http`, the process uses stdio. The default HTTP host is loopback. The Dockerfile at `mcp-server/Dockerfile.knowledge` builds this public-reference service from the repository root.

@@ -1,13 +1,13 @@
-# Local source retrieval in 2.3.0
+# Local source retrieval in 2.3.1
 
 The knowledge server now searches bundled repository source, templates and guides, outlines sections, and reads exact content with bounded output and continuation offsets. It exposes eight knowledge tools separately from the eleven analyzer tools. No runtime browsing is needed for local source retrieval. See [offline source workflow](../docs/tooling/offline-source-library.md).
 
-## New in 2.3.0: Apple knowledge tools for more clients
+## New in 2.3.1: Apple knowledge tools for more clients
 
 This package includes two MCP binaries: `ios-agent-mcp` for local Swift project analysis and `ios-agent-knowledge` for public Apple references and app/icon planning. Claude, Codex and Gemini CLI can run either over stdio. The knowledge server also supports Streamable HTTP for a hosted ChatGPT connection.
 
 ```bash
-npx -y --package=ios-agent-mcp@2.3.0 ios-agent-knowledge
+npx -y --package=ios-agent-mcp@2.3.1 ios-agent-knowledge
 ```
 
 Knowledge tools search 405 technologies and 96 update/release-note sources, retrieve guides, plan an app implementation, and specify separate Icon Composer layers. They do not write apps, access arbitrary project paths or claim native icon generation. [Setup](https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/mcp/installation.md).
