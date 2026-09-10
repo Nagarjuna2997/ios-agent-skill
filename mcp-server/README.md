@@ -1,3 +1,7 @@
+# iOS Agent MCP
+
+[Website and quick start](https://nagarjuna2997.github.io/ios-agent-skill/) · [GitHub source](https://github.com/Nagarjuna2997/ios-agent-skill)
+
 # Local source retrieval in 2.4.0
 
 The knowledge server now searches bundled repository source, templates and guides, outlines sections, and reads exact content with bounded output and continuation offsets. It exposes eight knowledge tools separately from the eleven analyzer tools. No runtime browsing is needed for local source retrieval. See [offline source workflow](../docs/tooling/offline-source-library.md).
