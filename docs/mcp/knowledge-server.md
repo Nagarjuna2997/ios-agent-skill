@@ -2,14 +2,17 @@
 
 ## Context
 
-`ios-agent-knowledge` is the public-reference companion to `ios-agent-mcp`. Both binaries ship in `ios-agent-mcp@2.2.0`. The analyzer keeps its eleven local-project tools; the knowledge server has five separate tools and never exposes project paths over HTTP.
+`ios-agent-knowledge` is the public-reference companion to `ios-agent-mcp`. Both binaries ship in `ios-agent-mcp@2.3.0`. The analyzer keeps its eleven local-project tools; the knowledge server has eight separate tools and never exposes project paths over HTTP.
 
 ## Pattern
 
 | Tool | Result |
 |---|---|
 | `search_apple_technologies` | Ranked matches in the 405-technology snapshot |
-| `get_apple_technology` | Source URL, availability metadata, topic links, and local guide |
+| `get_apple_technology` | Compact local routes by default; explicit full guide view |
+| `search_local_references` | Local guides and reusable source matches without bodies |
+| `get_reference_outline` | Heading offsets for focused section reads |
+| `read_local_reference` | Exact source/guide content with bounded output and continuation |
 | `get_apple_updates` | Search of 96 update/release-note landing pages |
 | `plan_ios_app` | Implementation workflow and CLI executable/argument array |
 | `plan_app_icon` | Editable foreground-layer specification and Icon Composer workflow |
@@ -17,20 +20,22 @@
 Start a local MCP connection:
 
 ```bash
-npx -y --package=ios-agent-mcp@2.2.0 ios-agent-knowledge
+npx -y --package=ios-agent-mcp@2.3.0 ios-agent-knowledge
 ```
 
 For a remotely hosted ChatGPT MCP connection, run the HTTP transport behind your host’s HTTPS ingress:
 
 ```bash
-npx -y --package=ios-agent-mcp@2.2.0 ios-agent-knowledge --http --host 0.0.0.0 --port 3000
+npx -y --package=ios-agent-mcp@2.3.0 ios-agent-knowledge --http --host 0.0.0.0 --port 3000
 ```
 
 The MCP route is `/mcp`; readiness is `/health`. Without `--http`, the process uses stdio. The default HTTP host is loopback. The Dockerfile at `mcp-server/Dockerfile.knowledge` builds this public-reference service from the repository root.
 
-This service accepts only search strings, catalog IDs and app/icon briefs. It reads a bundled allowlisted knowledge file, not caller-supplied file paths. It has no source upload, code execution, build or publishing tools, makes no runtime network requests, and does not store briefs. Configure HTTPS, request limits and operational logging on the deployment host. Account-specific or private-data tools would need a separate authentication design.
+This service accepts only search strings, indexed reference IDs/ranges, catalog IDs and app/icon briefs. It reads a bundled allowlisted knowledge file, never arbitrary caller-supplied filesystem paths. It has no source upload, code execution, build or publishing tools, makes no runtime network requests, and does not store briefs. Configure HTTPS, request limits and operational logging on the deployment host. Account-specific or private-data tools would need a separate authentication design.
 
 The data has explicit snapshot dates. Refresh source snapshots in the repository and rebuild before release. A successful HTTP handshake proves protocol compatibility, not that an arbitrary host or client account has been configured.
+
+Read `docs/tooling/offline-source-library.md` for offline search, source reuse, attribution and verification limits.
 
 ## Anti-Patterns
 

@@ -1,10 +1,24 @@
 {
   "name": "ios-agent-skill",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "description": "Build Apple apps with Swift guidance, 405 technologies, release notes, layered icons and MCP review tools.",
   "contextFileName": "GEMINI.md",
   "mcpServers": {
-    "ios-agent": {"command": "npx", "args": ["-y", "--package=ios-agent-mcp@2.2.0", "ios-agent-mcp"]},
-    "ios-agent-knowledge": {"command": "npx", "args": ["-y", "--package=ios-agent-mcp@2.2.0", "ios-agent-knowledge"]}
+    "ios-agent": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "--package=ios-agent-mcp@2.3.0",
+        "ios-agent-mcp"
+      ]
+    },
+    "ios-agent-knowledge": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "--package=ios-agent-mcp@2.3.0",
+        "ios-agent-knowledge"
+      ]
+    }
   }
 }

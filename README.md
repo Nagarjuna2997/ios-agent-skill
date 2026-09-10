@@ -1,4 +1,14 @@
 <p align="center">
+
+## Local source, not repeated browsing
+
+The repository includes complete editable Swift files, app templates, testable sample packages, and local Apple implementation guides. Search the bundled library and retrieve just the needed code or section to control context size. See [the offline source workflow](docs/tooling/offline-source-library.md) and [file inventory](docs/apple/local-library.md). Apple links remain attribution/freshness references; the 405-entry catalog does not claim 405 complete implementations or Apple's proprietary source.
+
+```bash
+node scripts/query-library.mjs search "Persistence" source
+node scripts/query-library.mjs read samples/SkillPatterns/Sources/SkillPatterns/Persistence.swift
+```
+
   <img src="https://img.shields.io/badge/Swift-6.4-F05138?style=for-the-badge&logo=swift&logoColor=white" alt="Swift 6.4">
   <img src="https://img.shields.io/badge/Xcode-27-147EFB?style=for-the-badge&logo=xcode&logoColor=white" alt="Xcode 27">
   <img src="https://img.shields.io/badge/iOS-17--27-000000?style=for-the-badge&logo=apple&logoColor=white" alt="iOS 17 through 27">
@@ -64,7 +74,7 @@ Open the generated folder with your coding agent and ask it to implement `App/AP
 
 ### Claude, ChatGPT/Codex and Gemini
 
-- **Claude and Codex:** local MCP analyzers plus five Apple knowledge/planning tools. A Codex plugin ZIP is included in releases.
+- **Claude and Codex:** local MCP analyzers plus eight Apple knowledge/source tools. A Codex plugin ZIP is included in releases.
 - **ChatGPT:** a portable skills-only plugin ZIP with bundled references. The optional knowledge server supports HTTP for deployment to your own HTTPS host.
 - **Gemini CLI:** install this GitHub repository as an extension; it includes both MCP connections and GEMINI guidance.
 

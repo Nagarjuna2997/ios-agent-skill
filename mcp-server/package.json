@@ -1,6 +1,6 @@
 {
   "name": "ios-agent-mcp",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "MCP server for modern iOS/Swift development — concurrency isolation, architecture boundaries, SwiftUI, and App Store readiness analysis",
   "license": "MIT",
   "type": "module",
@@ -21,7 +21,7 @@
   "scripts": {
     "build": "node scripts/sync-version.mjs && node scripts/bundle-knowledge.mjs && tsc",
     "test": "node --test test/*.test.js",
-    "typecheck": "node scripts/sync-version.mjs && tsc --noEmit",
+    "typecheck": "node scripts/sync-version.mjs && node scripts/bundle-knowledge.mjs && tsc --noEmit",
     "prepublishOnly": "npm run build && npm test",
     "sync-version": "node scripts/sync-version.mjs"
   },

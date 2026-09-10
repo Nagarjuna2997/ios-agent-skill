@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+### Added -- 3.2.0 (2026-09-10)
+
+- Reduce the always-loaded skill entry point and move the full engineering rules into an on-demand guide.
+- Bundle canonical local guides, source files, templates and assets in the knowledge MCP; store identical bodies once by content hash.
+- Add offline source search, heading outlines and bounded exact-content reads with continuation offsets. Technology lookup defaults to a compact overview; full guide retrieval remains explicit.
+- Add an original AppleRecipes Swift package with source, tests and Apple guidance attribution. Keep implementation coverage separate from the 405-technology directory.
+- Ship MCP 2.3.0 and updated ChatGPT/Codex/Gemini integration archives with the offline source workflow.
+
 ### Added -- 3.1.0 (2026-09-10)
 
 - Complete 405-technology Apple directory, 96 update/release-note landing pages, and layer-by-layer Icon Composer guidance.

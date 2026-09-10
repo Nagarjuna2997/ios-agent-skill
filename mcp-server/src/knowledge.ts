@@ -1,3 +1,4 @@
+import { searchLibrary, readLibrary, type Library } from '../data/local-library.mjs';
 import { readFileSync } from 'node:fs';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
@@ -7,8 +8,8 @@ type Topic = { title: string; links: { title: string; url: string }[] };
 type Technology = { name: string; slug: string; url: string; summary: string; categories: string[];
   guide: string; topics: Topic[]; platforms: unknown[]; deprecated: boolean };
 type Update = { title: string; url: string; summary: string; topics: { title: string; url: string; section: string }[] };
-type Bundle = { catalog: { checkedAt: string; technologies: Technology[] }; updates: { checkedAt: string; entries: Update[] };
-  guides: Record<string, string>; iconGuide: string; appWorkflow: string };
+type Bundle = { library: Library; catalog: { checkedAt: string; technologies: Technology[] }; updates: { checkedAt: string; entries: Update[] };
+  iconGuide: string; appWorkflow: string };
 const bundle = JSON.parse(readFileSync(new URL('../data/knowledge.json', import.meta.url), 'utf8')) as Bundle;
 const hints = { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false };
 const result = (value: object) => ({ content: [{ type: 'text' as const, text: JSON.stringify(value) }] });
@@ -24,8 +25,26 @@ export function searchTechnologies(query: string, limit: number) {
 export function lookupTechnology(id: string) {
   const t = bundle.catalog.technologies.find(t => t.slug === id || normalize(t.name) === normalize(id));
   if (!t) return { error: 'Technology not found. Use search_apple_technologies first.' };
-  return { ...t, checkedAt: bundle.catalog.checkedAt, guideText: bundle.guides[t.guide],
+  return { ...t, checkedAt: bundle.catalog.checkedAt, guideText: bundle.library.blobs[bundle.library.files.find(f => f.path === t.guide)!.hash],
     evidence: 'Source snapshot and authored/reference guidance; not proof of runtime or compilation.' };
+}
+export function searchLocalReferences(query: string, limit = 8, kind = 'all') {
+  return searchLibrary(bundle.library, query, limit, kind);
+}
+export function readLocalReference(path: string, offset = 0, maxChars = 6000) {
+  return readLibrary(bundle.library, path, offset, maxChars);
+}
+export function referenceOutline(path: string) {
+  const file = bundle.library.files.find(f => f.path === path);
+  return file ? {path:file.path,characters:file.characters,headings:file.headings} : {error:'Unknown indexed reference'};
+}
+export function technologyOverview(id: string) {
+  const t = bundle.catalog.technologies.find(t => t.slug === id || normalize(t.name) === normalize(id));
+  if (!t) return {error:'Technology not found. Search first.'};
+  return {name:t.name,id:t.slug,summary:t.summary,platforms:t.platforms,deprecated:t.deprecated,
+    guide:t.guide,outline:referenceOutline(t.guide),localSources:searchLocalReferences(t.name,5,'source'),
+    appleSource:t.url,checkedAt:bundle.catalog.checkedAt,
+    evidence:'Local guidance and reusable source where available. Directory coverage does not mean every Apple technology has a complete implementation.'};
 }
 export function lookupUpdates(query: string, limit: number) {
   const q = query.toLowerCase();
@@ -61,17 +80,27 @@ export function iconPlan(appName: string, concept: string) {
 }
 export function createKnowledgeServer() {
   const server = new McpServer({ name:'ios-agent-knowledge', version:VERSION }, { instructions:
-    'Look up Apple technologies and updates before implementation. This server reads only bundled public reference data; it cannot access local projects, write files, build, or publish apps. Use a local coding agent and CLI for implementation.' });
+    'Search local references first, then read only needed file ranges. Use source files for reuse and guides for context; avoid loading the entire library. Look up Apple technologies and updates before implementation. This server reads only bundled public reference data; it cannot access local projects, write files, build, or publish apps. Use a local coding agent and CLI for implementation.' });
   server.registerTool('search_apple_technologies', { title:'Search Apple technologies', description:'Find Apple frameworks, tools, services and legacy technologies in the bundled 405-entry source snapshot.',
     inputSchema:{query:z.string().min(1).max(200),limit:z.number().int().min(1).max(30).default(10)}, annotations:hints },
     async ({query,limit}) => result({checkedAt:bundle.catalog.checkedAt,results:searchTechnologies(query,limit)}));
-  server.registerTool('get_apple_technology', {title:'Read Apple technology guide',description:'Read a catalog technology, its local engineering guide, availability metadata and API topic links by exact name or returned id.',
-    inputSchema:{id:z.string().min(1).max(200)},annotations:hints}, async ({id}) => result(lookupTechnology(id)));
+  server.registerTool('get_apple_technology', {title:'Read Apple technology guide',description:'Get a compact technology overview and local source routes by default. Use view full only when the entire guide and API topic map are required.',
+    inputSchema:{id:z.string().min(1).max(200),view:z.enum(['overview','full']).default('overview')},annotations:hints}, async ({id,view}) => result(view === 'full' ? lookupTechnology(id) : technologyOverview(id)));
   server.registerTool('get_apple_updates', {title:'Find Apple updates and release notes',description:'Search dated Apple update and release-note landing pages with version-specific source links. Does not claim live results.',
     inputSchema:{query:z.string().max(200).default(''),limit:z.number().int().min(1).max(30).default(10)},annotations:hints}, async ({query,limit}) => result(lookupUpdates(query,limit)));
   server.registerTool('plan_ios_app', {title:'Plan an iOS app from a brief',description:'Return an implementation workflow and safe CLI argument array for a named app. No files are created and no build is claimed.',
     inputSchema:{name:z.string().max(64).refine(validAppName, 'Use a non-reserved Swift-safe app name'),brief:z.string().min(5).max(8000)},annotations:hints}, async ({name,brief}) => result(appPlan(name,brief)));
   server.registerTool('plan_app_icon', {title:'Plan layered Icon Composer artwork',description:'Return a separate-layer icon specification, Apple workflow and appearance checks. Does not fabricate a native .icon document.',
     inputSchema:{appName:z.string().min(1).max(100),concept:z.string().min(3).max(2000)},annotations:hints}, async ({appName,concept}) => result(iconPlan(appName,concept)));
+  server.registerTool('search_local_references', {title:'Search bundled source and guides',
+    description:'Search complete repository guides, Swift source, templates and assets offline. Returns compact file matches without loading bodies. Source files and guide code blocks have different verification status.',
+    inputSchema:{query:z.string().min(1).max(200),limit:z.number().int().min(1).max(20).default(8),kind:z.enum(['all','source','guide']).default('all')},annotations:hints},
+    async ({query,limit,kind}) => result({results:searchLocalReferences(query,limit,kind)}));
+  server.registerTool('read_local_reference', {title:'Read local source or guide',
+    description:'Read exact bundled file content in bounded character ranges. Use nextOffset to continue without omission; no network or user filesystem access. Offset is a JavaScript UTF-16 string index.',
+    inputSchema:{path:z.string().min(1).max(300),offset:z.number().int().min(0).default(0),maxChars:z.number().int().min(1).max(16000).default(6000)},annotations:hints},
+    async ({path,offset,maxChars}) => result(readLocalReference(path,offset,maxChars)));
+  server.registerTool('get_reference_outline', {title:'Outline a local guide',description:'Get heading offsets so only the relevant section needs to be read.',
+    inputSchema:{path:z.string().min(1).max(300)},annotations:hints},async ({path}) => result(referenceOutline(path)));
   return server;
 }

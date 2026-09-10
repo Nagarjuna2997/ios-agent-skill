@@ -1,0 +1,3715 @@
+{
+  "schemaVersion": 1,
+  "files": [
+    {
+      "path": "checklists/app-store-submission.md",
+      "title": "App Store Submission Checklist",
+      "kind": "guide",
+      "characters": 9565,
+      "hash": "498488b20b0fd7bac6fe235b35c91e13b6279318a39625707156cab5ccc5e4c1"
+    },
+    {
+      "path": "checklists/performance.md",
+      "title": "Performance Checklist",
+      "kind": "guide",
+      "characters": 13784,
+      "hash": "5313a5c1f2943b52e9b780daf60d15a59df28e628bd72366393653c22281bce1"
+    },
+    {
+      "path": "checklists/security.md",
+      "title": "Security Checklist",
+      "kind": "guide",
+      "characters": 17952,
+      "hash": "9e769f31b99c707c9337b1ced66d1d2429253a3e6b53dd11340c062aa9330ae8"
+    },
+    {
+      "path": "checklists/testing.md",
+      "title": "Testing Checklist",
+      "kind": "guide",
+      "characters": 22167,
+      "hash": "9058ef0f6f278f41739e06e7c3117915f6aae14a6d2e9255ce710139ef6d4bc8"
+    },
+    {
+      "path": "docs/agent-engineering-guide.md",
+      "title": "Apple engineering rules and detailed reference routes",
+      "kind": "guide",
+      "characters": 63362,
+      "hash": "9bbecef4d6cbd553553ed45e75222746efc8bc52a7c58c06ac92caf6474f82f1"
+    },
+    {
+      "path": "docs/ai-setup-guide.md",
+      "title": "AI Setup Guide",
+      "kind": "guide",
+      "characters": 2581,
+      "hash": "84d4a7dc612e9ed8ba7a601940b79f28fa075539b611651b29b311a5b95eb1ea"
+    },
+    {
+      "path": "docs/ai/machine-learning-brain.md",
+      "title": "AI And Machine Learning Brain",
+      "kind": "guide",
+      "characters": 20714,
+      "hash": "1fce4038a7b2bda2e8be6abe1c57c2769e90719a9a48ec134edff08ad6f7aa29"
+    },
+    {
+      "path": "docs/ai/README.md",
+      "title": "AI and Apple Intelligence",
+      "kind": "guide",
+      "characters": 4224,
+      "hash": "6569a1b2b44e910ff9478471e22a39f8a3f1c5806922ebedc3388c9e9fe777e3"
+    },
+    {
+      "path": "docs/animation/README.md",
+      "title": "Professional Motion and Animation",
+      "kind": "guide",
+      "characters": 2739,
+      "hash": "50215871aa974aa13cfeb4595e017f607df82e2cf03aae6f3e76efdacccc11e6"
+    },
+    {
+      "path": "docs/animation/web-animation-concepts.md",
+      "title": "Web Animation Concepts in Native Apple Apps",
+      "kind": "guide",
+      "characters": 1879,
+      "hash": "ac7df25fd8fe45ad4127f76a03690de96b5af7a9b17e7ba99db6e4b47307cf75"
+    },
+    {
+      "path": "docs/apple-docs-reference.md",
+      "title": "Apple Docs Reference",
+      "kind": "guide",
+      "characters": 3756,
+      "hash": "035f5124cda51e9c14cbc0ef5c4f0e66d99b55d19923737354481937f0704194"
+    },
+    {
+      "path": "docs/apple-framework-index.md",
+      "title": "Apple Framework Index",
+      "kind": "guide",
+      "characters": 15375,
+      "hash": "b18b196995ca4709c14b0386fd1958a71f306d5fedad18b87a70c001fdb25d29"
+    },
+    {
+      "path": "docs/apple/a-section-memory.md",
+      "title": "Apple Documentation A-Section Memory",
+      "kind": "guide",
+      "characters": 15495,
+      "hash": "6c8f4fcca1317a638f28500fcd16ad32160c82eb77533e69e0d83668a7a766ab"
+    },
+    {
+      "path": "docs/apple/all-technologies.md",
+      "title": "All Apple Technologies: Accelerate to XPC",
+      "kind": "guide",
+      "characters": 62188,
+      "hash": "0ed5c2a8e27693784f9719ebcc703db3567a4d00d08e70440e7cf32bc87528ae"
+    },
+    {
+      "path": "docs/apple/b-m-section-memory.md",
+      "title": "Apple Documentation B-M Section Memory",
+      "kind": "guide",
+      "characters": 12472,
+      "hash": "3c6e0224a0ef44b27b70d2112c2f36e06af86fec4739c9f70aa9bca0e950c16d"
+    },
+    {
+      "path": "docs/apple/coverage-status.md",
+      "title": "Apple Documentation Coverage Status",
+      "kind": "guide",
+      "characters": 2475,
+      "hash": "2f7aea9ff7a61a43447c9693fad6defb9cb9ece2450f4fc9117b233ac12a6d26"
+    },
+    {
+      "path": "docs/apple/documentation-navigator-brain.md",
+      "title": "Apple Documentation Navigator Brain",
+      "kind": "guide",
+      "characters": 7354,
+      "hash": "bf8ba9b09f79ee6e20a5b58ec9d4b4ff4906a0b23351955ae342468a3a02bc73"
+    },
+    {
+      "path": "docs/apple/n-z-section-memory.md",
+      "title": "Apple Documentation N-Z Section Memory",
+      "kind": "guide",
+      "characters": 12224,
+      "hash": "f8988d0f57279f4a687e4d0e04ba69d8db7b658bf24d58eb6a50680d6ed147a3"
+    },
+    {
+      "path": "docs/apple/resources-support-memory.md",
+      "title": "Apple Developer Resources And Support Memory",
+      "kind": "guide",
+      "characters": 9064,
+      "hash": "0c1641b02ce2de9678fbe61828ea793e1023ff831565187dfb10dfb54400cf1a"
+    },
+    {
+      "path": "docs/apple/technologies/accelerate__simd-library.md",
+      "title": "simd",
+      "kind": "guide",
+      "characters": 4291,
+      "hash": "dc58fab01ca1e78b846cf1a5ad9d32aa45be2a9655e833f5c05d575efec43b0b"
+    },
+    {
+      "path": "docs/apple/technologies/accessoryaccess.md",
+      "title": "Accessory Access",
+      "kind": "guide",
+      "characters": 2168,
+      "hash": "12c428ba214dbeb86d32d47b0a994be9bcf7664a4cc834483b882e2529d28614"
+    },
+    {
+      "path": "docs/apple/technologies/accessoryliveactivities.md",
+      "title": "Accessory Live Activities",
+      "kind": "guide",
+      "characters": 2500,
+      "hash": "f244bc302e444e2139187846bee7714f9429f3babb02cc15eabded0a02054aa0"
+    },
+    {
+      "path": "docs/apple/technologies/accessorynotifications.md",
+      "title": "Accessory Notifications",
+      "kind": "guide",
+      "characters": 3015,
+      "hash": "6de3c8d228c3c4c1c4c97d33e39f80b63f3467c58e0aea04ce3cf69c73d22aeb"
+    },
+    {
+      "path": "docs/apple/technologies/accessorytransportextension.md",
+      "title": "Accessory Transport Extension",
+      "kind": "guide",
+      "characters": 3934,
+      "hash": "448d1065ad02ef5684e5f94ecb642312c04d5780209b5fc9c1368dd7d6bcf268"
+    },
+    {
+      "path": "docs/apple/technologies/accountdatatransfer.md",
+      "title": "Account Data Transfer",
+      "kind": "guide",
+      "characters": 3330,
+      "hash": "3622031bb714acbb9b3019dac870f6d802825d6cfb624028a48f6786d6f8e834"
+    },
+    {
+      "path": "docs/apple/technologies/accountorganizationaldatasharing.md",
+      "title": "Account & Organizational Data Sharing",
+      "kind": "guide",
+      "characters": 2719,
+      "hash": "2a3ef15e4cb98553a163406c735e1f6e67fd5b44c941c23179ffbc844c19f0f5"
+    },
+    {
+      "path": "docs/apple/technologies/accounts.md",
+      "title": "Accounts",
+      "kind": "guide",
+      "characters": 2421,
+      "hash": "f2d01c7e41e3c9c0c4ed6c9fd3977ddacf6cb4180f30f18734429a3244091de1"
+    },
+    {
+      "path": "docs/apple/technologies/adattributionkit.md",
+      "title": "AdAttributionKit",
+      "kind": "guide",
+      "characters": 4350,
+      "hash": "bfbe952e774f442b67ff0e9a5837deff463649d376544488704a649878b254ef"
+    },
+    {
+      "path": "docs/apple/technologies/addressbook.md",
+      "title": "Address Book",
+      "kind": "guide",
+      "characters": 3349,
+      "hash": "79d22209015b37c53e76a92c525230c5084ef0119c205f5a68ee46f2d6dfdad5"
+    },
+    {
+      "path": "docs/apple/technologies/addressbookui.md",
+      "title": "Address Book UI",
+      "kind": "guide",
+      "characters": 2235,
+      "hash": "e9e42cb9fe164efe69d759a719dc497da20e72006fa46331c4d2abaecc4412b6"
+    },
+    {
+      "path": "docs/apple/technologies/adservices.md",
+      "title": "AdServices",
+      "kind": "guide",
+      "characters": 2084,
+      "hash": "2641c363f261659fccb916e3ae6f9d9c7ebb683ce79edad7aa9c857f278b3eae"
+    },
+    {
+      "path": "docs/apple/technologies/adsupport.md",
+      "title": "AdSupport",
+      "kind": "guide",
+      "characters": 1644,
+      "hash": "ec30c11f8980c06a834118067718441b66798025e21b5a68c0fa02794387d7b9"
+    },
+    {
+      "path": "docs/apple/technologies/advancedcommerceapi.md",
+      "title": "Advanced Commerce API",
+      "kind": "guide",
+      "characters": 8717,
+      "hash": "735df176148f6e03ec9e9f8adcd4454b6747842274303b0454e6ddbe2a21c1da"
+    },
+    {
+      "path": "docs/apple/technologies/alarmkit.md",
+      "title": "AlarmKit",
+      "kind": "guide",
+      "characters": 2268,
+      "hash": "ec678988dab06aae6e7913955cb17cfb83f6325dc18d7466eda33f1cacb0a0a5"
+    },
+    {
+      "path": "docs/apple/technologies/analytics-reports.md",
+      "title": "Analytics Reports",
+      "kind": "guide",
+      "characters": 18241,
+      "hash": "4ad18386b393f07b28a0b4257af6e3c99480616d81fa09bb93a5706b8cbbd3ec"
+    },
+    {
+      "path": "docs/apple/technologies/appdatatransfer.md",
+      "title": "App Data Transfer",
+      "kind": "guide",
+      "characters": 3204,
+      "hash": "94d918f56aa221875bab38ef714e11166ab5252d924a436a548a65b82be86b39"
+    },
+    {
+      "path": "docs/apple/technologies/appintentstesting.md",
+      "title": "App Intents Testing",
+      "kind": "guide",
+      "characters": 3341,
+      "hash": "67872dcc3e5c1681b1ca0b28d4be7e31295e7605d79519b08c85395191efc8d6"
+    },
+    {
+      "path": "docs/apple/technologies/appkit.md",
+      "title": "AppKit",
+      "kind": "guide",
+      "characters": 4888,
+      "hash": "0ff0960f50b70b5d4f131f4e339a4afcb95f2c476c7658bf29b13bf4bab4c814"
+    },
+    {
+      "path": "docs/apple/technologies/apple_ads.md",
+      "title": "Apple Ads",
+      "kind": "guide",
+      "characters": 3865,
+      "hash": "b90bbe5d91a48c587ad6fd3a36f040f2452f99542ffa7b84c1611d2df19c5721"
+    },
+    {
+      "path": "docs/apple/technologies/apple-ads-platform-api.md",
+      "title": "Apple Ads Platform API",
+      "kind": "guide",
+      "characters": 10064,
+      "hash": "25b9212d5bfad054c6baa03a47a58bd580297b3182785018c5dd5201498e5d29"
+    },
+    {
+      "path": "docs/apple/technologies/apple-school-and-business-manager-api.md",
+      "title": "Apple School Manager and Apple Business APIs",
+      "kind": "guide",
+      "characters": 2208,
+      "hash": "11e0d4525fb27a069cab55fb7d0cfcc417db8a626edf27d381df692bff0c3ec9"
+    },
+    {
+      "path": "docs/apple/technologies/apple-silicon.md",
+      "title": "Apple silicon",
+      "kind": "guide",
+      "characters": 4106,
+      "hash": "08317e315c48542bad77b5842fb8a561c0be46103adb577c2b0789e5484867e7"
+    },
+    {
+      "path": "docs/apple/technologies/applearchive.md",
+      "title": "Apple Archive",
+      "kind": "guide",
+      "characters": 3934,
+      "hash": "b56b94d26c2429d7c205519316e48717229a6503d3694334db7eeb1544bb7af8"
+    },
+    {
+      "path": "docs/apple/technologies/applemapsserverapi.md",
+      "title": "Apple Maps Server API",
+      "kind": "guide",
+      "characters": 4352,
+      "hash": "edba95386108db66dd6d33b17f52b55d91c0d6f6a90e58b9e1d597d8893df256"
+    },
+    {
+      "path": "docs/apple/technologies/applemusicapi.md",
+      "title": "Apple Music API",
+      "kind": "guide",
+      "characters": 6538,
+      "hash": "c0e2fe6fed30ff3a7a26460270e37deb9545b49b056a1868d27a227f56c9f6de"
+    },
+    {
+      "path": "docs/apple/technologies/applemusicfeed.md",
+      "title": "Apple Music Feed",
+      "kind": "guide",
+      "characters": 2257,
+      "hash": "1761ed4075532f6fbe62ddde775b728db9451ffae40a4eae7fabaad6c063eef0"
+    },
+    {
+      "path": "docs/apple/technologies/applenews.md",
+      "title": "Apple News",
+      "kind": "guide",
+      "characters": 2039,
+      "hash": "de7b181c9f0429be4ee56b42446f8cf4431abaef63d3fa7b7c135c520489aa9a"
+    },
+    {
+      "path": "docs/apple/technologies/applepaymerchanttokenusageinformation.md",
+      "title": "Apple Pay Merchant Token Usage Information API",
+      "kind": "guide",
+      "characters": 2756,
+      "hash": "df06be1882b28d55ba2b79226810f1e7666c6ca300477a4473ef4dc2d561756d"
+    },
+    {
+      "path": "docs/apple/technologies/applepayontheweb.md",
+      "title": "Apple Pay on the Web",
+      "kind": "guide",
+      "characters": 3786,
+      "hash": "91cf53c80b7bfa25d048404c6f0e3d251194fd0885b959cb58cb531f2b0d68ab"
+    },
+    {
+      "path": "docs/apple/technologies/applepaywebmerchantregistrationapi.md",
+      "title": "Apple Pay Web Merchant Registration API",
+      "kind": "guide",
+      "characters": 2767,
+      "hash": "c557d4e21e94697aeeeef8dfa39b6179f409a220c8598cecf687136a0d1264fa"
+    },
+    {
+      "path": "docs/apple/technologies/applepencil.md",
+      "title": "Apple Pencil",
+      "kind": "guide",
+      "characters": 3601,
+      "hash": "70779697f8ceec2dee232a56fcf813144023fac0820e6472f133ffd497eaf9ba"
+    },
+    {
+      "path": "docs/apple/technologies/appletvfeed.md",
+      "title": "Apple TV Feed",
+      "kind": "guide",
+      "characters": 2171,
+      "hash": "4aaf4d4c60ec9729c97a837208f0222769f4d693f78cd78d76b8a5856b98b1dd"
+    },
+    {
+      "path": "docs/apple/technologies/applicationservices.md",
+      "title": "Application Services",
+      "kind": "guide",
+      "characters": 4927,
+      "hash": "7128c69f35283f85a06b9def468d9c3cb1f088d761d4e4d3157f2ee6ee3e69a3"
+    },
+    {
+      "path": "docs/apple/technologies/applicensedeliverysdk.md",
+      "title": "App License Delivery SDK",
+      "kind": "guide",
+      "characters": 2337,
+      "hash": "c34bec68a5c00bd14e260fef926b7782f5cc34ae0ea8dbc7b59f6eada209301a"
+    },
+    {
+      "path": "docs/apple/technologies/appmigrationkit.md",
+      "title": "AppMigrationKit",
+      "kind": "guide",
+      "characters": 2450,
+      "hash": "efc133cb96cd8d37472e35763687e89be559ac08c28fc65bb640c4ceac9cccaf"
+    },
+    {
+      "path": "docs/apple/technologies/appstoreconnectapi.md",
+      "title": "App Store Connect API",
+      "kind": "guide",
+      "characters": 4692,
+      "hash": "3ae33790209e8c22b8abe45b61290a328685218cec63693c7ef1b85fcacf27e2"
+    },
+    {
+      "path": "docs/apple/technologies/appstorereceipts.md",
+      "title": "App Store Receipts",
+      "kind": "guide",
+      "characters": 2314,
+      "hash": "5ffa8b995fd02577fee0a006f6a9fa9e021100139a36293ad4706e36d962cf82"
+    },
+    {
+      "path": "docs/apple/technologies/appstoreservernotifications.md",
+      "title": "App Store Server Notifications",
+      "kind": "guide",
+      "characters": 3050,
+      "hash": "3f9930ecf6ea363ab523450e2ce7caf8a126a43d7628801ebf67458ea89cc1cf"
+    },
+    {
+      "path": "docs/apple/technologies/apptrackingtransparency.md",
+      "title": "App Tracking Transparency",
+      "kind": "guide",
+      "characters": 1954,
+      "hash": "f63c832de657bbfc3d1f6b1b67225e474f06ee7d7cef35182df37a330de4a6eb"
+    },
+    {
+      "path": "docs/apple/technologies/assetslibrary.md",
+      "title": "Assets Library",
+      "kind": "guide",
+      "characters": 1832,
+      "hash": "554189f14917fb9f9091bcfd8045c3923d1d0de260eefed7b2acd4de4eda03c7"
+    },
+    {
+      "path": "docs/apple/technologies/assignables.md",
+      "title": "Assignables",
+      "kind": "guide",
+      "characters": 4043,
+      "hash": "28342bec87b5a5f876fd79155ac61d60ca066e1f545c82bc5a95b8d8ff346fb5"
+    },
+    {
+      "path": "docs/apple/technologies/audioaccessorykit.md",
+      "title": "AudioAccessoryKit",
+      "kind": "guide",
+      "characters": 2739,
+      "hash": "ba9e39a7ff903021e03b200f18365a14565637966b753cfeab556c97b4158ab5"
+    },
+    {
+      "path": "docs/apple/technologies/audiodriverkit.md",
+      "title": "AudioDriverKit",
+      "kind": "guide",
+      "characters": 3837,
+      "hash": "1001ba59b5f11f8f98f439b489053d3b211a9bc25026c613717f6cb1566bbaa1"
+    },
+    {
+      "path": "docs/apple/technologies/audiotoolbox.md",
+      "title": "Audio Toolbox",
+      "kind": "guide",
+      "characters": 12655,
+      "hash": "341725b6620cb088fd8364bd8b2ce117c8ca0084998692d4972c18f1ebb6acc0"
+    },
+    {
+      "path": "docs/apple/technologies/audiounit.md",
+      "title": "Audio Unit",
+      "kind": "guide",
+      "characters": 1809,
+      "hash": "b72c436c7d495d7728867c9449dc3709cde677b12edb13b19bb70650e65a49a8"
+    },
+    {
+      "path": "docs/apple/technologies/automateddeviceenrollment.md",
+      "title": "Automated Device Enrollment",
+      "kind": "guide",
+      "characters": 1948,
+      "hash": "02e012a29311e23532b8f6e35e268b0c655306fd1ab55a2028efb85ec15838a5"
+    },
+    {
+      "path": "docs/apple/technologies/automaticassessmentconfiguration.md",
+      "title": "Automatic Assessment Configuration",
+      "kind": "guide",
+      "characters": 3545,
+      "hash": "93696d37de087a34f9a2320fd905ad4dbf9b68365aed42019551e901b60ca28a"
+    },
+    {
+      "path": "docs/apple/technologies/automaticsigninapi.md",
+      "title": "Automatic Sign-In API",
+      "kind": "guide",
+      "characters": 2283,
+      "hash": "9d3e6420606952a475f13e7196d281a5b33f563a8d9bb961c586153a47190655"
+    },
+    {
+      "path": "docs/apple/technologies/automator.md",
+      "title": "Automator",
+      "kind": "guide",
+      "characters": 2639,
+      "hash": "1e46d586ff992e15d9f792a9e96c3ee98dd2ee2463a3368a4fc2310bd6dd6058"
+    },
+    {
+      "path": "docs/apple/technologies/avfaudio.md",
+      "title": "AVFAudio",
+      "kind": "guide",
+      "characters": 3284,
+      "hash": "d8c5d42b1b7bb2ac91674fb473886d439164bf597c591bb09de8fc3861ccd240"
+    },
+    {
+      "path": "docs/apple/technologies/avrouting.md",
+      "title": "AVRouting",
+      "kind": "guide",
+      "characters": 2253,
+      "hash": "c9753a5ca1e71bc0c0e72d26ddcd68094311ea21b8ef402f7f17dde093cc326e"
+    },
+    {
+      "path": "docs/apple/technologies/avsystemrouting.md",
+      "title": "AVSystemRouting",
+      "kind": "guide",
+      "characters": 3338,
+      "hash": "9f851f605dc17874b68ce8a725bfff73b3b9d65b6e2b592a4bb02f4b2a6e80be"
+    },
+    {
+      "path": "docs/apple/technologies/backgroundassets.md",
+      "title": "Background Assets",
+      "kind": "guide",
+      "characters": 5054,
+      "hash": "4ff1d78036ce0dcb180fab2828d8ce1bc6ccb5de38bfbdfad5b942989a09366a"
+    },
+    {
+      "path": "docs/apple/technologies/blockstoragedevicedriverkit.md",
+      "title": "BlockStorageDeviceDriverKit",
+      "kind": "guide",
+      "characters": 2023,
+      "hash": "a5a2894984773b8c7816c02614c953c47a55a8f2c0e3740ccf67e0c60450dc59"
+    },
+    {
+      "path": "docs/apple/technologies/browserenginecore.md",
+      "title": "BrowserEngineCore",
+      "kind": "guide",
+      "characters": 2322,
+      "hash": "41a62a2ad9edc78400698aff4a014fd8ab147a8d4e60a1a94ec47e2519057cd1"
+    },
+    {
+      "path": "docs/apple/technologies/browserenginekit.md",
+      "title": "BrowserEngineKit",
+      "kind": "guide",
+      "characters": 5804,
+      "hash": "8b53153c22ba303ebf3f5da694df7d5581205440e8dfce008315469841c9013a"
+    },
+    {
+      "path": "docs/apple/technologies/browserkit.md",
+      "title": "BrowserKit",
+      "kind": "guide",
+      "characters": 3326,
+      "hash": "00af448b32f43aae20c2e8effbe0cb4530a1c5a2c5b7198d1e7a75912d63abe4"
+    },
+    {
+      "path": "docs/apple/technologies/bundleresources.md",
+      "title": "Bundle Resources",
+      "kind": "guide",
+      "characters": 2195,
+      "hash": "02034e976cde6e8361d52ce5b82113cc8771ffb570364698dec2b77853db533b"
+    },
+    {
+      "path": "docs/apple/technologies/callkit.md",
+      "title": "CallKit",
+      "kind": "guide",
+      "characters": 5046,
+      "hash": "6f884d33f2e1985497b32e22636c8ffa4d48fed8c749d26159e93cde7fecba0f"
+    },
+    {
+      "path": "docs/apple/technologies/carekit.md",
+      "title": "CareKit",
+      "kind": "guide",
+      "characters": 1393,
+      "hash": "76cb67272e5e6ece66acb41ca194e5266fc4289453efcbae0bafe9f92e918260"
+    },
+    {
+      "path": "docs/apple/technologies/carkey.md",
+      "title": "CarKey",
+      "kind": "guide",
+      "characters": 2696,
+      "hash": "ad8a33a237db516ea466529b96f0adae511544b3ae3d96ea99b9f99ff67f3736"
+    },
+    {
+      "path": "docs/apple/technologies/carplay.md",
+      "title": "CarPlay",
+      "kind": "guide",
+      "characters": 10830,
+      "hash": "6ee140ae8e4d18312376be8c33c5a3c5590e3bbd70bfba83ad6f56ed0528c973"
+    },
+    {
+      "path": "docs/apple/technologies/cfnetwork.md",
+      "title": "CFNetwork",
+      "kind": "guide",
+      "characters": 29469,
+      "hash": "33958c555f9d3a0a15d4a6241dd32d05c283a539292acd22c6888185dff48f7f"
+    },
+    {
+      "path": "docs/apple/technologies/cinematic.md",
+      "title": "Cinematic",
+      "kind": "guide",
+      "characters": 4498,
+      "hash": "baa952a9a6fd62c01146733cdbe9e35bff2bd04dbbb954c63a98369c8ba3a49d"
+    },
+    {
+      "path": "docs/apple/technologies/cktooljs.md",
+      "title": "CKTool JS",
+      "kind": "guide",
+      "characters": 3076,
+      "hash": "27087399b68a7c6c07eb2450671d40d3e6c7cdce74fe481288eaa204c7b83755"
+    },
+    {
+      "path": "docs/apple/technologies/classkit.md",
+      "title": "ClassKit",
+      "kind": "guide",
+      "characters": 3570,
+      "hash": "cabef78a74d3c4df1967693a410d90b5cfa45deb340c26793cb2ae7129b7fc7d"
+    },
+    {
+      "path": "docs/apple/technologies/classkitcatalogapi.md",
+      "title": "ClassKit Catalog API",
+      "kind": "guide",
+      "characters": 3103,
+      "hash": "7f8d47df086e6b99467d5ccc48285f8f98111c843c925f8346c7951ce4e738b8"
+    },
+    {
+      "path": "docs/apple/technologies/classkitui.md",
+      "title": "ClassKit UI",
+      "kind": "guide",
+      "characters": 1937,
+      "hash": "023dfef55c7734b57207ce681f461277cb23a216802baf18465b6452d9d31a8b"
+    },
+    {
+      "path": "docs/apple/technologies/clockkit.md",
+      "title": "ClockKit",
+      "kind": "guide",
+      "characters": 2350,
+      "hash": "768b7d79489c561fa74162dfee424042aedf2fc4ca0274d4b5592b8e933b06d1"
+    },
+    {
+      "path": "docs/apple/technologies/cloudkitjs.md",
+      "title": "CloudKit JS",
+      "kind": "guide",
+      "characters": 3639,
+      "hash": "77685c3e3398e42fed9414863d5b9add887228da29d9d2de24c46a6f89f00df9"
+    },
+    {
+      "path": "docs/apple/technologies/collaboration.md",
+      "title": "Collaboration",
+      "kind": "guide",
+      "characters": 1986,
+      "hash": "b7ffb248838afef8f7faddb22f1a4560e2dd2b7ab1950eccff2d278ca077b38a"
+    },
+    {
+      "path": "docs/apple/technologies/colorsync.md",
+      "title": "ColorSync",
+      "kind": "guide",
+      "characters": 2451,
+      "hash": "34f1abe727f195946784f8d09116e9fe84d3d089cb2320e323401130b4c3568a"
+    },
+    {
+      "path": "docs/apple/technologies/compositorservices.md",
+      "title": "Compositor Services",
+      "kind": "guide",
+      "characters": 3634,
+      "hash": "80c03640ffd07307627584a69c3c3067814a108fbe4207effd5f309431c3d842"
+    },
+    {
+      "path": "docs/apple/technologies/compression.md",
+      "title": "Compression",
+      "kind": "guide",
+      "characters": 4237,
+      "hash": "39c169f7c453cdf6278a3edf19c9d20674a270a46bc0264725c216e393d7d458"
+    },
+    {
+      "path": "docs/apple/technologies/computegraph.md",
+      "title": "Compute Graph",
+      "kind": "guide",
+      "characters": 5038,
+      "hash": "132e55f74a37883e76b6e431d148e046ab3805de38a869f9a040aba6779f6d7e"
+    },
+    {
+      "path": "docs/apple/technologies/contactprovider.md",
+      "title": "ContactProvider",
+      "kind": "guide",
+      "characters": 2765,
+      "hash": "d18894d8fa61458819dbc7121d6d145bbf1eccd67b50b97fcc9498810e578daf"
+    },
+    {
+      "path": "docs/apple/technologies/contactsui.md",
+      "title": "Contacts UI",
+      "kind": "guide",
+      "characters": 2047,
+      "hash": "578bae58b0dc4dd79b3c909a8a84bf8302bdd924b11a344a5c94cca6dcd70aa5"
+    },
+    {
+      "path": "docs/apple/technologies/coreaudio.md",
+      "title": "Core Audio",
+      "kind": "guide",
+      "characters": 4829,
+      "hash": "48853d18b753b66ad5de4555dfad450b07d944359d5cf2a4d846b7b44cf016f0"
+    },
+    {
+      "path": "docs/apple/technologies/coreaudiokit.md",
+      "title": "CoreAudioKit",
+      "kind": "guide",
+      "characters": 3606,
+      "hash": "f76d9fde774de8c2771fae15794178edffc51e11a35f3a0ffaf3aabf526051ea"
+    },
+    {
+      "path": "docs/apple/technologies/coreaudiotypes.md",
+      "title": "Core Audio Types",
+      "kind": "guide",
+      "characters": 6627,
+      "hash": "d5342de3f00391d363db7d5e785e18a85ddae452527bb32ecb0ecbe36726688a"
+    },
+    {
+      "path": "docs/apple/technologies/corefoundation.md",
+      "title": "Core Foundation",
+      "kind": "guide",
+      "characters": 8498,
+      "hash": "7cd64cd5ad8c986644e2ff52ce76b8815cbcc05ffc63e81863df9ecbb49b3c49"
+    },
+    {
+      "path": "docs/apple/technologies/coregraphics.md",
+      "title": "Core Graphics",
+      "kind": "guide",
+      "characters": 5661,
+      "hash": "b697361db56188e7f84c623dba38e5483c38db87245c9a1467be3608c2ad61b4"
+    },
+    {
+      "path": "docs/apple/technologies/corehid.md",
+      "title": "Core HID",
+      "kind": "guide",
+      "characters": 3313,
+      "hash": "bdd61d96407fb906936ce68cec1b7d0b335f4fc917d1257df06f4492778c88c8"
+    },
+    {
+      "path": "docs/apple/technologies/coreimage.md",
+      "title": "Core Image",
+      "kind": "guide",
+      "characters": 8392,
+      "hash": "fd0487d691c743a1b33d5cf572bf7dfecf90cdebbbb7529d3ce61a32f8fed156"
+    },
+    {
+      "path": "docs/apple/technologies/corelocationui.md",
+      "title": "Core Location UI",
+      "kind": "guide",
+      "characters": 2141,
+      "hash": "b036e332318c026f1de20457e77c6ba8bd5d90bd306d86f504b5bac6faec0fa0"
+    },
+    {
+      "path": "docs/apple/technologies/coremediaio.md",
+      "title": "Core Media I/O",
+      "kind": "guide",
+      "characters": 3670,
+      "hash": "885dc5cded8e5ac7933d728cfcf21264ced86d4dc8e4f8fe0ba8b013df49558f"
+    },
+    {
+      "path": "docs/apple/technologies/coremidi.md",
+      "title": "Core MIDI",
+      "kind": "guide",
+      "characters": 4567,
+      "hash": "513ac89a71c6090b9f76fe84af797478fea3c95120bf75b6fd7cf9ff47e81b91"
+    },
+    {
+      "path": "docs/apple/technologies/coreservices.md",
+      "title": "Core Services",
+      "kind": "guide",
+      "characters": 2512,
+      "hash": "52c64f308badc91e087f14fea2eda5a0bae7905cc66cdfd88113b80e938dc979"
+    },
+    {
+      "path": "docs/apple/technologies/coretelephony.md",
+      "title": "Core Telephony",
+      "kind": "guide",
+      "characters": 3354,
+      "hash": "1cf0d876e63db38acbdffbf68ce5d4ca2806d4da3e99421195922f728a05e795"
+    },
+    {
+      "path": "docs/apple/technologies/coretext.md",
+      "title": "Core Text",
+      "kind": "guide",
+      "characters": 3866,
+      "hash": "1d73ed9aaa5ae21421ee2c44216d0927c3153fc6a55f616a16d4db289d1f0266"
+    },
+    {
+      "path": "docs/apple/technologies/coretransferable.md",
+      "title": "Core Transferable",
+      "kind": "guide",
+      "characters": 3164,
+      "hash": "9cf663f4dcb85b7f813aa3db8af7d6dd9d950096d32c4c18be95882f91c74191"
+    },
+    {
+      "path": "docs/apple/technologies/corevideo.md",
+      "title": "Core Video",
+      "kind": "guide",
+      "characters": 3837,
+      "hash": "82a8ae2839d80d37e07ed50ea3a4c616a03ceac2ad7b367321a5343733a34b30"
+    },
+    {
+      "path": "docs/apple/technologies/corewlan.md",
+      "title": "Core WLAN",
+      "kind": "guide",
+      "characters": 2852,
+      "hash": "80f4bb9fad03882dc06846c61a64e70631c97af35efb29aad92751e495948488"
+    },
+    {
+      "path": "docs/apple/technologies/crashreportextension.md",
+      "title": "CrashReportExtension",
+      "kind": "guide",
+      "characters": 1640,
+      "hash": "4a3c063554a77973cef83e99da52492c5516c6f7b5d8513eb4e2ac5edb3f47ef"
+    },
+    {
+      "path": "docs/apple/technologies/createml.md",
+      "title": "Create ML",
+      "kind": "guide",
+      "characters": 6262,
+      "hash": "435cff67b006ffd9c3d0ee65b4c93a6eb69f157b7847addc82da455baf7e097f"
+    },
+    {
+      "path": "docs/apple/technologies/createmlcomponents.md",
+      "title": "Create ML Components",
+      "kind": "guide",
+      "characters": 24425,
+      "hash": "800e808e4c764d5c080619b24db7758f454993560a131e53728f92e0b268bb47"
+    },
+    {
+      "path": "docs/apple/technologies/cryptotokenkit.md",
+      "title": "CryptoTokenKit",
+      "kind": "guide",
+      "characters": 3749,
+      "hash": "a26626ea9918e143e66e21e0fba2c72fd3a91bf6e45a310bd1d4cbd5a1e54138"
+    },
+    {
+      "path": "docs/apple/technologies/darwinnotify.md",
+      "title": "Darwin Notify",
+      "kind": "guide",
+      "characters": 2016,
+      "hash": "8a1dfc3191197138ab8d1dbb377840b8840cd7c1f4e6d04fe4ab318c140724ae"
+    },
+    {
+      "path": "docs/apple/technologies/datadetection.md",
+      "title": "DataDetection",
+      "kind": "guide",
+      "characters": 3789,
+      "hash": "3553f799561d687fd254d76b73c606041613dd9d9ab2b3e3cf9276977dbf7400"
+    },
+    {
+      "path": "docs/apple/technologies/declaredagerange.md",
+      "title": "Declared Age Range",
+      "kind": "guide",
+      "characters": 2449,
+      "hash": "96df32714bf6bd6cd415ee73452d4c6035a238dfa8b61f7d8da1d1181d7046d0"
+    },
+    {
+      "path": "docs/apple/technologies/developertoolssupport.md",
+      "title": "Developer Tools Support",
+      "kind": "guide",
+      "characters": 3081,
+      "hash": "be081fa2138faa574976012fc771b171501a13197842f10d5b42d9d477d1ed66"
+    },
+    {
+      "path": "docs/apple/technologies/deviceactivity.md",
+      "title": "Device Activity",
+      "kind": "guide",
+      "characters": 3314,
+      "hash": "15e50dc92aafd4d9ba7aefefd609eb240092f16e77017e5dc4e91e221813a703"
+    },
+    {
+      "path": "docs/apple/technologies/devicediscoveryextension.md",
+      "title": "DeviceDiscoveryExtension",
+      "kind": "guide",
+      "characters": 4575,
+      "hash": "b074f586c5ec3fed3a62bac2377f96d8c4f3454924dbce63d0f06a97ea6954a7"
+    },
+    {
+      "path": "docs/apple/technologies/devicediscoveryui.md",
+      "title": "DeviceDiscoveryUI",
+      "kind": "guide",
+      "characters": 2776,
+      "hash": "f23b32d8d57121365158f247e983b6789a1b94d92328db7b571c5904b8a475ba"
+    },
+    {
+      "path": "docs/apple/technologies/devicemanagement.md",
+      "title": "Device Management",
+      "kind": "guide",
+      "characters": 3784,
+      "hash": "76895adad8da344c7470c1421cdca9d3358d0252a881678a3e7e7074095da235"
+    },
+    {
+      "path": "docs/apple/technologies/diskarbitration.md",
+      "title": "Disk Arbitration",
+      "kind": "guide",
+      "characters": 2610,
+      "hash": "50779db1f789c747867f0ffd624c75f414073a2fbd92ba6961975e9b24c80451"
+    },
+    {
+      "path": "docs/apple/technologies/diskimagekit.md",
+      "title": "DiskImageKit",
+      "kind": "guide",
+      "characters": 3744,
+      "hash": "6608fa766078c1ea3ae6aa2b683a30ecbb831501aee9546dcd540e32bfa03058"
+    },
+    {
+      "path": "docs/apple/technologies/dispatch.md",
+      "title": "Dispatch",
+      "kind": "guide",
+      "characters": 4999,
+      "hash": "2903e132d85cfd84ece30ed8210aefccfdc383b24a6aaba32de2c53d5cb7a0c9"
+    },
+    {
+      "path": "docs/apple/technologies/distributed.md",
+      "title": "Distributed",
+      "kind": "guide",
+      "characters": 3897,
+      "hash": "309b25d2aa4ce054e6c07d1fb2dab578d063fad67d6bdc85e7b3036ff3c364d9"
+    },
+    {
+      "path": "docs/apple/technologies/dnssd.md",
+      "title": "dnssd",
+      "kind": "guide",
+      "characters": 17757,
+      "hash": "8a0887df29191a5ae4d63a70f2013ed06b95e9d5c17559e32c1580a49765be2b"
+    },
+    {
+      "path": "docs/apple/technologies/docc.md",
+      "title": "DocC",
+      "kind": "guide",
+      "characters": 1348,
+      "hash": "bf25b94151decfe13976cb574854756979d2bfe8986e59a33f1b43d491b7b23f"
+    },
+    {
+      "path": "docs/apple/technologies/dockkit.md",
+      "title": "DockKit",
+      "kind": "guide",
+      "characters": 2268,
+      "hash": "c3f1649ad00afeffbff14e69667b0d9accf33c72ef6b5b5bb8b4432279c47553"
+    },
+    {
+      "path": "docs/apple/technologies/driverkit.md",
+      "title": "DriverKit",
+      "kind": "guide",
+      "characters": 14003,
+      "hash": "f849fa3e32d07f336ca79b9e7c80bb083250a5a3d5b043a11d24dfbb8ddb8e5d"
+    },
+    {
+      "path": "docs/apple/technologies/endpointsecurity.md",
+      "title": "Endpoint Security",
+      "kind": "guide",
+      "characters": 13082,
+      "hash": "2b89c73a8c00d06c48febf21c182ebaa9adcf2499ccc0d48348ede6aa8293fae"
+    },
+    {
+      "path": "docs/apple/technologies/energykit.md",
+      "title": "EnergyKit",
+      "kind": "guide",
+      "characters": 3703,
+      "hash": "2a22a92d086557183383208cbdae9b1e0de4ccefe40c03cb93bcaa4194388e31"
+    },
+    {
+      "path": "docs/apple/technologies/enterpriseprogramapi.md",
+      "title": "Enterprise Program API",
+      "kind": "guide",
+      "characters": 3527,
+      "hash": "3d794f97fbabdb6d1fc7e187f15fd3d069725e2b13658b9534e417c5824e80fa"
+    },
+    {
+      "path": "docs/apple/technologies/eventkitui.md",
+      "title": "EventKit UI",
+      "kind": "guide",
+      "characters": 2161,
+      "hash": "0b3584e7d4ec5a2dd6497d1be41ae6e3a2330bb555ca97c91905523ba8f2d00d"
+    },
+    {
+      "path": "docs/apple/technologies/exceptionhandling.md",
+      "title": "Exception Handling",
+      "kind": "guide",
+      "characters": 2117,
+      "hash": "b2a36711fde1485759476d638ee7a2bce3e2a910fb10d35ef95ac91f6393a0c0"
+    },
+    {
+      "path": "docs/apple/technologies/executionpolicy.md",
+      "title": "Execution Policy",
+      "kind": "guide",
+      "characters": 1952,
+      "hash": "fd459002599018def78389dcd27e7b07d5bfa237fd29eb4adbbc16d9d18d60a7"
+    },
+    {
+      "path": "docs/apple/technologies/exposurenotification.md",
+      "title": "Exposure Notification",
+      "kind": "guide",
+      "characters": 5470,
+      "hash": "96c408b96e9154eddee98f14026a266543abfa38ce2a5a7a129d080f1e0e8178"
+    },
+    {
+      "path": "docs/apple/technologies/extensionfoundation.md",
+      "title": "ExtensionFoundation",
+      "kind": "guide",
+      "characters": 2959,
+      "hash": "42a8e6ae0b6a0fb2a0cc08e925142852574dd107243e59b739278e2f1cd5024c"
+    },
+    {
+      "path": "docs/apple/technologies/extensionkit.md",
+      "title": "ExtensionKit",
+      "kind": "guide",
+      "characters": 2755,
+      "hash": "d6dba4630f0a0acd9dd06a2bd814e70981781891fdcd31935e52bcc67c96d1aa"
+    },
+    {
+      "path": "docs/apple/technologies/externalpurchaseserverapi.md",
+      "title": "External Purchase Server API",
+      "kind": "guide",
+      "characters": 4127,
+      "hash": "1539590ae35f2a46980f0e3ba53c012505122f59598c9b8af18c9bea0d97fcb8"
+    },
+    {
+      "path": "docs/apple/technologies/familycontrols.md",
+      "title": "Family Controls",
+      "kind": "guide",
+      "characters": 2741,
+      "hash": "5cecb69878cd6f561acc9e77f8139a1d793306ec899004be6fc38bee254b8a9a"
+    },
+    {
+      "path": "docs/apple/technologies/fileproviderui.md",
+      "title": "File Provider UI",
+      "kind": "guide",
+      "characters": 2203,
+      "hash": "8dcd6f8cd562ba6faa8abf0e1056ffceabfd5d7552091b5f0ab650ee9d0e2201"
+    },
+    {
+      "path": "docs/apple/technologies/financekit.md",
+      "title": "FinanceKit",
+      "kind": "guide",
+      "characters": 5302,
+      "hash": "89b1ce735aad6efca3befa8a12842a9148ad004a6778e61147e02d9e82fc1730"
+    },
+    {
+      "path": "docs/apple/technologies/financekitui.md",
+      "title": "FinanceKitUI",
+      "kind": "guide",
+      "characters": 2891,
+      "hash": "8bba3491ec713fbbb65135523b9e04ad8d1f531e00e33928128a63908dcf5923"
+    },
+    {
+      "path": "docs/apple/technologies/findersync.md",
+      "title": "Finder Sync",
+      "kind": "guide",
+      "characters": 1901,
+      "hash": "79ec66847f862e7f79e8cb575c5427d66bb0c4745d90543ef047c54abb9351d0"
+    },
+    {
+      "path": "docs/apple/technologies/forcefeedback.md",
+      "title": "Force Feedback",
+      "kind": "guide",
+      "characters": 2485,
+      "hash": "eb40ed1083c0f13d7f5c93648eb61e2162828b6b43dc61ff3b054205af243b64"
+    },
+    {
+      "path": "docs/apple/technologies/foveatedstreaming.md",
+      "title": "Foveated Streaming",
+      "kind": "guide",
+      "characters": 3844,
+      "hash": "ef1f6791832cab697bd106bcde426b2953b87ec6f50095e260781b1aab67cdf3"
+    },
+    {
+      "path": "docs/apple/technologies/fskit.md",
+      "title": "FSKit",
+      "kind": "guide",
+      "characters": 4714,
+      "hash": "897446cb7887a2d51b2bfd2f4f40839ea83a37703289f9dd490cfeae92674094"
+    },
+    {
+      "path": "docs/apple/technologies/gamekit.md",
+      "title": "GameKit",
+      "kind": "guide",
+      "characters": 9019,
+      "hash": "f3e62fb04e32a6ed9976d601e346eff2ad0fbee957a80ae1bbef3db88eea05f9"
+    },
+    {
+      "path": "docs/apple/technologies/gamesave.md",
+      "title": "GameSave",
+      "kind": "guide",
+      "characters": 1910,
+      "hash": "51e884e4d43894b4a2ea705ff5182cbf5626539939c4c4c6c0c9b8cb237eefd2"
+    },
+    {
+      "path": "docs/apple/technologies/geotoolbox.md",
+      "title": "GeoToolbox",
+      "kind": "guide",
+      "characters": 2400,
+      "hash": "6877948ded526419547fd3b390988358692f6cb3df27f2b7ab67d78414fcc284"
+    },
+    {
+      "path": "docs/apple/technologies/glkit.md",
+      "title": "GLKit",
+      "kind": "guide",
+      "characters": 4988,
+      "hash": "5e8e4df18faa1ba592c177e0fad460b862f4ff8e5b7e1e596b1b8543cae010f8"
+    },
+    {
+      "path": "docs/apple/technologies/groupactivities.md",
+      "title": "Group Activities",
+      "kind": "guide",
+      "characters": 6338,
+      "hash": "8350ca9cdb41d8ff94101dc5f529ef8b76e0c90c8e81dacd3b4d61acf098320c"
+    },
+    {
+      "path": "docs/apple/technologies/gss.md",
+      "title": "GSS",
+      "kind": "guide",
+      "characters": 2593,
+      "hash": "aa365d186798b6ddd340f0c2ced1af50ce7e59df17dcc946c38374f9db7bc190"
+    },
+    {
+      "path": "docs/apple/technologies/hiddriverkit.md",
+      "title": "HIDDriverKit",
+      "kind": "guide",
+      "characters": 7687,
+      "hash": "31cf413f9e52926c78edd26453c2552f3a5582ba258bcab66ee2044d1d5b5c7f"
+    },
+    {
+      "path": "docs/apple/technologies/http-live-streaming.md",
+      "title": "HTTP Live Streaming",
+      "kind": "guide",
+      "characters": 3610,
+      "hash": "daacc760b6abbb55b379454abb7f0198b068dfb3b1783b0dfa0faba91e27e989"
+    },
+    {
+      "path": "docs/apple/technologies/hvf.md",
+      "title": "hvf",
+      "kind": "guide",
+      "characters": 2973,
+      "hash": "0f2e0d9090c644aedad6412cdb952c6721e2a9396715e31c56b1f3189c3ed387"
+    },
+    {
+      "path": "docs/apple/technologies/hypervisor.md",
+      "title": "Hypervisor",
+      "kind": "guide",
+      "characters": 5838,
+      "hash": "bb91d8f2574769fa64315212b1e25c08f4433fd425baddd6d8677bdf26ff4058"
+    },
+    {
+      "path": "docs/apple/technologies/iad.md",
+      "title": "iAd",
+      "kind": "guide",
+      "characters": 3344,
+      "hash": "5dc86992bec31b15d161d06ca78299597107aa9d2bc2bae9d770891924e26af2"
+    },
+    {
+      "path": "docs/apple/technologies/identitydocumentservices.md",
+      "title": "IdentityDocumentServices",
+      "kind": "guide",
+      "characters": 3593,
+      "hash": "6daa168ab5a49aef4850ea486a166f50752bc189efe5b992e469c8eff71fc34d"
+    },
+    {
+      "path": "docs/apple/technologies/identitydocumentservicesui.md",
+      "title": "IdentityDocumentServicesUI",
+      "kind": "guide",
+      "characters": 3350,
+      "hash": "9dcf1217ea1f4af54359d9e71f59c8048223f8f12f9c3c5b554aa9cf7062b01a"
+    },
+    {
+      "path": "docs/apple/technologies/identitylookup.md",
+      "title": "SMS and Call Reporting",
+      "kind": "guide",
+      "characters": 4061,
+      "hash": "7843f70e577de02e83b10d67843bbb2ca6680883c8e8a46de30574dc24941bb8"
+    },
+    {
+      "path": "docs/apple/technologies/imagecapturecore.md",
+      "title": "ImageCaptureCore",
+      "kind": "guide",
+      "characters": 4264,
+      "hash": "0aa4d184060c129d8a7a9a30523b652f66aa7428ad6e734b5927912bf80a41e7"
+    },
+    {
+      "path": "docs/apple/technologies/imageio.md",
+      "title": "Image I/O",
+      "kind": "guide",
+      "characters": 9932,
+      "hash": "284f5499f4ae3d5850e14e58e715667f590a3648964ebac0b6458dad00a9412e"
+    },
+    {
+      "path": "docs/apple/technologies/imageplayground.md",
+      "title": "Image Playground",
+      "kind": "guide",
+      "characters": 2955,
+      "hash": "1bcf1ac866cfb06ee4da22ba8743d4574c2773b023e1cb4723072a5dfd4d004b"
+    },
+    {
+      "path": "docs/apple/technologies/immersivemediasupport.md",
+      "title": "Immersive Media Support",
+      "kind": "guide",
+      "characters": 4715,
+      "hash": "528f2b29d6360ceb1c4fbc69a6591720a19428c38a1d6ade34bb643ffadd7fe2"
+    },
+    {
+      "path": "docs/apple/technologies/inputmethodkit.md",
+      "title": "InputMethodKit",
+      "kind": "guide",
+      "characters": 2443,
+      "hash": "7d32be6e6ba491e9cad175d5b20e61919c82e18668f522c2fb731a936400514d"
+    },
+    {
+      "path": "docs/apple/technologies/installer_js.md",
+      "title": "Installer JS",
+      "kind": "guide",
+      "characters": 1985,
+      "hash": "1df5170e78fe04fe4b6d1fda6a9caaeafcea8be8218e56c94c7ffce1ffee5481"
+    },
+    {
+      "path": "docs/apple/technologies/iobluetooth.md",
+      "title": "IOBluetooth",
+      "kind": "guide",
+      "characters": 6561,
+      "hash": "3c966b27ba5b6516f114ce406fffe4c1a3465b06f98806f8a0caecd821627dfd"
+    },
+    {
+      "path": "docs/apple/technologies/iobluetoothui.md",
+      "title": "IOBluetooth UI",
+      "kind": "guide",
+      "characters": 3403,
+      "hash": "0b9c9d83d14c724707890bf2fd697ad7da2820c6fe4d7134bd3ebe0e67f30854"
+    },
+    {
+      "path": "docs/apple/technologies/iokit.md",
+      "title": "IOKit",
+      "kind": "guide",
+      "characters": 2367,
+      "hash": "d9b723b0023079ab3aed4846bd40e7b36da9235eb7befb8c798ced8914a32718"
+    },
+    {
+      "path": "docs/apple/technologies/ios-ipados-release-notes.md",
+      "title": "iOS & iPadOS Release Notes",
+      "kind": "guide",
+      "characters": 9526,
+      "hash": "776ce7b6a9d9a12d7854f64c775cdec6876576862ec5ecb69d13c55cdf7b8f70"
+    },
+    {
+      "path": "docs/apple/technologies/iosurface.md",
+      "title": "IOSurface",
+      "kind": "guide",
+      "characters": 3998,
+      "hash": "237997cbb6740c4e1eaf1d5559fcca3ac105e0885117a0fb0c9d5289eda3ac29"
+    },
+    {
+      "path": "docs/apple/technologies/iousbhost.md",
+      "title": "IOUSBHost",
+      "kind": "guide",
+      "characters": 4017,
+      "hash": "4c7fdcd5f018e748284d5c281b432699802ba4a0365fa3fa508c5b4b8aff9331"
+    },
+    {
+      "path": "docs/apple/technologies/ituneslibrary.md",
+      "title": "iTunes Library",
+      "kind": "guide",
+      "characters": 2389,
+      "hash": "37f3c4e677b114f112bddfca6cace9e96e73c59e6f4d9393cf0a7743d9b21fc4"
+    },
+    {
+      "path": "docs/apple/technologies/iworkdocumentexportingapi.md",
+      "title": "iWork Document Exporting API",
+      "kind": "guide",
+      "characters": 1672,
+      "hash": "1fa58e866e0efc879ea14ee76eae32adb8f8bbb0c41bf910b133975d46a35160"
+    },
+    {
+      "path": "docs/apple/technologies/javascriptcore.md",
+      "title": "JavaScriptCore",
+      "kind": "guide",
+      "characters": 4136,
+      "hash": "8a630bb3a3042c630dce67b9db3d18ed774ed81e32fff89eb9192f5f287df061"
+    },
+    {
+      "path": "docs/apple/technologies/journalingsuggestions.md",
+      "title": "Journaling Suggestions",
+      "kind": "guide",
+      "characters": 2872,
+      "hash": "5c26e936cb3f21024179fa11ce57aa78937b0793224fa8163b12c3ed52c95ccc"
+    },
+    {
+      "path": "docs/apple/technologies/kernel.md",
+      "title": "Kernel",
+      "kind": "guide",
+      "characters": 5709,
+      "hash": "140bdaca23025cee58398577b5a4fd03db206b236a113225458560731443d265"
+    },
+    {
+      "path": "docs/apple/technologies/latentsemanticmapping.md",
+      "title": "Latent Semantic Mapping",
+      "kind": "guide",
+      "characters": 1925,
+      "hash": "7f121bf4874bbad2dbf94f1f6c6ede46cb4ce6cc8929d9aef4853ac79400a488"
+    },
+    {
+      "path": "docs/apple/technologies/lightweightcoderequirements.md",
+      "title": "LightweightCodeRequirements",
+      "kind": "guide",
+      "characters": 6189,
+      "hash": "c15eb436620d3cc9a5d8f5d785179135bab857fe0b3b3f4ece809f65a9f75e28"
+    },
+    {
+      "path": "docs/apple/technologies/livecommunicationkit.md",
+      "title": "LiveCommunicationKit",
+      "kind": "guide",
+      "characters": 4244,
+      "hash": "0273737a3b083494c8fc6984d1033bd2be779b74b4205cc88ef76ea8ade61661"
+    },
+    {
+      "path": "docs/apple/technologies/livephotoskitjs.md",
+      "title": "LivePhotosKit JS",
+      "kind": "guide",
+      "characters": 1985,
+      "hash": "32d2cc9ef50b578f59896169b2c727152c7928d6bbe0e8b424e75d5d8fbffdfd"
+    },
+    {
+      "path": "docs/apple/technologies/localauthenticationembeddedui.md",
+      "title": "Local Authentication Embedded UI",
+      "kind": "guide",
+      "characters": 1982,
+      "hash": "1ec05d58e55c518e746d040d9300ca16870fbc2826bd1f19d4b2be75bc6c7841"
+    },
+    {
+      "path": "docs/apple/technologies/lockedcameracapture.md",
+      "title": "LockedCameraCapture",
+      "kind": "guide",
+      "characters": 2547,
+      "hash": "84497fd33507fc12f6841b963913c90100924f20069a3af76d40e2c9bcff55a2"
+    },
+    {
+      "path": "docs/apple/technologies/macos-release-notes.md",
+      "title": "macOS Release Notes",
+      "kind": "guide",
+      "characters": 9510,
+      "hash": "a018b21c07eaf95ee4393b1d7efb58fd6c743e76979e8be0eeb7c47cdc310ec4"
+    },
+    {
+      "path": "docs/apple/technologies/mailkit.md",
+      "title": "MailKit",
+      "kind": "guide",
+      "characters": 2997,
+      "hash": "d9047b9365ee9123476ee4c6c8cee2b7cc59feae3f68b1fa508063c581105467"
+    },
+    {
+      "path": "docs/apple/technologies/managedapp.md",
+      "title": "ManagedApp",
+      "kind": "guide",
+      "characters": 2768,
+      "hash": "05839e7527b9287b85cde63d39590f7cb947adbecc242cc193767158407dfecf"
+    },
+    {
+      "path": "docs/apple/technologies/managedappdistribution.md",
+      "title": "Managed App Distribution",
+      "kind": "guide",
+      "characters": 3006,
+      "hash": "2ecbe1c7e12af1ac531130207119ee50abc5915026a012e83afca7e11c373603"
+    },
+    {
+      "path": "docs/apple/technologies/managedsettings.md",
+      "title": "Managed Settings",
+      "kind": "guide",
+      "characters": 2851,
+      "hash": "df5bffdc3524dc51c57adf8e8387818f0f00d98846ede8ab6336725d71b2d893"
+    },
+    {
+      "path": "docs/apple/technologies/managedsettingsui.md",
+      "title": "Managed Settings UI",
+      "kind": "guide",
+      "characters": 1769,
+      "hash": "e1976eb1dc254775bb8b6d1899763ce901fbca59afa92955add602cf94965c02"
+    },
+    {
+      "path": "docs/apple/technologies/mapkitjs.md",
+      "title": "MapKit JS",
+      "kind": "guide",
+      "characters": 2308,
+      "hash": "c3c13d118e2ee8f2ccc48cb8201bb1a9daf9b4fbad3edd6a8cd641aa52916c6b"
+    },
+    {
+      "path": "docs/apple/technologies/marketplacekit.md",
+      "title": "MarketplaceKit",
+      "kind": "guide",
+      "characters": 6591,
+      "hash": "35b288c6446192bcc1a296ddc76d58bd6d28d6b6a6ea5d403ff56f24756645c2"
+    },
+    {
+      "path": "docs/apple/technologies/matter.md",
+      "title": "Matter",
+      "kind": "guide",
+      "characters": 50703,
+      "hash": "a010e6339ca17dc1eeafba9f371c9d64719ca809a4c31de2c9a7ec37aeb3997c"
+    },
+    {
+      "path": "docs/apple/technologies/mattersupport.md",
+      "title": "MatterSupport",
+      "kind": "guide",
+      "characters": 1958,
+      "hash": "62a8335608868c2f00af382f6392462b44836c91661509bc7d5dbce470b5ee22"
+    },
+    {
+      "path": "docs/apple/technologies/mediaaccessibility.md",
+      "title": "Media Accessibility",
+      "kind": "guide",
+      "characters": 1941,
+      "hash": "55e8e428d624c83cc5ca115eb940ea9a13b3f99bb55df791bb0b72b161d03c36"
+    },
+    {
+      "path": "docs/apple/technologies/mediadevice.md",
+      "title": "Media Device",
+      "kind": "guide",
+      "characters": 3143,
+      "hash": "c2ed73841e61ef39475c8a84c5ec23073d693e756a3aad17b706d993d4d52109"
+    },
+    {
+      "path": "docs/apple/technologies/mediaextension.md",
+      "title": "MediaExtension",
+      "kind": "guide",
+      "characters": 5762,
+      "hash": "1aad81a478e3e04e31f6f7b7791f7380fb5152b6dad900ebfb3e34142eda9d75"
+    },
+    {
+      "path": "docs/apple/technologies/mediaintelligence.md",
+      "title": "Media Intelligence",
+      "kind": "guide",
+      "characters": 2721,
+      "hash": "32c237c3d937e845e317138e17662441110477e31ed92740ebb88a060e6de0ef"
+    },
+    {
+      "path": "docs/apple/technologies/mediaintents.md",
+      "title": "Media Intents",
+      "kind": "guide",
+      "characters": 1867,
+      "hash": "9a04c55d9989f4eb486c0d9ecfa4ef3bbda140a77f319c27b7a493f4d2c1e518"
+    },
+    {
+      "path": "docs/apple/technologies/medialibrary.md",
+      "title": "Media Library",
+      "kind": "guide",
+      "characters": 2082,
+      "hash": "527b8fd90e734f4ad30da6467e2ab551702e1f8cc0b5f5e43ae4c3233d005e0e"
+    },
+    {
+      "path": "docs/apple/technologies/mediaplayer.md",
+      "title": "Media Player",
+      "kind": "guide",
+      "characters": 7133,
+      "hash": "cebc61dbe3686c32394754568fbae3ba27e29132544512a72424af803f2d1ec9"
+    },
+    {
+      "path": "docs/apple/technologies/mediasetup.md",
+      "title": "Media Setup",
+      "kind": "guide",
+      "characters": 1755,
+      "hash": "8ba25d7dfd7a223ab4f3932ce048074a42bfc36b5a344169cf4949a9be8fd3c2"
+    },
+    {
+      "path": "docs/apple/technologies/mediatoolbox.md",
+      "title": "Media Toolbox",
+      "kind": "guide",
+      "characters": 3163,
+      "hash": "aacf31ee4d92798a7826e3bd8b9b3bd45665af4cc5fc2a4890218dcd1974a01d"
+    },
+    {
+      "path": "docs/apple/technologies/merchanttokennotificationservices.md",
+      "title": "Apple Pay Merchant Token Management API",
+      "kind": "guide",
+      "characters": 6141,
+      "hash": "f16cdc2f3f4493ba301a7da7fa1732aa95cab32ded71663569fb9f66fe19c1d0"
+    },
+    {
+      "path": "docs/apple/technologies/messages.md",
+      "title": "Messages",
+      "kind": "guide",
+      "characters": 4894,
+      "hash": "92adb8c7892055a12883363b5c39ebe6035741381df54aa371aaa7ef1926b806"
+    },
+    {
+      "path": "docs/apple/technologies/messageui.md",
+      "title": "Message UI",
+      "kind": "guide",
+      "characters": 2498,
+      "hash": "2ac2e0f99d1a27f14034adafee5572d423bcccac55eb339efed587f03f8a2c02"
+    },
+    {
+      "path": "docs/apple/technologies/metalfx.md",
+      "title": "MetalFX",
+      "kind": "guide",
+      "characters": 3785,
+      "hash": "10e6fe35009c6306ad75fe7afc1d4e9b6cb065d08fea24921fec1413b8ba5204"
+    },
+    {
+      "path": "docs/apple/technologies/metalkit.md",
+      "title": "MetalKit",
+      "kind": "guide",
+      "characters": 2521,
+      "hash": "b85777a2352be0f006f7a671d4f23d7800fd8d054c6b4495d41321755b0b3c85"
+    },
+    {
+      "path": "docs/apple/technologies/metalperformanceshaders.md",
+      "title": "Metal Performance Shaders",
+      "kind": "guide",
+      "characters": 24682,
+      "hash": "7d430db8aecd8cd5df26ab28e9567d0d8a6503a28dd126fba1307a10e4417c49"
+    },
+    {
+      "path": "docs/apple/technologies/metalperformanceshadersgraph.md",
+      "title": "Metal Performance Shaders Graph",
+      "kind": "guide",
+      "characters": 10172,
+      "hash": "b3e45901a68e1b48496facb0f0fe9b82aac49a955f0280d590c5c6e876e01c64"
+    },
+    {
+      "path": "docs/apple/technologies/metrickit.md",
+      "title": "MetricKit",
+      "kind": "guide",
+      "characters": 8375,
+      "hash": "8332b329f9afa77d696d884cd8f324a9fc13d007760264761bb6766660e9dd86"
+    },
+    {
+      "path": "docs/apple/technologies/mididriverkit.md",
+      "title": "MIDIDriverKit",
+      "kind": "guide",
+      "characters": 2880,
+      "hash": "c8328d7e53fff70416a8a43819ef50a9591338aa068f36bade33bbfbce94256b"
+    },
+    {
+      "path": "docs/apple/technologies/mlcompute.md",
+      "title": "ML Compute",
+      "kind": "guide",
+      "characters": 2064,
+      "hash": "e20cb911dec98b56792f14e908460152850efb5901b07bd72f9c7070aedbd6f9"
+    },
+    {
+      "path": "docs/apple/technologies/modelio.md",
+      "title": "Model I/O",
+      "kind": "guide",
+      "characters": 9460,
+      "hash": "7f8d91d442af5e281103c08b6fdfb1546742b16e14c9729847d3d27b56c08f0d"
+    },
+    {
+      "path": "docs/apple/technologies/musickitjs.md",
+      "title": "MusicKitJS",
+      "kind": "guide",
+      "characters": 1368,
+      "hash": "f73ee4993f76d32b09e2582aebdf2e430d736efad6de293f425d51dea43c7b2c"
+    },
+    {
+      "path": "docs/apple/technologies/musicunderstanding.md",
+      "title": "Music Understanding",
+      "kind": "guide",
+      "characters": 3226,
+      "hash": "c0bb585278936dd329a918ada3454b8ed313f66ea613a056fe036a8a4d5a4eca"
+    },
+    {
+      "path": "docs/apple/technologies/networkingdriverkit.md",
+      "title": "NetworkingDriverKit",
+      "kind": "guide",
+      "characters": 5893,
+      "hash": "b95e4ae081ba27742d26ee1bbe351001df529764e08dc2643a319799294a89b8"
+    },
+    {
+      "path": "docs/apple/technologies/notaryapi.md",
+      "title": "Notary API",
+      "kind": "guide",
+      "characters": 2667,
+      "hash": "f655d6eef28b1f691b4b40a535bd99f6dc49adbc0635cc9d05b77382365d48df"
+    },
+    {
+      "path": "docs/apple/technologies/notificationcenter.md",
+      "title": "Notification Center",
+      "kind": "guide",
+      "characters": 2344,
+      "hash": "b2b8716026f3c2de6c18abef7d087d5d7fd98ec50bbe78f629f543c9694e2c21"
+    },
+    {
+      "path": "docs/apple/technologies/nowplaying.md",
+      "title": "Now Playing",
+      "kind": "guide",
+      "characters": 3306,
+      "hash": "40e624634c57ab1b5475caf3b22fdfac850ee7e569723f5df201daaa8281f3f8"
+    },
+    {
+      "path": "docs/apple/technologies/objectivec.md",
+      "title": "Objective-C Runtime",
+      "kind": "guide",
+      "characters": 2778,
+      "hash": "474b4242205b6615c91af52a3a172577f6f411d89b6a03ae1aab35dbdf693c90"
+    },
+    {
+      "path": "docs/apple/technologies/observation.md",
+      "title": "Observation",
+      "kind": "guide",
+      "characters": 3136,
+      "hash": "7b3cc51aebd5ceff39120ccf92a4a10bb997fb02e21078f789aaf1be693604cb"
+    },
+    {
+      "path": "docs/apple/technologies/opendirectory.md",
+      "title": "Open Directory",
+      "kind": "guide",
+      "characters": 3463,
+      "hash": "dd0be9fc568c277818b901211312ffb43eae2891656ba3e6629b063d83dc93d4"
+    },
+    {
+      "path": "docs/apple/technologies/opengles.md",
+      "title": "OpenGL ES",
+      "kind": "guide",
+      "characters": 2946,
+      "hash": "a1be594e2d676ff5f894df542394e3ccb83eb26346767f0a3c5675284212cb33"
+    },
+    {
+      "path": "docs/apple/technologies/packagedescription.md",
+      "title": "PackageDescription",
+      "kind": "guide",
+      "characters": 1944,
+      "hash": "17a958f7c4cea77556b28da1cd5e1ac68cf7680d70496b9a20f00a4fea59f578"
+    },
+    {
+      "path": "docs/apple/technologies/paperkit.md",
+      "title": "PaperKit",
+      "kind": "guide",
+      "characters": 3378,
+      "hash": "3cc269c4b0352f42853057af257cdabeb23c1b6c3919ab689def114f0940786a"
+    },
+    {
+      "path": "docs/apple/technologies/paravirtualizedgraphics.md",
+      "title": "Paravirtualized Graphics",
+      "kind": "guide",
+      "characters": 3555,
+      "hash": "08b551c5fba5425f99fd07a7b6a62894cd5fa269c52b846653feda627a70605b"
+    },
+    {
+      "path": "docs/apple/technologies/pcidriverkit.md",
+      "title": "PCIDriverKit",
+      "kind": "guide",
+      "characters": 10221,
+      "hash": "edc4d7ac4f289a8466dd41e4080b72d88ee24d3d47611b37ff25e880a9827ccd"
+    },
+    {
+      "path": "docs/apple/technologies/permissionkit.md",
+      "title": "PermissionKit",
+      "kind": "guide",
+      "characters": 3453,
+      "hash": "d1627b8880e8ed9a06090d01a9cd3aa16e22f1e247d7143d776798e6aca8aaa3"
+    },
+    {
+      "path": "docs/apple/technologies/phase.md",
+      "title": "PHASE",
+      "kind": "guide",
+      "characters": 6294,
+      "hash": "be76f5f800c9e83f8ed5c0a12b438c8fc1fdca68ee926c9f838a82b8665480ee"
+    },
+    {
+      "path": "docs/apple/technologies/playgroundbluetooth.md",
+      "title": "Playground Bluetooth",
+      "kind": "guide",
+      "characters": 2414,
+      "hash": "4b9f317fda260bc5f9224a20f84246d9cf841710eb6ca43bfd11322ed1916c9b"
+    },
+    {
+      "path": "docs/apple/technologies/playgroundsupport.md",
+      "title": "Playground Support",
+      "kind": "guide",
+      "characters": 2972,
+      "hash": "2869f81a101795ba9cd660d40d387a46979daa886056b4efd8994aa6e60c2887"
+    },
+    {
+      "path": "docs/apple/technologies/preferencepanes.md",
+      "title": "Preference Panes",
+      "kind": "guide",
+      "characters": 2918,
+      "hash": "24260376beec50377319bfc2c6edfa014ec0e81dd302db879875545fd46ac3ce"
+    },
+    {
+      "path": "docs/apple/technologies/privatecloudcomputesecurityguide.md",
+      "title": "Private Cloud Compute Security Guide",
+      "kind": "guide",
+      "characters": 1454,
+      "hash": "ad0ab52ce3230e0503e6eca39514f3e0820be60afdfcba0a772f61773bad5df3"
+    },
+    {
+      "path": "docs/apple/technologies/professional_video_applications.md",
+      "title": "Professional Video Applications",
+      "kind": "guide",
+      "characters": 3649,
+      "hash": "510a61bfa4499f60e6898c8f120aeb5f50751ee90a0062b7909973f8a42f4dc0"
+    },
+    {
+      "path": "docs/apple/technologies/proximityreader.md",
+      "title": "ProximityReader",
+      "kind": "guide",
+      "characters": 6641,
+      "hash": "14e6d83baa60e1138e1f7e58553c728abc798f5af41194707c4c9ba76d6c64dd"
+    },
+    {
+      "path": "docs/apple/technologies/pushkit.md",
+      "title": "PushKit",
+      "kind": "guide",
+      "characters": 2770,
+      "hash": "c6b1e3c4adfa50b082da4bc7d82e3cdc9fc0c5996d6b9abfdbf9297e4d054691"
+    },
+    {
+      "path": "docs/apple/technologies/pushtotalk.md",
+      "title": "Push to Talk",
+      "kind": "guide",
+      "characters": 3523,
+      "hash": "7ac5b7fead3fd99ae4ed6a8f3c36b65926da638bf0813c7167e98e70160f0bb2"
+    },
+    {
+      "path": "docs/apple/technologies/quartz.md",
+      "title": "Quartz",
+      "kind": "guide",
+      "characters": 2067,
+      "hash": "ddbba91e787d01aed8a4ed9028cf2388eaef7fcc92924d3758b07aefb46657f5"
+    },
+    {
+      "path": "docs/apple/technologies/quicklookthumbnailing.md",
+      "title": "Quick Look Thumbnailing",
+      "kind": "guide",
+      "characters": 3030,
+      "hash": "11c7db1f9da197cf629365c62238f2c4acab1ec72a91932f2c54572fa8aada7e"
+    },
+    {
+      "path": "docs/apple/technologies/quicklookui.md",
+      "title": "QuickLook UI",
+      "kind": "guide",
+      "characters": 2611,
+      "hash": "3b1b0c47e6b9f157e90daeb49a2351c4b763447a823d711a7fdb8e46b4830254"
+    },
+    {
+      "path": "docs/apple/technologies/quicktime-file-format.md",
+      "title": "QuickTime File Format",
+      "kind": "guide",
+      "characters": 2836,
+      "hash": "094eae1c5e8b23c9e2322a91923325759218df8af444c144d342deb47ba387a5"
+    },
+    {
+      "path": "docs/apple/technologies/realitycomposerpro.md",
+      "title": "Reality Composer Pro",
+      "kind": "guide",
+      "characters": 6119,
+      "hash": "d3b0356abc71eee4fa94aab012d3665365f1f03bfe714779cccc2b23d6242c89"
+    },
+    {
+      "path": "docs/apple/technologies/regexbuilder.md",
+      "title": "RegexBuilder",
+      "kind": "guide",
+      "characters": 3210,
+      "hash": "355b13e3624d0272148d295502929dd60fa82c4018ea577bca1930c9de478565"
+    },
+    {
+      "path": "docs/apple/technologies/relevancekit.md",
+      "title": "RelevanceKit",
+      "kind": "guide",
+      "characters": 3695,
+      "hash": "876657e15e29c11eacaff53248ab05a445059def86962dff095d4edb69341b97"
+    },
+    {
+      "path": "docs/apple/technologies/researchkit.md",
+      "title": "ResearchKit",
+      "kind": "guide",
+      "characters": 1338,
+      "hash": "c26df66f4f95eb1101d221b767a54c89563f1789b874607d5911576f566ab096"
+    },
+    {
+      "path": "docs/apple/technologies/retentionmessaging.md",
+      "title": "Retention Messaging API",
+      "kind": "guide",
+      "characters": 6009,
+      "hash": "08f8f197e68efe66438671ae1514dccb28243cdd6e82ec2c238eefe90205d466"
+    },
+    {
+      "path": "docs/apple/technologies/rosterapi.md",
+      "title": "Roster API",
+      "kind": "guide",
+      "characters": 3809,
+      "hash": "6a0730be10c98d0a682d61dadc9e0e1266ae44b8a5db91f7bf610ecde79ec487"
+    },
+    {
+      "path": "docs/apple/technologies/safari-developer-tools.md",
+      "title": "Safari Developer Features",
+      "kind": "guide",
+      "characters": 3618,
+      "hash": "42ecb61d80f68d4b6f162f07e2616950636627eff6cf074f467f3857e56734c5"
+    },
+    {
+      "path": "docs/apple/technologies/safari-release-notes.md",
+      "title": "Safari Release Notes",
+      "kind": "guide",
+      "characters": 6502,
+      "hash": "4781ea8a94a3ab0092ea56da93181432694a0e42eafb0fe3c71e504381d6d995"
+    },
+    {
+      "path": "docs/apple/technologies/safariservices__safari-app-extensions.md",
+      "title": "Safari app extensions",
+      "kind": "guide",
+      "characters": 3467,
+      "hash": "9159486801ebe7a31800055f184616c1fa9ab4e2cb028df45b407dd85fc574ee"
+    },
+    {
+      "path": "docs/apple/technologies/safariservices.md",
+      "title": "Safari Services",
+      "kind": "guide",
+      "characters": 5027,
+      "hash": "3cc498fcd497d4c3553090f07c89e2e802c66454f36df34b677865b5b0b437d3"
+    },
+    {
+      "path": "docs/apple/technologies/safetykit.md",
+      "title": "SafetyKit",
+      "kind": "guide",
+      "characters": 2615,
+      "hash": "72b846b4fdbadc1f340ea19401ea0f72b6ad90d1d12486092c029c0c5fddb8be"
+    },
+    {
+      "path": "docs/apple/technologies/samplecode.md",
+      "title": "Sample Code Library",
+      "kind": "guide",
+      "characters": 98247,
+      "hash": "9a7316e950aec83331545612111318efb0a5ef066b11fb864f6de9a25257f470"
+    },
+    {
+      "path": "docs/apple/technologies/screencapturekit.md",
+      "title": "ScreenCaptureKit",
+      "kind": "guide",
+      "characters": 5249,
+      "hash": "d749d8ebaf9884d2e41ac4a5178b7bdc613dbe7a825a7bcd364461646f883e77"
+    },
+    {
+      "path": "docs/apple/technologies/screensaver.md",
+      "title": "Screen Saver",
+      "kind": "guide",
+      "characters": 2136,
+      "hash": "67067535aee472274aede32d960b6a11b892d1be5b4c5cb3f0446238d4df11ea"
+    },
+    {
+      "path": "docs/apple/technologies/screentime.md",
+      "title": "Screen Time",
+      "kind": "guide",
+      "characters": 2026,
+      "hash": "e4d26d31e304bb19b3c4340d3035df139cdbb3b3fad6323f6e524c203c302837"
+    },
+    {
+      "path": "docs/apple/technologies/scriptingbridge.md",
+      "title": "Scripting Bridge",
+      "kind": "guide",
+      "characters": 1897,
+      "hash": "82e5d16c711458f2fba5ad8aeed972e64ffa1f57d340f4e5776e1e42d4938923"
+    },
+    {
+      "path": "docs/apple/technologies/scsicontrollerdriverkit.md",
+      "title": "SCSIControllerDriverKit",
+      "kind": "guide",
+      "characters": 2190,
+      "hash": "9774124c49878a2f6fcf5e35f8cfb57f6322d0bd739b87732b74adddfecc4de5"
+    },
+    {
+      "path": "docs/apple/technologies/scsiperipheralsdriverkit.md",
+      "title": "SCSIPeripheralsDriverKit",
+      "kind": "guide",
+      "characters": 2395,
+      "hash": "8a8326cd43d5f66cd405d78404d9d6b8b4484fb5a3e916d7d2275cf94ee7b2f3"
+    },
+    {
+      "path": "docs/apple/technologies/secureelementcredential.md",
+      "title": "SecureElementCredential",
+      "kind": "guide",
+      "characters": 2430,
+      "hash": "316fe75f5368d9e80465ab87e1fa99ba66127876233ef6fc2587500dc4aa15d1"
+    },
+    {
+      "path": "docs/apple/technologies/securityfoundation.md",
+      "title": "Security Foundation",
+      "kind": "guide",
+      "characters": 1621,
+      "hash": "32d0923d46fc3bbd64c6e323607b959963eeda72d06d45677458d6790501cf15"
+    },
+    {
+      "path": "docs/apple/technologies/securityinterface.md",
+      "title": "Security Interface",
+      "kind": "guide",
+      "characters": 3225,
+      "hash": "c8fdafea2715c49cbc9d98610312f3b33db008bfdd98ec75efcfe6d0f006d930"
+    },
+    {
+      "path": "docs/apple/technologies/sensitivecontentanalysis.md",
+      "title": "Sensitive Content Analysis",
+      "kind": "guide",
+      "characters": 2816,
+      "hash": "bc31827e89b57443ad50df3bc3243494c1a2801f85627591b6a678bbdb0a64d2"
+    },
+    {
+      "path": "docs/apple/technologies/serialdriverkit.md",
+      "title": "SerialDriverKit",
+      "kind": "guide",
+      "characters": 3459,
+      "hash": "493bb24fcf5d24143627e20b86b5a6ca6714b59b7fac23f37f0adaeee3dc126a"
+    },
+    {
+      "path": "docs/apple/technologies/servicemanagement.md",
+      "title": "Service Management",
+      "kind": "guide",
+      "characters": 3022,
+      "hash": "7cff7e483817d3c2a56f787e93c4df29ae86052945a61a01af077c59aac66ab8"
+    },
+    {
+      "path": "docs/apple/technologies/servicesaccountlinking.md",
+      "title": "ServicesAccountLinking",
+      "kind": "guide",
+      "characters": 2054,
+      "hash": "1f0cf1b3ad1c1d266c1e81b85c10bddf97b2885aba16c8f68edfb0719518f6e9"
+    },
+    {
+      "path": "docs/apple/technologies/shadergraph.md",
+      "title": "ShaderGraph",
+      "kind": "guide",
+      "characters": 2879,
+      "hash": "a820940821b0dbb76eb391a9e402c0c9dac0df5eac12693a243a16228846169d"
+    },
+    {
+      "path": "docs/apple/technologies/sharedwithyou.md",
+      "title": "Shared with You",
+      "kind": "guide",
+      "characters": 2810,
+      "hash": "6c62a5c885aa108fdcacb2d8ba8e29795274f97d5dc101a16b3765df99780417"
+    },
+    {
+      "path": "docs/apple/technologies/signinwithapple.md",
+      "title": "Sign in with Apple",
+      "kind": "guide",
+      "characters": 2901,
+      "hash": "8226e6ee37ec2624ca7bd717f5bb354c1b2c567081c005a4c3cd5c425f7995c1"
+    },
+    {
+      "path": "docs/apple/technologies/sirieventsuggestionsmarkup.md",
+      "title": "Siri Event Suggestions Markup",
+      "kind": "guide",
+      "characters": 3977,
+      "hash": "6c1efd7a1df88f9f3456aade9465cacb53a4430ce2c986e2ab661f16ae913956"
+    },
+    {
+      "path": "docs/apple/technologies/sirikit.md",
+      "title": "SiriKit",
+      "kind": "guide",
+      "characters": 6290,
+      "hash": "b87145b203cc43cc75b768c2f5bc3ce7e9f33f3a8af6ed5d64c368347ae151ac"
+    },
+    {
+      "path": "docs/apple/technologies/sirikitcloudmedia.md",
+      "title": "SiriKit Cloud Media",
+      "kind": "guide",
+      "characters": 5742,
+      "hash": "6d8feda1ba837e5891f4f526b3e24e784a7af19ef5564827be6a745b6d50d671"
+    },
+    {
+      "path": "docs/apple/technologies/skadnetworkforwebads.md",
+      "title": "SKAdNetwork for Web Ads",
+      "kind": "guide",
+      "characters": 2367,
+      "hash": "aa0bc53526b7e6198d3160e1e968ad541c96b10b56ea4c5edb912513d83e3f72"
+    },
+    {
+      "path": "docs/apple/technologies/snapshots.md",
+      "title": "Maps Web Snapshots",
+      "kind": "guide",
+      "characters": 2054,
+      "hash": "a7e12516d082c5997ce63def047d8abbdc27543a2ed3c7fc4eef5fa23ca4d37e"
+    },
+    {
+      "path": "docs/apple/technologies/social.md",
+      "title": "Social",
+      "kind": "guide",
+      "characters": 1874,
+      "hash": "37b2271c982eb13f3004f19528bbe7c925982959ed8699f588ad90197515b12a"
+    },
+    {
+      "path": "docs/apple/technologies/spatial.md",
+      "title": "Spatial",
+      "kind": "guide",
+      "characters": 7272,
+      "hash": "f044468d221b9d88b9bef5390356e6ea8f3dad7aa3bf572ac47e5cb1b0480cb9"
+    },
+    {
+      "path": "docs/apple/technologies/spatialpreview.md",
+      "title": "Spatial Preview",
+      "kind": "guide",
+      "characters": 3210,
+      "hash": "9c3351f7420c371a72c95287aa3b7e3f23985d057f2220db22e205e32d65d007"
+    },
+    {
+      "path": "docs/apple/technologies/statereporting.md",
+      "title": "StateReporting",
+      "kind": "guide",
+      "characters": 2490,
+      "hash": "c970a0e2d0a9ef311e26963c9e1f549511f6aab081af2c6b82d72d6b8a8dff72"
+    },
+    {
+      "path": "docs/apple/technologies/storekittest.md",
+      "title": "StoreKit Test",
+      "kind": "guide",
+      "characters": 4469,
+      "hash": "8d8c39996c0dc88f6667046ac6371b355d0f357d8b18c593c10dc4d7abf3b023"
+    },
+    {
+      "path": "docs/apple/technologies/suggestedactions.md",
+      "title": "Suggested Actions",
+      "kind": "guide",
+      "characters": 1889,
+      "hash": "189e9f5c4a5520dbbc1866a27c614c4ef28d677bfb6c4bef6010ac5810f35fe9"
+    },
+    {
+      "path": "docs/apple/technologies/swift-playgrounds.md",
+      "title": "Swift Playgrounds",
+      "kind": "guide",
+      "characters": 2696,
+      "hash": "31e536fd4da8d97f9060c5813f24be2e6a9c06655c7f17fffc21cc4c662bb48d"
+    },
+    {
+      "path": "docs/apple/technologies/swift.md",
+      "title": "Swift",
+      "kind": "guide",
+      "characters": 4517,
+      "hash": "4b37d06d5231ed4978344b98d0b474ea40d729acd2dbacd3c2401c28016dc168"
+    },
+    {
+      "path": "docs/apple/technologies/symbols.md",
+      "title": "Symbols",
+      "kind": "guide",
+      "characters": 4249,
+      "hash": "d1908d6ad50e27305e1f4740dcb92727c772cae2f2076163cfb044f6302330fc"
+    },
+    {
+      "path": "docs/apple/technologies/synchronization.md",
+      "title": "Synchronization",
+      "kind": "guide",
+      "characters": 2684,
+      "hash": "19ac1b60f7b11994fd1cbaa5039dd848d78fa2f68137e4df9d95a06922bcf7b7"
+    },
+    {
+      "path": "docs/apple/technologies/system.md",
+      "title": "System",
+      "kind": "guide",
+      "characters": 3062,
+      "hash": "0901a30f5cb457baf51a82b57cdb7a2647c379eaf59d31355a02f8811f33797e"
+    },
+    {
+      "path": "docs/apple/technologies/systemconfiguration.md",
+      "title": "System Configuration",
+      "kind": "guide",
+      "characters": 3819,
+      "hash": "a2308d1178f074e5afb5946c9fdeb86f8f609180d4a1d56d67a748b5d5fb05bf"
+    },
+    {
+      "path": "docs/apple/technologies/systemextensions.md",
+      "title": "System Extensions",
+      "kind": "guide",
+      "characters": 3705,
+      "hash": "371ac610404851857ad6537b696d49322142244a6137e331c3b3076cb9845a20"
+    },
+    {
+      "path": "docs/apple/technologies/tabletopkit.md",
+      "title": "TabletopKit",
+      "kind": "guide",
+      "characters": 7008,
+      "hash": "b8b227a6e2d7c1b56480d354e8f3c8c5b89b8a15a642d6d605656db5130e43bb"
+    },
+    {
+      "path": "docs/apple/technologies/tabulardata.md",
+      "title": "Tabular Data",
+      "kind": "guide",
+      "characters": 4040,
+      "hash": "bfb6703f891f4e113d5dd29bed275813eea6edde9dd68ad7161ea8d734fcd4e2"
+    },
+    {
+      "path": "docs/apple/technologies/technologyoverviews.md",
+      "title": "Technology Overviews",
+      "kind": "guide",
+      "characters": 2469,
+      "hash": "bb8de589460863d53c0d18a2af256474a30bb19319518f26f7d187241dc70789"
+    },
+    {
+      "path": "docs/apple/technologies/technotes.md",
+      "title": "Technotes",
+      "kind": "guide",
+      "characters": 14513,
+      "hash": "f0f4e8b647f8c667e972d33de0b59f7b713ece5ec3ae2db7e3106f3a53463793"
+    },
+    {
+      "path": "docs/apple/technologies/telephonymessagingkit.md",
+      "title": "TelephonyMessagingKit",
+      "kind": "guide",
+      "characters": 2137,
+      "hash": "020e030ce7618496ca6a2d9784445d62d1f18159dabf0ea5f3c100c535729dd5"
+    },
+    {
+      "path": "docs/apple/technologies/testing.md",
+      "title": "Swift Testing",
+      "kind": "guide",
+      "characters": 3401,
+      "hash": "80050b328ff510ee018ed463d7364bdf1c861ae94f471b9c35611e29c1a8962b"
+    },
+    {
+      "path": "docs/apple/technologies/threadnetwork.md",
+      "title": "Thread Network",
+      "kind": "guide",
+      "characters": 2399,
+      "hash": "5393e79d4c83e34e9ccb57814105f639a428cd4f2026ab015a8a554c804aad5d"
+    },
+    {
+      "path": "docs/apple/technologies/touchcontroller.md",
+      "title": "Touch Controller",
+      "kind": "guide",
+      "characters": 2984,
+      "hash": "5c66d06b799d8a44ede275b8e22b9913cb710dcb4363b24ebd410396d8726479"
+    },
+    {
+      "path": "docs/apple/technologies/translationuiprovider.md",
+      "title": "TranslationUIProvider",
+      "kind": "guide",
+      "characters": 2498,
+      "hash": "5ed5e090e56b196aade8f3104adefbc4b47867a5111e6f32152d263e2244cf19"
+    },
+    {
+      "path": "docs/apple/technologies/trustinsights.md",
+      "title": "Trust Insights",
+      "kind": "guide",
+      "characters": 3333,
+      "hash": "d372116c8673e4f489a87867308e699228f459f95e29ce5c57244a4d8c34dcb4"
+    },
+    {
+      "path": "docs/apple/technologies/tvml.md",
+      "title": "TVML",
+      "kind": "guide",
+      "characters": 6338,
+      "hash": "3b59b8b5e4c951a8c84d640e160ded9434f907ced41905bd0b3212229122bcda"
+    },
+    {
+      "path": "docs/apple/technologies/tvmljs.md",
+      "title": "TVMLKit JS",
+      "kind": "guide",
+      "characters": 4825,
+      "hash": "efe769b5429650f9d211997c552ec7196cad933c11fa7f13bac1d21048fd6e74"
+    },
+    {
+      "path": "docs/apple/technologies/tvmlkit.md",
+      "title": "TVMLKit",
+      "kind": "guide",
+      "characters": 4094,
+      "hash": "ad5ec55e9eb9b230095b60826fd9eecb13b5701ccca3b03c22fc1e13848f0b7c"
+    },
+    {
+      "path": "docs/apple/technologies/tvos-release-notes.md",
+      "title": "tvOS Release Notes",
+      "kind": "guide",
+      "characters": 7846,
+      "hash": "51e3228a0422599aa93de3dab0f9bc996f2a0c33a1d4278b51cd3efa42076c5a"
+    },
+    {
+      "path": "docs/apple/technologies/tvservices.md",
+      "title": "TV Services",
+      "kind": "guide",
+      "characters": 3917,
+      "hash": "1bb94f64e44d1c7a8b65bfc846c9fed8d25a587a8eaece626dbc3e4f5f109aed"
+    },
+    {
+      "path": "docs/apple/technologies/tvuikit.md",
+      "title": "TVUIKit",
+      "kind": "guide",
+      "characters": 3151,
+      "hash": "fd4419c7bce1af28209867593e4380726f8c14723dfd1802fded4bfef7550ae7"
+    },
+    {
+      "path": "docs/apple/technologies/uikit__mac-catalyst.md",
+      "title": "Mac Catalyst",
+      "kind": "guide",
+      "characters": 4399,
+      "hash": "817f371a8faf1c7c434e75e9528944705870a1c7516cab2946195aed85e7e23e"
+    },
+    {
+      "path": "docs/apple/technologies/updates.md",
+      "title": "Updates",
+      "kind": "guide",
+      "characters": 9626,
+      "hash": "1e71f74617512b2e9c2612f78a92d1b675f8ba2c2d6e80feb3493d89c2ddbe72"
+    },
+    {
+      "path": "docs/apple/technologies/usbdriverkit.md",
+      "title": "USBDriverKit",
+      "kind": "guide",
+      "characters": 7835,
+      "hash": "025a8de4002decf6b1e71f4987535599bc0ce11dbb9efef15061ac13100cceb5"
+    },
+    {
+      "path": "docs/apple/technologies/usbserialdriverkit.md",
+      "title": "USBSerialDriverKit",
+      "kind": "guide",
+      "characters": 1861,
+      "hash": "8251e4f645d0b68bf36ed3170e1d7599eb46c1aba6299bd127c74366ed0ccd03"
+    },
+    {
+      "path": "docs/apple/technologies/usd.md",
+      "title": "USD",
+      "kind": "guide",
+      "characters": 2026,
+      "hash": "0e9b3a3d27e1c4c5c957206dd24193f7e0a7f0875f6912a00f6049d582539a02"
+    },
+    {
+      "path": "docs/apple/technologies/usdkit.md",
+      "title": "USDKit",
+      "kind": "guide",
+      "characters": 2575,
+      "hash": "a9635074c19c4cc7e360a2d14b9ec8b00c3cb8087869c8d062be279125d96263"
+    },
+    {
+      "path": "docs/apple/technologies/usernotificationsui.md",
+      "title": "User Notifications UI",
+      "kind": "guide",
+      "characters": 1921,
+      "hash": "d754279ae46af4e05ce91323701fad4c3ccb4a4181d316f2bf54ff351299ef36"
+    },
+    {
+      "path": "docs/apple/technologies/videodriverkit.md",
+      "title": "VideoDriverKit",
+      "kind": "guide",
+      "characters": 3601,
+      "hash": "fecb1296d89dd05d8518e9f3bdafcb922ecdc4d46b475c879d83db562fbe816d"
+    },
+    {
+      "path": "docs/apple/technologies/videosubscriberaccount.md",
+      "title": "Video Subscriber Account",
+      "kind": "guide",
+      "characters": 3698,
+      "hash": "7cd1ad2ee958b809307b28d3d16d3f5530961bb6fa0dc3c9b69c4536db1c202b"
+    },
+    {
+      "path": "docs/apple/technologies/videotoolbox.md",
+      "title": "Video Toolbox",
+      "kind": "guide",
+      "characters": 6010,
+      "hash": "3ef7036351f1b3fd033baa7689278e96fa60cf5301002ea2d635c36e6bb8a118"
+    },
+    {
+      "path": "docs/apple/technologies/virtualization.md",
+      "title": "Virtualization",
+      "kind": "guide",
+      "characters": 5103,
+      "hash": "aa34f142f7d709c7149e9a6344615beec9a4b7ba5f454ab950d3f5d46cd82f3a"
+    },
+    {
+      "path": "docs/apple/technologies/visionos-release-notes.md",
+      "title": "visionOS Release Notes",
+      "kind": "guide",
+      "characters": 3763,
+      "hash": "e5ed01f345a37f95c1307b7ed675ecc30f788a4d0c2af7203fddf99ccecd807a"
+    },
+    {
+      "path": "docs/apple/technologies/visualintelligence.md",
+      "title": "Visual Intelligence",
+      "kind": "guide",
+      "characters": 2479,
+      "hash": "579ce8765485406284a7cea67b33189e4b505614869c84bc28cb7522a8fa0d66"
+    },
+    {
+      "path": "docs/apple/technologies/vmnet.md",
+      "title": "vmnet",
+      "kind": "guide",
+      "characters": 6821,
+      "hash": "55606f101589b8ea108d36980c8eadde2a46c3744b1fb3a9a6d6373f92837dda"
+    },
+    {
+      "path": "docs/apple/technologies/walletpasses.md",
+      "title": "Wallet Passes",
+      "kind": "guide",
+      "characters": 5549,
+      "hash": "e9b80a5b061c69507f0ab7af12420ac476e2c65bda4a9198e34071a8e7c290fb"
+    },
+    {
+      "path": "docs/apple/technologies/watchconnectivity.md",
+      "title": "Watch Connectivity",
+      "kind": "guide",
+      "characters": 2301,
+      "hash": "ba67e41f817e7c211d97a0be563117175f72dc892e0747ec8591e35dd3bc01aa"
+    },
+    {
+      "path": "docs/apple/technologies/watchkit.md",
+      "title": "WatchKit",
+      "kind": "guide",
+      "characters": 3295,
+      "hash": "3bb01bc045f6b8b27e6918f28de456f2ea7217dc0e38346f4a40f63da608505e"
+    },
+    {
+      "path": "docs/apple/technologies/watchos-apps.md",
+      "title": "watchOS apps",
+      "kind": "guide",
+      "characters": 6355,
+      "hash": "10a12daa6dbe52928a90f2c4599e534cea21b8d12c30e99c855e4f342043886e"
+    },
+    {
+      "path": "docs/apple/technologies/watchos-release-notes.md",
+      "title": "watchOS Release Notes",
+      "kind": "guide",
+      "characters": 8049,
+      "hash": "a192169e716c605ae31dcd8e703f408b433e9c526d6c81fd9ccf6200fd20bd63"
+    },
+    {
+      "path": "docs/apple/technologies/weatherkitrestapi.md",
+      "title": "WeatherKit REST API",
+      "kind": "guide",
+      "characters": 5206,
+      "hash": "6e854258a8cd023681b426ef58ddfe01f978f440f9038fa653741cb3b5f3be17"
+    },
+    {
+      "path": "docs/apple/technologies/webkitjs.md",
+      "title": "WebKit JS",
+      "kind": "guide",
+      "characters": 54812,
+      "hash": "b6d5532d71329904f9b847774b61dee31cf95fe2ad3c4fea7923cf5d1ec9b29e"
+    },
+    {
+      "path": "docs/apple/technologies/wifiaware.md",
+      "title": "Wi-Fi Aware",
+      "kind": "guide",
+      "characters": 5180,
+      "hash": "8edb76b8c7e346efb3f30267f3192072dbbb82d2a4a5e4057a54e5ad3353423d"
+    },
+    {
+      "path": "docs/apple/technologies/wifiinfrastructure.md",
+      "title": "Wi-Fi Infrastructure",
+      "kind": "guide",
+      "characters": 2635,
+      "hash": "19cd535cdb454784e9fce977af07120211401285de7fcd7ede98d294fbb6af27"
+    },
+    {
+      "path": "docs/apple/technologies/wirelessinsights.md",
+      "title": "WirelessInsights",
+      "kind": "guide",
+      "characters": 1804,
+      "hash": "556c7781fd0e52de3cc74a5e6262d6b190ae9fce227e261349af56620a749b2f"
+    },
+    {
+      "path": "docs/apple/technologies/workoutkit.md",
+      "title": "WorkoutKit",
+      "kind": "guide",
+      "characters": 2901,
+      "hash": "3511357fa5641bbb054811540bf32aa4e98074d9b2364e9499f1f5e10df3550d"
+    },
+    {
+      "path": "docs/apple/technologies/xcode__swift-packages.md",
+      "title": "Swift packages",
+      "kind": "guide",
+      "characters": 3165,
+      "hash": "1ec5ac36f9601a02832e6373c945b0d3a0664a36db2971b9bb48a1685b238e46"
+    },
+    {
+      "path": "docs/apple/technologies/xcode__xcode-cloud.md",
+      "title": "Xcode Cloud",
+      "kind": "guide",
+      "characters": 5805,
+      "hash": "84de46f9b1f465bfb4e7d74fad907e1732ddca274c537d3c14214f2bba007235"
+    },
+    {
+      "path": "docs/apple/technologies/xcode-release-notes.md",
+      "title": "Xcode Release Notes",
+      "kind": "guide",
+      "characters": 8383,
+      "hash": "fb719c92ac9102eef158274f54a3ce5cebbb4b8920c71d955fdae46f91fe2bc7"
+    },
+    {
+      "path": "docs/apple/technologies/xcode.md",
+      "title": "Xcode",
+      "kind": "guide",
+      "characters": 4300,
+      "hash": "e2b9f40cc834f493420fd83a42fd8d87b7f324ac74d6338e0afdeac8f79ad9f9"
+    },
+    {
+      "path": "docs/apple/technologies/xcodekit.md",
+      "title": "XcodeKit",
+      "kind": "guide",
+      "characters": 2486,
+      "hash": "fe1ca5d07ffec30e0caf1b7fcc42c95ba570863e3c7cf160be57c3bf650d2685"
+    },
+    {
+      "path": "docs/apple/technologies/xcselect.md",
+      "title": "xcselect",
+      "kind": "guide",
+      "characters": 1597,
+      "hash": "ba34e776e00bbb53ee19380fa83c7b70019c766718643fb2ea99c65787466994"
+    },
+    {
+      "path": "docs/apple/technologies/xctest.md",
+      "title": "XCTest",
+      "kind": "guide",
+      "characters": 3699,
+      "hash": "5f9fe7813316033532d1c4881864a58e2ec7b35343d96f9bd9ab87cbd8ee752f"
+    },
+    {
+      "path": "docs/apple/technologies/xpc.md",
+      "title": "XPC",
+      "kind": "guide",
+      "characters": 3017,
+      "hash": "cbdea4c5864d6af4d6f24ffb244cb497be4bfafa4c40920a680b2233d34e0b2b"
+    },
+    {
+      "path": "docs/apple/technology-workflow.md",
+      "title": "Implementing a Technology from the Apple Directory",
+      "kind": "guide",
+      "characters": 7695,
+      "hash": "234e29bb7d5aa6c7d755ce300f00ddb8120014a1f9e256b6df23c97ed0ce77dd"
+    },
+    {
+      "path": "docs/apple/updates-and-release-notes.md",
+      "title": "Apple Updates and Release Notes",
+      "kind": "guide",
+      "characters": 10869,
+      "hash": "7cc81fbd7242fe22890a37e3e10912d8cc6faf4a9622597bcf48f5fa203f79d3"
+    },
+    {
+      "path": "docs/compatibility-matrix.md",
+      "title": "Compatibility Matrix",
+      "kind": "guide",
+      "characters": 8035,
+      "hash": "0a3b9323632379940196b0cbee42254c9e02dad222e9d51bdd5d3cc596823cf0"
+    },
+    {
+      "path": "docs/data/README.md",
+      "title": "Data and Persistence",
+      "kind": "guide",
+      "characters": 1818,
+      "hash": "d5f5106fd60a225ae12c3206e789b4c527adf142717ea06d1fd43474c0eb2d93"
+    },
+    {
+      "path": "docs/design/color-system.md",
+      "title": "iOS Color System -- Complete Guide for Stunning SwiftUI UIs",
+      "kind": "guide",
+      "characters": 31912,
+      "hash": "99e4c9a2355a35a440d85e63af6db6fd03da3078184b2821b6aa1df21d1e9318"
+    },
+    {
+      "path": "docs/design/design-tokens.md",
+      "title": "Design Tokens, Adaptive Color, and Liquid Glass",
+      "kind": "guide",
+      "characters": 22205,
+      "hash": "fe57cbcb123bd2b3d83fbd1eff2e60ec43b50b84d0d747df572676fe90854be6"
+    },
+    {
+      "path": "docs/design/fonts-catalog.md",
+      "title": "iOS Font Catalog — Ultimate Reference",
+      "kind": "guide",
+      "characters": 89896,
+      "hash": "71a785ac8f1f72bf9da529398d19dd0971f45b258a8ef5b01f56bb7527660574"
+    },
+    {
+      "path": "docs/design/icon-composer.md",
+      "title": "Layer-by-Layer Icons with Icon Composer",
+      "kind": "guide",
+      "characters": 3924,
+      "hash": "1c4aaa7873913f6c623c054a3f6d70e0ca9e6037bd660fffae9a4d2388b4aa76"
+    },
+    {
+      "path": "docs/design/interaction-standards.md",
+      "title": "Interaction Standards",
+      "kind": "guide",
+      "characters": 39001,
+      "hash": "7c172bf56bb1c80cdce8283c2e6c3b7e1fb630a3739417cc9f156d642e1df388"
+    },
+    {
+      "path": "docs/design/liquid-glass-adoption.md",
+      "title": "Adopting Liquid Glass",
+      "kind": "guide",
+      "characters": 13562,
+      "hash": "313f10faff3511adfe3b7eee8f0211f071ae0ac005450896e66affc6d0257673"
+    },
+    {
+      "path": "docs/design/README.md",
+      "title": "Professional UI/UX System",
+      "kind": "guide",
+      "characters": 2657,
+      "hash": "cfe64978965c1c29f7ce8d75980319f5444d21f6fc007ef2c84b80b1f9d24d89"
+    },
+    {
+      "path": "docs/design/stunning-ui-patterns.md",
+      "title": "Stunning UI Patterns -- Complete SwiftUI Pattern Library",
+      "kind": "guide",
+      "characters": 66267,
+      "hash": "1582634e5e5ec74fa75bd3883a5a2dc0a7e769e09dd06c0942ebd42e99ac0a55"
+    },
+    {
+      "path": "docs/design/third-party-animations.md",
+      "title": "Third-Party Animation Integration",
+      "kind": "guide",
+      "characters": 13366,
+      "hash": "4ef3d96fa78cd0abf1594c99e31dcbdc57e499712f812796c4fde3509146f626"
+    },
+    {
+      "path": "docs/design/typography-system.md",
+      "title": "iOS Typography System -- Complete Guide for Stunning SwiftUI Text",
+      "kind": "guide",
+      "characters": 24786,
+      "hash": "c6a039c63117b9015b79693d2b5e49919d51eae143d9730a64ab46424cd5fe68"
+    },
+    {
+      "path": "docs/frameworks/accelerate.md",
+      "title": "Accelerate",
+      "kind": "guide",
+      "characters": 21359,
+      "hash": "a892b1c8ae8145c17a25dd3726e411fbfa83f0e7830576abd0d55d86ba1485ff"
+    },
+    {
+      "path": "docs/frameworks/accessibility.md",
+      "title": "Accessibility",
+      "kind": "guide",
+      "characters": 22057,
+      "hash": "018beb81713a7489d53150ec397289046845b142ba557eba1e9d2f13abbce621"
+    },
+    {
+      "path": "docs/frameworks/activitykit.md",
+      "title": "ActivityKit & Live Activities",
+      "kind": "guide",
+      "characters": 22210,
+      "hash": "da1f580253364a3fa1c82c2f1c1cc598533f036e4274e899d6b9fb32a942f807"
+    },
+    {
+      "path": "docs/frameworks/app-clips.md",
+      "title": "App Clips",
+      "kind": "guide",
+      "characters": 27277,
+      "hash": "20d604db0971578e94ba7ad16a3ef7055118ce73b2a8d00fe0dfde28bc0557f0"
+    },
+    {
+      "path": "docs/frameworks/app-intents-intelligence.md",
+      "title": "App Intents, Schemas, Spotlight, and View Annotations",
+      "kind": "guide",
+      "characters": 5629,
+      "hash": "8697c99f228fa3467b0960c0c6b14e189613f233608121129381b937155187a5"
+    },
+    {
+      "path": "docs/frameworks/app-intents.md",
+      "title": "App Intents",
+      "kind": "guide",
+      "characters": 18601,
+      "hash": "3bdec551b747d2a8b1e008b7925de3ca168534353d348a9304fc4f62a90460d6"
+    },
+    {
+      "path": "docs/frameworks/apple-intelligence.md",
+      "title": "Apple Intelligence",
+      "kind": "guide",
+      "characters": 8387,
+      "hash": "a9129bc1a1bab56dac3432e9fbd677bc2188bdeb20301ba9a00c7dc86d88559f"
+    },
+    {
+      "path": "docs/frameworks/arkit.md",
+      "title": "ARKit -- Complete Guide for Augmented Reality on iOS and iPadOS",
+      "kind": "guide",
+      "characters": 12020,
+      "hash": "9c5aef8d3968950e15d798983e5fcebbe97e32c0a26f5b948f02b40c97815d64"
+    },
+    {
+      "path": "docs/frameworks/authentication-services.md",
+      "title": "AuthenticationServices",
+      "kind": "guide",
+      "characters": 18434,
+      "hash": "6b5ad69ec216d0c88795078581289d20a5b6aa411233d4be379fc23138e77e0c"
+    },
+    {
+      "path": "docs/frameworks/avfoundation.md",
+      "title": "AVFoundation",
+      "kind": "guide",
+      "characters": 13021,
+      "hash": "e20423f90b786173480e61f6f2e43805338e453b900951b7f639e291657c65a3"
+    },
+    {
+      "path": "docs/frameworks/background-tasks.md",
+      "title": "BackgroundTasks",
+      "kind": "guide",
+      "characters": 12385,
+      "hash": "4f9fcc848f2477d3611574d41a8b1eb92d17ed55b08cb35a2bc87124691e86c8"
+    },
+    {
+      "path": "docs/frameworks/cloudkit.md",
+      "title": "CloudKit",
+      "kind": "guide",
+      "characters": 28559,
+      "hash": "96f0e562bffd3941357111df5209e842644bab3e02f5e7c985f40aae2808e1be"
+    },
+    {
+      "path": "docs/frameworks/combine.md",
+      "title": "Combine Framework",
+      "kind": "guide",
+      "characters": 9143,
+      "hash": "768ff29f5a661cab84ae7aee6c392b0d996149c8e67d706a93e64be8882ec818"
+    },
+    {
+      "path": "docs/frameworks/core-ai.md",
+      "title": "Core AI -- Custom On-Device AI Models on Apple Silicon",
+      "kind": "guide",
+      "characters": 8308,
+      "hash": "8ae3fd040b9f3d45ee6de489a5d2e88a0f67ce1b7435b6b9c6906aa9e5593268"
+    },
+    {
+      "path": "docs/frameworks/core-data.md",
+      "title": "Core Data",
+      "kind": "guide",
+      "characters": 10118,
+      "hash": "f8828b1208c5ab92933959eaefbd77a35bfc30017368993ce943377f62ae682e"
+    },
+    {
+      "path": "docs/frameworks/core-location.md",
+      "title": "CoreLocation",
+      "kind": "guide",
+      "characters": 9793,
+      "hash": "217ef0ada47fb3cd152b3e193ab36aa564978473ac7967c439a48347ab0ca048"
+    },
+    {
+      "path": "docs/frameworks/core-spotlight-rag.md",
+      "title": "Core Spotlight RAG -- Private App-Local Retrieval for Foundation Models",
+      "kind": "guide",
+      "characters": 4845,
+      "hash": "183803ca4c2e517abb3901528711aa8ae531e41ddae143c50169cd182c04eb9d"
+    },
+    {
+      "path": "docs/frameworks/cryptokit.md",
+      "title": "CryptoKit",
+      "kind": "guide",
+      "characters": 11421,
+      "hash": "03c11e3ccd6076c706fd74f6499b73c7cb0e9dd8102edd4c72b13adc71ae5ecd"
+    },
+    {
+      "path": "docs/frameworks/data-concurrency.md",
+      "title": "SwiftData and Core Data Concurrency",
+      "kind": "guide",
+      "characters": 13513,
+      "hash": "c0950a6a104518b5c310862ccc6af5567f7f0adb5ac3e829e9fe3aa59148afd1"
+    },
+    {
+      "path": "docs/frameworks/device-integrity.md",
+      "title": "Device Integrity (DeviceCheck & App Attest)",
+      "kind": "guide",
+      "characters": 11654,
+      "hash": "e8a35c9a338181fdb4e5360a9909295362dab7d74c0a6ad6bdb9d151cb1eadcd"
+    },
+    {
+      "path": "docs/frameworks/extended-apple-frameworks.md",
+      "title": "Extended Apple Frameworks",
+      "kind": "guide",
+      "characters": 16201,
+      "hash": "0e43e0e6f48216376fdfebfcb2ca1b7e911355dc9ccc5c4fa079847a111d5636"
+    },
+    {
+      "path": "docs/frameworks/foundation-models.md",
+      "title": "Foundation Models",
+      "kind": "guide",
+      "characters": 20663,
+      "hash": "d04f8661b17b33e5f128d4f90cd9fd601bbec0e1c9f9b24c852bdcff5580c687"
+    },
+    {
+      "path": "docs/frameworks/foundation.md",
+      "title": "Foundation Framework",
+      "kind": "guide",
+      "characters": 10444,
+      "hash": "78242eb286ccfd0e31376e22f4942a740ae54cc684b4c851f0bf2be813d97599"
+    },
+    {
+      "path": "docs/frameworks/hardware/core-bluetooth.md",
+      "title": "CoreBluetooth",
+      "kind": "guide",
+      "characters": 22853,
+      "hash": "4293d4acb0d234576ce4ee6d8b3c5f4ba2af6bd7ae695933f977123fa6c0ec48"
+    },
+    {
+      "path": "docs/frameworks/hardware/core-motion.md",
+      "title": "CoreMotion",
+      "kind": "guide",
+      "characters": 20266,
+      "hash": "229ee1c8467b84dbb20458bd16810a3f1ab8ce055539f56943ec576475f23a2b"
+    },
+    {
+      "path": "docs/frameworks/hardware/core-nfc.md",
+      "title": "CoreNFC",
+      "kind": "guide",
+      "characters": 20833,
+      "hash": "773a6974c7d990da2acae8568eba6de06ccf248e8e16805b425129481bb427f8"
+    },
+    {
+      "path": "docs/frameworks/hardware/healthkit.md",
+      "title": "HealthKit",
+      "kind": "guide",
+      "characters": 25620,
+      "hash": "c651a5da8ede55a617abbaa02f2586b303122a2933d72dde09d69df41fd47744"
+    },
+    {
+      "path": "docs/frameworks/hardware/homekit.md",
+      "title": "HomeKit and Matter",
+      "kind": "guide",
+      "characters": 23695,
+      "hash": "cdf658c59c0c7926014a58e7a6330fb07df4cdfa83995c67e50ab8ad7a23f409"
+    },
+    {
+      "path": "docs/frameworks/local-authentication.md",
+      "title": "LocalAuthentication",
+      "kind": "guide",
+      "characters": 19479,
+      "hash": "ff58855e87fbca41255921fc91c648bba3c404872a755d8e32a2252b8c68aa9d"
+    },
+    {
+      "path": "docs/frameworks/mapkit.md",
+      "title": "MapKit",
+      "kind": "guide",
+      "characters": 16221,
+      "hash": "0271112ec02f35a9a80a28d25aac2320585c70c37fb4c626ba84243cb585830a"
+    },
+    {
+      "path": "docs/frameworks/metal.md",
+      "title": "Metal -- GPU Rendering, Compute, and Performance-Critical Graphics",
+      "kind": "guide",
+      "characters": 12461,
+      "hash": "78832d834415dd4fa63dc4f339bab8f9f0366a74a03809e645271c28feae82bb"
+    },
+    {
+      "path": "docs/frameworks/ml/coreml.md",
+      "title": "CoreML -- Complete Guide for On-Device Machine Learning",
+      "kind": "guide",
+      "characters": 18827,
+      "hash": "e3e2a6d8bd47d9975f34bf41f858211aba5d9a6bbebe4e677006f5dc76918c5e"
+    },
+    {
+      "path": "docs/frameworks/ml/natural-language.md",
+      "title": "NaturalLanguage Framework -- Complete Guide for Text Processing and NLP",
+      "kind": "guide",
+      "characters": 19883,
+      "hash": "a696054de12712471c9e9f90a959241990f827470552dd7ccda9166d80c9d7f4"
+    },
+    {
+      "path": "docs/frameworks/ml/on-device-ai.md",
+      "title": "Apple On-Device AI -- Complete Guide for Foundation Models and Local Inference",
+      "kind": "guide",
+      "characters": 22611,
+      "hash": "ef143606c228f9c03ae680cbfd1254a9ecff98bcb4587fe62155a5aac65f28fb"
+    },
+    {
+      "path": "docs/frameworks/ml/sound-analysis.md",
+      "title": "Sound Analysis",
+      "kind": "guide",
+      "characters": 3972,
+      "hash": "6e9bc1799f2e7d4e46eb334855e2d53f663c36929acb99ad4daf665f67192c5a"
+    },
+    {
+      "path": "docs/frameworks/ml/speech.md",
+      "title": "Speech Framework -- Complete Guide for Speech Recognition and Transcription",
+      "kind": "guide",
+      "characters": 22796,
+      "hash": "3518c048742c001b4f52900f384137df7664e18b5061e8ee1557a85337de70bc"
+    },
+    {
+      "path": "docs/frameworks/ml/translation.md",
+      "title": "Translation",
+      "kind": "guide",
+      "characters": 4829,
+      "hash": "c08b1a676173e199fc57fd0b37315053d8ddc476462f36eabee761887c90a0a7"
+    },
+    {
+      "path": "docs/frameworks/ml/vision.md",
+      "title": "Vision Framework -- Complete Guide for Image Analysis and Computer Vision",
+      "kind": "guide",
+      "characters": 22734,
+      "hash": "6259000770da2df4d97d0c22d1026b8364f15a3dfaffbc4dfb4805c65145cb40"
+    },
+    {
+      "path": "docs/frameworks/network-framework.md",
+      "title": "Network.framework",
+      "kind": "guide",
+      "characters": 20274,
+      "hash": "e3debdca649de99d38c7181c180dcc687a68c58b830584704b1cd5dcdabf3b14"
+    },
+    {
+      "path": "docs/frameworks/networking.md",
+      "title": "Networking",
+      "kind": "guide",
+      "characters": 12184,
+      "hash": "d095258b11c4f3ca0b030eb5b5cb906a96a25d68839dc3e89643b12ebecda158"
+    },
+    {
+      "path": "docs/frameworks/oslog.md",
+      "title": "OSLog & MetricKit",
+      "kind": "guide",
+      "characters": 12529,
+      "hash": "557c3958214d06490f24e088d2868cb6411706d353ce14ce78abf7bd4a341738"
+    },
+    {
+      "path": "docs/frameworks/photosui.md",
+      "title": "PhotosUI & AVKit",
+      "kind": "guide",
+      "characters": 38824,
+      "hash": "7d30450ac9e3eddaf0fa9bf58ed59fdb4f170539b647aa9e3816faa2c9815d5e"
+    },
+    {
+      "path": "docs/frameworks/realitykit.md",
+      "title": "RealityKit -- Complete Guide for 3D Rendering, AR, and Spatial Apps",
+      "kind": "guide",
+      "characters": 18334,
+      "hash": "bc6529af2eb98b8173c096b7c2aa1e157e16638a64b311a62d7c1ae3ecf6b21f"
+    },
+    {
+      "path": "docs/frameworks/scenekit.md",
+      "title": "SceneKit -- Legacy 3D Scenes, Animation, and AR Rendering",
+      "kind": "guide",
+      "characters": 11841,
+      "hash": "614b97454f005f1b23e8e84c2d6f55e9667cd68d450f8232a4c1261a721b5ffa"
+    },
+    {
+      "path": "docs/frameworks/services/contacts.md",
+      "title": "Contacts Framework",
+      "kind": "guide",
+      "characters": 15306,
+      "hash": "5f89866263e9c2e6d4ec28492d4a53e350f1ffbf1e5b2a888f269f696cc345f0"
+    },
+    {
+      "path": "docs/frameworks/services/eventkit.md",
+      "title": "EventKit",
+      "kind": "guide",
+      "characters": 13185,
+      "hash": "14a7b1b9f498f15da1724a16aaaba1f76efe7891a212631abe8785b73622b926"
+    },
+    {
+      "path": "docs/frameworks/services/passkit.md",
+      "title": "PassKit & FinanceKit",
+      "kind": "guide",
+      "characters": 11552,
+      "hash": "37f7350bb37c04845c51e9ffe465bf22c75bec6afe767dd052fc696212d8a12b"
+    },
+    {
+      "path": "docs/frameworks/services/weatherkit.md",
+      "title": "WeatherKit",
+      "kind": "guide",
+      "characters": 12738,
+      "hash": "f857b528b714d8ad4830d1b9f3ecbd9d4da3a233683e0e19b11d2d9d79420e38"
+    },
+    {
+      "path": "docs/frameworks/storekit.md",
+      "title": "StoreKit 2",
+      "kind": "guide",
+      "characters": 21191,
+      "hash": "aea1281157b631f3c3e0fa1bc88a83301b82451c8ce47c744af701a2bebfdf30"
+    },
+    {
+      "path": "docs/frameworks/swift-charts.md",
+      "title": "Swift Charts",
+      "kind": "guide",
+      "characters": 15634,
+      "hash": "d5d560093882d60859a64419900e252961e9ddc76fe8120ca4224bab417e90ca"
+    },
+    {
+      "path": "docs/frameworks/swiftdata.md",
+      "title": "SwiftData",
+      "kind": "guide",
+      "characters": 19444,
+      "hash": "9e69136e09ef0b4693292caa9cc6d1ba33d4848598f2a137a296e0be498f7244"
+    },
+    {
+      "path": "docs/frameworks/tipkit.md",
+      "title": "TipKit",
+      "kind": "guide",
+      "characters": 20029,
+      "hash": "19bc1702d825696c5cac886cfc7692eaab506f9194129ef3eb2fdc072ef47382"
+    },
+    {
+      "path": "docs/frameworks/usernotifications.md",
+      "title": "UserNotifications",
+      "kind": "guide",
+      "characters": 22001,
+      "hash": "2efb44fee444762971123ee15212cae24c9f1d83730a83f6977e2548459f5bf0"
+    },
+    {
+      "path": "docs/frameworks/visionkit.md",
+      "title": "VisionKit",
+      "kind": "guide",
+      "characters": 3464,
+      "hash": "79d6491f96da38b1f6375342257eb610650f4abbed3da8a074eefced31ebdd69"
+    },
+    {
+      "path": "docs/frameworks/widgetkit.md",
+      "title": "WidgetKit",
+      "kind": "guide",
+      "characters": 28424,
+      "hash": "c438ef74b02f24678a176605c65b6e1763bbe3710505cc81599d51a59130a538"
+    },
+    {
+      "path": "docs/graphics/README.md",
+      "title": "Graphics, 3D, and Spatial Development",
+      "kind": "guide",
+      "characters": 2319,
+      "hash": "078fa12a47251a4974de5bf162b801753e757bcc8f97ab0e793317db5efac3e4"
+    },
+    {
+      "path": "docs/mcp/examples.md",
+      "title": "MCP Usage Examples",
+      "kind": "guide",
+      "characters": 12256,
+      "hash": "9ec7fcee2147e4731e5b047b71c9c0def9feb31794d8938010f34596600cecff"
+    },
+    {
+      "path": "docs/mcp/installation.md",
+      "title": "Installing the iOS Agent MCP Server",
+      "kind": "guide",
+      "characters": 7980,
+      "hash": "aa82c3a818556d0b30de0d4fef519c12838611cc2184e4ba90c1f159a4ae707e"
+    },
+    {
+      "path": "docs/mcp/knowledge-server.md",
+      "title": "Apple Knowledge MCP",
+      "kind": "guide",
+      "characters": 3028,
+      "hash": "87057966c10f78ad47bdfba1a42a336b31643f14a5807de622c28392c0d9da88"
+    },
+    {
+      "path": "docs/mcp/tools.md",
+      "title": "MCP Tool Reference",
+      "kind": "guide",
+      "characters": 12494,
+      "hash": "ebac4f5a9ff1a114d25d6eb1872d4a5c0296403678c2e5b8edc71ea6d4c337f8"
+    },
+    {
+      "path": "docs/mcp/vnext-analysis-tools.md",
+      "title": "vNext MCP Analysis Tools",
+      "kind": "guide",
+      "characters": 5328,
+      "hash": "52d606444596932cb84682a06a99e7e866f7ee5df43677a54691a6496bd01f77"
+    },
+    {
+      "path": "docs/migration/ios-deployment-migration.md",
+      "title": "Migrating Deployment Targets: iOS 17 → 26 → 27",
+      "kind": "guide",
+      "characters": 7368,
+      "hash": "25a9052017655791eaac14c9a6f7e90b5d01d2a6e5501ebb232d7b562996e434"
+    },
+    {
+      "path": "docs/migration/swift-6-migration.md",
+      "title": "Migrating to Swift 6 and 6.4",
+      "kind": "guide",
+      "characters": 9823,
+      "hash": "8c4932b6ded9fa59eda84643af8430b67a12099c8fa2f8f77e9851e568e9a4d0"
+    },
+    {
+      "path": "docs/migration/xcode-migration.md",
+      "title": "Migrating Xcode: 15 → 16 → 27",
+      "kind": "guide",
+      "characters": 6630,
+      "hash": "a11fa075c84b956b8c90d48c7e14a164f57637528647145a04f46cc42370213d"
+    },
+    {
+      "path": "docs/networking/README.md",
+      "title": "Networking and Connectivity",
+      "kind": "guide",
+      "characters": 1754,
+      "hash": "7e16bec18b87b1aca44fe8f4b7a1e9daecf487c623c27a001183e804c13eb320"
+    },
+    {
+      "path": "docs/orchestration/dynamic-workflows.md",
+      "title": "Dynamic Workflows and Large-Scale Jobs",
+      "kind": "guide",
+      "characters": 9185,
+      "hash": "dd3c990011bc2eae718bde7a62a59f7cf021c44fd7bb6d35fb6118033b69f30c"
+    },
+    {
+      "path": "docs/orchestration/hooks.md",
+      "title": "Hooks — Deterministic Enforcement",
+      "kind": "guide",
+      "characters": 7564,
+      "hash": "19a728a394742a916f7a9e2ae19f7ce33a203460bf5ff41739396ff2971a0a11"
+    },
+    {
+      "path": "docs/orchestration/looping.md",
+      "title": "Loops",
+      "kind": "guide",
+      "characters": 7931,
+      "hash": "c1ee46f0667628ac1784e35cbc227641d126f02222f3e9d5ac6c25c7cfa03335"
+    },
+    {
+      "path": "docs/orchestration/router.md",
+      "title": "Main Agent Router",
+      "kind": "guide",
+      "characters": 8339,
+      "hash": "15625e4f2d5502373df2c087a44b0adef17d7e77f5ac20949b711395466f48d3"
+    },
+    {
+      "path": "docs/orchestration/subagents.md",
+      "title": "Subagents",
+      "kind": "guide",
+      "characters": 12181,
+      "hash": "4afc510fe82620fa99aa4aae62a34968178c665077f4ff0286afadecafb5f98e"
+    },
+    {
+      "path": "docs/orchestration/verification.md",
+      "title": "Verification and the Evidence Contract",
+      "kind": "guide",
+      "characters": 7812,
+      "hash": "1c89eb2422b79ffdf23d6ccdd22a19885205f0bf1012ea60da35b37956202135"
+    },
+    {
+      "path": "docs/performance/README.md",
+      "title": "Performance",
+      "kind": "guide",
+      "characters": 1489,
+      "hash": "0ddbad2ad29cedaa7db82f6a9775aebd2ae9dfc99dda588543c5280af284b2ff"
+    },
+    {
+      "path": "docs/platforms/ios.md",
+      "title": "iOS Platform Guide",
+      "kind": "guide",
+      "characters": 11195,
+      "hash": "3b9d81abf495fc15f5510ababf9e69bf4c79667b2aebc78864a5926789c600fe"
+    },
+    {
+      "path": "docs/platforms/macos.md",
+      "title": "macOS Platform Guide",
+      "kind": "guide",
+      "characters": 12460,
+      "hash": "810920ddfbcf457ad223c2102a397ad8737cdd53fed568a5c127f078826c60eb"
+    },
+    {
+      "path": "docs/platforms/tvos.md",
+      "title": "tvOS Platform Guide",
+      "kind": "guide",
+      "characters": 12093,
+      "hash": "45b0090eadd33e3d973bb3e12c2f0152baa9272a8e445179c893ac1536c49afb"
+    },
+    {
+      "path": "docs/platforms/visionos.md",
+      "title": "visionOS Platform Guide",
+      "kind": "guide",
+      "characters": 16735,
+      "hash": "2b8e45be5b1cbb5a086da3dfbf0b9d3dba622f4b57d10c48099f4b9628cbf0f2"
+    },
+    {
+      "path": "docs/platforms/watchos.md",
+      "title": "watchOS Platform Guide",
+      "kind": "guide",
+      "characters": 13107,
+      "hash": "613dd1c886fe647f7807e56feb12e2c82053ec5e500269149cb2fe8b7d2b960b"
+    },
+    {
+      "path": "docs/security/README.md",
+      "title": "Security, Authentication, and Privacy",
+      "kind": "guide",
+      "characters": 1933,
+      "hash": "b6f23c1540cc98625e05821c57d86385b53adbdf954b93ed7db6fca8f9075993"
+    },
+    {
+      "path": "docs/swift/memory-lifetime.md",
+      "title": "Swift Memory And Lifetime",
+      "kind": "guide",
+      "characters": 6184,
+      "hash": "77db648655a971edae38b3bc8133fb66cf9a2e40e208beed6a041e3987898081"
+    },
+    {
+      "path": "docs/swift/swift-brain.md",
+      "title": "Swift Brain",
+      "kind": "guide",
+      "characters": 13046,
+      "hash": "8e80f2f14754f404640b8389bf2fba36f4785b3a96cadf7c192ee98ffc54eaf0"
+    },
+    {
+      "path": "docs/swift/swift-concurrency.md",
+      "title": "Swift Concurrency Reference",
+      "kind": "guide",
+      "characters": 37669,
+      "hash": "786e6b74fafb3bd4ad15c95ffb65db18c4619a26356316550f0835199137150d"
+    },
+    {
+      "path": "docs/swift/swift-language.md",
+      "title": "Swift Language Reference (5.9+)",
+      "kind": "guide",
+      "characters": 20946,
+      "hash": "ce997fcab2ca49480af12e508ccef001cf91812ca8bb5ca45bc2481821f9191a"
+    },
+    {
+      "path": "docs/swift/swift-standard-library.md",
+      "title": "Swift Standard Library Reference",
+      "kind": "guide",
+      "characters": 20666,
+      "hash": "b0451312a9d9e99df7001b10dbefe0b2ec9d6923ca9d99ef05392cc5d6f25653"
+    },
+    {
+      "path": "docs/swiftui/animations.md",
+      "title": "SwiftUI Animations",
+      "kind": "guide",
+      "characters": 36927,
+      "hash": "391f51d89792d3ef948ff05bbcaa8e000f7d78f20dd316a307f68c3d292bde18"
+    },
+    {
+      "path": "docs/swiftui/deep-linking-and-routing.md",
+      "title": "Routing, Deep Links, and State Restoration",
+      "kind": "guide",
+      "characters": 17650,
+      "hash": "873b1431ce29b37d42bf65fa42dc57c335f7c53e3e151556062155624f165436"
+    },
+    {
+      "path": "docs/swiftui/gestures.md",
+      "title": "SwiftUI Gestures",
+      "kind": "guide",
+      "characters": 20146,
+      "hash": "a353402c12af09759eb3b5c43661b42d7f61da57dadc003876d8fa3fa265d068"
+    },
+    {
+      "path": "docs/swiftui/ios-27-interactions.md",
+      "title": "SwiftUI iOS 27 Interactions",
+      "kind": "guide",
+      "characters": 4391,
+      "hash": "42248050c3aa625c4789690e8b4cf28e9c56fdc04feb6c455aad5a65bb44c9a2"
+    },
+    {
+      "path": "docs/swiftui/layout.md",
+      "title": "SwiftUI Layout System",
+      "kind": "guide",
+      "characters": 14775,
+      "hash": "0d9c382fe57e0a578a4c6d5dd2a6f3a6aeb1903b82fada99789099f9f9064b4f"
+    },
+    {
+      "path": "docs/swiftui/navigation.md",
+      "title": "SwiftUI Navigation",
+      "kind": "guide",
+      "characters": 24322,
+      "hash": "35b1e2ec2b59234bb40b85070f5d98c9f1d2636831e66bb9207e5094fdf95e02"
+    },
+    {
+      "path": "docs/swiftui/state-and-data-flow.md",
+      "title": "SwiftUI State and Data Flow",
+      "kind": "guide",
+      "characters": 26408,
+      "hash": "2040c7f263086b6966695c79d62bff0a088e6dba780466a4d33c51f08643ff17"
+    },
+    {
+      "path": "docs/swiftui/views-and-controls.md",
+      "title": "SwiftUI Views and Controls",
+      "kind": "guide",
+      "characters": 18047,
+      "hash": "52556e0ecfb8256992dc0e73a0468e8fbd2263b687248a4e36e7bcfd77622052"
+    },
+    {
+      "path": "docs/testing/evaluations.md",
+      "title": "Evaluations -- Testing Intelligence-Powered Features",
+      "kind": "guide",
+      "characters": 5567,
+      "hash": "b948b21daa936b0f79003d4445ce824be8668c8f2f97716cc32382e207bc9781"
+    },
+    {
+      "path": "docs/testing/mocking-strategy.md",
+      "title": "Mocking and Debugging Strategy",
+      "kind": "guide",
+      "characters": 18553,
+      "hash": "bbe928f352f5acc716f61243df43f934dd79a6ddda93ce97909ade0d48077b74"
+    },
+    {
+      "path": "docs/testing/xcuiautomation.md",
+      "title": "XCUIAutomation",
+      "kind": "guide",
+      "characters": 2414,
+      "hash": "6ad83a43a10c8573b494197d61361cf85c6eb86601403801b43c5d6943fc7519"
+    },
+    {
+      "path": "docs/tooling/app-description-workflow.md",
+      "title": "App Description Workflow",
+      "kind": "guide",
+      "characters": 6693,
+      "hash": "98276a44060cc2b577f743da91b8dd6a7a45d6ed1e1dd0a9daccc4811a24c454"
+    },
+    {
+      "path": "docs/tooling/device-hub.md",
+      "title": "Device Hub",
+      "kind": "guide",
+      "characters": 6687,
+      "hash": "0cbce9af9ea63ea4b4c1fabefdce12a9b91e60b3b15f1e7c48d59f0bbd0f6813"
+    },
+    {
+      "path": "docs/tooling/fm-cli.md",
+      "title": "Foundation Models `fm` CLI",
+      "kind": "guide",
+      "characters": 2438,
+      "hash": "bf1b2c0c64e55e11664dc990f1cc0480c9b1b94e668d68106db41d9ff0e871ad"
+    },
+    {
+      "path": "docs/tooling/foundation-models-instruments.md",
+      "title": "Foundation Models Instruments",
+      "kind": "guide",
+      "characters": 3378,
+      "hash": "6f36ef2be9118abd415ac822f69ff7b3575f380ea22dfe6be09383d265cae2eb"
+    },
+    {
+      "path": "docs/tooling/idea-to-app.md",
+      "title": "From an Idea to a Running Apple App",
+      "kind": "guide",
+      "characters": 2879,
+      "hash": "b9fe2c76e8818f34e1521d820dd4793a151c336718c69115358822bf2df20073"
+    },
+    {
+      "path": "docs/tooling/ios-simulator-mcp.md",
+      "title": "iOS Simulator MCP",
+      "kind": "guide",
+      "characters": 5168,
+      "hash": "06e68e38d87db430c55e8c7906c9a2ac2817f1b0788f7430166ca61204443f11"
+    },
+    {
+      "path": "docs/tooling/offline-source-library.md",
+      "title": "Build from local source and Apple guidance",
+      "kind": "guide",
+      "characters": 4736,
+      "hash": "848f9c54d5212f5e7603f54c37aea802060dcd57d311891dd32a7ad9552b91b8"
+    },
+    {
+      "path": "docs/tooling/project-scaffolding.md",
+      "title": "Project Scaffolding and Layout",
+      "kind": "guide",
+      "characters": 18060,
+      "hash": "569306705c836e4141b476921c445a1633c979d9173e0841f856ef401e89e337"
+    },
+    {
+      "path": "docs/tooling/visual-iteration-loop.md",
+      "title": "Visual Iteration Loop",
+      "kind": "guide",
+      "characters": 3160,
+      "hash": "01497ff58a5f6bd3b22985d4ba6738361a8fa1c9debf9f4c36202e525dbbdc08"
+    },
+    {
+      "path": "docs/tooling/xcode-27-agents.md",
+      "title": "Xcode 27 Coding Agents",
+      "kind": "guide",
+      "characters": 7944,
+      "hash": "946cbff7b79c70b8e89ced2225a8c4fa93f37d15b6c874b5b8ff397dac025665"
+    },
+    {
+      "path": "docs/tooling/xcode-memory-debugging.md",
+      "title": "Xcode Memory Debugging",
+      "kind": "guide",
+      "characters": 5286,
+      "hash": "e5b6294b8e8d53eefef59bdc1d30ba98a6a2f0f82f6610d6564613e652bc25e5"
+    },
+    {
+      "path": "docs/uikit/animations.md",
+      "title": "UIKit Animations",
+      "kind": "guide",
+      "characters": 34682,
+      "hash": "309fcdd3149fff5ec5d466a136b333d5fb4cfa9f9487887d30e9d500007b2b71"
+    },
+    {
+      "path": "docs/uikit/uikit-essentials.md",
+      "title": "UIKit Essentials",
+      "kind": "guide",
+      "characters": 12954,
+      "hash": "a6850833bf72bef9e4800a59aa1b5a812c228d47e460333f60a669ad3f25514c"
+    },
+    {
+      "path": "docs/uikit/uikit-swiftui-interop.md",
+      "title": "UIKit and SwiftUI Interoperability",
+      "kind": "guide",
+      "characters": 11023,
+      "hash": "397c6d627f88270bcde063e27cfe3bd371ed48d9ff9adfaeab174e07e14253eb"
+    },
+    {
+      "path": "docs/web/native-vs-web-animation.md",
+      "title": "Native vs. Web Animation and 3D",
+      "kind": "guide",
+      "characters": 3374,
+      "hash": "fcf22a414948b5d3404260cab574536f517e2bb1bf6aa05817ae2a833ad5d6c1"
+    },
+    {
+      "path": "docs/web/README.md",
+      "title": "WebKit and JavaScript Interoperability",
+      "kind": "guide",
+      "characters": 1541,
+      "hash": "768851d5f19f05fba9f6b7d21654e9495f573e4038a8c14b3b425a4071d19a10"
+    },
+    {
+      "path": "patterns/3d/README.md",
+      "title": "3D Pattern Library",
+      "kind": "guide",
+      "characters": 1114,
+      "hash": "711670e2af385d5a571b9bca58f2af690a26d6c21462dadbec5deadaba81b3e0"
+    },
+    {
+      "path": "patterns/accessibility/README.md",
+      "title": "Accessibility Patterns",
+      "kind": "guide",
+      "characters": 544,
+      "hash": "f255191eaee7b634a9101de1a8a660851a7eda1419c1bbe520dc348dc84d8323"
+    },
+    {
+      "path": "patterns/ai/README.md",
+      "title": "AI Patterns",
+      "kind": "guide",
+      "characters": 607,
+      "hash": "d8da8bb98dd3d73fcdba60640dcc57f1d931bc963deef9c1338eec3960b107c2"
+    },
+    {
+      "path": "patterns/animation/README.md",
+      "title": "Animation Patterns",
+      "kind": "guide",
+      "characters": 834,
+      "hash": "5661eb63e41ee786e219a74f2d5c260f3668d444474ef4b7824e9a9c3b056e30"
+    },
+    {
+      "path": "patterns/clean-architecture.md",
+      "title": "Clean Architecture",
+      "kind": "guide",
+      "characters": 30312,
+      "hash": "9bef3063fd52552f8fdb2b17d08b27d0b3a70ae9d8b2d6c806b3ab5c92b03f18"
+    },
+    {
+      "path": "patterns/coordinator.md",
+      "title": "Coordinator Pattern in SwiftUI",
+      "kind": "guide",
+      "characters": 12183,
+      "hash": "31c8c1c3de524863469893c5cbee8db8fdde34167e3ba59906a44644e90f1c4a"
+    },
+    {
+      "path": "patterns/error-handling.md",
+      "title": "Error Handling Patterns",
+      "kind": "guide",
+      "characters": 18325,
+      "hash": "7b755d85b4a8770dc535613cea1f392dc9d1d76d487669e2a3efb9168d0674be"
+    },
+    {
+      "path": "patterns/metal/README.md",
+      "title": "Metal Patterns",
+      "kind": "guide",
+      "characters": 629,
+      "hash": "99e4691893a5d119c8822201fdc0f0f7759b9dff3a526a8e7c3176d73a541ae3"
+    },
+    {
+      "path": "patterns/motion/README.md",
+      "title": "Motion Pattern Library",
+      "kind": "guide",
+      "characters": 1236,
+      "hash": "c3ce0995ca49aefbfb2a618566c79059bff780e574bd09593b01b026ee90d16d"
+    },
+    {
+      "path": "patterns/motion/splash-screens.md",
+      "title": "Splash Screens",
+      "kind": "guide",
+      "characters": 3800,
+      "hash": "96a127fb0dd48002a39aa2df7ebcd6fed1bac79181ffa939879c9ab15c5b2c62"
+    },
+    {
+      "path": "patterns/mvvm.md",
+      "title": "MVVM Pattern (Model-View-ViewModel)",
+      "kind": "guide",
+      "characters": 28022,
+      "hash": "22d598232c73f39112ea0a88e64a56df134d653aa873bae0d0da79bfdab98b90"
+    },
+    {
+      "path": "patterns/realitykit/README.md",
+      "title": "RealityKit Patterns",
+      "kind": "guide",
+      "characters": 669,
+      "hash": "b16d1ce128b1882b484e195d969cb8582cd357087a870fbea7acbd7717acd64d"
+    },
+    {
+      "path": "patterns/repository.md",
+      "title": "Repository Pattern",
+      "kind": "guide",
+      "characters": 18589,
+      "hash": "24a015896da6911bbe244dc54aa6c5d257951c2993a03fdc525467ce200204df"
+    },
+    {
+      "path": "patterns/tca.md",
+      "title": "The Composable Architecture (TCA)",
+      "kind": "guide",
+      "characters": 13051,
+      "hash": "93b5e77e7dac53ce719e82f6feee91c92ee51f4d73b8e7d0c972d6eb81976554"
+    },
+    {
+      "path": "patterns/testing/README.md",
+      "title": "Testing Patterns",
+      "kind": "guide",
+      "characters": 510,
+      "hash": "e357ea5a90a50e95db3b04c84d90e0857e5620d7f32f4169b3cb4d2048d785cd"
+    },
+    {
+      "path": "patterns/ui/README.md",
+      "title": "UI Pattern Library",
+      "kind": "guide",
+      "characters": 1583,
+      "hash": "4a54f02455ba6b6f12866d940f6d851e0c8d1ea574b29cb0ea82276d69433602"
+    },
+    {
+      "path": "patterns/webkit/README.md",
+      "title": "WebKit Patterns",
+      "kind": "guide",
+      "characters": 571,
+      "hash": "6d7ed093e2ff097e66961f797316854f8653e9d6c7669fec17b6cbe80a8034b1"
+    },
+    {
+      "path": "samples/AppleRecipes/Package.swift",
+      "title": "Package.swift",
+      "kind": "source",
+      "characters": 341,
+      "hash": "ded7e9fec054a4e489126fc0ba645a554a1dbb470ec4efb7b89faebc0507032e"
+    },
+    {
+      "path": "samples/AppleRecipes/README.md",
+      "title": "AppleRecipes — complete local Swift source",
+      "kind": "guide",
+      "characters": 4914,
+      "hash": "43d23c95f14f4ab3219b629a9ad6bc6d0105bbcdc94f177c097f277e3e0d46c0"
+    },
+    {
+      "path": "samples/AppleRecipes/Sources/AppleRecipes/ContentDigest.swift",
+      "title": "ContentDigest.swift",
+      "kind": "source",
+      "characters": 296,
+      "hash": "60964e12db4c037113a3524190eb68018204bf403fce006310ad896112dfcb49"
+    },
+    {
+      "path": "samples/AppleRecipes/Sources/AppleRecipes/HTTPSQuery.swift",
+      "title": "HTTPSQuery.swift",
+      "kind": "source",
+      "characters": 1072,
+      "hash": "db3450c182e13bbdae097e5b3718db62ef86bd0cac3551c2de3c66ebe48b7755"
+    },
+    {
+      "path": "samples/AppleRecipes/Sources/AppleRecipes/JSONFileStore.swift",
+      "title": "JSONFileStore.swift",
+      "kind": "source",
+      "characters": 1677,
+      "hash": "496116e9b3f32b60b217903c57d1e3f9caaa440343bd766647090c32b767d1a3"
+    },
+    {
+      "path": "samples/AppleRecipes/Sources/AppleRecipes/PDFTextExtractor.swift",
+      "title": "PDFTextExtractor.swift",
+      "kind": "source",
+      "characters": 1016,
+      "hash": "52e2b11754fba41ad7a4694bd9996f6dd2c857bfb5c828add50d0d20d0e5bc8b"
+    },
+    {
+      "path": "samples/AppleRecipes/Sources/AppleRecipes/TextLanguage.swift",
+      "title": "TextLanguage.swift",
+      "kind": "source",
+      "characters": 840,
+      "hash": "e538f4b6cd664b5ab53213c8cbe989c2cf0c21696c9822cf8d4c5bd69ea1f78f"
+    },
+    {
+      "path": "samples/AppleRecipes/Sources/AppleRecipes/VectorStatistics.swift",
+      "title": "VectorStatistics.swift",
+      "kind": "source",
+      "characters": 1146,
+      "hash": "4a3f4fc83f207d0ff10281fcf7048e1201ed6f346b7b2eadc0c239506de6b2f9"
+    },
+    {
+      "path": "samples/AppleRecipes/Tests/AppleRecipesTests/RecipesTests.swift",
+      "title": "RecipesTests.swift",
+      "kind": "source",
+      "characters": 4797,
+      "hash": "f996933b90eb27e7b47174be9536af21010f2a03ae7c6c3c57eb811e59d54c85"
+    },
+    {
+      "path": "samples/SkillPatterns/Package.swift",
+      "title": "Package.swift",
+      "kind": "source",
+      "characters": 1351,
+      "hash": "583506ddd0dba700d9504f7d86f2b5af29687c991c636c55ac506b93e84053c8"
+    },
+    {
+      "path": "samples/SkillPatterns/README.md",
+      "title": "SkillPatterns — the compile-checked reference",
+      "kind": "guide",
+      "characters": 3875,
+      "hash": "7826b67a499e868be74191edb39af69877eec1e28ea03737cce8e448d16e3ad5"
+    },
+    {
+      "path": "samples/SkillPatterns/Sources/SkillPatterns/ArticleListModel.swift",
+      "title": "ArticleListModel.swift",
+      "kind": "source",
+      "characters": 5436,
+      "hash": "3b1bde2a5aa82ecd0da202d8ddae63c8f2b583901b2834716f430c9b6c5ab854"
+    },
+    {
+      "path": "samples/SkillPatterns/Sources/SkillPatterns/Composition.swift",
+      "title": "Composition.swift",
+      "kind": "source",
+      "characters": 5694,
+      "hash": "fb75a1a91958d164b3dd24e9ee5664eec2be34c1f13c26f61bbc66b0ac80fb45"
+    },
+    {
+      "path": "samples/SkillPatterns/Sources/SkillPatterns/Domain.swift",
+      "title": "Domain.swift",
+      "kind": "source",
+      "characters": 3244,
+      "hash": "18aaf0fa6dd4b4172beb68b9136513c69fa712745719d532159b54b41f7ac8d3"
+    },
+    {
+      "path": "samples/SkillPatterns/Sources/SkillPatterns/Persistence.swift",
+      "title": "Persistence.swift",
+      "kind": "source",
+      "characters": 8192,
+      "hash": "531c6f319a543f196f3a561ed7127f23fed47800a27b94a2b68b82e0b48047c9"
+    },
+    {
+      "path": "samples/SkillPatterns/Sources/SkillPatterns/Router.swift",
+      "title": "Router.swift",
+      "kind": "source",
+      "characters": 4068,
+      "hash": "2e91940d77e9c73f232d755c0429b76f4a70da980fd5fe9b867258a6775b053e"
+    },
+    {
+      "path": "samples/SkillPatterns/Sources/SkillPatterns/SignalProcessing.swift",
+      "title": "SignalProcessing.swift",
+      "kind": "source",
+      "characters": 7822,
+      "hash": "b4baf044bc4bf7351880916e8b1f1f57e4a5dbbb391fb0f83777b1a8a409e451"
+    },
+    {
+      "path": "samples/SkillPatterns/Sources/SkillPatterns/Streaming.swift",
+      "title": "Streaming.swift",
+      "kind": "source",
+      "characters": 3917,
+      "hash": "48555f4815cf41ade1212545a9f67b9d5823d9bc7166972693439711d951acac"
+    },
+    {
+      "path": "samples/SkillPatterns/Tests/SkillPatternsTests/ArticleListModelTests.swift",
+      "title": "ArticleListModelTests.swift",
+      "kind": "source",
+      "characters": 7204,
+      "hash": "0dc5c501a56248b893d95bdd7df44cfa7b3280e396c7798e57721b8dd192e514"
+    },
+    {
+      "path": "samples/SkillPatterns/Tests/SkillPatternsTests/PersistenceTests.swift",
+      "title": "PersistenceTests.swift",
+      "kind": "source",
+      "characters": 6680,
+      "hash": "38420df058e9c24d7db9d485ecafa37dd6262b0b448972c88a162947e504c52f"
+    },
+    {
+      "path": "samples/SkillPatterns/Tests/SkillPatternsTests/RouterTests.swift",
+      "title": "RouterTests.swift",
+      "kind": "source",
+      "characters": 4122,
+      "hash": "946eff9d23c1695134e887167d3c3cc20bbd75e2375fa346692646a68e84d650"
+    },
+    {
+      "path": "samples/SkillPatterns/Tests/SkillPatternsTests/SignalProcessingTests.swift",
+      "title": "SignalProcessingTests.swift",
+      "kind": "source",
+      "characters": 4674,
+      "hash": "c44e834f72f35bf92bdce1e78c695e112f89bf85495c49a4a9b3d7afb55a9e3e"
+    },
+    {
+      "path": "samples/SkillPatterns/Tests/SkillPatternsTests/StateTransitionTests.swift",
+      "title": "StateTransitionTests.swift",
+      "kind": "source",
+      "characters": 9392,
+      "hash": "6b5cccd657c3ffa2b97bf570d07579701572caf7e9c3fba685217b35893d27a4"
+    },
+    {
+      "path": "templates/ci-cd/github-actions.yml",
+      "title": "github-actions.yml",
+      "kind": "source",
+      "characters": 10116,
+      "hash": "76b5db4e93feffc7acd91524c514adcf7732b9d9039b7a60c0d82a8b39fa1ae0"
+    },
+    {
+      "path": "templates/common-patterns/auth-flow.swift",
+      "title": "auth-flow.swift",
+      "kind": "source",
+      "characters": 8586,
+      "hash": "40bc213d16f356955ff8475ed076726eb79ccabc89c775c166945acf68049419"
+    },
+    {
+      "path": "templates/common-patterns/dependency-injection.swift",
+      "title": "dependency-injection.swift",
+      "kind": "source",
+      "characters": 5255,
+      "hash": "5615fb9efc222667135dcf1b0b314358c08af4f4cc8e6f1dc368c9eef82c66f9"
+    },
+    {
+      "path": "templates/common-patterns/design-system.swift",
+      "title": "design-system.swift",
+      "kind": "source",
+      "characters": 22414,
+      "hash": "7eb50ac681e331108bbea8bdae1c138784a4258176b5c8ab879235b408b2d177"
+    },
+    {
+      "path": "templates/common-patterns/navigation-router.swift",
+      "title": "navigation-router.swift",
+      "kind": "source",
+      "characters": 5828,
+      "hash": "b41832102d7401b2e58b7321690194df11fb09b1206336e0a55a8559ce4eecf1"
+    },
+    {
+      "path": "templates/common-patterns/networking-layer.swift",
+      "title": "networking-layer.swift",
+      "kind": "source",
+      "characters": 7333,
+      "hash": "2ea27be3623ed1cedae32b6e7fc17b63cdac35bd7b8fd5d7cd7a15c429e1a889"
+    },
+    {
+      "path": "templates/common-patterns/persistence-layer.swift",
+      "title": "persistence-layer.swift",
+      "kind": "source",
+      "characters": 6146,
+      "hash": "7660d89acedd5f18c8b7dcfdaccac24ea1b0558bb0f5f401b6f9676ca18970c8"
+    },
+    {
+      "path": "templates/common-patterns/ui-components.swift",
+      "title": "ui-components.swift",
+      "kind": "source",
+      "characters": 27582,
+      "hash": "15111d2c12f473748499b4dfb2a2af2c11a0bf4262d545969c54ffc11b16c768"
+    },
+    {
+      "path": "templates/hooks/README.md",
+      "title": "Hook Templates for iOS Projects",
+      "kind": "guide",
+      "characters": 1786,
+      "hash": "2df32c10b4cd36e21a66d3810e7d7f3e51d2b08cd87672773bdd03dee6cafe55"
+    },
+    {
+      "path": "templates/ios-app/App.swift",
+      "title": "App.swift",
+      "kind": "source",
+      "characters": 714,
+      "hash": "f830c0cf9071ea27f767e131f58a70fcdd9737245f5d167e841bd14c581ccd39"
+    },
+    {
+      "path": "templates/ios-app/ContentView.swift",
+      "title": "ContentView.swift",
+      "kind": "source",
+      "characters": 1531,
+      "hash": "a7ca91f41fb3e2d4cea44bd05e233175f458ddd563ee8d3e77a5240388d8825b"
+    },
+    {
+      "path": "templates/ios-app/Info.plist",
+      "title": "Info.plist",
+      "kind": "source",
+      "characters": 1143,
+      "hash": "ec5c82db45a890933108975c24c038e3bd37137dd67144a20236301cf70ca19a"
+    },
+    {
+      "path": "templates/ios-app/Models/Item.swift",
+      "title": "Item.swift",
+      "kind": "source",
+      "characters": 1076,
+      "hash": "ec75f7cc518db3b6fdbfdd6386475db499c2b6dcaf2f96d8b4e382983ced81da"
+    },
+    {
+      "path": "templates/ios-app/Services/ItemRepository.swift",
+      "title": "ItemRepository.swift",
+      "kind": "source",
+      "characters": 1204,
+      "hash": "2663066a61c632c88b094d5ee2ff8f03e1c5070ba074c4c35358ce6567f7add1"
+    },
+    {
+      "path": "templates/ios-app/Tests/AppTests.swift",
+      "title": "AppTests.swift",
+      "kind": "source",
+      "characters": 3510,
+      "hash": "3af073f2823fc57f1774ee256352c6be3d4f378d202e2c71e4bebef5ec087057"
+    },
+    {
+      "path": "templates/ios-app/Tests/AppXCTests.swift",
+      "title": "AppXCTests.swift",
+      "kind": "source",
+      "characters": 3187,
+      "hash": "4311f2f4fc34898b6100d55d375929efc51018fb227ea4b8c39b09e813c13580"
+    },
+    {
+      "path": "templates/ios-app/ViewModels/HomeViewModel.swift",
+      "title": "HomeViewModel.swift",
+      "kind": "source",
+      "characters": 2325,
+      "hash": "dbc2fa8f27f45c3c3f2963c343ce281cf3bec0d946cf593daec0baefa5db1a8d"
+    },
+    {
+      "path": "templates/ios-app/ViewModels/ProfileViewModel.swift",
+      "title": "ProfileViewModel.swift",
+      "kind": "source",
+      "characters": 877,
+      "hash": "0f1c21879889b7f9feb99cf5a7b2a6f177a5b8430d93be28e37763f86aeb122e"
+    },
+    {
+      "path": "templates/ios-app/Views/HomeView.swift",
+      "title": "HomeView.swift",
+      "kind": "source",
+      "characters": 4608,
+      "hash": "a4e1aa5fb5ee57daf4ce279010a1f032f358c3117c0faa592df660ace91b490f"
+    },
+    {
+      "path": "templates/ios-app/Views/ProfileView.swift",
+      "title": "ProfileView.swift",
+      "kind": "source",
+      "characters": 1950,
+      "hash": "75e5d622f02cf607a4b48327588d2520a5496d066b671595d8ced762281f51d9"
+    },
+    {
+      "path": "templates/ios-app/Views/SettingsView.swift",
+      "title": "SettingsView.swift",
+      "kind": "source",
+      "characters": 1832,
+      "hash": "ab009eaeebd031f5c858abbf8ea3d4a8c300f69ceed01749232b755c384d2a14"
+    },
+    {
+      "path": "templates/multiplatform-app/iOS/iOSApp.swift",
+      "title": "iOSApp.swift",
+      "kind": "source",
+      "characters": 1127,
+      "hash": "8cb75ddb5915b72327c741753301d1b2b3c8ee353fed9208721e48e1280fbddd"
+    },
+    {
+      "path": "templates/multiplatform-app/macOS/macOSApp.swift",
+      "title": "macOSApp.swift",
+      "kind": "source",
+      "characters": 944,
+      "hash": "88bf9ad0ba028ee96e17cfc5cda298d5313be39281fe3367fe504ff7d73be055"
+    },
+    {
+      "path": "templates/multiplatform-app/Shared/MultiplatformApp.swift",
+      "title": "MultiplatformApp.swift",
+      "kind": "source",
+      "characters": 1626,
+      "hash": "e785fcff8e9413e6d23e5cd7e023847f74d4491a06cb7a728f22bc9c58ad9dbf"
+    },
+    {
+      "path": "templates/multiplatform-app/watchOS/watchOSApp.swift",
+      "title": "watchOSApp.swift",
+      "kind": "source",
+      "characters": 1808,
+      "hash": "c41b28b085d364482ed3535f3ccb21a34b3871ae1410c42db03db94137164eed"
+    }
+  ]
+}

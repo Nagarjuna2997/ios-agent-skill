@@ -376,6 +376,11 @@ jobs:
           python3 scripts/sync-apple-technologies.py --check
           python3 -m unittest discover -s scripts/tests -p "test_apple_technologies.py"
 
+      - name: Local source index and retrieval tests
+        run: |
+          node scripts/index-local-library.mjs --check
+          node --test scripts/tests/local-library.test.mjs
+
       - name: Apple technology catalog is fresh
         run: node scripts/check-framework-catalog.mjs
 
@@ -591,3 +596,12 @@ jobs:
           echo "::group::Failing test names"
           grep -E "' failed \(" /tmp/swift-test.log | head -40 || true
           echo "::endgroup::"
+
+  apple-recipes:
+    name: AppleRecipes builds and tests
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile and test original Apple recipes
+        working-directory: samples/AppleRecipes
+        run: swift test

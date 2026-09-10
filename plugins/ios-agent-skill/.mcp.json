@@ -4,7 +4,7 @@
       "command": "npx",
       "args": [
         "-y",
-        "--package=ios-agent-mcp@2.2.0",
+        "--package=ios-agent-mcp@2.3.0",
         "ios-agent-mcp"
       ]
     },
@@ -12,7 +12,7 @@
       "command": "npx",
       "args": [
         "-y",
-        "--package=ios-agent-mcp@2.2.0",
+        "--package=ios-agent-mcp@2.3.0",
         "ios-agent-knowledge"
       ]
     }

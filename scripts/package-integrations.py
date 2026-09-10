@@ -24,6 +24,8 @@ def main():
                 for p in sorted((ROOT/folder).rglob('*')):
                     if p.is_file() and p.name!='.DS_Store' and not any(part in {'.build','node_modules','__pycache__'} for part in p.parts):
                         z.write(p,'skills/ios-builder/'+p.relative_to(ROOT).as_posix())
+            for script in ('scripts/query-library.mjs','scripts/lib/local-library.mjs'):
+                z.write(ROOT/script,'skills/ios-builder/'+script)
             # Maintenance scripts aren't needed at runtime; implementation templates and all references are bundled.
             z.write(ROOT/'LICENSE','LICENSE')
         with zipfile.ZipFile(archive) as z:
