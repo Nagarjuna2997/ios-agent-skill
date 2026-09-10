@@ -52,7 +52,7 @@ Load this skill when any of the following is true. When none are true, do not lo
 | Colors, spacing, theming, glass effects | `docs/design/design-tokens.md`, `docs/design/color-system.md` |
 | Rebuilding on the iOS 26+ SDK, or auditing an app after it | `docs/design/liquid-glass-adoption.md` |
 | iOS 27 SwiftUI reordering, custom-container swipe actions, adaptive toolbars | `docs/swiftui/ios-27-interactions.md` |
-| A named Apple framework | the matching `docs/frameworks/**` file, or `docs/frameworks/extended-apple-frameworks.md` for catalog-covered extended frameworks |
+| Any Apple technology from Accelerate through XPC, including tools, services, drivers, or legacy APIs | `docs/apple/all-technologies.md` → the technology’s existing or dedicated guide; exact source metadata and API topics in `docs/apple/technologies.json`; integration decisions in `docs/apple/technology-workflow.md` |
 | A named platform | the matching `docs/platforms/*.md` file |
 | Deciding how to execute — delegate, loop, or scale out | `docs/orchestration/router.md` |
 | Defining or invoking a subagent | `docs/orchestration/subagents.md` |
@@ -93,7 +93,7 @@ Load this skill when any of the following is true. When none are true, do not lo
 
 ## How These Docs Are Structured
 
-Every document in this skill follows the same three-part shape. Follow it when you write code, and when you add to this repository.
+Authored implementation documents in this skill follow the three-part shape below. Generated technology references use source metadata and API topic links in their Pattern section; they are discovery guides, not compiled examples. Follow it when you write code, and when you add to this repository.
 
 1. **Context** — when this pattern applies, and when it does not. Stated as a trigger, not a topic.
 2. **Pattern** — the correct implementation, as complete compiling Swift. Not a fragment, not pseudocode.

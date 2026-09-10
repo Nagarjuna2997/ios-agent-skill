@@ -242,6 +242,10 @@ if ! CATALOG_OUT="$(node scripts/check-framework-catalog.mjs 2>&1)"; then
   FAILURES+=("Apple framework catalog:\n$CATALOG_OUT")
 fi
 
+if ! DIRECTORY_OUT="$(python3 scripts/sync-apple-technologies.py --check 2>&1)"; then
+  FAILURES+=("Full Apple directory:\n$DIRECTORY_OUT")
+fi
+
 if (( ${#FAILURES[@]} > 0 )); then
   echo "Repository consistency checks failed:" >&2
   echo "" >&2

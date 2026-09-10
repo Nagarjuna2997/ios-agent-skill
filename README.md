@@ -35,6 +35,12 @@
 
 The central rule is simple: do not let an agent say "it works" without evidence. Build output, test output, screenshots, logs, and structured findings matter more than confident prose.
 
+## All Apple Technologies
+
+The [complete Apple technology directory](docs/apple/all-technologies.md) covers **405 unique entries**, from **Accelerate to XPC**, checked against Apple on **2026-09-10**. It reuses existing guides for **83 technology entries** and adds **322 dedicated reference pages**, with platform metadata and **11,500 API/topic links**. Five Apple directory entries lead to external resources.
+
+The [machine-readable snapshot](docs/apple/technologies.json) and `python3 scripts/sync-apple-technologies.py --check` keep names, URLs, routes, and generated pages consistent. Use `--refresh` to retrieve the live directory again. This is complete technology-level discovery, not a per-symbol documentation mirror or a claim that every integration has been compiled.
+
 ## Why It Exists
 
 AI-generated Swift often compiles while still being wrong in production-shaped ways.

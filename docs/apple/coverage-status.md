@@ -1,81 +1,42 @@
-# Apple Documentation Memory Coverage Status
+# Apple Documentation Coverage Status
 
 ## Context
 
-Load this when the user asks whether Apple documentation memory is complete, how much is covered, what remains, or whether the repo mirrors the Apple Developer Documentation navigator.
+Load this when asked what is covered, what remains, or whether the repository includes every Apple technology.
 
-## Current status
+## Verified directory coverage
 
-As of this repo update, Apple Developer Documentation memory is covered at the navigator, footer, topic-family, and framework-family level.
+Snapshot date: **2026-09-10**.
 
-Covered memory layers:
+- **405/405 unique technology entries** from Apple’s live technology directory, from Accelerate through XPC.
+- **400 Apple-hosted DocC landing pages** retrieved successfully.
+- **5 external resources** linked by Apple checked successfully at their actual destinations.
+- **83 entries reuse existing authored guides**, preserving those implementations.
+- **322 dedicated technology reference pages** added for the other entries.
+- **11,500 API/topic links** extracted from the landing-page topic groups.
+- One canonical record per technology URL; repeated category appearances are merged.
 
-- Top-level documentation navigator.
-- Platforms.
-- Tools.
-- Topics and technologies.
-- Resources.
-- Support.
-- Account areas.
-- Programs.
-- Events.
-- A-section framework memory.
-- B-M framework family memory.
-- N-Z framework family memory.
-- Swift brain.
-- AI and Machine Learning brain.
-- Xcode memory debugging brain.
-- Apple framework catalog: `99/99`, `100.0%` for the repo's tracked app-development technologies.
+Read [All Apple Technologies](all-technologies.md) for the full list. The canonical snapshot is `docs/apple/technologies.json`. The offline validator checks uniqueness, source counts, guide routes, and generated content. The refresh command reads the current directory and technology landing pages; it stops if a source cannot be retrieved.
 
-## What "covered" means here
+## Coverage levels
 
-Covered means the repo contains internal agent memory for:
+| Layer | Status |
+|---|---|
+| Every technology in the checked live directory | Cataloged and routed to a local guide |
+| Landing-page metadata and topic links | Recorded for all 400 Apple-hosted entries |
+| External resources in the directory | Canonical destination checked for all 5 entries |
+| Existing app-development implementations | Preserved; their separate curated catalog is `frameworks.json` |
+| Every linked symbol/article fetched or copied | Not claimed |
+| Compiled integration/sample for every technology | Not claimed |
+| Hardware, entitlements, signing, and runtime validation for every technology | Project-specific; not established by this catalog |
 
-- what the area is for
-- when to choose it
-- when not to choose it
-- setup and entitlement risks
-- privacy/security rules
-- performance/lifecycle risks
-- implementation defaults
-- verification habits
-- anti-patterns
-- routing to deeper local docs
+The previous 99/99 selected-framework metric describes the curated app-development subset. It must not be used as the full-directory count. The directory includes frameworks, services, developer tools, release notes, design resources, and legacy technologies, not only importable iOS modules.
 
-Covered does not mean:
+## Maintenance
 
-- every Apple symbol page is copied
-- every one of the 404 navigator items has a dedicated single file
-- every API method/property/type has full sample code
-- beta documentation has been treated as stable
-- local Xcode/device verification has been run for every framework
-
-## Truthful answer to "full covered or not?"
-
-Full category/family memory coverage: YES.
-
-Literal 404-item per-symbol mirror: NO.
-
-The repo now has enough memory for an agent to route and reason across the Apple Developer Documentation navigator without opening links first. When a user asks for a specific obscure framework or symbol, the agent should use the relevant family memory, then create or deepen a dedicated framework/symbol file if needed.
-
-## Next deepening levels
-
-If the user asks to go deeper after this point, proceed in this order:
-
-1. Add dedicated files for high-value obscure frameworks from the navigator.
-2. Expand framework files with compile-oriented Swift examples.
-3. Add entitlement/setup checklists.
-4. Add failure-mode playbooks.
-5. Add sample-app patterns.
-6. Add MCP static analyzers or lint checks where the rule can be automated.
-
-## Reporting template
-
-```text
-Apple docs memory status:
-Category/family memory: covered
-Tracked Apple technology catalog: 99/99, 100.0%
-Per-symbol Apple docs mirror: not attempted
-Latest added memory files: docs/apple/...
-Remaining work only if user wants deeper: specific framework/symbol files
+```bash
+python3 scripts/sync-apple-technologies.py --check
+python3 scripts/sync-apple-technologies.py --refresh
 ```
+
+After a refresh, review the diff and update dated narrative counts when the directory changes. Follow [the implementation workflow](technology-workflow.md) when using a technology in an application.

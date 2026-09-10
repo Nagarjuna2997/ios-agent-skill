@@ -66,3 +66,7 @@ dist/
 
 # Archives
 *.xcarchive
+
+# Python validation tools
+__pycache__/
+*.pyc

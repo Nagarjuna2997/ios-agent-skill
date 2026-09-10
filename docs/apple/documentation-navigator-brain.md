@@ -1,5 +1,7 @@
 # Apple Documentation Navigator Brain
 
+For the complete per-technology directory, load `docs/apple/all-technologies.md`. The source snapshot and topic maps live in `docs/apple/technologies.json`; use `docs/apple/technology-workflow.md` for implementation decisions.
+
 ## Context
 
 Load this when the user asks for Apple Developer Documentation memory, the documentation navigator, "404 items", broad Apple platform coverage, technology overviews, sample code, release notes, HIG, downloads, technotes, forums, or a framework name that is not yet covered by a dedicated local guide.
