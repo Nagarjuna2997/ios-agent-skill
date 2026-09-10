@@ -1,31 +1,8 @@
-<p align="center">
+# iOS Agent Skill
 
-## See your running app
+**Give your AI coding agent local Swift source, Apple guides, code review tools, and a way to see the app running.**
 
-Optional macOS runtime: `npx -y @nagarjuna2002/ios-simulator-mcp@0.2.0`. Build and launch an app, open its native Simulator, and display a private screenshot preview in your browser sidebar. See [setup and tools](docs/tooling/ios-simulator-mcp.md). [iPhone Duo guidance](docs/platforms/iphone-duo.md) distinguishes announced features from profiles actually installed in Xcode.
-
-## Local source, not repeated browsing
-
-The repository includes complete editable Swift files, app templates, testable sample packages, and local Apple implementation guides. Search the bundled library and retrieve just the needed code or section to control context size. See [the offline source workflow](docs/tooling/offline-source-library.md) and [file inventory](docs/apple/local-library.md). Apple links remain attribution/freshness references; the 405-entry catalog does not claim 405 complete implementations or Apple's proprietary source.
-
-```bash
-node scripts/query-library.mjs search "Persistence" source
-node scripts/query-library.mjs read samples/SkillPatterns/Sources/SkillPatterns/Persistence.swift
-```
-
-  <img src="https://img.shields.io/badge/Swift-6.4-F05138?style=for-the-badge&logo=swift&logoColor=white" alt="Swift 6.4">
-  <img src="https://img.shields.io/badge/Xcode-27-147EFB?style=for-the-badge&logo=xcode&logoColor=white" alt="Xcode 27">
-  <img src="https://img.shields.io/badge/iOS-17--27-000000?style=for-the-badge&logo=apple&logoColor=white" alt="iOS 17 through 27">
-  <img src="https://img.shields.io/badge/MCP-11%20analysis%20tools-8B5CF6?style=for-the-badge" alt="MCP tools">
-  <img src="https://img.shields.io/badge/Subagents-24-00D084?style=for-the-badge" alt="24 subagents">
-</p>
-
-<h1 align="center">iOS Agent Skill</h1>
-
-<p align="center">
-  <strong>Apple-platform engineering rules, analyzers, agents, and runtime tooling for AI coding agents.</strong><br>
-  Swift, SwiftUI, UIKit, SwiftData, Foundation Models, Apple Intelligence, RealityKit, SceneKit, ARKit, Metal, Xcode, and the iOS Simulator.
-</p>
+Build with Claude, Codex, or Gemini CLI. Portable references are also available for ChatGPT workflows. Free and open source under MIT.
 
 <p align="center">
   <a href="https://github.com/Nagarjuna2997/ios-agent-skill/actions/workflows/docs-consistency.yml"><img src="https://github.com/Nagarjuna2997/ios-agent-skill/actions/workflows/docs-consistency.yml/badge.svg" alt="CI"></a>
@@ -35,7 +12,37 @@ node scripts/query-library.mjs read samples/SkillPatterns/Sources/SkillPatterns/
   <a href="https://www.linkedin.com/in/nagarjuna-reddy-97836a193/"><img src="https://img.shields.io/badge/by-Nagarjuna%20Reddy-0A66C2?style=flat-square&logo=linkedin" alt="Author"></a>
 </p>
 
----
+
+## Try it in your next app
+
+Install the skill into your coding agent:
+
+```bash
+npx skills add Nagarjuna2997/ios-agent-skill
+```
+
+For build/run/screenshot tools, also configure the optional [simulator MCP](docs/tooling/ios-simulator-mcp.md) on a Mac with Xcode. Installing the skill alone adds guidance, not runtime tools.
+
+Then ask:
+
+> Build a SwiftUI reading list with local persistence, search, and accessible empty/error states. Reuse this skill's local source where it fits. Run the build and tests, and show simulator evidence for what you verified.
+
+Already have an app? Ask: **“Review this project for concurrency, architecture, accessibility, and security issues. Give me file locations and fix the blockers first.”**
+
+[Client setup](docs/mcp/installation.md) · [Start a new app](docs/tooling/idea-to-app.md) · [Download integrations](https://github.com/Nagarjuna2997/ios-agent-skill/releases/latest) · [Contribute](CONTRIBUTING.md)
+
+## What makes it useful
+
+| Feature | What you can do |
+|---|---|
+| **Local source, retrieved in small sections** | Search complete editable Swift files, templates, and guides; read only the matching section using [offline commands or MCP](docs/tooling/offline-source-library.md). No need to load the whole library into each prompt. |
+| **Apple technology discovery: Accelerate → XPC** | Navigate [405 unique technology entries](docs/apple/all-technologies.md), plus [updates and release notes](docs/apple/updates-and-release-notes.md), with official Apple attribution and dated snapshots. |
+| **11 read-only Swift review tools** | Find concurrency, architecture, SwiftUI, memory, security, testing, performance, and App Store readiness issues with [file-level findings](mcp-server/README.md). |
+| **Build → run → see** | Use [14 simulator tools](docs/tooling/ios-simulator-mcp.md) to build/test, launch an app, capture screenshots, and open a private browser preview alongside your agent. Requires macOS and Xcode. |
+| **An app starter you own** | Generate a Swift starter, app brief, optional XcodeGen spec, and [editable icon layers](docs/design/icon-composer.md). Your coding agent implements the features; you keep the source. |
+| **Examples with tests** | Reuse [SkillPatterns](samples/SkillPatterns/) and [AppleRecipes](samples/AppleRecipes/): persistence, networking, cryptography, language, vector statistics, and PDF recipes. |
+
+Local retrieval bounds output size; token and cost savings depend on the model and task and have not been benchmarked. The catalog is a discovery map, not 405 completed framework implementations or Apple's proprietary source. Static reviews are heuristic findings; builds, tests, and runtime checks supply separate evidence.
 
 ## What This Is
 
@@ -128,7 +135,7 @@ More client setup is in [docs/mcp/installation.md](docs/mcp/installation.md).
 
 ### Use the CLI
 
-The CLI is currently used from source:
+The CLI is published on npm. For a quick start, use `npx -y @nagarjuna2002/ios-agent@0.2.0 new MyApp --xcodegen`. To develop it from source:
 
 ```bash
 cd cli
@@ -154,9 +161,9 @@ node dist/index.js --help
 
 | Package | Status | Runtime | Purpose |
 |---|---|---|---|
-| [mcp-server](mcp-server/) / `ios-agent-mcp` | Published as `2.1.0` | Node, any OS | Static Swift analysis and skill linting |
-| [cli](cli/) / `ios-agent` | Source package | Node 20+ | Project scaffolding and layout management |
-| [ios-simulator-mcp](ios-simulator-mcp/) | Source package, v4 seed | macOS + Xcode | Runtime build/test/simulator evidence |
+| [ios-agent-mcp](https://www.npmjs.com/package/ios-agent-mcp) | Published: `2.4.0` | Node 18+, any OS | 11 analysis tools; separate knowledge server with 8 tools |
+| [@nagarjuna2002/ios-agent](https://www.npmjs.com/package/@nagarjuna2002/ios-agent) | Published: `0.2.0` | Node 20+ | Project scaffolding, app briefs, editable icon layers |
+| [@nagarjuna2002/ios-simulator-mcp](https://www.npmjs.com/package/@nagarjuna2002/ios-simulator-mcp) | Published: `0.2.0` | macOS + Xcode | 14 tools for runtime evidence and browser preview |
 | [samples/SkillPatterns](samples/SkillPatterns/) | CI sample | Swift Package Manager | Compile-checked examples of the rules |
 
 ## MCP Tools
@@ -181,11 +188,15 @@ Every review returns markdown plus `structuredContent` with counts, issues, scor
 
 ## Simulator Tools
 
-`ios-simulator-mcp` currently exposes the safe first slice of runtime automation:
+`@nagarjuna2002/ios-simulator-mcp` exposes 14 runtime tools:
 
 | Tool | Backend |
 |---|---|
 | `simulator_list` | `xcrun simctl list devices available --json` |
+| `simulator_environment` | Installed Xcode, runtime and device availability |
+| `simulator_show` | Open native Simulator |
+| `simulator_preview_start` | Start private, read-only browser screenshot preview |
+| `simulator_preview_stop` | Stop browser preview |
 | `simulator_boot` | `xcrun simctl boot` |
 | `simulator_shutdown` | `xcrun simctl shutdown` |
 | `build_project` | `xcodebuild build` |
@@ -238,7 +249,9 @@ Start here:
 | App description to build prompt | [docs/tooling/app-description-workflow.md](docs/tooling/app-description-workflow.md), [docs/design/design-tokens.md](docs/design/design-tokens.md), [docs/design/color-system.md](docs/design/color-system.md) |
 | Version and migration guidance | [docs/compatibility-matrix.md](docs/compatibility-matrix.md), [docs/migration/swift-6-migration.md](docs/migration/swift-6-migration.md), [docs/migration/xcode-migration.md](docs/migration/xcode-migration.md) |
 
-## Apple Technology Catalog
+## Curated Framework Guide Coverage
+
+This smaller, curated guide index is separate from the 405-entry Apple directory above. “Covered” tracks documentation coverage, not compiled integrations.
 
 <!-- apple-catalog:start -->
 Apple catalog tracked: **99** technologies. Covered: **99**. Planned: **0**. Skipped: **0**. Deprecated: **0**. Coverage: **100.0%**.
@@ -339,7 +352,7 @@ npm test
 
 ## Publishing
 
-`ios-agent-mcp@2.1.0` is published on npm:
+`ios-agent-mcp@2.4.0` is published on npm:
 
 ```bash
 npm view ios-agent-mcp version
@@ -359,9 +372,8 @@ If npm asks for security-key approval, use the browser link printed by the CLI a
 
 Current state:
 
-- v2.1: static MCP analyzer complete and published.
-- v3.0: Apple Platform Intelligence docs, catalog, routing hubs, and specialist subagents.
-- v4.0 seed: executable simulator MCP package for Build -> Run -> See evidence.
+- v3.3.0 repository release: local source library, Apple catalog, cross-client integrations, and simulator preview.
+- npm: analyzer/knowledge package 2.4.0, app CLI 0.2.0, and simulator package 0.2.0.
 
 Next work:
 
