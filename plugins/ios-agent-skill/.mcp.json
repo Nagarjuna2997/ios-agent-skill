@@ -4,16 +4,7 @@
       "command": "npx",
       "args": [
         "-y",
-        "--package=ios-agent-mcp@2.4.0",
-        "ios-agent-mcp"
-      ]
-    },
-    "ios-agent-knowledge": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "--package=ios-agent-mcp@2.4.0",
-        "ios-agent-knowledge"
+        "ios-agent-mcp@2.5.1"
       ]
     }
   }

@@ -420,7 +420,7 @@ Search offline with `node scripts/query-library.mjs search "SwiftData"`. Read a 
 | [docs/frameworks/widgetkit.md](../../docs/frameworks/widgetkit.md) | guide | 28424 |
 | [docs/graphics/README.md](../../docs/graphics/README.md) | guide | 2319 |
 | [docs/mcp/examples.md](../../docs/mcp/examples.md) | guide | 12256 |
-| [docs/mcp/installation.md](../../docs/mcp/installation.md) | guide | 8323 |
+| [docs/mcp/installation.md](../../docs/mcp/installation.md) | guide | 9119 |
 | [docs/mcp/knowledge-server.md](../../docs/mcp/knowledge-server.md) | guide | 3028 |
 | [docs/mcp/tools.md](../../docs/mcp/tools.md) | guide | 12494 |
 | [docs/mcp/vnext-analysis-tools.md](../../docs/mcp/vnext-analysis-tools.md) | guide | 5328 |

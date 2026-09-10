@@ -1,5 +1,21 @@
 # iOS Agent Skill
 
+## One install, one MCP connection (2.5.1)
+
+```bash
+claude mcp add ios-agent -- npx -y ios-agent-mcp@2.5.1
+```
+
+The default server exposes 34 tools: 11 Swift reviews, 8 Apple reference tools, 14 simulator tools, and `create_app`. App scaffolding and simulator packages install automatically as dependencies; no separate installation or MCP connection is needed. Remove the separate knowledge/simulator connections if you previously configured them to avoid duplicate tools.
+
+Create a starter directly:
+
+```bash
+npx -y ios-agent-mcp@2.5.1 new MyApp --brief "A reading list with local storage" --xcodegen
+```
+
+Requires Node.js 20+. Simulator operations require macOS and Xcode; XcodeGen is required to generate an Xcode project from the starter specification. The agent implements app features using the starter, source tools and verification tools. One install is not autonomous app generation. The default connection now includes tools that write files and operate the simulator; review and reference tools remain read-only.
+
 **[Website & quick start →](https://nagarjuna2997.github.io/ios-agent-skill/)**
 
 **Give your AI coding agent local Swift source, Apple guides, code review tools, and a way to see the app running.**
@@ -114,7 +130,7 @@ git clone https://github.com/Nagarjuna2997/ios-agent-skill.git .ios-skill
 
 ### Install the static MCP analyzer
 
-`ios-agent-mcp` is published on npm. It is read-only and does not require Xcode.
+`ios-agent-mcp` is published on npm. Reviews and references are read-only; app creation and simulator tools have write/runtime effects. Simulator operations require Xcode.
 
 ```bash
 claude mcp add ios-agent -- npx -y ios-agent-mcp --project /path/to/YourApp
@@ -163,14 +179,14 @@ node dist/index.js --help
 
 | Package | Status | Runtime | Purpose |
 |---|---|---|---|
-| [ios-agent-mcp](https://www.npmjs.com/package/ios-agent-mcp) | Published: `2.4.0` | Node 18+, any OS | 11 analysis tools; separate knowledge server with 8 tools |
+| [ios-agent-mcp](https://www.npmjs.com/package/ios-agent-mcp) | Version: `2.5.1` | Node 20+; runtime tools need Mac/Xcode | 34 tools in one default connection |
 | [@nagarjuna2002/ios-agent](https://www.npmjs.com/package/@nagarjuna2002/ios-agent) | Published: `0.2.0` | Node 20+ | Project scaffolding, app briefs, editable icon layers |
 | [@nagarjuna2002/ios-simulator-mcp](https://www.npmjs.com/package/@nagarjuna2002/ios-simulator-mcp) | Published: `0.2.0` | macOS + Xcode | 14 tools for runtime evidence and browser preview |
 | [samples/SkillPatterns](samples/SkillPatterns/) | CI sample | Swift Package Manager | Compile-checked examples of the rules |
 
 ## MCP Tools
 
-`ios-agent-mcp` exposes eleven read-only tools:
+The unified server includes these eleven read-only review tools:
 
 | Tool | Use when |
 |---|---|
@@ -354,7 +370,7 @@ npm test
 
 ## Publishing
 
-`ios-agent-mcp@2.4.0` is published on npm:
+`ios-agent-mcp@2.5.1` is published on npm:
 
 ```bash
 npm view ios-agent-mcp version
@@ -375,7 +391,7 @@ If npm asks for security-key approval, use the browser link printed by the CLI a
 Current state:
 
 - v3.3.0 repository release: local source library, Apple catalog, cross-client integrations, and simulator preview.
-- npm: analyzer/knowledge package 2.4.0, app CLI 0.2.0, and simulator package 0.2.0.
+- npm: unified package 2.5.1, app CLI 0.2.0, and simulator package 0.2.0.
 
 Next work:
 

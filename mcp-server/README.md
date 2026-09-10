@@ -1,5 +1,21 @@
 # iOS Agent MCP
 
+## One install, one MCP connection (2.5.1)
+
+```bash
+claude mcp add ios-agent -- npx -y ios-agent-mcp@2.5.1
+```
+
+The default server exposes 34 tools: 11 Swift reviews, 8 Apple reference tools, 14 simulator tools, and `create_app`. App scaffolding and simulator packages install automatically as dependencies; no separate installation or MCP connection is needed. Remove the separate knowledge/simulator connections if you previously configured them to avoid duplicate tools.
+
+Create a starter directly:
+
+```bash
+npx -y ios-agent-mcp@2.5.1 new MyApp --brief "A reading list with local storage" --xcodegen
+```
+
+Requires Node.js 20+. Simulator operations require macOS and Xcode; XcodeGen is required to generate an Xcode project from the starter specification. The agent implements app features using the starter, source tools and verification tools. One install is not autonomous app generation. The default connection now includes tools that write files and operate the simulator; review and reference tools remain read-only.
+
 [Website and quick start](https://nagarjuna2997.github.io/ios-agent-skill/) · [GitHub source](https://github.com/Nagarjuna2997/ios-agent-skill)
 
 # Local source retrieval in 2.4.0
@@ -146,18 +162,13 @@ The root comes from `--project`, then `IOS_AGENT_PROJECT`, then the working
 directory the client spawned the server in. **Every payload reports which root it
 used**, so an empty project is never mistaken for a wrong path.
 
-**There is deliberately no `ios://project/build-status`.** It would have to run
-`xcodebuild`, which needs macOS and Xcode and breaks the
-`filesystem: read, network: none` contract that lets this package install
-anywhere in ~26 KB. Build and simulator state belong in the separate package that
-already requires a full toolchain — see [ROADMAP.md](../ROADMAP.md).
+Project resources remain read-only snapshots. Build, test and simulator actions are available as tools in the unified connection; they require macOS/Xcode.
 
 ---
 
 ## What it does and does not do
 
-**Does:** static analysis. Reads `.swift`, `Info.plist`, `Package.swift`, and
-`project.pbxproj` under the path you give it. No network, no writes.
+**Review tools:** read project files without modifying them. **App creation:** writes a new starter. **Simulator tools:** build/test projects and operate devices; builds can fetch dependencies, and preview starts a loopback server.
 
 **Does not:** prove your app builds or behaves correctly. Run `swift build` and
 `swift test` for that — the tools say so in their own output.

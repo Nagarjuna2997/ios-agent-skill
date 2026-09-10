@@ -1,5 +1,21 @@
 # Installing the iOS Agent MCP Server
 
+## One install, one MCP connection (2.5.1)
+
+```bash
+claude mcp add ios-agent -- npx -y ios-agent-mcp@2.5.1
+```
+
+The default server exposes 34 tools: 11 Swift reviews, 8 Apple reference tools, 14 simulator tools, and `create_app`. App scaffolding and simulator packages install automatically as dependencies; no separate installation or MCP connection is needed. Remove the separate knowledge/simulator connections if you previously configured them to avoid duplicate tools.
+
+Create a starter directly:
+
+```bash
+npx -y ios-agent-mcp@2.5.1 new MyApp --brief "A reading list with local storage" --xcodegen
+```
+
+Requires Node.js 20+. Simulator operations require macOS and Xcode; XcodeGen is required to generate an Xcode project from the starter specification. The agent implements app features using the starter, source tools and verification tools. One install is not autonomous app generation. The default connection now includes tools that write files and operate the simulator; review and reference tools remain read-only.
+
 **Load this when:** setting up `ios-agent-mcp` in Claude Code, Claude Desktop,
 ChatGPT/Codex, Gemini, or another MCP-capable client.
 
@@ -15,8 +31,7 @@ It also serves three **resources** (`ios://project/info`, `.../dependencies`,
    directory — the marker `ios-agent` writes (`docs/tooling/project-scaffolding.md`)
 4. the working directory itself
 
-The server only **reads** that marker; it never creates one, so its
-`filesystem: read, network: none` contract is unchanged. `ios://project/info`
+The analysis tools only **read** that marker; it never creates one, while app creation and simulator tools have separate write/runtime effects. `ios://project/info`
 reports `resolved_from` alongside the path, because an implicit root is
 otherwise unfalsifiable — "no Swift files" reads identically whether the project
 is empty or the server is pointed at the wrong directory.
@@ -192,9 +207,9 @@ directory differs.
 
 ## Requirements
 
-- **Node 18+**. Check with `node --version`.
-- No Xcode required. The server is static analysis; it never invokes a build.
-- No network access. It reads local files only.
+- **Node 20+**. Check with `node --version`.
+- Review/reference tools do not require Xcode. Simulator builds and tests require macOS/Xcode.
+- Local review/reference tools read files. Builds may fetch dependencies, and simulator previews serve on loopback.
 
 ---
 
@@ -228,11 +243,4 @@ it is build configuration, not app source.
 
 ## Privacy
 
-The server reads files under the path you pass to a tool. It makes **no network
-requests** and **writes nothing**. Your source never leaves the machine, except
-insofar as your MCP client sends the tool's text output to its model — the same
-as any file you paste into a chat.
-
-## Optional Simulator sidebar access
-
-For a local Mac with Xcode, add the scoped runtime package `@nagarjuna2002/ios-simulator-mcp@0.2.0`. Setup and the exact MCP configuration are in `docs/tooling/ios-simulator-mcp.md`. This is independent of the portable knowledge server and offers a local screenshot viewer plus native Simulator control.
+Review and local-reference tools read files. App creation writes a new starter; simulator tools execute Xcode and manage devices. Builds may fetch dependencies, and preview serves on loopback. The MCP client can send tool outputs to its model provider; review that client's settings.
