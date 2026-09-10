@@ -6,6 +6,9 @@ Checked September 10, 2026. Submitted does not mean accepted or indexed.
 |---|---|
 | GitHub | README feature overview, published package versions, repository description and search topics updated. |
 | [Awesome MCP Servers](https://github.com/punkpeye/awesome-mcp-servers/pull/14145) | Submitted one Developer Tools entry; awaiting maintainer review. Duplicate search found no existing submission. |
+| [TensorBlock MCP Index](https://github.com/TensorBlock/awesome-mcp-servers/issues/2302) | Submitted via its official server submission issue; awaiting review. Repository and issue search found no duplicate. |
+| [MCP Bridge](https://github.com/stormlive-ai/mcp-bridge-docs/issues/7) | Submitted through the GitHub issue route linked by its website; awaiting review. No duplicate found in repository/issue search. |
+| [MCP.Directory](https://mcp.directory/submit) | Free web submission accepted with “Server Submitted!” receipt. Directory says it will review; a live listing has not been verified. |
 | [skills.sh](https://skills.sh/docs/faq) | `npx skills add Nagarjuna2997/ios-agent-skill --list` successfully discovers one skill. Directory ranking uses real install telemetry; this check is not evidence of a leaderboard listing. |
 | [Glama](https://glama.ai/mcp/servers) | Submission requires sign-in. After owner login, the browser blocked the return page; submission not confirmed. |
 | [PulseMCP](https://www.pulsemcp.com/submit) | Submissions temporarily paused. Its page recommends publishing to the Official MCP Registry for future ingestion. |
