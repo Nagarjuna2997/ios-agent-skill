@@ -341,7 +341,7 @@ ${brief}
 - Define screens, navigation, data models, persistence, and loading/empty/error states.
 - Choose semantic colors and reusable spacing/type tokens; support Dynamic Type and dark mode.
 - Implement the app in SwiftUI, with offline previews and injected dependencies where needed.
-- Customize IconLayers, import the layers into Icon Composer, and validate the resulting icon in Xcode.
+- Create or customize separate SVG IconLayers, import the layers into Icon Composer, and validate the resulting icon in Xcode.
 - Build and test on an available simulator; report actual results and remaining limitations.
 `;
 }

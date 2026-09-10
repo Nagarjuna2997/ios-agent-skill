@@ -340,6 +340,7 @@ jobs:
           # carry frontmatter. Any OTHER doc starting with '---' is almost certainly
           # an accident (a stray fence or a copy-paste) that renders as raw YAML.
           allowed = {"./SKILL.md"}
+          allowed.update(glob.glob("./plugins/*/skills/*/SKILL.md"))
           allowed.update(glob.glob("./.claude/agents/*.md"))
           allowed.update(glob.glob("./.github/ISSUE_TEMPLATE/*.md"))
           allowed.update(glob.glob("./.github/*.md"))

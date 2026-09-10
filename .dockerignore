@@ -1,0 +1,5 @@
+.git
+**/node_modules
+**/dist
+**/data/knowledge.json
+dist-release

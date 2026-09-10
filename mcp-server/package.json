@@ -1,23 +1,25 @@
 {
   "name": "ios-agent-mcp",
-  "version": "2.1.0",
-  "description": "MCP server for modern iOS/Swift development \u2014 concurrency isolation, architecture boundaries, SwiftUI, and App Store readiness analysis",
+  "version": "2.2.0",
+  "description": "MCP server for modern iOS/Swift development — concurrency isolation, architecture boundaries, SwiftUI, and App Store readiness analysis",
   "license": "MIT",
   "type": "module",
   "bin": {
-    "ios-agent-mcp": "dist/index.js"
+    "ios-agent-mcp": "dist/index.js",
+    "ios-agent-knowledge": "dist/knowledge-server.js"
   },
   "main": "dist/index.js",
   "files": [
     "dist",
     "mcp.json",
-    "README.md"
+    "README.md",
+    "data"
   ],
   "engines": {
     "node": ">=18"
   },
   "scripts": {
-    "build": "node scripts/sync-version.mjs && tsc",
+    "build": "node scripts/sync-version.mjs && node scripts/bundle-knowledge.mjs && tsc",
     "test": "node --test test/*.test.js",
     "typecheck": "node scripts/sync-version.mjs && tsc --noEmit",
     "prepublishOnly": "npm run build && npm test",
@@ -30,15 +32,21 @@
     "swift",
     "swiftui",
     "claude",
-    "cursor"
+    "cursor",
+    "chatgpt",
+    "codex",
+    "gemini",
+    "apple-documentation",
+    "icon-composer"
   ],
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "typescript": "^5.6.0",
-    "@types/node": "^22.0.0"
+    "@types/express": "^5.0.6",
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0"
   },
   "repository": {
     "type": "git",

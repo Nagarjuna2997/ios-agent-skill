@@ -1,0 +1,25 @@
+{
+  "name": "ios-agent-chatgpt",
+  "version": "3.1.0",
+  "description": "Apple app building workflows, technology guidance, release notes and layered Icon Composer assets.",
+  "author": {
+    "name": "Nagarjuna Reddy"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "iOS Agent for ChatGPT",
+    "shortDescription": "Build Apple apps with source-backed guidance.",
+    "longDescription": "Turn an app brief into an implementation workflow with Apple technology references, release notes, editable icon layers and build verification.",
+    "developerName": "Nagarjuna Reddy",
+    "category": "Productivity",
+    "capabilities": [],
+    "defaultPrompt": [
+      "Build an iOS app from my idea.",
+      "Create layer-by-layer app icon artwork.",
+      "Check Apple SDK updates for my app."
+    ]
+  },
+  "homepage": "https://github.com/Nagarjuna2997/ios-agent-skill",
+  "repository": "https://github.com/Nagarjuna2997/ios-agent-skill",
+  "license": "MIT"
+}

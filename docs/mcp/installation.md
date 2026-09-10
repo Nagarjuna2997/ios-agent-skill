@@ -26,6 +26,52 @@ Worked sessions: `examples.md`.
 
 ---
 
+## Choose your client
+
+| Client | Install path | Capabilities |
+|---|---|---|
+| Claude Code/Desktop | Local stdio MCP configuration below | Swift analysis and optional knowledge tools |
+| Codex | Codex MCP CLI/config or the release plugin ZIP | Local analysis, knowledge and app-building skill |
+| ChatGPT | Portable skills-only plugin ZIP; optional hosted knowledge MCP | Bundled workflows/references; implementation needs a coding environment |
+| Gemini CLI | GitHub extension or local MCP configuration | GEMINI instructions, analysis and knowledge tools |
+
+## Codex
+
+```bash
+codex mcp add ios-agent -- npx -y --package=ios-agent-mcp@2.2.0 ios-agent-mcp
+codex mcp add ios-agent-knowledge -- npx -y --package=ios-agent-mcp@2.2.0 ios-agent-knowledge
+```
+
+Equivalent `config.toml` entries:
+
+```toml
+[mcp_servers.ios-agent]
+command = "npx"
+args = ["-y", "--package=ios-agent-mcp@2.2.0", "ios-agent-mcp"]
+
+[mcp_servers.ios-agent-knowledge]
+command = "npx"
+args = ["-y", "--package=ios-agent-mcp@2.2.0", "ios-agent-knowledge"]
+```
+
+Pass `--project` and an absolute app path to the analyzer when project resource discovery needs an explicit root. The plugin ZIP is an alternative; avoid installing the same server via both plugin and manual configuration.
+
+## ChatGPT plugin and remote MCP
+
+The GitHub release includes `ios-agent-chatgpt.zip`, a self-contained skills-only plugin with the Apple references and app/icon workflow. It contains no local-process MCP configuration, so it does not pretend a browser can run `npx` on your Mac. Upload/import it through a supported plugin development or submission flow for your account. Public marketplace listing remains subject to publisher verification and platform review.
+
+The optional [knowledge MCP server](knowledge-server.md) supports Streamable HTTP. Deploy it at a stable HTTPS URL, then connect `/mcp` through ChatGPT’s supported developer-mode workflow. The repository does not invent a production endpoint. Its remote tools serve public references and plans; actual local project analysis stays in the local MCP server.
+
+## Gemini CLI
+
+```bash
+gemini extensions install https://github.com/Nagarjuna2997/ios-agent-skill
+```
+
+The repository’s `gemini-extension.json` registers both MCP binaries and loads `GEMINI.md`. Alternatively add the same `mcpServers` object from the Claude Desktop example to Gemini CLI settings, with an additional server named `ios-agent-knowledge` whose args are `["-y", "--package=ios-agent-mcp@2.2.0", "ios-agent-knowledge"]`. Use one installation method to avoid duplicates. The Gemini web chat is a different product and is not claimed to load CLI extensions.
+
+Official client references: [Codex MCP](https://developers.openai.com/codex/mcp), [OpenAI plugin packaging](https://developers.openai.com/plugins/build/plugins), [ChatGPT connection/testing](https://developers.openai.com/plugins/deploy/connect-chatgpt), [Gemini extension format](https://geminicli.com/docs/extensions/reference/).
+
 ## Claude Code
 
 ```bash

@@ -1,7 +1,7 @@
 ---
 name: ios-agent-skill
 description: Expert iOS/Swift developer behavior for AI coding agents. Use when writing, reviewing, or refactoring Swift, SwiftUI, UIKit, or SwiftData code; when designing iOS app architecture (MVVM, Clean Architecture, coordinators, routing); when building UI that must meet Apple's Human Interface Guidelines, contrast, dark-mode, and Dynamic Type standards; when working with any Apple framework (SwiftData, Core Data, CloudKit, StoreKit, HealthKit, WidgetKit, App Intents, CoreML, Vision, ARKit, RealityKit, SceneKit, Metal, and 30+ more); or when targeting iOS, macOS, watchOS, tvOS, or visionOS. Also use for Swift concurrency questions — actors, @MainActor isolation, Sendable, structured concurrency.
-version: 3.0.0
+version: "3.1.0"
 license: MIT
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 metadata:
@@ -28,7 +28,7 @@ metadata:
     - Swift 6 strict concurrency
 ---
 
-# iOS Agent Skill — Claude AI Expert iOS/Swift Developer
+# iOS Agent Skill — Apple App Engineering for AI Coding Agents
 
 You are an **expert iOS/Swift developer** with deep knowledge of all Apple platforms and frameworks. You write production-ready, error-free Swift code following Apple's latest APIs, design patterns, and Human Interface Guidelines.
 
@@ -56,6 +56,9 @@ Load this skill when any of the following is true. When none are true, do not lo
 
 | Trigger | Load |
 |---------|------|
+| Build a complete app from an idea, client setup or plugin installation | `docs/tooling/idea-to-app.md`, `docs/mcp/installation.md` |
+| Apple updates, SDK release notes, known issues or resolved issues | `docs/apple/updates-and-release-notes.md`, `docs/apple/updates.json` |
+| App icons, Icon Composer, layered artwork or Liquid Glass icon variants | `docs/design/icon-composer.md`; produce separately editable layers and verify native `.icon` in the actual tool |
 | Any new screen or view | `docs/swiftui/views-and-controls.md`, `docs/design/design-tokens.md` |
 | State, `@Observable`, or a view model | `docs/swiftui/state-and-data-flow.md`, `patterns/mvvm.md` |
 | Swift from scratch, Swift language memory, Apple Swift docs coverage, ARC, ownership, lifetime, or `deinit` behavior | `docs/swift/swift-brain.md`, `docs/swift/swift-language.md`, `docs/swift/swift-standard-library.md`, `docs/swift/memory-lifetime.md`, `docs/apple-docs-reference.md` |

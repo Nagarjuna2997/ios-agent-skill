@@ -70,3 +70,6 @@ dist/
 # Python validation tools
 __pycache__/
 *.pyc
+
+# Built release archives
+/dist-release/

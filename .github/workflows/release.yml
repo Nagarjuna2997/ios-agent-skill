@@ -39,6 +39,16 @@ jobs:
           npm run build
           npm test
 
+      - name: Build and test app CLI
+        working-directory: cli
+        run: |
+          npm ci
+          npm run build
+          npm test
+
+      - name: Package integrations
+        run: python3 scripts/package-integrations.py
+
       - name: Extract release notes from CHANGELOG
         id: notes
         run: |
@@ -75,4 +85,5 @@ jobs:
           gh release create "$GITHUB_REF_NAME" \
             --title "$GITHUB_REF_NAME" \
             --notes-file release-notes.md \
-            --verify-tag
+            --verify-tag \
+            dist-release/*

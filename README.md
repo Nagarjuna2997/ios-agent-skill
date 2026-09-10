@@ -54,6 +54,24 @@ AI-generated Swift often compiles while still being wrong in production-shaped w
 | Design | Fixed fonts, literal colors, inaccessible icon buttons | Design tokens, Dynamic Type, contrast, VoiceOver labels |
 | Verification | "Should work now" | Commands run, output shown, evidence labelled |
 
+## Start with your app idea
+
+```bash
+npx -y @nagarjuna2002/ios-agent@0.2.0 new MyApp --brief "Describe the app you want" --xcodegen
+```
+
+Open the generated folder with your coding agent and ask it to implement `App/APP_BRIEF.md` through build and screen verification. The starter includes an XcodeGen project spec and separate editable icon layers. [Full idea-to-app workflow](docs/tooling/idea-to-app.md).
+
+### Claude, ChatGPT/Codex and Gemini
+
+- **Claude and Codex:** local MCP analyzers plus five Apple knowledge/planning tools. A Codex plugin ZIP is included in releases.
+- **ChatGPT:** a portable skills-only plugin ZIP with bundled references. The optional knowledge server supports HTTP for deployment to your own HTTPS host.
+- **Gemini CLI:** install this GitHub repository as an extension; it includes both MCP connections and GEMINI guidance.
+
+[Client installation](docs/mcp/installation.md) · [Knowledge MCP](docs/mcp/knowledge-server.md) · [Apple updates and release notes](docs/apple/updates-and-release-notes.md) · [Layer-by-layer Icon Composer workflow](docs/design/icon-composer.md) · [Release downloads](https://github.com/Nagarjuna2997/ios-agent-skill/releases)
+
+The release artifacts are installable packages, not a claim of acceptance into a public plugin marketplace. Xcode builds and native Icon Composer editing require a compatible Mac environment.
+
 ## Quick Install
 
 ### Install the skill

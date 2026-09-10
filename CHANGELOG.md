@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+### Added -- 3.1.0 (2026-09-10)
+
+- Complete 405-technology Apple directory, 96 update/release-note landing pages, and layer-by-layer Icon Composer guidance.
+- `ios-agent-mcp` 2.2.0 includes a separate knowledge server with five tools, stdio and Streamable HTTP, bundled public reference data, and protocol tests.
+- `@nagarjuna2002/ios-agent` 0.2.0 adds app briefs, optional XcodeGen scaffolding and editable SVG icon layers with overwrite protection.
+- Portable ChatGPT skills-only and Codex plugin ZIPs, Gemini CLI extension, and explicit client setup instructions.
+- GitHub Release assets include npm tarballs, self-contained plugin bundles and SHA-256 checksums. Public marketplace acceptance and a hosted endpoint are separate deployment steps.
+
+
 ### Added -- 4.0.0 seed
 - **`ios-simulator-mcp/`** -- the first executable slice of the v4 Build -> Run -> See -> Fix loop. It is a separate MCP package from `ios-agent-mcp`, with a macOS + Xcode runtime contract instead of a lightweight static-analysis contract.
 - Implemented safe runtime tools for `simulator_list`, `simulator_boot`, `simulator_shutdown`, `build_project`, `run_tests`, `install_app`, `launch_app`, `terminate_app`, `open_deep_link`, and `screenshot`.

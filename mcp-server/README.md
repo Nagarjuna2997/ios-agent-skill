@@ -1,3 +1,13 @@
+## New in 2.2.0: Apple knowledge tools for more clients
+
+This package includes two MCP binaries: `ios-agent-mcp` for local Swift project analysis and `ios-agent-knowledge` for public Apple references and app/icon planning. Claude, Codex and Gemini CLI can run either over stdio. The knowledge server also supports Streamable HTTP for a hosted ChatGPT connection.
+
+```bash
+npx -y --package=ios-agent-mcp@2.2.0 ios-agent-knowledge
+```
+
+Knowledge tools search 405 technologies and 96 update/release-note sources, retrieve guides, plan an app implementation, and specify separate Icon Composer layers. They do not write apps, access arbitrary project paths or claim native icon generation. [Setup](https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/mcp/installation.md).
+
 # ios-agent-mcp
 
 An MCP server that reviews Swift projects against the rules in
