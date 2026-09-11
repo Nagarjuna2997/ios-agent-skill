@@ -2,7 +2,9 @@ name: Publish landing page
 on:
   push:
     branches: [main]
-    paths: ['site/**', '.github/workflows/pages.yml']
+    paths: ['site/**', 'scripts/npm-downloads.py', '.github/workflows/pages.yml']
+  schedule:
+    - cron: "17 8 * * *"
   workflow_dispatch:
 defaults:
   run:
@@ -22,6 +24,8 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+      - name: Refresh total npm downloads
+        run: python3 scripts/npm-downloads.py
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
