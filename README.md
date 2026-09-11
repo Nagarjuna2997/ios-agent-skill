@@ -1,6 +1,8 @@
 # iOS Agent Skill
 
-     <iframe width="360" height="240" frameborder="0" src="https://nagarjuna2997.github.io/ios-agent-skill/ios-agent-skill-badge.html"></iframe>
+   [![npm downloads](https://nagarjuna2997.github.io/ios-agent-skill/ios-agent-skill-badge.html)](https://npmjs.com/package/ios-agent-skill)
+
+      
 
 _Total npm downloads for `ios-agent-mcp`, refreshed daily through the latest complete UTC day. Downloads are not unique users._
 
