@@ -1,8 +1,6 @@
 # iOS Agent Skill
 
-   <a href="https://npmjs.com/package/ios-agent-skill" target="_blank">
-     <img src="https://img.shields.io/npm/dm/ios-agent-skill?label=Downloads%20(monthly)&color=blue" alt="npm downloads">
-   </a>
+     <iframe width="360" height="240" frameborder="0" src="https://nagarjuna2997.github.io/ios-agent-skill/ios-agent-skill-badge.html"></iframe>
 
 _Total npm downloads for `ios-agent-mcp`, refreshed daily through the latest complete UTC day. Downloads are not unique users._
 
