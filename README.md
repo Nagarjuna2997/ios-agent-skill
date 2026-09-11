@@ -1,6 +1,8 @@
 # iOS Agent Skill
 
-[![npm total downloads](https://img.shields.io/endpoint?url=https%3A%2F%2Fnagarjuna2997.github.io%2Fios-agent-skill%2Fnpm-downloads.json)](https://nagarjuna2997.github.io/ios-agent-skill/npm-downloads-details.json)
+   <a href="https://npmjs.com/package/ios-agent-skill" target="_blank">
+     <img src="https://img.shields.io/npm/dm/ios-agent-skill?label=Downloads%20(monthly)&color=blue" alt="npm downloads">
+   </a>
 
 _Total npm downloads for `ios-agent-mcp`, refreshed daily through the latest complete UTC day. Downloads are not unique users._
 
