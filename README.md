@@ -1,9 +1,5 @@
 # iOS Agent Skill
-
-   [![npm downloads](https://nagarjuna2997.github.io/ios-agent-skill/ios-agent-skill-badge.html)](https://npmjs.com/package/ios-agent-skill)
-
-      
-
+[![npm total downloads](https://img.shields.io/endpoint?url=https%3A%2F%2Fnagarjuna2997.github.io%2Fios-agent-skill%2Fnpm-downloads.json)](https://nagarjuna2997.github.io/ios-agent-skill/npm-downloads-details.json) 
 _Total npm downloads for `ios-agent-mcp`, refreshed daily through the latest complete UTC day. Downloads are not unique users._
 
 ## One install, one MCP connection (2.5.1)
