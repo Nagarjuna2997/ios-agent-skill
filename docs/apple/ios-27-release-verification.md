@@ -10,6 +10,21 @@ Checked **2026-09-16**. Release status is distinct from this repository’s comp
 | App Intents | [Framework updates](https://developer.apple.com/documentation/updates/appintents), [OS release notes](https://developer.apple.com/documentation/ios-ipados-release-notes/ios-ipados-27-release-notes) | Static reviewer tests; no live Siri acceptance test |
 | Foundation Models | [Framework updates](https://developer.apple.com/documentation/updates/foundationmodels) | AppleRecipes tool compiles with Xcode 26.6; deterministic tests, not live model generation |
 
+## Latest public release-feed additions
+
+Rechecked Apple's [release feed](https://developer.apple.com/news/releases/) on
+2026-09-16. It now lists **27.2 beta** for iOS/iPadOS (24B5084k), macOS
+(26B5086k), tvOS (24K5088l), visionOS (24N5088l), watchOS (24S5086l), and
+Xcode 27.2 beta (27B5019j). These are prereleases, separate from the released
+27.0 baseline. Their appearance in the feed does not establish local compile or
+runtime compatibility; keep per-symbol availability guards and test with the
+corresponding SDK before adopting APIs.
+
+The 405-technology directory and 97 update/release-note landing pages were fetched
+again for npm 2.7.0. Their public metadata was unchanged from the earlier snapshot.
+No developer-account pages, certificates, signing profiles or credentials were
+used to build these resources.
+
 ## Corrections that matter
 
 [SiriKit updates](https://developer.apple.com/documentation/updates/sirikit) still describe existing standard/custom intents participating in enhanced Siri. We found no primary evidence for blanket SiriKit deprecation or an App-Intents-only requirement. `review_app_intents` therefore reports migration advice, not a deprecation error.

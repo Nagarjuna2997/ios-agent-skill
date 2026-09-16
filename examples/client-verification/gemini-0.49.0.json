@@ -1,0 +1,11 @@
+{
+  "checkedAt": "2026-09-16",
+  "client": "Gemini CLI",
+  "version": "0.49.0",
+  "serverVersion": "2.7.0",
+  "serverStage": "release candidate",
+  "extensionValidation": "passed",
+  "stdioConnection": "Connected",
+  "isolatedConfiguration": true,
+  "modelSessionVerified": false
+}

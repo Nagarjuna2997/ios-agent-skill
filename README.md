@@ -56,6 +56,12 @@ The [Reading List demo](samples/ReadingList/README.md) has persistence, search, 
 
 The server exposes 35 tools. Static reviews are heuristics, not compiler diagnostics. The Apple directory is a reference map, not Apple's proprietary framework source or proof of 405 working integrations. Token savings have not been benchmarked. [Build-loop verification limits](docs/tooling/app-building-loop.md).
 
+## Why use this alongside Xcode?
+
+Xcode already ships agent expertise and build/test tools. Use those when they meet your needs. This repository adds shared guidance across our four client families, inspectable review rules, local source retrieval and repeatable asset workflows. We have not established that it makes an AI outperform Xcode's skills or use fewer tokens.
+
+[Where the guidance comes from, evidence and unfinished work](docs/evidence-and-scope.md). A paired Claude/Codex benchmark is running; results will be published without assuming a win.
+
 ## Four client families, one project
 
 | Client | Setup and evidence |

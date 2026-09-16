@@ -124,8 +124,8 @@
       "path": "docs/apple/ios-27-release-verification.md",
       "title": "iOS 27 release verification",
       "kind": "guide",
-      "characters": 3157,
-      "hash": "a44e638299aa2b1c97ae66a04e2488e49fc32341c29c8172fbcb653e0ab1c0ba"
+      "characters": 3978,
+      "hash": "669b819063c9f94275e6560434771503ff75d06c386ba6febd530e325871fa1c"
     },
     {
       "path": "docs/apple/n-z-section-memory.md",
@@ -2427,8 +2427,8 @@
       "path": "docs/design/asset-generation.md",
       "title": "Generate real asset catalogs",
       "kind": "guide",
-      "characters": 4123,
-      "hash": "09d06adcb675d6d5843bead25b30f9b7d13d5cd9cd94af21314817c860363951"
+      "characters": 4186,
+      "hash": "f58e30129e6421447ac4cf85c98b10cb6f144cc398a0aec408eeee5805e946d0"
     },
     {
       "path": "docs/design/color-system.md",
@@ -2446,7 +2446,7 @@
     },
     {
       "path": "docs/design/fonts-catalog.md",
-      "title": "iOS Font Catalog \u2014 Ultimate Reference",
+      "title": "iOS Font Catalog — Ultimate Reference",
       "kind": "guide",
       "characters": 89896,
       "hash": "71a785ac8f1f72bf9da529398d19dd0971f45b258a8ef5b01f56bb7527660574"
@@ -2506,6 +2506,13 @@
       "kind": "guide",
       "characters": 1204,
       "hash": "c335bb9e36521167eadc1104d1e70b575473e9819e1256ae2030ed85bcd774bb"
+    },
+    {
+      "path": "docs/evidence-and-scope.md",
+      "title": "Evidence, sources and scope",
+      "kind": "guide",
+      "characters": 4807,
+      "hash": "bc2e3d409fa4645e8fd648da037cd038662ae08e7db9e23bc78404172279e55e"
     },
     {
       "path": "docs/frameworks/accelerate.md",
@@ -2910,8 +2917,8 @@
       "path": "docs/mcp/installation.md",
       "title": "Installing the iOS Agent MCP Server",
       "kind": "guide",
-      "characters": 12869,
-      "hash": "cee80385df4d7d09d59a742c5642cb38ee005b736be078076235e0e80b950e21"
+      "characters": 14021,
+      "hash": "d76f57dfc2a33e12fffe0da937cd6be12a058d5831700bc4ee23bbbbfe9c320a"
     },
     {
       "path": "docs/mcp/knowledge-server.md",
@@ -2943,7 +2950,7 @@
     },
     {
       "path": "docs/migration/ios-deployment-migration.md",
-      "title": "Migrating Deployment Targets: iOS 17 \u2192 26 \u2192 27",
+      "title": "Migrating Deployment Targets: iOS 17 → 26 → 27",
       "kind": "guide",
       "characters": 7368,
       "hash": "25a9052017655791eaac14c9a6f7e90b5d01d2a6e5501ebb232d7b562996e434"
@@ -2957,7 +2964,7 @@
     },
     {
       "path": "docs/migration/xcode-migration.md",
-      "title": "Migrating Xcode: 15 \u2192 16 \u2192 27",
+      "title": "Migrating Xcode: 15 → 16 → 27",
       "kind": "guide",
       "characters": 6898,
       "hash": "4d4fe8ab990e819d5ae9846d8747644a7bda6e0bf768bccbf986a3dd084c6c79"
@@ -2978,7 +2985,7 @@
     },
     {
       "path": "docs/orchestration/hooks.md",
-      "title": "Hooks \u2014 Deterministic Enforcement",
+      "title": "Hooks — Deterministic Enforcement",
       "kind": "guide",
       "characters": 7564,
       "hash": "19a728a394742a916f7a9e2ae19f7ce33a203460bf5ff41739396ff2971a0a11"
@@ -3426,7 +3433,7 @@
     },
     {
       "path": "samples/AppleRecipes/README.md",
-      "title": "AppleRecipes \u2014 complete local Swift source",
+      "title": "AppleRecipes — complete local Swift source",
       "kind": "guide",
       "characters": 5913,
       "hash": "3170f74d557a09f32b580a1f06e06d3bb2b965b73753fa2031ee7d32bf21e115"
@@ -3587,7 +3594,7 @@
     },
     {
       "path": "samples/SkillPatterns/README.md",
-      "title": "SkillPatterns \u2014 the compile-checked reference",
+      "title": "SkillPatterns — the compile-checked reference",
       "kind": "guide",
       "characters": 3875,
       "hash": "7826b67a499e868be74191edb39af69877eec1e28ea03737cce8e448d16e3ad5"

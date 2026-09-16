@@ -15,8 +15,9 @@ node cli/dist/index.js assets --tokens tokens.json --output App/Assets.xcassets
 
 The output parent directory must exist. An existing catalog is never overwritten;
 generate a sibling catalog, review its diff, then merge the intended changes.
-These commands are available from source; a package release must include this
-CLI change before the published combined command can use it.
+The combined package includes this CLI starting with ios-agent-mcp 2.7.0.
+Run `npx -y ios-agent-mcp@latest assets --tokens tokens.json --output App/Assets.xcassets`
+to use it without a source checkout.
 
 ```json
 {

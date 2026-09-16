@@ -71,9 +71,11 @@ Pass `--project` and an absolute app path when project resource discovery needs 
 
 The GitHub release includes `ios-agent-chatgpt.zip`, a self-contained skills-only plugin with the Apple references and app/icon workflow. It contains no local-process MCP configuration, so it does not pretend a browser can run `npx` on your Mac. Upload/import it through a supported plugin development or submission flow for your account. Public marketplace listing remains subject to publisher verification and platform review.
 
-The optional [knowledge MCP server](knowledge-server.md) supports Streamable HTTP. Deploy it at a stable HTTPS URL, then connect `/mcp` through ChatGPT’s supported developer-mode workflow. The repository does not invent a production endpoint. Its remote tools serve public references and plans; actual local project analysis stays in the local MCP server.
+The optional [knowledge MCP server](knowledge-server.md) supports Streamable HTTP. Deploy it at a stable HTTPS URL, then connect `/mcp` through ChatGPT’s supported developer-mode workflow. OpenAI also supports Secure MCP Tunnel for developer-mode access to a private stdio or HTTP server; see the [official connection guide](https://developers.openai.com/plugins/deploy/connect-chatgpt). This release does not create a tunnel or expose your Mac. Account/workspace policy may limit developer mode. The repository does not invent a production endpoint. Its remote tools serve public references and plans; actual local project analysis stays in the local MCP server.
 
 ## Gemini CLI
+
+Gemini CLI 0.49.0 validated the extension manifest and connected to the 2.7.0 server release candidate in an isolated project. A real model-driven app-building session remains unverified.
 
 ```bash
 gemini extensions install https://github.com/Nagarjuna2997/ios-agent-skill
@@ -325,3 +327,15 @@ Official sources: [Meta announcement](https://research.meta.ai/blog/introducing-
 [configuration](https://dev.meta.ai/docs/muse-code/configuration), and
 [extensions](https://dev.meta.ai/docs/muse-code/extending). The latter documentation
 requires sign-in; the compatibility claims above come from executable tests.
+
+## Support scope and optional source installer
+
+Active client families are Claude, ChatGPT/Codex, Gemini CLI and Muse. Other
+standard MCP clients may work, but compatibility is not a maintained support
+claim. Request another client through GitHub Issues and use 👍 reactions to
+register demand; feasibility and verification also determine priorities.
+
+The optional `install.sh` requires an explicit `--client`. It clones source skills
+for Claude, Codex or Muse, and prints dedicated instructions for Gemini/ChatGPT.
+It does not configure MCP. Existing installs update only when the checkout has
+the expected origin, a clean worktree and the main branch.

@@ -230,7 +230,7 @@ test("help exits zero", () => {
 test("--version prints the CLI package version", () => {
   const { io, out } = capture(tempDir());
   assert.equal(run(["--version"], io), 0);
-  assert.equal(out.join("\n"), "0.2.0");
+  assert.equal(out.join("\n"), JSON.parse(fs.readFileSync(new URL("../package.json", import.meta.url), "utf8")).version);
 });
 
 // MARK: - doctor --fix

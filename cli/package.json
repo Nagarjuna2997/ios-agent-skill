@@ -1,6 +1,6 @@
 {
   "name": "@nagarjuna2002/ios-agent",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Project scaffolding and layout management for iOS work. Keeps tool-owned files out of the user's way.",
   "type": "module",
   "bin": {

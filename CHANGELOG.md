@@ -6,8 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+No additional changes recorded.
+
+## [3.5.0] -- 2026-09-16
+
+### Added -- 3.5.0
+
 - Appearance-aware asset catalogs and offline SVG-layer app-icon rendering in the source CLI; 67 tests and Apple asset compilation verified.
 - Muse Code 1.3.0 setup template, verified published MCP tool discovery and Stop-hook execution, plus a repeatable credential-free compatibility script. Model sessions and observer behavior remain unverified.
+
+### Changed -- 3.5.0
+
+- Publish one consolidated `ios-agent-mcp` 2.7.0 release with CLI 0.3.0 installed automatically; existing simulator dependency stays unchanged.
+- Refresh the 405-technology and 97-update public Apple snapshots; distinguish September 16's 27.2 betas from released 27.0.
+- Validate the Gemini CLI extension and clarify ChatGPT skills, HTTPS and private-tunnel connection options.
+- Generated apps retain neutral ownership; no developer credentials or signing material is packaged.
 
 ## [3.4.0] -- 2026-09-16
 

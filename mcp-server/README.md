@@ -1,5 +1,15 @@
 # iOS Agent MCP
 
+## Latest: 2.7.0
+
+Includes real appearance-aware color catalogs and offline SVG-layer app icons,
+Muse Code setup with verified MCP discovery, and refreshed public Apple references
+through September 16, 2026 (27.0 releases and separately labeled 27.2 betas).
+The CLI is included automatically. User accounts, signing profiles and credentials
+are not package resources. Gemini CLI uses the repository extension; ChatGPT uses
+the skills package or a separately configured MCP connection. See the
+[client setup guide](https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/mcp/installation.md).
+
 ## One install, one MCP connection
 
 ```bash
