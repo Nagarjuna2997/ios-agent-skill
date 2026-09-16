@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "mentions": [
+    {
+      "id": "reddit-xcode",
+      "platform": "Reddit / r/Xcode",
+      "kind": "discussion",
+      "category": "Discussion · maintainer-started",
+      "description": "Readers discuss Xcode overlap, rule sources and the need for measured evidence.",
+      "url": "https://www.reddit.com/r/Xcode/comments/1v8j94w/i_got_tired_of_ai_agents_writing_2019era_swiftui/",
+      "verifiedOn": "2026-09-16",
+      "evidence": "Maintainer post links the exact repository; independent reader comments were visible."
+    },
+    {
+      "id": "kimi-skills",
+      "platform": "Kimi",
+      "kind": "resource",
+      "category": "Developer Resource",
+      "description": "Lists ios-agent-skill among open-source software skills and links to the repository.",
+      "url": "https://www.kimi.ai/resources/software-skills-for-agents",
+      "verifiedOn": "2026-09-16",
+      "evidence": "Exact repository appears in the open-source skills table; not a partnership claim."
+    },
+    {
+      "id": "skillworks",
+      "platform": "SkillWorks",
+      "kind": "directory",
+      "category": "Developer Resource · index",
+      "description": "Indexes the repository’s CLAUDE.md among real-world instruction-file examples.",
+      "url": "https://skillworks.thecompound.tech/claude-md-examples",
+      "verifiedOn": "2026-09-16",
+      "evidence": "Repository appears in the examples table."
+    },
+    {
+      "id": "skillsmp",
+      "platform": "SkillsMP",
+      "kind": "directory",
+      "category": "Directory",
+      "description": "Provides a skill listing with the source repository and installation information.",
+      "url": "https://skillsmp.com/creators/nagarjuna2997/ios-agent-skill/skill",
+      "verifiedOn": "2026-09-16",
+      "evidence": "Source facts identify Nagarjuna2997/ios-agent-skill."
+    },
+    {
+      "id": "awesome-skills",
+      "platform": "Awesome Skills",
+      "kind": "directory",
+      "category": "Directory",
+      "description": "Lists the skill with a direct source link and installation options.",
+      "url": "https://www.awesomeskills.dev/en/skill/nagarjuna2997-ios-agent-skill",
+      "verifiedOn": "2026-09-16",
+      "evidence": "Heading and source link identify the exact repository."
+    },
+    {
+      "id": "awesome-mcp",
+      "platform": "Awesome MCP Servers",
+      "kind": "directory",
+      "category": "Directory",
+      "description": "Lists the MCP server and reproduces project documentation.",
+      "url": "https://mcpservers.org/servers/nagarjuna2997/ios-agent-skill",
+      "verifiedOn": "2026-09-16",
+      "evidence": "Opened listing contains exact repository and npm package; copied documentation is not an independent review."
+    },
+    {
+      "id": "agentmods",
+      "platform": "Agentmods",
+      "kind": "directory",
+      "category": "Directory",
+      "description": "Indexes the project’s Gemini CLI extension with links to its source.",
+      "url": "https://agentmods.dev/plugins/nagarjuna2997/ios-agent-skill/gemini-extension",
+      "verifiedOn": "2026-09-16",
+      "evidence": "Verified alternative to the initially inaccessible hooks URL; same project, one card."
+    },
+    {
+      "id": "skills-rest",
+      "platform": "skills.rest",
+      "kind": "directory",
+      "category": "Directory",
+      "description": "Provides an indexed skill page linking to this repository.",
+      "url": "https://skills.rest/skill/ios-agent-skill",
+      "verifiedOn": "2026-09-16",
+      "evidence": "Source/download link identifies the exact repository; listing claims are not adopted here."
+    },
+    {
+      "id": "dev-toolbox",
+      "platform": "DEV Community",
+      "kind": "own",
+      "category": "Article · maintainer-authored",
+      "description": "The maintainer explains the Swift, Xcode and simulator toolbox and asks for feedback.",
+      "url": "https://dev.to/nagarjuna_reddy_7ca85e003/im-building-an-mcp-toolbox-for-swift-xcode-and-ios-simulator-kp9",
+      "verifiedOn": "2026-09-16",
+      "evidence": "Author is Nagarjuna Reddy; article links the repository and npm package."
+    },
+    {
+      "id": "web-pulse",
+      "platform": "Web Pulse",
+      "kind": "mirror",
+      "category": "Mirror · maintainer article",
+      "description": "Republishes the maintainer’s DEV article and links back to the original.",
+      "url": "https://wpnews.pro/news/im-building-an-mcp-toolbox-for-swift-xcode-and-ios-simulator",
+      "verifiedOn": "2026-09-16",
+      "evidence": "Page credits the original DEV article; not independent praise."
+    },
+    {
+      "id": "github",
+      "platform": "GitHub",
+      "kind": "official",
+      "category": "Official project page",
+      "description": "Source code, issues and releases maintained by the project.",
+      "url": "https://github.com/Nagarjuna2997/ios-agent-skill",
+      "verifiedOn": "2026-09-16",
+      "evidence": "Opened repository page; official source, not independent coverage."
+    }
+  ]
+}

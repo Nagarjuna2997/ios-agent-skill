@@ -25,6 +25,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Sync features from README
         run: python3 scripts/render-site.py
+      - name: Verify community section
+        run: python3 scripts/render-community.py --check
       - name: Refresh total npm downloads
         run: python3 scripts/npm-downloads.py
       - uses: actions/configure-pages@v5
