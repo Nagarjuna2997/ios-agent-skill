@@ -10,12 +10,16 @@ import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { z } from 'zod';
 import { VERSION } from './version.js';
+import { reportingCommand, reportToolFailure } from './automatic-reporting.js';
 import { issueReportTool, prepareIssueReport } from './issue-report.js';
 const require = createRequire(import.meta.url);
 const args = process.argv.slice(2);
 const cli = () => require.resolve('@nagarjuna2002/ios-agent/dist/index.js');
 if (args.includes('--version')) console.log(VERSION);
-else if (args.includes('--help')) console.log(`ios-agent-mcp ${VERSION}\nOne MCP connection: Swift reviews, Apple references, app creation and simulator tools.\nRequires Node 20+. Simulator operations require macOS/Xcode.\nUsage: ios-agent-mcp [--project PATH]\n       ios-agent-mcp new MyApp --brief "Your idea" --xcodegen\n       ios-agent-mcp loop init --project PATH --brief BRIEF.md --checks checks.json\n       ios-agent-mcp loop resume --project PATH\n       ios-agent-mcp loop status --project PATH\nThe starter requires your coding agent to implement the app features.`);
+else if (args.includes('--help')) console.log(`ios-agent-mcp ${VERSION}\nOne MCP connection: Swift reviews, Apple references, app creation and simulator tools.\nRequires Node 20+. Simulator operations require macOS/Xcode.\nUsage: ios-agent-mcp [--project PATH]\n       ios-agent-mcp new MyApp --brief "Your idea" --xcodegen\n       ios-agent-mcp loop init --project PATH --brief BRIEF.md --checks checks.json\n       ios-agent-mcp loop resume --project PATH\n       ios-agent-mcp loop status --project PATH\nOptional reporting: ios-agent-mcp reporting (read the consent notice before enabling).\nThe starter requires your coding agent to implement the app features.`);
+else if (args[0] === 'reporting') {
+  try { await reportingCommand(args.slice(1)); } catch(error) { console.error(error instanceof Error?error.message:String(error));process.exitCode=1; }
+}
 else if (args[0] === 'loop') {
   try { await (await import('./app-loop.js')).appLoop(args.slice(1)); } catch(error) { console.error(error instanceof Error?error.message:String(error));process.exitCode=1; }
 }
@@ -52,11 +56,15 @@ else if ((args[0] === 'new' || args[0] === 'assets')) {
           const input=z.object({name:z.string().min(1),directory:z.string().min(1),brief:z.string().min(1),xcodegen:z.boolean().default(true)}).strict().parse(request.params.arguments);
           const result=await promisify(execFile)(process.execPath,[cli(),'new',input.name,'--into',input.directory,'--brief',input.brief,...(input.xcodegen?['--xcodegen']:[])],{timeout:30000,maxBuffer:1024*1024});
           return {content:[{type:'text',text:result.stdout || 'App starter created.'}]};
-        } catch(error) {return {isError:true,content:[{type:'text',text:error instanceof Error?error.message:String(error)}]};}
+        } catch(error) {void reportToolFailure('create_app');return {isError:true,content:[{type:'text',text:error instanceof Error?error.message:String(error)}]};}
       }
       const owner=owners.get(request.params.name);
       if(!owner)throw Error('Unknown tool');
-      return owner.callTool(request.params,undefined,{timeout:21*60*1000,signal:extra.signal});
+      try {
+        const result=await owner.callTool(request.params,undefined,{timeout:21*60*1000,signal:extra.signal});
+        if(result.isError===true)void reportToolFailure(request.params.name);
+        return result;
+      } catch(error) { if(!extra.signal.aborted)void reportToolFailure(request.params.name);throw error; }
     });
     process.once('SIGINT',()=>{void close().finally(()=>process.exit(0));});
     process.once('SIGTERM',()=>{void close().finally(()=>process.exit(0));});

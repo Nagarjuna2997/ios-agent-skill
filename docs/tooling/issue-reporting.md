@@ -38,9 +38,39 @@ Opening the URLs sends the fixed fields to GitHub. Submitting creates a public
 issue. The grouping key only aids search: this tool does not search remotely,
 assert that duplicates are absent, or suppress duplicates automatically.
 
-There is no login-free reporting backend, telemetry, token embedded in npm,
-scheduled reporting or automatic code repair. A future opt-in service would need
-separate deployment, secure credentials, abuse controls and a clear privacy
-policy. Never add private app code, logs, credentials or signing information to
-GitHub's form. Security vulnerabilities belong in the repository's security
-reporting channel rather than a public issue.
+## Automatic mode: one-time opt-in (source only)
+
+The source now includes an optional client and [receiving service](../../services/issue-inbox/README.md).
+The service is **not deployed**, so automatic submission is not live. Once its
+operator publishes an HTTPS endpoint and privacy notice, a user can enable it:
+
+```sh
+ios-agent-mcp reporting enable --endpoint https://YOUR-REPORTING-HOST/reports
+ios-agent-mcp reporting status
+ios-agent-mcp reporting disable
+```
+
+The endpoint above is a placeholder. Enabling is a one-time explicit consent to
+send fixed package-failure categories, package version and platform, potentially
+as public GitHub issues. The host receives the network IP. AI agents must explain
+this before enabling and must never enable it without user authorization. After
+opt-in, no form or per-report approval is needed. Disable stops future reporting;
+it does not delete previous issues.
+
+Only error results from the unified MCP's supported review, reference, simulator
+and app-starter tools trigger it. Ordinary review findings, user-app compile
+errors reported as successful tool results, standalone CLI failures and the local
+preview itself do not trigger reports. Raw tool arguments, outputs, exceptions,
+source, paths and credentials are never passed to the reporter. Categories are
+coarse, so maintainers may still need a synthetic reproduction to diagnose a bug.
+
+Client settings are stored outside the app under `~/.config/ios-agent/`. Reporting
+is off by default. The client attempts a category at most once per day per package
+version; it reserves before sending, uses a three-second timeout, rejects redirects
+and never interrupts the user's build on reporting failure. The single-instance
+service applies persistent attempt limits and duplicate reservations. Multiple
+client processes may race locally; the service remains the submission gate.
+
+Reports appear in [GitHub Issues](https://github.com/Nagarjuna2997/ios-agent-skill/issues).
+There is no automatic code repair or daily publishing. Never include security
+vulnerabilities in public reports: use the repository's private security channel.

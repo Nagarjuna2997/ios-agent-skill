@@ -64,7 +64,7 @@ Xcode already ships agent expertise and build/test tools. Use those when they me
 
 ## Help improve the tools
 
-The source build adds `prepare_issue_report` (pending the next npm release). Your AI can prepare a local report when an iOS Agent tool fails. It accepts fixed categories only, shows a preview and a duplicate-search link, and leaves public submission to you. No app source or logs are collected. [Reporting workflow](docs/tooling/issue-reporting.md).
+The source build adds `prepare_issue_report` (pending the next npm release). Your AI can prepare a local report when an iOS Agent tool fails. It accepts fixed categories only, shows a preview and a duplicate-search link, and leaves public submission to you. No app source or logs are collected. Automatic submission after one-time opt-in is implemented in source but awaits a hosted reporting service; it is not live. [Reporting workflow](docs/tooling/issue-reporting.md).
 
 ## Four client families, one project
 

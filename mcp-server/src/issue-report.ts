@@ -25,12 +25,13 @@ export const issueReportTool = {
   }, required: ['feature', 'symptom'], additionalProperties: false },
 };
 
-export function prepareIssueReport(raw: unknown) {
+export function prepareIssueReport(raw: unknown, reportedVersion: string = VERSION) {
+  const version = z.string().regex(/^\d{1,4}\.\d{1,4}\.\d{1,4}$/).parse(reportedVersion);
   const input = issueReportSchema.parse(raw);
   // Grouping key only; never includes user identity, project data or machine metadata.
-  const fingerprint = createHash('sha256').update(JSON.stringify({ version: VERSION, ...input })).digest('hex').slice(0, 16);
+  const fingerprint = createHash('sha256').update(JSON.stringify({ version, ...input })).digest('hex').slice(0, 16);
   const title = `[AI-assisted report] ${input.feature}: ${input.symptom}`;
-  const body = `## Package issue preview\n\nThis is a category-only report, not a verified diagnosis.\n\n- Package: ios-agent-mcp ${VERSION}\n- Feature: ${input.feature}\n- Symptom: ${input.symptom}\n- Client: ${input.client}\n- Platform: ${input.platform}\n- Reproducibility: ${input.reproducibility}\n- Grouping key: ios-agent-${fingerprint}\n\n## Before submitting\n\nSearch existing issues first. Explain expected versus actual behavior and reproduction steps using a synthetic example in the GitHub form if possible. Do not include app source, logs, personal paths, credentials, signing data or private project names. Review everything added to this public issue.\n\nGenerated locally with fixed fields; no diagnostics were collected or uploaded.\n`;
+  const body = `## Package issue preview\n\nThis is a category-only report, not a verified diagnosis.\n\n- Package: ios-agent-mcp ${version}\n- Feature: ${input.feature}\n- Symptom: ${input.symptom}\n- Client: ${input.client}\n- Platform: ${input.platform}\n- Reproducibility: ${input.reproducibility}\n- Grouping key: ios-agent-${fingerprint}\n\n## Before submitting\n\nSearch existing issues first. Explain expected versus actual behavior and reproduction steps using a synthetic example in the GitHub form if possible. Do not include app source, logs, personal paths, credentials, signing data or private project names. Review everything added to this public issue.\n\nGenerated locally with fixed fields; no diagnostics were collected or uploaded.\n`;
   const submit = new URL('https://github.com/Nagarjuna2997/ios-agent-skill/issues/new');
   submit.searchParams.set('title', title); submit.searchParams.set('body', body);
   const search = new URL('https://github.com/Nagarjuna2997/ios-agent-skill/issues');
