@@ -48,6 +48,7 @@ Worked sessions: `examples.md`.
 | Claude Code/Desktop | Local stdio MCP configuration below | Unified local tools |
 | Codex | Codex MCP CLI/config or the release plugin ZIP | Local analysis, knowledge and app-building skill |
 | ChatGPT | Portable skills-only plugin ZIP; optional hosted knowledge MCP | Bundled workflows/references; implementation needs a coding environment |
+| Muse Code | Local stdio setup below; existing AGENTS.md and Claude-format skills | MCP discovery and Stop command hook verified; model session unverified |
 | Gemini CLI | GitHub extension or local MCP configuration | GEMINI instructions, analysis and knowledge tools |
 
 ## Codex
@@ -244,10 +245,83 @@ Review and local-reference tools read files. App creation writes a new starter; 
 
 Use the [in-Xcode agent setup](../tooling/xcode-27-agents.md#connect-this-server-inside-xcode-27). Xcode uses its own agent configuration directories. This setup is documented from Apple’s released guidance; runtime acceptance remains unverified on the current Xcode 26.6 host.
 
-## Muse Code — partial verification only
+## Muse Code
 
-Checked 2026-09-16 with the official Muse Code 1.3.0 (1.3.0-R3233.1) installer. In an isolated project, `muse init` created `AGENTS.md`; `muse skills list --workspace /absolute/project --trust-workspace --json` discovered this repo’s skill under the isolated project’s .claude/skills/ios-agent-skill directory with no diagnostics. The existing `AGENTS.md` mirror therefore applies; do not create a separate `MUSE.md`.
+Muse Code joins Claude, Codex and Gemini CLI through the same unified local MCP
+server. No separate server package, plugin ZIP or `MUSE.md` is needed.
 
-MCP tool discovery, hook schema/execution, verification observer and a real model session are **not yet verified**. No settings snippet, hook port, privacy-tier claim or Muse-specific ZIP is shipped on the basis of assumed compatibility. The installed CLI documents proxy-only networking by default; validate package fetching in the actual configured sandbox before relying on `npx`.
+Install the server outside the agent sandbox, using Node.js 20 or later:
 
-[Official Muse announcement and installer](https://research.meta.ai/blog/introducing-muse-code-and-muse-spark-1-2). The CLI is installed outside this repository for verification; user credentials were neither requested nor published.
+```sh
+npm install -g ios-agent-mcp@latest
+```
+
+Merge this into `~/.config/muse/settings.json`; preserve your other settings and
+existing server entries. Do not replace the whole file. `schema_version` is required.
+
+```json
+{
+  "schema_version": 1,
+  "mcpServers": {
+    "ios-agent": {
+      "command": "ios-agent-mcp",
+      "args": []
+    }
+  }
+}
+```
+
+[Copyable template](../../templates/clients/muse-settings.json). If Muse cannot find
+the command, use the absolute executable path printed by `command -v ios-agent-mcp`.
+Restart Muse after updating settings. This avoids fetching a package inside Muse's
+default proxy-only sandbox. It does not disable sandboxing or grant network access.
+
+For local instructions, use the repository's `AGENTS.md`. For skill discovery,
+keep the original frontmatter-bearing `SKILL.md` under your project's
+project-local .claude/skills/ios-agent-skill folder with its companion references. Do not rename the
+frontmatter-stripped `AGENTS.md` to `SKILL.md`. Trust only workspaces you recognize.
+
+### Verified compatibility, 2026-09-16
+
+Muse Code **1.3.0 (1.3.0-R3233.1)** connected to the published **ios-agent-mcp 2.6.0**
+using stdio and discovered **35 tools**, including reviews, local references,
+`create_app` and simulator tools. Initialization and tool discovery used the actual
+Muse executable with its local `echo` provider. No account credentials or model
+request were needed. `muse init` and discovery of the repository's Claude-format
+skill were separately verified earlier.
+
+A command-based **Stop hook executed** in an isolated test. The
+[optional maintainer hook template](../../templates/hooks/muse-settings.json) runs
+this repository's existing verification script. It is for sessions rooted in this
+repository only: confirm the working directory before enabling it. Do not copy it
+into an unrelated user's app or apply it globally across projects. Hook commands
+execute shell code, so inspect commands before merging them into your settings.
+
+**Not verified:** model-directed tool invocation, PreToolUse/PostToolUse ports,
+verification observer behavior, sandboxed simulator operations and end-to-end
+app creation by Muse. Tool discovery is not evidence that a model completed an app.
+No observer toggle or privacy/pricing-tier claim is supplied without verification.
+
+[Recorded verification result](../../examples/client-verification/muse-1.3.0.json).
+The harness asserts four representative tools and records the complete discovered
+catalog and installed server package version.
+
+### Recheck on upgrades
+
+From this repository, with Muse and the MCP package already installed:
+
+```sh
+node scripts/verify-muse.mjs /absolute/path/to/muse /absolute/path/to/ios-agent-mcp/dist/unified.js
+```
+
+This uses temporary configuration, disables foreign personal context, and checks
+MCP discovery plus a Stop hook without a model call. It prints versioned JSON
+results and removes the temporary files. It does not edit your Muse settings.
+Rerun it when either client or server changes; record model-based checks separately.
+Updating npm's `@latest` does not automatically upgrade an existing global install:
+rerun `npm install -g ios-agent-mcp@latest` when choosing to upgrade.
+
+Official sources: [Meta announcement](https://research.meta.ai/blog/introducing-muse-code-and-muse-spark-1-2),
+[configuration](https://dev.meta.ai/docs/muse-code/configuration), and
+[extensions](https://dev.meta.ai/docs/muse-code/extending). The latter documentation
+requires sign-in; the compatibility claims above come from executable tests.

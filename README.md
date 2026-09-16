@@ -55,7 +55,7 @@ The [resumable build/test/fix loop](docs/tooling/app-building-loop.md) saves pro
 
 ## Client support and evidence
 
-[Setup guides](docs/mcp/installation.md) cover Claude, Codex, Cursor-compatible stdio configurations and Gemini CLI. Browser ChatGPT cannot launch a local process; its hosted reference/skills path is documented separately. Xcode 27 setup is documented but not runtime-verified on the current Xcode 26.6 host. Muse Code skill discovery is verified; MCP/hooks remain unverified.
+[Setup guides](docs/mcp/installation.md) cover Claude, Codex, Cursor-compatible stdio configurations, Gemini CLI and Muse Code. Browser ChatGPT cannot launch a local process; its hosted reference/skills path is documented separately. Xcode 27 setup is documented but not runtime-verified on the current Xcode 26.6 host. Muse Code 1.3.0 skill discovery, discovery of all 35 published MCP tools and a Stop command hook are verified; real model sessions and the verification observer remain unverified.
 
 npm download counts refresh daily through the last complete UTC day; downloads are not unique users. Tests and docs have separate CI badges above.
 

@@ -6,7 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
-No additional changes recorded.
+- Appearance-aware asset catalogs and offline SVG-layer app-icon rendering in the source CLI; 67 tests and Apple asset compilation verified.
+- Muse Code 1.3.0 setup template, verified published MCP tool discovery and Stop-hook execution, plus a repeatable credential-free compatibility script. Model sessions and observer behavior remain unverified.
 
 ## [3.4.0] -- 2026-09-16
 

@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ./scripts/hooks/verify-repo.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

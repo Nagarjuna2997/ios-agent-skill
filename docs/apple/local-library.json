@@ -2910,8 +2910,8 @@
       "path": "docs/mcp/installation.md",
       "title": "Installing the iOS Agent MCP Server",
       "kind": "guide",
-      "characters": 9992,
-      "hash": "1c3e7420264f2f2d1665522bcdcc312c5af5c584570c4869e9f84bc0198701db"
+      "characters": 12869,
+      "hash": "cee80385df4d7d09d59a742c5642cb38ee005b736be078076235e0e80b950e21"
     },
     {
       "path": "docs/mcp/knowledge-server.md",
@@ -3684,6 +3684,13 @@
       "hash": "76b5db4e93feffc7acd91524c514adcf7732b9d9039b7a60c0d82a8b39fa1ae0"
     },
     {
+      "path": "templates/clients/muse-settings.json",
+      "title": "muse-settings.json",
+      "kind": "source",
+      "characters": 125,
+      "hash": "0a71818163f91445edeb550b352f15c14cca808bdc6fc36c41c202b6cb18036f"
+    },
+    {
       "path": "templates/common-patterns/auth-flow.swift",
       "title": "auth-flow.swift",
       "kind": "source",
@@ -3731,6 +3738,13 @@
       "kind": "source",
       "characters": 27582,
       "hash": "15111d2c12f473748499b4dfb2a2af2c11a0bf4262d545969c54ffc11b16c768"
+    },
+    {
+      "path": "templates/hooks/muse-settings.json",
+      "title": "muse-settings.json",
+      "kind": "source",
+      "characters": 225,
+      "hash": "d7968374deb6f643fb5e57abafd772b1466772c289d729e30f053fa043f7d343"
     },
     {
       "path": "templates/hooks/README.md",
