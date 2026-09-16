@@ -5,3 +5,32 @@
 @media(max-width:700px){.wrap{padding-inline:22px}nav{height:auto;min-height:82px;padding:18px 0;gap:16px;flex-wrap:wrap}.brand{font-size:16px}.mark{width:30px;height:30px}.links{gap:20px;font-size:12px}.hero{padding-top:34px}h1{font-size:clamp(45px,9vw,62px);letter-spacing:-.065em;line-height:1.02;margin-bottom:22px}.hero-lead{font-size:17px;max-width:355px}.eyebrow{font-size:10px;letter-spacing:2.5px}.actions{gap:20px;margin-top:25px}.btn{font-size:14px;min-height:50px;padding:13px 18px}.text-link{font-size:14px}.clients{font-size:10px;margin-top:16px}.hero-stage{width:145%;margin:10px 0 0 -22.5%;max-width:none}.stage-caption{font-size:9px;align-items:flex-start;padding-top:10px}.stage-caption>span{max-width:200px}.workflow{padding:32px 0}.workflow-grid{grid-template-columns:1fr;gap:24px}.workflow h2{font-size:32px;grid-column:auto;margin-bottom:5px}.workflow article{display:grid;grid-template-columns:27px 1fr;column-gap:14px}.workflow-icon{grid-row:1/3;margin-top:3px;width:25px;height:25px}.workflow h3{margin:0 0 5px}.workflow p{grid-column:2;max-width:none;font-size:13px}.features,.evidence{padding-top:65px;padding-bottom:60px}.section-heading{display:block;margin-bottom:28px}.section-summary{max-width:none;font-size:16px;margin-top:24px}.feature-grid{grid-template-columns:1fr}.card,.card:nth-child(n+4){grid-column:auto;padding:25px}.card h3{margin-top:20px;font-size:25px}.setup-section{padding:60px 0}.setup-grid{grid-template-columns:1fr;gap:30px}.setup-panel{padding:20px;border-radius:18px}.setup-grid .lead{font-size:17px}.client-tabs button{font-size:12px}.command-row{gap:10px;padding:14px}.command-row code{font-size:12px}.proof-strip{grid-template-columns:1fr;gap:25px;margin-top:30px}.proof-strip strong{font-size:26px}.community-link{padding-top:45px;padding-bottom:55px;align-items:flex-start;flex-direction:column;gap:26px}.final-cta{padding:60px 0}.final-cta h2{font-size:58px}footer{gap:22px;padding-block:30px}footer p{flex-basis:100%}.subpage .grid{grid-template-columns:1fr}.subpage .page-intro{padding-top:40px}.subpage .guide h2{font-size:30px}.subpage .code{align-items:flex-start}.subpage .guide pre{padding:15px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}.hero-art{transform:none!important}}
 @media(min-width:1001px){.hero{padding-top:25px}.hero h1{line-height:.91;margin-top:10px;margin-bottom:24px}.hero-stage{margin-top:-70px}.hero-art img{width:94%;margin-inline:auto}.stage-caption{position:relative;background:var(--bg)}}
+
+/* Separate artwork layers: only the object under the pointer reacts. */
+.hero-stage{aspect-ratio:2.8;max-width:1440px;margin:-36px auto 0;perspective:1200px;isolation:isolate}
+.play-object{position:absolute;display:block;padding:0;border:0;background:none;border-radius:8px;width:var(--width);left:var(--left);top:var(--top);z-index:var(--layer,1);transform:translate3d(var(--drag-x,0px),var(--drag-y,0px),0) perspective(800px) rotateX(var(--tilt-x,0deg)) rotateY(var(--tilt-y,0deg)) rotate(var(--angle,0deg));transition:transform .75s cubic-bezier(.2,1.45,.4,1),filter .3s,scale .25s;cursor:grab;touch-action:pan-y;user-select:none;-webkit-user-select:none;filter:drop-shadow(0 9px 8px #17201526)}
+.play-object img{display:block;width:100%;height:auto;pointer-events:none;user-select:none;-webkit-user-drag:none}
+.play-object.hovering,.play-object.nudged{filter:drop-shadow(0 20px 16px #17201533);scale:1.035}
+.play-object.dragging{z-index:30;cursor:grabbing;transition:none;filter:drop-shadow(0 24px 20px #17201540);scale:1.055}
+.play-object:focus-visible{outline:3px solid #4e7926;outline-offset:8px;z-index:29}
+.object-mountain{--width:28%;--left:3%;--top:5%;--angle:-13deg;--layer:1}
+.object-lake{--width:19%;--left:79%;--top:24%;--angle:-10deg;--layer:2}
+.object-code-card{--width:16%;--left:75%;--top:8%;--angle:14deg;--layer:3}
+.object-folder{--width:28%;--left:6%;--top:26%;--angle:-9deg;--layer:4}
+.object-phone{--width:21%;--left:29%;--top:8%;--angle:8deg;--layer:5}
+.object-note{--width:21%;--left:50%;--top:17%;--angle:-9deg;--layer:4}
+.object-terminal{--width:26%;--left:50%;--top:73%;--angle:8deg;--layer:7}
+.object-knot{--width:25%;--left:65%;--top:32%;--angle:3deg;--layer:8}
+.object-source-label{--width:14%;--left:2%;--top:20%;--angle:-7deg;--layer:9}
+.object-coral-sticker{--width:12%;--left:84%;--top:0%;--angle:15deg;--layer:9}
+.object-lime-sticker{--width:12%;--left:0%;--top:67%;--angle:-12deg;--layer:10}
+.stage-caption{position:relative;z-index:35;background:var(--bg);margin-top:25px;font-size:11px;min-height:56px;align-items:center}
+.stage-caption p{margin:0 0 3px;font-size:12px;color:#44513e}.stage-caption span{font-size:10px}
+.scene-controls{display:flex;align-items:center;gap:8px}.reset-objects{background:transparent;border:1px solid var(--line);border-radius:20px;padding:6px 10px;font-size:11px;white-space:nowrap;color:var(--ink)}
+.objects-frozen .play-object{cursor:default}
+@media(min-width:1001px){.hero-stage{margin-top:-35px;min-height:480px}}
+@media(max-width:700px){.hero-stage{width:100%;margin:28px 0 0;aspect-ratio:1.6;max-width:none}.object-phone{--width:29%;--left:29%;--top:6%}.object-folder{--width:33%;--left:2%;--top:20%}.object-mountain{--width:30%;--left:2%;--top:2%}.object-note{--width:29%;--left:57%;--top:15%}.object-terminal{--width:36%;--left:45%;--top:77%}.object-knot{--width:32%;--left:65%;--top:37%}.object-code-card{--width:19%;--left:78%;--top:14%}.object-lake{--width:23%;--left:75%;--top:52%}.object-coral-sticker{--width:19%;--left:77%;--top:0%}.object-lime-sticker{--width:19%;--left:3%;--top:61%}.object-source-label{--width:23%;--left:0%;--top:16%}.stage-caption{flex-wrap:wrap;gap:10px;margin-top:15px;padding-bottom:16px}.stage-caption>div:first-child{max-width:100%}.stage-caption p{font-size:11px}.scene-controls{margin-left:auto}}
+@media(prefers-reduced-motion:reduce){.play-object{transition:none!important}.play-object.hovering,.play-object.nudged,.play-object.dragging{scale:1}}
+
+.play-object:disabled{cursor:default}
+@media(min-width:701px){.object-phone{--width:17%;--left:31%;--top:6%}.object-terminal{--left:48%;--top:78%}.object-knot{--left:66%;--top:22%;--width:23%}}

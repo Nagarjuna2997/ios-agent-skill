@@ -38,32 +38,81 @@ copy.addEventListener('click',async()=>{
 });
 const reduced=matchMedia('(prefers-reduced-motion: reduce)');
 const stage=document.querySelector('.hero-stage');
-const art=document.querySelector('.hero-art');
 const motion=document.querySelector('.motion-toggle');
-let paused=reduced.matches;
-function updateMotion(){
-  document.body.classList.toggle('motion-paused',paused||reduced.matches);
-  motion.hidden=reduced.matches;
-  motion.setAttribute('aria-pressed',String(paused));
-  motion.querySelector('span').textContent=paused?'Resume motion':'Pause motion';
-  motion.querySelector('img').src=`assets/icons/${paused?'play':'pause'}.svg`;
+const reset=document.querySelector('.reset-objects');
+const objects=[...stage.querySelectorAll('.play-object')];
+let frozen=false;
+const states=new Map(objects.map(object=>[object,{x:0,y:0,drag:null,timer:null}]));
+function paint(object,state) {
+  object.style.setProperty('--drag-x',`${state.x}px`);
+  object.style.setProperty('--drag-y',`${state.y}px`);
 }
-updateMotion();
-document.body.classList.add('motion-ready');
-reduced.addEventListener('change',()=>{paused=reduced.matches;updateMotion();});
-motion.addEventListener('click',()=>{paused=!paused;updateMotion();});
-stage.addEventListener('pointermove',event=>{
-  if(paused||reduced.matches||event.pointerType!=='mouse') return;
-  const box=stage.getBoundingClientRect();
-  art.style.setProperty('--rx',`${(0.5-(event.clientY-box.top)/box.height)*4}deg`);
-  art.style.setProperty('--ry',`${((event.clientX-box.left)/box.width-0.5)*6}deg`);
+function settle(object) {
+  const state=states.get(object);
+  if(state.drag && object.hasPointerCapture(state.drag.id))object.releasePointerCapture(state.drag.id);
+  state.drag=null;state.x=0;state.y=0;
+  clearTimeout(state.timer);
+  object.classList.remove('dragging','hovering','nudged');
+  object.style.setProperty('--tilt-x','0deg');object.style.setProperty('--tilt-y','0deg');
+  paint(object,state);
+}
+function updateMode(){
+  stage.classList.toggle('objects-frozen',frozen);
+  motion.setAttribute('aria-pressed',String(frozen));
+  motion.querySelector('span').textContent=frozen?'Unfreeze objects':'Freeze objects';
+  motion.querySelector('img').src=`assets/icons/${frozen?'play':'pause'}.svg`;
+  objects.forEach(object=>object.setAttribute('aria-disabled',String(frozen)));
+}
+objects.forEach(object=>{
+  object.disabled=false;
+  const state=states.get(object);
+  object.addEventListener('pointerdown',event=>{
+    if(frozen||event.button!==0||state.drag)return;
+    clearTimeout(state.timer);object.classList.remove('nudged');
+    state.drag={id:event.pointerId,startX:event.clientX,startY:event.clientY,x:state.x,y:state.y};
+    object.classList.add('dragging');object.setPointerCapture(event.pointerId);
+  });
+  object.addEventListener('pointermove',event=>{
+    if(frozen)return;
+    if(state.drag && event.pointerId===state.drag.id){
+      // Keep objects near their original places; vertical touch movement remains page scrolling.
+      const limit=Math.min(100,stage.clientWidth*.12);
+      state.x=Math.max(-limit,Math.min(limit,state.drag.x+event.clientX-state.drag.startX));
+      state.y=Math.max(-70,Math.min(70,state.drag.y+event.clientY-state.drag.startY));
+      paint(object,state);return;
+    }
+    if(event.pointerType!=='mouse'||reduced.matches)return;
+    const box=object.getBoundingClientRect();
+    object.classList.add('hovering');
+    object.style.setProperty('--tilt-x',`${(.5-(event.clientY-box.top)/box.height)*12}deg`);
+    object.style.setProperty('--tilt-y',`${((event.clientX-box.left)/box.width-.5)*14}deg`);
+  });
+  object.addEventListener('pointerleave',()=>{
+    if(!state.drag){object.classList.remove('hovering');object.style.setProperty('--tilt-x','0deg');object.style.setProperty('--tilt-y','0deg');}
+  });
+  for(const eventName of ['pointerup','pointercancel','lostpointercapture'])object.addEventListener(eventName,event=>{
+    if(state.drag?.id===event.pointerId)settle(object);
+  });
+  object.addEventListener('keydown',event=>{
+    if(frozen)return;
+    const deltas={ArrowLeft:[-12,0],ArrowRight:[12,0],ArrowUp:[0,-12],ArrowDown:[0,12]};
+    if(event.key==='Escape'||event.key==='Home'){event.preventDefault();settle(object);return;}
+    const delta=deltas[event.key];if(!delta)return;
+    event.preventDefault();const limit=Math.min(100,stage.clientWidth*.12);
+    state.x=Math.max(-limit,Math.min(limit,state.x+delta[0]));state.y=Math.max(-70,Math.min(70,state.y+delta[1]));paint(object,state);
+  });
+  object.addEventListener('click',event=>{
+    // Enter/Space also provides a small, local response for keyboard activation.
+    if(event.detail!==0||frozen||reduced.matches)return;
+    object.classList.add('nudged');clearTimeout(state.timer);state.timer=setTimeout(()=>object.classList.remove('nudged'),350);
+  });
 });
-stage.addEventListener('pointerleave',()=>{art.style.setProperty('--rx','0deg');art.style.setProperty('--ry','0deg');});
-// Avoid a permanent animation loop in background tabs or when the artwork is offscreen.
-const visibility=new IntersectionObserver(entries=>{
-  art.querySelector('img').style.animationPlayState=entries[0].isIntersecting?'':'paused';
-});
-visibility.observe(stage);
+motion.hidden=false;reset.hidden=false;
+motion.addEventListener('click',()=>{frozen=!frozen;objects.forEach(settle);updateMode();});
+reset.addEventListener('click',()=>objects.forEach(settle));
+reduced.addEventListener('change',()=>objects.forEach(settle));
+window.addEventListener('blur',()=>objects.forEach(settle));
+updateMode();
 fetch('npm-downloads-details.json').then(response=>{if(!response.ok)throw new Error('Unavailable');return response.json();}).then(data=>{
   if(data.package!=='ios-agent-mcp'||!Number.isSafeInteger(data.downloads)||data.downloads<0||!/^\d{4}-\d{2}-\d{2}$/.test(data.through))return;
   document.getElementById('download-count').textContent=data.downloads.toLocaleString();
