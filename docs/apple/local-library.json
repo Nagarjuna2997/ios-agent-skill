@@ -2424,6 +2424,13 @@
       "hash": "d5f5106fd60a225ae12c3206e789b4c527adf142717ea06d1fd43474c0eb2d93"
     },
     {
+      "path": "docs/design/asset-generation.md",
+      "title": "Generate real asset catalogs",
+      "kind": "guide",
+      "characters": 4123,
+      "hash": "09d06adcb675d6d5843bead25b30f9b7d13d5cd9cd94af21314817c860363951"
+    },
+    {
       "path": "docs/design/color-system.md",
       "title": "iOS Color System -- Complete Guide for Stunning SwiftUI UIs",
       "kind": "guide",
@@ -2434,8 +2441,8 @@
       "path": "docs/design/design-tokens.md",
       "title": "Design Tokens, Adaptive Color, and Liquid Glass",
       "kind": "guide",
-      "characters": 22205,
-      "hash": "fe57cbcb123bd2b3d83fbd1eff2e60ec43b50b84d0d747df572676fe90854be6"
+      "characters": 22323,
+      "hash": "7cafc4714a19270ea49bb16e9aea506016b971b82d3571caa2c004e7150b2fab"
     },
     {
       "path": "docs/design/fonts-catalog.md",

@@ -1,3 +1,4 @@
+import { generateAssets } from "./assets.js";
 import fs from "node:fs";
 import path from "node:path";
 
@@ -58,7 +59,7 @@ interface ParsedArgs {
 }
 
 /** Flags that take a value. Everything else is boolean, so `--json doctor` parses. */
-const VALUE_FLAGS = new Set(["into", "project", "brief"]);
+const VALUE_FLAGS = new Set(["into", "project", "brief", "tokens", "output", "icon-layers", "icon-background"]);
 
 function parseArgs(argv: string[]): ParsedArgs {
   const positionals: string[] = [];
@@ -111,6 +112,20 @@ interface CommandSpec {
  * until someone follows the documentation and gets an error.
  */
 const COMMANDS: readonly CommandSpec[] = [
+  {
+    name: "assets", usage: "ios-agent assets --tokens tokens.json --output Assets.xcassets",
+    summary: "Generate named colors with four appearances into a new asset catalog",
+    flags: [{name: "tokens", takesValue: true, summary: "Design token JSON"}, {name: "output", takesValue: true, summary: "New .xcassets path"}, {name:"icon-layers",takesValue:true,summary:"Directory of SVG layers and manifest"}, {name:"icon-background",takesValue:true,summary:"Opaque #RRGGBB background (default white)"}],
+    run: (args, io) => {
+      try {
+        const tokens = args.values.get("tokens"), output = args.values.get("output");
+        if (!tokens || !output) throw Error("--tokens and --output are required.");
+        const files = generateAssets(path.resolve(io.cwd(), tokens), path.resolve(io.cwd(), output), args.values.has("icon-layers") ? path.resolve(io.cwd(), args.values.get("icon-layers")!) : undefined, args.values.get("icon-background"));
+        io.out(`Created ${files.length} asset catalog files.`);
+        return EXIT_OK;
+      } catch (error) { io.err(error instanceof Error ? error.message : String(error)); return EXIT_USAGE; }
+    }
+  },
   {
     name: "new",
     usage: "ios-agent new <Name>",

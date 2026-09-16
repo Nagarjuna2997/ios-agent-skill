@@ -19,6 +19,7 @@ Do not load the whole inventory, all technology topic maps, or the detailed engi
 - Respect deployment availability, privacy permissions and entitlements. Use the installed SDK to validate generated APIs.
 - Use shared design tokens, semantic colors and Dynamic Type. Account for VoiceOver, Reduce Motion and iPad layouts.
 - Compile and run appropriate tests before claiming code works. Separate inspected source, successful build/test evidence, and unverified runtime/device behavior.
+- Generated apps belong to their users. Do not put this repository maintainer’s name, username, branding, signing team or bundle identifier into generated app UI, source headers or ownership metadata. Use user-provided identity or neutral placeholders. Preserve legally required third-party notices separately.
 - Follow the user's publication scope. Do not create paid services or publish an app without authorization.
 
 ## Load by task

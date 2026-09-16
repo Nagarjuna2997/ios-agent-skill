@@ -1,5 +1,6 @@
 # Design Tokens, Adaptive Color, and Liquid Glass
 
+For executable token JSON → asset catalogs and editable SVG → PNG icons, see [asset generation](asset-generation.md).
 **Load this when:** building or reviewing an app's design system, adding a theme,
 auditing dark-mode or Dynamic Type compliance, or applying glass/material
 effects.

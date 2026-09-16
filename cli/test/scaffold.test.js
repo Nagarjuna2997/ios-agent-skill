@@ -56,7 +56,7 @@ test("generated Swift lands under App/<Name>/", () => {
   const { layout } = scaffoldProject({ name: "Notes", parentDir: parent });
 
   const sources = fs.readdirSync(path.join(layout.app, "Notes")).sort();
-  assert.deepEqual(sources, ["ContentView.swift", "NotesApp.swift"]);
+  assert.deepEqual(sources, ["Assets.xcassets", "ContentView.swift", "NotesApp.swift"]);
   assert.ok(fs.existsSync(path.join(layout.app, "NotesTests", "NotesTests.swift")));
 
   const entry = fs.readFileSync(path.join(layout.app, "Notes", "NotesApp.swift"), "utf8");
@@ -194,4 +194,20 @@ test("force refuses symlink destinations including internals", () => {
     assert.deepEqual(fs.readdirSync(external), []);
     assert.deepEqual(fs.readdirSync(root), [folder]);
   }
+});
+
+test("generated apps do not inherit the tool maintainer identity", () => {
+  const parent = tempDir();
+  try {
+    const { layout } = scaffoldProject({ name: "CustomerApp", parentDir: parent, brief: "A personal reading list", xcodegen: true });
+    const visit = (dir) => {
+      for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+        const file = path.join(dir, entry.name);
+        if (entry.isDirectory()) visit(file);
+        else assert.doesNotMatch(fs.readFileSync(file, "utf8"), /nagarjuna|nagarjuna2997|nagarjuna2002/i, file);
+      }
+    };
+    visit(layout.root);
+    assert.match(fs.readFileSync(path.join(layout.app, 'project.yml'), 'utf8'), /com\.example\.customerapp/);
+  } finally { fs.rmSync(parent, { recursive: true, force: true }); }
 });

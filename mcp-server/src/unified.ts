@@ -18,7 +18,7 @@ else if (args.includes('--help')) console.log(`ios-agent-mcp ${VERSION}\nOne MCP
 else if (args[0] === 'loop') {
   try { await (await import('./app-loop.js')).appLoop(args.slice(1)); } catch(error) { console.error(error instanceof Error?error.message:String(error));process.exitCode=1; }
 }
-else if (args[0] === 'new') {
+else if ((args[0] === 'new' || args[0] === 'assets')) {
   const child = (await import('node:child_process')).spawn(process.execPath,[cli(),...args],{stdio:'inherit'});
   child.on('error',e=>{console.error(e.message);process.exitCode=1;});
   child.on('exit',code=>{process.exitCode=code ?? 1;});

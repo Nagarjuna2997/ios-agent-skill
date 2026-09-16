@@ -1,3 +1,5 @@
+import { iconCatalogFiles } from "./icon.js";
+import { assetFiles, defaultTokens } from "./assets.js";
 import fs from "node:fs";
 import path from "node:path";
 
@@ -72,11 +74,14 @@ export function scaffoldProject(options: ScaffoldOptions): ScaffoldResult {
     }
   }
 
-  const planned = new Map<string, string>();
-  const write = (target: string, contents: string) => { planned.set(target, contents); };
+  const planned = new Map<string, string | Buffer>();
+  const write = (target: string, contents: string | Buffer) => { planned.set(target, contents); };
 
   const sourceDir = path.join(layout.app, name);
   const testDir = path.join(layout.app, `${name}Tests`);
+
+  write(path.join(layout.app, "design-tokens.json"), JSON.stringify(defaultTokens, null, 2) + "\n");
+  for (const [file, contents] of Object.entries(assetFiles(defaultTokens))) write(path.join(sourceDir, "Assets.xcassets", file), contents);
 
   write(path.join(sourceDir, `${name}App.swift`), appEntryPoint(name));
   write(path.join(sourceDir, "ContentView.swift"), contentView(name));
@@ -86,7 +91,9 @@ export function scaffoldProject(options: ScaffoldOptions): ScaffoldResult {
   if (options.xcodegen) {
     write(path.join(layout.app, "project.yml"), projectSpec(name));
     write(path.join(layout.app, "BUILD.md"), buildInstructions(name));
-    for (const [file, contents] of Object.entries(iconLayers())) write(path.join(sourceDir, "IconLayers", file), contents);
+    const layers = iconLayers();
+    for (const [file, contents] of Object.entries(iconCatalogFiles([layers["background.svg"], layers["foreground.svg"], layers["accent.svg"]], "#2457DB"))) write(path.join(sourceDir, "Assets.xcassets", file), contents);
+    for (const [file, contents] of Object.entries(layers)) write(path.join(sourceDir, "IconLayers", file), contents);
   }
 
   if (!minimal) {
@@ -371,6 +378,8 @@ targets:
           - IconLayers
     settings:
       base:
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         PRODUCT_BUNDLE_IDENTIFIER: "com.example.${bundle}"
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
@@ -384,6 +393,7 @@ targets:
       - target: ${quoted}
     settings:
       base:
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         PRODUCT_BUNDLE_IDENTIFIER: "com.example.${bundle}.tests"
 schemes:
   ${quoted}:
@@ -401,7 +411,7 @@ function buildInstructions(name: string): string {
 
 Prerequisites: macOS, Xcode 15 or newer with an installed iOS simulator runtime,
 and XcodeGen installed separately. The CLI does not install or run these tools.
-Icon Composer requires a compatible Xcode installation and is only needed for icon editing.
+Icon Composer requires a compatible Xcode installation and is only needed for native Liquid Glass icon authoring. SVG paths can be edited with free tools.
 
 From this App directory:
 
@@ -416,8 +426,8 @@ Choose an available simulator destination from that list to run tests in Xcode
 or with xcodebuild test. The starter test is a placeholder: replace it with real
 behavior assertions. Device builds require your own bundle identifier and signing team.
 Edit project.yml and regenerate when changing targets or build settings.
-No .xcodeproj is created until you run XcodeGen. The project has no shipping app
-icon yet; see ${name}/IconLayers/README.md before distribution.
+No .xcodeproj is created until you run XcodeGen. The project has a generic placeholder app
+icon; see ${name}/IconLayers/README.md before distribution.
 `;
 }
 
@@ -432,7 +442,9 @@ function iconLayers(): Record<string, string> {
 
 These are separate SVG starter assets, ordered background → foreground → accent.
 Edit their paths and colors in a vector editor to fit your app. They are generic
-placeholders, not finished branding or an Icon Composer document.
+placeholders, not finished branding or an Icon Composer document. A flattened
+1024px PNG is generated in Assets.xcassets/AppIcon.appiconset for the starter.
+Regenerate into a new catalog after editing layers; review before replacing assets.
 
 1. Open Icon Composer from a compatible Xcode installation and create a new icon.
 2. Import each SVG as a separate layer, preserving the back-to-front order above.

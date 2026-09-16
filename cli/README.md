@@ -165,3 +165,13 @@ The user-level cache defaults to `~/Library/Caches/ios-agent` on macOS,
 It does not implement features from the description, invoke an AI model, install
 build tools, run XcodeGen, or create a native Icon Composer document. Without
 `--xcodegen`, create the project in Xcode and add the generated sources.
+
+## Asset catalogs
+
+New scaffolds include semantic color assets. `--xcodegen` also includes a flattened
+1024px AppIcon rendered from the editable SVG layers. Use `ios-agent assets
+--tokens tokens.json --output NewAssets.xcassets` to generate a separate catalog.
+Optional `--icon-layers IconLayers --icon-background "#2457DB"` renders the ordered
+SVG layers. Existing catalogs are never overwritten. See
+[the schema and free workflow](../docs/design/asset-generation.md). Native `.icon`
+authoring still uses Apple Icon Composer.
