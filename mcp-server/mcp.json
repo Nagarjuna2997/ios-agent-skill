@@ -180,6 +180,10 @@
     {
       "name": "prepare_issue_report",
       "summary": "Local category-only issue preview; no network, diagnostics collection or submission. User reviews and signs in to GitHub to submit."
+    },
+    {
+      "name": "private_feedback",
+      "summary": "Source-preview consented category-only private feedback. Preview first, explicitly approve, then submit to configured HTTPS receiver; unavailable without backend. No public fallback."
     }
   ],
   "resources": [

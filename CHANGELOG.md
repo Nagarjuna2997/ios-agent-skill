@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+- Source-only private feedback preview/approval tool and receiver for a private GitHub inbox. Explicit in-chat approval, fixed categories, private-destination checks and no public fallback. Hosting is not configured; no npm publication.
+
 ## [3.6.0] -- 2026-09-16
 
 ### Added

@@ -18,7 +18,7 @@ the skills package or a separately configured MCP connection. See the
 claude mcp add ios-agent -- npx -y ios-agent-mcp@latest
 ```
 
-The default server exposes 36 tools: 12 review/metadata tools, 8 Apple reference tools, 14 simulator tools, `create_app`, and the local `prepare_issue_report` tool. App scaffolding and simulator packages install automatically as dependencies; no separate installation or MCP connection is needed. Remove the separate knowledge/simulator connections if you previously configured them to avoid duplicate tools.
+The published 2.7.0 server exposes 36 tools: 12 review/metadata tools, 8 Apple reference tools, 14 simulator tools, `create_app`, and the local `prepare_issue_report` tool. App scaffolding and simulator packages install automatically as dependencies; no separate installation or MCP connection is needed. Remove the separate knowledge/simulator connections if you previously configured them to avoid duplicate tools.
 
 Create a starter directly:
 
@@ -324,3 +324,7 @@ Adds `review_app_intents` with conservative SiriKit migration advice and opt-in 
 ## Local issue previews (2.7.0)
 
 `prepare_issue_report` is included in 2.7.0. It creates a local preview from fixed failure categories and links to this project’s issue tracker. It does not collect diagnostics, open a browser, make network calls or submit issues. Show the preview to the user before opening any link. GitHub sign-in and user submission are required.
+
+## Private chat feedback — source preview only
+
+The source adds `private_feedback` as a 37th tool. It requires an operator-configured HTTPS receiver, a local preview, and explicit user approval before sending fixed categories to a private repository. Hosting is not configured; this is not live or included in npm 2.7.0. No user GitHub sign-in is needed once deployed. No source, logs or credentials are accepted, and there is no automatic public fallback. See [the reporting workflow](https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/tooling/issue-reporting.md).

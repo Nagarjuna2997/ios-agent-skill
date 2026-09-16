@@ -52,6 +52,9 @@ jobs:
       - name: Test
         run: npm test
 
+      - name: Private feedback receiver tests (mock GitHub only)
+        run: node --test ../services/private-feedback/server.test.mjs
+
       - name: Manifest is valid
         run: |
           python3 - <<'PY'

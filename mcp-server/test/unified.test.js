@@ -10,8 +10,10 @@ test('single connection exposes reviews, knowledge, simulator and safe app creat
  const client=new Client({name:'test',version:'1'});
  try {
   await client.connect(new StdioClientTransport({command:process.execPath,args:['dist/unified.js','--project',root],env:{...process.env,HOME:root,USERPROFILE:root}}));
-  const {tools}=await client.listTools();assert.equal(tools.length,36);assert.equal(new Set(tools.map(t=>t.name)).size,36);
+  const {tools}=await client.listTools();assert.equal(tools.length,37);assert.equal(new Set(tools.map(t=>t.name)).size,37);
   for(const name of ['analyze_swift_project','search_local_references','simulator_list','create_app'])assert.ok(tools.some(t=>t.name===name));
+  const privatePreview=await client.callTool({name:'private_feedback',arguments:{action:'preview',report:{feature:'installation',symptom:'timeout'}}});
+  assert.equal(JSON.parse(privatePreview.content[0].text).status,'not-configured');
   const preview=await client.callTool({name:'prepare_issue_report',arguments:{feature:'installation',symptom:'timeout'}});
   assert.equal(JSON.parse(preview.content[0].text).submitted,false);
   const rejected=await client.callTool({name:'prepare_issue_report',arguments:{feature:'installation',symptom:'timeout',logs:'PRIVATE_SENTINEL'}});

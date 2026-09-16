@@ -12,6 +12,7 @@ import { z } from 'zod';
 import { VERSION } from './version.js';
 import { withDevelopmentFeedback } from './development-feedback.js';
 import { issueReportTool, prepareIssueReport } from './issue-report.js';
+import { privateFeedbackTool, createPrivateFeedback } from './private-feedback.js';
 const require = createRequire(import.meta.url);
 const args = process.argv.slice(2);
 const cli = () => require.resolve('@nagarjuna2002/ios-agent/dist/index.js');
@@ -38,12 +39,17 @@ else if ((args[0] === 'new' || args[0] === 'assets')) {
     const owners = new Map<string,Client>();
     const tools = catalog.flatMap((list,i)=>list.tools.map(tool=>{if(owners.has(tool.name))throw Error(`Duplicate tool ${tool.name}`);owners.set(tool.name,clients[i]!);return tool;}));
     tools.push({name:'create_app',description:'Create an editable Swift app starter, implementation brief and optional XcodeGen specification/icon layers. Writes a NEW project; does not implement the full app idea. Then use source retrieval, review and simulator tools to implement and verify it.',inputSchema:{type:'object',properties:{name:{type:'string'},directory:{type:'string',description:'Parent directory for the new project'},brief:{type:'string'},xcodegen:{type:'boolean',default:true}},required:['name','directory','brief'],additionalProperties:false}});
-    tools.push(issueReportTool);
+    tools.push(issueReportTool, privateFeedbackTool);
+    const privateFeedback=createPrivateFeedback();
     const server = new Server({name:'ios-agent-mcp',version:VERSION},{capabilities:{tools:{},resources:{}}});
     server.setRequestHandler(ListToolsRequestSchema,async()=>({tools}));
     server.setRequestHandler(ListResourcesRequestSchema,()=>clients[0]!.listResources());
     server.setRequestHandler(ReadResourceRequestSchema,request=>clients[0]!.readResource(request.params));
     server.setRequestHandler(CallToolRequestSchema,async (request,extra)=>{
+      if(request.params.name==='private_feedback') {
+        try { return {content:[{type:'text',text:JSON.stringify(await privateFeedback(request.params.arguments),null,2)}]}; }
+        catch { return {isError:true,content:[{type:'text',text:'Private feedback rejected. Use a valid configured destination and preview, then obtain explicit approval. No arbitrary text or diagnostics accepted.'}]}; }
+      }
       if(request.params.name==='prepare_issue_report') {
         try { return {content:[{type:'text',text:JSON.stringify(prepareIssueReport(request.params.arguments),null,2)}]}; }
         catch { return {isError:true,content:[{type:'text',text:'Invalid report categories. Free text, logs, source, paths and credentials are not accepted.'}]}; }

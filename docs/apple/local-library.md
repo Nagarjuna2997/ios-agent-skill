@@ -470,7 +470,7 @@ Search offline with `node scripts/query-library.mjs search "SwiftData"`. Read a 
 | [docs/tooling/foundation-models-instruments.md](../../docs/tooling/foundation-models-instruments.md) | guide | 3378 |
 | [docs/tooling/idea-to-app.md](../../docs/tooling/idea-to-app.md) | guide | 2879 |
 | [docs/tooling/ios-simulator-mcp.md](../../docs/tooling/ios-simulator-mcp.md) | guide | 7719 |
-| [docs/tooling/issue-reporting.md](../../docs/tooling/issue-reporting.md) | guide | 2773 |
+| [docs/tooling/issue-reporting.md](../../docs/tooling/issue-reporting.md) | guide | 4887 |
 | [docs/tooling/offline-source-library.md](../../docs/tooling/offline-source-library.md) | guide | 4736 |
 | [docs/tooling/project-scaffolding.md](../../docs/tooling/project-scaffolding.md) | guide | 18060 |
 | [docs/tooling/visual-iteration-loop.md](../../docs/tooling/visual-iteration-loop.md) | guide | 3160 |
