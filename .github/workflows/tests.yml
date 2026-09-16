@@ -52,9 +52,6 @@ jobs:
       - name: Test
         run: npm test
 
-      - name: Issue inbox tests (mock GitHub only)
-        run: node --test ../services/issue-inbox/server.test.mjs
-
       - name: Manifest is valid
         run: |
           python3 - <<'PY'

@@ -6,7 +6,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
-- Add opt-in automatic fixed-category failure reporting and a self-hosted GitHub issue inbox with persistent limits and duplicate reservations. Off by default; backend deployment and operator credential required. Not live or published to npm.
 
 - Add `prepare_issue_report`: local category-only previews for package failures, duplicate-search links and a prefilled GitHub form. No automatic uploads or submissions; pending the next npm release.
 

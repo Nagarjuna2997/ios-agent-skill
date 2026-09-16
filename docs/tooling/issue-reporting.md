@@ -42,41 +42,4 @@ assert that duplicates are absent, or suppress duplicates automatically.
 
 Source builds append troubleshooting guidance to returned unified tool errors, preserving the original diagnostic and structured result. The agent should explain the observed error, distinguish evidence from guesses, attempt a bounded fix within the approved task, and show the verification result. Compiler/test failures returned as successful tool calls and thrown transport errors are covered by agent instructions rather than this error-result decorator. Actual presentation depends on the coding client and agent following those instructions.
 
-This feedback stays in the coding session, not in the generated app or the public website. Redact secrets before repeating diagnostics. It does not transmit additional details or confirm a GitHub submission. Repeated failures get local attention while public reporting keeps duplicate and rate controls. For an actionable public bug report, separately review and authorize a minimal synthetic reproduction; never attach private app code or raw logs automatically.
-
-## Automatic mode: one-time opt-in (source only)
-
-The source now includes an optional client and [receiving service](../../services/issue-inbox/README.md).
-The service is **not deployed**, so automatic submission is not live. Once its
-operator publishes an HTTPS endpoint and privacy notice, a user can enable it:
-
-```sh
-ios-agent-mcp reporting enable --endpoint https://YOUR-REPORTING-HOST/reports
-ios-agent-mcp reporting status
-ios-agent-mcp reporting disable
-```
-
-The endpoint above is a placeholder. Enabling is a one-time explicit consent to
-send fixed package-failure categories, package version and platform, potentially
-as public GitHub issues. The host receives the network IP. AI agents must explain
-this before enabling and must never enable it without user authorization. After
-opt-in, no form or per-report approval is needed. Disable stops future reporting;
-it does not delete previous issues.
-
-Only error results from the unified MCP's supported review, reference, simulator
-and app-starter tools trigger it. Ordinary review findings, user-app compile
-errors reported as successful tool results, standalone CLI failures and the local
-preview itself do not trigger reports. Raw tool arguments, outputs, exceptions,
-source, paths and credentials are never passed to the reporter. Categories are
-coarse, so maintainers may still need a synthetic reproduction to diagnose a bug.
-
-Client settings are stored outside the app under `~/.config/ios-agent/`. Reporting
-is off by default. The client attempts a category at most once per day per package
-version; it reserves before sending, uses a three-second timeout, rejects redirects
-and never interrupts the user's build on reporting failure. The single-instance
-service applies persistent attempt limits and duplicate reservations. Multiple
-client processes may race locally; the service remains the submission gate.
-
-Reports appear in [GitHub Issues](https://github.com/Nagarjuna2997/ios-agent-skill/issues).
-There is no automatic code repair or daily publishing. Never include security
-vulnerabilities in public reports: use the repository's private security channel.
+This feedback stays in the coding session, not in the generated app or the public website. Redact secrets before repeating diagnostics. It does not transmit additional details or confirm a GitHub submission. Repeated failures get local attention and public submission remains separately authorized. For an actionable public bug report, separately review and authorize a minimal synthetic reproduction; never attach private app code or raw logs automatically.

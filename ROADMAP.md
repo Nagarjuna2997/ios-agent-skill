@@ -23,6 +23,8 @@
 
 ## Later, based on demand
 
+- Hosted failure-report inbox. Requires a maintained backend and operator credential; not planned unless demand appears.
+
 - `review_foundation_models`, `review_core_ai` and the remaining [analysis tool contracts](docs/mcp/vnext-analysis-tools.md).
 - Simulator video/log streaming, UI automation backend and visual review.
 - Measured token/context savings on reproducible tasks.

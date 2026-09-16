@@ -72,7 +72,7 @@ Xcode already ships agent expertise and build/test tools. Use those when they me
 
 Failure feedback belongs in your coding session: the observed error, the proposed fix and actual verification results. The source server adds troubleshooting guidance to returned tool errors; agent instructions also cover compiler/test failures. These messages do not appear in the app you are building.
 
-The source build adds `prepare_issue_report` (pending the next npm release). Your AI can prepare a local report when an iOS Agent tool fails. It accepts fixed categories only, shows a preview and a duplicate-search link, and leaves public submission to you. No app source or logs are collected. Automatic submission after one-time opt-in is implemented in source but awaits a hosted reporting service; it is not live. [Reporting workflow](docs/tooling/issue-reporting.md).
+The source build adds `prepare_issue_report` (pending the next npm release). Your AI can prepare a local report when an iOS Agent tool fails. It accepts fixed categories only, shows a preview and a duplicate-search link, and leaves public submission to you. No app source or logs are collected. [Reporting workflow](docs/tooling/issue-reporting.md).
 
 ## Four client families, one project
 
