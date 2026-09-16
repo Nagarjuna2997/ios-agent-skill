@@ -1,7 +1,6 @@
 # AI-assisted issue previews
 
-**Availability:** source build; pending the next npm release. The source server
-has 36 tools; previously published builds have 35.
+**Availability:** ios-agent-mcp 2.7.0 and later, with 36 unified tools.
 
 When an iOS Agent operation fails, the AI can prepare a report using
 `prepare_issue_report`. Report problems with this package, not ordinary errors
@@ -40,6 +39,6 @@ assert that duplicates are absent, or suppress duplicates automatically.
 
 ## Local developer feedback on every failed step
 
-Source builds append troubleshooting guidance to returned unified tool errors, preserving the original diagnostic and structured result. The agent should explain the observed error, distinguish evidence from guesses, attempt a bounded fix within the approved task, and show the verification result. Compiler/test failures returned as successful tool calls and thrown transport errors are covered by agent instructions rather than this error-result decorator. Actual presentation depends on the coding client and agent following those instructions.
+The unified server appends troubleshooting guidance to returned unified tool errors, preserving the original diagnostic and structured result. The agent should explain the observed error, distinguish evidence from guesses, attempt a bounded fix within the approved task, and show the verification result. Compiler/test failures returned as successful tool calls and thrown transport errors are covered by agent instructions rather than this error-result decorator. Actual presentation depends on the coding client and agent following those instructions.
 
 This feedback stays in the coding session, not in the generated app or the public website. Redact secrets before repeating diagnostics. It does not transmit additional details or confirm a GitHub submission. Repeated failures get local attention and public submission remains separately authorized. For an actionable public bug report, separately review and authorize a minimal synthetic reproduction; never attach private app code or raw logs automatically.

@@ -7,7 +7,7 @@ The website uses system fonts and local assets. No paid animation library, remot
 
 ## Independent playground objects
 
-`objects/` contains eleven separately generated, transparent WebP objects matching the original artwork. Each object is its own focusable interaction target. Pointer dragging uses local transforms, pointer capture and a bounded return transition. Hover affects only the selected object; there is no scene-wide movement or idle animation. Touch keeps vertical page scrolling through `touch-action: pan-y`. Arrow keys move the focused object; Escape/Home and Reset restore positions. Freeze disables interaction; reduced motion removes hover effects and animated settling. These are image cutouts with perspective, not volumetric 3D meshes.
+`objects/` contains eleven AI-generated, transparent WebP objects (same tool and prompt family as `playground-hero.webp`) matching the original artwork. Each object is its own focusable interaction target. Pointer dragging uses local transforms, pointer capture and a bounded return transition. Hover affects only the selected object; there is no scene-wide movement or idle animation. Touch keeps vertical page scrolling through `touch-action: pan-y`. Arrow keys move the focused object; Escape/Home and Reset restore positions. Freeze disables interaction; reduced motion removes hover effects and animated settling. These are image cutouts with perspective, not volumetric 3D meshes.
 
 ## Scroll story evidence
 
@@ -15,4 +15,6 @@ The website uses system fonts and local assets. No paid animation library, remot
 
 `readme-hero.jpg` is a browser screenshot of the website hero in light appearance, used as a linked preview at the top of the repository README. Its phone and other objects are illustrative artwork, not simulator evidence.
 
-`readme-walkthrough.gif` is a looping browser recording of normal scrolling from the website hero to its footer (840 × 630). It illustrates the website, not an automated app-building run. The README includes the still preview as an alternative.
+`readme-walkthrough.gif` is a browser screen recording of the website, converted to GIF (840 × 630); it contains only the decorative artwork and the Reading List evidence capture described above. It illustrates the website, not an automated app-building run. The README displays the still preview and links to the GIF without autoplay.
+
+All AI-generated artwork in this folder is original, decorative, and not derived from Apple assets, screenshots, or third-party artwork.

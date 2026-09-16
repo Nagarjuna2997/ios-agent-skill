@@ -1,12 +1,10 @@
 # iOS Agent Skill
 
-<a href="https://nagarjuna2997.github.io/ios-agent-skill/">
-  <img src="site/assets/readme-walkthrough.gif" alt="iOS Agent Skill website walkthrough, from the playground to the footer" width="520">
-</a>
-
-*Explore the interactive playground and workflow on [our website](https://nagarjuna2997.github.io/ios-agent-skill/) · [View a still preview](site/assets/readme-hero.jpg).*
-
 **Give your coding agent the Apple references, Swift source and local tools it needs to build and review an iOS app.**
+
+[![iOS Agent Skill website preview](site/assets/readme-hero.jpg)](https://nagarjuna2997.github.io/ios-agent-skill/)
+
+[Watch the website walkthrough](site/assets/readme-walkthrough.gif) · [Explore the website](https://nagarjuna2997.github.io/ios-agent-skill/)
 
 Use it to turn an app idea into an editable starter, improve an existing Swift project, and check the result with Xcode and the simulator. Your agent writes the app; this repository supplies reusable implementation guidance and tools to inspect its work.
 
@@ -40,7 +38,7 @@ For an existing app, provide its absolute project path and ask for a focused rev
 | Start an app | An editable Swift starter, implementation brief and optional XcodeGen specification. |
 | Reuse Apple knowledge | Search local Swift source and guides in bounded sections, plus a dated directory of Apple technologies and release notes. |
 | Review Swift code | File-located findings for concurrency, architecture, SwiftUI, availability, security, performance and App Intents. |
-| Generate design assets | Source preview (npm release pending): named light/dark/high-contrast colors and an opaque 1024px app icon rendered locally from editable SVG layers. |
+| Generate design assets | Named light/dark/high-contrast colors and an opaque 1024px app icon rendered locally from editable SVG layers. |
 | Verify on a simulator | Build, test, install, launch and capture screenshots through Xcode. |
 <!-- product-features:end -->
 
@@ -60,11 +58,11 @@ The [Reading List demo](samples/ReadingList/README.md) has persistence, search, 
 
 ![Reading List running in the simulator](examples/reading-list/library.png)
 
-The server exposes 35 tools. Static reviews are heuristics, not compiler diagnostics. The Apple directory is a reference map, not Apple's proprietary framework source or proof of 405 working integrations. Token savings have not been benchmarked. [Build-loop verification limits](docs/tooling/app-building-loop.md).
+The server exposes 36 tools. Static reviews are heuristics, not compiler diagnostics. The Apple directory is a reference map, not Apple's proprietary framework source or proof of 405 working integrations. Token savings have not been benchmarked. [Build-loop verification limits](docs/tooling/app-building-loop.md).
 
 ## Why use this alongside Xcode?
 
-Xcode already ships agent expertise and build/test tools. Use those when they meet your needs. This repository adds shared guidance across our four client families, inspectable review rules, local source retrieval and repeatable asset workflows. We have not established that it makes an AI outperform Xcode's skills or use fewer tokens.
+Xcode already ships agent expertise and build/test tools. Use those when they meet your needs. This repository adds shared guidance across these four client families, inspectable review rules, local source retrieval and repeatable asset workflows. It has not been established that it makes an AI outperform Xcode's skills or use fewer tokens.
 
 [Where the guidance comes from, evidence and unfinished work](docs/evidence-and-scope.md). A paired Claude/Codex benchmark is running; results will be published without assuming a win.
 
@@ -72,7 +70,7 @@ Xcode already ships agent expertise and build/test tools. Use those when they me
 
 Failure feedback belongs in your coding session: the observed error, the proposed fix and actual verification results. The source server adds troubleshooting guidance to returned tool errors; agent instructions also cover compiler/test failures. These messages do not appear in the app you are building.
 
-The source build adds `prepare_issue_report` (pending the next npm release). Your AI can prepare a local report when an iOS Agent tool fails. It accepts fixed categories only, shows a preview and a duplicate-search link, and leaves public submission to you. No app source or logs are collected. [Reporting workflow](docs/tooling/issue-reporting.md).
+`prepare_issue_report` lets your AI prepare a local report when an iOS Agent tool fails. It accepts fixed categories only, shows a preview and a duplicate-search link, and leaves public submission to you. No app source or logs are collected. [Reporting workflow](docs/tooling/issue-reporting.md).
 
 ## Four client families, one project
 
@@ -83,7 +81,7 @@ The source build adds `prepare_issue_report` (pending the next npm release). You
 | Gemini CLI | Extension configuration and local MCP connection verified. |
 | Muse Code | Skill discovery, 35-tool MCP discovery and a Stop hook verified; model sessions and observer behavior remain unverified. |
 
-We focus on these four families. For another client, [open a client-support request](https://github.com/Nagarjuna2997/ios-agent-skill/issues/new?template=client_support.md) or add a 👍 to an existing request. Votes inform priorities alongside feasibility and testing; they do not guarantee delivery. Existing experimental adapters are not actively maintained.
+The project focuses on these four families. For another client, [open a client-support request](https://github.com/Nagarjuna2997/ios-agent-skill/issues/new?template=client_support.md) or add a 👍 to an existing request. Votes inform priorities alongside feasibility and testing; they do not guarantee delivery. Existing experimental adapters are not actively maintained.
 
 `install.sh` is optional: it installs source guidance for a chosen local client, not the MCP server or a browser plugin. Run `bash install.sh --help` after cloning. Most users should use the client setup guide above.
 

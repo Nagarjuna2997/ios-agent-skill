@@ -321,6 +321,6 @@ The CLI now provides `loop init`, `loop resume` and `loop status` alongside the 
 
 Adds `review_app_intents` with conservative SiriKit migration advice and opt-in Apple Intelligence schema/onscreen checks. Apple snapshots refreshed after the iOS 27 release. Includes the preview `loop` CLI; real Claude repair remains unverified. See [release verification](https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/apple/ios-27-release-verification.md) and [complete tools](https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/mcp/tools.md).
 
-## Local issue previews (source build; next release)
+## Local issue previews (2.7.0)
 
 `prepare_issue_report` is included in 2.7.0. It creates a local preview from fixed failure categories and links to this project’s issue tracker. It does not collect diagnostics, open a browser, make network calls or submit issues. Show the preview to the user before opening any link. GitHub sign-in and user submission are required.

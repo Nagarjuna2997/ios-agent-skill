@@ -54,8 +54,8 @@ This status is about implementation and evidence, not promises made in conversat
 
 | Work | Status |
 |---|---|
-| Unified reviews, local references, app starter, simulator build/launch/screenshots | Published in npm 2.6.0; 35 tools. |
-| Real asset catalogs and offline SVG-layer PNG icon | Source complete and tested; CLI 0.3.0 published; consolidated MCP 2.7.0 publication in progress. |
+| Unified reviews, local references, app starter, simulator build/launch/screenshots | Published in npm 2.7.0; 36 tools, including local issue previews. |
+| Real asset catalogs and offline SVG-layer PNG icon | CLI 0.3.0 and consolidated MCP 2.7.0 published; asset generation tested. |
 | Muse setup; Gemini CLI setup | Muse discovery/Stop hook and Gemini connection verified; no complete app-generation claim. |
 | Claude repair adapter | Real bounded repair passed; full generated-app run and model planning still unverified. |
 | README, four-client focus, issue voting and automatic Pages feature updates | Pushed and deployed. |
