@@ -6,7 +6,7 @@ Load this when a task names **Safari Developer Features** or one of the API topi
 
 Apple categories: Developer Tools.
 
-[Apple documentation](https://developer.apple.com/documentation/safari-developer-tools) · Source checked: 2026-09-10.
+[Apple documentation](https://developer.apple.com/documentation/safari-developer-tools) · Source checked: 2026-09-16.
 
 Apple’s short description (excerpt):
 

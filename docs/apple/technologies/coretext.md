@@ -6,7 +6,7 @@ Load this when a task names **Core Text** or one of the API topics below.
 
 Apple categories: App Services.
 
-[Apple documentation](https://developer.apple.com/documentation/coretext) · Source checked: 2026-09-10.
+[Apple documentation](https://developer.apple.com/documentation/coretext) · Source checked: 2026-09-16.
 
 Apple’s short description (excerpt):
 

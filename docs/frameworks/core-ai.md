@@ -6,7 +6,7 @@ Core AI is Apple's framework for bringing custom AI models into an app and runni
 
 Use **Foundation Models** when you need language generation, structured output, tools, or Apple Intelligence model access. Use **Core ML** when your model is not a neural network workload, or when an existing Core ML pipeline already covers the feature.
 
-> Core AI is beta in the iOS 27 / Xcode 27 generation. Treat APIs and tool output as subject to change until final SDKs ship.
+> Release status checked 2026-09-16: iOS 27 and Xcode 27 are released. This guide describes the released API direction; Core AI examples have not been compiled on this repository’s Xcode 26.6 verification host. See [release verification](../apple/ios-27-release-verification.md).
 
 ---
 
@@ -206,3 +206,7 @@ Use this workflow:
 - [ ] Fallback path exists for unsupported devices, storage pressure, and OS updates
 
 See also: `docs/frameworks/foundation-models.md`, `docs/frameworks/ml/coreml.md`, `docs/frameworks/ml/on-device-ai.md`, `docs/frameworks/metal.md`.
+
+## Released SDK boundary
+
+[Apple’s Core AI documentation](https://developer.apple.com/documentation/coreai) now marks the 27.0 platform APIs as non-beta. Model format, supported operators, memory requirements and device eligibility still need validation per model. Use [Apple’s Core AI model adapter](https://github.com/apple/coreai-models) when connecting a supported local model to Foundation Models; it is a separate dependency, not vendored framework code. This repository has not run a converted Core AI model on-device.

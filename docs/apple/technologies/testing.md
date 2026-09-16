@@ -6,7 +6,7 @@ Load this when a task names **Swift Testing** or one of the API topics below.
 
 Apple categories: Developer Tools.
 
-[Apple documentation](https://developer.apple.com/documentation/testing) · Source checked: 2026-09-10.
+[Apple documentation](https://developer.apple.com/documentation/testing) · Source checked: 2026-09-16.
 
 Apple’s short description (excerpt):
 

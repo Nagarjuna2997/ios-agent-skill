@@ -6,7 +6,7 @@ Load this when a task names **Technology Overviews** or one of the API topics be
 
 Apple categories: Technology Overviews.
 
-[Apple documentation](https://developer.apple.com/documentation/technologyoverviews) · Source checked: 2026-09-10.
+[Apple documentation](https://developer.apple.com/documentation/technologyoverviews) · Source checked: 2026-09-16.
 
 Apple’s short description (excerpt):
 

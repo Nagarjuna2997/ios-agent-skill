@@ -6,7 +6,7 @@ Load this when a task names **NetworkingDriverKit** or one of the API topics bel
 
 Apple categories: System.
 
-[Apple documentation](https://developer.apple.com/documentation/networkingdriverkit) · Source checked: 2026-09-10.
+[Apple documentation](https://developer.apple.com/documentation/networkingdriverkit) · Source checked: 2026-09-16.
 
 Apple’s short description (excerpt):
 

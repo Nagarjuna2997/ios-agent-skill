@@ -631,3 +631,11 @@ LanguageModelSession(model: PrivateCloudComputeLanguageModel())
 - [ ] On-device is the default; PCC is a deliberate escalation.
 - [ ] Tests assert shape and constraints, and unit tests use a protocol double.
 - [ ] The feature is additive — the app still works with no model available.
+
+## Released routing APIs and a compiled starting point
+
+Reviewed 2026-09-16 against [Apple’s Foundation Models updates](https://developer.apple.com/documentation/updates/foundationmodels). iOS 27 adds the `LanguageModel` protocol for provider adapters, alongside Apple’s on-device and Private Cloud Compute models. A shared protocol does not provide provider credentials, entitlements, pricing, or identical privacy guarantees. Confirm the actual vendor adapter and model capability before offering Claude or Gemini; this repository does not bundle or claim a verified adapter for either.
+
+Apple links [CoreAILanguageModel](https://github.com/apple/coreai-models) and [MLXLanguageModel](https://github.com/ml-explore/mlx-swift-lm) for local model integrations. Device memory, model licensing, conversion and workload size still constrain what can run locally; “full-scale models” is not an unlimited capability guarantee.
+
+[ReadingAssistant.swift](../../samples/AppleRecipes/Sources/AppleRecipes/ReadingAssistant.swift) is a complete Foundation Models tool-calling composition with an injected reading catalog, per-request session, runtime availability check and local-search fallback. It uses the iOS 26 baseline so the actual implementation compiles on our installed toolchain. Tests call the real `Tool` and exercise fallback/error/cancellation through an injected backend; they do not assert a model chose the tool or generated a correct answer. Xcode 27-only routing remains a separate validation task.

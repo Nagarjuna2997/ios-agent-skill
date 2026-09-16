@@ -6,7 +6,7 @@ Load this when a task names **Local Authentication Embedded UI** or one of the A
 
 Apple categories: System.
 
-[Apple documentation](https://developer.apple.com/documentation/localauthenticationembeddedui) · Source checked: 2026-09-10.
+[Apple documentation](https://developer.apple.com/documentation/localauthenticationembeddedui) · Source checked: 2026-09-16.
 
 Apple’s short description (excerpt):
 

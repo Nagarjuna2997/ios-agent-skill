@@ -6,7 +6,7 @@ Load this when a task names **DocC** or one of the API topics below.
 
 Apple categories: Developer Tools.
 
-[Apple documentation](https://www.swift.org/documentation/docc) · Source checked: 2026-09-10.
+[Apple documentation](https://www.swift.org/documentation/docc) · Source checked: 2026-09-16.
 
 ## Pattern
 

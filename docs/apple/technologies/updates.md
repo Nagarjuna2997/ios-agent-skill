@@ -6,7 +6,7 @@ Load this when a task names **Updates** or one of the API topics below.
 
 Apple categories: Web.
 
-[Apple documentation](https://developer.apple.com/documentation/updates) · Source checked: 2026-09-10.
+[Apple documentation](https://developer.apple.com/documentation/updates) · Source checked: 2026-09-16.
 
 Apple’s short description (excerpt):
 
@@ -49,6 +49,7 @@ Apple’s directory does not supply platform availability for this entry. It may
 - [AuthenticationServices updates](https://developer.apple.com/documentation/updates/authenticationservices)
 - [AVFAudio updates](https://developer.apple.com/documentation/updates/avfaudio)
 - [AVFoundation updates](https://developer.apple.com/documentation/updates/avfoundation)
+- [AVKit updates](https://developer.apple.com/documentation/updates/avkit)
 - [Background Tasks updates](https://developer.apple.com/documentation/updates/backgroundtasks)
 - [Bundle Resources updates](https://developer.apple.com/documentation/updates/bundleresources)
 - [CallKit updates](https://developer.apple.com/documentation/updates/callkit)

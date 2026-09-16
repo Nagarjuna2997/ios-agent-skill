@@ -1,6 +1,7 @@
 import { realpathSync, statSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 
+import { analyzeAppIntents } from "./analyzers/app-intents.js";
 import { analyzeConcurrency } from "./analyzers/concurrency.js";
 import { analyzeArchitecture } from "./analyzers/architecture.js";
 import { analyzeSwiftUI } from "./analyzers/swiftui.js";
@@ -231,6 +232,7 @@ export async function projectIssuesResource(
     }
 
     const categories: Record<string, Finding[]> = {
+      app_intents: analyzeAppIntents(files),
       concurrency: files.flatMap(analyzeConcurrency),
       architecture: files.flatMap(analyzeArchitecture),
       swiftui: files.flatMap(analyzeSwiftUI),

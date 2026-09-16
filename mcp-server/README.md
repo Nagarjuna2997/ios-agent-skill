@@ -1,17 +1,17 @@
 # iOS Agent MCP
 
-## One install, one MCP connection (2.5.1)
+## One install, one MCP connection
 
 ```bash
-claude mcp add ios-agent -- npx -y ios-agent-mcp@2.5.1
+claude mcp add ios-agent -- npx -y ios-agent-mcp@latest
 ```
 
-The default server exposes 34 tools: 11 Swift reviews, 8 Apple reference tools, 14 simulator tools, and `create_app`. App scaffolding and simulator packages install automatically as dependencies; no separate installation or MCP connection is needed. Remove the separate knowledge/simulator connections if you previously configured them to avoid duplicate tools.
+The default server exposes 35 tools: 12 review/metadata tools, 8 Apple reference tools, 14 simulator tools, and `create_app`. App scaffolding and simulator packages install automatically as dependencies; no separate installation or MCP connection is needed. Remove the separate knowledge/simulator connections if you previously configured them to avoid duplicate tools.
 
 Create a starter directly:
 
 ```bash
-npx -y ios-agent-mcp@2.5.1 new MyApp --brief "A reading list with local storage" --xcodegen
+npx -y ios-agent-mcp@latest new MyApp --brief "A reading list with local storage" --xcodegen
 ```
 
 Requires Node.js 20+. Simulator operations require macOS and Xcode; XcodeGen is required to generate an Xcode project from the starter specification. The agent implements app features using the starter, source tools and verification tools. One install is not autonomous app generation. The default connection now includes tools that write files and operate the simulator; review and reference tools remain read-only.
@@ -271,3 +271,7 @@ MIT — see [LICENSE](./LICENSE).
 ## App-building loop preview (source checkout)
 
 The CLI now provides `loop init`, `loop resume` and `loop status` alongside the unified MCP connection. See the [workflow guide](../docs/tooling/app-building-loop.md) and [reading-list demo](../samples/ReadingList/README.md) for reproducible acceptance checks, bounded Claude repairs, simulator evidence and saved progress. Real Claude repair is not yet integration-verified; the published npm version does not include this preview.
+
+## 2.6.0
+
+Adds `review_app_intents` with conservative SiriKit migration advice and opt-in Apple Intelligence schema/onscreen checks. Apple snapshots refreshed after the iOS 27 release. Includes the preview `loop` CLI; real Claude repair remains unverified. See [release verification](https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/apple/ios-27-release-verification.md) and [complete tools](https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/mcp/tools.md).

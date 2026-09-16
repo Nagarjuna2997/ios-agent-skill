@@ -71,7 +71,7 @@ const WRITE_TOOLS = new Set(["Edit", "Write", "NotebookEdit"]);
  * be told it has drifted from a SKILL.md it never mirrored.
  */
 const MIRROR_CANDIDATES = [
-  "AGENTS.md",
+  "AGENTS.md", // Shared with Muse Code; no separate MUSE.md mirror.
   "CLAUDE.md",
   "CONVENTIONS.md",
   "GEMINI.md",

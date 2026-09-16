@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-09-10",
+  "checkedAt": "2026-09-16",
   "source": "https://developer.apple.com/tutorials/data/documentation/technologies.json",
   "directoryURL": "https://developer.apple.com/documentation/technologies",
   "sourceCount": 405,
@@ -5944,7 +5944,7 @@
         "occ",
         "swift"
       ],
-      "summary": "Request user authorization to access app-related data for tracking the user or the device.",
+      "summary": "Request authorization to access app-related data that your app can use to track the person or the device.",
       "modules": [
         "App Tracking Transparency"
       ],
@@ -5990,6 +5990,12 @@
           "title": "Essentials",
           "links": [
             {
+              "title": "ATTrackingManager",
+              "url": "https://developer.apple.com/documentation/apptrackingtransparency/attrackingmanager",
+              "deprecated": false,
+              "beta": false
+            },
+            {
               "title": "NSUserTrackingUsageDescription",
               "url": "https://developer.apple.com/documentation/bundleresources/information-property-list/nsusertrackingusagedescription",
               "deprecated": false,
@@ -5998,11 +6004,40 @@
           ]
         },
         {
-          "title": "Class and Components",
+          "title": "Authorization requests",
           "links": [
             {
-              "title": "ATTrackingManager",
-              "url": "https://developer.apple.com/documentation/apptrackingtransparency/attrackingmanager",
+              "title": "requestTrackingAuthorization(completionHandler:)",
+              "url": "https://developer.apple.com/documentation/apptrackingtransparency/attrackingmanager/requesttrackingauthorization(completionhandler:)",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "requestTrackingAuthorization(usingExpandedInterface:additionalInformationAction:completionHandler:)",
+              "url": "https://developer.apple.com/documentation/apptrackingtransparency/attrackingmanager/requesttrackingauthorization(usingexpandedinterface:additionalinformationaction:completionhandler:)",
+              "deprecated": false,
+              "beta": true
+            },
+            {
+              "title": "NSUserTrackingMarkdownUsageDescription",
+              "url": "https://developer.apple.com/documentation/bundleresources/information-property-list/nsusertrackingmarkdownusagedescription",
+              "deprecated": false,
+              "beta": true
+            }
+          ]
+        },
+        {
+          "title": "Authorization status and results",
+          "links": [
+            {
+              "title": "trackingAuthorizationStatus",
+              "url": "https://developer.apple.com/documentation/apptrackingtransparency/attrackingmanager/trackingauthorizationstatus",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "ATTrackingManager.AuthorizationStatus",
+              "url": "https://developer.apple.com/documentation/apptrackingtransparency/attrackingmanager/authorizationstatus",
               "deprecated": false,
               "beta": false
             }
@@ -12649,7 +12684,7 @@
         "occ",
         "swift"
       ],
-      "summary": "Create user interfaces for media playback, complete with transport controls, chapter navigation, picture-in-picture support, and display of subtitles and closed captions.",
+      "summary": "Adopt the system’s video playback interfaces, and integrate your camera app with capture hardware.",
       "modules": [
         "AVKit"
       ],
@@ -12699,339 +12734,17 @@
       "guide": "docs/frameworks/extended-apple-frameworks.md",
       "topics": [
         {
-          "title": "iOS playback and capture",
+          "title": "Essentials",
           "links": [
             {
-              "title": "Playing video content in a standard user interface",
-              "url": "https://developer.apple.com/documentation/avkit/playing-video-content-in-a-standard-user-interface",
+              "title": "Playback interfaces",
+              "url": "https://developer.apple.com/documentation/avkit/avkit-playback-interfaces",
               "deprecated": false,
               "beta": false
             },
             {
-              "title": "AVPlayerViewController",
-              "url": "https://developer.apple.com/documentation/avkit/avplayerviewcontroller",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "AVPlayerViewControllerDelegate",
-              "url": "https://developer.apple.com/documentation/avkit/avplayerviewcontrollerdelegate",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "AVCaptureEventInteraction",
-              "url": "https://developer.apple.com/documentation/avkit/avcaptureeventinteraction",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "AVCaptureEvent",
-              "url": "https://developer.apple.com/documentation/avkit/avcaptureevent",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "AVCaptureEventSound",
-              "url": "https://developer.apple.com/documentation/avkit/avcaptureeventsound",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "AVInputPickerInteraction",
-              "url": "https://developer.apple.com/documentation/avkit/avinputpickerinteraction",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "Third-party casting support",
-              "url": "https://developer.apple.com/documentation/avkit/third-party-casting-support",
-              "deprecated": false,
-              "beta": false
-            }
-          ]
-        },
-        {
-          "title": "tvOS playback and capture",
-          "links": [
-            {
-              "title": "Customizing the tvOS Playback Experience",
-              "url": "https://developer.apple.com/documentation/avkit/customizing-the-tvos-playback-experience",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "Presenting Navigation Markers",
-              "url": "https://developer.apple.com/documentation/avkit/presenting-navigation-markers",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "Working with Interstitial Content",
-              "url": "https://developer.apple.com/documentation/avkit/working-with-interstitial-content",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "Presenting Content Proposals in tvOS",
-              "url": "https://developer.apple.com/documentation/avkit/presenting-content-proposals-in-tvos",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "Working with Overlays and Parental Controls in tvOS",
-              "url": "https://developer.apple.com/documentation/avkit/working-with-overlays-and-parental-controls-in-tvos",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "Supporting Continuity Camera in your tvOS app",
-              "url": "https://developer.apple.com/documentation/avkit/supporting-continuity-camera-in-your-tvos-app",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "AVPlayerViewController",
-              "url": "https://developer.apple.com/documentation/avkit/avplayerviewcontroller",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "AVPlayerViewControllerDelegate",
-              "url": "https://developer.apple.com/documentation/avkit/avplayerviewcontrollerdelegate",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "AVInterstitialTimeRange",
-              "url": "https://developer.apple.com/documentation/avkit/avinterstitialtimerange",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "AVNavigationMarkersGroup",
-              "url": "https://developer.apple.com/documentation/avkit/avnavigationmarkersgroup",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "AVContentProposalViewController",
-              "url": "https://developer.apple.com/documentation/avkit/avcontentproposalviewcontroller",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "AVDisplayManager",
-              "url": "https://developer.apple.com/documentation/avkit/avdisplaymanager",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "AVContinuityDevicePickerViewController",
-              "url": "https://developer.apple.com/documentation/avkit/avcontinuitydevicepickerviewcontroller",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "AVContinuityDevicePickerViewControllerDelegate",
-              "url": "https://developer.apple.com/documentation/avkit/avcontinuitydevicepickerviewcontrollerdelegate",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "Third-party casting support",
-              "url": "https://developer.apple.com/documentation/avkit/third-party-casting-support",
-              "deprecated": false,
-              "beta": false
-            }
-          ]
-        },
-        {
-          "title": "visionOS playback",
-          "links": [
-            {
-              "title": "Playing immersive media with AVKit",
-              "url": "https://developer.apple.com/documentation/avkit/playing-immersive-media-with-avkit",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "Creating a multiview video playback experience in visionOS",
-              "url": "https://developer.apple.com/documentation/avkit/creating-a-multiview-video-playback-experience-in-visionos",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "Adopting the system player interface in visionOS",
-              "url": "https://developer.apple.com/documentation/avkit/adopting-the-system-player-interface-in-visionos",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "Trimming and exporting media in visionOS",
-              "url": "https://developer.apple.com/documentation/avkit/trimming-and-exporting-media-in-visionos",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "AVPlayerViewController",
-              "url": "https://developer.apple.com/documentation/avkit/avplayerviewcontroller",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "AVPlayerViewControllerDelegate",
-              "url": "https://developer.apple.com/documentation/avkit/avplayerviewcontrollerdelegate",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "AVExperienceController",
-              "url": "https://developer.apple.com/documentation/avkit/avexperiencecontroller",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "AVMultiviewManager",
-              "url": "https://developer.apple.com/documentation/avkit/avmultiviewmanager",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "AVGroupExperienceCoordinator",
-              "url": "https://developer.apple.com/documentation/avkit/avgroupexperiencecoordinator",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "AVViewport",
-              "url": "https://developer.apple.com/documentation/avkit/avviewport",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "AVPortalViewport",
-              "url": "https://developer.apple.com/documentation/avkit/avportalviewport",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "Third-party casting support",
-              "url": "https://developer.apple.com/documentation/avkit/third-party-casting-support",
-              "deprecated": false,
-              "beta": false
-            }
-          ]
-        },
-        {
-          "title": "macOS playback and capture",
-          "links": [
-            {
-              "title": "Implementing Trimming in a macOS Player",
-              "url": "https://developer.apple.com/documentation/avkit/implementing-trimming-in-a-macos-player",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "AVPlayerView",
-              "url": "https://developer.apple.com/documentation/avkit/avplayerview",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "AVCaptureView",
-              "url": "https://developer.apple.com/documentation/avkit/avcaptureview",
-              "deprecated": false,
-              "beta": false
-            }
-          ]
-        },
-        {
-          "title": "Multiplatform playback and capture",
-          "links": [
-            {
-              "title": "VideoPlayer",
-              "url": "https://developer.apple.com/documentation/avkit/videoplayer",
-              "deprecated": false,
-              "beta": false
-            }
-          ]
-        },
-        {
-          "title": "Picture in Picture",
-          "links": [
-            {
-              "title": "Adopting Picture in Picture Playback in tvOS",
-              "url": "https://developer.apple.com/documentation/avkit/adopting-picture-in-picture-playback-in-tvos",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "Adopting Picture in Picture in a Standard Player",
-              "url": "https://developer.apple.com/documentation/avkit/adopting-picture-in-picture-in-a-standard-player",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "Adopting Picture in Picture in a Custom Player",
-              "url": "https://developer.apple.com/documentation/avkit/adopting-picture-in-picture-in-a-custom-player",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "Adopting Picture in Picture for video calls",
-              "url": "https://developer.apple.com/documentation/avkit/adopting-picture-in-picture-for-video-calls",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "Accessing the camera while multitasking on iPad",
-              "url": "https://developer.apple.com/documentation/avkit/accessing-the-camera-while-multitasking-on-ipad",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "AVPictureInPictureController",
-              "url": "https://developer.apple.com/documentation/avkit/avpictureinpicturecontroller",
-              "deprecated": false,
-              "beta": false
-            }
-          ]
-        },
-        {
-          "title": "Legible media options",
-          "links": [
-            {
-              "title": "AVLegibleMediaOptionsMenuController",
-              "url": "https://developer.apple.com/documentation/avkit/avlegiblemediaoptionsmenucontroller",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "AVLegibleMediaOptionsMenuState",
-              "url": "https://developer.apple.com/documentation/avkit/avlegiblemediaoptionsmenustate",
-              "deprecated": false,
-              "beta": false
-            }
-          ]
-        },
-        {
-          "title": "Playback route selection",
-          "links": [
-            {
-              "title": "AVRoutePickerView",
-              "url": "https://developer.apple.com/documentation/avkit/avroutepickerview",
-              "deprecated": false,
-              "beta": false
-            }
-          ]
-        },
-        {
-          "title": "Metadata",
-          "links": [
-            {
-              "title": "AVKit Metadata Identifiers",
-              "url": "https://developer.apple.com/documentation/avkit/avkit-metadata-identifiers",
+              "title": "Capture interfaces",
+              "url": "https://developer.apple.com/documentation/avkit/avkit-capture-interfaces",
               "deprecated": false,
               "beta": false
             }
@@ -13055,6 +12768,12 @@
             {
               "title": "AVKitError.Code",
               "url": "https://developer.apple.com/documentation/avkit/avkiterror-swift.struct/code",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "Error constants",
+              "url": "https://developer.apple.com/documentation/avkit/error-constants",
               "deprecated": false,
               "beta": false
             }
@@ -34193,6 +33912,60 @@
               "beta": false
             },
             {
+              "title": "ES_EVENT_TYPE_RESERVED_10",
+              "url": "https://developer.apple.com/documentation/endpointsecurity/es_event_type_reserved_10",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "ES_EVENT_TYPE_RESERVED_11",
+              "url": "https://developer.apple.com/documentation/endpointsecurity/es_event_type_reserved_11",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "ES_EVENT_TYPE_RESERVED_12",
+              "url": "https://developer.apple.com/documentation/endpointsecurity/es_event_type_reserved_12",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "ES_EVENT_TYPE_RESERVED_13",
+              "url": "https://developer.apple.com/documentation/endpointsecurity/es_event_type_reserved_13",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "ES_EVENT_TYPE_RESERVED_14",
+              "url": "https://developer.apple.com/documentation/endpointsecurity/es_event_type_reserved_14",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "ES_EVENT_TYPE_RESERVED_15",
+              "url": "https://developer.apple.com/documentation/endpointsecurity/es_event_type_reserved_15",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "ES_EVENT_TYPE_RESERVED_16",
+              "url": "https://developer.apple.com/documentation/endpointsecurity/es_event_type_reserved_16",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "ES_EVENT_TYPE_RESERVED_17",
+              "url": "https://developer.apple.com/documentation/endpointsecurity/es_event_type_reserved_17",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "ES_EVENT_TYPE_RESERVED_18",
+              "url": "https://developer.apple.com/documentation/endpointsecurity/es_event_type_reserved_18",
+              "deprecated": false,
+              "beta": false
+            },
+            {
               "title": "ES_EVENT_TYPE_RESERVED_2",
               "url": "https://developer.apple.com/documentation/endpointsecurity/es_event_type_reserved_2",
               "deprecated": false,
@@ -34231,6 +34004,12 @@
             {
               "title": "ES_EVENT_TYPE_RESERVED_8",
               "url": "https://developer.apple.com/documentation/endpointsecurity/es_event_type_reserved_8",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "ES_EVENT_TYPE_RESERVED_9",
+              "url": "https://developer.apple.com/documentation/endpointsecurity/es_event_type_reserved_9",
               "deprecated": false,
               "beta": false
             },
@@ -38221,6 +38000,23 @@
               "url": "https://developer.apple.com/documentation/foundationmodels/analyzing-the-runtime-performance-of-your-foundation-models-app",
               "deprecated": false,
               "beta": false
+            }
+          ]
+        },
+        {
+          "title": "Protocols",
+          "links": [
+            {
+              "title": "DataAttachmentRepresentable",
+              "url": "https://developer.apple.com/documentation/foundationmodels/dataattachmentrepresentable",
+              "deprecated": false,
+              "beta": true
+            },
+            {
+              "title": "DataEntryRepresentable",
+              "url": "https://developer.apple.com/documentation/foundationmodels/dataentryrepresentable",
+              "deprecated": false,
+              "beta": true
             }
           ]
         }
@@ -44729,7 +44525,13 @@
           "title": "iOS & iPadOS 27",
           "links": [
             {
-              "title": "iOS & iPadOS 27 RC Release Notes",
+              "title": "iOS & iPadOS 27.2 Beta Release Notes",
+              "url": "https://developer.apple.com/documentation/ios-ipados-release-notes/ios-ipados-27_2-release-notes",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "iOS & iPadOS 27 Release Notes",
               "url": "https://developer.apple.com/documentation/ios-ipados-release-notes/ios-ipados-27-release-notes",
               "deprecated": false,
               "beta": false
@@ -47026,6 +46828,23 @@
               "beta": false
             }
           ]
+        },
+        {
+          "title": "Conversation assistance",
+          "links": [
+            {
+              "title": "LiveAssistanceExtension",
+              "url": "https://developer.apple.com/documentation/livecommunicationkit/liveassistanceextension",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "LiveAssistance",
+              "url": "https://developer.apple.com/documentation/livecommunicationkit/liveassistance",
+              "deprecated": false,
+              "beta": false
+            }
+          ]
         }
       ]
     },
@@ -47797,7 +47616,13 @@
           "title": "macOS 27",
           "links": [
             {
-              "title": "macOS 27 Golden Gate RC Release Notes",
+              "title": "macOS 27.2 Golden Gate Beta Release Notes",
+              "url": "https://developer.apple.com/documentation/macos-release-notes/macos-27_2-release-notes",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "macOS 27 Golden Gate Release Notes",
               "url": "https://developer.apple.com/documentation/macos-release-notes/macos-27-release-notes",
               "deprecated": false,
               "beta": false
@@ -52929,6 +52754,12 @@
           "title": "Format readers",
           "links": [
             {
+              "title": "Supporting custom media formats and decoders",
+              "url": "https://developer.apple.com/documentation/mediaextension/supporting-custom-media-formats-and-decoders",
+              "deprecated": false,
+              "beta": false
+            },
+            {
               "title": "MEFormatReader",
               "url": "https://developer.apple.com/documentation/mediaextension/meformatreader",
               "deprecated": false,
@@ -53032,6 +52863,12 @@
         {
           "title": "Video decoders",
           "links": [
+            {
+              "title": "Supporting custom media formats and decoders",
+              "url": "https://developer.apple.com/documentation/mediaextension/supporting-custom-media-formats-and-decoders",
+              "deprecated": false,
+              "beta": false
+            },
             {
               "title": "MEVideoDecoder",
               "url": "https://developer.apple.com/documentation/mediaextension/mevideodecoder",
@@ -65343,6 +65180,18 @@
               "beta": false
             },
             {
+              "title": "Migrating older projects to Reality Composer Pro 3",
+              "url": "https://developer.apple.com/documentation/realitycomposerpro/realitycomposerpro-essentials-migrating-older-projects-to-reality-composer-pro-3",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "Updating migrated assets to Reality Composer Pro 3",
+              "url": "https://developer.apple.com/documentation/realitycomposerpro/realitycomposerpro-essentials-updating-migrated-assets-to-reality-composer-pro-3",
+              "deprecated": false,
+              "beta": false
+            },
+            {
               "title": "Configuring the project workspace",
               "url": "https://developer.apple.com/documentation/realitycomposerpro/realitycomposerpro-essentials-configuringprojectworkspace",
               "deprecated": false,
@@ -65400,6 +65249,12 @@
               "url": "https://developer.apple.com/documentation/realitycomposerpro/designing-materials-with-shader-graph",
               "deprecated": false,
               "beta": false
+            },
+            {
+              "title": "Creating a procedural Shader Graph material",
+              "url": "https://developer.apple.com/documentation/realitycomposerpro/creating-a-procedural-shader-graph-material",
+              "deprecated": false,
+              "beta": false
             }
           ]
         },
@@ -65420,6 +65275,18 @@
             {
               "title": "Getting started with Script Graphs",
               "url": "https://developer.apple.com/documentation/realitycomposerpro/getting-started-with-script-graphs",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "Building custom interactive behavior with Script Graph",
+              "url": "https://developer.apple.com/documentation/realitycomposerpro/building-custom-interactive-behavior-with-script-graph",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "Registering a Reality Composer Pro custom component",
+              "url": "https://developer.apple.com/documentation/realitycomposerpro/registering-a-reality-composer-pro-custom-component",
               "deprecated": false,
               "beta": false
             }
@@ -65540,30 +65407,6 @@
             {
               "title": "Reality Composer Pro Release Notes",
               "url": "https://developer.apple.com/documentation/realitycomposerpro/reality-composer-pro-release-notes",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "Reality Composer Pro Beta 2 Release Notes",
-              "url": "https://developer.apple.com/documentation/realitycomposerpro/reality-composer-pro-beta-2-release-notes",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "Reality Composer Pro Beta 3 Release Notes",
-              "url": "https://developer.apple.com/documentation/realitycomposerpro/reality-composer-pro-beta-3-release-notes",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "Reality Composer Pro Beta 4 Release Notes",
-              "url": "https://developer.apple.com/documentation/realitycomposerpro/reality-composer-pro-beta-4-release-notes",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "Reality Composer Pro Beta 5 Release Notes",
-              "url": "https://developer.apple.com/documentation/realitycomposerpro/reality-composer-pro-beta-5-release-notes",
               "deprecated": false,
               "beta": false
             }
@@ -65978,6 +65821,17 @@
             {
               "title": "Low-level rendering",
               "url": "https://developer.apple.com/documentation/realitykit/low-level-rendering",
+              "deprecated": false,
+              "beta": false
+            }
+          ]
+        },
+        {
+          "title": "Articles",
+          "links": [
+            {
+              "title": "Gaussian Splat Rendering Guidelines",
+              "url": "https://developer.apple.com/documentation/realitykit/gaussian-splat-rendering-guidelines",
               "deprecated": false,
               "beta": false
             }
@@ -67569,7 +67423,7 @@
           "title": "Version 27",
           "links": [
             {
-              "title": "Safari 27 Beta Release Notes",
+              "title": "Safari 27 Release Notes",
               "url": "https://developer.apple.com/documentation/safari-release-notes/safari-27-release-notes",
               "deprecated": false,
               "beta": false
@@ -68388,12 +68242,6 @@
             {
               "title": "Exploring object tracking with ARKit",
               "url": "https://developer.apple.com/documentation/visionos/exploring_object_tracking_with_arkit",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "Gaussian splats on visionOS",
-              "url": "https://developer.apple.com/documentation/visionos/gaussian-splats-on-visionos",
               "deprecated": false,
               "beta": false
             },
@@ -70248,6 +70096,12 @@
               "beta": false
             },
             {
+              "title": "Evaluating a Core AI model",
+              "url": "https://developer.apple.com/documentation/evaluations/evaluating-a-core-ai-model",
+              "deprecated": false,
+              "beta": false
+            },
+            {
               "title": "Finding answers to questions in a text document",
               "url": "https://developer.apple.com/documentation/coreml/finding-answers-to-questions-in-a-text-document",
               "deprecated": false,
@@ -71434,7 +71288,7 @@
           "title": "TV",
           "links": [
             {
-              "title": "Adopting Picture in Picture Playback in tvOS",
+              "title": "Adopting Picture in Picture playback in tvOS",
               "url": "https://developer.apple.com/documentation/avkit/adopting-picture-in-picture-playback-in-tvos",
               "deprecated": false,
               "beta": false
@@ -71518,7 +71372,7 @@
               "beta": false
             },
             {
-              "title": "Working with Overlays and Parental Controls in tvOS",
+              "title": "Working with overlays and parental controls in tvOS",
               "url": "https://developer.apple.com/documentation/avkit/working-with-overlays-and-parental-controls-in-tvos",
               "deprecated": false,
               "beta": false
@@ -72045,6 +71899,12 @@
             {
               "title": "Creating 3D models as movable windows",
               "url": "https://developer.apple.com/documentation/visionos/creating-a-volumetric-window-in-visionos",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "Creating animation graphs with Reality Composer Pro and RealityKit",
+              "url": "https://developer.apple.com/documentation/visionos/creating-animation-graphs-with-reality-composer-pro-and-realitykit",
               "deprecated": false,
               "beta": false
             },
@@ -85437,7 +85297,13 @@
           "title": "tvOS 27",
           "links": [
             {
-              "title": "tvOS 27 RC Release Notes",
+              "title": "tvOS 27.2 Beta Release Notes",
+              "url": "https://developer.apple.com/documentation/tvos-release-notes/tvos-27_2-release-notes",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "tvOS 27 Release Notes",
               "url": "https://developer.apple.com/documentation/tvos-release-notes/tvos-27-release-notes",
               "deprecated": false,
               "beta": false
@@ -86293,6 +86159,12 @@
               "beta": false
             },
             {
+              "title": "UITraitNavigationTitleAlignment",
+              "url": "https://developer.apple.com/documentation/uikit/uitraitnavigationtitlealignment-swift.struct",
+              "deprecated": false,
+              "beta": false
+            },
+            {
               "title": "UITraitSystemPrefersReducedResourceUsage",
               "url": "https://developer.apple.com/documentation/uikit/uitraitsystemprefersreducedresourceusage-swift.struct",
               "deprecated": false,
@@ -86601,6 +86473,12 @@
             {
               "title": "AVFoundation updates",
               "url": "https://developer.apple.com/documentation/updates/avfoundation",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "AVKit updates",
+              "url": "https://developer.apple.com/documentation/updates/avkit",
               "deprecated": false,
               "beta": false
             },
@@ -88637,7 +88515,7 @@
       ],
       "platforms": [
         {
-          "beta": false,
+          "beta": true,
           "introducedAt": "27.0",
           "name": "DriverKit"
         }
@@ -89948,8 +89826,8 @@
               "beta": false
             },
             {
-              "title": "Gaussian splats on visionOS",
-              "url": "https://developer.apple.com/documentation/visionos/gaussian-splats-on-visionos",
+              "title": "Rendering Gaussian splats with RealityKit",
+              "url": "https://developer.apple.com/documentation/visionos/working-with-gaussian-splats-with-realitykit",
               "deprecated": false,
               "beta": false
             },
@@ -90308,7 +90186,13 @@
           "title": "visionOS 27",
           "links": [
             {
-              "title": "visionOS 27 RC Release Notes",
+              "title": "visionOS 27.2 Beta Release Notes",
+              "url": "https://developer.apple.com/documentation/visionos-release-notes/visionos-27_2-release-notes",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "visionOS 27 Release Notes",
               "url": "https://developer.apple.com/documentation/visionos-release-notes/visionos-27-release-notes",
               "deprecated": false,
               "beta": false
@@ -91036,7 +90920,7 @@
               "beta": false
             },
             {
-              "title": "Creating a poster generic pass",
+              "title": "Creating a Poster Generic Pass",
               "url": "https://developer.apple.com/documentation/walletpasses/creating-a-poster-generic-pass",
               "deprecated": false,
               "beta": false
@@ -91170,7 +91054,7 @@
           "title": "Generic passes",
           "links": [
             {
-              "title": "Creating a poster generic pass",
+              "title": "Creating a Poster Generic Pass",
               "url": "https://developer.apple.com/documentation/walletpasses/creating-a-poster-generic-pass",
               "deprecated": false,
               "beta": false
@@ -91846,7 +91730,13 @@
           "title": "watchOS 27",
           "links": [
             {
-              "title": "watchOS 27 RC Release Notes",
+              "title": "watchOS 27.2 Beta Release Notes",
+              "url": "https://developer.apple.com/documentation/watchos-release-notes/watchos-27_2-release-notes",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "watchOS 27 Release Notes",
               "url": "https://developer.apple.com/documentation/watchos-release-notes/watchos-27-release-notes",
               "deprecated": false,
               "beta": false
@@ -97180,6 +97070,12 @@
               "url": "https://developer.apple.com/documentation/widgetkit/linking-to-specific-app-scenes-from-your-widget-or-live-activity",
               "deprecated": false,
               "beta": false
+            },
+            {
+              "title": "widgetURL(_:)",
+              "url": "https://developer.apple.com/documentation/swiftui/view/widgeturl(_:)",
+              "deprecated": false,
+              "beta": false
             }
           ]
         },
@@ -97926,7 +97822,13 @@
           "title": "Xcode 27",
           "links": [
             {
-              "title": "Xcode 27 RC Release Notes",
+              "title": "Xcode 27.2 Beta Release Notes",
+              "url": "https://developer.apple.com/documentation/xcode-release-notes/xcode-27_2-release-notes",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "Xcode 27 Release Notes",
               "url": "https://developer.apple.com/documentation/xcode-release-notes/xcode-27-release-notes",
               "deprecated": false,
               "beta": false

@@ -6,7 +6,7 @@ Load this when a task names **Developer Tools Support** or one of the API topics
 
 Apple categories: Developer Tools.
 
-[Apple documentation](https://developer.apple.com/documentation/developertoolssupport) · Source checked: 2026-09-10.
+[Apple documentation](https://developer.apple.com/documentation/developertoolssupport) · Source checked: 2026-09-16.
 
 Apple’s short description (excerpt):
 

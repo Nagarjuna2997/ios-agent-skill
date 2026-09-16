@@ -6,7 +6,7 @@ Load this when a task names **iWork Document Exporting API** or one of the API t
 
 Apple categories: App Services.
 
-[Apple documentation](https://developer.apple.com/documentation/iworkdocumentexportingapi) · Source checked: 2026-09-10.
+[Apple documentation](https://developer.apple.com/documentation/iworkdocumentexportingapi) · Source checked: 2026-09-16.
 
 Apple’s short description (excerpt):
 

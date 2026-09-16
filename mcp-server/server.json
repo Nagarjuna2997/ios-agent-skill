@@ -1,0 +1,20 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.Nagarjuna2997/ios-agent-skill",
+  "description": "Swift reviews, local Apple references, app scaffolding and iOS simulator workflows.",
+  "repository": {
+    "url": "https://github.com/Nagarjuna2997/ios-agent-skill",
+    "source": "github"
+  },
+  "version": "2.6.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "ios-agent-mcp",
+      "version": "2.6.0",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}

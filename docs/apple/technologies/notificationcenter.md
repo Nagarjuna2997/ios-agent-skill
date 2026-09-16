@@ -6,7 +6,7 @@ Load this when a task names **Notification Center** or one of the API topics bel
 
 Apple categories: App Services.
 
-[Apple documentation](https://developer.apple.com/documentation/notificationcenter) · Source checked: 2026-09-10.
+[Apple documentation](https://developer.apple.com/documentation/notificationcenter) · Source checked: 2026-09-16.
 
 Apple’s short description (excerpt):
 

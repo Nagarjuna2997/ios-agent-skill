@@ -90,7 +90,7 @@ Index the content people naturally ask about. Remove index entries when the unde
 
 View annotations let the system connect visible SwiftUI content to app entities so a user can say "send this photo" or "open the second message."
 
-Because the API is beta, prefer this implementation pattern over hardcoding assumptions:
+The following is an architectural sketch, not a compiled API example. For an established onscreen association, use `NSUserActivity.appEntityIdentifier` with an `AppEntity` conforming to `Transferable`; schema adoption is not mandatory for that path. Verify newer view modifiers against the installed SDK:
 
 ```swift
 struct MemoryRow: View {
@@ -159,3 +159,14 @@ Do not rely only on UI automation. Siri and Spotlight bugs often live in schema,
 - [ ] Privacy review covers every exposed entity field
 
 See also: `docs/frameworks/app-intents.md`, `docs/frameworks/core-spotlight-rag.md`, `docs/frameworks/apple-intelligence.md`, `docs/testing/evaluations.md`.
+
+## Static integration review
+
+In MCP, call `review_app_intents` with an absolute project `path`.
+By default it reports SiriKit/`INIntent` migration opportunities as minor advice.
+Set `appleIntelligence: true` to review directly declared entities without a detected schema;
+set `onscreenContent: true` to review a missing `appEntityIdentifier` association across the scanned project.
+
+These options describe product intent. Do not enable them automatically for ordinary Shortcuts or background intents. Schema domains may not fit a custom entity. The reviewer is lexical, inspects conditional branches, and cannot resolve inherited conformances, SDK defaults, dependency-provided annotations, or an equivalent view annotation. Confirm each suggestion against the compiler and the actual integration.
+
+[Release verification and corrected SiriKit status](../apple/ios-27-release-verification.md).

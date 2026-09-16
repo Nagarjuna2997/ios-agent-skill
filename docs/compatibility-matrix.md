@@ -8,6 +8,8 @@ deciding whether an API is safe to use, or bumping a toolchain.
 
 ---
 
+Last release-status review: **2026-09-16**. [iOS 27 release](https://developer.apple.com/news/releases/?id=09142026a), [Xcode 27 release](https://support.apple.com/en-us/149040), [SDK release notes](https://developer.apple.com/documentation/xcode-release-notes/xcode-27-release-notes).
+
 ## 1. At a glance
 
 | | Version |
@@ -35,7 +37,7 @@ require raising the deployment target.
 
 | Xcode | Swift | SDKs | Status here |
 |-------|-------|------|-------------|
-| 27 | 6.4 | iOS/iPadOS/macOS/watchOS/tvOS/visionOS 27 | **Primary.** Beta — content tied to it is provisional |
+| 27 | 6.4 | iOS/iPadOS/macOS/watchOS/tvOS/visionOS 27 | **Primary documentation target.** Released 2026-09-14; local Xcode 27 compilation not yet verified |
 | 26 | 6.2 | iOS 26 | Supported. Liquid Glass and Foundation Models baseline |
 | 16 | 6.0–6.1 | iOS 18 | Supported. Swift 6 language mode available |
 | 15 | 5.9–5.10 | iOS 17 | Minimum. Observation, SwiftData, `NavigationStack` |
@@ -182,9 +184,7 @@ working path, never disappear.
 | `sample-package` | macos-latest | Builds and tests `samples/SkillPatterns` — the compile check behind the skill's patterns |
 
 The sample package is scoped to **stable APIs only** (iOS 17 / macOS 14) so it
-compiles on standard runners. Beta-SDK features are documented but not
-compile-checked — that is why sections tied to Xcode 27 carry a verification
-note.
+compiles on standard runners. Xcode 27-only features are documented from released SDK notes but are not locally compile-checked: the verification host has Xcode 26.6 / Swift 6.3.3. Release status and build evidence are separate.
 
 ---
 

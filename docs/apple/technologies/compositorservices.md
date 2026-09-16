@@ -6,7 +6,7 @@ Load this when a task names **Compositor Services** or one of the API topics bel
 
 Apple categories: Graphics and Games.
 
-[Apple documentation](https://developer.apple.com/documentation/compositorservices) · Source checked: 2026-09-10.
+[Apple documentation](https://developer.apple.com/documentation/compositorservices) · Source checked: 2026-09-16.
 
 Apple’s short description (excerpt):
 

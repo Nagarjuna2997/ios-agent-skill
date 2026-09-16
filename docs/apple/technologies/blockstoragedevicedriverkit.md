@@ -6,7 +6,7 @@ Load this when a task names **BlockStorageDeviceDriverKit** or one of the API to
 
 Apple categories: System.
 
-[Apple documentation](https://developer.apple.com/documentation/blockstoragedevicedriverkit) · Source checked: 2026-09-10.
+[Apple documentation](https://developer.apple.com/documentation/blockstoragedevicedriverkit) · Source checked: 2026-09-16.
 
 Apple’s short description (excerpt):
 

@@ -6,7 +6,7 @@ Load this when a task names **Declared Age Range** or one of the API topics belo
 
 Apple categories: App Frameworks.
 
-[Apple documentation](https://developer.apple.com/documentation/declaredagerange) · Source checked: 2026-09-10.
+[Apple documentation](https://developer.apple.com/documentation/declaredagerange) · Source checked: 2026-09-16.
 
 Apple’s short description (excerpt):
 

@@ -1,0 +1,249 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  # Without this, work on a branch with no open PR gets no CI at all — which is
+  # how eleven commits once accumulated with zero runs. Lets any branch be
+  # checked on demand, including against the macOS runner.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# GitHub's default shell is `bash -e` WITHOUT pipefail, so `cmd | tail` reports
+# tail's exit code and a step passes on a failing command — a check that cannot
+# fail. `shell: bash` maps to `bash --noprofile --norc -eo pipefail`, which fixes
+# it for every step at once rather than relying on per-step discipline.
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  mcp-server:
+    name: MCP server builds and tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mcp-server
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install
+        run: npm ci || npm install
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Versions agree with package.json
+        run: node scripts/sync-version.mjs --check
+
+      - name: Build
+        run: npm run build
+
+      # Unit tests cover the analyzers; the smoke test launches the real server
+      # and speaks the real MCP protocol over stdio, which unit tests cannot.
+      - name: Test
+        run: npm test
+
+      - name: Manifest is valid
+        run: |
+          python3 - <<'PY'
+          import json, sys
+          manifest = json.load(open("mcp.json"))
+          for key in ("name", "description", "version", "runtime", "tools"):
+              if key not in manifest:
+                  sys.exit(f"mcp.json missing required key: {key}")
+          if not manifest["tools"]:
+              sys.exit("mcp.json declares no tools")
+          print(f"OK - {manifest['name']} v{manifest['version']}, {len(manifest['tools'])} tools")
+          PY
+
+      # The manifest and the server must not drift apart: a tool advertised in
+      # mcp.json but not registered would be a broken promise to any client.
+      - name: Manifest matches registered tools
+        run: node scripts/check-tool-manifest.mjs
+
+  cli:
+    name: CLI builds and tests
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      # The layout is path-shaped, so it has to be exercised on a case-insensitive
+      # filesystem and on Windows separators, not just on the Linux runner.
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    defaults:
+      run:
+        working-directory: cli
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install
+        run: npm ci || npm install
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build
+        run: npm run build
+
+      - name: Test
+        run: npm test
+
+      # The scaffold's central promise is what the user sees at the project
+      # root. Asserting it end to end catches a regression that unit tests on
+      # the layout table would not: a command that writes somewhere unexpected.
+      #
+      # Every path here is RELATIVE, deliberately. On the Windows runner `bash`
+      # is Git Bash, whose `/tmp/x` is not the `/tmp/x` a native Windows
+      # node.exe resolves — an absolute path from `mktemp -d` would have the
+      # shell and the CLI writing to two different directories, and the failure
+      # would look like the scaffold silently producing nothing.
+      - name: Scaffold a project and check what is visible
+        shell: bash
+        run: |
+          rm -rf .probe && mkdir -p .probe
+          node dist/index.js new CIProbe --into .probe
+
+          visible="$(ls .probe/CIProbe | sort | tr '\n' ' ')"
+          echo "visible at root: $visible"
+          if [ "$visible" != "App LICENSE README.md " ]; then
+            echo "Unexpected visible entries at the project root."
+            exit 1
+          fi
+
+          test -d .probe/CIProbe/.ios-agent || { echo "missing .ios-agent"; exit 1; }
+          test -f .probe/CIProbe/App/CIProbe/CIProbeApp.swift || { echo "missing entry point"; exit 1; }
+
+          # Discovery must work from a nested source directory, so this runs
+          # from one — reaching back to the CLI relatively for the same reason.
+          ( cd .probe/CIProbe/App/CIProbe \
+            && node ../../../../dist/index.js doctor \
+            && node ../../../../dist/index.js where --json > /dev/null )
+
+          # Exit codes are part of the interface, so they are asserted rather
+          # than assumed: 2 means unhealthy, 1 means called wrong.
+          printf 'broken' > .probe/CIProbe/.ios-agent/.gitignore
+          set +e
+          node dist/index.js doctor --project .probe/CIProbe > /dev/null 2>&1
+          unhealthy=$?
+          set -e
+          [ "$unhealthy" -eq 2 ] || { echo "doctor should exit 2 when unhealthy, got $unhealthy"; exit 1; }
+
+          node dist/index.js doctor --project .probe/CIProbe --fix > /dev/null
+          node dist/index.js doctor --project .probe/CIProbe > /dev/null \
+            || { echo "--fix did not restore health"; exit 1; }
+
+          node dist/index.js completions zsh | grep -q "_ios_agent" || { echo "zsh completions missing"; exit 1; }
+          node dist/index.js completions bash | grep -q "complete -F" || { echo "bash completions missing"; exit 1; }
+
+          rm -rf .probe
+          echo "OK - scaffold, nested discovery, doctor, --fix, exit codes, completions"
+
+  ios-simulator-mcp:
+    name: iOS Simulator MCP builds and tests
+    runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: ios-simulator-mcp
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install
+        run: npm ci || npm install
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build
+        run: npm run build
+
+      - name: Test
+        run: npm test
+
+  sample-package:
+    name: Sample package builds and tests
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Toolchain versions
+        run: |
+          swift --version
+          xcodebuild -version || true
+
+      # This job is the point: it turns the skill's patterns from INSPECTED
+      # into VERIFIED. Strict concurrency is on, so an isolation regression
+      # fails the build.
+      #
+      # `set -o pipefail` is load-bearing. GitHub runs `run:` under `bash -e`
+      # WITHOUT pipefail, so `swift test | tail` would report the exit code of
+      # `tail` (always 0) and the job would pass on a failing test run — a check
+      # that cannot fail. See docs/orchestration/hooks.md.
+      - name: Build
+        working-directory: samples/SkillPatterns
+        run: |
+          set -o pipefail
+          swift build 2>&1 | tail -40
+
+      - name: Test
+        working-directory: samples/SkillPatterns
+        run: |
+          set -o pipefail
+          swift test 2>&1 | tee /tmp/swift-test.log | tail -60
+
+      # `| tail -60` keeps the log readable on success, and hides the failures
+      # on the runs that matter: with 49 tests the failing assertions scroll off
+      # the top and the job reports "6 failures" with no indication which six.
+      # This step exists so a red run says what broke.
+      - name: Show test failures
+        if: failure()
+        working-directory: samples/SkillPatterns
+        run: |
+          echo "::group::Failing assertions"
+          grep -E "error:|: failed|XCTAssert|Fatal error" /tmp/swift-test.log | head -60 || true
+          echo "::endgroup::"
+          echo "::group::Failing test names"
+          grep -E "' failed \(" /tmp/swift-test.log | head -40 || true
+          echo "::endgroup::"
+
+  apple-recipes:
+    name: AppleRecipes builds and tests
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile and test original Apple recipes
+        working-directory: samples/AppleRecipes
+        run: swift test
+
+  reading-list-demo:
+    name: Reading List simulator acceptance
+    runs-on: macos-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build, test and capture six screens
+        working-directory: samples/ReadingList
+        run: python3 verify.py
+      - name: Upload simulator evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reading-list-evidence
+          path: samples/ReadingList/.ios-agent/evidence/*.png
+          if-no-files-found: warn

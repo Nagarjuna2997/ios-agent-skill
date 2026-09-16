@@ -6,7 +6,7 @@ Load this when a task names **Account Data Transfer** or one of the API topics b
 
 Apple categories: App Frameworks.
 
-[Apple documentation](https://developer.apple.com/documentation/accountdatatransfer) · Source checked: 2026-09-10.
+[Apple documentation](https://developer.apple.com/documentation/accountdatatransfer) · Source checked: 2026-09-16.
 
 Apple’s short description (excerpt):
 

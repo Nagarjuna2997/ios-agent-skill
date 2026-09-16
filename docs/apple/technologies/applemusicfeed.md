@@ -6,7 +6,7 @@ Load this when a task names **Apple Music Feed** or one of the API topics below.
 
 Apple categories: Media.
 
-[Apple documentation](https://developer.apple.com/documentation/applemusicfeed) · Source checked: 2026-09-10.
+[Apple documentation](https://developer.apple.com/documentation/applemusicfeed) · Source checked: 2026-09-16.
 
 Apple’s short description (excerpt):
 

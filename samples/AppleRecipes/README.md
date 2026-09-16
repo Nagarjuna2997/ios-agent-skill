@@ -2,7 +2,7 @@
 
 ## Context
 
-Use these six small, original implementations when you need working building blocks rather than another API link. Each source file is self-contained; load only the relevant file and its test to save model context. This package complements the larger `SkillPatterns` sample. It does not implement every Apple technology or reproduce Apple's framework internals.
+Use these small, original implementations when you need working building blocks rather than another API link. Each source file is self-contained; load only the relevant file and its test to save model context. This package complements the larger `SkillPatterns` sample. It does not implement every Apple technology or reproduce Apple's framework internals.
 
 The package has no external dependencies. It targets macOS 13 and iOS 16 or later and uses Swift 6 language mode. Tests run on macOS; iOS runtime behavior is not yet verified. CryptoKit, NaturalLanguage, Accelerate and PDFKit are provided by the Apple SDK, not vendored here.
 
@@ -66,3 +66,11 @@ The implementations are original repository source under the repository MIT lice
 - [Apple vDSP](https://developer.apple.com/documentation/accelerate/vdsp)
 - [Apple PDFDocument](https://developer.apple.com/documentation/pdfkit/pdfdocument)
 - [Apple URLComponents](https://developer.apple.com/documentation/foundation/urlcomponents)
+
+## Foundation Models tool calling
+
+[ReadingAssistant.swift](Sources/AppleRecipes/ReadingAssistant.swift) adds a read-only saved-book lookup tool. `ReadingAssistant.system(catalog:)` creates the composition: Foundation Models on iOS/macOS 26 when available, deterministic local search otherwise. Earlier supported OSes use the fallback. The catalog is injected and bounded to ten matches; no secrets, network service or user files are loaded by the tool.
+
+The result distinguishes a generated response from local matches. Model errors and cancellation propagate to the caller. Present an explicit error state rather than interpreting an error as an empty library.
+
+Verified on 2026-09-16: Xcode 26.6 / Swift 6.3.3, all 12 package tests passed, including compilation and direct execution of the Foundation Models `Tool`, fallback, error and cancellation checks. Model-backed generation, tool selection by a live model, iOS device behavior and iOS 27 provider routing are **not** verified by these tests.

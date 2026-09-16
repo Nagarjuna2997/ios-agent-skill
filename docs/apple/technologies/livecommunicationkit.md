@@ -6,7 +6,7 @@ Load this when a task names **LiveCommunicationKit** or one of the API topics be
 
 Apple categories: App Services.
 
-[Apple documentation](https://developer.apple.com/documentation/livecommunicationkit) · Source checked: 2026-09-10.
+[Apple documentation](https://developer.apple.com/documentation/livecommunicationkit) · Source checked: 2026-09-16.
 
 Apple’s short description (excerpt):
 
@@ -64,6 +64,11 @@ These are landing-page values, not availability guarantees for every member. Che
 - [SetTranslatingAction](https://developer.apple.com/documentation/livecommunicationkit/settranslatingaction)
 - [StartConversationAction](https://developer.apple.com/documentation/livecommunicationkit/startconversationaction)
 - [UnmergeConversationAction](https://developer.apple.com/documentation/livecommunicationkit/unmergeconversationaction)
+
+### Conversation assistance
+
+- [LiveAssistanceExtension](https://developer.apple.com/documentation/livecommunicationkit/liveassistanceextension)
+- [LiveAssistance](https://developer.apple.com/documentation/livecommunicationkit/liveassistance)
 
 ## Anti-Patterns
 

@@ -6,7 +6,7 @@ Load this when a task names **Automatic Assessment Configuration** or one of the
 
 Apple categories: App Services.
 
-[Apple documentation](https://developer.apple.com/documentation/automaticassessmentconfiguration) · Source checked: 2026-09-10.
+[Apple documentation](https://developer.apple.com/documentation/automaticassessmentconfiguration) · Source checked: 2026-09-16.
 
 Apple’s short description (excerpt):
 

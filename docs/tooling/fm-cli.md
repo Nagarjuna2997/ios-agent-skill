@@ -57,7 +57,7 @@ This keeps terminal exploration useful without letting it replace app-level test
 
 ## 4. What Not to Do
 
-- Do not rely on beta CLI output format for stable CI parsing.
+- Do not rely on undocumented CLI output formats for stable CI parsing.
 - Do not paste real user data into terminal prompts.
 - Do not commit large generated transcripts.
 - Do not assume CLI behavior matches a device with different model availability.

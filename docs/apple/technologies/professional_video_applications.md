@@ -6,7 +6,7 @@ Load this when a task names **Professional Video Applications** or one of the AP
 
 Apple categories: Media.
 
-[Apple documentation](https://developer.apple.com/documentation/professional_video_applications) · Source checked: 2026-09-10.
+[Apple documentation](https://developer.apple.com/documentation/professional_video_applications) · Source checked: 2026-09-16.
 
 Apple’s short description (excerpt):
 

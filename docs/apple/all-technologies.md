@@ -1,6 +1,6 @@
 # All Apple Technologies: Accelerate to XPC
 
-Snapshot checked **2026-09-10**: **405 unique entries** from [Apple’s technology directory](https://developer.apple.com/documentation/technologies).
+Snapshot checked **2026-09-16**: **405 unique entries** from [Apple’s technology directory](https://developer.apple.com/documentation/technologies).
 
 **83** entries reuse existing implementation guides; **322** have dedicated source-backed reference pages. Each technology has one canonical catalog record.
 

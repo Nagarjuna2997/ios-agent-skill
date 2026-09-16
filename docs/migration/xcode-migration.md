@@ -121,17 +121,11 @@ New capabilities rather than migration work. Note that **Xcode agents do not rea
 this skill's rules** — bind them with a pre-commit hook or CI. See
 `../tooling/xcode-27-agents.md`.
 
-### Xcode 27 is beta
+### Xcode 27 is released
 
-Do not move CI to it while it is beta. Keep CI on the current stable Xcode and
-let developers opt in locally:
+Xcode 27 shipped on September 14, 2026. Add a separate Xcode 27 validation lane, record `xcodebuild -version`, and run builds and simulator acceptance checks before changing the baseline. Keep the existing verified lane during migration. A released toolchain is not proof that this project has passed on it.
 
-```yaml
-# CI stays pinned to stable.
-xcode-version: '26.2'
-```
-
-A beta toolchain in CI means every red build has an extra suspect.
+This repository’s local verification host remains Xcode 26.6; no Xcode 27 build is claimed here. See [release verification](../apple/ios-27-release-verification.md).
 
 ---
 
@@ -202,4 +196,4 @@ so a failure is attributable.
 - [ ] Xcode 16+: previews failing on a live dependency fixed with a stub.
 - [ ] Xcode 27: unhandled-task-error warnings handled, not silenced.
 - [ ] Xcode 27: **iPad resizing verified** after the SDK rebuild.
-- [ ] CI kept on stable while Xcode 27 is beta.
+- [ ] Xcode 27 migration lane passes before changing the verified CI baseline.

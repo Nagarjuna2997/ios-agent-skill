@@ -4,7 +4,7 @@
 
 The Evaluations framework measures the quality of AI-powered features with executable Swift definitions. Use it to compare prompt strategies, catch regressions, test tool calls, evaluate model-as-judge criteria, and attach results to Swift Testing.
 
-> Evaluations is beta in the iOS 27 / Xcode 27 generation. Keep evaluation code close to tests, and expect API names to settle as the SDK stabilizes.
+> iOS 27 / Xcode 27 are released. This guide has not yet been compiled with Xcode 27; keep evaluation code close to tests and verify exact signatures in that SDK.
 
 ---
 
@@ -54,7 +54,7 @@ struct TaggingEvaluation: Evaluation {
 }
 ```
 
-Exact signatures can vary during beta seeds. Preserve the architecture: samples in, feature response out, metrics aggregated.
+The illustrative code below has not been compiled with the released Xcode 27 SDK. Preserve the architecture: samples in, feature response out, metrics aggregated.
 
 ---
 

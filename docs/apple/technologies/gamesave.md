@@ -6,7 +6,7 @@ Load this when a task names **GameSave** or one of the API topics below.
 
 Apple categories: Graphics and Games.
 
-[Apple documentation](https://developer.apple.com/documentation/gamesave) · Source checked: 2026-09-10.
+[Apple documentation](https://developer.apple.com/documentation/gamesave) · Source checked: 2026-09-16.
 
 Apple’s short description (excerpt):
 

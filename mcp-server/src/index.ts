@@ -6,6 +6,7 @@ import { z } from "zod";
 import { VERSION } from "./version.js";
 
 import { Finding } from "./analyzers/types.js";
+import { analyzeAppIntents } from "./analyzers/app-intents.js";
 import { analyzeConcurrency } from "./analyzers/concurrency.js";
 import { analyzeArchitecture } from "./analyzers/architecture.js";
 import { analyzeSwiftUI } from "./analyzers/swiftui.js";
@@ -70,6 +71,7 @@ function handleCLIFlags(argv: string[]): boolean {
         "",
         "TOOLS",
         "  analyze_swift_project        Overview plus findings per category",
+        "  review_app_intents           SiriKit migration and opt-in entity/onscreen review",
         "  review_swift_concurrency     Actor isolation and Swift 6 concurrency",
         "  review_swift_architecture    Layer boundaries and testability",
         "  review_swiftui               Views, state, Dynamic Type, tokens",
@@ -81,7 +83,7 @@ function handleCLIFlags(argv: string[]): boolean {
         "  review_swift_performance     Work on the render path",
         "  lint_skill                   Skill metadata, agent tool grants, mirrors",
         "",
-        "Each tool takes one argument: an absolute path. The first ten want a",
+        "Each tool takes one argument: an absolute path. The review tools want a",
         "Swift project root; lint_skill wants an Agent Skill repository root.",
         "",
         "RESOURCES  (root: --project, IOS_AGENT_PROJECT, or a .ios-agent/ marker)",
@@ -159,6 +161,20 @@ async function scanAndRender(
     };
   }
 }
+
+server.registerTool(
+  "review_app_intents",
+  {
+    title: "Review App Intents integration",
+    description: "Review SiriKit/INIntent migration opportunities and, when explicitly requested, missing Apple Intelligence entity schemas or onscreen entity associations. Findings are heuristic advisories, not blanket deprecations or proof of invalid code. Use when integrating Siri, Shortcuts or Apple Intelligence.",
+    inputSchema: { ...pathInput,
+      appleIntelligence: z.boolean().default(false).describe("Review entity schemas for a requested Apple Intelligence integration; not required for ordinary intents."),
+      onscreenContent: z.boolean().default(false).describe("Review onscreen entity association only when Siri should reference visible content.") },
+    outputSchema: reviewOutputShape,
+    annotations: { readOnlyHint: true, destructiveHint: false, openWorldHint: false },
+  },
+  async ({ path, appleIntelligence, onscreenContent }) => scanAndRender(path, "App Intents Review", files => analyzeAppIntents(files, { appleIntelligence, onscreenContent })),
+);
 
 server.registerTool(
   "review_swift_concurrency",
@@ -277,6 +293,7 @@ server.registerTool(
       const summary = await summarizeProject(root, files);
 
       const categories = {
+        "App Intents": analyzeAppIntents(files),
         Concurrency: files.flatMap(analyzeConcurrency),
         Architecture: files.flatMap(analyzeArchitecture),
         SwiftUI: files.flatMap(analyzeSwiftUI),
@@ -321,6 +338,7 @@ server.registerTool(
       ];
 
       const toolFor: Record<string, string> = {
+        "App Intents": "review_app_intents",
         Concurrency: "review_swift_concurrency",
         Architecture: "review_swift_architecture",
         SwiftUI: "review_swiftui",

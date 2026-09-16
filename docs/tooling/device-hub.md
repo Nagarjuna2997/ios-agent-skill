@@ -7,8 +7,7 @@ Device Hub (Xcode 27) brings devices and simulators together in one place, so yo
 can diagnose and reproduce issues, inspect device state, and run testing
 workflows without leaving Xcode.
 
-> **Verification status:** written against Xcode 27 beta documentation. The
-> workflows below are stable; exact UI placement may shift before release.
+> **Verification status (2026-09-16):** Xcode 27 is released. Device Hub UI workflows still require hands-on verification; this repository’s local runtime checks use Xcode 26.6.
 
 ---
 

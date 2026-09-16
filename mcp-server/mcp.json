@@ -1,7 +1,7 @@
 {
   "name": "ios-agent-mcp",
   "displayName": "iOS Agent",
-  "version": "2.5.1",
+  "version": "2.6.0",
   "description": "Unified iOS development tools: Swift reviews, Apple source retrieval, app scaffolding and Xcode simulator workflows.",
   "author": "Nagarjuna Reddy",
   "license": "MIT",
@@ -172,6 +172,10 @@
     {
       "name": "create_app",
       "summary": "Create an editable Swift app starter, implementation brief and optional XcodeGen specification/icon layers. Writes a NEW project; does not implement the full app idea. Then use source retrieval, review and simulator tools to implement and verify it."
+    },
+    {
+      "name": "review_app_intents",
+      "summary": "Read-only SiriKit migration advice and opt-in Apple Intelligence schema/onscreen entity review. No blanket SiriKit deprecation claim."
     }
   ],
   "resources": [

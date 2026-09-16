@@ -6,7 +6,7 @@ Load this when a task names **Automated Device Enrollment** or one of the API to
 
 Apple categories: App Services.
 
-[Apple documentation](https://developer.apple.com/documentation/automateddeviceenrollment) · Source checked: 2026-09-10.
+[Apple documentation](https://developer.apple.com/documentation/automateddeviceenrollment) · Source checked: 2026-09-16.
 
 Apple’s short description (excerpt):
 

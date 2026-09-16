@@ -4,6 +4,10 @@
 
 Use this as the contract for expanding `ios-agent-mcp` beyond the current Swift engineering analyzers. These tools remain static, read-only project reviewers. Runtime behavior belongs in `ios-simulator-mcp`.
 
+## Implemented in the 2.6.0 source
+
+`review_app_intents`: SiriKit migration advice plus opt-in schema and onscreen entity association checks. See [integration contract](../frameworks/app-intents-intelligence.md#static-integration-review). Parameter-summary/localization/identifier analysis remains future work.
+
 ## Tool Plan
 
 | Tool | Focus | Typical signals |
@@ -17,7 +21,7 @@ Use this as the contract for expanding `ios-agent-mcp` beyond the current Swift 
 | `review_webkit` | Web/native interop safety | untyped JS bridge, broad navigation, injected secrets, WKWebView used where native controls fit better |
 | `review_foundation_models` | Foundation Models usage | missing availability gates, no graceful fallback, unsafe prompt logging, absent evaluation path |
 | `review_core_ai` | Core AI model integration | model lifecycle, privacy boundaries, device capability checks, background work isolation |
-| `review_app_intents` | Siri/App Intents/App Shortcuts | missing parameter summaries, fragile identifiers, no localization, unavailable actions |
+
 | `review_ai_security` | AI privacy and misuse resistance | prompt injection surfaces, secret leakage, unbounded tool calls, unsafe retrieval context |
 | `review_ai_evaluations` | Evaluation coverage | no datasets, no code-based evaluators, no regression gate, no failure taxonomy |
 | `review_networking` | Network correctness and resilience | unbounded retries, no cancellation, live API defaults in previews/tests, missing offline state |

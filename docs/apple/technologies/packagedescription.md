@@ -6,7 +6,7 @@ Load this when a task names **PackageDescription** or one of the API topics belo
 
 Apple categories: Developer Tools.
 
-[Apple documentation](https://developer.apple.com/documentation/packagedescription) · Source checked: 2026-09-10.
+[Apple documentation](https://developer.apple.com/documentation/packagedescription) · Source checked: 2026-09-16.
 
 Apple’s short description (excerpt):
 

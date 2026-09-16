@@ -6,7 +6,7 @@ Load this when a task names **Wallet Passes** or one of the API topics below.
 
 Apple categories: App Services.
 
-[Apple documentation](https://developer.apple.com/documentation/walletpasses) · Source checked: 2026-09-10.
+[Apple documentation](https://developer.apple.com/documentation/walletpasses) · Source checked: 2026-09-16.
 
 Apple’s short description (excerpt):
 
@@ -33,7 +33,7 @@ These are landing-page values, not availability guarantees for every member. Che
 ### Essentials
 
 - [Creating a pass with Pass Designer](https://developer.apple.com/documentation/walletpasses/creating-a-pass-with-pass-designer)
-- [Creating a poster generic pass](https://developer.apple.com/documentation/walletpasses/creating-a-poster-generic-pass)
+- [Creating a Poster Generic Pass](https://developer.apple.com/documentation/walletpasses/creating-a-poster-generic-pass)
 - [Creating the Source for a Pass](https://developer.apple.com/documentation/walletpasses/creating-the-source-for-a-pass)
 - [Building a Pass](https://developer.apple.com/documentation/walletpasses/building-a-pass)
 - [Defining the metadata of your Wallet Pass](https://developer.apple.com/documentation/walletpasses/defining-the-metadata-of-your-wallet-pass)
@@ -64,7 +64,7 @@ These are landing-page values, not availability guarantees for every member. Che
 
 ### Generic passes
 
-- [Creating a poster generic pass](https://developer.apple.com/documentation/walletpasses/creating-a-poster-generic-pass)
+- [Creating a Poster Generic Pass](https://developer.apple.com/documentation/walletpasses/creating-a-poster-generic-pass)
 - [Pass.Generic](https://developer.apple.com/documentation/walletpasses/pass/generic-data.dictionary)
 
 ### Store card passes

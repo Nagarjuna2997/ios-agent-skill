@@ -6,7 +6,7 @@ Load this when a task names **Sample Code Library** or one of the API topics bel
 
 Apple categories: Sample Code.
 
-[Apple documentation](https://developer.apple.com/documentation/samplecode) · Source checked: 2026-09-10.
+[Apple documentation](https://developer.apple.com/documentation/samplecode) · Source checked: 2026-09-16.
 
 Apple’s short description (excerpt):
 
@@ -38,7 +38,6 @@ Apple’s directory does not supply platform availability for this entry. It may
 - [Enhancing your app with machine learning-based video effects](https://developer.apple.com/documentation/videotoolbox/enhancing-your-app-with-machine-learning-based-video-effects)
 - [Enriching your text in text views](https://developer.apple.com/documentation/uikit/enriching-your-text-in-text-views)
 - [Exploring object tracking with ARKit](https://developer.apple.com/documentation/visionos/exploring_object_tracking_with_arkit)
-- [Gaussian splats on visionOS](https://developer.apple.com/documentation/visionos/gaussian-splats-on-visionos)
 - [Implementing a store in your app using the StoreKit API](https://developer.apple.com/documentation/storekit/implementing-a-store-in-your-app-using-the-storekit-api)
 - [Implementing age assurance and permissions](https://developer.apple.com/documentation/declaredagerange/implementing-age-assurance-and-permissions)
 - [Implementing saliency-based image cropping in iOS and watchOS](https://developer.apple.com/documentation/vision/implementing-saliency-based-image-cropping-in-ios-and-watchos)
@@ -382,6 +381,7 @@ Apple’s directory does not supply platform availability for this entry. It may
 - [Detecting human actions in a live video feed](https://developer.apple.com/documentation/createml/detecting-human-actions-in-a-live-video-feed)
 - [Detecting human body poses in an image](https://developer.apple.com/documentation/coreml/detecting-human-body-poses-in-an-image)
 - [Enhancing your app with machine learning-based video effects](https://developer.apple.com/documentation/videotoolbox/enhancing-your-app-with-machine-learning-based-video-effects)
+- [Evaluating a Core AI model](https://developer.apple.com/documentation/evaluations/evaluating-a-core-ai-model)
 - [Finding answers to questions in a text document](https://developer.apple.com/documentation/coreml/finding-answers-to-questions-in-a-text-document)
 - [Generate dynamic game content with guided generation and tools](https://developer.apple.com/documentation/foundationmodels/generate-dynamic-game-content-with-guided-generation-and-tools)
 - [Integrating a Core ML Model into Your App](https://developer.apple.com/documentation/coreml/integrating-a-core-ml-model-into-your-app)
@@ -597,7 +597,7 @@ Apple’s directory does not supply platform availability for this entry. It may
 
 ### TV
 
-- [Adopting Picture in Picture Playback in tvOS](https://developer.apple.com/documentation/avkit/adopting-picture-in-picture-playback-in-tvos)
+- [Adopting Picture in Picture playback in tvOS](https://developer.apple.com/documentation/avkit/adopting-picture-in-picture-playback-in-tvos)
 - [Binding JSON data to TVML documents](https://developer.apple.com/documentation/tvmljs/binding_json_data_to_tvml_documents)
 - [Building a Full Screen Top Shelf Extension](https://developer.apple.com/documentation/tvservices/building-a-full-screen-top-shelf-extension)
 - [Creating a Client-Server TVML App](https://developer.apple.com/documentation/tvmljs/creating_a_client-server_tvml_app)
@@ -611,7 +611,7 @@ Apple’s directory does not supply platform availability for this entry. It may
 - [Responding to User Interaction](https://developer.apple.com/documentation/tvmljs/responding_to_user_interaction)
 - [Supporting Continuity Camera in your tvOS app](https://developer.apple.com/documentation/avkit/supporting-continuity-camera-in-your-tvos-app)
 - [Supporting Multiple Users in Your tvOS App](https://developer.apple.com/documentation/tvservices/supporting-multiple-users-in-your-tvos-app)
-- [Working with Overlays and Parental Controls in tvOS](https://developer.apple.com/documentation/avkit/working-with-overlays-and-parental-controls-in-tvos)
+- [Working with overlays and parental controls in tvOS](https://developer.apple.com/documentation/avkit/working-with-overlays-and-parental-controls-in-tvos)
 
 ### UIKit
 
@@ -706,6 +706,7 @@ Apple’s directory does not supply platform availability for this entry. It may
 - [Creating 2D shapes with SwiftUI](https://developer.apple.com/documentation/visionos/creating-2d-shapes-in-visionos-with-swiftui)
 - [Creating 3D entities with RealityKit](https://developer.apple.com/documentation/visionos/creating-3d-entities-with-realitykit)
 - [Creating 3D models as movable windows](https://developer.apple.com/documentation/visionos/creating-a-volumetric-window-in-visionos)
+- [Creating animation graphs with Reality Composer Pro and RealityKit](https://developer.apple.com/documentation/visionos/creating-animation-graphs-with-reality-composer-pro-and-realitykit)
 - [Creating a 3D painting space](https://developer.apple.com/documentation/visionos/creating-a-painting-space-in-visionos)
 - [Creating a foveated streaming client on visionOS](https://developer.apple.com/documentation/foveatedstreaming/creating-a-foveated-streaming-client-on-visionos)
 - [Creating an immersive space in visionOS](https://developer.apple.com/documentation/visionos/creating-immersive-spaces-in-visionos-with-swiftui)

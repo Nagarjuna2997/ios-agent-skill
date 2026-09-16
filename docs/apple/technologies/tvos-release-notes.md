@@ -6,7 +6,7 @@ Load this when a task names **tvOS Release Notes** or one of the API topics belo
 
 Apple categories: Release Notes.
 
-[Apple documentation](https://developer.apple.com/documentation/tvos-release-notes) · Source checked: 2026-09-10.
+[Apple documentation](https://developer.apple.com/documentation/tvos-release-notes) · Source checked: 2026-09-16.
 
 Apple’s short description (excerpt):
 
@@ -22,7 +22,8 @@ Apple’s directory does not supply platform availability for this entry. It may
 
 ### tvOS 27
 
-- [tvOS 27 RC Release Notes](https://developer.apple.com/documentation/tvos-release-notes/tvos-27-release-notes)
+- [tvOS 27.2 Beta Release Notes](https://developer.apple.com/documentation/tvos-release-notes/tvos-27_2-release-notes)
+- [tvOS 27 Release Notes](https://developer.apple.com/documentation/tvos-release-notes/tvos-27-release-notes)
 
 ### tvOS 26
 

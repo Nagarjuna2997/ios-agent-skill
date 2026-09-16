@@ -6,7 +6,7 @@ Load this when a task names **MusicKitJS** or one of the API topics below.
 
 Apple categories: Media.
 
-[Apple documentation](https://developer.apple.com/musickit/web/) · Source checked: 2026-09-10.
+[Apple documentation](https://developer.apple.com/musickit/web/) · Source checked: 2026-09-16.
 
 ## Pattern
 

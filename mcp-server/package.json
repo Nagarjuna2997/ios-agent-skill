@@ -1,7 +1,7 @@
 {
   "name": "ios-agent-mcp",
-  "version": "2.5.1",
-  "description": "MCP server for modern iOS/Swift development — concurrency isolation, architecture boundaries, SwiftUI, and App Store readiness analysis",
+  "version": "2.6.0",
+  "description": "MCP server for modern iOS/Swift development \u2014 concurrency isolation, architecture boundaries, SwiftUI, and App Store readiness analysis",
   "license": "MIT",
   "type": "module",
   "bin": {
@@ -58,5 +58,6 @@
   "homepage": "https://nagarjuna2997.github.io/ios-agent-skill/",
   "bugs": {
     "url": "https://github.com/Nagarjuna2997/ios-agent-skill/issues"
-  }
+  },
+  "mcpName": "io.github.Nagarjuna2997/ios-agent-skill"
 }

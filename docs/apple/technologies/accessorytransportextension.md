@@ -6,7 +6,7 @@ Load this when a task names **Accessory Transport Extension** or one of the API 
 
 Apple categories: System.
 
-[Apple documentation](https://developer.apple.com/documentation/accessorytransportextension) · Source checked: 2026-09-10.
+[Apple documentation](https://developer.apple.com/documentation/accessorytransportextension) · Source checked: 2026-09-16.
 
 Apple’s short description (excerpt):
 

@@ -4,7 +4,7 @@
 
 SwiftUI's iOS 27 generation adds interaction APIs for custom containers that previously required `List` or hand-rolled drag/swipe behavior: reorderable content, swipe actions in arbitrary row containers, and richer toolbar adaptation.
 
-> These APIs are beta in the iOS 27 SDK. Guard examples with availability and check the latest SDK signatures before shipping.
+> iOS 27 is released. Guard new APIs with availability; this guide’s iOS 27 examples still require compilation with Xcode 27. [Release verification](../apple/ios-27-release-verification.md).
 
 ---
 
@@ -127,3 +127,9 @@ For reordering, include sync and persistence tests. For swipe actions, include d
 - [ ] Interaction tests cover iPad resizability and accessibility
 
 See also: `docs/swiftui/views-and-controls.md`, `docs/swiftui/layout.md`, `docs/tooling/device-hub.md`.
+
+## Released API review (2026-09-16)
+
+[Apple’s SwiftUI updates](https://developer.apple.com/documentation/updates/swiftui) document `reorderable()` with `reorderContainer(for:isEnabled:move:)`, and URL-based documents using `ReadableDocument`, `WritableDocument`, and `URLDocumentConfiguration`. Keep the actual availability guards; older document protocols and container approaches do not become deprecated merely because these additions exist.
+
+The static SwiftUI reviewer’s regression tests accept these new names. No speculative deprecation list was added. Prefetching and widget styling require API-specific review and runtime tests; a lexical scan cannot establish their performance or Siri behavior.

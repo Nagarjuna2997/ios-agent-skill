@@ -10,7 +10,7 @@ test('single connection exposes reviews, knowledge, simulator and safe app creat
  const client=new Client({name:'test',version:'1'});
  try {
   await client.connect(new StdioClientTransport({command:process.execPath,args:['dist/unified.js','--project',root]}));
-  const {tools}=await client.listTools();assert.equal(tools.length,34);assert.equal(new Set(tools.map(t=>t.name)).size,34);
+  const {tools}=await client.listTools();assert.equal(tools.length,35);assert.equal(new Set(tools.map(t=>t.name)).size,35);
   for(const name of ['analyze_swift_project','search_local_references','simulator_list','create_app'])assert.ok(tools.some(t=>t.name===name));
   const result=await client.callTool({name:'create_app',arguments:{name:'UnifiedProbe',directory:root,brief:'Reading list with local persistence',xcodegen:true}});assert.notEqual(result.isError,true,JSON.stringify(result));
   assert.match(await readFile(join(root,'UnifiedProbe','App','APP_BRIEF.md'),'utf8'),/Reading list/);

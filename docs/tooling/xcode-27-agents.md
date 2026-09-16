@@ -8,9 +8,7 @@ Xcode 27 has coding agents built in, powered by a model of your choice. This
 document covers what they are good at, what they are not, and how the discipline
 in `docs/orchestration/` applies inside Xcode.
 
-> **Verification status:** written against Xcode 27 beta documentation. Feature
-> names and UI placement can shift before release — treat the workflow guidance
-> as stable and re-check specific menu paths against the current beta.
+> **Verification status (2026-09-16):** Xcode 27 is released. The local verification host has Xcode 26.6, so in-editor agent connection, menu paths and delegated reviewer behavior remain untested. CLI MCP tests do not establish Xcode integration.
 
 ---
 
@@ -208,3 +206,16 @@ which agent wrote the line if the rule is checked mechanically. See
 - [ ] String keys have comments before the agent runs.
 - [ ] This skill's rules are enforced by a hook or CI, not by hoping.
 - [ ] Isolation performance is measured, not assumed.
+
+## Connect this server inside Xcode 27
+
+Apple documents separate [in-Xcode agent environments](https://developer.apple.com/documentation/xcode/extending-and-customizing-agents/). A terminal agent’s working MCP setup does not automatically configure the IDE agent.
+
+1. Select the agent in Xcode’s Intelligence settings. Its configuration lives under `~/Library/Developer/Xcode/CodingAssistant`: `ClaudeAgentConfig` for Claude, `codex` for Codex, and `gemini` for Gemini.
+2. Merge one `ios-agent` stdio entry into that agent’s configuration; retain existing settings. Use an absolute executable path if Xcode cannot find Node on its GUI PATH. The server command is `npx` with args `["-y", "ios-agent-mcp@latest", "--project", "/absolute/path/to/App"]`. An installed `ios-agent-mcp` executable avoids a package fetch during the session.
+3. Reload the agent, list its available tools, then call `analyze_swift_project` and `review_app_intents` on that absolute project path. Verify returned filenames and file counts.
+4. Ask the IDE agent to read the project’s `AGENTS.md`/`CLAUDE.md`, make a small change, build and run a relevant test. Record the selected agent, Xcode build, tool results and test output. Check that a reviewer can inspect the actual diff; do not assume Claude-specific subagent definitions automatically load in every IDE agent.
+
+Apple also supports agent plug-ins through Intelligence settings → Plug-ins. This repository does not claim its existing client ZIPs have passed Xcode’s plug-in import. No Xcode-only artifact is published without that check.
+
+**Current result:** local stdio MCP tests pass. The above **Xcode 27 session remains untested** because the verification host has Xcode 26.6. No global agent configuration was changed during this documentation pass. Apple’s own external-tools server (`mcpbridge`/`mcp-server`) is a separate integration; do not confuse it with this project’s `ios-agent` server.

@@ -6,7 +6,7 @@ Load this when a task names **XCTest** or one of the API topics below.
 
 Apple categories: Developer Tools.
 
-[Apple documentation](https://developer.apple.com/documentation/xctest) · Source checked: 2026-09-10.
+[Apple documentation](https://developer.apple.com/documentation/xctest) · Source checked: 2026-09-16.
 
 Apple’s short description (excerpt):
 

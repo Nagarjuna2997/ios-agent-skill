@@ -6,7 +6,7 @@ Load this when a task names **Endpoint Security** or one of the API topics below
 
 Apple categories: System.
 
-[Apple documentation](https://developer.apple.com/documentation/endpointsecurity) · Source checked: 2026-09-10.
+[Apple documentation](https://developer.apple.com/documentation/endpointsecurity) · Source checked: 2026-09-16.
 
 Apple’s short description (excerpt):
 
@@ -87,6 +87,15 @@ These are landing-page values, not availability guarantees for every member. Che
 - [ES_EVENT_TYPE_NOTIFY_TCC_MODIFY](https://developer.apple.com/documentation/endpointsecurity/es_event_type_notify_tcc_modify)
 - [ES_EVENT_TYPE_RESERVED_0](https://developer.apple.com/documentation/endpointsecurity/es_event_type_reserved_0)
 - [ES_EVENT_TYPE_RESERVED_1](https://developer.apple.com/documentation/endpointsecurity/es_event_type_reserved_1)
+- [ES_EVENT_TYPE_RESERVED_10](https://developer.apple.com/documentation/endpointsecurity/es_event_type_reserved_10)
+- [ES_EVENT_TYPE_RESERVED_11](https://developer.apple.com/documentation/endpointsecurity/es_event_type_reserved_11)
+- [ES_EVENT_TYPE_RESERVED_12](https://developer.apple.com/documentation/endpointsecurity/es_event_type_reserved_12)
+- [ES_EVENT_TYPE_RESERVED_13](https://developer.apple.com/documentation/endpointsecurity/es_event_type_reserved_13)
+- [ES_EVENT_TYPE_RESERVED_14](https://developer.apple.com/documentation/endpointsecurity/es_event_type_reserved_14)
+- [ES_EVENT_TYPE_RESERVED_15](https://developer.apple.com/documentation/endpointsecurity/es_event_type_reserved_15)
+- [ES_EVENT_TYPE_RESERVED_16](https://developer.apple.com/documentation/endpointsecurity/es_event_type_reserved_16)
+- [ES_EVENT_TYPE_RESERVED_17](https://developer.apple.com/documentation/endpointsecurity/es_event_type_reserved_17)
+- [ES_EVENT_TYPE_RESERVED_18](https://developer.apple.com/documentation/endpointsecurity/es_event_type_reserved_18)
 - [ES_EVENT_TYPE_RESERVED_2](https://developer.apple.com/documentation/endpointsecurity/es_event_type_reserved_2)
 - [ES_EVENT_TYPE_RESERVED_3](https://developer.apple.com/documentation/endpointsecurity/es_event_type_reserved_3)
 - [ES_EVENT_TYPE_RESERVED_4](https://developer.apple.com/documentation/endpointsecurity/es_event_type_reserved_4)
@@ -94,6 +103,7 @@ These are landing-page values, not availability guarantees for every member. Che
 - [ES_EVENT_TYPE_RESERVED_6](https://developer.apple.com/documentation/endpointsecurity/es_event_type_reserved_6)
 - [ES_EVENT_TYPE_RESERVED_7](https://developer.apple.com/documentation/endpointsecurity/es_event_type_reserved_7)
 - [ES_EVENT_TYPE_RESERVED_8](https://developer.apple.com/documentation/endpointsecurity/es_event_type_reserved_8)
+- [ES_EVENT_TYPE_RESERVED_9](https://developer.apple.com/documentation/endpointsecurity/es_event_type_reserved_9)
 - [ES_TCC_AUTHORIZATION_REASON_APP_TYPE_POLICY](https://developer.apple.com/documentation/endpointsecurity/es_tcc_authorization_reason_app_type_policy)
 - [ES_TCC_AUTHORIZATION_REASON_ENTITLED](https://developer.apple.com/documentation/endpointsecurity/es_tcc_authorization_reason_entitled)
 - [ES_TCC_AUTHORIZATION_REASON_ERROR](https://developer.apple.com/documentation/endpointsecurity/es_tcc_authorization_reason_error)

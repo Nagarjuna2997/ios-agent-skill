@@ -4,7 +4,7 @@
       "command": "npx",
       "args": [
         "-y",
-        "ios-agent-mcp@2.5.1"
+        "ios-agent-mcp@2.6.0"
       ]
     }
   }

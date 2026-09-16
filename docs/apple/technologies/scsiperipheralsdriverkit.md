@@ -6,7 +6,7 @@ Load this when a task names **SCSIPeripheralsDriverKit** or one of the API topic
 
 Apple categories: System.
 
-[Apple documentation](https://developer.apple.com/documentation/scsiperipheralsdriverkit) · Source checked: 2026-09-10.
+[Apple documentation](https://developer.apple.com/documentation/scsiperipheralsdriverkit) · Source checked: 2026-09-16.
 
 Apple’s short description (excerpt):
 

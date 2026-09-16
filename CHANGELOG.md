@@ -6,14 +6,38 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
-### Added -- 3.3.0 (2026-09-10)
+No additional changes recorded.
+
+## [3.4.0] -- 2026-09-16
+
+### Added -- 3.4.0
+
+- `ios-agent-mcp` 2.6.0 source: `review_app_intents` with read-only migration advice and opt-in schema/onscreen checks; 35 unified tools.
+- Foundation Models reading-list tool with injected catalog, availability fallback, explicit generation errors and cancellation; compiled and tested on Xcode 26.6.
+- Official MCP Registry identity and version-synchronized manifest. Registry acceptance is separate from committing metadata.
+- Security disclosure policy, CODEOWNERS, separate executable-test workflow and a real simulator screenshot.
+
+### Changed -- 3.4.0
+
+- Verify iOS 27 and Xcode 27 release status against Apple; refresh 405 technologies and 97 release-note/update pages on September 16.
+- Preserve Xcode 27 runtime/compilation limitations; no unsupported blanket SiriKit deprecation claim.
+- Document in-Xcode configuration boundaries and partial Muse skill discovery verification.
+- Use one install path in the README and setup guide; move development instructions to docs and remove public marketing trackers.
+- Exclude local agent state and Xcode user data from release archives.
+
+
+## [3.3.0] -- 2026-09-10
+
+### Added -- 3.3.0
 
 - Publish the scoped Simulator runtime with 14 MCP tools: installed Xcode/device discovery, native Simulator display, private sidebar preview, build/test/install/launch and screenshots with optional MCP image output.
 - Add a loopback browser viewer with token-protected screenshot access, bounded refresh, pause/fit controls and cleanup on stop. Native Simulator handles touch/keyboard interaction.
 - Add dated iPhone Duo guidance grounded in Apple's September 9 announcement. Discover actual installed profiles rather than inventing Duo support; this development Mac has no Duo device type.
 - Refresh Apple technology and updates snapshots; bundle the new local guidance in MCP 2.4.0 and integration archives.
 
-### Added -- 3.2.1 (2026-09-10)
+## [3.2.1] -- 2026-09-10
+
+### Added -- 3.2.1
 
 - Reduce the always-loaded skill entry point and move the full engineering rules into an on-demand guide.
 - Bundle canonical local guides, source files, templates and assets in the knowledge MCP; store identical bodies once by content hash.
@@ -21,7 +45,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Add an original AppleRecipes Swift package with source, tests and Apple guidance attribution. Keep implementation coverage separate from the 405-technology directory.
 - Ship MCP 2.3.1 and updated ChatGPT/Codex/Gemini integration archives with the offline source workflow.
 
-### Added -- 3.1.0 (2026-09-10)
+## [3.1.0] -- 2026-09-10
+
+### Added -- 3.1.0
 
 - Complete 405-technology Apple directory, 96 update/release-note landing pages, and layer-by-layer Icon Composer guidance.
 - `ios-agent-mcp` 2.2.0 includes a separate knowledge server with five tools, stdio and Streamable HTTP, bundled public reference data, and protocol tests.
@@ -29,6 +55,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Portable ChatGPT skills-only and Codex plugin ZIPs, Gemini CLI extension, and explicit client setup instructions.
 - GitHub Release assets include npm tarballs, self-contained plugin bundles and SHA-256 checksums. Public marketplace acceptance and a hosted endpoint are separate deployment steps.
 
+
+## Earlier development notes
+
+These entries preserve historical implementation decisions, not current package boundaries or unreleased version promises.
 
 ### Added -- 4.0.0 seed
 - **`ios-simulator-mcp/`** -- the first executable slice of the v4 Build -> Run -> See -> Fix loop. It is a separate MCP package from `ios-agent-mcp`, with a macOS + Xcode runtime contract instead of a lightweight static-analysis contract.

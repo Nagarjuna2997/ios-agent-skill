@@ -306,3 +306,7 @@ would halve the chance anyone reads the output.
 
 **Caps.** 2000 files and 512 KB per file, so a huge monorepo returns something
 rather than hanging.
+
+## review_app_intents
+
+Read-only project review. Inputs: absolute `path`, optional booleans `appleIntelligence` and `onscreenContent` (both default false). Returns the same structured findings as other reviewers. SiriKit migration, missing schema and missing onscreen association are minor advisories with scope limitations; no blanket SiriKit deprecation is asserted. See [rule semantics](../frameworks/app-intents-intelligence.md#static-integration-review).

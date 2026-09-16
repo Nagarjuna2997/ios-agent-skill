@@ -99,6 +99,7 @@ describe("mcp server", () => {
       "audit_app_store_readiness",
       "check_availability_guards",
       "lint_skill",
+      "review_app_intents",
       "review_swift_architecture",
       "review_swift_concurrency",
       "review_swift_memory",

@@ -6,7 +6,7 @@ Load this when a task names **MediaExtension** or one of the API topics below.
 
 Apple categories: Media.
 
-[Apple documentation](https://developer.apple.com/documentation/mediaextension) · Source checked: 2026-09-10.
+[Apple documentation](https://developer.apple.com/documentation/mediaextension) · Source checked: 2026-09-16.
 
 Apple’s short description (excerpt):
 
@@ -31,6 +31,7 @@ These are landing-page values, not availability guarantees for every member. Che
 
 ### Format readers
 
+- [Supporting custom media formats and decoders](https://developer.apple.com/documentation/mediaextension/supporting-custom-media-formats-and-decoders)
 - [MEFormatReader](https://developer.apple.com/documentation/mediaextension/meformatreader)
 - [MEFormatReaderExtension](https://developer.apple.com/documentation/mediaextension/meformatreaderextension)
 - [MEFormatReaderInstantiationOptions](https://developer.apple.com/documentation/mediaextension/meformatreaderinstantiationoptions)
@@ -57,6 +58,7 @@ These are landing-page values, not availability guarantees for every member. Che
 
 ### Video decoders
 
+- [Supporting custom media formats and decoders](https://developer.apple.com/documentation/mediaextension/supporting-custom-media-formats-and-decoders)
 - [MEVideoDecoder](https://developer.apple.com/documentation/mediaextension/mevideodecoder)
 - [MEVideoDecoderExtension](https://developer.apple.com/documentation/mediaextension/mevideodecoderextension)
 - [MEDecodeFrameOptions](https://developer.apple.com/documentation/mediaextension/medecodeframeoptions)

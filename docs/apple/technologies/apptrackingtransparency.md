@@ -6,11 +6,11 @@ Load this when a task names **App Tracking Transparency** or one of the API topi
 
 Apple categories: System.
 
-[Apple documentation](https://developer.apple.com/documentation/apptrackingtransparency) · Source checked: 2026-09-10.
+[Apple documentation](https://developer.apple.com/documentation/apptrackingtransparency) · Source checked: 2026-09-16.
 
 Apple’s short description (excerpt):
 
-> Request user authorization to access app-related data for tracking the user or the device.
+> Request authorization to access app-related data that your app can use to track the person or the device.
 
 ## Pattern
 
@@ -35,11 +35,19 @@ These are landing-page values, not availability guarantees for every member. Che
 
 ### Essentials
 
+- [ATTrackingManager](https://developer.apple.com/documentation/apptrackingtransparency/attrackingmanager)
 - [NSUserTrackingUsageDescription](https://developer.apple.com/documentation/bundleresources/information-property-list/nsusertrackingusagedescription)
 
-### Class and Components
+### Authorization requests
 
-- [ATTrackingManager](https://developer.apple.com/documentation/apptrackingtransparency/attrackingmanager)
+- [requestTrackingAuthorization(completionHandler:)](https://developer.apple.com/documentation/apptrackingtransparency/attrackingmanager/requesttrackingauthorization(completionhandler:))
+- [requestTrackingAuthorization(usingExpandedInterface:additionalInformationAction:completionHandler:)](https://developer.apple.com/documentation/apptrackingtransparency/attrackingmanager/requesttrackingauthorization(usingexpandedinterface:additionalinformationaction:completionhandler:)) — beta
+- [NSUserTrackingMarkdownUsageDescription](https://developer.apple.com/documentation/bundleresources/information-property-list/nsusertrackingmarkdownusagedescription) — beta
+
+### Authorization status and results
+
+- [trackingAuthorizationStatus](https://developer.apple.com/documentation/apptrackingtransparency/attrackingmanager/trackingauthorizationstatus)
+- [ATTrackingManager.AuthorizationStatus](https://developer.apple.com/documentation/apptrackingtransparency/attrackingmanager/authorizationstatus)
 
 ## Anti-Patterns
 

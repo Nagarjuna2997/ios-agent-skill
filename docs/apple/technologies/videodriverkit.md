@@ -6,7 +6,7 @@ Load this when a task names **VideoDriverKit** or one of the API topics below.
 
 Apple categories: System.
 
-[Apple documentation](https://developer.apple.com/documentation/videodriverkit) · Source checked: 2026-09-10.
+[Apple documentation](https://developer.apple.com/documentation/videodriverkit) · Source checked: 2026-09-16.
 
 Apple’s short description (excerpt):
 
@@ -24,7 +24,7 @@ Documentation language identifiers: occ.
 
 | Platform | Introduced | Deprecated | Beta |
 |---|---|---|---|
-| DriverKit | 27.0 | — | No |
+| DriverKit | 27.0 | — | Yes |
 
 These are landing-page values, not availability guarantees for every member. Check the selected symbol and the installed SDK.
 

@@ -6,7 +6,7 @@ Load this when a task names **Media Intelligence** or one of the API topics belo
 
 Apple categories: Media.
 
-[Apple documentation](https://developer.apple.com/documentation/mediaintelligence) · Source checked: 2026-09-10.
+[Apple documentation](https://developer.apple.com/documentation/mediaintelligence) · Source checked: 2026-09-16.
 
 Apple’s short description (excerpt):
 

@@ -6,7 +6,7 @@ Load this when a task names **Private Cloud Compute Security Guide** or one of t
 
 Apple categories: App Services.
 
-[Apple documentation](https://security.apple.com/documentation/private-cloud-compute/) · Source checked: 2026-09-10.
+[Apple documentation](https://security.apple.com/documentation/private-cloud-compute/) · Source checked: 2026-09-16.
 
 ## Pattern
 

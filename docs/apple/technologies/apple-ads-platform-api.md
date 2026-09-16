@@ -6,7 +6,7 @@ Load this when a task names **Apple Ads Platform API** or one of the API topics 
 
 Apple categories: Web.
 
-[Apple documentation](https://developer.apple.com/documentation/apple-ads-platform-api) · Source checked: 2026-09-10.
+[Apple documentation](https://developer.apple.com/documentation/apple-ads-platform-api) · Source checked: 2026-09-16.
 
 Apple’s short description (excerpt):
 

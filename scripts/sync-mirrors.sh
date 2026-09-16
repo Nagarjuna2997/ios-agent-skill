@@ -20,9 +20,9 @@ cd "$REPO_ROOT"
 SOURCE="SKILL.md"
 
 # Supported mirror targets. The public product direction is Claude,
-# ChatGPT/Codex, and Gemini.
+# ChatGPT/Codex, and Gemini; Muse shares AGENTS.md (MCP still unverified).
 MIRRORS=(
-  "AGENTS.md"                          # ChatGPT/Codex-style agents
+  "AGENTS.md"                          # ChatGPT/Codex-style agents; Muse Code (init/discovery verified)
   "CLAUDE.md"                          # Claude Code
   "GEMINI.md"                          # Gemini CLI
 )

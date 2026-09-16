@@ -6,7 +6,7 @@ Load this when a task names **Reality Composer Pro** or one of the API topics be
 
 Apple categories: Developer Tools.
 
-[Apple documentation](https://developer.apple.com/documentation/realitycomposerpro) · Source checked: 2026-09-10.
+[Apple documentation](https://developer.apple.com/documentation/realitycomposerpro) · Source checked: 2026-09-16.
 
 Apple’s short description (excerpt):
 
@@ -23,6 +23,8 @@ Apple’s directory does not supply platform availability for this entry. It may
 ### Essentials
 
 - [Linking an Xcode project](https://developer.apple.com/documentation/realitycomposerpro/realitycomposerpro-essentials-linkingxcodeproject)
+- [Migrating older projects to Reality Composer Pro 3](https://developer.apple.com/documentation/realitycomposerpro/realitycomposerpro-essentials-migrating-older-projects-to-reality-composer-pro-3)
+- [Updating migrated assets to Reality Composer Pro 3](https://developer.apple.com/documentation/realitycomposerpro/realitycomposerpro-essentials-updating-migrated-assets-to-reality-composer-pro-3)
 - [Configuring the project workspace](https://developer.apple.com/documentation/realitycomposerpro/realitycomposerpro-essentials-configuringprojectworkspace)
 - [Navigating the Reality Composer Pro workspace](https://developer.apple.com/documentation/realitycomposerpro/realitycomposerpro-essentials-workspaceoverview)
 - [Adding entities and assets to a scene](https://developer.apple.com/documentation/realitycomposerpro/realitycomposerpro-essentials-addingentitiestoscene)
@@ -35,6 +37,7 @@ Apple’s directory does not supply platform availability for this entry. It may
 - [Building materials in Reality Composer Pro](https://developer.apple.com/documentation/realitycomposerpro/building-materials-in-reality-composer-pro)
 - [Applying materials to an asset](https://developer.apple.com/documentation/realitycomposerpro/applying-materials-to-an-asset)
 - [Designing materials with Shader Graph](https://developer.apple.com/documentation/realitycomposerpro/designing-materials-with-shader-graph)
+- [Creating a procedural Shader Graph material](https://developer.apple.com/documentation/realitycomposerpro/creating-a-procedural-shader-graph-material)
 
 ### Particle Emitter
 
@@ -43,6 +46,8 @@ Apple’s directory does not supply platform availability for this entry. It may
 ### Script Graph
 
 - [Getting started with Script Graphs](https://developer.apple.com/documentation/realitycomposerpro/getting-started-with-script-graphs)
+- [Building custom interactive behavior with Script Graph](https://developer.apple.com/documentation/realitycomposerpro/building-custom-interactive-behavior-with-script-graph)
+- [Registering a Reality Composer Pro custom component](https://developer.apple.com/documentation/realitycomposerpro/registering-a-reality-composer-pro-custom-component)
 
 ### Compute Graph
 
@@ -76,10 +81,6 @@ Apple’s directory does not supply platform availability for this entry. It may
 ### Release notes
 
 - [Reality Composer Pro Release Notes](https://developer.apple.com/documentation/realitycomposerpro/reality-composer-pro-release-notes)
-- [Reality Composer Pro Beta 2 Release Notes](https://developer.apple.com/documentation/realitycomposerpro/reality-composer-pro-beta-2-release-notes)
-- [Reality Composer Pro Beta 3 Release Notes](https://developer.apple.com/documentation/realitycomposerpro/reality-composer-pro-beta-3-release-notes)
-- [Reality Composer Pro Beta 4 Release Notes](https://developer.apple.com/documentation/realitycomposerpro/reality-composer-pro-beta-4-release-notes)
-- [Reality Composer Pro Beta 5 Release Notes](https://developer.apple.com/documentation/realitycomposerpro/reality-composer-pro-beta-5-release-notes)
 
 ## Anti-Patterns
 

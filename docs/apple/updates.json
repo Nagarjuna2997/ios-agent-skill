@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-09-10",
+  "checkedAt": "2026-09-16",
   "source": "https://developer.apple.com/documentation/updates",
   "entries": [
     {
@@ -90,6 +90,12 @@
       "title": "AVFoundation updates",
       "url": "https://developer.apple.com/documentation/updates/avfoundation",
       "summary": "Learn about important changes to AVFoundation.",
+      "topics": []
+    },
+    {
+      "title": "AVKit updates",
+      "url": "https://developer.apple.com/documentation/updates/avkit",
+      "summary": "Learn about important changes to AVKit.",
       "topics": []
     },
     {
@@ -236,7 +242,12 @@
       "summary": "Learn about changes to the iOS & iPadOS SDK.",
       "topics": [
         {
-          "title": "iOS & iPadOS 27 RC Release Notes",
+          "title": "iOS & iPadOS 27.2 Beta Release Notes",
+          "url": "https://developer.apple.com/documentation/ios-ipados-release-notes/ios-ipados-27_2-release-notes",
+          "section": "iOS & iPadOS 27"
+        },
+        {
+          "title": "iOS & iPadOS 27 Release Notes",
           "url": "https://developer.apple.com/documentation/ios-ipados-release-notes/ios-ipados-27-release-notes",
           "section": "iOS & iPadOS 27"
         },
@@ -566,7 +577,12 @@
       "summary": "Learn about changes to the macOS SDK.",
       "topics": [
         {
-          "title": "macOS 27 Golden Gate RC Release Notes",
+          "title": "macOS 27.2 Golden Gate Beta Release Notes",
+          "url": "https://developer.apple.com/documentation/macos-release-notes/macos-27_2-release-notes",
+          "section": "macOS 27"
+        },
+        {
+          "title": "macOS 27 Golden Gate Release Notes",
           "url": "https://developer.apple.com/documentation/macos-release-notes/macos-27-release-notes",
           "section": "macOS 27"
         },
@@ -956,7 +972,7 @@
       "summary": "Learn about changes for Safari and Safari View Controller for iOS, iPadOS, macOS, and in visionOS; WKWebView for iOS, iPadOS, macOS, watchOS, and in visionOS; …",
       "topics": [
         {
-          "title": "Safari 27 Beta Release Notes",
+          "title": "Safari 27 Release Notes",
           "url": "https://developer.apple.com/documentation/safari-release-notes/safari-27-release-notes",
           "section": "Version 27"
         },
@@ -1264,7 +1280,12 @@
       "summary": "Learn about changes to the tvOS SDK.",
       "topics": [
         {
-          "title": "tvOS 27 RC Release Notes",
+          "title": "tvOS 27.2 Beta Release Notes",
+          "url": "https://developer.apple.com/documentation/tvos-release-notes/tvos-27_2-release-notes",
+          "section": "tvOS 27"
+        },
+        {
+          "title": "tvOS 27 Release Notes",
           "url": "https://developer.apple.com/documentation/tvos-release-notes/tvos-27-release-notes",
           "section": "tvOS 27"
         },
@@ -1667,6 +1688,11 @@
           "section": "Technology and frameworks"
         },
         {
+          "title": "AVKit updates",
+          "url": "https://developer.apple.com/documentation/updates/avkit",
+          "section": "Technology and frameworks"
+        },
+        {
           "title": "Background Tasks updates",
           "url": "https://developer.apple.com/documentation/updates/backgroundtasks",
           "section": "Technology and frameworks"
@@ -2063,7 +2089,12 @@
       "summary": "Learn about changes to the visionOS SDK.",
       "topics": [
         {
-          "title": "visionOS 27 RC Release Notes",
+          "title": "visionOS 27.2 Beta Release Notes",
+          "url": "https://developer.apple.com/documentation/visionos-release-notes/visionos-27_2-release-notes",
+          "section": "visionOS 27"
+        },
+        {
+          "title": "visionOS 27 Release Notes",
           "url": "https://developer.apple.com/documentation/visionos-release-notes/visionos-27-release-notes",
           "section": "visionOS 27"
         },
@@ -2171,7 +2202,12 @@
       "summary": "Learn about changes to the watchOS SDK.",
       "topics": [
         {
-          "title": "watchOS 27 RC Release Notes",
+          "title": "watchOS 27.2 Beta Release Notes",
+          "url": "https://developer.apple.com/documentation/watchos-release-notes/watchos-27_2-release-notes",
+          "section": "watchOS 27"
+        },
+        {
+          "title": "watchOS 27 Release Notes",
           "url": "https://developer.apple.com/documentation/watchos-release-notes/watchos-27-release-notes",
           "section": "watchOS 27"
         },
@@ -4822,7 +4858,12 @@
       "summary": "Learn about changes to Xcode.",
       "topics": [
         {
-          "title": "Xcode 27 RC Release Notes",
+          "title": "Xcode 27.2 Beta Release Notes",
+          "url": "https://developer.apple.com/documentation/xcode-release-notes/xcode-27_2-release-notes",
+          "section": "Xcode 27"
+        },
+        {
+          "title": "Xcode 27 Release Notes",
           "url": "https://developer.apple.com/documentation/xcode-release-notes/xcode-27-release-notes",
           "section": "Xcode 27"
         },

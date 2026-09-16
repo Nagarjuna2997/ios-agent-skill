@@ -63,6 +63,14 @@ targets.push({
   next: `${JSON.stringify(lock, null, 2)}\n`,
 });
 
+const registry = JSON.parse(await readFile(join(ROOT, "server.json"), "utf8"));
+registry.version = VERSION;
+registry.name = pkg.mcpName;
+for (const entry of registry.packages) {
+  if (entry.registryType === "npm" && entry.identifier === pkg.name) entry.version = VERSION;
+}
+targets.push({ path: "server.json", next: `${JSON.stringify(registry, null, 2)}\n` });
+
 let stale = 0;
 
 for (const target of targets) {

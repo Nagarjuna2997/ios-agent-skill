@@ -6,7 +6,7 @@ Load this when a task names **CareKit** or one of the API topics below.
 
 Apple categories: App Services.
 
-[Apple documentation](https://carekit-apple.github.io/CareKit/documentation/carekit) · Source checked: 2026-09-10.
+[Apple documentation](https://carekit-apple.github.io/CareKit/documentation/carekit) · Source checked: 2026-09-16.
 
 ## Pattern
 
