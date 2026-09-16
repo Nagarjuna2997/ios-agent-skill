@@ -246,6 +246,10 @@ if ! DIRECTORY_OUT="$(python3 scripts/sync-apple-technologies.py --check 2>&1)";
   FAILURES+=("Full Apple directory:\n$DIRECTORY_OUT")
 fi
 
+if ! SITE_OUT="$(python3 scripts/render-site.py --check 2>&1)"; then
+  FAILURES+=("Site feature sync:\n$SITE_OUT")
+fi
+
 if (( ${#FAILURES[@]} > 0 )); then
   echo "Repository consistency checks failed:" >&2
   echo "" >&2

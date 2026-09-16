@@ -111,3 +111,14 @@ By participating, you agree to abide by [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.m
 ## License
 
 By contributing, you agree your contributions are licensed under the [MIT License](LICENSE).
+
+## Client support requests
+
+We actively focus on Claude, ChatGPT/Codex, Gemini CLI and Muse. Search existing
+client-support issues before creating one; use 👍 reactions instead of duplicate
+requests. Votes help prioritize alongside a concrete use case, maintainability
+and someone able to verify the integration. Votes do not guarantee delivery.
+
+When adding a shipped feature, update the product feature table in README.md and
+run `python3 scripts/render-site.py`. GitHub Pages regenerates that section and
+deploys on every push to main, keeping the public feature summary in sync.
