@@ -56,7 +56,9 @@ XcodeGen is needed to generate the Xcode project. The starter is not a finished 
 
 The [Reading List demo](samples/ReadingList/README.md) has persistence, search, simulator acceptance tests and captured screens.
 
-![Reading List running in the simulator](examples/reading-list/library.png)
+<a href="examples/reading-list/library.png">
+  <img src="examples/reading-list/library.png" alt="Reading List running in the simulator" width="260">
+</a>
 
 The server exposes 36 tools. Static reviews are heuristics, not compiler diagnostics. The Apple directory is a reference map, not Apple's proprietary framework source or proof of 405 working integrations. Token savings have not been benchmarked. [Build-loop verification limits](docs/tooling/app-building-loop.md).
 
