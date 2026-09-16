@@ -68,7 +68,7 @@ jobs:
 
           # Collect every "### <Section> -- <version> …" block for this version.
           pattern = re.compile(
-              r"^### ([A-Za-z]+) -- " + re.escape(version) + r"\b.*?$(.*?)(?=^### |\Z)",
+              r"^### ([A-Za-z]+) -- " + re.escape(version) + r"\b.*?$(.*?)(?=^#{2,3} |\Z)",
               re.MULTILINE | re.DOTALL,
           )
           blocks = pattern.findall(text)
