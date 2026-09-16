@@ -1,6 +1,8 @@
 # iOS Agent Skill
 
-[![iOS Agent Skill website walkthrough — scrolling from the developer playground through the workflow to the footer](site/assets/readme-walkthrough.gif)](https://nagarjuna2997.github.io/ios-agent-skill/)
+<a href="https://nagarjuna2997.github.io/ios-agent-skill/">
+  <img src="site/assets/readme-walkthrough.gif" alt="iOS Agent Skill website walkthrough, from the playground to the footer" width="520">
+</a>
 
 *Explore the interactive playground and workflow on [our website](https://nagarjuna2997.github.io/ios-agent-skill/) · [View a still preview](site/assets/readme-hero.jpg).*
 
