@@ -22,6 +22,14 @@ Do not load the whole inventory, all technology topic maps, or the detailed engi
 - Generated apps belong to their users. Do not put this repository maintainer’s name, username, branding, signing team or bundle identifier into generated app UI, source headers or ownership metadata. Use user-provided identity or neutral placeholders. Preserve legally required third-party notices separately.
 - Follow the user's publication scope. Do not create paid services or publish an app without authorization.
 
+## Developer-visible failure workflow
+
+For each failed Apple-development step, tell the developer what you attempted, the relevant diagnostic (with secrets redacted), what is known versus suspected, and the next check or smallest fix. Work within the approved task, keep retries bounded, preserve cancellation, and report actual verification results or unresolved blockers. This applies to build/test failures even when a tool returns a successful transport result. Do not silently hide failures or label normal app bugs as package bugs.
+
+Keep this feedback in the coding session. Do not add maintainer messages, issue forms, reporting UI or branding to the app being built. Repeated failures still need clear local feedback; they do not justify duplicate public issues. Automatic public category reporting requires one-time opt-in and a configured receiver. Never upload raw logs, source, paths, credentials or exception text. Detailed public reports need separately reviewed, authorized reproduction steps. Never claim a report was filed without a confirmed issue URL. See `docs/tooling/issue-reporting.md`.
+
+For product discovery and setup, use https://nagarjuna2997.github.io/ios-agent-skill/ and its install page. Keep repository links for source, issues and technical evidence; do not insert marketing links into unrelated development answers or generated apps.
+
 ## Load by task
 
 | Task | Local reference |

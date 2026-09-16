@@ -8,7 +8,7 @@ Use it to turn an app idea into an editable starter, improve an existing Swift p
 [![Docs](https://github.com/Nagarjuna2997/ios-agent-skill/actions/workflows/docs-consistency.yml/badge.svg)](https://github.com/Nagarjuna2997/ios-agent-skill/actions/workflows/docs-consistency.yml)
 [![npm total downloads](https://img.shields.io/endpoint?url=https%3A%2F%2Fnagarjuna2997.github.io%2Fios-agent-skill%2Fnpm-downloads.json)](https://nagarjuna2997.github.io/ios-agent-skill/npm-downloads-details.json)
 
-[Website](https://nagarjuna2997.github.io/ios-agent-skill/) · [npm](https://www.npmjs.com/package/ios-agent-mcp) · [Release notes](CHANGELOG.md)
+[Explore the website](https://nagarjuna2997.github.io/ios-agent-skill/) · [Client setup guides](https://nagarjuna2997.github.io/ios-agent-skill/install.html) · [npm](https://www.npmjs.com/package/ios-agent-mcp) · [Release notes](CHANGELOG.md)
 
 ## Start with one connection
 
@@ -18,7 +18,7 @@ For Claude Code:
 claude mcp add ios-agent -- npx -y ios-agent-mcp@latest
 ```
 
-[Set up ChatGPT/Codex, Gemini CLI or Muse](docs/mcp/installation.md). One npm package includes reviews, local references, app scaffolding and simulator tools. Node.js 20+ is required; building and running iOS apps needs macOS and Xcode.
+[Set up ChatGPT/Codex, Gemini CLI or Muse](https://nagarjuna2997.github.io/ios-agent-skill/install.html). One npm package includes reviews, local references, app scaffolding and simulator tools. Node.js 20+ is required; building and running iOS apps needs macOS and Xcode.
 
 Then ask:
 
@@ -63,6 +63,8 @@ Xcode already ships agent expertise and build/test tools. Use those when they me
 [Where the guidance comes from, evidence and unfinished work](docs/evidence-and-scope.md). A paired Claude/Codex benchmark is running; results will be published without assuming a win.
 
 ## Help improve the tools
+
+Failure feedback belongs in your coding session: the observed error, the proposed fix and actual verification results. The source server adds troubleshooting guidance to returned tool errors; agent instructions also cover compiler/test failures. These messages do not appear in the app you are building.
 
 The source build adds `prepare_issue_report` (pending the next npm release). Your AI can prepare a local report when an iOS Agent tool fails. It accepts fixed categories only, shows a preview and a duplicate-search link, and leaves public submission to you. No app source or logs are collected. Automatic submission after one-time opt-in is implemented in source but awaits a hosted reporting service; it is not live. [Reporting workflow](docs/tooling/issue-reporting.md).
 

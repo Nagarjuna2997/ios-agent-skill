@@ -42,5 +42,6 @@
   "dependencies": {
     "@resvg/resvg-js": "2.6.2",
     "pngjs": "7.0.0"
-  }
+  },
+  "homepage": "https://nagarjuna2997.github.io/ios-agent-skill/"
 }

@@ -42,7 +42,7 @@
     "url": "git+https://github.com/Nagarjuna2997/ios-agent-skill.git",
     "directory": "ios-simulator-mcp"
   },
-  "homepage": "https://github.com/Nagarjuna2997/ios-agent-skill/tree/main/ios-simulator-mcp",
+  "homepage": "https://nagarjuna2997.github.io/ios-agent-skill/",
   "publishConfig": {
     "access": "public"
   }

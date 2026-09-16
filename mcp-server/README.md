@@ -1,6 +1,8 @@
 # iOS Agent MCP
 
-## Latest: 2.7.0
+[Explore the website](https://nagarjuna2997.github.io/ios-agent-skill/) · [Choose your AI and install](https://nagarjuna2997.github.io/ios-agent-skill/install.html)
+
+## Source preview: 2.7.0 (npm publication pending)
 
 Includes real appearance-aware color catalogs and offline SVG-layer app icons,
 Muse Code setup with verified MCP discovery, and refreshed public Apple references
@@ -8,7 +10,7 @@ through September 16, 2026 (27.0 releases and separately labeled 27.2 betas).
 The CLI is included automatically. User accounts, signing profiles and credentials
 are not package resources. Gemini CLI uses the repository extension; ChatGPT uses
 the skills package or a separately configured MCP connection. See the
-[client setup guide](https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/mcp/installation.md).
+[client setup guide](https://nagarjuna2997.github.io/ios-agent-skill/install.html).
 
 ## One install, one MCP connection
 
@@ -40,7 +42,7 @@ This package includes two MCP binaries: `ios-agent-mcp` for local Swift project 
 npx -y --package=ios-agent-mcp@2.4.0 ios-agent-knowledge
 ```
 
-Knowledge tools search 405 technologies and 96 update/release-note sources, retrieve guides, plan an app implementation, and specify separate Icon Composer layers. They do not write apps, access arbitrary project paths or claim native icon generation. [Setup](https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/mcp/installation.md).
+Knowledge tools search 405 technologies and 96 update/release-note sources, retrieve guides, plan an app implementation, and specify separate Icon Composer layers. They do not write apps, access arbitrary project paths or claim native icon generation. [Setup](https://nagarjuna2997.github.io/ios-agent-skill/install.html).
 
 # ios-agent-mcp
 
@@ -99,7 +101,7 @@ claude mcp add ios-agent -- npx -y ios-agent-mcp
 codex mcp add ios-agent -- npx -y ios-agent-mcp@latest
 ```
 
-**ChatGPT** has a different setup: use the skills-only release package where your account supports it, or configure a hosted HTTPS knowledge server/private MCP tunnel through a supported developer-mode flow. ChatGPT web does not run this local `npx` command itself. This project does not provide a public hosted endpoint. See the [ChatGPT setup guide](https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/mcp/installation.md#chatgpt-plugin-and-remote-mcp) for account requirements and connection limits.
+**ChatGPT** has a different setup: use the skills-only release package where your account supports it, or configure a hosted HTTPS knowledge server/private MCP tunnel through a supported developer-mode flow. ChatGPT web does not run this local `npx` command itself. This project does not provide a public hosted endpoint. See the [ChatGPT setup guide](https://nagarjuna2997.github.io/ios-agent-skill/install.html#chatgpt) for account requirements and connection limits.
 
 ### Gemini CLI
 
@@ -107,7 +109,7 @@ codex mcp add ios-agent -- npx -y ios-agent-mcp@latest
 gemini mcp add ios-agent -- npx -y ios-agent-mcp@latest
 ```
 
-This adds a local MCP connection; Gemini web chat is a different product. The repository extension additionally supplies `GEMINI.md`, but its version pin must be available on npm before installing it. Use one connection method to avoid duplicate tools. [Gemini setup and verification](https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/mcp/installation.md#gemini-cli).
+This adds a local MCP connection; Gemini web chat is a different product. The repository extension additionally supplies `GEMINI.md`, but its version pin must be available on npm before installing it. Use one connection method to avoid duplicate tools. [Gemini setup and verification](https://nagarjuna2997.github.io/ios-agent-skill/install.html#gemini).
 
 ### Muse Code
 
@@ -131,7 +133,7 @@ Merge this into `~/.config/muse/settings.json`, preserving your existing setting
 }
 ```
 
-Restart Muse. If the executable is not found, use its absolute path from `command -v ios-agent-mcp`. MCP discovery and a Stop hook have been verified; complete model-driven app creation has not. [Muse setup and evidence](https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/mcp/installation.md#muse-code).
+Restart Muse. If the executable is not found, use its absolute path from `command -v ios-agent-mcp`. MCP discovery and a Stop hook have been verified; complete model-driven app creation has not. [Muse setup and evidence](https://nagarjuna2997.github.io/ios-agent-skill/install.html#muse).
 
 ### Other clients, including Cursor
 

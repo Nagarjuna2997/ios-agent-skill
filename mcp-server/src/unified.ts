@@ -11,6 +11,7 @@ import { promisify } from 'node:util';
 import { z } from 'zod';
 import { VERSION } from './version.js';
 import { reportingCommand, reportToolFailure } from './automatic-reporting.js';
+import { withDevelopmentFeedback } from './development-feedback.js';
 import { issueReportTool, prepareIssueReport } from './issue-report.js';
 const require = createRequire(import.meta.url);
 const args = process.argv.slice(2);
@@ -56,14 +57,14 @@ else if ((args[0] === 'new' || args[0] === 'assets')) {
           const input=z.object({name:z.string().min(1),directory:z.string().min(1),brief:z.string().min(1),xcodegen:z.boolean().default(true)}).strict().parse(request.params.arguments);
           const result=await promisify(execFile)(process.execPath,[cli(),'new',input.name,'--into',input.directory,'--brief',input.brief,...(input.xcodegen?['--xcodegen']:[])],{timeout:30000,maxBuffer:1024*1024});
           return {content:[{type:'text',text:result.stdout || 'App starter created.'}]};
-        } catch(error) {void reportToolFailure('create_app');return {isError:true,content:[{type:'text',text:error instanceof Error?error.message:String(error)}]};}
+        } catch(error) {void reportToolFailure('create_app');return withDevelopmentFeedback({isError:true,content:[{type:'text',text:error instanceof Error?error.message:String(error)}]});}
       }
       const owner=owners.get(request.params.name);
       if(!owner)throw Error('Unknown tool');
       try {
         const result=await owner.callTool(request.params,undefined,{timeout:21*60*1000,signal:extra.signal});
         if(result.isError===true)void reportToolFailure(request.params.name);
-        return result;
+        return withDevelopmentFeedback(result);
       } catch(error) { if(!extra.signal.aborted)void reportToolFailure(request.params.name);throw error; }
     });
     process.once('SIGINT',()=>{void close().finally(()=>process.exit(0));});

@@ -38,6 +38,12 @@ Opening the URLs sends the fixed fields to GitHub. Submitting creates a public
 issue. The grouping key only aids search: this tool does not search remotely,
 assert that duplicates are absent, or suppress duplicates automatically.
 
+## Local developer feedback on every failed step
+
+Source builds append troubleshooting guidance to returned unified tool errors, preserving the original diagnostic and structured result. The agent should explain the observed error, distinguish evidence from guesses, attempt a bounded fix within the approved task, and show the verification result. Compiler/test failures returned as successful tool calls and thrown transport errors are covered by agent instructions rather than this error-result decorator. Actual presentation depends on the coding client and agent following those instructions.
+
+This feedback stays in the coding session, not in the generated app or the public website. Redact secrets before repeating diagnostics. It does not transmit additional details or confirm a GitHub submission. Repeated failures get local attention while public reporting keeps duplicate and rate controls. For an actionable public bug report, separately review and authorize a minimal synthetic reproduction; never attach private app code or raw logs automatically.
+
 ## Automatic mode: one-time opt-in (source only)
 
 The source now includes an optional client and [receiving service](../../services/issue-inbox/README.md).
