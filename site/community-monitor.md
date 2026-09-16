@@ -4,8 +4,8 @@ Operational instructions for the scheduled Codex task. Scheduling is in Codex, n
 
 ## Repository workflow
 
-- Read `site/community-mentions.json` and the live `#community` section first.
-- Verified mentions are stored in that JSON. Generate the isolated HTML section with `python3 scripts/render-community.py`.
+- Read `site/community-mentions.json` and the live `community.html` page first.
+- Verified mentions are stored in that JSON. Generate the isolated HTML section in `site/community.html` with `python3 scripts/render-community.py`.
 - Run `python3 scripts/render-community.py --check`, `python3 scripts/render-site.py --check`, `python3 -m unittest discover -s scripts/tests -p test_community.py` and `bash scripts/hooks/verify-repo.sh`.
 - Keep verification dates stable on no-change days. Do not commit daily reports, timestamp-only updates or inaccessible-candidate churn. Record the run report in the scheduled task.
 - Work from a clean current checkout; preserve unrelated work, never reset it. Commit only intended files. Push main to publish through GitHub Pages. Never publish npm or change package versions.

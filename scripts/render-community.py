@@ -28,7 +28,7 @@ def update(page,block):
     before,tail=page.split(START);_,after=tail.split(END)
     return before+START+'\n'+block+'\n'+END+after
 if __name__=='__main__':
-    p=ROOT/'site/index.html';old=p.read_text();new=update(old,render(json.loads((ROOT/'site/community-mentions.json').read_text())))
+    p=ROOT/'site/community.html';old=p.read_text();new=update(old,render(json.loads((ROOT/'site/community-mentions.json').read_text())))
     if '--check' in sys.argv:
         if new!=old:raise SystemExit('Community section stale: run scripts/render-community.py')
     elif new!=old:p.write_text(new)
