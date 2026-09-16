@@ -1,0 +1,102 @@
+[
+  {
+    "id": "stable-dedup",
+    "prompt": "Implement stableUnique(_ values: [String]) -> [String], keeping the first occurrence of each exact string, in order.",
+    "assertions": "precondition(stableUnique([\"b\",\"a\",\"b\",\"A\"]) == [\"b\",\"a\",\"A\"]); precondition(stableUnique([]).isEmpty)"
+  },
+  {
+    "id": "reading-search",
+    "prompt": "Implement searchTitles(_ titles: [String], query: String) -> [String]. Trim query whitespace, compare case-insensitively, preserve order, and return all titles for an empty query.",
+    "assertions": "precondition(searchTitles([\"Swift\",\"Garden\",\"SWIFT UI\"], query: \" swift \") == [\"Swift\",\"SWIFT UI\"]); precondition(searchTitles([\"A\"], query: \"  \") == [\"A\"])"
+  },
+  {
+    "id": "safe-pagination",
+    "prompt": "Implement page<T>(_ values: [T], offset: Int, limit: Int) -> [T]. Negative offsets clamp to zero; nonpositive limits and out-of-range offsets return empty. Handle Int.max without overflow.",
+    "assertions": "precondition(page([1,2,3], offset: -1, limit: 2) == [1,2]); precondition(page([1,2], offset: 1, limit: Int.max) == [2]); precondition(page([1], offset: Int.max, limit: 2).isEmpty)"
+  },
+  {
+    "id": "clamped-progress",
+    "prompt": "Implement progress(completed: Int, total: Int) -> Double. Return zero for nonpositive totals; otherwise clamp the ratio to 0...1, with no integer overflow.",
+    "assertions": "precondition(progress(completed: 3, total: 4) == 0.75); precondition(progress(completed: -1, total: 4) == 0); precondition(progress(completed: Int.max, total: 1) == 1); precondition(progress(completed: 1, total: 0) == 0)"
+  },
+  {
+    "id": "unicode-prefix",
+    "prompt": "Implement shortened(_ text: String, maxCharacters: Int) -> String using extended grapheme clusters. Return at most maxCharacters characters, with no ellipsis; nonpositive limits return empty.",
+    "assertions": "precondition(shortened(\"👨‍👩‍👧‍👦abc\", maxCharacters: 2) == \"👨‍👩‍👧‍👦a\"); precondition(shortened(\"abc\", maxCharacters: 0).isEmpty); precondition(shortened(\"éxy\", maxCharacters: 1) == \"é\")"
+  },
+  {
+    "id": "filename-validation",
+    "prompt": "Implement isSafeComponent(_ value: String) -> Bool for a single local filename component. Reject empty, dot, dot-dot, slashes, backslashes and NUL; accept spaces and Unicode without modifying the value.",
+    "assertions": "precondition(!isSafeComponent(\"../a\")); precondition(!isSafeComponent(\"..\")); precondition(!isSafeComponent(\"a\\\\b\")); precondition(!isSafeComponent(\"a\\u{0}b\".replacingOccurrences(of: \"\\u{0}\", with: String(UnicodeScalar(0)!)))); precondition(isSafeComponent(\"旅行 notes\"))"
+  },
+  {
+    "id": "https-query",
+    "prompt": "Implement queryURL(base: URL, key: String, value: String) -> URL? that accepts only HTTPS URLs with host and no credentials, preserves existing query items and appends one item without string concatenation.",
+    "assertions": "let u = queryURL(base: URL(string: \"https://example.com/p?x=1\")!, key: \"q\", value: \"a&b\")!; let q = URLComponents(url:u,resolvingAgainstBaseURL:false)!.queryItems!; precondition(q.count == 2 && q[1].value == \"a&b\"); precondition(queryURL(base:URL(string:\"http://example.com\")!,key:\"q\",value:\"x\") == nil)"
+  },
+  {
+    "id": "redact-token",
+    "prompt": "Implement redacted(_ value: String) -> String: for strings longer than four characters show the last four characters preceded by exactly four asterisks; otherwise return four asterisks. Count graphemes, not bytes.",
+    "assertions": "precondition(redacted(\"abcdef\") == \"****cdef\"); precondition(redacted(\"abc\") == \"****\"); precondition(redacted(\"\") == \"****\")"
+  },
+  {
+    "id": "integer-input",
+    "prompt": "Implement parseCount(_ text: String) -> Int? that trims whitespace and accepts only nonempty ASCII digits representing 0...10000. Reject plus/minus signs, decimals, overflow and Unicode digits.",
+    "assertions": "precondition(parseCount(\" 42 \") == 42); precondition(parseCount(\"+1\") == nil); precondition(parseCount(\"10001\") == nil); precondition(parseCount(\"١\") == nil); precondition(parseCount(\"000\") == 0)"
+  },
+  {
+    "id": "bounded-average",
+    "prompt": "Implement average(_ values: [Double]) -> Double? returning nil for empty or nonfinite inputs. Avoid overflow when averaging finite values including [Double.greatestFiniteMagnitude, Double.greatestFiniteMagnitude].",
+    "assertions": "precondition(average([2,4]) == 3); precondition(average([]) == nil); precondition(average([.nan]) == nil); precondition(average([Double.greatestFiniteMagnitude,Double.greatestFiniteMagnitude]) == Double.greatestFiniteMagnitude)"
+  },
+  {
+    "id": "sort-ties",
+    "prompt": "Define struct Book with let title: String and let pages: Int; implement sortedBooks(_ books: [Book]) -> [Book] sorted by pages ascending then title lexicographically ascending.",
+    "assertions": "let b = sortedBooks([Book(title:\"Z\",pages:1),Book(title:\"A\",pages:2),Book(title:\"B\",pages:1)]); precondition(b.map(\\.title) == [\"B\",\"Z\",\"A\"])"
+  },
+  {
+    "id": "toggle-membership",
+    "prompt": "Implement toggled<T: Hashable>(_ value: T, in values: Set<T>) -> Set<T>, returning a new set with membership toggled without mutating the input.",
+    "assertions": "let original:Set<Int> = [1,2]; precondition(toggled(2,in:original) == [1]); precondition(toggled(3,in:original) == [1,2,3]); precondition(original == [1,2])"
+  },
+  {
+    "id": "decode-explicit-error",
+    "prompt": "Define Codable, Equatable struct Settings with let notifications: Bool. Implement decodeSettings(_ data: Data) throws -> Settings. Invalid or missing fields must throw rather than silently using defaults.",
+    "assertions": "let s = try decodeSettings(Data(\"{\\\"notifications\\\":true}\".utf8)); precondition(s == Settings(notifications:true)); do { _ = try decodeSettings(Data(\"{}\".utf8)); preconditionFailure(\"missing field silently accepted\") } catch {}"
+  },
+  {
+    "id": "merge-preferences",
+    "prompt": "Implement merged(_ defaults: [String: String], overrides: [String: String]) -> [String: String], where overrides win and keys absent from overrides are retained.",
+    "assertions": "precondition(merged([\"a\":\"1\",\"b\":\"2\"],overrides:[\"b\":\"3\"]) == [\"a\":\"1\",\"b\":\"3\"]); precondition(merged([:],overrides:[:]).isEmpty)"
+  },
+  {
+    "id": "bounded-step",
+    "prompt": "Implement incremented(_ value: Int, upperBound: Int) -> Int. Values at or above upperBound return upperBound; smaller values increment by one safely, including Int.max boundaries.",
+    "assertions": "precondition(incremented(2,upperBound:4) == 3); precondition(incremented(Int.max,upperBound:Int.max) == Int.max); precondition(incremented(8,upperBound:4) == 4)"
+  },
+  {
+    "id": "validated-range",
+    "prompt": "Implement normalizedRange(start: Int, end: Int, count: Int) -> Range<Int> that clamps endpoints into 0...max(count,0); if clamped end is below clamped start return an empty range at clamped start.",
+    "assertions": "precondition(normalizedRange(start:-3,end:8,count:4) == 0..<4); precondition(normalizedRange(start:3,end:1,count:4) == 3..<3); precondition(normalizedRange(start:0,end:4,count:-1).isEmpty)"
+  },
+  {
+    "id": "route-parser",
+    "prompt": "Implement bookID(from url: URL) -> UUID? accepting only reading://book/<UUID> URLs, rejecting other schemes, hosts, credentials, additional path components, queries and fragments.",
+    "assertions": "let id=UUID(); precondition(bookID(from:URL(string:\"reading://book/\\(id.uuidString)\")!) == id); precondition(bookID(from:URL(string:\"reading://other/\\(id.uuidString)\")!) == nil); precondition(bookID(from:URL(string:\"reading://book/\\(id.uuidString)/extra\")!) == nil)"
+  },
+  {
+    "id": "group-in-order",
+    "prompt": "Implement grouped(_ values: [String]) -> [String: [String]] grouping by the first Character as a String key (empty strings use an empty key), preserving order within each group.",
+    "assertions": "precondition(grouped([\"ab\",\"ac\",\"ba\",\"\"]) == [\"a\":[\"ab\",\"ac\"],\"b\":[\"ba\"],\"\":[\"\"]]); precondition(grouped([\"👩‍💻a\"])[\"👩‍💻\"] == [\"👩‍💻a\"])"
+  },
+  {
+    "id": "dedup-identifiers",
+    "prompt": "Implement uniqueIDs(_ values: [UUID?]) -> [UUID], ignoring nil, preserving order and keeping each UUID once.",
+    "assertions": "let a=UUID(),b=UUID(); precondition(uniqueIDs([nil,a,b,a,nil]) == [a,b]); precondition(uniqueIDs([]).isEmpty)"
+  },
+  {
+    "id": "safe-ratio",
+    "prompt": "Implement percentage(_ value: Double, of total: Double) -> Double? returning nil for nonfinite inputs, total <= 0, or a nonfinite result. Otherwise return value / total * 100, without clamping.",
+    "assertions": "precondition(percentage(1,of:4) == 25); precondition(percentage(2,of:1) == 200); precondition(percentage(.infinity,of:1) == nil); precondition(percentage(1,of:0) == nil); precondition(percentage(1,of:.leastNonzeroMagnitude) == nil)"
+  }
+]
