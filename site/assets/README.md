@@ -8,3 +8,7 @@ The website uses system fonts and local assets. No paid animation library, remot
 ## Independent playground objects
 
 `objects/` contains eleven separately generated, transparent WebP objects matching the original artwork. Each object is its own focusable interaction target. Pointer dragging uses local transforms, pointer capture and a bounded return transition. Hover affects only the selected object; there is no scene-wide movement or idle animation. Touch keeps vertical page scrolling through `touch-action: pan-y`. Arrow keys move the focused object; Escape/Home and Reset restore positions. Freeze disables interaction; reduced motion removes hover effects and animated settling. These are image cutouts with perspective, not volumetric 3D meshes.
+
+## Scroll story evidence
+
+`reading-list-evidence.png` is an unmodified copy of `examples/reading-list/library.png`: a recorded iOS 26.5 simulator acceptance capture using synthetic book data. See `examples/reading-list/README.md` for provenance and limits. It is not a live AI session or an iOS 27 capture. The other scroll-story visuals reuse the decorative playground objects.
