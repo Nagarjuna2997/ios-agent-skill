@@ -14,3 +14,5 @@ The website uses system fonts and local assets. No paid animation library, remot
 `reading-list-evidence.png` is an unmodified copy of `examples/reading-list/library.png`: a recorded iOS 26.5 simulator acceptance capture using synthetic book data. See `examples/reading-list/README.md` for provenance and limits. It is not a live AI session or an iOS 27 capture. The other scroll-story visuals reuse the decorative playground objects.
 
 `readme-hero.jpg` is a browser screenshot of the website hero in light appearance, used as a linked preview at the top of the repository README. Its phone and other objects are illustrative artwork, not simulator evidence.
+
+`readme-walkthrough.gif` is a looping browser recording of normal scrolling from the website hero to its footer (840 × 630). It illustrates the website, not an automated app-building run. The README includes the still preview as an alternative.
