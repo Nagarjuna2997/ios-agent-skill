@@ -1,5 +1,9 @@
 # iOS Agent Skill
 
+[![iOS Agent Skill website — interactive developer playground with Swift source, Apple guides and tools for your coding agent](site/assets/readme-hero.jpg)](https://nagarjuna2997.github.io/ios-agent-skill/)
+
+*Explore the interactive playground and workflow on [our website](https://nagarjuna2997.github.io/ios-agent-skill/).*
+
 **Give your coding agent the Apple references, Swift source and local tools it needs to build and review an iOS app.**
 
 Use it to turn an app idea into an editable starter, improve an existing Swift project, and check the result with Xcode and the simulator. Your agent writes the app; this repository supplies reusable implementation guidance and tools to inspect its work.
