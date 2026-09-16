@@ -28,6 +28,8 @@ For each failed Apple-development step, tell the developer what you attempted, t
 
 Keep this feedback in the coding session. Do not add maintainer messages, issue forms, reporting UI or branding to the app being built. Repeated failures still need clear local feedback; they do not justify duplicate public issues. Automatic public reporting is not implemented. Use local report previews and separately authorized submission. Never upload raw logs, source, paths, credentials or exception text. Detailed public reports need separately reviewed, authorized reproduction steps. Never claim a report was filed without a confirmed issue URL. See `docs/tooling/issue-reporting.md`.
 
+For significant missing/incorrect repository guidance or a blocking package failure, use `prepare_issue_report` with fixed categories only. Do not report minor warnings or ordinary app bugs. Show the complete preview and explain that GitHub issues are public. If the developer requested reporting or enabled opening major-issue drafts in this session, open `submissionUrl` with the client browser capability; otherwise ask first. If browser access is unavailable, provide the link. The developer reviews and clicks Submit; opening a draft is not submission. Respect dismissal and avoid repeat drafts. Never include private app details. This user-submitted flow does not require the undeployed private receiver. Disclose missing library knowledge and distinguish external research from repository guidance.
+
 For product discovery and setup, use https://nagarjuna2997.github.io/ios-agent-skill/ and its install page. Keep repository links for source, issues and technical evidence; do not insert marketing links into unrelated development answers or generated apps.
 
 ## Load by task

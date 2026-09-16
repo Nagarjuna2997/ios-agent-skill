@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { VERSION } from './version.js';
 
 const features = ['installation', 'swift-review', 'local-references', 'app-starter', 'asset-generation', 'simulator', 'app-loop', 'client-connection'] as const;
-const symptoms = ['unexpected-error', 'timeout', 'incorrect-result', 'missing-result', 'invalid-output', 'documentation-mismatch'] as const;
+const symptoms = ['unexpected-error', 'timeout', 'incorrect-result', 'missing-result', 'invalid-output', 'documentation-mismatch', 'missing-guidance', 'incorrect-guidance'] as const;
 const clients = ['claude', 'chatgpt-codex', 'gemini-cli', 'muse', 'unknown'] as const;
 const platforms = ['macos', 'linux', 'windows', 'unknown'] as const;
 const repeats = ['once', 'repeated', 'unknown'] as const;
@@ -15,7 +15,7 @@ export const issueReportSchema = z.object({
 
 export const issueReportTool = {
   name: 'prepare_issue_report',
-  description: 'Prepare a LOCAL issue preview for an ios-agent-mcp failure, not a defect in the user app. Accepts fixed categories only, never source, logs, paths or credentials. Makes no network requests or submissions. Show the complete preview to the user; opening a link or submitting requires their approval. GitHub sign-in is required to submit. Do not repeatedly suggest a report after dismissal.',
+  description: 'Prepare a LOCAL issue preview for a significant ios-agent-mcp knowledge gap, incorrect guidance or blocking package failure, not a minor warning or defect in the user app. Accepts fixed categories only, never source, logs, paths or credentials. Makes no network requests or submissions. Show the complete preview and public destination. If the user has requested GitHub reporting for this issue or enabled opening major-issue drafts in this session, use the client browser capability to open submissionUrl; otherwise ask first. The user reviews and clicks Submit on GitHub. Never submit automatically. GitHub sign-in is required to submit. Do not repeatedly suggest a report after dismissal.',
   annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   inputSchema: { type: 'object' as const, properties: {
     feature: { type: 'string', enum: [...features] }, symptom: { type: 'string', enum: [...symptoms] },
@@ -38,5 +38,5 @@ export function prepareIssueReport(raw: unknown, reportedVersion: string = VERSI
   search.searchParams.set('q', `is:issue "ios-agent-${fingerprint}"`);
   return { status: 'local-preview', submitted: false, title, body, fingerprint,
     searchUrl: search.href, submissionUrl: submit.href,
-    notice: 'Nothing sent. Show this preview and ask before opening links. Opening a link sends these fixed fields to GitHub; submitting creates a public issue and requires GitHub sign-in. Duplicate lookup has not been performed.' };
+    notice: 'Nothing sent. Show this preview. With user authorization to open issue drafts, open submissionUrl using the coding client; otherwise ask first. The user must click Submit on GitHub. Opening a link sends these fixed fields to GitHub; submitting creates a public issue and requires GitHub sign-in. Duplicate lookup has not been performed.' };
 }

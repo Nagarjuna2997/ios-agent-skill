@@ -18,14 +18,21 @@ Example MCP arguments:
 }
 ```
 
-1. Explain the observed package problem and show the complete local preview.
-2. Ask before opening the duplicate-search link. It checks a category grouping
-   key; broader searches may find related reports with different categories.
-3. If the user wants to submit, open the prefilled GitHub link. They can add
-   synthetic reproduction steps, review the public content and submit after
-   signing in. An AI with separate GitHub access still needs explicit permission
-   to submit on the user's behalf.
-4. Respect dismissal. Never create repeat reports or background submissions.
+1. Report only significant missing/incorrect guidance or a blocking package failure.
+   Minor warnings and normal bugs in the generated app do not belong here.
+2. Show the complete category-only preview and say the GitHub issue will be public.
+3. If the developer requested reporting for this issue or enabled opening major-issue
+   drafts for this session, the AI opens the prefilled `submissionUrl` through its
+   client's browser capability. Otherwise ask before opening. If browser access is
+   unavailable, display the link. Never claim the tool itself launches a browser.
+4. The developer reviews the draft, signs into GitHub if needed, and clicks Submit.
+   Opening the draft does not submit it. No automatic submission or private backend
+   is needed. Do not open repeat drafts after dismissal or for the same failure.
+
+The source also supports `missing-guidance` and `incorrect-guidance` symptoms;
+these additions are pending the next npm release. Use `feature: "local-references"`
+for knowledge gaps. Disclose missing knowledge and label any outside research as
+external, rather than attributing it to this repository.
 
 The tool takes fixed enums only. Unknown fields and arbitrary text are rejected.
 It does not read files, environment variables, project names or machine identity;

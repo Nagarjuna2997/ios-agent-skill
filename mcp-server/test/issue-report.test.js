@@ -22,3 +22,13 @@ test('omitted metadata stays unknown rather than being collected',()=>{
  assert.match(r.body,/Client: unknown/);assert.match(r.body,/Platform: unknown/);
  assert.match(r.notice,/Nothing sent/);
 });
+
+test('knowledge gaps remain category-only user-submitted drafts',()=>{
+ for (const symptom of ['missing-guidance','incorrect-guidance']) {
+  const r=prepareIssueReport({feature:'local-references',symptom});
+  assert.equal(r.submitted,false);
+  assert.match(r.body,new RegExp(symptom));
+  assert.match(r.notice,/user must click Submit/);
+  assert.throws(()=>prepareIssueReport({feature:'local-references',symptom,details:'PRIVATE_APP'}));
+ }
+});
