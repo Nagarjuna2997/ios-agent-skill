@@ -592,3 +592,20 @@ jobs:
       - name: Compile and test original Apple recipes
         working-directory: samples/AppleRecipes
         run: swift test
+
+  reading-list-demo:
+    name: Reading List simulator acceptance
+    runs-on: macos-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build, test and capture six screens
+        working-directory: samples/ReadingList
+        run: python3 verify.py
+      - name: Upload simulator evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reading-list-evidence
+          path: samples/ReadingList/.ios-agent/evidence/*.png
+          if-no-files-found: warn

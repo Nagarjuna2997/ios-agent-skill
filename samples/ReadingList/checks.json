@@ -1,0 +1,61 @@
+{
+  "protectedFiles": [
+    "verify.py",
+    "Tests/ReadingStoreTests.swift",
+    "UITests/ReadingListUITests.swift",
+    "project.yml",
+    "ReadingList.xcodeproj/project.pbxproj",
+    "ReadingList.xcodeproj/xcshareddata/xcschemes/ReadingList.xcscheme"
+  ],
+  "checks": [
+    {
+      "id": "acceptance",
+      "description": "Build and run unit/UI acceptance tests; export six screenshots",
+      "command": "python3",
+      "args": [
+        "verify.py"
+      ],
+      "timeoutSeconds": 1200,
+      "artifacts": [
+        ".ios-agent/evidence/empty.png",
+        ".ios-agent/evidence/add.png",
+        ".ios-agent/evidence/library.png",
+        ".ios-agent/evidence/detail.png",
+        ".ios-agent/evidence/search-empty.png",
+        ".ios-agent/evidence/error.png"
+      ]
+    }
+  ],
+  "screens": [
+    {
+      "name": "empty",
+      "checkId": "acceptance",
+      "artifact": ".ios-agent/evidence/empty.png"
+    },
+    {
+      "name": "add",
+      "checkId": "acceptance",
+      "artifact": ".ios-agent/evidence/add.png"
+    },
+    {
+      "name": "library",
+      "checkId": "acceptance",
+      "artifact": ".ios-agent/evidence/library.png"
+    },
+    {
+      "name": "detail",
+      "checkId": "acceptance",
+      "artifact": ".ios-agent/evidence/detail.png"
+    },
+    {
+      "name": "search-empty",
+      "checkId": "acceptance",
+      "artifact": ".ios-agent/evidence/search-empty.png"
+    },
+    {
+      "name": "error",
+      "checkId": "acceptance",
+      "artifact": ".ios-agent/evidence/error.png"
+    }
+  ]
+}

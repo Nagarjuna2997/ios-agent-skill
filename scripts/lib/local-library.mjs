@@ -3,8 +3,8 @@ import { join, relative, extname, basename } from 'node:path';
 import { createHash } from 'node:crypto';
 
 const roots = ['docs', 'patterns', 'checklists', 'templates', 'samples'];
-const excluded = new Set(['.git', '.build', 'node_modules', 'dist', '__pycache__']);
-const extensions = new Set(['.md', '.swift', '.metal', '.h', '.m', '.c', '.cpp', '.plist', '.yml', '.yaml', '.json', '.svg']);
+const excluded = new Set(['.git', '.build', '.ios-agent', 'node_modules', 'dist', '__pycache__', 'xcuserdata', 'DerivedData']);
+const extensions = new Set(['.md', '.swift', '.metal', '.h', '.m', '.c', '.cpp', '.plist', '.yml', '.yaml', '.json', '.svg', '.py', '.pbxproj', '.xcscheme']);
 const generated = new Set(['docs/apple/technologies.json', 'docs/apple/updates.json', 'docs/apple/local-library.json', 'docs/apple/local-library.md']);
 
 export function buildLibrary(root) {

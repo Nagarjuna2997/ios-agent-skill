@@ -14,7 +14,10 @@ const require = createRequire(import.meta.url);
 const args = process.argv.slice(2);
 const cli = () => require.resolve('@nagarjuna2002/ios-agent/dist/index.js');
 if (args.includes('--version')) console.log(VERSION);
-else if (args.includes('--help')) console.log(`ios-agent-mcp ${VERSION}\nOne MCP connection: Swift reviews, Apple references, app creation and simulator tools.\nRequires Node 20+. Simulator operations require macOS/Xcode.\nUsage: ios-agent-mcp [--project PATH]\n       ios-agent-mcp new MyApp --brief "Your idea" --xcodegen\nThe starter requires your coding agent to implement the app features.`);
+else if (args.includes('--help')) console.log(`ios-agent-mcp ${VERSION}\nOne MCP connection: Swift reviews, Apple references, app creation and simulator tools.\nRequires Node 20+. Simulator operations require macOS/Xcode.\nUsage: ios-agent-mcp [--project PATH]\n       ios-agent-mcp new MyApp --brief "Your idea" --xcodegen\n       ios-agent-mcp loop init --project PATH --brief BRIEF.md --checks checks.json\n       ios-agent-mcp loop resume --project PATH\n       ios-agent-mcp loop status --project PATH\nThe starter requires your coding agent to implement the app features.`);
+else if (args[0] === 'loop') {
+  try { await (await import('./app-loop.js')).appLoop(args.slice(1)); } catch(error) { console.error(error instanceof Error?error.message:String(error));process.exitCode=1; }
+}
 else if (args[0] === 'new') {
   const child = (await import('node:child_process')).spawn(process.execPath,[cli(),...args],{stdio:'inherit'});
   child.on('error',e=>{console.error(e.message);process.exitCode=1;});

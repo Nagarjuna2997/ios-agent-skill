@@ -267,3 +267,7 @@ before, which is exactly how 2.0.1 shipped with a manifest reading 1.0.0.
 ## License
 
 MIT — see [LICENSE](./LICENSE).
+
+## App-building loop preview (source checkout)
+
+The CLI now provides `loop init`, `loop resume` and `loop status` alongside the unified MCP connection. See the [workflow guide](../docs/tooling/app-building-loop.md) and [reading-list demo](../samples/ReadingList/README.md) for reproducible acceptance checks, bounded Claude repairs, simulator evidence and saved progress. Real Claude repair is not yet integration-verified; the published npm version does not include this preview.

@@ -3152,6 +3152,13 @@
       "hash": "6ad83a43a10c8573b494197d61361cf85c6eb86601403801b43c5d6943fc7519"
     },
     {
+      "path": "docs/tooling/app-building-loop.md",
+      "title": "App-building loop (preview)",
+      "kind": "guide",
+      "characters": 4893,
+      "hash": "480a6b205226e8e689b90c78c4d5d676e3edc6a1db43cd39960270f3cac6f301"
+    },
+    {
       "path": "docs/tooling/app-description-workflow.md",
       "title": "App Description Workflow",
       "kind": "guide",
@@ -3444,6 +3451,90 @@
       "kind": "source",
       "characters": 4797,
       "hash": "f996933b90eb27e7b47174be9536af21010f2a03ae7c6c3c57eb811e59d54c85"
+    },
+    {
+      "path": "samples/ReadingList/App/ReadingListApp.swift",
+      "title": "ReadingListApp.swift",
+      "kind": "source",
+      "characters": 5510,
+      "hash": "0dd13b6f0f9b9e184fa90183f7e1ae5a15c72baf5ffab4964b11b6c92748d123"
+    },
+    {
+      "path": "samples/ReadingList/App/ReadingStore.swift",
+      "title": "ReadingStore.swift",
+      "kind": "source",
+      "characters": 2849,
+      "hash": "011ee7500b0c7dccbe7fd5135ec45361376510d3be3a33a4fd9556711b57d2ac"
+    },
+    {
+      "path": "samples/ReadingList/BRIEF.md",
+      "title": "BRIEF.md",
+      "kind": "guide",
+      "characters": 729,
+      "hash": "e33def3d3a5fbe1a8557734fa62eb20d27f20ea63ec527c3c90de63415696a00"
+    },
+    {
+      "path": "samples/ReadingList/checks.json",
+      "title": "checks.json",
+      "kind": "source",
+      "characters": 1526,
+      "hash": "c57bbc633211863a6ce3a1bb87dcc4377164a1d7958cf61c7bcb78c9d60a0277"
+    },
+    {
+      "path": "samples/ReadingList/plan.json",
+      "title": "plan.json",
+      "kind": "source",
+      "characters": 804,
+      "hash": "434b96c0d5ec57ac8f94eda9e272786f02b7e8c59c1f3168687a9a592fee4fe2"
+    },
+    {
+      "path": "samples/ReadingList/project.yml",
+      "title": "project.yml",
+      "kind": "source",
+      "characters": 808,
+      "hash": "fec02552577047fd0f9b90d2f484327b9f5d06ab35c6466a2c9a6764ede44901"
+    },
+    {
+      "path": "samples/ReadingList/ReadingList.xcodeproj/project.pbxproj",
+      "title": "project.pbxproj",
+      "kind": "source",
+      "characters": 17345,
+      "hash": "5f99a839451f003b81d6bf4a574c72618df0f1447766651a9faac2faccdf4d34"
+    },
+    {
+      "path": "samples/ReadingList/ReadingList.xcodeproj/xcshareddata/xcschemes/ReadingList.xcscheme",
+      "title": "ReadingList.xcscheme",
+      "kind": "source",
+      "characters": 4350,
+      "hash": "40557fa14f6d16ebc210a7368c09965f3d07e22bab3f05de6a210f5997c1d34b"
+    },
+    {
+      "path": "samples/ReadingList/README.md",
+      "title": "Reading List acceptance demo",
+      "kind": "guide",
+      "characters": 1776,
+      "hash": "d8f4d1401a2fd35e8e6c36a6a2a0bdb07529bfa8851d5d4f8ab861d014b68805"
+    },
+    {
+      "path": "samples/ReadingList/Tests/ReadingStoreTests.swift",
+      "title": "ReadingStoreTests.swift",
+      "kind": "source",
+      "characters": 2145,
+      "hash": "696491f0cc3ccd62a2905387c2eeb55505d3eaa1c5109dc85caebcc36ed34c07"
+    },
+    {
+      "path": "samples/ReadingList/UITests/ReadingListUITests.swift",
+      "title": "ReadingListUITests.swift",
+      "kind": "source",
+      "characters": 2112,
+      "hash": "7b6d450c9605ca10312c8d38b80fb8cf9c287ea4cc1f6cd38b90fddb7a402a0e"
+    },
+    {
+      "path": "samples/ReadingList/verify.py",
+      "title": "verify.py",
+      "kind": "source",
+      "characters": 2210,
+      "hash": "5c2aa8e0bca39b4d5226e1bfe146467070d7e37882e6dc50aa79241a924bcb1e"
     },
     {
       "path": "samples/SkillPatterns/Package.swift",

@@ -35,6 +35,10 @@ Build with Claude, Codex, or Gemini CLI. Portable references are also available 
 </p>
 
 
+## New: a resumable app-building loop (preview)
+
+[Run the reading-list demo](samples/ReadingList/README.md): persistence, search, progress, error handling and six simulator screenshots. The [local Claude workflow](docs/tooling/app-building-loop.md) turns a brief into a plan, runs your acceptance checks, requests bounded repairs and saves progress. Completion requires all configured checks to pass. The engine and demo are tested; real Claude repair remains unverified pending local authentication. Available from this checkout; the published npm version remains 2.5.1.
+
 ## Try it in your next app
 
 Install the skill into your coding agent:

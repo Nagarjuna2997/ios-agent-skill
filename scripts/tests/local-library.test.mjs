@@ -13,6 +13,8 @@ test('builder keeps canonical paths but stores identical content once and exclud
     writeFileSync(join(root,'templates','two.swift'),'import Foundation\nlet title = "Books"\n');
     mkdirSync(join(root,'samples','.build'));
     writeFileSync(join(root,'samples','.build','hidden.swift'),'secret');
+    mkdirSync(join(root,'samples','.ios-agent'));
+    writeFileSync(join(root,'samples','.ios-agent','state.json'),'{"private":true}');
     writeFileSync(join(root,'outside.swift'),'outside');
     symlinkSync(join(root,'outside.swift'),join(root,'samples','linked.swift'));
     const library=buildLibrary(root);

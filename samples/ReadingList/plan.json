@@ -1,0 +1,10 @@
+{
+  "summary": "A local SwiftUI reading list with durable storage and verifiable UI states.",
+  "screens": ["empty", "add", "library", "detail", "search-empty", "error"],
+  "features": ["Add books", "Search title or author", "Mark finished", "Persist across launch", "Delete books", "Recoverable load/save failures"],
+  "criteria": [
+    {"id":"storage","description":"Persist added books and progress; delete persists; corrupt data is preserved and failed saves do not mutate memory.","checkIds":["acceptance"]},
+    {"id":"search","description":"Match title/author case-insensitively; show a no-results state.","checkIds":["acceptance"]},
+    {"id":"ui","description":"UI tests add, finish, relaunch and search using labelled controls, and export all six screenshots.","checkIds":["acceptance"]}
+  ]
+}

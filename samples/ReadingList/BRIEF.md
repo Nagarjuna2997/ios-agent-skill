@@ -1,0 +1,3 @@
+Build a local-only SwiftUI reading list for iOS 17+. A user can add title/author, search either field, mark a book finished, inspect details and delete a book. Persist across launches. Never overwrite a corrupt library or claim a failed save succeeded. Include empty library, no search results, and recoverable error states. Use system text styles, semantic colors and labelled controls.
+Screens: library, add book, book details, empty library, empty search, error.
+Acceptance: unit tests prove persistence/search/progress/deletion and load/save failures. UI tests exercise adding, finishing, relaunching and search; retain six simulator screenshots. Passing screenshots prove capture, not a complete visual/accessibility audit.
