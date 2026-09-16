@@ -176,6 +176,10 @@
     {
       "name": "review_app_intents",
       "summary": "Read-only SiriKit migration advice and opt-in Apple Intelligence schema/onscreen entity review. No blanket SiriKit deprecation claim."
+    },
+    {
+      "name": "prepare_issue_report",
+      "summary": "Local category-only issue preview; no network, diagnostics collection or submission. User reviews and signs in to GitHub to submit."
     }
   ],
   "resources": [

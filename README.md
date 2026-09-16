@@ -62,6 +62,10 @@ Xcode already ships agent expertise and build/test tools. Use those when they me
 
 [Where the guidance comes from, evidence and unfinished work](docs/evidence-and-scope.md). A paired Claude/Codex benchmark is running; results will be published without assuming a win.
 
+## Help improve the tools
+
+The source build adds `prepare_issue_report` (pending the next npm release). Your AI can prepare a local report when an iOS Agent tool fails. It accepts fixed categories only, shows a preview and a duplicate-search link, and leaves public submission to you. No app source or logs are collected. [Reporting workflow](docs/tooling/issue-reporting.md).
+
 ## Four client families, one project
 
 | Client | Setup and evidence |

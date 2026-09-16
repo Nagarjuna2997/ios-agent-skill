@@ -3236,6 +3236,13 @@
       "hash": "64a3a0d63e2665a8541557fba2b8e9a03814d810c185c85ee82bfd4fbf35b8a2"
     },
     {
+      "path": "docs/tooling/issue-reporting.md",
+      "title": "AI-assisted issue previews",
+      "kind": "guide",
+      "characters": 2203,
+      "hash": "0793f71fe875f329dc0c4746ee4463ebb6f31b3792dbb4f6427a7e96ecc6184d"
+    },
+    {
       "path": "docs/tooling/offline-source-library.md",
       "title": "Build from local source and Apple guidance",
       "kind": "guide",

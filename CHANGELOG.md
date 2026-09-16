@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
-No additional changes recorded.
+- Add `prepare_issue_report`: local category-only previews for package failures, duplicate-search links and a prefilled GitHub form. No automatic uploads or submissions; pending the next npm release.
 
 ## [3.5.0] -- 2026-09-16
 

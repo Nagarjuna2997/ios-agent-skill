@@ -10,8 +10,12 @@ test('single connection exposes reviews, knowledge, simulator and safe app creat
  const client=new Client({name:'test',version:'1'});
  try {
   await client.connect(new StdioClientTransport({command:process.execPath,args:['dist/unified.js','--project',root]}));
-  const {tools}=await client.listTools();assert.equal(tools.length,35);assert.equal(new Set(tools.map(t=>t.name)).size,35);
+  const {tools}=await client.listTools();assert.equal(tools.length,36);assert.equal(new Set(tools.map(t=>t.name)).size,36);
   for(const name of ['analyze_swift_project','search_local_references','simulator_list','create_app'])assert.ok(tools.some(t=>t.name===name));
+  const preview=await client.callTool({name:'prepare_issue_report',arguments:{feature:'installation',symptom:'timeout'}});
+  assert.equal(JSON.parse(preview.content[0].text).submitted,false);
+  const rejected=await client.callTool({name:'prepare_issue_report',arguments:{feature:'installation',symptom:'timeout',logs:'PRIVATE_SENTINEL'}});
+  assert.equal(rejected.isError,true);assert.ok(!JSON.stringify(rejected).includes('PRIVATE_SENTINEL'));
   const result=await client.callTool({name:'create_app',arguments:{name:'UnifiedProbe',directory:root,brief:'Reading list with local persistence',xcodegen:true}});assert.notEqual(result.isError,true,JSON.stringify(result));
   assert.match(await readFile(join(root,'UnifiedProbe','App','APP_BRIEF.md'),'utf8'),/Reading list/);
   const again=await client.callTool({name:'create_app',arguments:{name:'UnifiedProbe',directory:root,brief:'Do not overwrite'}});assert.equal(again.isError,true);
