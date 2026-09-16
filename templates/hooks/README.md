@@ -47,3 +47,13 @@ slow. Options, in order of preference:
 3. Move it to CI only, and keep the two fast PostToolUse hooks locally.
 
 Never solve slowness by deleting the check and asserting the build passes.
+
+## Muse Code
+
+The command-based `Stop` hook shape in [muse-settings.json](muse-settings.json)
+was verified on Muse Code 1.3.0 (1.3.0-R3233.1), using an isolated local echo-provider
+session; other hook events are untested. See [the verification record](../../examples/client-verification/muse-1.3.0.json).
+The supplied command runs this repository’s verification script, so use it only
+for sessions rooted in this repository. Do not install it globally or copy it into
+an unrelated app. A successful hook probe does not verify model sessions or the
+verification observer.

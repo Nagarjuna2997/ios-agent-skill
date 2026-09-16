@@ -2511,8 +2511,8 @@
       "path": "docs/evidence-and-scope.md",
       "title": "Evidence, sources and scope",
       "kind": "guide",
-      "characters": 4807,
-      "hash": "bc2e3d409fa4645e8fd648da037cd038662ae08e7db9e23bc78404172279e55e"
+      "characters": 4815,
+      "hash": "1a0a592d7c5207c2ad15e72fae8c34e1fc41286df15f1ed161244ab65589f623"
     },
     {
       "path": "docs/frameworks/accelerate.md",
@@ -2917,8 +2917,8 @@
       "path": "docs/mcp/installation.md",
       "title": "Installing the iOS Agent MCP Server",
       "kind": "guide",
-      "characters": 14196,
-      "hash": "d170c88ce766edc2a23fc13e0f3756052013aaf68ff4291a2afe417539552b2c"
+      "characters": 14383,
+      "hash": "c070c864e579b47552121803d1ecf3d7bed8a78bb2a00407cffe97ade4534719"
     },
     {
       "path": "docs/mcp/knowledge-server.md",
@@ -3239,8 +3239,8 @@
       "path": "docs/tooling/issue-reporting.md",
       "title": "AI-assisted issue previews",
       "kind": "guide",
-      "characters": 2826,
-      "hash": "20c992997325a67439cf7565345d3c65b078a35c18bb6e958933312a4eca0fb9"
+      "characters": 2773,
+      "hash": "eac1bdbed9bf31cfaf6b5a0eceb7d66dd7bfb183e55fe6f234cf411bf2299466"
     },
     {
       "path": "docs/tooling/offline-source-library.md",
@@ -3705,6 +3705,13 @@
       "hash": "0a71818163f91445edeb550b352f15c14cca808bdc6fc36c41c202b6cb18036f"
     },
     {
+      "path": "templates/clients/muse-settings.md",
+      "title": "Muse Code settings template",
+      "kind": "guide",
+      "characters": 746,
+      "hash": "2207aa2eac16c53ca98eb9dd2f71508bc8a4483dc2936ce2310db2f5021e25fb"
+    },
+    {
       "path": "templates/common-patterns/auth-flow.swift",
       "title": "auth-flow.swift",
       "kind": "source",
@@ -3764,8 +3771,8 @@
       "path": "templates/hooks/README.md",
       "title": "Hook Templates for iOS Projects",
       "kind": "guide",
-      "characters": 1786,
-      "hash": "2df32c10b4cd36e21a66d3810e7d7f3e51d2b08cd87672773bdd03dee6cafe55"
+      "characters": 2358,
+      "hash": "684b9fb5d67132b92c1b88b30446158f117f0034fe50eb4a146317fab76674af"
     },
     {
       "path": "templates/ios-app/App.swift",

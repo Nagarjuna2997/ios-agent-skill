@@ -6,7 +6,7 @@
 claude mcp add ios-agent -- npx -y ios-agent-mcp@latest
 ```
 
-The default server exposes 35 tools in 2.6.0: 12 review/metadata tools, 8 Apple reference tools, 14 simulator tools, and `create_app`. App scaffolding and simulator packages install automatically as dependencies; no separate installation or MCP connection is needed. Remove the separate knowledge/simulator connections if you previously configured them to avoid duplicate tools.
+The default server exposes 36 tools in 2.7.0: 12 review/metadata tools, 8 Apple reference tools, 14 simulator tools, `create_app`, and the local `prepare_issue_report` tool. App scaffolding and simulator packages install automatically as dependencies; no separate installation or MCP connection is needed. Remove the separate knowledge/simulator connections if you previously configured them to avoid duplicate tools.
 
 Create a starter directly:
 
@@ -273,7 +273,7 @@ existing server entries. Do not replace the whole file. `schema_version` is requ
 }
 ```
 
-[Copyable template](../../templates/clients/muse-settings.json). If Muse cannot find
+[Copyable template](../../templates/clients/muse-settings.json) · [Settings-key verification note](../../templates/clients/muse-settings.md) · [Hook verification scope](../../templates/hooks/README.md#muse-code). If Muse cannot find
 the command, use the absolute executable path printed by `command -v ios-agent-mcp`.
 Restart Muse after updating settings. This avoids fetching a package inside Muse's
 default proxy-only sandbox. It does not disable sandboxing or grant network access.
@@ -285,8 +285,8 @@ frontmatter-stripped `AGENTS.md` to `SKILL.md`. Trust only workspaces you recogn
 
 ### Verified compatibility, 2026-09-16
 
-Muse Code **1.3.0 (1.3.0-R3233.1)** connected to the published **ios-agent-mcp 2.6.0**
-using stdio and discovered **35 tools**, including reviews, local references,
+Muse Code **1.3.0 (1.3.0-R3233.1)** connected to the published **ios-agent-mcp 2.7.0**
+using stdio and discovered **36 tools**, including reviews, local references,
 `create_app` and simulator tools. Initialization and tool discovery used the actual
 Muse executable with its local `echo` provider. No account credentials or model
 request were needed. `muse init` and discovery of the repository's Claude-format
