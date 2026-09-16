@@ -79,7 +79,7 @@ Failure feedback belongs in your coding session: the observed error, the propose
 | Claude | Local MCP and source skill; your Claude client supplies the coding agent. |
 | ChatGPT / Codex | Codex local MCP; ChatGPT skills package or a separately configured HTTPS/private-tunnel MCP connection. Availability depends on account/workspace policy. |
 | Gemini CLI | Extension configuration and local MCP connection verified. |
-| Muse Code | Skill discovery, 35-tool MCP discovery and a Stop hook verified; model sessions and observer behavior remain unverified. |
+| Muse Code | Skill discovery, 36-tool MCP discovery and a Stop hook verified; model sessions and observer behavior remain unverified. |
 
 The project focuses on these four families. For another client, [open a client-support request](https://github.com/Nagarjuna2997/ios-agent-skill/issues/new?template=client_support.md) or add a 👍 to an existing request. Votes inform priorities alongside feasibility and testing; they do not guarantee delivery. Existing experimental adapters are not actively maintained.
 
