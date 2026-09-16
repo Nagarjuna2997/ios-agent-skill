@@ -68,6 +68,8 @@ Claude → review_swift_concurrency
 
 ## Install
 
+Choose your client: [Claude](#claude-code) · [ChatGPT / Codex](#chatgpt--codex) · [Gemini CLI](#gemini-cli) · [Muse Code](#muse-code). One server package; client connection methods differ.
+
 ### Claude Code
 
 ```bash
@@ -89,20 +91,51 @@ claude mcp add ios-agent -- npx -y ios-agent-mcp
 }
 ```
 
-### Cursor
+### ChatGPT / Codex
 
-`.cursor/mcp.json` in your project, or `~/.cursor/mcp.json` globally:
+**Codex** connects to the local unified server:
+
+```bash
+codex mcp add ios-agent -- npx -y ios-agent-mcp@latest
+```
+
+**ChatGPT** has a different setup: use the skills-only release package where your account supports it, or configure a hosted HTTPS knowledge server/private MCP tunnel through a supported developer-mode flow. ChatGPT web does not run this local `npx` command itself. This project does not provide a public hosted endpoint. See the [ChatGPT setup guide](https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/mcp/installation.md#chatgpt-plugin-and-remote-mcp) for account requirements and connection limits.
+
+### Gemini CLI
+
+```bash
+gemini mcp add ios-agent -- npx -y ios-agent-mcp@latest
+```
+
+This adds a local MCP connection; Gemini web chat is a different product. The repository extension additionally supplies `GEMINI.md`, but its version pin must be available on npm before installing it. Use one connection method to avoid duplicate tools. [Gemini setup and verification](https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/mcp/installation.md#gemini-cli).
+
+### Muse Code
+
+Install outside the agent sandbox:
+
+```bash
+npm install -g ios-agent-mcp@latest
+```
+
+Merge this into `~/.config/muse/settings.json`, preserving your existing settings:
 
 ```json
 {
+  "schema_version": 1,
   "mcpServers": {
     "ios-agent": {
-      "command": "npx",
-      "args": ["-y", "ios-agent-mcp"]
+      "command": "ios-agent-mcp",
+      "args": []
     }
   }
 }
 ```
+
+Restart Muse. If the executable is not found, use its absolute path from `command -v ios-agent-mcp`. MCP discovery and a Stop hook have been verified; complete model-driven app creation has not. [Muse setup and evidence](https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/mcp/installation.md#muse-code).
+
+### Other clients, including Cursor
+
+Our primary client families are **Claude, ChatGPT/Codex, Gemini CLI and Muse**. Cursor and other MCP-compatible clients may use the generic `mcpServers` configuration shown above, but are not actively verified in this support scope. [Request another client or vote on an existing issue](https://github.com/Nagarjuna2997/ios-agent-skill/issues/new?template=client_support.md).
 
 ### From source
 
@@ -110,7 +143,7 @@ claude mcp add ios-agent -- npx -y ios-agent-mcp
 git clone https://github.com/Nagarjuna2997/ios-agent-skill.git
 cd ios-agent-skill/mcp-server
 npm install && npm run build
-# then point your client at: node /absolute/path/to/mcp-server/dist/index.js
+# then point your client at: node /absolute/path/to/mcp-server/dist/unified.js
 ```
 
 ---

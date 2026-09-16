@@ -78,10 +78,10 @@ The optional [knowledge MCP server](knowledge-server.md) supports Streamable HTT
 Gemini CLI 0.49.0 validated the extension manifest and connected to the 2.7.0 server release candidate in an isolated project. A real model-driven app-building session remains unverified.
 
 ```bash
-gemini extensions install https://github.com/Nagarjuna2997/ios-agent-skill
+gemini mcp add ios-agent -- npx -y ios-agent-mcp@latest
 ```
 
-The repository’s `gemini-extension.json` registers the unified server and loads `GEMINI.md`. Alternatively use the Claude Desktop `mcpServers` object below in Gemini CLI settings. Use one method; the web chat is a different product and does not load CLI extensions.
+The command above connects to the published package. For bundled `GEMINI.md` guidance, the repository’s `gemini-extension.json` is an alternative; check that its pinned npm version is published before running `gemini extensions install https://github.com/Nagarjuna2997/ios-agent-skill`. Alternatively use the Claude Desktop `mcpServers` object below in Gemini CLI settings. Use one method; the web chat is a different product and does not load CLI extensions.
 
 Official client references: [Codex MCP](https://developers.openai.com/codex/mcp), [OpenAI plugin packaging](https://developers.openai.com/plugins/build/plugins), [ChatGPT connection/testing](https://developers.openai.com/plugins/deploy/connect-chatgpt), [Gemini extension format](https://geminicli.com/docs/extensions/reference/).
 
