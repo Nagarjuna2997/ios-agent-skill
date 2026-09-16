@@ -44,4 +44,4 @@ The repair adapter exposes Read, Glob, Grep, Edit and Write; it disables externa
 
 ## Validation status
 
-Engine tests cover cached evidence, source changes, frozen checks, retry exhaustion, interruption and a deterministic repair adapter. The demo has real simulator tests. A real Claude repair session remains **unverified** in the development environment because its OAuth session expired. The fixture-based repair test is not a substitute for that integration check. No API keys or credentials are included in the repository.
+Engine tests cover cached evidence, source changes, frozen checks, retry exhaustion, interruption and a deterministic repair adapter. The demo has real simulator tests. On 2026-09-16, a real authenticated Claude Code repair passed a bounded integration fixture: the initial check failed, Claude edited the source text, and the frozen acceptance check passed on the first repair attempt. This verifies the live repair adapter, not full iOS app generation or model-generated planning. Full end-to-end app-building and the cross-client benchmark remain unverified. No API keys or credentials are included in the repository.

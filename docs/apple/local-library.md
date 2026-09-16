@@ -462,7 +462,7 @@ Search offline with `node scripts/query-library.mjs search "SwiftData"`. Read a 
 | [docs/testing/evaluations.md](../../docs/testing/evaluations.md) | guide | 5617 |
 | [docs/testing/mocking-strategy.md](../../docs/testing/mocking-strategy.md) | guide | 18553 |
 | [docs/testing/xcuiautomation.md](../../docs/testing/xcuiautomation.md) | guide | 2414 |
-| [docs/tooling/app-building-loop.md](../../docs/tooling/app-building-loop.md) | guide | 4893 |
+| [docs/tooling/app-building-loop.md](../../docs/tooling/app-building-loop.md) | guide | 5090 |
 | [docs/tooling/app-description-workflow.md](../../docs/tooling/app-description-workflow.md) | guide | 6693 |
 | [docs/tooling/device-hub.md](../../docs/tooling/device-hub.md) | guide | 7046 |
 | [docs/tooling/fm-cli.md](../../docs/tooling/fm-cli.md) | guide | 2447 |
