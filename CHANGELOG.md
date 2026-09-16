@@ -6,19 +6,29 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+## [3.6.0] -- 2026-09-16
 
-- Add `prepare_issue_report`: local category-only previews for package failures, duplicate-search links and a prefilled GitHub form. No automatic uploads or submissions; pending the next npm release.
+### Added
+
+- Publish `ios-agent-mcp` 2.7.0 with 36 unified tools and the bundled CLI 0.3.0.
+- `prepare_issue_report` creates local category-only previews, duplicate-search links and a prefilled GitHub form. Submission remains user-reviewed; no automatic uploads.
+- Appearance-aware asset catalogs and offline SVG-layer app-icon rendering; CLI 0.3.0 installs automatically with the MCP package.
+
+### Changed
+
+- Remove the automatic-reporting client and self-hosted issue inbox; keep local developer diagnostics and defer hosting until demand appears.
+- Refresh Muse and Gemini connection evidence against the published 2.7.0 package; model-driven app creation remains outside those checks.
+- Clarify client setup and asset provenance; use a still README preview with an optional walkthrough link.
 
 ## [3.5.0] -- 2026-09-16
 
 ### Added -- 3.5.0
 
-- Appearance-aware asset catalogs and offline SVG-layer app-icon rendering in the source CLI; 67 tests and Apple asset compilation verified.
 - Muse Code 1.3.0 setup template, verified published MCP tool discovery and Stop-hook execution, plus a repeatable credential-free compatibility script. Model sessions and observer behavior remain unverified.
 
 ### Changed -- 3.5.0
 
-- Publish one consolidated `ios-agent-mcp` 2.7.0 release with CLI 0.3.0 installed automatically; existing simulator dependency stays unchanged.
+- Prepare the consolidated `ios-agent-mcp` 2.7.0 source candidate with CLI 0.3.0; npm publication is recorded under 3.6.0.
 - Refresh the 405-technology and 97-update public Apple snapshots; distinguish September 16's 27.2 betas from released 27.0.
 - Validate the Gemini CLI extension and clarify ChatGPT skills, HTTPS and private-tunnel connection options.
 - Generated apps retain neutral ownership; no developer credentials or signing material is packaged.
@@ -382,5 +392,7 @@ The repository taught the main agent what to write but never how to operate. Thi
 - Complete UI design system -- color palettes, typography, stunning UI patterns.
 - Initial commit: agent brain, MVVM/Clean Architecture/Coordinator/Repository/Error Handling patterns, iOS-app and multiplatform-app templates, GitHub Actions + Fastfile CI/CD templates.
 
-[Unreleased]: https://github.com/Nagarjuna2997/ios-agent-skill/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/Nagarjuna2997/ios-agent-skill/compare/v3.6.0...HEAD
 [1.0.0]: https://github.com/Nagarjuna2997/ios-agent-skill/releases/tag/v1.0.0
+
+[3.6.0]: https://github.com/Nagarjuna2997/ios-agent-skill/compare/v3.4.0...v3.6.0

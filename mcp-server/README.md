@@ -2,7 +2,7 @@
 
 [Explore the website](https://nagarjuna2997.github.io/ios-agent-skill/) · [Choose your AI and install](https://nagarjuna2997.github.io/ios-agent-skill/install.html)
 
-## Source preview: 2.7.0 (npm publication pending)
+## Version 2.7.0
 
 Includes real appearance-aware color catalogs and offline SVG-layer app icons,
 Muse Code setup with verified MCP discovery, and refreshed public Apple references
@@ -18,7 +18,7 @@ the skills package or a separately configured MCP connection. See the
 claude mcp add ios-agent -- npx -y ios-agent-mcp@latest
 ```
 
-The default server exposes 35 tools: 12 review/metadata tools, 8 Apple reference tools, 14 simulator tools, and `create_app`. App scaffolding and simulator packages install automatically as dependencies; no separate installation or MCP connection is needed. Remove the separate knowledge/simulator connections if you previously configured them to avoid duplicate tools.
+The default server exposes 36 tools: 12 review/metadata tools, 8 Apple reference tools, 14 simulator tools, `create_app`, and the local `prepare_issue_report` tool. App scaffolding and simulator packages install automatically as dependencies; no separate installation or MCP connection is needed. Remove the separate knowledge/simulator connections if you previously configured them to avoid duplicate tools.
 
 Create a starter directly:
 
@@ -323,4 +323,4 @@ Adds `review_app_intents` with conservative SiriKit migration advice and opt-in 
 
 ## Local issue previews (source build; next release)
 
-`prepare_issue_report` adds a 36th tool in the source build. It creates a local preview from fixed failure categories and links to this project’s issue tracker. It does not collect diagnostics, open a browser, make network calls or submit issues. Show the preview to the user before opening any link. GitHub sign-in and user submission are required.
+`prepare_issue_report` is included in 2.7.0. It creates a local preview from fixed failure categories and links to this project’s issue tracker. It does not collect diagnostics, open a browser, make network calls or submit issues. Show the preview to the user before opening any link. GitHub sign-in and user submission are required.

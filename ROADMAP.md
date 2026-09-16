@@ -5,7 +5,7 @@
 - One MCP installation for reviews, local references, app scaffolding and simulator tools.
 - Dated Apple technology and release-note snapshots, with original Swift implementations and tests.
 - Reading List demo with persistence, search and simulator acceptance checks.
-- Resumable loop engine with bounded repairs and saved evidence; real Claude repair integration remains unverified.
+- Resumable loop engine with bounded repairs and saved evidence; a bounded real Claude repair is recorded in `examples/client-verification/claude-repair.json`; full app generation remains unverified.
 
 ## This release
 
@@ -18,8 +18,8 @@
 
 - Xcode 27 compilation and in-editor MCP/agent acceptance; current local host is Xcode 26.6.
 - Live Foundation Models generation and provider routing, Core AI model execution and real Siri behavior.
-- Muse Code MCP discovery, hook execution and verification observer; only CLI installation/skill discovery is verified.
-- Real Claude repair session after local authentication. Never replace this check with a simulated success.
+- Muse Code model-directed tool use and verification observer; MCP discovery and a Stop hook are verified.
+- Full app-generation acceptance across clients; do not generalize the bounded Claude repair check into a complete app-building claim.
 
 ## Later, based on demand
 
