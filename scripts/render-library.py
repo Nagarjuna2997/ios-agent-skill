@@ -10,6 +10,9 @@ paths={t['guide'] for t in technologies if t.get('guide')}
 for folder in ['docs/design','docs/tooling','docs/swiftui','docs/orchestration','docs/mcp']:
  paths.update(str(p.relative_to(root)) for p in (root/folder).glob('*.md'))
 (site/'guides').mkdir(exist_ok=True)
+visual_plans=json.loads((root/'content/guides/visuals.json').read_text())
+render_visuals=runpy.run_path(str(root/'scripts/guide-visuals.py'))['render']
+assert paths == set(visual_plans), 'Every source guide must have a reviewed visual plan'
 cards=[];urls=[]
 for source in sorted(paths):
  p=root/source
@@ -29,7 +32,7 @@ for source in sorted(paths):
  md=markdown.Markdown(extensions=['fenced_code','tables','toc']);body=md.convert(text)
  body=body.replace('#3-google-fonts--top-100-for-ios','#3-google-fonts-top-100-for-ios')
  desc='Repository guidance for '+(', '.join(names) if names else title)+'. Examples, decisions, and verification limits from the maintained source guide.'
- content='<article class="blog-article"><header class="page-intro"><p class="eyebrow">'+html.escape(category)+' · Reference guide</p><h1>'+html.escape(title)+'</h1><p class="lead">'+html.escape(desc)+'</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/'+source+'">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong>'+md.toc+'</aside>'+body+'</div></article>'
+ content='<article class="blog-article"><header class="page-intro"><p class="eyebrow">'+html.escape(category)+' · Reference guide</p><h1>'+html.escape(title)+'</h1><p class="lead">'+html.escape(desc)+'</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/'+source+'">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong>'+'<p><a href="#visual-overview">Visual overview: workflow and architecture</a></p>'+md.toc+'</aside>'+render_visuals(visual_plans[source])+body+'</div></article>'
  url='guides/'+slug+'.html';urls.append(url)
  (site/url).write_text(page(title,desc,content,url,1))
  cards.append('<article class="card" data-guide><p class="eyebrow">'+html.escape(category)+'</p><h2><a href="'+url+'">'+html.escape(title)+'</a></h2><p>'+html.escape(', '.join(names) or category)+' </p></article>')

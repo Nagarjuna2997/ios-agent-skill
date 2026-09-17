@@ -1,0 +1,1341 @@
+{
+  "checklists/app-store-submission.md": {
+    "flow": [
+      "Inventory app capabilities",
+      "Check privacy and signing",
+      "Exercise release build",
+      "Submit reviewed archive"
+    ],
+    "architecture": [
+      "Release artifact",
+      "Privacy declarations",
+      "Review evidence"
+    ]
+  },
+  "docs/design/README.md": {
+    "flow": [
+      "Define the product task",
+      "Choose semantic tokens",
+      "Compose adaptive screens",
+      "Review accessibility"
+    ],
+    "architecture": [
+      "Product intent",
+      "Design system",
+      "SwiftUI surfaces"
+    ]
+  },
+  "docs/design/asset-generation.md": {
+    "flow": [
+      "Read design tokens",
+      "Generate named assets",
+      "Compile asset catalog",
+      "Inspect appearance variants"
+    ],
+    "architecture": [
+      "Token document",
+      "Asset generator",
+      "Assets.xcassets"
+    ]
+  },
+  "docs/design/color-system.md": {
+    "flow": [
+      "Choose semantic roles",
+      "Assign appearance variants",
+      "Measure contrast",
+      "Inspect real screens"
+    ],
+    "architecture": [
+      "Semantic roles",
+      "Light and dark palettes",
+      "Accessible UI"
+    ]
+  },
+  "docs/design/design-tokens.md": {
+    "flow": [
+      "Define token names",
+      "Map values to appearances",
+      "Generate shared resources",
+      "Reject literal styling"
+    ],
+    "architecture": [
+      "Token source",
+      "Generated resources",
+      "View consumers"
+    ]
+  },
+  "docs/design/fonts-catalog.md": {
+    "flow": [
+      "Choose a reading role",
+      "Check font license",
+      "Register bundled font",
+      "Test Dynamic Type"
+    ],
+    "architecture": [
+      "Font files",
+      "Typography roles",
+      "Scaled text"
+    ]
+  },
+  "docs/design/icon-composer.md": {
+    "flow": [
+      "Separate foreground layers",
+      "Export editable artwork",
+      "Assemble in Icon Composer",
+      "Inspect rendered variants"
+    ],
+    "architecture": [
+      "Layer sources",
+      "Icon composition",
+      "App icon asset"
+    ]
+  },
+  "docs/design/interaction-standards.md": {
+    "flow": [
+      "Identify an interaction",
+      "Choose native behavior",
+      "Add accessible feedback",
+      "Test alternate inputs"
+    ],
+    "architecture": [
+      "User input",
+      "Interaction state",
+      "Feedback and accessibility"
+    ]
+  },
+  "docs/design/liquid-glass-adoption.md": {
+    "flow": [
+      "Locate navigation surfaces",
+      "Check SDK availability",
+      "Apply supported materials",
+      "Review legibility"
+    ],
+    "architecture": [
+      "Content layer",
+      "Navigation chrome",
+      "Accessibility settings"
+    ]
+  },
+  "docs/design/stunning-ui-patterns.md": {
+    "flow": [
+      "Choose information hierarchy",
+      "Compose layout and spacing",
+      "Add meaningful motion",
+      "Review all screen states"
+    ],
+    "architecture": [
+      "Content hierarchy",
+      "Reusable components",
+      "Screen states"
+    ]
+  },
+  "docs/design/third-party-animations.md": {
+    "flow": [
+      "Decide whether native is enough",
+      "Check dependency and license",
+      "Integrate an isolated effect",
+      "Test reduced motion"
+    ],
+    "architecture": [
+      "Animation assets",
+      "Integration boundary",
+      "Native screen"
+    ]
+  },
+  "docs/design/typography-system.md": {
+    "flow": [
+      "Define text roles",
+      "Apply scalable styles",
+      "Test long localized text",
+      "Verify largest text sizes"
+    ],
+    "architecture": [
+      "Semantic styles",
+      "Font metrics",
+      "Adaptive layout"
+    ]
+  },
+  "docs/frameworks/activitykit.md": {
+    "flow": [
+      "Check activity availability",
+      "Request an activity",
+      "Update activity content",
+      "End the activity"
+    ],
+    "architecture": [
+      "App state",
+      "Activity content",
+      "Live Activity presentation"
+    ]
+  },
+  "docs/frameworks/app-clips.md": {
+    "flow": [
+      "Resolve invocation URL",
+      "Load the focused experience",
+      "Complete the short task",
+      "Offer full-app continuity"
+    ],
+    "architecture": [
+      "Invocation link",
+      "App Clip target",
+      "Shared domain logic"
+    ]
+  },
+  "docs/frameworks/app-intents.md": {
+    "flow": [
+      "Define a user action",
+      "Resolve typed parameters",
+      "Execute domain operation",
+      "Return a useful result"
+    ],
+    "architecture": [
+      "Intent adapter",
+      "Domain service",
+      "Entities and results"
+    ]
+  },
+  "docs/frameworks/apple-intelligence.md": {
+    "flow": [
+      "Identify an intelligence feature",
+      "Check device and model readiness",
+      "Run a bounded request",
+      "Offer a non-AI fallback"
+    ],
+    "architecture": [
+      "Feature interface",
+      "Capability boundary",
+      "Model or fallback"
+    ]
+  },
+  "docs/frameworks/arkit.md": {
+    "flow": [
+      "Check device support",
+      "Configure tracking session",
+      "Consume anchors and updates",
+      "Handle tracking loss"
+    ],
+    "architecture": [
+      "AR session",
+      "Anchors and tracking",
+      "Scene presentation"
+    ]
+  },
+  "docs/frameworks/authentication-services.md": {
+    "flow": [
+      "Start user-initiated sign-in",
+      "Request identity credential",
+      "Validate with trusted service",
+      "Establish app session"
+    ],
+    "architecture": [
+      "Authorization UI",
+      "Identity verification",
+      "Session state"
+    ]
+  },
+  "docs/frameworks/avfoundation.md": {
+    "flow": [
+      "Request needed permissions",
+      "Configure media session",
+      "Capture or play media",
+      "Handle interruptions"
+    ],
+    "architecture": [
+      "Media source",
+      "AVFoundation pipeline",
+      "Playback or capture UI"
+    ]
+  },
+  "docs/frameworks/background-tasks.md": {
+    "flow": [
+      "Register task handlers",
+      "Schedule eligible work",
+      "Handle launch and expiration",
+      "Report completion"
+    ],
+    "architecture": [
+      "System scheduler",
+      "Bounded task worker",
+      "Persistent app state"
+    ]
+  },
+  "docs/frameworks/cloudkit.md": {
+    "flow": [
+      "Define records and zones",
+      "Check account availability",
+      "Fetch or save changes",
+      "Resolve errors and conflicts"
+    ],
+    "architecture": [
+      "Local app state",
+      "Sync coordinator",
+      "CloudKit records"
+    ]
+  },
+  "docs/frameworks/core-ai.md": {
+    "flow": [
+      "Choose a custom model workload",
+      "Verify installed SDK support",
+      "Prepare model assets",
+      "Measure inference on device"
+    ],
+    "architecture": [
+      "Model assets",
+      "Inference boundary",
+      "App feature"
+    ]
+  },
+  "docs/frameworks/core-data.md": {
+    "flow": [
+      "Define persistent model",
+      "Create managed contexts",
+      "Fetch and save changes",
+      "Test migration and failure"
+    ],
+    "architecture": [
+      "Persistent store",
+      "Context ownership",
+      "View models"
+    ]
+  },
+  "docs/frameworks/core-location.md": {
+    "flow": [
+      "Explain location purpose",
+      "Request appropriate access",
+      "Consume location updates",
+      "Stop unnecessary tracking"
+    ],
+    "architecture": [
+      "Authorization state",
+      "Location service",
+      "Feature consumer"
+    ]
+  },
+  "docs/frameworks/core-spotlight-rag.md": {
+    "flow": [
+      "Choose indexable content",
+      "Index scoped items",
+      "Retrieve relevant records",
+      "Ground the response"
+    ],
+    "architecture": [
+      "Source documents",
+      "Search index",
+      "Retrieval consumer"
+    ]
+  },
+  "docs/frameworks/cryptokit.md": {
+    "flow": [
+      "Choose a cryptographic operation",
+      "Load protected key material",
+      "Authenticate or encrypt data",
+      "Handle verification failure"
+    ],
+    "architecture": [
+      "Key storage",
+      "Cryptographic operation",
+      "Protected payload"
+    ]
+  },
+  "docs/frameworks/data-concurrency.md": {
+    "flow": [
+      "Identify data ownership",
+      "Isolate mutable state",
+      "Cross boundaries with safe values",
+      "Test concurrent operations"
+    ],
+    "architecture": [
+      "UI actor",
+      "Data service boundary",
+      "Persistent storage"
+    ]
+  },
+  "docs/frameworks/device-integrity.md": {
+    "flow": [
+      "Request server challenge",
+      "Generate device attestation",
+      "Validate proof on server",
+      "Apply a server-side policy"
+    ],
+    "architecture": [
+      "Client attestation",
+      "Challenge verification",
+      "Server policy"
+    ]
+  },
+  "docs/frameworks/extended-apple-frameworks.md": {
+    "flow": [
+      "Identify the platform task",
+      "Choose a focused framework",
+      "Check permissions and support",
+      "Verify representative inputs"
+    ],
+    "architecture": [
+      "App requirement",
+      "Framework adapter",
+      "Platform capability"
+    ]
+  },
+  "docs/frameworks/foundation-models.md": {
+    "flow": [
+      "Check model readiness",
+      "Create a scoped session",
+      "Request structured output or tools",
+      "Validate and handle fallback"
+    ],
+    "architecture": [
+      "App request",
+      "Model session",
+      "Tools and typed output"
+    ]
+  },
+  "docs/frameworks/foundation.md": {
+    "flow": [
+      "Define a data contract",
+      "Transform or decode values",
+      "Handle dates files and URLs",
+      "Test malformed input"
+    ],
+    "architecture": [
+      "Input values",
+      "Foundation operations",
+      "Domain values"
+    ]
+  },
+  "docs/frameworks/hardware/core-bluetooth.md": {
+    "flow": [
+      "Check Bluetooth state",
+      "Discover eligible peripherals",
+      "Connect and exchange values",
+      "Recover from disconnection"
+    ],
+    "architecture": [
+      "Central manager",
+      "Peripheral services",
+      "App connection state"
+    ]
+  },
+  "docs/frameworks/hardware/core-motion.md": {
+    "flow": [
+      "Check sensor availability",
+      "Start required updates",
+      "Process motion samples",
+      "Stop updates on exit"
+    ],
+    "architecture": [
+      "Device sensors",
+      "Motion processing",
+      "Feature state"
+    ]
+  },
+  "docs/frameworks/hardware/core-nfc.md": {
+    "flow": [
+      "Check reading capability",
+      "Start a foreground session",
+      "Read supported tag data",
+      "Invalidate the session"
+    ],
+    "architecture": [
+      "Reader session",
+      "NFC tag",
+      "Validated domain data"
+    ]
+  },
+  "docs/frameworks/hardware/healthkit.md": {
+    "flow": [
+      "Explain requested health access",
+      "Request scoped authorization",
+      "Query or save permitted data",
+      "Handle unavailable data"
+    ],
+    "architecture": [
+      "Health permissions",
+      "Health store",
+      "Health feature"
+    ]
+  },
+  "docs/frameworks/hardware/homekit.md": {
+    "flow": [
+      "Request home access",
+      "Discover accessories",
+      "Read or write characteristics",
+      "Handle unreachable devices"
+    ],
+    "architecture": [
+      "Home manager",
+      "Accessories and services",
+      "Home controls"
+    ]
+  },
+  "docs/frameworks/local-authentication.md": {
+    "flow": [
+      "Check available policy",
+      "Explain authentication reason",
+      "Evaluate local authentication",
+      "Handle cancellation or fallback"
+    ],
+    "architecture": [
+      "Protected action",
+      "Authentication context",
+      "Authorization result"
+    ]
+  },
+  "docs/frameworks/mapkit.md": {
+    "flow": [
+      "Define map region",
+      "Load annotations or search",
+      "Select a destination",
+      "Present route or place detail"
+    ],
+    "architecture": [
+      "Location data",
+      "Map content",
+      "Selection state"
+    ]
+  },
+  "docs/frameworks/metal.md": {
+    "flow": [
+      "Create GPU resources",
+      "Encode rendering or compute work",
+      "Submit command buffers",
+      "Profile and synchronize"
+    ],
+    "architecture": [
+      "CPU preparation",
+      "GPU command pipeline",
+      "Output buffers"
+    ]
+  },
+  "docs/frameworks/ml/coreml.md": {
+    "flow": [
+      "Load compatible model",
+      "Prepare typed inputs",
+      "Run prediction",
+      "Validate output and latency"
+    ],
+    "architecture": [
+      "Model asset",
+      "Prediction adapter",
+      "App decision"
+    ]
+  },
+  "docs/frameworks/ml/natural-language.md": {
+    "flow": [
+      "Choose language task",
+      "Configure tokenizer or tagger",
+      "Process text units",
+      "Interpret linguistic results"
+    ],
+    "architecture": [
+      "Text input",
+      "Language analysis",
+      "Structured annotations"
+    ]
+  },
+  "docs/frameworks/ml/sound-analysis.md": {
+    "flow": [
+      "Prepare audio stream",
+      "Configure classification request",
+      "Consume classification results",
+      "Handle stream termination"
+    ],
+    "architecture": [
+      "Audio source",
+      "Sound analyzer",
+      "Classification consumer"
+    ]
+  },
+  "docs/frameworks/ml/speech.md": {
+    "flow": [
+      "Request required permissions",
+      "Start speech recognition",
+      "Update transcript state",
+      "Handle cancellation and errors"
+    ],
+    "architecture": [
+      "Audio capture",
+      "Recognition session",
+      "Transcript UI"
+    ]
+  },
+  "docs/frameworks/ml/translation.md": {
+    "flow": [
+      "Select source and target languages",
+      "Check translation readiness",
+      "Translate scoped text",
+      "Handle unavailable language support"
+    ],
+    "architecture": [
+      "Source text",
+      "Translation session",
+      "Translated presentation"
+    ]
+  },
+  "docs/frameworks/ml/vision.md": {
+    "flow": [
+      "Prepare image orientation",
+      "Configure a vision request",
+      "Perform image analysis",
+      "Map observations to UI"
+    ],
+    "architecture": [
+      "Image input",
+      "Vision request",
+      "Observations"
+    ]
+  },
+  "docs/frameworks/network-framework.md": {
+    "flow": [
+      "Select transport parameters",
+      "Start connection",
+      "Send and receive framed data",
+      "Handle connection transitions"
+    ],
+    "architecture": [
+      "Connection state",
+      "Transport channel",
+      "Message handling"
+    ]
+  },
+  "docs/frameworks/networking.md": {
+    "flow": [
+      "Build a typed request",
+      "Await URLSession response",
+      "Validate and decode payload",
+      "Map failures to UI state"
+    ],
+    "architecture": [
+      "View model",
+      "API client",
+      "Remote endpoint"
+    ]
+  },
+  "docs/frameworks/oslog.md": {
+    "flow": [
+      "Define subsystem and category",
+      "Emit privacy-aware events",
+      "Reproduce the behavior",
+      "Inspect filtered logs"
+    ],
+    "architecture": [
+      "App events",
+      "Structured logging",
+      "Diagnostic reader"
+    ]
+  },
+  "docs/frameworks/photosui.md": {
+    "flow": [
+      "Present system photo picker",
+      "Receive selected items",
+      "Load transferable content",
+      "Handle cancellation or load failure"
+    ],
+    "architecture": [
+      "Picker selection",
+      "Content loading",
+      "App media state"
+    ]
+  },
+  "docs/frameworks/realitykit.md": {
+    "flow": [
+      "Load or create entities",
+      "Attach components",
+      "Add entities to a scene",
+      "Update behavior and interactions"
+    ],
+    "architecture": [
+      "Entity hierarchy",
+      "Components and systems",
+      "Rendered scene"
+    ]
+  },
+  "docs/frameworks/scenekit.md": {
+    "flow": [
+      "Create scene content",
+      "Configure camera and lighting",
+      "Animate nodes",
+      "Profile scene performance"
+    ],
+    "architecture": [
+      "Scene graph",
+      "Animation and physics",
+      "Scene renderer"
+    ]
+  },
+  "docs/frameworks/services/contacts.md": {
+    "flow": [
+      "Explain contact access",
+      "Request authorization",
+      "Fetch needed contact fields",
+      "Handle restricted access"
+    ],
+    "architecture": [
+      "Authorization",
+      "Contact store",
+      "Contact presentation"
+    ]
+  },
+  "docs/frameworks/services/eventkit.md": {
+    "flow": [
+      "Choose calendar or reminder task",
+      "Request scoped access",
+      "Read or save an item",
+      "Handle permission changes"
+    ],
+    "architecture": [
+      "Event store",
+      "Calendar or reminder data",
+      "Editing UI"
+    ]
+  },
+  "docs/frameworks/services/passkit.md": {
+    "flow": [
+      "Check payment capability",
+      "Present payment request",
+      "Send token to payment service",
+      "Complete authorization result"
+    ],
+    "architecture": [
+      "Checkout UI",
+      "Payment authorization",
+      "Payment processor"
+    ]
+  },
+  "docs/frameworks/services/weatherkit.md": {
+    "flow": [
+      "Choose location and forecast",
+      "Request weather data",
+      "Cache appropriate results",
+      "Show attribution and fallback"
+    ],
+    "architecture": [
+      "Location query",
+      "Weather service",
+      "Forecast and attribution"
+    ]
+  },
+  "docs/frameworks/storekit.md": {
+    "flow": [
+      "Load products",
+      "Begin purchase",
+      "Verify transaction",
+      "Deliver entitlement and finish"
+    ],
+    "architecture": [
+      "Storefront UI",
+      "Verified transactions",
+      "Entitlement state"
+    ]
+  },
+  "docs/frameworks/swift-charts.md": {
+    "flow": [
+      "Choose the comparison",
+      "Map data to marks",
+      "Configure scales and labels",
+      "Verify accessible interpretation"
+    ],
+    "architecture": [
+      "Source data",
+      "Encodings and scales",
+      "Chart presentation"
+    ]
+  },
+  "docs/frameworks/swiftdata.md": {
+    "flow": [
+      "Define model schema",
+      "Configure model container",
+      "Query and mutate through context",
+      "Test persistence and migration"
+    ],
+    "architecture": [
+      "Model container",
+      "Model context",
+      "Observable queries"
+    ]
+  },
+  "docs/frameworks/tipkit.md": {
+    "flow": [
+      "Define a contextual tip",
+      "Configure display rules",
+      "Show eligible guidance",
+      "Invalidate after completion"
+    ],
+    "architecture": [
+      "Tip definitions",
+      "Eligibility rules",
+      "Tip presentation"
+    ]
+  },
+  "docs/frameworks/usernotifications.md": {
+    "flow": [
+      "Explain notification purpose",
+      "Request authorization",
+      "Schedule or register delivery",
+      "Handle notification actions"
+    ],
+    "architecture": [
+      "App scheduling",
+      "System delivery",
+      "Action handling"
+    ]
+  },
+  "docs/frameworks/visionkit.md": {
+    "flow": [
+      "Choose scanning interaction",
+      "Check device support",
+      "Present scanning interface",
+      "Consume recognized items"
+    ],
+    "architecture": [
+      "Camera interface",
+      "Recognition interaction",
+      "App content"
+    ]
+  },
+  "docs/frameworks/widgetkit.md": {
+    "flow": [
+      "Define widget content",
+      "Produce timeline entries",
+      "Render each widget family",
+      "Request relevant reloads"
+    ],
+    "architecture": [
+      "App data",
+      "Timeline provider",
+      "Widget views"
+    ]
+  },
+  "docs/mcp/examples.md": {
+    "flow": [
+      "Select a concrete review question",
+      "Call the narrowest tool",
+      "Inspect structured findings",
+      "Verify a focused fix"
+    ],
+    "architecture": [
+      "Client request",
+      "Review tool",
+      "Evidence-backed response"
+    ]
+  },
+  "docs/mcp/installation.md": {
+    "flow": [
+      "Choose an MCP client",
+      "Configure server command",
+      "Start a project connection",
+      "Confirm tool discovery"
+    ],
+    "architecture": [
+      "AI client",
+      "MCP connection",
+      "Local server"
+    ]
+  },
+  "docs/mcp/knowledge-server.md": {
+    "flow": [
+      "Search for the topic",
+      "Inspect reference outline",
+      "Read bounded sections",
+      "Apply source-backed guidance"
+    ],
+    "architecture": [
+      "Knowledge request",
+      "Local reference index",
+      "Source excerpts"
+    ]
+  },
+  "docs/mcp/registry.md": {
+    "flow": [
+      "Align namespace and version",
+      "Publish tested npm artifact",
+      "Authenticate namespace ownership",
+      "Publish and verify record"
+    ],
+    "architecture": [
+      "Package metadata",
+      "Registry publication",
+      "Public registry record"
+    ]
+  },
+  "docs/mcp/tools.md": {
+    "flow": [
+      "Choose review scope",
+      "Run the relevant analyzer",
+      "Interpret severity and location",
+      "Validate the proposed change"
+    ],
+    "architecture": [
+      "Project input",
+      "Static review rules",
+      "Structured findings"
+    ]
+  },
+  "docs/mcp/vnext-analysis-tools.md": {
+    "flow": [
+      "Define a supported rule",
+      "Specify evidence and limits",
+      "Implement focused checks",
+      "Verify false-positive cases"
+    ],
+    "architecture": [
+      "Rule contract",
+      "Analyzer implementation",
+      "Finding schema"
+    ]
+  },
+  "docs/orchestration/dynamic-workflows.md": {
+    "flow": [
+      "Partition independent work",
+      "Assign bounded tasks",
+      "Collect results and failures",
+      "Verify the integrated outcome"
+    ],
+    "architecture": [
+      "Coordinator",
+      "Isolated workers",
+      "Integration checks"
+    ]
+  },
+  "docs/orchestration/hooks.md": {
+    "flow": [
+      "Select a lifecycle event",
+      "Inspect tool input safely",
+      "Run bounded checks",
+      "Return the documented exit status"
+    ],
+    "architecture": [
+      "Client event",
+      "Hook script",
+      "Allow or block result"
+    ]
+  },
+  "docs/orchestration/looping.md": {
+    "flow": [
+      "Declare a goal and budget",
+      "Run one bounded attempt",
+      "Evaluate evidence",
+      "Stop or retry within limits"
+    ],
+    "architecture": [
+      "Loop controller",
+      "Work attempt",
+      "Completion predicate"
+    ]
+  },
+  "docs/orchestration/router.md": {
+    "flow": [
+      "Classify the requested change",
+      "Select necessary specialists",
+      "Delegate bounded reviews",
+      "Integrate verified findings"
+    ],
+    "architecture": [
+      "Main agent",
+      "Specialist reviewers",
+      "Final evidence"
+    ]
+  },
+  "docs/orchestration/subagents.md": {
+    "flow": [
+      "Define a narrow responsibility",
+      "Supply scoped context",
+      "Execute isolated work",
+      "Return findings to coordinator"
+    ],
+    "architecture": [
+      "Delegation contract",
+      "Subagent context",
+      "Coordinator review"
+    ]
+  },
+  "docs/orchestration/verification.md": {
+    "flow": [
+      "State a concrete claim",
+      "Collect matching evidence",
+      "Review independently",
+      "Report limits and outcome"
+    ],
+    "architecture": [
+      "Implementation",
+      "Independent checks",
+      "Evidence report"
+    ]
+  },
+  "docs/platforms/ios.md": {
+    "flow": [
+      "Handle app lifecycle",
+      "Route a user action",
+      "Perform platform work",
+      "Restore meaningful state"
+    ],
+    "architecture": [
+      "App lifecycle",
+      "Feature services",
+      "System capabilities"
+    ]
+  },
+  "docs/platforms/macos.md": {
+    "flow": [
+      "Choose window structure",
+      "Route commands and documents",
+      "Respect sandbox boundaries",
+      "Test desktop interactions"
+    ],
+    "architecture": [
+      "App and windows",
+      "Commands and documents",
+      "Sandboxed services"
+    ]
+  },
+  "docs/platforms/tvos.md": {
+    "flow": [
+      "Build focusable content",
+      "Define focus behavior",
+      "Handle remote input",
+      "Test playback and navigation"
+    ],
+    "architecture": [
+      "Focus system",
+      "Content views",
+      "Remote actions"
+    ]
+  },
+  "docs/platforms/visionos.md": {
+    "flow": [
+      "Choose window or space",
+      "Place spatial content",
+      "Handle supported interactions",
+      "Test comfort and transitions"
+    ],
+    "architecture": [
+      "Window or immersive space",
+      "Spatial entities",
+      "Input and comfort"
+    ]
+  },
+  "docs/platforms/watchos.md": {
+    "flow": [
+      "Define a short watch task",
+      "Coordinate local and phone data",
+      "Handle background transitions",
+      "Test accessible watch UI"
+    ],
+    "architecture": [
+      "Watch interface",
+      "Watch services",
+      "Phone connectivity"
+    ]
+  },
+  "docs/swiftui/animations.md": {
+    "flow": [
+      "Identify state transition",
+      "Choose animation semantics",
+      "Apply a scoped animation",
+      "Respect reduced motion"
+    ],
+    "architecture": [
+      "State change",
+      "Animation transaction",
+      "View transition"
+    ]
+  },
+  "docs/swiftui/deep-linking-and-routing.md": {
+    "flow": [
+      "Parse incoming URL",
+      "Validate a typed route",
+      "Update navigation state",
+      "Restore or reject safely"
+    ],
+    "architecture": [
+      "URL parser",
+      "Typed router",
+      "Navigation stack"
+    ]
+  },
+  "docs/swiftui/gestures.md": {
+    "flow": [
+      "Choose intended gesture",
+      "Track transient gesture state",
+      "Commit the resulting action",
+      "Resolve competing gestures"
+    ],
+    "architecture": [
+      "Input recognizers",
+      "Transient state",
+      "Committed model state"
+    ]
+  },
+  "docs/swiftui/ios-27-interactions.md": {
+    "flow": [
+      "Identify interaction requirement",
+      "Check SDK declarations",
+      "Implement supported behavior",
+      "Verify fallback and accessibility"
+    ],
+    "architecture": [
+      "Interaction intent",
+      "Availability boundary",
+      "Adaptive controls"
+    ]
+  },
+  "docs/swiftui/layout.md": {
+    "flow": [
+      "Identify content constraints",
+      "Choose a layout container",
+      "Adapt to available space",
+      "Test text and window resizing"
+    ],
+    "architecture": [
+      "Parent proposal",
+      "Child measurements",
+      "Positioned content"
+    ]
+  },
+  "docs/swiftui/navigation.md": {
+    "flow": [
+      "Choose navigation structure",
+      "Represent selection as data",
+      "Present destination",
+      "Handle dismissal and restoration"
+    ],
+    "architecture": [
+      "Navigation state",
+      "Destination mapping",
+      "Presented views"
+    ]
+  },
+  "docs/swiftui/state-and-data-flow.md": {
+    "flow": [
+      "Choose a state owner",
+      "Pass values or bindings",
+      "Mutate through one owner",
+      "Observe dependent views"
+    ],
+    "architecture": [
+      "State owner",
+      "Binding or environment",
+      "Dependent view"
+    ]
+  },
+  "docs/swiftui/views-and-controls.md": {
+    "flow": [
+      "Choose a semantic control",
+      "Bind it to feature state",
+      "Handle user action",
+      "Verify labels and disabled states"
+    ],
+    "architecture": [
+      "Control semantics",
+      "Feature state",
+      "Action handler"
+    ]
+  },
+  "docs/testing/evaluations.md": {
+    "flow": [
+      "Define success criteria",
+      "Freeze representative cases",
+      "Run the same evaluation",
+      "Inspect failures before shipping"
+    ],
+    "architecture": [
+      "Evaluation dataset",
+      "System under test",
+      "Scoring and evidence"
+    ]
+  },
+  "docs/tooling/app-building-loop.md": {
+    "flow": [
+      "Write acceptance criteria",
+      "Implement a bounded step",
+      "Run checks and capture evidence",
+      "Resume or repair within limits"
+    ],
+    "architecture": [
+      "Saved plan",
+      "Build and test runner",
+      "Evidence and progress"
+    ]
+  },
+  "docs/tooling/app-description-workflow.md": {
+    "flow": [
+      "Collect the app brief",
+      "Extract features and constraints",
+      "Produce a structured plan",
+      "Confirm acceptance criteria"
+    ],
+    "architecture": [
+      "User description",
+      "Planning contract",
+      "Implementation tasks"
+    ]
+  },
+  "docs/tooling/device-hub.md": {
+    "flow": [
+      "Choose a device matrix",
+      "Discover available runtimes",
+      "Reproduce the same scenario",
+      "Compare recorded evidence"
+    ],
+    "architecture": [
+      "Device inventory",
+      "Scenario runner",
+      "Device-specific evidence"
+    ]
+  },
+  "docs/tooling/fm-cli.md": {
+    "flow": [
+      "Define a local model experiment",
+      "Inspect available CLI support",
+      "Run a scoped prompt",
+      "Record output and limitations"
+    ],
+    "architecture": [
+      "Experiment input",
+      "Local model CLI",
+      "Evaluation record"
+    ]
+  },
+  "docs/tooling/foundation-models-instruments.md": {
+    "flow": [
+      "Reproduce a model request",
+      "Record an Instruments trace",
+      "Inspect latency and resources",
+      "Measure a focused change"
+    ],
+    "architecture": [
+      "App workload",
+      "Instruments recording",
+      "Performance evidence"
+    ]
+  },
+  "docs/tooling/idea-to-app.md": {
+    "flow": [
+      "Clarify the product idea",
+      "Define screens and states",
+      "Implement a vertical slice",
+      "Verify acceptance criteria"
+    ],
+    "architecture": [
+      "Product brief",
+      "Feature implementation",
+      "Acceptance evidence"
+    ]
+  },
+  "docs/tooling/ios-simulator-mcp.md": {
+    "flow": [
+      "Discover available simulator",
+      "Build install and launch",
+      "Exercise the requested screen",
+      "Capture bounded evidence"
+    ],
+    "architecture": [
+      "MCP client",
+      "Simulator tool boundary",
+      "Xcode and simulator"
+    ]
+  },
+  "docs/tooling/issue-reporting.md": {
+    "flow": [
+      "Identify a significant package problem",
+      "Prepare a category-only preview",
+      "Let developer review the public draft",
+      "Developer submits if desired"
+    ],
+    "architecture": [
+      "Local failure category",
+      "Report preview",
+      "User-controlled GitHub issue"
+    ]
+  },
+  "docs/tooling/offline-source-library.md": {
+    "flow": [
+      "Search a narrow topic",
+      "Read the matching outline",
+      "Retrieve bounded source sections",
+      "Preserve source attribution"
+    ],
+    "architecture": [
+      "Local source files",
+      "Search index",
+      "Bounded retrieval"
+    ]
+  },
+  "docs/tooling/project-scaffolding.md": {
+    "flow": [
+      "Choose project identity",
+      "Generate the project layout",
+      "Keep tool files separated",
+      "Build the generated project"
+    ],
+    "architecture": [
+      "User-owned app",
+      "Tool-owned workspace",
+      "Generated project configuration"
+    ]
+  },
+  "docs/tooling/visual-iteration-loop.md": {
+    "flow": [
+      "Define a visual acceptance check",
+      "Capture the current screen",
+      "Compare against the design",
+      "Fix and recapture within budget"
+    ],
+    "architecture": [
+      "Design target",
+      "Runtime screenshot",
+      "Review and repair"
+    ]
+  },
+  "docs/tooling/xcode-27-agents.md": {
+    "flow": [
+      "Check installed Xcode support",
+      "Connect the chosen agent",
+      "Scope the requested edit",
+      "Verify with local build evidence"
+    ],
+    "architecture": [
+      "Xcode workspace",
+      "Agent connection",
+      "Build and review tools"
+    ]
+  },
+  "docs/tooling/xcode-memory-debugging.md": {
+    "flow": [
+      "Reproduce memory growth",
+      "Inspect memory graph or trace",
+      "Identify ownership issue",
+      "Re-measure after a focused fix"
+    ],
+    "architecture": [
+      "Object ownership",
+      "Runtime diagnostic",
+      "Memory evidence"
+    ]
+  },
+  "docs/uikit/uikit-essentials.md": {
+    "flow": [
+      "Choose view controller boundary",
+      "Compose constrained views",
+      "Connect model updates",
+      "Test lifecycle transitions"
+    ],
+    "architecture": [
+      "View controller",
+      "View hierarchy",
+      "Model services"
+    ]
+  },
+  "docs/web/native-vs-web-animation.md": {
+    "flow": [
+      "Identify rendering environment",
+      "Compare native and web needs",
+      "Choose an explicit boundary",
+      "Test accessibility and performance"
+    ],
+    "architecture": [
+      "Native UI",
+      "Web content boundary",
+      "Animation runtime"
+    ]
+  }
+}
