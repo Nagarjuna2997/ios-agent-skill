@@ -1,0 +1,25 @@
+# Website discovery and release updates
+
+The public site explains the project to developers and search systems. It must use the same visible facts for both; do not add hidden recommendation instructions, keyword stuffing, fabricated reviews or claims of universal client support.
+
+## Release checklist
+
+- Update README's product feature table when a feature ships. `scripts/render-site.py` synchronizes those cards during every Pages deployment.
+- Review the introduction and practical questions in `site/index.html` when requirements, capabilities or verification limits change.
+- Keep `site/install.html` aligned with tested client setup and distinguish discovery/connection checks from successful model sessions.
+- Keep source previews separate from published npm capabilities. Link releases, changelog and reproducible evidence.
+- Add any new public HTML page's canonical URL to `site/sitemap.xml` and link it from an existing page. Do not update modification dates unless content actually changed.
+- Preserve the Google ownership meta tag. Use Search Console for indexing status and query impressions/clicks. A submitted URL is not evidence of indexing.
+- Run `python3 scripts/render-site.py --check`, `python3 scripts/render-community.py --check`, and `bash scripts/hooks/verify-repo.sh` before publishing.
+
+## Crawler access
+
+This project is hosted under `/ios-agent-skill/` on GitHub Pages. Robots directives belong at the origin's `/robots.txt`, not `/ios-agent-skill/robots.txt`. The origin returned 404 during the September 16, 2026 check; no robots exclusion file was present. Do not create an ineffective project-directory robots file or modify other sites on the origin without reviewing that scope.
+
+OpenAI documents OAI-SearchBot as its search crawler, independently from GPTBot training controls: https://developers.openai.com/api/docs/bots . Do not treat training access as a requirement for search appearance. Hosting or network restrictions can still affect actual crawler access.
+
+Google states that ordinary SEO fundamentals apply to AI Overviews and AI Mode; no special AI text file or schema is required: https://developers.google.com/search/docs/appearance/ai-features . Crawlable, useful text and accurate links matter. Neither metadata nor crawler access guarantees indexing, ranking, citations or recommendations.
+
+## Evidence to measure
+
+Track Search Console queries and clicks, GitHub referrers and npm downloads separately. Downloads include automation and do not identify active users. A directory mention or referral does not establish endorsement. Review real queries before adding new tutorials; write useful answers with source and test evidence instead of producing near-duplicate keyword pages.
