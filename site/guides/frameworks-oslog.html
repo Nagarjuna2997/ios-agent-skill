@@ -1,0 +1,385 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>OSLog &amp; MetricKit — iOS Agent Skill</title><meta name="description" content="Repository guidance for OSLog. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-oslog.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="OSLog &amp; MetricKit"><meta property="og:description" content="Repository guidance for OSLog. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-oslog.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "OSLog & MetricKit", "description": "Repository guidance for OSLog. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-oslog.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">System Integration · Reference guide</p><h1>OSLog &amp; MetricKit</h1><p class="lead">Repository guidance for OSLog. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/frameworks/oslog.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#logger-struct-ios-14">Logger Struct (iOS 14+)</a></li>
+<li><a href="#log-levels">Log Levels</a></li>
+<li><a href="#string-interpolation-privacy">String Interpolation Privacy</a></li>
+<li><a href="#os_signpost-for-performance-profiling">os_signpost for Performance Profiling</a></li>
+<li><a href="#structured-logging-utility">Structured Logging Utility</a></li>
+<li><a href="#mxmetricmanager-metrickit">MXMetricManager (MetricKit)</a></li>
+<li><a href="#xcode-instruments-integration">Xcode Instruments Integration</a></li>
+<li><a href="#complete-logging-setup-example">Complete Logging Setup Example</a></li>
+</ul>
+</div>
+</aside><h2 id="logger-struct-ios-14">Logger Struct (iOS 14+)</h2>
+<pre><code class="language-swift">import OSLog
+
+extension Logger {
+    /// Bundle identifier as default subsystem
+    private static let subsystem = Bundle.main.bundleIdentifier ?? &quot;com.yourapp&quot;
+
+    /// Loggers organized by category
+    static let network = Logger(subsystem: subsystem, category: &quot;Network&quot;)
+    static let ui = Logger(subsystem: subsystem, category: &quot;UI&quot;)
+    static let data = Logger(subsystem: subsystem, category: &quot;DataStore&quot;)
+    static let auth = Logger(subsystem: subsystem, category: &quot;Authentication&quot;)
+    static let payment = Logger(subsystem: subsystem, category: &quot;Payment&quot;)
+    static let sync = Logger(subsystem: subsystem, category: &quot;Sync&quot;)
+}
+</code></pre>
+<h2 id="log-levels">Log Levels</h2>
+<pre><code class="language-swift">func demonstrateLogLevels() {
+    // .debug — Verbose developer info. Not persisted by default. Not collected in production.
+    Logger.network.debug(&quot;Request headers: \(headers)&quot;)
+
+    // .info — Helpful but not essential. Persisted only during log collect.
+    Logger.network.info(&quot;Starting request to \(endpoint)&quot;)
+
+    // .notice (default) — Essential for troubleshooting. Persisted up to storage limit.
+    Logger.auth.notice(&quot;User signed in successfully&quot;)
+
+    // .error — Error conditions. Always persisted.
+    Logger.data.error(&quot;Failed to save context: \(error.localizedDescription)&quot;)
+
+    // .fault — Bug in the program. Always persisted. Captures calling process info.
+    Logger.data.fault(&quot;Core Data stack not initialized — this should never happen&quot;)
+}
+</code></pre>
+<h2 id="string-interpolation-privacy">String Interpolation Privacy</h2>
+<pre><code class="language-swift">func logWithPrivacy(userId: String, email: String, itemCount: Int) {
+    // Default: dynamic strings are PRIVATE (redacted in production logs)
+    Logger.auth.info(&quot;User logged in: \(userId)&quot;)
+    // Output in production: &quot;User logged in: &lt;private&gt;&quot;
+
+    // Explicitly mark as public when safe
+    Logger.ui.info(&quot;Screen loaded: \(screenName, privacy: .public)&quot;)
+
+    // Mark as private (default for dynamic values)
+    Logger.auth.info(&quot;Email: \(email, privacy: .private)&quot;)
+
+    // Hash private data for correlation without revealing values
+    Logger.auth.info(&quot;User hash: \(email, privacy: .private(mask: .hash))&quot;)
+
+    // Numeric values are PUBLIC by default
+    Logger.data.info(&quot;Items count: \(itemCount)&quot;)
+
+    // Format specifiers
+    Logger.payment.info(&quot;Amount: \(amount, format: .fixed(precision: 2), privacy: .private)&quot;)
+
+    // Boolean and numeric types
+    Logger.network.debug(&quot;Cache hit: \(isCached, privacy: .public), size: \(responseSize) bytes&quot;)
+}
+</code></pre>
+<h2 id="os_signpost-for-performance-profiling">os_signpost for Performance Profiling</h2>
+<pre><code class="language-swift">import os
+
+// Create a signpost log
+let pointsOfInterest = OSLog(subsystem: &quot;com.yourapp&quot;, category: .pointsOfInterest)
+let networkLog = OSLog(subsystem: &quot;com.yourapp.network&quot;, category: &quot;Requests&quot;)
+
+// Mark an interval (begin + end)
+func fetchData() async throws -&gt; Data {
+    let signpostID = OSSignpostID(log: networkLog)
+
+    os_signpost(.begin, log: networkLog, name: &quot;FetchData&quot;, signpostID: signpostID,
+                &quot;URL: %{public}@&quot;, url.absoluteString)
+
+    let (data, _) = try await URLSession.shared.data(from: url)
+
+    os_signpost(.end, log: networkLog, name: &quot;FetchData&quot;, signpostID: signpostID,
+                &quot;Received %d bytes&quot;, data.count)
+
+    return data
+}
+
+// Mark a single event (point of interest)
+func userTappedCheckout() {
+    os_signpost(.event, log: pointsOfInterest, name: &quot;Checkout&quot;, &quot;User tapped checkout button&quot;)
+}
+
+// Modern signpost API (iOS 15+)
+let signposter = OSSignposter(subsystem: &quot;com.yourapp&quot;, category: &quot;Performance&quot;)
+
+func modernSignpostExample() async throws {
+    let state = signposter.beginInterval(&quot;DataLoad&quot;)
+
+    let data = try await loadData()
+    signposter.emitEvent(&quot;DataReceived&quot;, &quot;\(data.count) bytes&quot;)
+
+    signposter.endInterval(&quot;DataLoad&quot;, state)
+}
+
+// Automatic interval with withIntervalSignpost
+func automaticSignpost() async throws -&gt; [Item] {
+    try await signposter.withIntervalSignpost(&quot;FetchItems&quot;) {
+        try await api.fetchItems()
+    }
+}
+</code></pre>
+<h2 id="structured-logging-utility">Structured Logging Utility</h2>
+<pre><code class="language-swift">import OSLog
+
+/// Centralized logging with context
+enum AppLogger {
+    private static let logger = Logger(
+        subsystem: Bundle.main.bundleIdentifier ?? &quot;com.yourapp&quot;,
+        category: &quot;App&quot;
+    )
+
+    static func logNetworkRequest(
+        method: String,
+        url: URL,
+        statusCode: Int?,
+        duration: TimeInterval,
+        error: Error? = nil
+    ) {
+        if let error {
+            Logger.network.error(&quot;&quot;&quot;
+                Network error — \(method, privacy: .public) \(url.absoluteString, privacy: .public) \
+                status=\(statusCode ?? 0) \
+                duration=\(duration, format: .fixed(precision: 3))s \
+                error=\(error.localizedDescription)
+                &quot;&quot;&quot;)
+        } else {
+            Logger.network.info(&quot;&quot;&quot;
+                Network — \(method, privacy: .public) \(url.absoluteString, privacy: .public) \
+                status=\(statusCode ?? 0) \
+                duration=\(duration, format: .fixed(precision: 3))s
+                &quot;&quot;&quot;)
+        }
+    }
+
+    static func logUserAction(_ action: String, screen: String, metadata: [String: String] = [:]) {
+        let metaString = metadata.map { &quot;\($0.key)=\($0.value)&quot; }.joined(separator: &quot;, &quot;)
+        Logger.ui.notice(&quot;Action: \(action, privacy: .public) screen=\(screen, privacy: .public) \(metaString)&quot;)
+    }
+
+    static func logAppLifecycle(_ event: String) {
+        logger.notice(&quot;Lifecycle: \(event, privacy: .public)&quot;)
+    }
+}
+</code></pre>
+<h2 id="mxmetricmanager-metrickit">MXMetricManager (MetricKit)</h2>
+<pre><code class="language-swift">import MetricKit
+
+final class MetricsManager: NSObject, MXMetricManagerSubscriber {
+    static let shared = MetricsManager()
+
+    func startCollecting() {
+        MXMetricManager.shared.add(self)
+    }
+
+    func stopCollecting() {
+        MXMetricManager.shared.remove(self)
+    }
+
+    // Called once per day with aggregated metrics
+    func didReceive(_ payloads: [MXMetricPayload]) {
+        for payload in payloads {
+            processMetricPayload(payload)
+        }
+    }
+
+    // Called when diagnostic reports are available
+    func didReceive(_ payloads: [MXDiagnosticPayload]) {
+        for payload in payloads {
+            processDiagnosticPayload(payload)
+        }
+    }
+
+    private func processMetricPayload(_ payload: MXMetricPayload) {
+        // Launch time
+        if let launchMetrics = payload.applicationLaunchMetrics {
+            let resumeTime = launchMetrics.histogrammedTimeToFirstDraw
+            Logger.data.info(&quot;Launch histogram: \(resumeTime)&quot;)
+        }
+
+        // Responsiveness (hang rate)
+        if let responsiveness = payload.applicationResponsivenessMetrics {
+            let hangTime = responsiveness.histogrammedApplicationHangTime
+            Logger.data.info(&quot;Hang time histogram: \(hangTime)&quot;)
+        }
+
+        // CPU
+        if let cpu = payload.cpuMetrics {
+            let cumulativeCPUTime = cpu.cumulativeCPUTime
+            Logger.data.info(&quot;CPU time: \(cumulativeCPUTime)&quot;)
+        }
+
+        // Memory
+        if let memory = payload.memoryMetrics {
+            let peakMemory = memory.peakMemoryUsage
+            Logger.data.info(&quot;Peak memory: \(peakMemory)&quot;)
+        }
+
+        // Disk I/O
+        if let disk = payload.diskIOMetrics {
+            let writes = disk.cumulativeLogicalWrites
+            Logger.data.info(&quot;Disk writes: \(writes)&quot;)
+        }
+
+        // Network
+        if let network = payload.networkTransferMetrics {
+            let upload = network.cumulativeCellularUpload
+            let download = network.cumulativeCellularDownload
+            Logger.data.info(&quot;Cellular: up=\(upload), down=\(download)&quot;)
+        }
+
+        // Export as JSON for server-side analytics
+        let jsonData = payload.jsonRepresentation()
+        sendToAnalyticsServer(jsonData)
+    }
+
+    private func processDiagnosticPayload(_ payload: MXDiagnosticPayload) {
+        // Crash diagnostics
+        if let crashes = payload.crashDiagnostics {
+            for crash in crashes {
+                Logger.data.fault(&quot;Crash: \(crash.jsonRepresentation())&quot;)
+                let callStack = crash.callStackTree
+                // Analyze call stack for crash root cause
+            }
+        }
+
+        // Hang diagnostics
+        if let hangs = payload.hangDiagnostics {
+            for hang in hangs {
+                let duration = hang.hangDuration
+                Logger.data.error(&quot;Hang detected: \(duration)s&quot;)
+            }
+        }
+
+        // Disk write diagnostics
+        if let diskWrites = payload.diskWriteExceptionDiagnostics {
+            for diagnostic in diskWrites {
+                let totalWrites = diagnostic.totalWritesCaused
+                Logger.data.error(&quot;Excessive disk writes: \(totalWrites)&quot;)
+            }
+        }
+
+        // CPU exceptions
+        if let cpuExceptions = payload.cpuExceptionDiagnostics {
+            for exception in cpuExceptions {
+                let totalCPU = exception.totalCPUTime
+                Logger.data.error(&quot;CPU exception: \(totalCPU)s&quot;)
+            }
+        }
+    }
+
+    private func sendToAnalyticsServer(_ data: Data) {
+        // Upload payload JSON to your analytics backend
+    }
+}
+</code></pre>
+<h2 id="xcode-instruments-integration">Xcode Instruments Integration</h2>
+<pre><code class="language-swift">/// Custom OSLog categories map to Instruments categories
+/// View in Instruments &gt; Logging &gt; your subsystem
+
+// For Instruments profiling, use os_signpost:
+import os
+
+final class InstrumentsHelper {
+    private static let log = OSLog(subsystem: &quot;com.yourapp&quot;, category: &quot;Performance&quot;)
+
+    /// Wrap any async operation with Instruments-visible signpost
+    static func measure&lt;T&gt;(
+        _ name: StaticString,
+        _ operation: () async throws -&gt; T
+    ) async rethrows -&gt; T {
+        let id = OSSignpostID(log: log)
+        os_signpost(.begin, log: log, name: name, signpostID: id)
+        let result = try await operation()
+        os_signpost(.end, log: log, name: name, signpostID: id)
+        return result
+    }
+
+    /// Measure synchronous work
+    static func measureSync&lt;T&gt;(
+        _ name: StaticString,
+        _ operation: () throws -&gt; T
+    ) rethrows -&gt; T {
+        let id = OSSignpostID(log: log)
+        os_signpost(.begin, log: log, name: name, signpostID: id)
+        let result = try operation()
+        os_signpost(.end, log: log, name: name, signpostID: id)
+        return result
+    }
+}
+
+// Usage:
+// let items = await InstrumentsHelper.measure(&quot;LoadItems&quot;) {
+//     try await api.fetchItems()
+// }
+</code></pre>
+<h2 id="complete-logging-setup-example">Complete Logging Setup Example</h2>
+<pre><code class="language-swift">import SwiftUI
+import OSLog
+import MetricKit
+
+@main
+struct MyApp: App {
+    @State private var metricsManager = MetricsManager.shared
+
+    init() {
+        MetricsManager.shared.startCollecting()
+        AppLogger.logAppLifecycle(&quot;App launched&quot;)
+    }
+
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+                .onOpenURL { url in
+                    Logger.ui.info(&quot;Opened URL: \(url.absoluteString, privacy: .public)&quot;)
+                }
+        }
+    }
+}
+
+// Network layer with structured logging
+final class LoggingHTTPClient {
+    private let session: URLSession
+    private let signposter = OSSignposter(subsystem: &quot;com.yourapp&quot;, category: &quot;HTTP&quot;)
+
+    init(session: URLSession = .shared) {
+        self.session = session
+    }
+
+    func request(_ urlRequest: URLRequest) async throws -&gt; (Data, HTTPURLResponse) {
+        let method = urlRequest.httpMethod ?? &quot;GET&quot;
+        let url = urlRequest.url!
+
+        Logger.network.info(&quot;Starting \(method, privacy: .public) \(url.absoluteString, privacy: .public)&quot;)
+
+        let state = signposter.beginInterval(&quot;HTTP&quot;, &quot;\(method) \(url.path())&quot;)
+        let start = CFAbsoluteTimeGetCurrent()
+
+        do {
+            let (data, response) = try await session.data(for: urlRequest)
+            let httpResponse = response as! HTTPURLResponse
+            let duration = CFAbsoluteTimeGetCurrent() - start
+
+            signposter.endInterval(&quot;HTTP&quot;, state)
+
+            AppLogger.logNetworkRequest(
+                method: method,
+                url: url,
+                statusCode: httpResponse.statusCode,
+                duration: duration
+            )
+
+            return (data, httpResponse)
+        } catch {
+            let duration = CFAbsoluteTimeGetCurrent() - start
+            signposter.endInterval(&quot;HTTP&quot;, state)
+
+            AppLogger.logNetworkRequest(
+                method: method,
+                url: url,
+                statusCode: nil,
+                duration: duration,
+                error: error
+            )
+
+            throw error
+        }
+    }
+}
+</code></pre></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

@@ -1,0 +1,865 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>WidgetKit — iOS Agent Skill</title><meta name="description" content="Repository guidance for WidgetKit. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-widgetkit.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="WidgetKit"><meta property="og:description" content="Repository guidance for WidgetKit. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-widgetkit.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "WidgetKit", "description": "Repository guidance for WidgetKit. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-widgetkit.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Core UI and Apps · Reference guide</p><h1>WidgetKit</h1><p class="lead">Repository guidance for WidgetKit. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/frameworks/widgetkit.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#widget-protocol-and-configuration">Widget Protocol and Configuration</a></li>
+<li><a href="#timelineprovider-placeholder-snapshot-timeline">TimelineProvider (Placeholder, Snapshot, Timeline)</a></li>
+<li><a href="#timelineentry-design">TimelineEntry Design</a></li>
+<li><a href="#widget-families-systemsmall-medium-large-extralarge">Widget Families (systemSmall, Medium, Large, ExtraLarge)</a></li>
+<li><a href="#lock-screen-widgets-accessory-families">Lock Screen Widgets (Accessory Families)</a></li>
+<li><a href="#widgetbundle-for-multiple-widgets">WidgetBundle for Multiple Widgets</a></li>
+<li><a href="#interactive-widgets-ios-17-buttontoggle">Interactive Widgets (iOS 17+ Button/Toggle)</a></li>
+<li><a href="#live-activities-and-activitykit">Live Activities and ActivityKit</a></li>
+<li><a href="#app-intent-configuration">App Intent Configuration</a></li>
+<li><a href="#reloading-widgets-from-the-main-app">Reloading Widgets from the Main App</a></li>
+<li><a href="#ios-18-additions">iOS 18+ Additions</a><ul>
+<li><a href="#controls-api-controlwidget">Controls API (ControlWidget)</a></li>
+<li><a href="#control-center-placement-and-sizing">Control Center Placement and Sizing</a></li>
+<li><a href="#live-activity-intents-ios-18">Live Activity Intents (iOS 18)</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</aside><p>WidgetKit enables glanceable, timely content on the Home Screen, Lock Screen, and StandBy mode. Widgets use SwiftUI for their views and a timeline-based system for updates.</p>
+<h2 id="widget-protocol-and-configuration">Widget Protocol and Configuration</h2>
+<pre><code class="language-swift">import WidgetKit
+import SwiftUI
+
+// Static configuration (no user configuration needed)
+struct SimpleWidget: Widget {
+    let kind: String = &quot;SimpleWidget&quot;
+
+    var body: some WidgetConfiguration {
+        StaticConfiguration(kind: kind, provider: SimpleProvider()) { entry in
+            SimpleWidgetView(entry: entry)
+                .containerBackground(.fill.tertiary, for: .widget)
+        }
+        .configurationDisplayName(&quot;Daily Summary&quot;)
+        .description(&quot;Shows your daily progress at a glance.&quot;)
+        .supportedFamilies([
+            .systemSmall, .systemMedium, .systemLarge,
+            .accessoryCircular, .accessoryRectangular, .accessoryInline
+        ])
+        .contentMarginsDisabled()  // iOS 17+: opt out of default content margins
+    }
+}
+
+// App Intent configuration (iOS 17+ user-configurable widget)
+struct ConfigurableWidget: Widget {
+    let kind: String = &quot;ConfigurableWidget&quot;
+
+    var body: some WidgetConfiguration {
+        AppIntentConfiguration(
+            kind: kind,
+            intent: SelectCategoryIntent.self,
+            provider: ConfigurableProvider()
+        ) { entry in
+            ConfigurableWidgetView(entry: entry)
+                .containerBackground(.fill.tertiary, for: .widget)
+        }
+        .configurationDisplayName(&quot;Category Widget&quot;)
+        .description(&quot;Shows items from a selected category.&quot;)
+        .supportedFamilies([.systemSmall, .systemMedium])
+    }
+}
+</code></pre>
+<h2 id="timelineprovider-placeholder-snapshot-timeline">TimelineProvider (Placeholder, Snapshot, Timeline)</h2>
+<pre><code class="language-swift">struct SimpleEntry: TimelineEntry {
+    let date: Date
+    let title: String
+    let value: Int
+    let icon: String
+}
+
+struct SimpleProvider: TimelineProvider {
+    // Shown while widget is loading. Must return synchronously.
+    func placeholder(in context: Context) -&gt; SimpleEntry {
+        SimpleEntry(date: .now, title: &quot;Loading...&quot;, value: 0, icon: &quot;star&quot;)
+    }
+
+    // Shown in the widget gallery and transient situations.
+    func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -&gt; Void) {
+        if context.isPreview {
+            // Return sample data for the gallery preview
+            completion(SimpleEntry(date: .now, title: &quot;Steps Today&quot;, value: 8432, icon: &quot;figure.walk&quot;))
+        } else {
+            // Fetch real data for transient display
+            let entry = SimpleEntry(date: .now, title: &quot;Steps Today&quot;, value: fetchStepCount(), icon: &quot;figure.walk&quot;)
+            completion(entry)
+        }
+    }
+
+    // Provides the timeline of entries that drive the widget's display.
+    func getTimeline(in context: Context, completion: @escaping (Timeline&lt;SimpleEntry&gt;) -&gt; Void) {
+        var entries: [SimpleEntry] = []
+        let currentDate = Date()
+
+        // Create entries for the next 5 hours
+        for hourOffset in 0..&lt;5 {
+            let entryDate = Calendar.current.date(byAdding: .hour, value: hourOffset, to: currentDate)!
+            let entry = SimpleEntry(
+                date: entryDate,
+                title: &quot;Steps Today&quot;,
+                value: fetchStepCount() + (hourOffset * 500),
+                icon: &quot;figure.walk&quot;
+            )
+            entries.append(entry)
+        }
+
+        // Timeline reload policies:
+        // .atEnd     - reload after the last entry's date passes
+        // .after(d)  - reload after a specific date
+        // .never     - only reload when the app explicitly requests it
+        let timeline = Timeline(entries: entries, policy: .atEnd)
+        completion(timeline)
+    }
+
+    private func fetchStepCount() -&gt; Int { return 8432 }
+}
+
+// Async provider using AppIntentTimelineProvider (cleaner async/await API)
+struct ConfigurableProvider: AppIntentTimelineProvider {
+    typealias Entry = SimpleEntry
+    typealias Intent = SelectCategoryIntent
+
+    func placeholder(in context: Context) -&gt; SimpleEntry {
+        SimpleEntry(date: .now, title: &quot;Loading...&quot;, value: 0, icon: &quot;star&quot;)
+    }
+
+    func snapshot(for configuration: SelectCategoryIntent, in context: Context) async -&gt; SimpleEntry {
+        SimpleEntry(date: .now, title: configuration.category?.name ?? &quot;All&quot;, value: 42, icon: &quot;star&quot;)
+    }
+
+    func timeline(for configuration: SelectCategoryIntent, in context: Context) async -&gt; Timeline&lt;SimpleEntry&gt; {
+        let entries = [
+            SimpleEntry(
+                date: .now,
+                title: configuration.category?.name ?? &quot;All&quot;,
+                value: 42,
+                icon: &quot;star&quot;
+            )
+        ]
+        return Timeline(entries: entries, policy: .after(.now.addingTimeInterval(3600)))
+    }
+}
+</code></pre>
+<h2 id="timelineentry-design">TimelineEntry Design</h2>
+<pre><code class="language-swift">// Rich timeline entry with multiple data points
+struct DashboardEntry: TimelineEntry {
+    let date: Date
+    let tasks: [TaskItem]
+    let completedCount: Int
+    let totalCount: Int
+    let streakDays: Int
+
+    var completionPercentage: Double {
+        guard totalCount &gt; 0 else { return 0 }
+        return Double(completedCount) / Double(totalCount)
+    }
+
+    static var preview: DashboardEntry {
+        DashboardEntry(
+            date: .now,
+            tasks: [
+                TaskItem(name: &quot;Morning workout&quot;, isComplete: true),
+                TaskItem(name: &quot;Read 30 minutes&quot;, isComplete: false),
+                TaskItem(name: &quot;Meditate&quot;, isComplete: true)
+            ],
+            completedCount: 5,
+            totalCount: 8,
+            streakDays: 12
+        )
+    }
+}
+
+struct TaskItem: Identifiable {
+    let id = UUID()
+    let name: String
+    let isComplete: Bool
+}
+</code></pre>
+<h2 id="widget-families-systemsmall-medium-large-extralarge">Widget Families (systemSmall, Medium, Large, ExtraLarge)</h2>
+<pre><code class="language-swift">struct SimpleWidgetView: View {
+    var entry: SimpleEntry
+
+    @Environment(\.widgetFamily) var family
+
+    var body: some View {
+        switch family {
+        case .systemSmall:
+            smallView
+        case .systemMedium:
+            mediumView
+        case .systemLarge:
+            largeView
+        case .systemExtraLarge:
+            extraLargeView  // iPad only
+        case .accessoryCircular:
+            circularView
+        case .accessoryRectangular:
+            rectangularView
+        case .accessoryInline:
+            inlineView
+        @unknown default:
+            smallView
+        }
+    }
+
+    // Home Screen small (~169x169 pt)
+    var smallView: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Image(systemName: entry.icon)
+                .font(.title2)
+                .foregroundStyle(.blue)
+            Spacer()
+            Text(entry.title)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            Text(&quot;\(entry.value)&quot;)
+                .font(.title.bold())
+                .contentTransition(.numericText())
+        }
+        .padding()
+        .widgetURL(URL(string: &quot;myapp://steps&quot;))
+    }
+
+    // Home Screen medium (~360x169 pt)
+    var mediumView: some View {
+        HStack {
+            smallView
+            Spacer()
+            VStack(alignment: .trailing) {
+                Text(&quot;Goal: 10,000&quot;)
+                    .font(.caption)
+                ProgressView(value: Double(entry.value), total: 10000)
+                    .tint(.blue)
+                Text(&quot;\(10000 - entry.value) remaining&quot;)
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+            .padding()
+        }
+    }
+
+    // Home Screen large (~360x376 pt)
+    var largeView: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            mediumView
+            Divider()
+            Text(&quot;Hourly Breakdown&quot;)
+                .font(.headline)
+            ForEach(0..&lt;4) { hour in
+                HStack {
+                    Text(&quot;\(hour + 9):00&quot;)
+                        .font(.caption.monospacedDigit())
+                    ProgressView(value: Double.random(in: 0.2...1.0))
+                        .tint(.blue)
+                }
+            }
+            Spacer()
+        }
+        .padding()
+    }
+
+    var extraLargeView: some View {
+        largeView // Customize further for iPad extra large
+    }
+}
+</code></pre>
+<h2 id="lock-screen-widgets-accessory-families">Lock Screen Widgets (Accessory Families)</h2>
+<pre><code class="language-swift">extension SimpleWidgetView {
+    // Lock Screen circular gauge
+    var circularView: some View {
+        Gauge(value: Double(entry.value), in: 0...10000) {
+            Image(systemName: entry.icon)
+        } currentValueLabel: {
+            Text(&quot;\(entry.value / 1000)k&quot;)
+                .font(.caption2)
+        }
+        .gaugeStyle(.accessoryCircular)
+    }
+
+    // Lock Screen rectangular
+    var rectangularView: some View {
+        VStack(alignment: .leading) {
+            Label(&quot;\(entry.value)&quot;, systemImage: entry.icon)
+                .font(.headline)
+            Text(entry.title)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            ProgressView(value: Double(entry.value), total: 10000)
+        }
+    }
+
+    // Lock Screen inline (single line of text beside clock)
+    var inlineView: some View {
+        Label(&quot;\(entry.value) \(entry.title)&quot;, systemImage: entry.icon)
+    }
+}
+
+// Rendering mode for lock screen
+// Lock Screen widgets are rendered in one of three modes:
+// - .vibrant: tinted semi-transparent material (iOS Lock Screen)
+// - .accented: tinted with user's chosen accent color (watchOS)
+// - .fullColor: standard colors (Home Screen)
+// Use @Environment(\.widgetRenderingMode) to adapt
+</code></pre>
+<h2 id="widgetbundle-for-multiple-widgets">WidgetBundle for Multiple Widgets</h2>
+<pre><code class="language-swift">@main
+struct MyWidgets: WidgetBundle {
+    var body: some Widget {
+        SimpleWidget()
+        ConfigurableWidget()
+        DashboardWidget()
+
+        if #available(iOS 18, *) {
+            ControlWidget()
+        }
+    }
+}
+</code></pre>
+<h2 id="interactive-widgets-ios-17-buttontoggle">Interactive Widgets (iOS 17+ Button/Toggle)</h2>
+<p>iOS 17 introduced interactive widgets with Button and Toggle that perform AppIntents directly from the widget.</p>
+<pre><code class="language-swift">import AppIntents
+
+// App Intent for toggling a task
+struct ToggleTaskIntent: AppIntent {
+    static var title: LocalizedStringResource = &quot;Toggle Task&quot;
+
+    @Parameter(title: &quot;Task ID&quot;)
+    var taskID: String
+
+    init() {}
+
+    init(taskID: String) {
+        self.taskID = taskID
+    }
+
+    func perform() async throws -&gt; some IntentResult {
+        let store = TaskStore.shared
+        store.toggleTask(id: taskID)
+
+        // Reload the widget timeline to reflect the change
+        WidgetCenter.shared.reloadTimelines(ofKind: &quot;TaskWidget&quot;)
+
+        return .result()
+    }
+}
+
+struct IncrementCountIntent: AppIntent {
+    static var title: LocalizedStringResource = &quot;Increment Counter&quot;
+
+    func perform() async throws -&gt; some IntentResult {
+        CounterStore.shared.increment()
+        WidgetCenter.shared.reloadTimelines(ofKind: &quot;CounterWidget&quot;)
+        return .result()
+    }
+}
+
+// Widget view with interactive elements
+struct InteractiveTaskWidget: View {
+    let entry: DashboardEntry
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(&quot;Tasks&quot;)
+                .font(.headline)
+
+            ForEach(entry.tasks) { task in
+                HStack {
+                    // Interactive toggle button
+                    Button(intent: ToggleTaskIntent(taskID: task.id.uuidString)) {
+                        Image(systemName: task.isComplete ? &quot;checkmark.circle.fill&quot; : &quot;circle&quot;)
+                            .foregroundStyle(task.isComplete ? .green : .secondary)
+                    }
+                    .buttonStyle(.plain)
+
+                    Text(task.name)
+                        .strikethrough(task.isComplete)
+                        .font(.subheadline)
+                }
+            }
+
+            Spacer()
+
+            // Interactive toggle
+            Toggle(isOn: entry.completedCount &gt; 0, intent: IncrementCountIntent()) {
+                Text(&quot;Focus Mode&quot;)
+            }
+            .toggleStyle(.switch)
+        }
+        .padding()
+    }
+}
+</code></pre>
+<h2 id="live-activities-and-activitykit">Live Activities and ActivityKit</h2>
+<pre><code class="language-swift">import ActivityKit
+
+// Define the attributes for the Live Activity
+struct DeliveryAttributes: ActivityAttributes {
+    // Dynamic content that changes over time
+    struct ContentState: Codable, Hashable {
+        var status: String
+        var estimatedArrival: Date
+        var driverName: String
+        var currentStep: Int  // 0: preparing, 1: picked up, 2: nearby, 3: delivered
+    }
+
+    // Static content set at creation
+    let orderNumber: String
+    let restaurantName: String
+}
+
+class LiveActivityManager {
+    var currentActivity: Activity&lt;DeliveryAttributes&gt;?
+
+    func startDeliveryTracking(orderNumber: String, restaurant: String) throws {
+        guard ActivityAuthorizationInfo().areActivitiesEnabled else {
+            print(&quot;Live Activities not enabled&quot;)
+            return
+        }
+
+        let attributes = DeliveryAttributes(
+            orderNumber: orderNumber,
+            restaurantName: restaurant
+        )
+
+        let initialState = DeliveryAttributes.ContentState(
+            status: &quot;Preparing your order&quot;,
+            estimatedArrival: .now.addingTimeInterval(1800),
+            driverName: &quot;Alex&quot;,
+            currentStep: 0
+        )
+
+        let content = ActivityContent(state: initialState, staleDate: nil)
+
+        currentActivity = try Activity.request(
+            attributes: attributes,
+            content: content,
+            pushType: .token  // .token for server push updates, nil for local-only
+        )
+
+        // Observe push token for server-driven updates
+        if let activity = currentActivity {
+            Task {
+                for await token in activity.pushTokenUpdates {
+                    let tokenString = token.map { String(format: &quot;%02x&quot;, $0) }.joined()
+                    print(&quot;Live Activity push token: \(tokenString)&quot;)
+                    // Send this token to your server
+                }
+            }
+        }
+    }
+
+    // Update the Live Activity locally
+    func updateDelivery(status: String, step: Int, eta: Date) async {
+        let updatedState = DeliveryAttributes.ContentState(
+            status: status,
+            estimatedArrival: eta,
+            driverName: &quot;Alex&quot;,
+            currentStep: step
+        )
+        let content = ActivityContent(state: updatedState, staleDate: nil)
+        await currentActivity?.update(content)
+    }
+
+    // End the Live Activity
+    func endDelivery() async {
+        let finalState = DeliveryAttributes.ContentState(
+            status: &quot;Delivered!&quot;,
+            estimatedArrival: .now,
+            driverName: &quot;Alex&quot;,
+            currentStep: 3
+        )
+        let content = ActivityContent(state: finalState, staleDate: nil)
+
+        // Dismissal policies:
+        // .default          - user can dismiss manually
+        // .immediate        - disappears right away
+        // .after(date)      - auto-dismiss after the specified date
+        await currentActivity?.end(content, dismissalPolicy: .after(.now.addingTimeInterval(300)))
+    }
+}
+
+// Live Activity UI (defined in your Widget extension target)
+struct DeliveryLiveActivity: Widget {
+    var body: some WidgetConfiguration {
+        ActivityConfiguration(for: DeliveryAttributes.self) { context in
+            // Lock Screen and banner presentation
+            VStack(spacing: 12) {
+                HStack {
+                    Text(context.attributes.restaurantName)
+                        .font(.headline)
+                    Spacer()
+                    Text(&quot;Order #\(context.attributes.orderNumber)&quot;)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+
+                ProgressView(value: Double(context.state.currentStep), total: 3)
+                    .tint(.green)
+
+                HStack {
+                    Label(context.state.status, systemImage: &quot;bicycle&quot;)
+                        .font(.subheadline)
+                    Spacer()
+                    Text(context.state.estimatedArrival, style: .timer)
+                        .font(.subheadline.monospacedDigit())
+                }
+            }
+            .padding()
+            .activityBackgroundTint(.black.opacity(0.8))
+            .activitySystemActionForegroundColor(.white)
+
+        } dynamicIsland: { context in
+            DynamicIsland {
+                DynamicIslandExpandedRegion(.leading) {
+                    Image(systemName: &quot;bicycle&quot;)
+                        .font(.title2)
+                }
+                DynamicIslandExpandedRegion(.trailing) {
+                    Text(context.state.estimatedArrival, style: .timer)
+                        .font(.caption.monospacedDigit())
+                }
+                DynamicIslandExpandedRegion(.center) {
+                    Text(context.attributes.restaurantName)
+                        .font(.headline)
+                }
+                DynamicIslandExpandedRegion(.bottom) {
+                    VStack(spacing: 8) {
+                        Text(context.state.status)
+                            .font(.subheadline)
+                        ProgressView(value: Double(context.state.currentStep), total: 3)
+                            .tint(.green)
+                    }
+                }
+            } compactLeading: {
+                Image(systemName: &quot;bicycle&quot;)
+            } compactTrailing: {
+                Text(context.state.estimatedArrival, style: .timer)
+                    .font(.caption.monospacedDigit())
+            } minimal: {
+                Image(systemName: &quot;bicycle&quot;)
+            }
+        }
+    }
+}
+</code></pre>
+<h2 id="app-intent-configuration">App Intent Configuration</h2>
+<pre><code class="language-swift">import AppIntents
+
+// Define a configurable entity for widget parameters
+struct CategoryEntity: AppEntity {
+    static var typeDisplayRepresentation = TypeDisplayRepresentation(name: &quot;Category&quot;)
+    static var defaultQuery = CategoryQuery()
+
+    var id: String
+    var name: String
+
+    var displayRepresentation: DisplayRepresentation {
+        DisplayRepresentation(title: &quot;\(name)&quot;)
+    }
+}
+
+struct CategoryQuery: EntityQuery {
+    func entities(for identifiers: [String]) async throws -&gt; [CategoryEntity] {
+        allCategories().filter { identifiers.contains($0.id) }
+    }
+
+    func suggestedEntities() async throws -&gt; [CategoryEntity] {
+        allCategories()
+    }
+
+    func defaultResult() async -&gt; CategoryEntity? {
+        allCategories().first
+    }
+
+    private func allCategories() -&gt; [CategoryEntity] {
+        [
+            CategoryEntity(id: &quot;work&quot;, name: &quot;Work&quot;),
+            CategoryEntity(id: &quot;personal&quot;, name: &quot;Personal&quot;),
+            CategoryEntity(id: &quot;health&quot;, name: &quot;Health&quot;)
+        ]
+    }
+}
+
+// Widget configuration intent
+struct SelectCategoryIntent: WidgetConfigurationIntent {
+    static var title: LocalizedStringResource = &quot;Select Category&quot;
+    static var description = IntentDescription(&quot;Choose which category to display in the widget.&quot;)
+
+    @Parameter(title: &quot;Category&quot;)
+    var category: CategoryEntity?
+
+    @Parameter(title: &quot;Show Completed&quot;, default: true)
+    var showCompleted: Bool
+}
+</code></pre>
+<h2 id="reloading-widgets-from-the-main-app">Reloading Widgets from the Main App</h2>
+<pre><code class="language-swift">import WidgetKit
+
+class WidgetReloadManager {
+    // Reload a specific widget by kind
+    func reloadTaskWidget() {
+        WidgetCenter.shared.reloadTimelines(ofKind: &quot;TaskWidget&quot;)
+    }
+
+    // Reload all widgets belonging to this app
+    func reloadAllWidgets() {
+        WidgetCenter.shared.reloadAllTimelines()
+    }
+
+    // Get current widget configurations on the user's device
+    func getWidgetInfo() {
+        WidgetCenter.shared.getCurrentConfigurations { result in
+            switch result {
+            case .success(let widgets):
+                for widget in widgets {
+                    print(&quot;Kind: \(widget.kind), Family: \(widget.family)&quot;)
+                }
+            case .failure(let error):
+                print(&quot;Error fetching configurations: \(error)&quot;)
+            }
+        }
+    }
+}
+
+// Sharing data between the app and widget extension using App Groups.
+// 1. Enable App Groups capability in both the app target and widget extension target
+// 2. Use the shared container:
+
+let sharedDefaults = UserDefaults(suiteName: &quot;group.com.yourapp.shared&quot;)
+sharedDefaults?.set(42, forKey: &quot;stepCount&quot;)
+
+let sharedContainer = FileManager.default.containerURL(
+    forSecurityApplicationGroupIdentifier: &quot;group.com.yourapp.shared&quot;
+)
+// Write/read files in sharedContainer for larger data sets
+</code></pre>
+<h2 id="ios-18-additions">iOS 18+ Additions</h2>
+<h3 id="controls-api-controlwidget">Controls API (ControlWidget)</h3>
+<p>iOS 18 introduces <code>ControlWidget</code> for adding interactive controls to Control Center and the Lock Screen. Controls are small, actionable widgets that can toggle states or trigger actions.</p>
+<pre><code class="language-swift">import WidgetKit
+import SwiftUI
+import AppIntents
+
+// MARK: - Toggle Control (e.g., a light switch)
+
+struct LightToggleControl: ControlWidget {
+    var body: some ControlWidgetConfiguration {
+        StaticControlConfiguration(kind: &quot;com.app.light-toggle&quot;) {
+            ControlWidgetToggle(
+                &quot;Living Room&quot;,
+                isOn: LightManager.shared.isLivingRoomOn,
+                action: ToggleLightIntent(room: &quot;living-room&quot;)
+            ) { isOn in
+                // The view displayed in the control
+                Label(isOn ? &quot;On&quot; : &quot;Off&quot;, systemImage: isOn ? &quot;lightbulb.fill&quot; : &quot;lightbulb&quot;)
+            }
+            .tint(.yellow)
+        }
+        .displayName(&quot;Light Toggle&quot;)
+        .description(&quot;Toggle a light on or off.&quot;)
+    }
+}
+
+// App Intent that the toggle invokes
+struct ToggleLightIntent: SetValueIntent {
+    static var title: LocalizedStringResource = &quot;Toggle Light&quot;
+
+    @Parameter(title: &quot;Room&quot;)
+    var room: String
+
+    @Parameter(title: &quot;Is On&quot;)
+    var value: Bool
+
+    init() {
+        self.room = &quot;living-room&quot;
+        self.value = false
+    }
+
+    init(room: String) {
+        self.room = room
+        self.value = false
+    }
+
+    func perform() async throws -&gt; some IntentResult {
+        LightManager.shared.setLight(room: room, isOn: value)
+        return .result()
+    }
+}
+
+// MARK: - Button Control (e.g., trigger an action)
+
+struct CaffeineLogControl: ControlWidget {
+    var body: some ControlWidgetConfiguration {
+        StaticControlConfiguration(kind: &quot;com.app.caffeine-log&quot;) {
+            ControlWidgetButton(action: LogCaffeineIntent()) {
+                Label(&quot;Log Coffee&quot;, systemImage: &quot;cup.and.saucer.fill&quot;)
+            }
+        }
+        .displayName(&quot;Log Caffeine&quot;)
+        .description(&quot;Quickly log a coffee.&quot;)
+    }
+}
+
+struct LogCaffeineIntent: AppIntent {
+    static var title: LocalizedStringResource = &quot;Log Caffeine&quot;
+
+    func perform() async throws -&gt; some IntentResult {
+        CaffeineStore.shared.logCoffee()
+        return .result()
+    }
+}
+
+// MARK: - Configurable Control with AppIntentControlConfiguration
+
+struct ConfigurableLightControl: ControlWidget {
+    var body: some ControlWidgetConfiguration {
+        AppIntentControlConfiguration(
+            kind: &quot;com.app.configurable-light&quot;,
+            intent: SelectRoomIntent.self
+        ) { configuration in
+            ControlWidgetToggle(
+                configuration.room?.name ?? &quot;Light&quot;,
+                isOn: LightManager.shared.isOn(room: configuration.room?.id ?? &quot;&quot;),
+                action: ToggleLightIntent(room: configuration.room?.id ?? &quot;&quot;)
+            ) { isOn in
+                Label(isOn ? &quot;On&quot; : &quot;Off&quot;, systemImage: isOn ? &quot;lightbulb.fill&quot; : &quot;lightbulb&quot;)
+            }
+            .tint(.orange)
+        }
+        .displayName(&quot;Room Light&quot;)
+        .description(&quot;Toggle a specific room's light.&quot;)
+    }
+}
+
+struct SelectRoomIntent: ControlConfigurationIntent {
+    static var title: LocalizedStringResource = &quot;Select Room&quot;
+
+    @Parameter(title: &quot;Room&quot;)
+    var room: RoomEntity?
+}
+
+// MARK: - Registering Controls in WidgetBundle
+
+@main
+struct MyWidgets: WidgetBundle {
+    var body: some Widget {
+        SimpleWidget()
+        DashboardWidget()
+
+        // iOS 18+ Control Center widgets
+        if #available(iOS 18, *) {
+            LightToggleControl()
+            CaffeineLogControl()
+            ConfigurableLightControl()
+        }
+    }
+}
+</code></pre>
+<h3 id="control-center-placement-and-sizing">Control Center Placement and Sizing</h3>
+<p>Controls appear in the redesigned iOS 18 Control Center. Users add them from the Control Center gallery, just like Home Screen widgets.</p>
+<p>Key characteristics:
+- <strong>Small footprint</strong>: Controls occupy a single Control Center cell (similar to the existing toggles like Wi-Fi, Bluetooth)
+- <strong>Two types</strong>: <code>ControlWidgetToggle</code> for on/off state, <code>ControlWidgetButton</code> for one-shot actions
+- <strong>Lock Screen access</strong>: Controls can also be placed on the Lock Screen as quick-action buttons (replacing the default flashlight/camera shortcuts)
+- <strong>Tinting</strong>: Use <code>.tint()</code> to set the active color of a toggle control
+- <strong>Static vs Configurable</strong>: Use <code>StaticControlConfiguration</code> for fixed controls, <code>AppIntentControlConfiguration</code> for user-configurable controls with parameters
+- <strong>Value providers</strong>: For toggles, provide a value source that returns the current state; SwiftData or App Groups work well for shared state</p>
+<h3 id="live-activity-intents-ios-18">Live Activity Intents (iOS 18)</h3>
+<p>iOS 18 enables Live Activities to include App Intent-driven buttons and toggles directly on the Lock Screen and Dynamic Island.</p>
+<pre><code class="language-swift">import ActivityKit
+import AppIntents
+import SwiftUI
+import WidgetKit
+
+// Live Activity with interactive intent-driven buttons
+struct OrderTrackingLiveActivity: Widget {
+    var body: some WidgetConfiguration {
+        ActivityConfiguration(for: OrderAttributes.self) { context in
+            // Lock Screen / banner view with interactive buttons
+            VStack(spacing: 12) {
+                HStack {
+                    Text(context.attributes.storeName)
+                        .font(.headline)
+                    Spacer()
+                    Text(context.state.status)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+
+                ProgressView(value: context.state.progress)
+                    .tint(.blue)
+
+                HStack(spacing: 16) {
+                    // Intent-driven button on the Live Activity
+                    Button(intent: ContactDriverIntent(orderID: context.attributes.orderID)) {
+                        Label(&quot;Contact Driver&quot;, systemImage: &quot;phone.fill&quot;)
+                            .font(.caption)
+                    }
+                    .buttonStyle(.bordered)
+                    .tint(.green)
+
+                    Button(intent: CancelOrderIntent(orderID: context.attributes.orderID)) {
+                        Label(&quot;Cancel&quot;, systemImage: &quot;xmark.circle&quot;)
+                            .font(.caption)
+                    }
+                    .buttonStyle(.bordered)
+                    .tint(.red)
+                }
+            }
+            .padding()
+
+        } dynamicIsland: { context in
+            DynamicIsland {
+                DynamicIslandExpandedRegion(.bottom) {
+                    Button(intent: ContactDriverIntent(orderID: context.attributes.orderID)) {
+                        Label(&quot;Contact Driver&quot;, systemImage: &quot;phone.fill&quot;)
+                    }
+                    .buttonStyle(.bordered)
+                }
+                DynamicIslandExpandedRegion(.center) {
+                    Text(context.state.status)
+                }
+                DynamicIslandExpandedRegion(.leading) {
+                    Image(systemName: &quot;bag.fill&quot;)
+                }
+                DynamicIslandExpandedRegion(.trailing) {
+                    Text(context.state.eta, style: .timer)
+                }
+            } compactLeading: {
+                Image(systemName: &quot;bag.fill&quot;)
+            } compactTrailing: {
+                Text(context.state.eta, style: .timer)
+                    .font(.caption2)
+            } minimal: {
+                Image(systemName: &quot;bag.fill&quot;)
+            }
+        }
+    }
+}
+
+struct ContactDriverIntent: AppIntent {
+    static var title: LocalizedStringResource = &quot;Contact Driver&quot;
+
+    @Parameter(title: &quot;Order ID&quot;)
+    var orderID: String
+
+    init() { self.orderID = &quot;&quot; }
+    init(orderID: String) { self.orderID = orderID }
+
+    func perform() async throws -&gt; some IntentResult {
+        // Open the call screen or in-app chat for the driver
+        return .result()
+    }
+}
+
+struct OrderAttributes: ActivityAttributes {
+    struct ContentState: Codable, Hashable {
+        var status: String
+        var progress: Double
+        var eta: Date
+    }
+    let orderID: String
+    let storeName: String
+}
+</code></pre></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

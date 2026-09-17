@@ -1,0 +1,552 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>App Intents — iOS Agent Skill</title><meta name="description" content="Repository guidance for App Intents. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-app-intents.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="App Intents"><meta property="og:description" content="Repository guidance for App Intents. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-app-intents.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "App Intents", "description": "Repository guidance for App Intents. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-app-intents.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Core UI and Apps · Reference guide</p><h1>App Intents</h1><p class="lead">Repository guidance for App Intents. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/frameworks/app-intents.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#appintent-protocol-and-perform">AppIntent Protocol and perform()</a></li>
+<li><a href="#parameter-property-wrapper">@Parameter Property Wrapper</a></li>
+<li><a href="#intentdialog-and-intentresult">IntentDialog and IntentResult</a></li>
+<li><a href="#appshortcutsprovider-for-siri-and-shortcuts">AppShortcutsProvider for Siri and Shortcuts</a></li>
+<li><a href="#entityquery-for-spotlight-integration">EntityQuery for Spotlight Integration</a></li>
+<li><a href="#appintents-for-widgets-widgetconfigurationintent">AppIntents for Widgets (WidgetConfigurationIntent)</a></li>
+<li><a href="#appintents-for-focus-filters">AppIntents for Focus Filters</a></li>
+<li><a href="#apple-intelligence-integration-sirikit-to-app-intents-migration">Apple Intelligence Integration (SiriKit to App Intents Migration)</a></li>
+<li><a href="#interactive-widget-buttons-with-app-intents">Interactive Widget Buttons with App Intents</a></li>
+<li><a href="#key-considerations">Key Considerations</a></li>
+</ul>
+</div>
+</aside><p>App Intents is Apple's modern framework for exposing app functionality to Siri, Shortcuts, Spotlight, Widgets, Focus Filters, and Apple Intelligence. It replaces SiriKit Intents with a Swift-native, protocol-driven approach that requires no intent definition files.</p>
+<h2 id="appintent-protocol-and-perform">AppIntent Protocol and perform()</h2>
+<p>Every App Intent conforms to the <code>AppIntent</code> protocol and implements a <code>perform()</code> method that returns an <code>IntentResult</code>.</p>
+<pre><code class="language-swift">import AppIntents
+
+struct OpenArticleIntent: AppIntent {
+    // Title shown in Shortcuts and Siri
+    static var title: LocalizedStringResource = &quot;Open Article&quot;
+    static var description: IntentDescription = &quot;Opens a specific article in the app.&quot;
+
+    // The system can open your app when this intent runs
+    static var openAppWhenRun: Bool = true
+
+    @Parameter(title: &quot;Article Name&quot;)
+    var articleName: String
+
+    @MainActor
+    func perform() async throws -&gt; some IntentResult &amp; ProvidesDialog {
+        // Look up the article and navigate to it
+        guard let article = ArticleStore.shared.find(byName: articleName) else {
+            throw ArticleError.notFound(articleName)
+        }
+
+        NavigationManager.shared.navigate(to: article)
+
+        return .result(dialog: &quot;Opening \&quot;\(article.title)\&quot;&quot;)
+    }
+}
+
+enum ArticleError: Error, CustomLocalizedStringResourceConvertible {
+    case notFound(String)
+
+    var localizedStringResource: LocalizedStringResource {
+        switch self {
+        case .notFound(let name):
+            return &quot;Could not find article \&quot;\(name)\&quot;&quot;
+        }
+    }
+}
+</code></pre>
+<h2 id="parameter-property-wrapper">@Parameter Property Wrapper</h2>
+<p>Parameters define the inputs for your intent. They support default values, validation, and dynamic options.</p>
+<pre><code class="language-swift">import AppIntents
+
+struct CreateReminderIntent: AppIntent {
+    static var title: LocalizedStringResource = &quot;Create Reminder&quot;
+
+    @Parameter(title: &quot;Title&quot;, description: &quot;The reminder title&quot;)
+    var title: String
+
+    @Parameter(title: &quot;Due Date&quot;, description: &quot;When the reminder is due&quot;)
+    var dueDate: Date?
+
+    @Parameter(
+        title: &quot;Priority&quot;,
+        description: &quot;Reminder priority level&quot;,
+        default: .medium
+    )
+    var priority: ReminderPriority
+
+    @Parameter(
+        title: &quot;Tags&quot;,
+        description: &quot;Tags to apply&quot;,
+        optionsProvider: TagOptionsProvider()
+    )
+    var tags: [String]
+
+    func perform() async throws -&gt; some IntentResult &amp; ProvidesDialog {
+        let reminder = Reminder(
+            title: title,
+            dueDate: dueDate,
+            priority: priority,
+            tags: tags
+        )
+        try await ReminderStore.shared.save(reminder)
+        return .result(dialog: &quot;Created reminder: \(title)&quot;)
+    }
+}
+
+// Enum parameter with automatic case display
+enum ReminderPriority: String, AppEnum {
+    case low, medium, high, urgent
+
+    static var typeDisplayRepresentation = TypeDisplayRepresentation(name: &quot;Priority&quot;)
+
+    static var caseDisplayRepresentations: [ReminderPriority: DisplayRepresentation] = [
+        .low: &quot;Low&quot;,
+        .medium: &quot;Medium&quot;,
+        .high: &quot;High&quot;,
+        .urgent: &quot;Urgent&quot;
+    ]
+}
+
+// Dynamic options provider for parameter suggestions
+struct TagOptionsProvider: DynamicOptionsProvider {
+    func results() async throws -&gt; [String] {
+        await TagStore.shared.allTags().map(\.name)
+    }
+}
+</code></pre>
+<h2 id="intentdialog-and-intentresult">IntentDialog and IntentResult</h2>
+<p>Intents return results that can include dialogs, snippets (SwiftUI views), and values.</p>
+<pre><code class="language-swift">import AppIntents
+import SwiftUI
+
+struct CheckWeatherIntent: AppIntent {
+    static var title: LocalizedStringResource = &quot;Check Weather&quot;
+
+    @Parameter(title: &quot;City&quot;)
+    var city: String
+
+    // Return multiple result types with protocols
+    func perform() async throws -&gt; some IntentResult &amp; ProvidesDialog &amp; ShowsSnippetView &amp; ReturnsValue&lt;String&gt; {
+        let weather = try await WeatherService.shared.fetch(for: city)
+
+        let summary = &quot;\(weather.condition) — \(weather.temperature)°F&quot;
+
+        return .result(
+            value: summary,
+            dialog: IntentDialog(stringLiteral: &quot;It's \(summary) in \(city).&quot;),
+            view: WeatherSnippetView(weather: weather)
+        )
+    }
+}
+
+struct WeatherSnippetView: View {
+    let weather: WeatherData
+
+    var body: some View {
+        HStack(spacing: 16) {
+            Image(systemName: weather.symbolName)
+                .font(.largeTitle)
+                .foregroundStyle(.blue)
+            VStack(alignment: .leading) {
+                Text(&quot;\(weather.temperature)°F&quot;)
+                    .font(.title.bold())
+                Text(weather.condition)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .padding()
+    }
+}
+
+struct WeatherData {
+    let temperature: Int
+    let condition: String
+    let symbolName: String
+}
+</code></pre>
+<h2 id="appshortcutsprovider-for-siri-and-shortcuts">AppShortcutsProvider for Siri and Shortcuts</h2>
+<p>Expose your intents as system shortcuts that appear in Siri, the Shortcuts app, and Spotlight without user configuration.</p>
+<pre><code class="language-swift">import AppIntents
+
+struct AppShortcuts: AppShortcutsProvider {
+    // The App Shortcuts the system surfaces automatically
+    static var appShortcuts: [AppShortcut] {
+        AppShortcut(
+            intent: OpenArticleIntent(),
+            phrases: [
+                &quot;Open \(\.$articleName) in \(.applicationName)&quot;,
+                &quot;Show article \(\.$articleName) in \(.applicationName)&quot;,
+                &quot;Read \(\.$articleName) with \(.applicationName)&quot;
+            ],
+            shortTitle: &quot;Open Article&quot;,
+            systemImageName: &quot;doc.richtext&quot;
+        )
+
+        AppShortcut(
+            intent: CreateReminderIntent(),
+            phrases: [
+                &quot;Create a reminder in \(.applicationName)&quot;,
+                &quot;Add a reminder with \(.applicationName)&quot;,
+                &quot;Remind me in \(.applicationName)&quot;
+            ],
+            shortTitle: &quot;Create Reminder&quot;,
+            systemImageName: &quot;checklist&quot;
+        )
+
+        AppShortcut(
+            intent: CheckWeatherIntent(),
+            phrases: [
+                &quot;Check weather in \(\.$city) with \(.applicationName)&quot;,
+                &quot;What's the weather in \(\.$city)&quot;
+            ],
+            shortTitle: &quot;Check Weather&quot;,
+            systemImageName: &quot;cloud.sun&quot;
+        )
+    }
+}
+</code></pre>
+<h2 id="entityquery-for-spotlight-integration">EntityQuery for Spotlight Integration</h2>
+<p>Entities represent searchable objects in your app. EntityQuery lets Spotlight and the system find and display them.</p>
+<pre><code class="language-swift">import AppIntents
+import CoreSpotlight
+
+// Define an entity that Spotlight can index and display
+struct ArticleEntity: AppEntity {
+    static var typeDisplayRepresentation = TypeDisplayRepresentation(name: &quot;Article&quot;)
+
+    static var defaultQuery = ArticleQuery()
+
+    var id: String
+    var title: String
+    var summary: String
+    var category: String
+
+    var displayRepresentation: DisplayRepresentation {
+        DisplayRepresentation(
+            title: LocalizedStringResource(stringLiteral: title),
+            subtitle: LocalizedStringResource(stringLiteral: category),
+            image: .init(systemName: &quot;doc.richtext&quot;)
+        )
+    }
+}
+
+// Query that the system uses to find entities
+struct ArticleQuery: EntityQuery {
+    // Find entities by their identifiers
+    func entities(for identifiers: [String]) async throws -&gt; [ArticleEntity] {
+        let articles = await ArticleStore.shared.fetchAll()
+        return articles
+            .filter { identifiers.contains($0.id) }
+            .map { ArticleEntity(id: $0.id, title: $0.title, summary: $0.summary, category: $0.category) }
+    }
+
+    // Provide suggestions when the user is picking an entity
+    func suggestedEntities() async throws -&gt; [ArticleEntity] {
+        let recent = await ArticleStore.shared.fetchRecent(limit: 10)
+        return recent.map {
+            ArticleEntity(id: $0.id, title: $0.title, summary: $0.summary, category: $0.category)
+        }
+    }
+}
+
+// Enable string-based search for entities
+extension ArticleQuery: EntityStringQuery {
+    func entities(matching query: String) async throws -&gt; [ArticleEntity] {
+        let results = await ArticleStore.shared.search(query)
+        return results.map {
+            ArticleEntity(id: $0.id, title: $0.title, summary: $0.summary, category: $0.category)
+        }
+    }
+}
+
+// Use entities in intents
+struct ReadArticleIntent: AppIntent {
+    static var title: LocalizedStringResource = &quot;Read Article&quot;
+
+    @Parameter(title: &quot;Article&quot;)
+    var article: ArticleEntity
+
+    static var openAppWhenRun: Bool = true
+
+    @MainActor
+    func perform() async throws -&gt; some IntentResult &amp; ProvidesDialog {
+        NavigationManager.shared.navigateToArticle(id: article.id)
+        return .result(dialog: &quot;Opening \&quot;\(article.title)\&quot;&quot;)
+    }
+}
+</code></pre>
+<h2 id="appintents-for-widgets-widgetconfigurationintent">AppIntents for Widgets (WidgetConfigurationIntent)</h2>
+<p>Use <code>WidgetConfigurationIntent</code> to let users configure widgets through the App Intents system.</p>
+<pre><code class="language-swift">import AppIntents
+import WidgetKit
+import SwiftUI
+
+// Widget configuration intent — users pick options in the widget editor
+struct SelectCategoryIntent: WidgetConfigurationIntent {
+    static var title: LocalizedStringResource = &quot;Select Category&quot;
+    static var description: IntentDescription = &quot;Choose which category to display.&quot;
+
+    @Parameter(title: &quot;Category&quot;, default: .all)
+    var category: WidgetCategory
+
+    @Parameter(title: &quot;Show Count&quot;, default: true)
+    var showCount: Bool
+
+    @Parameter(title: &quot;Max Items&quot;, default: 5)
+    var maxItems: Int
+}
+
+enum WidgetCategory: String, AppEnum {
+    case all, favorites, recent, trending
+
+    static var typeDisplayRepresentation = TypeDisplayRepresentation(name: &quot;Category&quot;)
+
+    static var caseDisplayRepresentations: [WidgetCategory: DisplayRepresentation] = [
+        .all: DisplayRepresentation(title: &quot;All&quot;, image: .init(systemName: &quot;square.grid.2x2&quot;)),
+        .favorites: DisplayRepresentation(title: &quot;Favorites&quot;, image: .init(systemName: &quot;star.fill&quot;)),
+        .recent: DisplayRepresentation(title: &quot;Recent&quot;, image: .init(systemName: &quot;clock&quot;)),
+        .trending: DisplayRepresentation(title: &quot;Trending&quot;, image: .init(systemName: &quot;flame&quot;))
+    ]
+}
+
+// Widget using the configuration intent
+struct CategoryWidget: Widget {
+    let kind = &quot;CategoryWidget&quot;
+
+    var body: some WidgetConfiguration {
+        AppIntentConfiguration(
+            kind: kind,
+            intent: SelectCategoryIntent.self,
+            provider: CategoryProvider()
+        ) { entry in
+            CategoryWidgetView(entry: entry)
+                .containerBackground(.fill.tertiary, for: .widget)
+        }
+        .configurationDisplayName(&quot;Category&quot;)
+        .description(&quot;Shows items from a selected category.&quot;)
+        .supportedFamilies([.systemSmall, .systemMedium])
+    }
+}
+
+struct CategoryEntry: TimelineEntry {
+    let date: Date
+    let category: WidgetCategory
+    let items: [String]
+    let showCount: Bool
+}
+
+struct CategoryProvider: AppIntentTimelineProvider {
+    func placeholder(in context: Context) -&gt; CategoryEntry {
+        CategoryEntry(date: .now, category: .all, items: [&quot;Loading...&quot;], showCount: true)
+    }
+
+    func snapshot(for configuration: SelectCategoryIntent, in context: Context) async -&gt; CategoryEntry {
+        CategoryEntry(date: .now, category: configuration.category, items: [&quot;Sample Item&quot;], showCount: configuration.showCount)
+    }
+
+    func timeline(for configuration: SelectCategoryIntent, in context: Context) async -&gt; Timeline&lt;CategoryEntry&gt; {
+        let items = await fetchItems(for: configuration.category, limit: configuration.maxItems)
+        let entry = CategoryEntry(
+            date: .now,
+            category: configuration.category,
+            items: items,
+            showCount: configuration.showCount
+        )
+        let nextUpdate = Calendar.current.date(byAdding: .hour, value: 1, to: .now)!
+        return Timeline(entries: [entry], policy: .after(nextUpdate))
+    }
+
+    private func fetchItems(for category: WidgetCategory, limit: Int) async -&gt; [String] {
+        return [&quot;Item 1&quot;, &quot;Item 2&quot;, &quot;Item 3&quot;]
+    }
+}
+
+struct CategoryWidgetView: View {
+    let entry: CategoryEntry
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text(entry.category.rawValue.capitalized)
+                    .font(.headline)
+                if entry.showCount {
+                    Spacer()
+                    Text(&quot;\(entry.items.count)&quot;)
+                        .font(.caption.bold())
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(.blue.opacity(0.2))
+                        .clipShape(Capsule())
+                }
+            }
+            ForEach(entry.items, id: \.self) { item in
+                Text(item)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+        }
+    }
+}
+</code></pre>
+<h2 id="appintents-for-focus-filters">AppIntents for Focus Filters</h2>
+<p>Let users customize your app's behavior when a specific Focus mode is active.</p>
+<pre><code class="language-swift">import AppIntents
+
+struct AppFocusFilter: SetFocusFilterIntent {
+    static var title: LocalizedStringResource = &quot;Set App Focus Filter&quot;
+    static var description: IntentDescription = &quot;Customize which content is shown during Focus.&quot;
+
+    @Parameter(title: &quot;Show Notifications&quot;, default: true)
+    var showNotifications: Bool
+
+    @Parameter(title: &quot;Category Filter&quot;)
+    var category: WidgetCategory?
+
+    @Parameter(title: &quot;Mute Sounds&quot;, default: false)
+    var muteSounds: Bool
+
+    // The display representation shown in Focus settings
+    var displayRepresentation: DisplayRepresentation {
+        DisplayRepresentation(
+            title: &quot;App Focus&quot;,
+            subtitle: category.map { &quot;Showing \($0.rawValue)&quot; } ?? &quot;All content&quot;,
+            image: .init(systemName: &quot;app.badge&quot;)
+        )
+    }
+
+    func perform() async throws -&gt; some IntentResult {
+        // Apply the focus configuration to your app
+        await FocusManager.shared.apply(
+            showNotifications: showNotifications,
+            category: category,
+            muteSounds: muteSounds
+        )
+        return .result()
+    }
+}
+</code></pre>
+<h2 id="apple-intelligence-integration-sirikit-to-app-intents-migration">Apple Intelligence Integration (SiriKit to App Intents Migration)</h2>
+<p>App Intents is the foundation for Apple Intelligence features. Migrate from SiriKit to App Intents to enable AI-powered interactions.</p>
+<pre><code class="language-swift">import AppIntents
+
+// Assistive intent that Apple Intelligence can invoke contextually
+struct SendMessageIntent: AppIntent {
+    static var title: LocalizedStringResource = &quot;Send Message&quot;
+    static var description: IntentDescription = IntentDescription(
+        &quot;Send a message to a contact.&quot;,
+        categoryName: &quot;Messaging&quot;
+    )
+
+    // Apple Intelligence can extract these from natural language
+    @Parameter(title: &quot;Recipient&quot;)
+    var recipient: ContactEntity
+
+    @Parameter(title: &quot;Message&quot;)
+    var message: String
+
+    // Confirmation dialog before performing a sensitive action
+    static var isDiscoverable: Bool = true
+
+    func perform() async throws -&gt; some IntentResult &amp; ProvidesDialog {
+        try await MessageService.shared.send(message, to: recipient.id)
+        return .result(dialog: &quot;Message sent to \(recipient.name).&quot;)
+    }
+}
+
+// Contact entity for Apple Intelligence to reference
+struct ContactEntity: AppEntity {
+    static var typeDisplayRepresentation = TypeDisplayRepresentation(name: &quot;Contact&quot;)
+    static var defaultQuery = ContactQuery()
+
+    var id: String
+    var name: String
+    var email: String
+
+    var displayRepresentation: DisplayRepresentation {
+        DisplayRepresentation(
+            title: LocalizedStringResource(stringLiteral: name),
+            subtitle: LocalizedStringResource(stringLiteral: email)
+        )
+    }
+}
+
+struct ContactQuery: EntityQuery {
+    func entities(for identifiers: [String]) async throws -&gt; [ContactEntity] {
+        await ContactStore.shared.fetch(ids: identifiers).map {
+            ContactEntity(id: $0.id, name: $0.name, email: $0.email)
+        }
+    }
+
+    func suggestedEntities() async throws -&gt; [ContactEntity] {
+        await ContactStore.shared.frequentContacts(limit: 10).map {
+            ContactEntity(id: $0.id, name: $0.name, email: $0.email)
+        }
+    }
+}
+
+extension ContactQuery: EntityStringQuery {
+    func entities(matching query: String) async throws -&gt; [ContactEntity] {
+        await ContactStore.shared.search(query).map {
+            ContactEntity(id: $0.id, name: $0.name, email: $0.email)
+        }
+    }
+}
+</code></pre>
+<h2 id="interactive-widget-buttons-with-app-intents">Interactive Widget Buttons with App Intents</h2>
+<p>Use App Intents to make widgets interactive with tappable buttons and toggles.</p>
+<pre><code class="language-swift">import AppIntents
+import SwiftUI
+import WidgetKit
+
+// Intent performed when user taps a widget button
+struct ToggleFavoriteIntent: AppIntent {
+    static var title: LocalizedStringResource = &quot;Toggle Favorite&quot;
+
+    @Parameter(title: &quot;Item ID&quot;)
+    var itemID: String
+
+    init() {}
+
+    init(itemID: String) {
+        self.itemID = itemID
+    }
+
+    func perform() async throws -&gt; some IntentResult {
+        await ItemStore.shared.toggleFavorite(id: itemID)
+        return .result()
+    }
+}
+
+// Widget view with an interactive button
+struct InteractiveWidgetView: View {
+    let item: WidgetItem
+
+    var body: some View {
+        VStack {
+            Text(item.name)
+                .font(.headline)
+
+            // This button runs the intent directly from the widget
+            Button(intent: ToggleFavoriteIntent(itemID: item.id)) {
+                Image(systemName: item.isFavorite ? &quot;star.fill&quot; : &quot;star&quot;)
+                    .foregroundStyle(item.isFavorite ? .yellow : .gray)
+            }
+            .buttonStyle(.plain)
+        }
+    }
+}
+
+struct WidgetItem {
+    let id: String
+    let name: String
+    let isFavorite: Bool
+}
+</code></pre>
+<h2 id="key-considerations">Key Considerations</h2>
+<ul>
+<li><strong>Availability</strong>: App Intents requires iOS 16+. WidgetConfigurationIntent and Focus Filters require iOS 16+. AppShortcutsProvider requires iOS 16.4+.</li>
+<li><strong>Thread safety</strong>: The <code>perform()</code> method can run on any thread. Use <code>@MainActor</code> when accessing UI state.</li>
+<li><strong>Error display</strong>: Throw errors conforming to <code>CustomLocalizedStringResourceConvertible</code> so Siri and Shortcuts display meaningful messages.</li>
+<li><strong>Phrases</strong>: Include <code>\(.applicationName)</code> in at least one phrase per AppShortcut so Siri associates the phrase with your app.</li>
+<li><strong>Testing</strong>: Use the Shortcuts app and Siri to test intents. Use the <code>xcrun simctl</code> command to trigger intents in the simulator.</li>
+<li><strong>Migration</strong>: SiriKit INIntent definitions can coexist with App Intents. Migrate incrementally by implementing the same functionality with App Intents and marking the SiriKit version as deprecated.</li>
+</ul></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

@@ -1,0 +1,63 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>How should I review availability guards when moving a Swift app toward iOS 27? — iOS Agent Skill</title><meta name="description" content="A measured guard-review example that separates SDK availability, runtime readiness, and static-analysis limits."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/blog/availability-guards.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="How should I review availability guards when moving a Swift app toward iOS 27?"><meta property="og:description" content="A measured guard-review example that separates SDK availability, runtime readiness, and static-analysis limits."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/blog/availability-guards.html"><meta property="og:type" content="article"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/blog/availability-guards.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "How should I review availability guards when moving a Swift app toward iOS 27?", "description": "A measured guard-review example that separates SDK availability, runtime readiness, and static-analysis limits.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/blog/availability-guards.html", "dateModified": "2026-09-16", "author": {"@type": "Organization", "name": "iOS Agent Skill project"}, "image": "https://nagarjuna2997.github.io/ios-agent-skill/assets/blog/availability-guards.jpg"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Swift reviews · iOS Agent Skill project</p><h1>How should I review availability guards when moving a Swift app toward iOS 27?</h1><p class="lead">A measured guard-review example that separates SDK availability, runtime readiness, and static-analysis limits.</p></header><figure><img src="../assets/blog/availability-guards.jpg" alt="Editorial illustration for How should I review availability guards when moving a Swift app toward iOS 27?" width="1200" height="600"></figure><div class="article-body"><aside class="article-toc" aria-label="Table of contents"><strong>On this page</strong><ol><li><a href="#which-versions-must-stay-separate">Which versions must stay separate?</a></li><li><a href="#what-did-the-test-contain">What did the test contain?</a></li><li><a href="#what-did-the-reviewer-report">What did the reviewer report?</a></li><li><a href="#what-happened-after-editing-the-fixtures">What happened after editing the fixtures?</a></li><li><a href="#which-checks-belong-in-the-real-review">Which checks belong in the real review?</a></li><li><a href="#limits">Limits</a></li><li><a href="#last-verified">Last verified</a></li></ol></aside><section class="workflow" aria-label="Article workflow"><p class="eyebrow">The workflow</p><ol><li><span>01</span>Which versions must stay separate?</li><li><span>02</span>What did the test contain?</li><li><span>03</span>What did the reviewer report?</li><li><span>04</span>What happened after editing the fixtures?</li></ol></section><p>Guard a symbol at the OS version where it becomes available, then verify the older-system fallback and any separate runtime readiness requirements. This article ran the published availability reviewer against synthetic files, but did not compile or execute iOS 27 APIs because the installed toolchain is Xcode 26.6.</p>
+<h2 id="which-versions-must-stay-separate">Which versions must stay separate?</h2>
+<p>A toolchain version, the SDK it contains, and an application's minimum deployment target answer different questions. The repository's compatibility matrix distinguishes them because a newly installed SDK should not automatically remove support for older devices. A guard must describe the API being used, not simply repeat the newest version number in the project documentation.</p>
+<p>There are two useful review failures to look for. An unguarded newer API can prevent supporting an older deployment target. An unnecessarily restrictive guard can send supported devices down an older fallback path. The latter may be invisible if every local test runs on the newest OS.</p>
+<p>Apple's <a href="https://developer.apple.com/documentation/FoundationModels/adding-server-side-intelligence-with-private-cloud-compute">Private Cloud Compute integration guide</a> supplies a concrete iOS 27 example and discusses falling back on earlier systems. Treat that documentation as the API authority. The table below is instead a record of what this review tool detected.</p>
+<h2 id="what-did-the-test-contain">What did the test contain?</h2>
+<p>I created four separate Swift source fixtures. <code>Card.swift</code> uses <code>glassEffect()</code> inside an iOS 27 guard. Three additional files contain bare symbol references for <code>PrivateCloudComputeLanguageModel</code>, <code>DynamicProfile</code>, and <code>OCRTool</code>. The latter files are explicitly labeled lexical fixtures: they exercise the reviewer's matching rules and are not compiling examples of those APIs.</p>
+<p>The distinction is especially important for nested types or APIs that require framework-specific setup. A token appearing in a source file is enough to test a lexical check, but not enough to teach correct API usage. I have kept the synthetic source downloadable so a reader can see exactly what was tested.</p>
+<p>I called <code>check_availability_guards</code> through the published server's stdio MCP connection, passing the fixture directory. The <a href="../evidence/blog/availability-before.json">before response</a> reported three blocker findings and one serious finding across four files.</p>
+<h2 id="what-did-the-reviewer-report">What did the reviewer report?</h2>
+<table>
+<thead>
+<tr>
+<th>Fixture location</th>
+<th>Matched item</th>
+<th>Reported result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Cloud.swift:2</code></td>
+<td><code>PrivateCloudComputeLanguageModel</code></td>
+<td>missing iOS 27 guard</td>
+</tr>
+<tr>
+<td><code>Profile.swift:2</code></td>
+<td><code>DynamicProfile</code></td>
+<td>missing iOS 27 guard</td>
+</tr>
+<tr>
+<td><code>Tools.swift:2</code></td>
+<td><code>OCRTool</code></td>
+<td>missing iOS 27 guard</td>
+</tr>
+<tr>
+<td><code>Card.swift:6</code></td>
+<td><code>glassEffect()</code></td>
+<td>iOS 27 guard stricter than the reviewer's iOS 26 entry</td>
+</tr>
+</tbody>
+</table>
+<p>This table is a reproducible analyzer result, not a complete iOS 27 availability index. Before adopting any symbol, check its current Apple declaration, enclosing type, platform, and minor-version requirements. A short maintained pattern table cannot enumerate every API in an SDK.</p>
+<p>For the card, the proposed change is deliberately small:</p>
+<pre><code class="language-swift">if #available(iOS 26.0, *) {
+    Text(&quot;Reading&quot;).glassEffect()
+} else {
+    Text(&quot;Reading&quot;)
+}
+</code></pre>
+<p>The corresponding <a href="https://developer.apple.com/documentation/swiftui/view/glasseffect(_:in:)">Apple API reference</a> remains the source for the modifier's contract. The fallback here preserves readable content; a production design may require more deliberate visual treatment.</p>
+<h2 id="what-happened-after-editing-the-fixtures">What happened after editing the fixtures?</h2>
+<p>I changed the card guard from 27.0 to 26.0. For the lexical iOS 27 fixtures, I placed the references inside functions annotated with <code>@available(iOS 27.0, *)</code>. These changes test the rule's response to the relevant annotation; they do not turn placeholder references into complete Foundation Models features.</p>
+<p>The same tool then returned zero findings across the four files. The <a href="../evidence/blog/availability-after.json">after response</a> preserves that result. The before and after sources are included beside the JSON, allowing another reviewer to check that the experiment changed guards rather than removing the matched names entirely.</p>
+<p>The clean result answers a narrow question: did the tool stop flagging these patterns? It does not answer whether the surrounding app compiles, whether every call site is guarded, or whether a selected model is available at runtime.</p>
+<h2 id="which-checks-belong-in-the-real-review">Which checks belong in the real review?</h2>
+<p>First identify the application's oldest supported OS. Then inspect the introduction version of each newly adopted symbol. Check the scope of the guard around the use, including helper methods and initializers; finding an unrelated guard elsewhere in a file is insufficient.</p>
+<p>Next inspect the fallback as product behavior. Does the same action remain possible? Is disabled functionality explained? Does a view still have meaningful content? An empty branch can be syntactically acceptable while leaving an older device with a broken experience.</p>
+<p>For model-backed features, separate API presence from model readiness. Apple's <a href="https://developer.apple.com/documentation/foundationmodels/generating-content-and-performing-tasks-with-foundation-models">generation guide</a> documents checking availability before starting a session. An OS-version check alone does not establish that the model can answer a request.</p>
+<h2 id="limits">Limits</h2>
+<p>The reviewer uses source heuristics and can miss scope, target settings, and minor-version distinctions. It is not an SDK parser or a compiler. This draft demonstrates its current behavior, including that limitation, and does not certify iOS 27 compatibility. Runtime fallback testing on supported OS versions is still required. Never replace a compiler diagnostic with a more convenient zero-findings report.</p>
+<h2 id="last-verified">Last verified</h2>
+<p>September 16, 2026, local time. Published <code>ios-agent-mcp</code> 2.7.0; Node.js 24.15.0; host Xcode 26.6 build 17F113. No Xcode 27 build performed. Repository sources: <code>docs/compatibility-matrix.md</code> and <code>docs/apple/ios-27-release-verification.md</code>.</p>
+<p>Example project: <a href="https://github.com/Nagarjuna2997/ios-agent-skill">ios-agent-skill</a>.</p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

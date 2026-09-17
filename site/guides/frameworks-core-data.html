@@ -1,0 +1,313 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Core Data — iOS Agent Skill</title><meta name="description" content="Repository guidance for Core Data. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-core-data.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="Core Data"><meta property="og:description" content="Repository guidance for Core Data. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-core-data.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "Core Data", "description": "Repository guidance for Core Data. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-core-data.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Data Management · Reference guide</p><h1>Core Data</h1><p class="lead">Repository guidance for Core Data. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/frameworks/core-data.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#nsmanagedobjectmodel-and-xcdatamodeld">NSManagedObjectModel and .xcdatamodeld</a></li>
+<li><a href="#persistent-container-setup">Persistent Container Setup</a></li>
+<li><a href="#nsmanagedobjectcontext-view-and-background">NSManagedObjectContext — View and Background</a></li>
+<li><a href="#nsfetchrequest-and-nspredicate">NSFetchRequest and NSPredicate</a></li>
+<li><a href="#nsfetchedresultscontroller">NSFetchedResultsController</a></li>
+<li><a href="#relationships">Relationships</a></li>
+<li><a href="#lightweight-migration">Lightweight Migration</a></li>
+<li><a href="#core-data-with-cloudkit">Core Data with CloudKit</a></li>
+</ul>
+</div>
+</aside><h2 id="nsmanagedobjectmodel-and-xcdatamodeld">NSManagedObjectModel and .xcdatamodeld</h2>
+<p>Core Data uses an <code>.xcdatamodeld</code> file to define your schema visually in Xcode. Each entity maps to an <code>NSManagedObject</code> subclass.</p>
+<pre><code class="language-swift">// Auto-generated NSManagedObject subclass (Codegen: Class Definition)
+// Or manually define with Codegen: Manual/None
+
+import CoreData
+
+@objc(Task)
+public class Task: NSManagedObject {
+    @NSManaged public var id: UUID
+    @NSManaged public var title: String
+    @NSManaged public var isCompleted: Bool
+    @NSManaged public var createdAt: Date
+    @NSManaged public var priority: Int16
+    @NSManaged public var category: Category? // Relationship
+}
+
+extension Task {
+    @nonobjc public class func fetchRequest() -&gt; NSFetchRequest&lt;Task&gt; {
+        return NSFetchRequest&lt;Task&gt;(entityName: &quot;Task&quot;)
+    }
+
+    var priorityLevel: Priority {
+        get { Priority(rawValue: priority) ?? .medium }
+        set { priority = newValue.rawValue }
+    }
+}
+
+enum Priority: Int16 {
+    case low = 0, medium = 1, high = 2
+}
+</code></pre>
+<h2 id="persistent-container-setup">Persistent Container Setup</h2>
+<pre><code class="language-swift">class PersistenceController {
+    static let shared = PersistenceController()
+
+    let container: NSPersistentContainer
+
+    init(inMemory: Bool = false) {
+        container = NSPersistentContainer(name: &quot;MyApp&quot;)
+
+        if inMemory {
+            container.persistentStoreDescriptions.first?.url = URL(fileURLWithPath: &quot;/dev/null&quot;)
+        }
+
+        container.loadPersistentStores { description, error in
+            if let error = error as NSError? {
+                fatalError(&quot;Core Data store failed: \(error), \(error.userInfo)&quot;)
+            }
+        }
+
+        container.viewContext.automaticallyMergesChangesFromParent = true
+        container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+    }
+
+    // Preview helper
+    static var preview: PersistenceController = {
+        let controller = PersistenceController(inMemory: true)
+        let ctx = controller.container.viewContext
+        for i in 0..&lt;10 {
+            let task = Task(context: ctx)
+            task.id = UUID()
+            task.title = &quot;Sample Task \(i)&quot;
+            task.isCompleted = i.isMultiple(of: 3)
+            task.createdAt = Date()
+            task.priority = Int16(i % 3)
+        }
+        try? ctx.save()
+        return controller
+    }()
+}
+
+// Inject into SwiftUI
+@main
+struct MyApp: App {
+    let persistence = PersistenceController.shared
+
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+                .environment(\.managedObjectContext, persistence.container.viewContext)
+        }
+    }
+}
+</code></pre>
+<h2 id="nsmanagedobjectcontext-view-and-background">NSManagedObjectContext — View and Background</h2>
+<pre><code class="language-swift">// View context (main thread) — for reads and light writes
+let viewContext = PersistenceController.shared.container.viewContext
+
+// Background context — for heavy operations
+func importData(_ items: [ItemDTO]) async throws {
+    let context = PersistenceController.shared.container.newBackgroundContext()
+    context.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+
+    try await context.perform {
+        for dto in items {
+            let task = Task(context: context)
+            task.id = dto.id
+            task.title = dto.title
+            task.isCompleted = dto.completed
+            task.createdAt = dto.createdAt
+        }
+        try context.save()
+    }
+}
+
+// performBackgroundTask convenience
+PersistenceController.shared.container.performBackgroundTask { context in
+    // Already on a background queue
+    let request = Task.fetchRequest()
+    request.predicate = NSPredicate(format: &quot;isCompleted == YES&quot;)
+    if let completed = try? context.fetch(request) {
+        completed.forEach { context.delete($0) }
+        try? context.save()
+    }
+}
+</code></pre>
+<h2 id="nsfetchrequest-and-nspredicate">NSFetchRequest and NSPredicate</h2>
+<pre><code class="language-swift">// Basic fetch
+let request = Task.fetchRequest()
+request.sortDescriptors = [
+    NSSortDescriptor(keyPath: \Task.priority, ascending: false),
+    NSSortDescriptor(keyPath: \Task.createdAt, ascending: true),
+]
+let allTasks = try viewContext.fetch(request)
+
+// Filtered fetch
+request.predicate = NSPredicate(format: &quot;isCompleted == %@ AND priority &gt;= %d&quot;, NSNumber(value: false), 1)
+
+// Compound predicates
+let notCompleted = NSPredicate(format: &quot;isCompleted == NO&quot;)
+let highPriority = NSPredicate(format: &quot;priority == %d&quot;, Priority.high.rawValue)
+let searchPredicate = NSPredicate(format: &quot;title CONTAINS[cd] %@&quot;, searchText)
+request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [notCompleted, highPriority, searchPredicate])
+
+// Fetch limit and batch size
+request.fetchLimit = 20
+request.fetchBatchSize = 50
+
+// Count instead of fetching objects
+let count = try viewContext.count(for: request)
+
+// Fetch specific properties
+request.propertiesToFetch = [&quot;title&quot;, &quot;priority&quot;]
+request.resultType = .dictionaryResultType
+
+// SwiftUI @FetchRequest
+struct TaskListView: View {
+    @Environment(\.managedObjectContext) private var viewContext
+
+    @FetchRequest(
+        sortDescriptors: [SortDescriptor(\.createdAt, order: .reverse)],
+        predicate: NSPredicate(format: &quot;isCompleted == NO&quot;),
+        animation: .default
+    )
+    private var tasks: FetchedResults&lt;Task&gt;
+
+    var body: some View {
+        List {
+            ForEach(tasks) { task in
+                TaskRow(task: task)
+            }
+            .onDelete(perform: deleteTasks)
+        }
+    }
+
+    private func deleteTasks(offsets: IndexSet) {
+        offsets.map { tasks[$0] }.forEach(viewContext.delete)
+        try? viewContext.save()
+    }
+}
+</code></pre>
+<h2 id="nsfetchedresultscontroller">NSFetchedResultsController</h2>
+<pre><code class="language-swift">// Used primarily in UIKit for efficient table/collection view updates
+class TaskListViewController: UITableViewController, NSFetchedResultsControllerDelegate {
+
+    private var fetchedResultsController: NSFetchedResultsController&lt;Task&gt;!
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        let request = Task.fetchRequest()
+        request.sortDescriptors = [
+            NSSortDescriptor(keyPath: \Task.priority, ascending: false),
+            NSSortDescriptor(keyPath: \Task.title, ascending: true),
+        ]
+        request.predicate = NSPredicate(format: &quot;isCompleted == NO&quot;)
+
+        fetchedResultsController = NSFetchedResultsController(
+            fetchRequest: request,
+            managedObjectContext: PersistenceController.shared.container.viewContext,
+            sectionNameKeyPath: &quot;priority&quot;,
+            cacheName: &quot;taskCache&quot;
+        )
+        fetchedResultsController.delegate = self
+        try? fetchedResultsController.performFetch()
+    }
+
+    // Diffable data source integration
+    func controller(
+        _ controller: NSFetchedResultsController&lt;NSFetchRequestResult&gt;,
+        didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference
+    ) {
+        let snapshot = snapshot as NSDiffableDataSourceSnapshot&lt;String, NSManagedObjectID&gt;
+        dataSource.apply(snapshot, animatingDifferences: true)
+    }
+}
+</code></pre>
+<h2 id="relationships">Relationships</h2>
+<pre><code class="language-swift">// One-to-Many: Category has many Tasks
+@objc(Category)
+public class Category: NSManagedObject {
+    @NSManaged public var id: UUID
+    @NSManaged public var name: String
+    @NSManaged public var tasks: NSSet? // One-to-many (inverse of Task.category)
+}
+
+extension Category {
+    var tasksArray: [Task] {
+        let set = tasks as? Set&lt;Task&gt; ?? []
+        return set.sorted { $0.createdAt &lt; $1.createdAt }
+    }
+
+    @objc(addTasksObject:)
+    @NSManaged public func addToTasks(_ value: Task)
+
+    @objc(removeTasksObject:)
+    @NSManaged public func removeFromTasks(_ value: Task)
+}
+
+// Creating with relationships
+let category = Category(context: viewContext)
+category.id = UUID()
+category.name = &quot;Work&quot;
+
+let task = Task(context: viewContext)
+task.id = UUID()
+task.title = &quot;Prepare presentation&quot;
+task.category = category // Sets both sides with inverse relationship
+
+try viewContext.save()
+
+// Many-to-Many: Tasks can have many Tags, Tags can have many Tasks
+// Define in .xcdatamodeld with inverse relationships on both sides
+// Both sides generate NSSet properties
+</code></pre>
+<h2 id="lightweight-migration">Lightweight Migration</h2>
+<pre><code class="language-swift">// Automatic lightweight migration (handles simple changes)
+let description = NSPersistentStoreDescription()
+description.shouldMigrateStoreAutomatically = true
+description.shouldInferMappingModelAutomatically = true
+container.persistentStoreDescriptions = [description]
+
+// Supported lightweight migrations:
+// - Adding a new attribute (with default value)
+// - Removing an attribute
+// - Renaming an attribute (set renaming identifier in model editor)
+// - Adding a new entity
+// - Adding/removing a relationship
+// - Changing optional &lt;-&gt; non-optional (if default value set)
+</code></pre>
+<h2 id="core-data-with-cloudkit">Core Data with CloudKit</h2>
+<pre><code class="language-swift">class CloudPersistenceController {
+    static let shared = CloudPersistenceController()
+
+    let container: NSPersistentCloudKitContainer
+
+    init() {
+        container = NSPersistentCloudKitContainer(name: &quot;MyApp&quot;)
+
+        // Configure for CloudKit sync
+        guard let description = container.persistentStoreDescriptions.first else {
+            fatalError(&quot;No store description&quot;)
+        }
+        description.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
+        description.setOption(true as NSNumber, forKey: NSPersistentStoreRemoteChangeNotificationPostOptionKey)
+        description.cloudKitContainerOptions = NSPersistentCloudKitContainerOptions(
+            containerIdentifier: &quot;iCloud.com.myapp.data&quot;
+        )
+
+        container.loadPersistentStores { _, error in
+            if let error { fatalError(&quot;CloudKit store failed: \(error)&quot;) }
+        }
+
+        container.viewContext.automaticallyMergesChangesFromParent = true
+        container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+
+        // Observe remote changes
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(storeRemoteChange),
+            name: .NSPersistentStoreRemoteChange,
+            object: container.persistentStoreCoordinator
+        )
+    }
+
+    @objc private func storeRemoteChange(_ notification: Notification) {
+        // Handle remote changes if needed
+    }
+}
+</code></pre></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

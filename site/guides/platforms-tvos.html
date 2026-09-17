@@ -1,0 +1,424 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>tvOS Platform Guide — iOS Agent Skill</title><meta name="description" content="Repository guidance for tvOS. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/platforms-tvos.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="tvOS Platform Guide"><meta property="og:description" content="Repository guidance for tvOS. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/platforms-tvos.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "tvOS Platform Guide", "description": "Repository guidance for tvOS. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/platforms-tvos.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Platforms · Reference guide</p><h1>tvOS Platform Guide</h1><p class="lead">Repository guidance for tvOS. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/platforms/tvos.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#focus-engine-and-focusable-views">Focus Engine and Focusable Views</a><ul>
+<li><a href="#understanding-the-focus-system">Understanding the Focus System</a></li>
+<li><a href="#focus-sections-and-custom-navigation">Focus Sections and Custom Navigation</a></li>
+<li><a href="#focus-aware-styling">Focus-Aware Styling</a></li>
+</ul>
+</li>
+<li><a href="#tvuikit-components">TVUIKit Components</a><ul>
+<li><a href="#lockup-views-uikit">Lockup Views (UIKit)</a></li>
+<li><a href="#monogram-and-caption-button">Monogram and Caption Button</a></li>
+</ul>
+</li>
+<li><a href="#top-shelf-extensions">Top Shelf Extensions</a><ul>
+<li><a href="#static-top-shelf">Static Top Shelf</a></li>
+<li><a href="#inset-top-shelf">Inset Top Shelf</a></li>
+</ul>
+</li>
+<li><a href="#siri-remote-handling">Siri Remote Handling</a><ul>
+<li><a href="#gesture-recognition">Gesture Recognition</a></li>
+<li><a href="#game-controller-support">Game Controller Support</a></li>
+</ul>
+</li>
+<li><a href="#media-playback-on-tv">Media Playback on TV</a></li>
+<li><a href="#multi-user-support">Multi-User Support</a></li>
+<li><a href="#tvos-design-guidelines">tvOS Design Guidelines</a></li>
+</ul>
+</div>
+</aside><h2 id="focus-engine-and-focusable-views">Focus Engine and Focusable Views</h2>
+<h3 id="understanding-the-focus-system">Understanding the Focus System</h3>
+<p>tvOS uses a focus-based navigation model. The Siri Remote trackpad moves focus between views; pressing the trackpad selects the focused item.</p>
+<pre><code class="language-swift">struct ContentGridView: View {
+    @FocusState private var focusedItem: String?
+
+    let items = [&quot;Movies&quot;, &quot;Shows&quot;, &quot;Music&quot;, &quot;Podcasts&quot;]
+
+    var body: some View {
+        HStack(spacing: 40) {
+            ForEach(items, id: \.self) { item in
+                CardView(title: item)
+                    .focusable()
+                    .focused($focusedItem, equals: item)
+                    .scaleEffect(focusedItem == item ? 1.1 : 1.0)
+                    .shadow(radius: focusedItem == item ? 20 : 5)
+                    .animation(.spring(duration: 0.3), value: focusedItem)
+            }
+        }
+        .padding(60)
+        .defaultFocus($focusedItem, &quot;Movies&quot;)
+    }
+}
+</code></pre>
+<h3 id="focus-sections-and-custom-navigation">Focus Sections and Custom Navigation</h3>
+<pre><code class="language-swift">struct CustomFocusView: View {
+    @FocusState private var section: Section?
+
+    enum Section: Hashable {
+        case sidebar, content, detail
+    }
+
+    var body: some View {
+        HStack {
+            // Sidebar
+            VStack {
+                ForEach(menuItems) { item in
+                    MenuButton(item: item)
+                }
+            }
+            .focusSection()
+            .focused($section, equals: .sidebar)
+
+            // Content area
+            LazyVGrid(columns: columns) {
+                ForEach(contentItems) { item in
+                    ContentCard(item: item)
+                }
+            }
+            .focusSection()
+            .focused($section, equals: .content)
+        }
+        .focusScope(namespace)
+        .onMoveCommand { direction in
+            handleDirectionalInput(direction)
+        }
+    }
+
+    func handleDirectionalInput(_ direction: MoveCommandDirection) {
+        switch direction {
+        case .left:  section = .sidebar
+        case .right: section = .content
+        default: break
+        }
+    }
+}
+</code></pre>
+<h3 id="focus-aware-styling">Focus-Aware Styling</h3>
+<pre><code class="language-swift">struct FocusableCard: View {
+    let title: String
+    let imageURL: URL
+    @Environment(\.isFocused) var isFocused
+
+    var body: some View {
+        VStack {
+            AsyncImage(url: imageURL) { image in
+                image.resizable().aspectRatio(contentMode: .fill)
+            } placeholder: {
+                Color.gray
+            }
+            .frame(width: 300, height: 170)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .shadow(color: .black.opacity(isFocused ? 0.4 : 0.1),
+                    radius: isFocused ? 20 : 5,
+                    y: isFocused ? 10 : 2)
+
+            Text(title)
+                .font(isFocused ? .headline : .subheadline)
+                .foregroundStyle(isFocused ? .primary : .secondary)
+        }
+        .scaleEffect(isFocused ? 1.05 : 1.0)
+        .animation(.easeInOut(duration: 0.2), value: isFocused)
+    }
+}
+</code></pre>
+<hr />
+<h2 id="tvuikit-components">TVUIKit Components</h2>
+<h3 id="lockup-views-uikit">Lockup Views (UIKit)</h3>
+<pre><code class="language-swift">import TVUIKit
+
+class PosterViewController: UIViewController {
+    func createLockupView() -&gt; TVLockupView {
+        let lockup = TVLockupView()
+
+        // Content image
+        let imageView = UIImageView(image: UIImage(named: &quot;poster&quot;))
+        imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
+        imageView.frame = CGRect(x: 0, y: 0, width: 240, height: 360)
+        lockup.contentView.addSubview(imageView)
+
+        // Header
+        let headerLabel = UILabel()
+        headerLabel.text = &quot;NEW&quot;
+        headerLabel.font = .systemFont(ofSize: 16, weight: .bold)
+        lockup.headerView = headerLabel
+
+        // Footer
+        let footerLabel = UILabel()
+        footerLabel.text = &quot;Movie Title&quot;
+        footerLabel.font = .systemFont(ofSize: 20)
+        lockup.footerView = footerLabel
+
+        lockup.contentSize = CGSize(width: 240, height: 360)
+        return lockup
+    }
+}
+</code></pre>
+<h3 id="monogram-and-caption-button">Monogram and Caption Button</h3>
+<pre><code class="language-swift">// Monogram view for user profiles
+let monogram = TVMonogramView()
+monogram.title = &quot;John Doe&quot;
+monogram.subtitle = &quot;Family Member&quot;
+monogram.image = UIImage(named: &quot;profile&quot;)
+
+// Caption button
+let captionButton = TVCaptionButtonView()
+captionButton.contentImage = UIImage(systemName: &quot;play.fill&quot;)
+captionButton.title = &quot;Play&quot;
+captionButton.subtitle = &quot;From Beginning&quot;
+</code></pre>
+<hr />
+<h2 id="top-shelf-extensions">Top Shelf Extensions</h2>
+<h3 id="static-top-shelf">Static Top Shelf</h3>
+<pre><code class="language-swift">import TVServices
+
+class ContentProvider: TVTopShelfContentProvider {
+    override func loadTopShelfContent() async -&gt; TVTopShelfContent? {
+        // Sectioned content
+        var sections: [TVTopShelfItemCollection&lt;TVTopShelfSectionedItem&gt;] = []
+
+        let continueWatching = TVTopShelfItemCollection&lt;TVTopShelfSectionedItem&gt;(items: await fetchContinueWatching())
+        continueWatching.title = &quot;Continue Watching&quot;
+
+        let recommended = TVTopShelfItemCollection&lt;TVTopShelfSectionedItem&gt;(items: await fetchRecommended())
+        recommended.title = &quot;Recommended for You&quot;
+
+        sections = [continueWatching, recommended]
+        return TVTopShelfSectionedContent(sections: sections)
+    }
+
+    private func fetchContinueWatching() async -&gt; [TVTopShelfSectionedItem] {
+        // Fetch from your data source
+        return movies.map { movie in
+            let item = TVTopShelfSectionedItem(identifier: movie.id)
+            item.title = movie.title
+            item.setImageURL(movie.posterURL, for: .screenScale1x)
+            item.setImageURL(movie.posterURL2x, for: .screenScale2x)
+            item.playAction = TVTopShelfAction(url: URL(string: &quot;myapp://play/\(movie.id)&quot;)!)
+            item.displayAction = TVTopShelfAction(url: URL(string: &quot;myapp://detail/\(movie.id)&quot;)!)
+            return item
+        }
+    }
+}
+</code></pre>
+<h3 id="inset-top-shelf">Inset Top Shelf</h3>
+<pre><code class="language-swift">func loadTopShelfContent() async -&gt; TVTopShelfContent? {
+    let items: [TVTopShelfInsetItem] = await fetchFeatured().map { featured in
+        let item = TVTopShelfInsetItem(identifier: featured.id)
+        item.title = featured.title
+        item.setImageURL(featured.wideImageURL, for: .screenScale1x)
+        item.setImageURL(featured.wideImageURL2x, for: .screenScale2x)
+        item.imageShape = .extraWide  // 16:9 aspect ratio
+        item.playAction = TVTopShelfAction(url: URL(string: &quot;myapp://play/\(featured.id)&quot;)!)
+        return item
+    }
+    return TVTopShelfInsetContent(items: items)
+}
+</code></pre>
+<hr />
+<h2 id="siri-remote-handling">Siri Remote Handling</h2>
+<h3 id="gesture-recognition">Gesture Recognition</h3>
+<pre><code class="language-swift">struct RemoteAwareView: View {
+    @State private var position = CGPoint(x: 400, y: 300)
+
+    var body: some View {
+        Canvas { context, size in
+            let rect = CGRect(x: position.x - 25, y: position.y - 25, width: 50, height: 50)
+            context.fill(Circle().path(in: rect), with: .color(.blue))
+        }
+        .onPlayPauseCommand { togglePlayback() }
+        .onExitCommand { handleBack() }
+        .onMoveCommand { direction in
+            withAnimation(.spring) {
+                switch direction {
+                case .up:    position.y -= 50
+                case .down:  position.y += 50
+                case .left:  position.x -= 50
+                case .right: position.x += 50
+                @unknown default: break
+                }
+            }
+        }
+    }
+}
+</code></pre>
+<h3 id="game-controller-support">Game Controller Support</h3>
+<pre><code class="language-swift">import GameController
+
+class RemoteInputManager: ObservableObject {
+    @Published var isConnected = false
+
+    func setupGameController() {
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(controllerConnected),
+            name: .GCControllerDidConnect, object: nil
+        )
+
+        // Siri Remote as game controller
+        GCController.startWirelessControllerDiscovery()
+    }
+
+    @objc func controllerConnected(_ notification: Notification) {
+        guard let controller = notification.object as? GCController else { return }
+        isConnected = true
+
+        if let micro = controller.microGamepad {
+            micro.dpad.valueChangedHandler = { pad, x, y in
+                // Trackpad touch position (-1...1)
+                print(&quot;Touch: \(x), \(y)&quot;)
+            }
+            micro.buttonA.pressedChangedHandler = { _, _, pressed in
+                if pressed { self.handleSelect() }
+            }
+            micro.buttonMenu.pressedChangedHandler = { _, _, pressed in
+                if pressed { self.handleMenu() }
+            }
+        }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="media-playback-on-tv">Media Playback on TV</h2>
+<pre><code class="language-swift">import AVKit
+
+struct PlayerView: UIViewControllerRepresentable {
+    let mediaURL: URL
+
+    func makeUIViewController(context: Context) -&gt; AVPlayerViewController {
+        let controller = AVPlayerViewController()
+        let player = AVPlayer(url: mediaURL)
+        controller.player = player
+
+        // Configure for TV experience
+        controller.showsPlaybackControls = true
+        controller.allowsPictureInPicturePlayback = false
+        controller.updatesNowPlayingInfoCenter = true
+        controller.skippingBehavior = .skipItem
+        controller.requiresLinearPlayback = false
+
+        // Metadata
+        let metadata = AVMutableMetadataItem()
+        metadata.identifier = .commonIdentifierTitle
+        metadata.value = &quot;Movie Title&quot; as NSString
+        player.currentItem?.externalMetadata = [metadata]
+
+        // Info panel customization
+        controller.transportBarCustomMenuItems = [
+            UIAction(title: &quot;Audio&quot;, image: UIImage(systemName: &quot;speaker.wave.3&quot;)) { _ in },
+            UIAction(title: &quot;Subtitles&quot;, image: UIImage(systemName: &quot;captions.bubble&quot;)) { _ in }
+        ]
+
+        player.play()
+        return controller
+    }
+
+    func updateUIViewController(_ controller: AVPlayerViewController, context: Context) {}
+}
+
+// Interstitial content (ads, recaps)
+struct ContentWithInterstitials {
+    func configureInterstitials(for player: AVPlayer) {
+        let interstitialEvent = AVPlayerInterstitialEvent(
+            primaryItem: player.currentItem!,
+            time: CMTime(seconds: 300, preferredTimescale: 1)  // At 5 minutes
+        )
+        interstitialEvent.templateItems = [
+            AVPlayerItem(url: URL(string: &quot;https://example.com/ad.mp4&quot;)!)
+        ]
+
+        let controller = AVPlayerInterstitialEventController(primaryPlayer: player)
+        controller.events = [interstitialEvent]
+    }
+}
+</code></pre>
+<hr />
+<h2 id="multi-user-support">Multi-User Support</h2>
+<pre><code class="language-swift">import TVUIKit
+
+class UserManager {
+    func getCurrentUser() async -&gt; TVUserManager.User? {
+        // tvOS supports multiple user profiles
+        let userManager = TVUserManager()
+
+        return await withCheckedContinuation { continuation in
+            userManager.presentProfilePreferencesPanel { result in
+                switch result {
+                case .success(let user):
+                    continuation.resume(returning: user)
+                case .failure:
+                    continuation.resume(returning: nil)
+                @unknown default:
+                    continuation.resume(returning: nil)
+                }
+            }
+        }
+    }
+}
+
+// User-specific data isolation
+struct UserProfileView: View {
+    let userIdentifier: String
+
+    var body: some View {
+        // Load user-specific preferences and watch history
+        VStack {
+            Text(&quot;Welcome back&quot;)
+                .font(.title)
+            ContinueWatchingRow(userId: userIdentifier)
+            RecommendationsRow(userId: userIdentifier)
+        }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="tvos-design-guidelines">tvOS Design Guidelines</h2>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>Recommendation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Viewing distance</td>
+<td>Design for 10-foot experience (large text, images)</td>
+</tr>
+<tr>
+<td>Safe area</td>
+<td>Respect 60pt insets on all sides</td>
+</tr>
+<tr>
+<td>Focus feedback</td>
+<td>Always provide visual feedback for focus changes</td>
+</tr>
+<tr>
+<td>Text size</td>
+<td>Minimum 31pt for body text</td>
+</tr>
+<tr>
+<td>Animations</td>
+<td>Use spring animations for focus transitions</td>
+</tr>
+<tr>
+<td>Navigation depth</td>
+<td>Keep to 3-4 levels maximum</td>
+</tr>
+<tr>
+<td>Loading states</td>
+<td>Show placeholder content immediately</td>
+</tr>
+<tr>
+<td>Background</td>
+<td>Use layered images for parallax depth effect</td>
+</tr>
+<tr>
+<td>Audio</td>
+<td>Always provide descriptive audio option</td>
+</tr>
+<tr>
+<td>Top Shelf</td>
+<td>Update content regularly for discovery</td>
+</tr>
+</tbody>
+</table></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

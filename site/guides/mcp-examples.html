@@ -1,0 +1,318 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MCP Usage Examples — iOS Agent Skill</title><meta name="description" content="Repository guidance for MCP Usage Examples. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/mcp-examples.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="MCP Usage Examples"><meta property="og:description" content="Repository guidance for MCP Usage Examples. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/mcp-examples.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "MCP Usage Examples", "description": "Repository guidance for MCP Usage Examples. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/mcp-examples.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Mcp · Reference guide</p><h1>MCP Usage Examples</h1><p class="lead">Repository guidance for MCP Usage Examples. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/mcp/examples.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#1-onboarding-onto-an-unfamiliar-codebase">1. Onboarding onto an unfamiliar codebase</a></li>
+<li><a href="#2-diagnosing-a-data-race">2. Diagnosing a data race</a><ul>
+<li><a href="#sourcesviewsfeedviewswift7-taskdetached-drops-actor-isolation-priority-and-task-locals">🟠 Sources/Views/FeedView.swift:7 — Task.detached drops actor isolation, priority, and task-locals.</a></li>
+<li><a href="#sourcesviewscardswift14-glasseffect-was-introduced-in-ios-26-but-is-guarded-at-ios-27">🟠 Sources/Views/Card.swift:14 — glassEffect was introduced in iOS 26 but is guarded at iOS 27.</a></li>
+<li><a href="#sourceslocationserviceswift1-uses-location-but-infoplist-has-no-nslocationwheninuseusagedescription">🔴 Sources/LocationService.swift:1 — Uses location but Info.plist has no NSLocationWhenInUseUsageDescription.</a></li>
+<li><a href="#privacyinfoxcprivacy1-no-privacyinfoxcprivacy-found-in-the-project">🔴 PrivacyInfo.xcprivacy:1 — No PrivacyInfo.xcprivacy found in the project.</a></li>
+<li><a href="#sourcesviewstoolbarswift22-icon-only-button-has-no-accessibility-label">🟠 Sources/Views/Toolbar.swift:22 — Icon-only button has no accessibility label.</a></li>
+</ul>
+</li>
+<li><a href="#8-reading-the-project-without-asking">8. Reading the project without asking</a></li>
+<li><a href="#9-checking-the-skill-itself">9. Checking the skill itself</a></li>
+<li><a href="#10-in-ci">10. In CI</a></li>
+<li><a href="#what-to-expect">What to expect</a></li>
+</ul>
+</div>
+</aside><p><strong>Load this when:</strong> you want to see what a session with <code>ios-agent-mcp</code> actually
+looks like, or how to combine it with the skill's subagents.</p>
+<p>Every transcript below is the server's real output format.</p>
+<hr />
+<h2 id="1-onboarding-onto-an-unfamiliar-codebase">1. Onboarding onto an unfamiliar codebase</h2>
+<blockquote>
+<p><strong>You:</strong> I just inherited this Swift project. What am I looking at?</p>
+</blockquote>
+<p>Claude calls <code>analyze_swift_project</code>:</p>
+<pre><code># Swift Project Analysis
+
+## Structure
+
+- **Swift files:** 12
+- **Lines:** 1,998
+- **Deployment target:** iOS 17
+- **Swift tools version:** 5.9
+- **Test files:** found
+
+## Shape
+
+- **UI framework:** unknown
+- **Architecture:** Clean Architecture
+  - evidence: 1 use-case protocol(s) or a UseCases/ directory; 1 repository protocol(s)
+- **Dependency injection:** protocol existentials injected through init
+- **Third-party dependencies:** none detected
+
+- **Frameworks:** Accelerate, Foundation, Observation, SwiftData, XCTest
+
+## Findings by category
+
+| Category | 🔴 Blocker | 🟠 Serious | 🟡 Minor | Tool |
+|---|---:|---:|---:|---|
+| Concurrency | 0 | 0 | 0 | `review_swift_concurrency` |
+| Architecture | 0 | 0 | 0 | `review_swift_architecture` |
+| SwiftUI | 0 | 0 | 0 | `review_swiftui` |
+| Availability | 0 | 0 | 0 | `check_availability_guards` |
+| Memory | 0 | 0 | 0 | `review_swift_memory` |
+| Security | 0 | 0 | 0 | `review_swift_security` |
+| Performance | 0 | 0 | 0 | `review_swift_performance` |
+| Testing | 0 | 0 | 0 | `review_swift_testing` |
+| App Store | 0 | 0 | 0 | `audit_app_store_readiness` |
+
+**No findings in any category.**
+</code></pre>
+<p>That is genuinely the current output of running the server against this repo's
+own <code>samples/SkillPatterns</code>, pasted rather than composed — the package builds
+and its tests pass on macOS CI on every push.</p>
+<p><code>UI framework: unknown</code> is correct, not a gap: the sample deliberately contains
+no SwiftUI view code so it can build on a plain runner with no simulator.</p>
+<p><strong>Why start here:</strong> the table tells you which of the ten tools is worth running.
+Running all of them on a large project buries the signal.</p>
+<hr />
+<h2 id="2-diagnosing-a-data-race">2. Diagnosing a data race</h2>
+<blockquote>
+<p><strong>You:</strong> Users report the feed occasionally shows stale posts. Anything obviously wrong?</p>
+</blockquote>
+<p><code>review_swift_concurrency</code>:</p>
+<pre><code>### 🔴 Sources/Views/FeedView.swift:3 — @Observable type is not @MainActor-isolated.
+
+```swift
+@Observable
+</code></pre>
+<p><strong>Why it matters:</strong> @Observable grants no isolation. SwiftUI reads this state
+during layout while any task may write it — a data race under Swift 5 mode, a
+compile error under Swift 6.</p>
+<p><strong>Fix:</strong> Annotate the type: <code>@MainActor @Observable final class …</code>. Annotate the
+type, not individual members — per-member isolation leaves gaps.</p>
+<p><em>Rule <code>observable-without-mainactor</code> · see <code>docs/swift/swift-concurrency.md</code></em></p>
+<h3 id="sourcesviewsfeedviewswift7-taskdetached-drops-actor-isolation-priority-and-task-locals">🟠 Sources/Views/FeedView.swift:7 — Task.detached drops actor isolation, priority, and task-locals.</h3>
+<pre><code>
+Two findings that together explain the symptom: unisolated state plus a detached
+task writing to it.
+
+---
+
+## 3. The finding people don't expect
+
+&gt; **You:** We shipped Liquid Glass last release but users on iOS 26 say they don't see it.
+
+`check_availability_guards`:
+
+</code></pre>
+<h3 id="sourcesviewscardswift14-glasseffect-was-introduced-in-ios-26-but-is-guarded-at-ios-27">🟠 Sources/Views/Card.swift:14 — glassEffect was introduced in iOS 26 but is guarded at iOS 27.</h3>
+<p><strong>Why it matters:</strong> Every device on iOS 26–26 falls back unnecessarily, losing
+the feature for a large installed base. This is invisible when testing on a
+current device.</p>
+<p><strong>Fix:</strong> Guard on iOS 26, the version where the symbol was introduced — not the
+newest SDK.</p>
+<pre><code>
+The code compiled, shipped, and worked on the developer's phone. Nothing but a
+rule catches this.
+
+---
+
+## 4. Pre-submission audit
+
+&gt; **You:** We submit tomorrow. Anything that will get rejected?
+
+`audit_app_store_readiness`:
+
+</code></pre>
+<h3 id="sourceslocationserviceswift1-uses-location-but-infoplist-has-no-nslocationwheninuseusagedescription">🔴 Sources/LocationService.swift:1 — Uses location but Info.plist has no NSLocationWhenInUseUsageDescription.</h3>
+<p><strong>Why it matters:</strong> iOS terminates the app the moment the permission is
+requested, and App Review rejects the submission.</p>
+<h3 id="privacyinfoxcprivacy1-no-privacyinfoxcprivacy-found-in-the-project">🔴 PrivacyInfo.xcprivacy:1 — No PrivacyInfo.xcprivacy found in the project.</h3>
+<h3 id="sourcesviewstoolbarswift22-icon-only-button-has-no-accessibility-label">🟠 Sources/Views/Toolbar.swift:22 — Icon-only button has no accessibility label.</h3>
+<pre><code>
+Two of these are hard rejections; the third is an accessibility failure a
+reviewer may also catch.
+
+---
+
+## 5. Combined with the skill's subagents
+
+The MCP server finds *what* is wrong. The subagents in `.claude/agents/` decide
+*what to do*. A useful pairing:
+
+</code></pre>
+<ol>
+<li>analyze_swift_project        → where the problems are</li>
+<li>ios-plan                     → a fix plan, respecting existing seams</li>
+<li>main agent                   → execute</li>
+<li>review_swift_concurrency     → confirm the category is now clean</li>
+<li>swift-reviewer               → build + tests, with real output</li>
+</ol>
+<pre><code>
+Step 4 and step 5 are doing different jobs, and both matter:
+
+- The **MCP tool** proves the *pattern* is gone. It is deterministic and cannot
+  be argued with.
+- The **reviewer subagent** proves the *code still works*, by running the build
+  and pasting the output.
+
+A clean static report on code that no longer compiles is worthless. Neither
+check substitutes for the other. See `../orchestration/verification.md`.
+
+---
+
+## 6. The four checks people run after something goes wrong
+
+These were added in 2.1.0, and each answers a question the first six could not.
+
+### Memory — &quot;the screen is gone but it is still updating&quot;
+
+&gt; **You:** deinit never runs on my ClockModel.
+
+</code></pre>
+<p>Claude → review_swift_memory</p>
+<p>🟠 Sources/ClockModel.swift:12 — Repeating Timer captures self strongly.
+   Why: the run loop retains the timer, the timer retains the block, and the
+        block retains self. The cycle is self -&gt; Timer -&gt; closure -&gt; self, and
+        ARC cannot break it.
+   Fix: capture <code>[weak self]</code>, and invalidate() when the owner goes away.</p>
+<pre><code>
+Deliberately narrow: a closure capturing `self` is **not** a leak, and flagging
+every one would bury the handful that are. The rules fire only on APIs that
+*store* the closure — repeating `Timer`, block `NotificationCenter` observers,
+Combine `sink`, stored closure properties, non-`weak` delegates.
+
+### Security — before handling credentials
+
+&gt; **You:** security pass before we ship the login screen.
+
+</code></pre>
+<p>Claude → review_swift_security</p>
+<p>🔴 Sources/Session.swift:31 — Credential written to UserDefaults.
+   Why: UserDefaults is an unencrypted plist in the app container. It is
+        readable on a jailbroken device AND included in unencrypted backups,
+        so the token leaves the device entirely.
+   Fix: Keychain with kSecAttrAccessibleWhenUnlockedThisDeviceOnly.</p>
+<pre><code>
+`hardcoded-secret` skips the placeholders people legitimately commit —
+`YOUR_API_KEY`, `&lt;your-key&gt;`, `changeme`. A rule that cries wolf on those is a
+rule everyone learns to ignore.
+
+### Testing — when the suite is green and you do not believe it
+
+The inverse of every other tool: it runs **only** on test files.
+
+</code></pre>
+<p>Claude → review_swift_testing</p>
+<p>🟠 Tests/FeedTests.swift:22 — Test contains no assertion.
+   Why: it passes as long as nothing throws, so it reports success whether the
+        behavior is right or wrong.
+   Fix: assert the outcome, or delete it. A test that cannot fail is not a test.</p>
+<p>🔴 Tests/FeedTests.swift:41 — <code>await</code> inside an XCTAssert autoclosure.
+   Why: XCTAssert takes an autoclosure, which cannot contain an await. This
+        does not compile.
+   Fix: <code>let value = try await subject.run()</code>, then assert on <code>value</code>.</p>
+<pre><code>
+### Performance — when scrolling stutters
+
+</code></pre>
+<p>Claude → review_swift_performance</p>
+<p>🟠 Sources/FeedView.swift:24 — Formatter allocated inside <code>body</code>.
+   Why: body re-runs on every state change, and constructing a DateFormatter is
+        one of the most expensive routine operations on the platform. In a list
+        this is the hitch.
+   Fix: hoist to a <code>static let</code>, or use <code>.formatted()</code>.</p>
+<pre><code>
+Rules that only matter on the render path are scoped to `var body: some View`
+and stay quiet elsewhere — the same `DateFormatter()` is 🟠 inside `body` and
+🟡 outside it.
+
+---
+
+## 7. Branching on a result without parsing prose
+
+Every review tool returns `structuredContent` next to the markdown, so a
+workflow can act on the numbers:
+
+```jsonc
+{
+  &quot;summary&quot;: &quot;Security Review: 1 blocker, 2 serious across 34 files.&quot;,
+  &quot;score&quot;: 91,
+  &quot;counts&quot;: { &quot;blocker&quot;: 1, &quot;serious&quot;: 2, &quot;minor&quot;: 0, &quot;total&quot;: 3 },
+  &quot;files_checked&quot;: 34,
+  &quot;issues&quot;: [ /* file, line, severity, rule, consequence, fix */ ],
+  &quot;suggestions&quot;: [&quot;hardcoded-secret: Move it server-side…&quot;]
+}
+</code></pre>
+<p><code>suggestions</code> groups by rule rather than repeating every issue's fix — forty
+literal-spacing findings produce one instruction, not forty.</p>
+<p><strong>On <code>score</code>:</strong> it is a published formula, not a judgement —
+<code>100 × (1 − penalty/capacity)</code> where <code>penalty = 10·blockers + 3·serious +
+1·minor</code> and <code>capacity = files × 10</code>. Because it is a <em>density</em>, it is
+comparable across runs on one project and <strong>not</strong> between projects: a UI-heavy
+app and a networking library have different rule surfaces. Use <code>counts</code> for
+anything that matters.</p>
+<hr />
+<h2 id="8-reading-the-project-without-asking">8. Reading the project without asking</h2>
+<p>Point the server at a project once, in the client config:</p>
+<pre><code class="language-jsonc">{
+  &quot;mcpServers&quot;: {
+    &quot;ios-agent&quot;: {
+      &quot;command&quot;: &quot;npx&quot;,
+      &quot;args&quot;: [&quot;-y&quot;, &quot;ios-agent-mcp&quot;, &quot;--project&quot;, &quot;/Users/you/Projects/MyApp&quot;]
+    }
+  }
+}
+</code></pre>
+<p>Then <code>ios://project/info</code> is readable without the model deciding to call
+anything:</p>
+<pre><code class="language-json">{
+  &quot;project_root&quot;: &quot;/Users/you/Projects/MyApp&quot;,
+  &quot;available&quot;: true,
+  &quot;swift_files&quot;: 84,
+  &quot;deployment_target&quot;: &quot;17.0&quot;,
+  &quot;ui_framework&quot;: &quot;SwiftUI&quot;,
+  &quot;architecture&quot;: &quot;MVVM&quot;,
+  &quot;architecture_evidence&quot;: [&quot;12 ViewModel/Model type(s)&quot;, &quot;Views/ and ViewModels/ directories&quot;],
+  &quot;uses_dependency_injection&quot;: true,
+  &quot;has_tests&quot;: true
+}
+</code></pre>
+<p>The <strong>evidence</strong> ships with the verdict. "MVVM" alone is a guess presented as a
+fact; the list underneath is a claim you can check. When the signals are weak it
+says <code>not determined</code> rather than picking the most popular answer.</p>
+<p>Every payload also reports <code>project_root</code>, because the root is implicit — it
+comes from <code>--project</code>, <code>IOS_AGENT_PROJECT</code>, or the directory the client
+happened to spawn the server in, and a reader who cannot see which one won has
+no way to tell an empty project from a wrong path.</p>
+<p><strong>There is no <code>ios://project/build-status</code>.</strong> It would have to run <code>xcodebuild</code>,
+which needs macOS and Xcode and breaks the <code>filesystem: read, network: none</code>
+contract that lets this install anywhere in ~26 KB.</p>
+<hr />
+<h2 id="9-checking-the-skill-itself">9. Checking the skill itself</h2>
+<p><code>lint_skill</code> is the one tool that does not read Swift. Use it when a subagent
+never gets invoked, or before publishing a skill:</p>
+<pre><code>Claude → lint_skill
+
+🔴 .claude/agents/swift-reviewer.md:4 — described as read-only but granted Write.
+   Why: the main agent delegates on the strength of that promise. A reviewer
+        that can edit will fix what it was meant to report, and the separation
+        of duties the review depends on is gone with nothing in the output to
+        show it.
+   Fix: remove Write from `tools`, or stop describing the agent as read-only.
+</code></pre>
+<p>Run against this repository it found a real defect on its first run: one of the
+ten subagents described what it <em>is</em> without saying when to <em>use</em> it, making it
+measurably less likely to be selected than its nine peers.</p>
+<hr />
+<h2 id="10-in-ci">10. In CI</h2>
+<p>The server is for interactive use, but the same rules run headless via
+<code>templates/hooks/forbid-antipatterns.sh</code> — the analyzers were derived from it.
+Use the hook in CI and pre-commit, and the MCP server when you want an agent to
+explain and fix what it found.</p>
+<hr />
+<h2 id="what-to-expect">What to expect</h2>
+<p><strong>A clean report is not a passing build.</strong> Every tool says so in its own footer.
+Static analysis cannot type-check, run, or prove behavior.</p>
+<p><strong>Fewer findings on unconventional layouts.</strong> Architecture rules infer layers
+from directory names. A project that does not use <code>Views/</code> or <code>Domain/</code> gets
+fewer architecture findings — not wrong ones.</p>
+<p><strong>Test and mock files are exempt</strong> from app-code-only rules, deliberately. So is
+<code>Package.swift</code>. <code>review_swift_testing</code> is the exception that proves it — it is
+the only tool that runs <em>exclusively</em> on test files.</p>
+<p><strong><code>score</code> is a density, not a grade.</strong> Comparable across runs on one project,
+meaningless between projects. The formula is published in <code>tools.md</code> so the
+number is reproducible rather than a vibe.</p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

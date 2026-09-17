@@ -1,0 +1,1531 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Interaction Standards — iOS Agent Skill</title><meta name="description" content="Repository guidance for Interaction Standards. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/design-interaction-standards.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="Interaction Standards"><meta property="og:description" content="Repository guidance for Interaction Standards. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/design-interaction-standards.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "Interaction Standards", "description": "Repository guidance for Interaction Standards. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/design-interaction-standards.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Design · Reference guide</p><h1>Interaction Standards</h1><p class="lead">Repository guidance for Interaction Standards. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/design/interaction-standards.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#1-animation-standards">1. Animation Standards</a><ul>
+<li><a href="#default-curves-and-durations">Default Curves and Durations</a></li>
+<li><a href="#when-to-use-which-animation">When to Use Which Animation</a></li>
+<li><a href="#transition-standards">Transition Standards</a></li>
+</ul>
+</li>
+<li><a href="#2-haptic-feedback-rules">2. Haptic Feedback Rules</a><ul>
+<li><a href="#haptic-selection-guide">Haptic Selection Guide</a></li>
+<li><a href="#sensoryfeedback-ios-17">SensoryFeedback (iOS 17+)</a></li>
+<li><a href="#uiimpactfeedbackgenerator-ios-16-and-below">UIImpactFeedbackGenerator (iOS 16 and Below)</a></li>
+<li><a href="#best-practices">Best Practices</a></li>
+</ul>
+</li>
+<li><a href="#3-sf-symbols-guidelines">3. SF Symbols Guidelines</a><ul>
+<li><a href="#size-guidelines">Size Guidelines</a></li>
+<li><a href="#rendering-modes">Rendering Modes</a></li>
+<li><a href="#variable-value-symbols">Variable Value Symbols</a></li>
+<li><a href="#symbol-effects">Symbol Effects</a></li>
+<li><a href="#preferred-symbol-weight">Preferred Symbol Weight</a></li>
+</ul>
+</li>
+<li><a href="#4-button-style-standards">4. Button Style Standards</a><ul>
+<li><a href="#complete-button-style-system">Complete Button Style System</a></li>
+</ul>
+</li>
+<li><a href="#5-loading-empty-and-error-state-patterns">5. Loading, Empty, and Error State Patterns</a><ul>
+<li><a href="#viewstate-enum">ViewState Enum</a></li>
+<li><a href="#loading-view">Loading View</a></li>
+<li><a href="#empty-state-view">Empty State View</a></li>
+<li><a href="#error-state-view">Error State View</a></li>
+<li><a href="#asynccontentview-wrapper">AsyncContentView Wrapper</a></li>
+</ul>
+</li>
+<li><a href="#6-localization-approach">6. Localization Approach</a><ul>
+<li><a href="#string-catalogs-setup">String Catalogs Setup</a></li>
+<li><a href="#date-and-number-formatting">Date and Number Formatting</a></li>
+<li><a href="#rtl-and-layout-considerations">RTL and Layout Considerations</a></li>
+</ul>
+</li>
+<li><a href="#7-privacy-manifest">7. Privacy Manifest</a><ul>
+<li><a href="#privacyinfoxcprivacy-structure">PrivacyInfo.xcprivacy Structure</a></li>
+<li><a href="#required-reason-api-categories">Required Reason API Categories</a></li>
+<li><a href="#third-party-sdk-manifests">Third-Party SDK Manifests</a></li>
+</ul>
+</li>
+<li><a href="#8-device-support-and-adaptive-layout">8. Device Support and Adaptive Layout</a><ul>
+<li><a href="#size-class-detection">Size Class Detection</a></li>
+<li><a href="#navigationsplitview-for-ipad-sidebar">NavigationSplitView for iPad Sidebar</a></li>
+<li><a href="#viewthatfits">ViewThatFits</a></li>
+<li><a href="#ipad-specific-features">iPad-Specific Features</a></li>
+</ul>
+</li>
+<li><a href="#9-preview-provider-standards">9. Preview Provider Standards</a><ul>
+<li><a href="#modern-previews-ios-17">Modern Previews (iOS 17+)</a></li>
+<li><a href="#interactive-previews">Interactive Previews</a></li>
+<li><a href="#preview-with-mock-data">Preview with Mock Data</a></li>
+<li><a href="#swiftdata-preview-container">SwiftData Preview Container</a></li>
+<li><a href="#legacy-previewprovider-ios-16-and-below">Legacy PreviewProvider (iOS 16 and Below)</a></li>
+</ul>
+</li>
+<li><a href="#quick-reference-summary">Quick Reference Summary</a></li>
+</ul>
+</div>
+</aside><blockquote>
+<p>Comprehensive reference for animations, haptics, symbols, button styles, state patterns, localization, privacy, adaptive layout, and preview standards.</p>
+</blockquote>
+<hr />
+<h2 id="1-animation-standards">1. Animation Standards</h2>
+<h3 id="default-curves-and-durations">Default Curves and Durations</h3>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Duration</th>
+<th>Curve</th>
+<th>Usage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Micro interaction</td>
+<td>0.2s</td>
+<td><code>.easeOut</code></td>
+<td>Toggles, button presses, icon changes</td>
+</tr>
+<tr>
+<td>Navigation transition</td>
+<td>0.35s</td>
+<td><code>.spring(response: 0.35, dampingFraction: 0.85)</code></td>
+<td>Push, pop, tab switches</td>
+</tr>
+<tr>
+<td>Content loading</td>
+<td>0.3s</td>
+<td><code>.easeInOut</code></td>
+<td>Skeleton to content, fade-in</td>
+</tr>
+<tr>
+<td>Dismissal</td>
+<td>0.25s</td>
+<td><code>.easeIn</code></td>
+<td>Sheet dismiss, alert close, toast exit</td>
+</tr>
+<tr>
+<td>Bouncy spring</td>
+<td>--</td>
+<td><code>.bouncy</code></td>
+<td>Playful UI: reactions, badges, celebrations</td>
+</tr>
+<tr>
+<td>Snappy spring</td>
+<td>--</td>
+<td><code>.snappy</code></td>
+<td>Responsive controls: sliders, toggles</td>
+</tr>
+<tr>
+<td>Smooth spring</td>
+<td>--</td>
+<td><code>.smooth</code></td>
+<td>Elegant reveals: cards, overlays</td>
+</tr>
+</tbody>
+</table>
+<h3 id="when-to-use-which-animation">When to Use Which Animation</h3>
+<table>
+<thead>
+<tr>
+<th>Use Case</th>
+<th>Animation</th>
+<th>Rationale</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Button tap feedback</td>
+<td><code>.easeOut, 0.2s</code></td>
+<td>Quick acknowledgment, no lingering</td>
+</tr>
+<tr>
+<td>Toggle switch</td>
+<td><code>.snappy</code></td>
+<td>Responsive mechanical feel</td>
+</tr>
+<tr>
+<td>Card expand/collapse</td>
+<td><code>.spring(response: 0.35, dampingFraction: 0.85)</code></td>
+<td>Natural, physical motion</td>
+</tr>
+<tr>
+<td>Pull-to-refresh</td>
+<td><code>.bouncy</code></td>
+<td>Playful rubber-band feel</td>
+</tr>
+<tr>
+<td>Modal presentation</td>
+<td><code>.smooth</code></td>
+<td>Elegant, unhurried entrance</td>
+</tr>
+<tr>
+<td>Error shake</td>
+<td><code>.default.repeatCount(3)</code></td>
+<td>Attention-grabbing without being jarring</td>
+</tr>
+<tr>
+<td>Skeleton shimmer</td>
+<td><code>.easeInOut, 1.2s, repeat</code></td>
+<td>Smooth continuous loop</td>
+</tr>
+<tr>
+<td>Item deletion</td>
+<td><code>.easeIn, 0.25s</code></td>
+<td>Quick exit, attention moves forward</td>
+</tr>
+<tr>
+<td>List reorder</td>
+<td><code>.snappy</code></td>
+<td>Keeps up with the finger</td>
+</tr>
+<tr>
+<td>Hero transition</td>
+<td><code>matchedGeometryEffect</code></td>
+<td>Spatial continuity between screens</td>
+</tr>
+</tbody>
+</table>
+<h3 id="transition-standards">Transition Standards</h3>
+<pre><code class="language-swift">// MARK: - Sheet Presentation (use system default)
+.sheet(isPresented: $showSettings) {
+    SettingsView()
+}
+
+// MARK: - Full Screen Cover with Custom Transition
+.fullScreenCover(isPresented: $showOnboarding) {
+    OnboardingView()
+        .transition(.opacity.combined(with: .move(edge: .bottom)))
+}
+
+// MARK: - Navigation Push (system default)
+NavigationStack {
+    List(items) { item in
+        NavigationLink(value: item) {
+            ItemRow(item: item)
+        }
+    }
+    .navigationDestination(for: Item.self) { item in
+        ItemDetailView(item: item)
+    }
+}
+
+// MARK: - Hero Transition with matchedGeometryEffect
+struct HeroTransitionExample: View {
+    @Namespace private var heroNamespace
+    @State private var isExpanded = false
+
+    var body: some View {
+        if isExpanded {
+            DetailCard(namespace: heroNamespace)
+                .onTapGesture {
+                    withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                        isExpanded = false
+                    }
+                }
+        } else {
+            ThumbnailCard(namespace: heroNamespace)
+                .onTapGesture {
+                    withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                        isExpanded = true
+                    }
+                }
+        }
+    }
+}
+
+struct ThumbnailCard: View {
+    var namespace: Namespace.ID
+
+    var body: some View {
+        RoundedRectangle(cornerRadius: 12)
+            .fill(.blue.gradient)
+            .matchedGeometryEffect(id: &quot;card&quot;, in: namespace)
+            .frame(width: 120, height: 120)
+            .overlay {
+                Text(&quot;Tap&quot;)
+                    .matchedGeometryEffect(id: &quot;title&quot;, in: namespace)
+            }
+    }
+}
+
+struct DetailCard: View {
+    var namespace: Namespace.ID
+
+    var body: some View {
+        RoundedRectangle(cornerRadius: 24)
+            .fill(.blue.gradient)
+            .matchedGeometryEffect(id: &quot;card&quot;, in: namespace)
+            .frame(maxWidth: .infinity, maxHeight: 400)
+            .overlay {
+                Text(&quot;Detail View&quot;)
+                    .matchedGeometryEffect(id: &quot;title&quot;, in: namespace)
+            }
+            .padding()
+    }
+}
+
+// MARK: - Custom Asymmetric Transition
+extension AnyTransition {
+    static var slideAndFade: AnyTransition {
+        .asymmetric(
+            insertion: .move(edge: .trailing).combined(with: .opacity),
+            removal: .move(edge: .leading).combined(with: .opacity)
+        )
+    }
+}
+
+// Usage:
+struct CustomTransitionExample: View {
+    @State private var showContent = false
+
+    var body: some View {
+        VStack {
+            if showContent {
+                ContentView()
+                    .transition(.slideAndFade)
+            }
+            Button(&quot;Toggle&quot;) {
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    showContent.toggle()
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Phased Animation for Multi-Step Effects
+struct PhasedAnimationExample: View {
+    @State private var trigger = false
+
+    var body: some View {
+        Image(systemName: &quot;bell.fill&quot;)
+            .font(.system(size: 32))
+            .phaseAnimator([false, true], trigger: trigger) { content, phase in
+                content
+                    .scaleEffect(phase ? 1.2 : 1.0)
+                    .rotationEffect(.degrees(phase ? 15 : 0))
+            } animation: { phase in
+                phase ? .bouncy : .snappy
+            }
+            .onTapGesture { trigger.toggle() }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="2-haptic-feedback-rules">2. Haptic Feedback Rules</h2>
+<h3 id="haptic-selection-guide">Haptic Selection Guide</h3>
+<table>
+<thead>
+<tr>
+<th>Haptic Type</th>
+<th>When to Use</th>
+<th>Examples</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.success</code></td>
+<td>Completed action</td>
+<td>Save confirmed, message sent, purchase complete</td>
+</tr>
+<tr>
+<td><code>.warning</code></td>
+<td>Destructive action confirmation</td>
+<td>Delete dialog appears, irreversible action prompt</td>
+</tr>
+<tr>
+<td><code>.error</code></td>
+<td>Failed action</td>
+<td>Validation error, network failure, permission denied</td>
+</tr>
+<tr>
+<td><code>.light</code></td>
+<td>Toggle or selection change</td>
+<td>Switch toggled, radio selected, checkbox tapped</td>
+</tr>
+<tr>
+<td><code>.medium</code></td>
+<td>Snap to position</td>
+<td>Pull-to-refresh threshold reached, snap point hit</td>
+</tr>
+<tr>
+<td><code>.heavy</code></td>
+<td>Long press activation</td>
+<td>Context menu triggered, drag-and-drop pickup</td>
+</tr>
+<tr>
+<td><code>.selection</code></td>
+<td>Scrolling through values</td>
+<td>Picker scroll, date wheel spin, segment change</td>
+</tr>
+</tbody>
+</table>
+<h3 id="sensoryfeedback-ios-17">SensoryFeedback (iOS 17+)</h3>
+<pre><code class="language-swift">// MARK: - SensoryFeedback Modifier (Preferred for iOS 17+)
+struct HapticExamples: View {
+    @State private var isFavorited = false
+    @State private var taskCompleted = false
+    @State private var showError = false
+    @State private var sliderValue = 0.5
+
+    var body: some View {
+        VStack(spacing: 24) {
+            // Success haptic on task completion
+            Button(&quot;Complete Task&quot;) {
+                taskCompleted = true
+            }
+            .sensoryFeedback(.success, trigger: taskCompleted)
+
+            // Light haptic on toggle
+            Toggle(&quot;Favorite&quot;, isOn: $isFavorited)
+                .sensoryFeedback(.selection, trigger: isFavorited)
+
+            // Error haptic on failure
+            Button(&quot;Submit&quot;) {
+                showError = true
+            }
+            .sensoryFeedback(.error, trigger: showError)
+
+            // Impact haptic with weight
+            Button(&quot;Heavy Action&quot;) { }
+                .sensoryFeedback(.impact(weight: .heavy), trigger: taskCompleted)
+        }
+    }
+}
+</code></pre>
+<h3 id="uiimpactfeedbackgenerator-ios-16-and-below">UIImpactFeedbackGenerator (iOS 16 and Below)</h3>
+<pre><code class="language-swift">// MARK: - Haptic Manager for Pre-iOS 17
+final class HapticManager {
+    static let shared = HapticManager()
+    private init() {}
+
+    func impact(_ style: UIImpactFeedbackGenerator.FeedbackStyle) {
+        let generator = UIImpactFeedbackGenerator(style: style)
+        generator.prepare()
+        generator.impactOccurred()
+    }
+
+    func notification(_ type: UINotificationFeedbackGenerator.FeedbackType) {
+        let generator = UINotificationFeedbackGenerator()
+        generator.prepare()
+        generator.notificationOccurred(type)
+    }
+
+    func selection() {
+        let generator = UISelectionFeedbackGenerator()
+        generator.prepare()
+        generator.selectionChanged()
+    }
+}
+
+// Usage:
+Button(&quot;Save&quot;) {
+    performSave()
+    HapticManager.shared.notification(.success)
+}
+
+Button(&quot;Delete&quot;) {
+    HapticManager.shared.notification(.warning)
+    showDeleteConfirmation = true
+}
+</code></pre>
+<h3 id="best-practices">Best Practices</h3>
+<ul>
+<li>Never fire haptics on passive events (scrolling, appearing, background refresh).</li>
+<li>Respect the system setting: haptics are automatically suppressed when the user disables them.</li>
+<li>Prepare generators early (<code>.prepare()</code>) before the moment of feedback for zero-latency response.</li>
+<li>Do not chain multiple haptics in rapid succession; one feedback per gesture.</li>
+<li>Test on a real device -- the Simulator does not produce haptic output.</li>
+</ul>
+<hr />
+<h2 id="3-sf-symbols-guidelines">3. SF Symbols Guidelines</h2>
+<h3 id="size-guidelines">Size Guidelines</h3>
+<table>
+<thead>
+<tr>
+<th>Context</th>
+<th>Point Size</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Inline with text</td>
+<td>17pt</td>
+<td>Label icons, list item accessories</td>
+</tr>
+<tr>
+<td>Tab bar</td>
+<td>24pt</td>
+<td>Bottom navigation icons</td>
+</tr>
+<tr>
+<td>Buttons</td>
+<td>28-32pt</td>
+<td>Toolbar actions, floating action buttons</td>
+</tr>
+<tr>
+<td>Feature icons</td>
+<td>44-64pt</td>
+<td>Empty states, onboarding, settings headers</td>
+</tr>
+</tbody>
+</table>
+<h3 id="rendering-modes">Rendering Modes</h3>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>When to Use</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.monochrome</code></td>
+<td>Default, single-tone UI elements</td>
+<td>One color applied uniformly</td>
+</tr>
+<tr>
+<td><code>.hierarchical</code></td>
+<td>Icons needing depth</td>
+<td>Primary color with opacity layers</td>
+</tr>
+<tr>
+<td><code>.palette</code></td>
+<td>Brand-specific multi-color</td>
+<td>You control each layer color</td>
+</tr>
+<tr>
+<td><code>.multicolor</code></td>
+<td>System-defined rich icons</td>
+<td>Weather, file types, flags</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-swift">// MARK: - Rendering Modes
+struct SymbolRenderingExamples: View {
+    var body: some View {
+        VStack(spacing: 20) {
+            // Monochrome (default)
+            Image(systemName: &quot;heart.fill&quot;)
+                .symbolRenderingMode(.monochrome)
+                .foregroundStyle(.red)
+
+            // Hierarchical — automatic depth
+            Image(systemName: &quot;square.stack.3d.up.fill&quot;)
+                .symbolRenderingMode(.hierarchical)
+                .foregroundStyle(.blue)
+                .font(.system(size: 44))
+
+            // Palette — explicit layer colors
+            Image(systemName: &quot;person.crop.circle.badge.checkmark&quot;)
+                .symbolRenderingMode(.palette)
+                .foregroundStyle(.blue, .green)
+                .font(.system(size: 44))
+
+            // Multicolor — system-defined
+            Image(systemName: &quot;cloud.sun.rain.fill&quot;)
+                .symbolRenderingMode(.multicolor)
+                .font(.system(size: 44))
+        }
+    }
+}
+</code></pre>
+<h3 id="variable-value-symbols">Variable Value Symbols</h3>
+<pre><code class="language-swift">// MARK: - Variable Value (0.0 to 1.0) for Progress
+struct VariableSymbolExample: View {
+    @State private var progress: Double = 0.0
+
+    var body: some View {
+        VStack(spacing: 16) {
+            Image(systemName: &quot;speaker.wave.3.fill&quot;, variableValue: progress)
+                .font(.system(size: 48))
+                .foregroundStyle(.blue)
+                .contentTransition(.symbolEffect(.replace))
+
+            Image(systemName: &quot;wifi&quot;, variableValue: progress)
+                .font(.system(size: 48))
+                .foregroundStyle(.green)
+
+            Slider(value: $progress, in: 0...1)
+                .padding(.horizontal)
+        }
+    }
+}
+</code></pre>
+<h3 id="symbol-effects">Symbol Effects</h3>
+<pre><code class="language-swift">// MARK: - Symbol Effects (iOS 17+)
+struct SymbolEffectsExample: View {
+    @State private var bellTapped = false
+    @State private var isActive = false
+    @State private var downloadComplete = false
+
+    var body: some View {
+        VStack(spacing: 24) {
+            // Bounce on tap
+            Image(systemName: &quot;bell.fill&quot;)
+                .font(.system(size: 32))
+                .symbolEffect(.bounce, value: bellTapped)
+                .onTapGesture { bellTapped.toggle() }
+
+            // Continuous pulse while active
+            Image(systemName: &quot;antenna.radiowaves.left.and.right&quot;)
+                .font(.system(size: 32))
+                .symbolEffect(.pulse, isActive: isActive)
+
+            // Variable color animation (iterating layers)
+            Image(systemName: &quot;wifi&quot;)
+                .font(.system(size: 32))
+                .symbolEffect(.variableColor.iterative, isActive: isActive)
+
+            // Appear / disappear
+            Image(systemName: &quot;checkmark.circle.fill&quot;)
+                .font(.system(size: 32))
+                .symbolEffect(.appear, isActive: downloadComplete)
+
+            // Replace transition between symbols
+            Image(systemName: isActive ? &quot;pause.fill&quot; : &quot;play.fill&quot;)
+                .contentTransition(.symbolEffect(.replace))
+                .font(.system(size: 32))
+                .onTapGesture {
+                    withAnimation { isActive.toggle() }
+                }
+
+            // Breathe effect
+            Image(systemName: &quot;heart.fill&quot;)
+                .font(.system(size: 32))
+                .foregroundStyle(.red)
+                .symbolEffect(.breathe, isActive: isActive)
+
+            // Wiggle effect
+            Image(systemName: &quot;bell.badge.fill&quot;)
+                .font(.system(size: 32))
+                .symbolEffect(.wiggle, value: bellTapped)
+
+            // Rotate effect
+            Image(systemName: &quot;gear&quot;)
+                .font(.system(size: 32))
+                .symbolEffect(.rotate, isActive: isActive)
+        }
+    }
+}
+</code></pre>
+<h3 id="preferred-symbol-weight">Preferred Symbol Weight</h3>
+<p>Use <code>.medium</code> weight by default to match the system HIG:</p>
+<pre><code class="language-swift">Image(systemName: &quot;gear&quot;)
+    .fontWeight(.medium)
+</code></pre>
+<hr />
+<h2 id="4-button-style-standards">4. Button Style Standards</h2>
+<h3 id="complete-button-style-system">Complete Button Style System</h3>
+<pre><code class="language-swift">// MARK: - Primary Button Style
+struct PrimaryButtonStyle: ButtonStyle {
+    @Environment(\.isEnabled) private var isEnabled
+    var isLoading: Bool = false
+
+    func makeBody(configuration: Configuration) -&gt; some View {
+        HStack(spacing: 8) {
+            if isLoading {
+                ProgressView()
+                    .tint(.white)
+            }
+            configuration.label
+        }
+        .font(.body.weight(.semibold))
+        .foregroundStyle(.white)
+        .frame(maxWidth: .infinity, minHeight: 50)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(
+                    isEnabled
+                        ? AnyShapeStyle(LinearGradient(
+                            colors: [.blue, .blue.opacity(0.8)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing))
+                        : AnyShapeStyle(.gray.opacity(0.4))
+                )
+        )
+        .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
+        .opacity(isLoading ? 0.9 : 1.0)
+        .animation(.easeOut(duration: 0.2), value: configuration.isPressed)
+        .allowsHitTesting(!isLoading)
+    }
+}
+
+// MARK: - Secondary Button Style
+struct SecondaryButtonStyle: ButtonStyle {
+    @Environment(\.isEnabled) private var isEnabled
+    var isLoading: Bool = false
+
+    func makeBody(configuration: Configuration) -&gt; some View {
+        HStack(spacing: 8) {
+            if isLoading {
+                ProgressView()
+                    .tint(.accentColor)
+            }
+            configuration.label
+        }
+        .font(.body.weight(.semibold))
+        .foregroundStyle(isEnabled ? .accentColor : .gray)
+        .frame(maxWidth: .infinity, minHeight: 50)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(isEnabled ? Color.accentColor : .gray, lineWidth: 1.5)
+        )
+        .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
+        .animation(.easeOut(duration: 0.2), value: configuration.isPressed)
+    }
+}
+
+// MARK: - Destructive Button Style
+struct DestructiveButtonStyle: ButtonStyle {
+    @Environment(\.isEnabled) private var isEnabled
+    var isLoading: Bool = false
+
+    func makeBody(configuration: Configuration) -&gt; some View {
+        HStack(spacing: 8) {
+            if isLoading {
+                ProgressView()
+                    .tint(.white)
+            }
+            configuration.label
+        }
+        .font(.body.weight(.semibold))
+        .foregroundStyle(.white)
+        .frame(maxWidth: .infinity, minHeight: 50)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(isEnabled ? Color.red : .gray.opacity(0.4))
+        )
+        .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
+        .animation(.easeOut(duration: 0.2), value: configuration.isPressed)
+    }
+}
+
+// MARK: - Ghost Button Style
+struct GhostButtonStyle: ButtonStyle {
+    @Environment(\.isEnabled) private var isEnabled
+
+    func makeBody(configuration: Configuration) -&gt; some View {
+        configuration.label
+            .font(.body.weight(.medium))
+            .foregroundStyle(isEnabled ? .accentColor : .gray)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
+            .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
+            .opacity(configuration.isPressed ? 0.7 : 1.0)
+            .animation(.easeOut(duration: 0.2), value: configuration.isPressed)
+    }
+}
+
+// MARK: - Icon Button Style
+struct IconButtonStyle: ButtonStyle {
+    var size: CGFloat = 44
+    @Environment(\.isEnabled) private var isEnabled
+
+    func makeBody(configuration: Configuration) -&gt; some View {
+        configuration.label
+            .font(.system(size: size * 0.45, weight: .medium))
+            .foregroundStyle(isEnabled ? .accentColor : .gray)
+            .frame(width: size, height: size)
+            .background(Circle().fill(.ultraThinMaterial))
+            .scaleEffect(configuration.isPressed ? 0.9 : 1.0)
+            .animation(.easeOut(duration: 0.2), value: configuration.isPressed)
+    }
+}
+
+// MARK: - Pill Button Style
+struct PillButtonStyle: ButtonStyle {
+    @Environment(\.isEnabled) private var isEnabled
+
+    func makeBody(configuration: Configuration) -&gt; some View {
+        configuration.label
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(isEnabled ? .white : .gray)
+            .padding(.horizontal, 20)
+            .padding(.vertical, 10)
+            .background(
+                Capsule()
+                    .fill(isEnabled ? Color.accentColor : .gray.opacity(0.3))
+            )
+            .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
+            .animation(.easeOut(duration: 0.2), value: configuration.isPressed)
+    }
+}
+
+// MARK: - Usage Examples
+struct ButtonShowcase: View {
+    @State private var isLoading = false
+
+    var body: some View {
+        VStack(spacing: 16) {
+            Button { } label: {
+                Label(&quot;Continue&quot;, systemImage: &quot;arrow.right&quot;)
+            }
+            .buttonStyle(PrimaryButtonStyle())
+
+            Button { } label: {
+                Label(&quot;Edit Profile&quot;, systemImage: &quot;pencil&quot;)
+            }
+            .buttonStyle(SecondaryButtonStyle())
+
+            Button(role: .destructive) { } label: {
+                Label(&quot;Delete Account&quot;, systemImage: &quot;trash&quot;)
+            }
+            .buttonStyle(DestructiveButtonStyle())
+
+            Button(&quot;Learn More&quot;) { }
+                .buttonStyle(GhostButtonStyle())
+
+            Button { } label: {
+                Image(systemName: &quot;plus&quot;)
+            }
+            .buttonStyle(IconButtonStyle())
+
+            Button { } label: {
+                Label(&quot;Subscribe&quot;, systemImage: &quot;star.fill&quot;)
+            }
+            .buttonStyle(PillButtonStyle())
+
+            // Disabled state
+            Button(&quot;Disabled&quot;) { }
+                .buttonStyle(PrimaryButtonStyle())
+                .disabled(true)
+
+            // Loading state
+            Button(&quot;Saving...&quot;) { }
+                .buttonStyle(PrimaryButtonStyle(isLoading: true))
+        }
+        .padding()
+    }
+}
+</code></pre>
+<hr />
+<h2 id="5-loading-empty-and-error-state-patterns">5. Loading, Empty, and Error State Patterns</h2>
+<h3 id="viewstate-enum">ViewState Enum</h3>
+<pre><code class="language-swift">// MARK: - Generic View State
+enum ViewState&lt;T&gt; {
+    case loading
+    case loaded(T)
+    case empty
+    case error(Error)
+}
+</code></pre>
+<h3 id="loading-view">Loading View</h3>
+<pre><code class="language-swift">// MARK: - Shimmer Modifier
+struct ShimmerModifier: ViewModifier {
+    @State private var phase: CGFloat = 0
+
+    func body(content: Content) -&gt; some View {
+        content
+            .overlay(
+                LinearGradient(
+                    colors: [.clear, .white.opacity(0.4), .clear],
+                    startPoint: .leading,
+                    endPoint: .trailing
+                )
+                .offset(x: phase)
+                .mask(content)
+            )
+            .onAppear {
+                withAnimation(.easeInOut(duration: 1.2).repeatForever(autoreverses: false)) {
+                    phase = UIScreen.main.bounds.width
+                }
+            }
+    }
+}
+
+extension View {
+    func shimmer() -&gt; some View {
+        modifier(ShimmerModifier())
+    }
+}
+
+// MARK: - Skeleton Loading View
+struct SkeletonRow: View {
+    var body: some View {
+        HStack(spacing: 12) {
+            RoundedRectangle(cornerRadius: 8)
+                .fill(.gray.opacity(0.2))
+                .frame(width: 48, height: 48)
+
+            VStack(alignment: .leading, spacing: 8) {
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(.gray.opacity(0.2))
+                    .frame(height: 14)
+                    .frame(maxWidth: 160)
+
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(.gray.opacity(0.2))
+                    .frame(height: 12)
+                    .frame(maxWidth: 100)
+            }
+        }
+        .shimmer()
+    }
+}
+
+// MARK: - Spinner Loading
+struct LoadingSpinnerView: View {
+    var message: String = &quot;Loading...&quot;
+
+    var body: some View {
+        VStack(spacing: 16) {
+            ProgressView()
+                .controlSize(.large)
+            Text(message)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+}
+</code></pre>
+<h3 id="empty-state-view">Empty State View</h3>
+<pre><code class="language-swift">// MARK: - Empty State Presets
+enum EmptyStatePreset {
+    case noData
+    case noSearchResults
+    case noConnection
+    case firstTimeUse
+
+    var icon: String {
+        switch self {
+        case .noData: &quot;tray&quot;
+        case .noSearchResults: &quot;magnifyingglass&quot;
+        case .noConnection: &quot;wifi.slash&quot;
+        case .firstTimeUse: &quot;sparkles&quot;
+        }
+    }
+
+    var title: String {
+        switch self {
+        case .noData: &quot;Nothing Here Yet&quot;
+        case .noSearchResults: &quot;No Results Found&quot;
+        case .noConnection: &quot;No Connection&quot;
+        case .firstTimeUse: &quot;Get Started&quot;
+        }
+    }
+
+    var message: String {
+        switch self {
+        case .noData: &quot;Items you add will appear here.&quot;
+        case .noSearchResults: &quot;Try a different search term.&quot;
+        case .noConnection: &quot;Check your internet connection and try again.&quot;
+        case .firstTimeUse: &quot;Tap the button below to create your first item.&quot;
+        }
+    }
+}
+
+struct EmptyStateView: View {
+    var preset: EmptyStatePreset
+    var actionTitle: String?
+    var action: (() -&gt; Void)?
+
+    var body: some View {
+        ContentUnavailableView {
+            Label(preset.title, systemImage: preset.icon)
+        } description: {
+            Text(preset.message)
+        } actions: {
+            if let actionTitle, let action {
+                Button(actionTitle, action: action)
+                    .buttonStyle(.borderedProminent)
+            }
+        }
+    }
+}
+</code></pre>
+<h3 id="error-state-view">Error State View</h3>
+<pre><code class="language-swift">// MARK: - Error State View
+struct ErrorStateView: View {
+    let error: Error
+    var retryAction: (() -&gt; Void)?
+    var reportAction: (() -&gt; Void)?
+
+    var body: some View {
+        ContentUnavailableView {
+            Label(&quot;Something Went Wrong&quot;, systemImage: &quot;exclamationmark.triangle&quot;)
+        } description: {
+            Text(error.localizedDescription)
+        } actions: {
+            VStack(spacing: 12) {
+                if let retryAction {
+                    Button(&quot;Try Again&quot;, action: retryAction)
+                        .buttonStyle(.borderedProminent)
+                }
+                if let reportAction {
+                    Button(&quot;Report Issue&quot;, action: reportAction)
+                        .font(.footnote)
+                }
+            }
+        }
+    }
+}
+</code></pre>
+<h3 id="asynccontentview-wrapper">AsyncContentView Wrapper</h3>
+<pre><code class="language-swift">// MARK: - Async Content View
+struct AsyncContentView&lt;T, LoadedContent: View&gt;: View {
+    @Binding var state: ViewState&lt;T&gt;
+    var loadingMessage: String = &quot;Loading...&quot;
+    var emptyPreset: EmptyStatePreset = .noData
+    var emptyAction: (() -&gt; Void)?
+    var retryAction: (() -&gt; Void)?
+    @ViewBuilder var content: (T) -&gt; LoadedContent
+
+    var body: some View {
+        switch state {
+        case .loading:
+            LoadingSpinnerView(message: loadingMessage)
+                .transition(.opacity)
+        case .loaded(let data):
+            content(data)
+                .transition(.opacity)
+        case .empty:
+            EmptyStateView(
+                preset: emptyPreset,
+                actionTitle: emptyAction != nil ? &quot;Add Item&quot; : nil,
+                action: emptyAction
+            )
+            .transition(.opacity)
+        case .error(let error):
+            ErrorStateView(error: error, retryAction: retryAction)
+                .transition(.opacity)
+        }
+    }
+}
+
+// MARK: - Usage with Pull-to-Refresh
+struct ItemListView: View {
+    @State private var state: ViewState&lt;[Item]&gt; = .loading
+
+    var body: some View {
+        AsyncContentView(
+            state: $state,
+            emptyPreset: .noData,
+            retryAction: { Task { await loadItems() } }
+        ) { items in
+            List(items) { item in
+                Text(item.name)
+            }
+            .refreshable {
+                await loadItems()
+            }
+        }
+        .animation(.easeInOut(duration: 0.3), value: stateKey)
+        .task { await loadItems() }
+    }
+
+    private var stateKey: String {
+        switch state {
+        case .loading: &quot;loading&quot;
+        case .loaded: &quot;loaded&quot;
+        case .empty: &quot;empty&quot;
+        case .error: &quot;error&quot;
+        }
+    }
+
+    private func loadItems() async {
+        state = .loading
+        do {
+            let items = try await ItemService.fetchAll()
+            state = items.isEmpty ? .empty : .loaded(items)
+        } catch {
+            state = .error(error)
+        }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="6-localization-approach">6. Localization Approach</h2>
+<h3 id="string-catalogs-setup">String Catalogs Setup</h3>
+<p>All user-facing strings must use <code>String(localized:)</code>. Never hardcode display text.</p>
+<p>Xcode creates a <code>Localizable.xcstrings</code> file (String Catalog) that automatically extracts strings.</p>
+<pre><code class="language-swift">// MARK: - Correct: Localized Strings
+let title = String(localized: &quot;welcome.title&quot;)
+let message = String(localized: &quot;welcome.message&quot;)
+
+// With default value
+let greeting = String(localized: &quot;greeting&quot;, defaultValue: &quot;Hello there!&quot;)
+
+// MARK: - String Interpolation
+let itemCount = 5
+let label = String(localized: &quot;\(itemCount) items remaining&quot;)
+
+// MARK: - Pluralization (handled in .xcstrings catalog)
+// In the String Catalog, define plural variants:
+//   &quot;item_count&quot; -&gt; one: &quot;%lld item&quot;, other: &quot;%lld items&quot;
+let countLabel = String(localized: &quot;\(itemCount) items&quot;)
+
+// MARK: - Table-based organization
+let settingsTitle = String(localized: &quot;title&quot;, table: &quot;Settings&quot;)
+</code></pre>
+<h3 id="date-and-number-formatting">Date and Number Formatting</h3>
+<pre><code class="language-swift">// MARK: - Locale-Aware Formatting
+struct FormattingExamples: View {
+    let price: Decimal = 49.99
+    let eventDate = Date()
+    let progress = 0.756
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            // Currency — adapts to user locale
+            Text(price, format: .currency(code: &quot;USD&quot;))
+
+            // Date — adapts to locale conventions
+            Text(eventDate, format: .dateTime.month(.wide).day().year())
+
+            // Relative date
+            Text(eventDate, format: .relative(presentation: .named))
+
+            // Percentage
+            Text(progress, format: .percent.precision(.fractionLength(1)))
+
+            // Measurement
+            Text(Measurement(value: 72, unit: UnitTemperature.fahrenheit),
+                 format: .measurement(width: .abbreviated))
+        }
+    }
+}
+</code></pre>
+<h3 id="rtl-and-layout-considerations">RTL and Layout Considerations</h3>
+<pre><code class="language-swift">// MARK: - RTL-Safe Layout
+struct RTLSafeView: View {
+    @Environment(\.layoutDirection) var layoutDirection
+
+    var body: some View {
+        HStack {
+            // Use .leading/.trailing, never .left/.right
+            Image(systemName: &quot;arrow.forward&quot;)
+                .flipsForRightToLeftLayoutDirection(true)
+            Text(String(localized: &quot;next&quot;))
+        }
+        .frame(maxWidth: .infinity, alignment: .leading) // Flips automatically in RTL
+    }
+}
+</code></pre>
+<hr />
+<h2 id="7-privacy-manifest">7. Privacy Manifest</h2>
+<h3 id="privacyinfoxcprivacy-structure">PrivacyInfo.xcprivacy Structure</h3>
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;!DOCTYPE plist PUBLIC &quot;-//Apple//DTD PLIST 1.0//EN&quot;
+  &quot;http://www.apple.com/DTDs/PropertyList-1.0.dtd&quot;&gt;
+&lt;plist version=&quot;1.0&quot;&gt;
+&lt;dict&gt;
+    &lt;!-- Tracking declaration --&gt;
+    &lt;key&gt;NSPrivacyTracking&lt;/key&gt;
+    &lt;false/&gt;
+    &lt;key&gt;NSPrivacyTrackingDomains&lt;/key&gt;
+    &lt;array/&gt;
+
+    &lt;!-- Required Reason APIs --&gt;
+    &lt;key&gt;NSPrivacyAccessedAPITypes&lt;/key&gt;
+    &lt;array&gt;
+        &lt;!-- File timestamp APIs --&gt;
+        &lt;dict&gt;
+            &lt;key&gt;NSPrivacyAccessedAPIType&lt;/key&gt;
+            &lt;string&gt;NSPrivacyAccessedAPICategoryFileTimestamp&lt;/string&gt;
+            &lt;key&gt;NSPrivacyAccessedAPITypeReasons&lt;/key&gt;
+            &lt;array&gt;
+                &lt;string&gt;C617.1&lt;/string&gt; &lt;!-- Access within app container --&gt;
+            &lt;/array&gt;
+        &lt;/dict&gt;
+        &lt;!-- System boot time APIs --&gt;
+        &lt;dict&gt;
+            &lt;key&gt;NSPrivacyAccessedAPIType&lt;/key&gt;
+            &lt;string&gt;NSPrivacyAccessedAPICategorySystemBootTime&lt;/string&gt;
+            &lt;key&gt;NSPrivacyAccessedAPITypeReasons&lt;/key&gt;
+            &lt;array&gt;
+                &lt;string&gt;35F9.1&lt;/string&gt; &lt;!-- Measure elapsed time --&gt;
+            &lt;/array&gt;
+        &lt;/dict&gt;
+        &lt;!-- Disk space APIs --&gt;
+        &lt;dict&gt;
+            &lt;key&gt;NSPrivacyAccessedAPIType&lt;/key&gt;
+            &lt;string&gt;NSPrivacyAccessedAPICategoryDiskSpace&lt;/string&gt;
+            &lt;key&gt;NSPrivacyAccessedAPITypeReasons&lt;/key&gt;
+            &lt;array&gt;
+                &lt;string&gt;E174.1&lt;/string&gt; &lt;!-- Check available disk space --&gt;
+            &lt;/array&gt;
+        &lt;/dict&gt;
+        &lt;!-- User defaults APIs --&gt;
+        &lt;dict&gt;
+            &lt;key&gt;NSPrivacyAccessedAPIType&lt;/key&gt;
+            &lt;string&gt;NSPrivacyAccessedAPICategoryUserDefaults&lt;/string&gt;
+            &lt;key&gt;NSPrivacyAccessedAPITypeReasons&lt;/key&gt;
+            &lt;array&gt;
+                &lt;string&gt;CA92.1&lt;/string&gt; &lt;!-- Access within app --&gt;
+            &lt;/array&gt;
+        &lt;/dict&gt;
+    &lt;/array&gt;
+
+    &lt;!-- Collected data types --&gt;
+    &lt;key&gt;NSPrivacyCollectedDataTypes&lt;/key&gt;
+    &lt;array&gt;
+        &lt;dict&gt;
+            &lt;key&gt;NSPrivacyCollectedDataType&lt;/key&gt;
+            &lt;string&gt;NSPrivacyCollectedDataTypeCrashData&lt;/string&gt;
+            &lt;key&gt;NSPrivacyCollectedDataTypeLinked&lt;/key&gt;
+            &lt;false/&gt;
+            &lt;key&gt;NSPrivacyCollectedDataTypeTracking&lt;/key&gt;
+            &lt;false/&gt;
+            &lt;key&gt;NSPrivacyCollectedDataTypePurposes&lt;/key&gt;
+            &lt;array&gt;
+                &lt;string&gt;NSPrivacyCollectedDataTypePurposeAppFunctionality&lt;/string&gt;
+            &lt;/array&gt;
+        &lt;/dict&gt;
+    &lt;/array&gt;
+&lt;/dict&gt;
+&lt;/plist&gt;
+</code></pre>
+<h3 id="required-reason-api-categories">Required Reason API Categories</h3>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Common APIs</th>
+<th>Typical Reason Code</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>File Timestamp</td>
+<td><code>NSFileCreationDate</code>, <code>NSFileModificationDate</code>, <code>NSURLContentModificationDateKey</code></td>
+<td><code>C617.1</code> (app container), <code>DDA9.1</code> (user-presented)</td>
+</tr>
+<tr>
+<td>System Boot Time</td>
+<td><code>systemUptime</code>, <code>ProcessInfo.processInfo.systemUptime</code></td>
+<td><code>35F9.1</code> (measure elapsed time)</td>
+</tr>
+<tr>
+<td>Disk Space</td>
+<td><code>volumeAvailableCapacityKey</code>, <code>volumeAvailableCapacityForImportantUsageKey</code></td>
+<td><code>E174.1</code> (check space before write)</td>
+</tr>
+<tr>
+<td>User Defaults</td>
+<td><code>UserDefaults</code></td>
+<td><code>CA92.1</code> (access within app)</td>
+</tr>
+<tr>
+<td>Active Keyboard</td>
+<td><code>activeInputModes</code></td>
+<td><code>3EC4.1</code> (customize UI)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="third-party-sdk-manifests">Third-Party SDK Manifests</h3>
+<p>Each third-party SDK must include its own <code>PrivacyInfo.xcprivacy</code>. Verify during dependency audits:</p>
+<pre><code class="language-swift">// In Package.swift or Podfile, verify SDK authors ship privacy manifests.
+// Xcode aggregates all manifests during App Store submission.
+// Run: Product &gt; Generate Privacy Report to audit before submission.
+</code></pre>
+<hr />
+<h2 id="8-device-support-and-adaptive-layout">8. Device Support and Adaptive Layout</h2>
+<h3 id="size-class-detection">Size Class Detection</h3>
+<pre><code class="language-swift">// MARK: - Adaptive Layout with Size Classes
+struct AdaptiveView: View {
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
+
+    var body: some View {
+        if horizontalSizeClass == .regular {
+            // iPad or iPhone landscape wide
+            HStack(spacing: 0) {
+                SidebarView()
+                    .frame(width: 320)
+                DetailView()
+            }
+        } else {
+            // iPhone portrait
+            NavigationStack {
+                ListView()
+            }
+        }
+    }
+}
+</code></pre>
+<h3 id="navigationsplitview-for-ipad-sidebar">NavigationSplitView for iPad Sidebar</h3>
+<pre><code class="language-swift">// MARK: - Navigation Split View
+struct SplitLayoutView: View {
+    @State private var selectedItem: Item?
+    @State private var columnVisibility = NavigationSplitViewVisibility.automatic
+
+    var body: some View {
+        NavigationSplitView(columnVisibility: $columnVisibility) {
+            List(items, selection: $selectedItem) { item in
+                NavigationLink(value: item) {
+                    ItemRow(item: item)
+                }
+            }
+            .navigationTitle(&quot;Items&quot;)
+        } detail: {
+            if let selectedItem {
+                ItemDetailView(item: selectedItem)
+            } else {
+                ContentUnavailableView(&quot;Select an Item&quot;,
+                    systemImage: &quot;sidebar.left&quot;,
+                    description: Text(&quot;Choose an item from the sidebar.&quot;))
+            }
+        }
+    }
+}
+</code></pre>
+<h3 id="viewthatfits">ViewThatFits</h3>
+<pre><code class="language-swift">// MARK: - ViewThatFits for Adaptive Components
+struct AdaptiveActionBar: View {
+    var body: some View {
+        ViewThatFits(in: .horizontal) {
+            // First choice: full horizontal layout
+            HStack(spacing: 16) {
+                Button(&quot;Save Draft&quot;) { }
+                    .buttonStyle(SecondaryButtonStyle())
+                Button(&quot;Preview&quot;) { }
+                    .buttonStyle(SecondaryButtonStyle())
+                Button(&quot;Publish&quot;) { }
+                    .buttonStyle(PrimaryButtonStyle())
+            }
+
+            // Fallback: stacked layout
+            VStack(spacing: 8) {
+                Button(&quot;Publish&quot;) { }
+                    .buttonStyle(PrimaryButtonStyle())
+                HStack(spacing: 8) {
+                    Button(&quot;Save Draft&quot;) { }
+                        .buttonStyle(SecondaryButtonStyle())
+                    Button(&quot;Preview&quot;) { }
+                        .buttonStyle(SecondaryButtonStyle())
+                }
+            }
+        }
+        .padding()
+    }
+}
+</code></pre>
+<h3 id="ipad-specific-features">iPad-Specific Features</h3>
+<pre><code class="language-swift">// MARK: - Pointer Hover Effect (iPad)
+struct HoverableCard: View {
+    @State private var isHovered = false
+
+    var body: some View {
+        RoundedRectangle(cornerRadius: 12)
+            .fill(.background)
+            .shadow(radius: isHovered ? 8 : 2)
+            .scaleEffect(isHovered ? 1.02 : 1.0)
+            .onHover { hovering in
+                withAnimation(.easeOut(duration: 0.2)) {
+                    isHovered = hovering
+                }
+            }
+            .hoverEffect(.lift) // System pointer lift effect
+    }
+}
+
+// MARK: - Keyboard Shortcuts (iPad with hardware keyboard)
+struct ShortcutView: View {
+    var body: some View {
+        VStack {
+            Text(&quot;Press Cmd+N to create&quot;)
+        }
+        .keyboardShortcut(&quot;n&quot;, modifiers: .command)
+    }
+}
+</code></pre>
+<hr />
+<h2 id="9-preview-provider-standards">9. Preview Provider Standards</h2>
+<h3 id="modern-previews-ios-17">Modern Previews (iOS 17+)</h3>
+<pre><code class="language-swift">// MARK: - Basic Preview
+#Preview {
+    ContentView()
+}
+
+// MARK: - Named Preview
+#Preview(&quot;Dark Mode&quot;) {
+    ContentView()
+        .preferredColorScheme(.dark)
+}
+
+// MARK: - Light and Dark Side by Side
+#Preview(&quot;Color Schemes&quot;) {
+    VStack {
+        ContentView()
+            .preferredColorScheme(.light)
+        ContentView()
+            .preferredColorScheme(.dark)
+    }
+}
+
+// MARK: - Dynamic Type Sizes
+#Preview(&quot;Large Text&quot;) {
+    ContentView()
+        .dynamicTypeSize(.xxxLarge)
+}
+
+#Preview(&quot;Accessibility Sizes&quot;) {
+    ContentView()
+        .dynamicTypeSize(.accessibility3)
+}
+
+// MARK: - Device Variations
+#Preview(&quot;iPhone SE&quot;, traits: .fixedLayout(width: 375, height: 667)) {
+    ContentView()
+}
+
+#Preview(&quot;iPad&quot;, traits: .fixedLayout(width: 1024, height: 768)) {
+    ContentView()
+}
+
+// MARK: - Size That Fits
+#Preview(&quot;Component&quot;, traits: .sizeThatFitsLayout) {
+    PillButtonExample()
+        .padding()
+}
+</code></pre>
+<h3 id="interactive-previews">Interactive Previews</h3>
+<pre><code class="language-swift">// MARK: - Interactive Preview with @Previewable
+#Preview(&quot;Toggle Demo&quot;) {
+    @Previewable @State var isOn = false
+
+    Toggle(&quot;Notifications&quot;, isOn: $isOn)
+        .padding()
+}
+
+#Preview(&quot;Counter&quot;) {
+    @Previewable @State var count = 0
+
+    VStack {
+        Text(&quot;Count: \(count)&quot;)
+            .font(.largeTitle)
+        Button(&quot;Increment&quot;) { count += 1 }
+            .buttonStyle(PrimaryButtonStyle())
+    }
+    .padding()
+}
+</code></pre>
+<h3 id="preview-with-mock-data">Preview with Mock Data</h3>
+<pre><code class="language-swift">// MARK: - Preview with Mock Data
+struct Item: Identifiable {
+    let id: UUID
+    let name: String
+    let subtitle: String
+
+    static let samples: [Item] = [
+        Item(id: UUID(), name: &quot;Morning Run&quot;, subtitle: &quot;5.2 km&quot;),
+        Item(id: UUID(), name: &quot;Yoga Session&quot;, subtitle: &quot;45 min&quot;),
+        Item(id: UUID(), name: &quot;Cycling&quot;, subtitle: &quot;12.8 km&quot;),
+    ]
+}
+
+#Preview {
+    List(Item.samples) { item in
+        VStack(alignment: .leading) {
+            Text(item.name).font(.headline)
+            Text(item.subtitle).font(.caption).foregroundStyle(.secondary)
+        }
+    }
+}
+</code></pre>
+<h3 id="swiftdata-preview-container">SwiftData Preview Container</h3>
+<pre><code class="language-swift">// MARK: - SwiftData Preview Container
+struct PreviewContainer {
+    static var shared: ModelContainer {
+        let config = ModelConfiguration(isStoredInMemoryOnly: true)
+        let container = try! ModelContainer(
+            for: Task.self,
+            configurations: config
+        )
+        // Insert sample data
+        let context = container.mainContext
+        for task in Task.sampleTasks {
+            context.insert(task)
+        }
+        return container
+    }
+}
+
+#Preview {
+    TaskListView()
+        .modelContainer(PreviewContainer.shared)
+}
+</code></pre>
+<h3 id="legacy-previewprovider-ios-16-and-below">Legacy PreviewProvider (iOS 16 and Below)</h3>
+<pre><code class="language-swift">// MARK: - Legacy PreviewProvider
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        Group {
+            ContentView()
+                .previewDisplayName(&quot;Light&quot;)
+
+            ContentView()
+                .preferredColorScheme(.dark)
+                .previewDisplayName(&quot;Dark&quot;)
+
+            ContentView()
+                .dynamicTypeSize(.xxxLarge)
+                .previewDisplayName(&quot;Large Text&quot;)
+        }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="quick-reference-summary">Quick Reference Summary</h2>
+<table>
+<thead>
+<tr>
+<th>Area</th>
+<th>Key Rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Micro interaction</td>
+<td>0.2s <code>.easeOut</code></td>
+</tr>
+<tr>
+<td>Navigation</td>
+<td>0.35s <code>.spring(response: 0.35, dampingFraction: 0.85)</code></td>
+</tr>
+<tr>
+<td>Dismissal</td>
+<td>0.25s <code>.easeIn</code></td>
+</tr>
+<tr>
+<td>Haptic on success</td>
+<td><code>.success</code> via <code>SensoryFeedback</code></td>
+</tr>
+<tr>
+<td>Haptic on toggle</td>
+<td><code>.selection</code></td>
+</tr>
+<tr>
+<td>SF Symbol weight</td>
+<td><code>.medium</code></td>
+</tr>
+<tr>
+<td>SF Symbol inline size</td>
+<td>17pt</td>
+</tr>
+<tr>
+<td>Button press scale</td>
+<td><code>0.97</code></td>
+</tr>
+<tr>
+<td>Strings</td>
+<td>Always <code>String(localized:)</code></td>
+</tr>
+<tr>
+<td>Layout direction</td>
+<td><code>.leading/.trailing</code>, never <code>.left/.right</code></td>
+</tr>
+<tr>
+<td>Privacy</td>
+<td>Ship <code>PrivacyInfo.xcprivacy</code> with every target</td>
+</tr>
+<tr>
+<td>Previews</td>
+<td>Use <code>#Preview</code> macro, test light/dark/large text</td>
+</tr>
+</tbody>
+</table></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

@@ -1,0 +1,389 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>WeatherKit — iOS Agent Skill</title><meta name="description" content="Repository guidance for WeatherKit. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-services-weatherkit.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="WeatherKit"><meta property="og:description" content="Repository guidance for WeatherKit. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-services-weatherkit.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "WeatherKit", "description": "Repository guidance for WeatherKit. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-services-weatherkit.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">System Integration · Reference guide</p><h1>WeatherKit</h1><p class="lead">Repository guidance for WeatherKit. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/frameworks/services/weatherkit.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#setup-requirements">Setup Requirements</a></li>
+<li><a href="#weatherservice-basics">WeatherService Basics</a></li>
+<li><a href="#current-weather">Current Weather</a></li>
+<li><a href="#hourly-forecast">Hourly Forecast</a></li>
+<li><a href="#daily-forecast">Daily Forecast</a></li>
+<li><a href="#weather-alerts">Weather Alerts</a></li>
+<li><a href="#minute-by-minute-precipitation">Minute-by-Minute Precipitation</a></li>
+<li><a href="#apple-attribution-requirements-mandatory">Apple Attribution Requirements (Mandatory)</a></li>
+<li><a href="#caching-strategy">Caching Strategy</a></li>
+<li><a href="#complete-weather-app-example">Complete Weather App Example</a></li>
+</ul>
+</div>
+</aside><h2 id="setup-requirements">Setup Requirements</h2>
+<p>WeatherKit requires an <strong>Apple Developer Program membership</strong> and capability registration.</p>
+<ol>
+<li>Enable <strong>WeatherKit</strong> capability in Xcode (Signing &amp; Capabilities)</li>
+<li>Register the WeatherKit service in App Store Connect &gt; Identifiers &gt; App Services</li>
+<li>Add <code>import WeatherKit</code> to your source files</li>
+</ol>
+<p>Rate limits: 500,000 calls/month included free. Additional calls require a paid tier.</p>
+<h2 id="weatherservice-basics">WeatherService Basics</h2>
+<pre><code class="language-swift">import WeatherKit
+import CoreLocation
+
+@Observable
+final class WeatherManager {
+    var currentWeather: CurrentWeather?
+    var hourlyForecast: [HourWeather] = []
+    var dailyForecast: [DayWeather] = []
+    var alerts: [WeatherAlert] = []
+    var minuteForecast: [MinuteWeather]?
+    var attribution: WeatherAttribution?
+    var error: Error?
+
+    private let service = WeatherService.shared
+
+    /// Fetch all weather data for a location
+    func fetchWeather(for location: CLLocation) async {
+        do {
+            let weather = try await service.weather(for: location)
+
+            currentWeather = weather.currentWeather
+            hourlyForecast = Array(weather.hourlyForecast.prefix(24))
+            dailyForecast = Array(weather.dailyForecast.prefix(10))
+            alerts = weather.weatherAlerts ?? []
+            minuteForecast = weather.minuteForecast.map { Array($0) }
+
+            // Always fetch attribution (required by Apple)
+            attribution = try await service.attribution
+        } catch {
+            self.error = error
+        }
+    }
+}
+</code></pre>
+<h2 id="current-weather">Current Weather</h2>
+<pre><code class="language-swift">func displayCurrentWeather(_ current: CurrentWeather) {
+    let temp = current.temperature                    // Measurement&lt;UnitTemperature&gt;
+    let apparentTemp = current.apparentTemperature
+    let condition = current.condition                  // .clear, .cloudy, .rain, etc.
+    let symbolName = current.symbolName                // SF Symbol name
+    let humidity = current.humidity                    // 0.0 ... 1.0
+    let windSpeed = current.wind.speed                // Measurement&lt;UnitSpeed&gt;
+    let windDirection = current.wind.compassDirection  // .north, .northEast, etc.
+    let uvIndex = current.uvIndex.value               // Int
+    let pressure = current.pressure                   // Measurement&lt;UnitPressure&gt;
+    let visibility = current.visibility               // Measurement&lt;UnitLength&gt;
+    let dewPoint = current.dewPoint
+
+    // Format for display
+    let formatter = MeasurementFormatter()
+    formatter.unitOptions = .providedUnit
+    let tempString = temp.formatted(.measurement(width: .abbreviated))
+    // e.g., &quot;72°F&quot; or &quot;22°C&quot; based on locale
+}
+</code></pre>
+<h2 id="hourly-forecast">Hourly Forecast</h2>
+<pre><code class="language-swift">func processHourlyForecast(_ hours: [HourWeather]) {
+    for hour in hours {
+        let date = hour.date
+        let temp = hour.temperature
+        let condition = hour.condition
+        let symbol = hour.symbolName
+        let precipChance = hour.precipitationChance    // 0.0 ... 1.0
+        let precipAmount = hour.precipitationAmount    // Measurement&lt;UnitLength&gt;
+        let humidity = hour.humidity
+        let windSpeed = hour.wind.speed
+        let cloudCover = hour.cloudCover               // 0.0 ... 1.0
+    }
+}
+</code></pre>
+<h2 id="daily-forecast">Daily Forecast</h2>
+<pre><code class="language-swift">func processDailyForecast(_ days: [DayWeather]) {
+    for day in days {
+        let date = day.date
+        let highTemp = day.highTemperature
+        let lowTemp = day.lowTemperature
+        let condition = day.condition
+        let symbol = day.symbolName
+        let precipChance = day.precipitationChance
+        let sunrise = day.sun.sunrise                 // Date?
+        let sunset = day.sun.sunset                   // Date?
+        let moonPhase = day.moon.phase                // .new, .full, .firstQuarter, etc.
+        let moonrise = day.moon.moonrise
+        let uvIndexMax = day.uvIndex.value
+        let windMax = day.wind.speed
+    }
+}
+</code></pre>
+<h2 id="weather-alerts">Weather Alerts</h2>
+<pre><code class="language-swift">func processAlerts(_ alerts: [WeatherAlert]) {
+    for alert in alerts {
+        let summary = alert.summary            // Human-readable summary
+        let severity = alert.severity          // .minor, .moderate, .severe, .extreme
+        let source = alert.source              // Issuing authority
+        let region = alert.region              // Affected region name
+        let detailsURL = alert.detailsURL     // URL for full details
+
+        switch alert.severity {
+        case .extreme:
+            // Show prominent red banner
+            break
+        case .severe:
+            // Show orange warning
+            break
+        case .moderate:
+            // Show yellow advisory
+            break
+        case .minor:
+            // Show informational notice
+            break
+        default:
+            break
+        }
+    }
+}
+</code></pre>
+<h2 id="minute-by-minute-precipitation">Minute-by-Minute Precipitation</h2>
+<pre><code class="language-swift">/// Available only in select countries (US, UK, Ireland, etc.)
+func processMinuteForecast(_ minutes: [MinuteWeather]?) {
+    guard let minutes else {
+        // Minute forecast not available for this location
+        return
+    }
+
+    for minute in minutes {
+        let date = minute.date
+        let precipChance = minute.precipitationChance
+        let precipIntensity = minute.precipitationIntensity // Measurement&lt;UnitSpeed&gt;
+    }
+
+    // Summarize: will it rain in the next hour?
+    let precipitationExpected = minutes.contains { $0.precipitationChance &gt; 0.5 }
+    let firstRainMinute = minutes.first { $0.precipitationChance &gt; 0.5 }
+}
+</code></pre>
+<h2 id="apple-attribution-requirements-mandatory">Apple Attribution Requirements (Mandatory)</h2>
+<p>Apple <strong>requires</strong> you to display the Apple Weather attribution in your app.</p>
+<pre><code class="language-swift">import SwiftUI
+import WeatherKit
+
+struct WeatherAttributionView: View {
+    let attribution: WeatherAttribution?
+
+    var body: some View {
+        if let attribution {
+            VStack(spacing: 4) {
+                // Required: Apple Weather logo
+                AsyncImage(url: attribution.combinedMarkDarkURL) { image in
+                    image.resizable().scaledToFit()
+                } placeholder: {
+                    EmptyView()
+                }
+                .frame(height: 14)
+
+                // Required: link to legal attribution page
+                Link(&quot;Weather Data Sources&quot;, destination: attribution.legalPageURL)
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+        }
+    }
+}
+</code></pre>
+<h2 id="caching-strategy">Caching Strategy</h2>
+<pre><code class="language-swift">actor WeatherCache {
+    static let shared = WeatherCache()
+
+    private var cache: [String: CachedWeather] = [:]
+    private let maxAge: TimeInterval = 900 // 15 minutes
+
+    struct CachedWeather {
+        let weather: Weather
+        let timestamp: Date
+    }
+
+    func weather(for key: String) -&gt; Weather? {
+        guard let cached = cache[key],
+              Date().timeIntervalSince(cached.timestamp) &lt; maxAge else {
+            cache[key] = nil
+            return nil
+        }
+        return cached.weather
+    }
+
+    func store(_ weather: Weather, for key: String) {
+        cache[key] = CachedWeather(weather: weather, timestamp: Date())
+    }
+
+    /// Create a cache key from coordinates (rounded to reduce duplicate calls)
+    static func key(lat: Double, lon: Double) -&gt; String {
+        let roundedLat = (lat * 100).rounded() / 100
+        let roundedLon = (lon * 100).rounded() / 100
+        return &quot;\(roundedLat),\(roundedLon)&quot;
+    }
+}
+</code></pre>
+<h2 id="complete-weather-app-example">Complete Weather App Example</h2>
+<pre><code class="language-swift">import SwiftUI
+import WeatherKit
+import CoreLocation
+
+@Observable
+final class WeatherViewModel {
+    var currentWeather: CurrentWeather?
+    var hourly: [HourWeather] = []
+    var daily: [DayWeather] = []
+    var attribution: WeatherAttribution?
+    var isLoading = false
+    var errorMessage: String?
+
+    private let service = WeatherService.shared
+
+    func load(latitude: Double, longitude: Double) async {
+        isLoading = true
+        defer { isLoading = false }
+
+        let location = CLLocation(latitude: latitude, longitude: longitude)
+        let cacheKey = WeatherCache.key(lat: latitude, lon: longitude)
+
+        // Check cache first
+        if let cached = await WeatherCache.shared.weather(for: cacheKey) {
+            applyWeather(cached)
+            return
+        }
+
+        do {
+            let weather = try await service.weather(for: location)
+            await WeatherCache.shared.store(weather, for: cacheKey)
+            applyWeather(weather)
+            attribution = try await service.attribution
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    private func applyWeather(_ weather: Weather) {
+        currentWeather = weather.currentWeather
+        hourly = Array(weather.hourlyForecast.prefix(24))
+        daily = Array(weather.dailyForecast.prefix(10))
+    }
+}
+
+struct WeatherAppView: View {
+    @State private var viewModel = WeatherViewModel()
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 20) {
+                // Current conditions
+                if let current = viewModel.currentWeather {
+                    CurrentWeatherCard(weather: current)
+                }
+
+                // Hourly
+                if !viewModel.hourly.isEmpty {
+                    HourlyForecastRow(hours: viewModel.hourly)
+                }
+
+                // Daily
+                if !viewModel.daily.isEmpty {
+                    DailyForecastList(days: viewModel.daily)
+                }
+
+                // Attribution (required)
+                WeatherAttributionView(attribution: viewModel.attribution)
+                    .padding(.top, 8)
+            }
+            .padding()
+        }
+        .overlay {
+            if viewModel.isLoading {
+                ProgressView()
+            }
+        }
+        .task {
+            await viewModel.load(latitude: 37.7749, longitude: -122.4194)
+        }
+    }
+}
+
+struct CurrentWeatherCard: View {
+    let weather: CurrentWeather
+
+    var body: some View {
+        VStack(spacing: 8) {
+            Image(systemName: weather.symbolName)
+                .font(.system(size: 60))
+                .symbolRenderingMode(.multicolor)
+
+            Text(weather.temperature.formatted(.measurement(width: .abbreviated)))
+                .font(.system(size: 56, weight: .thin, design: .rounded))
+
+            Text(weather.condition.description)
+                .font(.title3)
+                .foregroundStyle(.secondary)
+
+            HStack(spacing: 24) {
+                Label(
+                    weather.wind.speed.formatted(.measurement(width: .abbreviated)),
+                    systemImage: &quot;wind&quot;
+                )
+                Label(
+                    &quot;\(Int(weather.humidity * 100))%&quot;,
+                    systemImage: &quot;humidity&quot;
+                )
+                Label(
+                    &quot;UV \(weather.uvIndex.value)&quot;,
+                    systemImage: &quot;sun.max&quot;
+                )
+            }
+            .font(.subheadline)
+            .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding()
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
+    }
+}
+
+struct HourlyForecastRow: View {
+    let hours: [HourWeather]
+
+    var body: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 16) {
+                ForEach(hours, id: \.date) { hour in
+                    VStack(spacing: 6) {
+                        Text(hour.date, format: .dateTime.hour())
+                            .font(.caption)
+                        Image(systemName: hour.symbolName)
+                            .symbolRenderingMode(.multicolor)
+                        Text(hour.temperature.formatted(.measurement(width: .abbreviated)))
+                            .font(.callout.bold())
+                    }
+                }
+            }
+            .padding(.horizontal)
+        }
+    }
+}
+
+struct DailyForecastList: View {
+    let days: [DayWeather]
+
+    var body: some View {
+        VStack(spacing: 12) {
+            ForEach(days, id: \.date) { day in
+                HStack {
+                    Text(day.date, format: .dateTime.weekday(.abbreviated))
+                        .frame(width: 40, alignment: .leading)
+                    Image(systemName: day.symbolName)
+                        .symbolRenderingMode(.multicolor)
+                        .frame(width: 30)
+                    Spacer()
+                    Text(day.lowTemperature.formatted(.measurement(width: .abbreviated)))
+                        .foregroundStyle(.secondary)
+                    Text(day.highTemperature.formatted(.measurement(width: .abbreviated)))
+                }
+                .font(.callout)
+            }
+        }
+        .padding()
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
+    }
+}
+</code></pre></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

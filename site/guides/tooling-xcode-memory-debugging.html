@@ -1,0 +1,108 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Xcode Memory Debugging — iOS Agent Skill</title><meta name="description" content="Repository guidance for Xcode Memory Debugging. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-xcode-memory-debugging.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="Xcode Memory Debugging"><meta property="og:description" content="Repository guidance for Xcode Memory Debugging. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-xcode-memory-debugging.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "Xcode Memory Debugging", "description": "Repository guidance for Xcode Memory Debugging. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-xcode-memory-debugging.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Tooling · Reference guide</p><h1>Xcode Memory Debugging</h1><p class="lead">Repository guidance for Xcode Memory Debugging. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/tooling/xcode-memory-debugging.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#context">Context</a></li>
+<li><a href="#first-pass-triage">First-pass triage</a></li>
+<li><a href="#memory-graph-workflow">Memory Graph workflow</a></li>
+<li><a href="#instruments-allocations-workflow">Instruments Allocations workflow</a></li>
+<li><a href="#sanitizers-and-runtime-diagnostics">Sanitizers and runtime diagnostics</a></li>
+<li><a href="#crash-logs-jetsam-and-metrickit">Crash logs, jetsam, and MetricKit</a></li>
+<li><a href="#reducing-memory">Reducing memory</a></li>
+<li><a href="#metal-memory-viewer">Metal Memory viewer</a></li>
+<li><a href="#report-template">Report template</a></li>
+</ul>
+</div>
+</aside><h2 id="context">Context</h2>
+<p>Load this when an iOS, iPadOS, macOS, watchOS, tvOS, or visionOS app has rising memory, a suspected leak, a retain cycle, <code>deinit</code> not firing, <code>EXC_BAD_ACCESS</code>, jetsam termination, slow scrolling caused by allocation churn, image/cache pressure, or Metal resource growth.</p>
+<p>Apple's Xcode and Instruments tools provide the evidence. This file tells agents what to ask for, what to inspect, and how to report the result.</p>
+<h2 id="first-pass-triage">First-pass triage</h2>
+<ol>
+<li>Reproduce the issue in a clean run.</li>
+<li>Record device or simulator, OS version, scheme, build configuration, and the exact interaction.</li>
+<li>Watch Xcode's Debug navigator memory report for current and peak memory.</li>
+<li>Capture whether Xcode shows normal, warning, or termination-risk memory pressure.</li>
+<li>Separate Swift object leaks from large non-object allocations such as images, decoded video frames, Core Animation backing stores, Metal textures, and malloc buffers.</li>
+</ol>
+<p>If the issue only happens on device, do not close it based on simulator evidence.</p>
+<h2 id="memory-graph-workflow">Memory Graph workflow</h2>
+<p>Use Xcode Debug Memory Graph when objects stay alive after their owner should be gone.</p>
+<p>Checklist:</p>
+<ul>
+<li>Navigate to the feature and back out.</li>
+<li>Press the Debug Memory Graph button.</li>
+<li>Search for the model, view controller, coordinator, task owner, delegate, or cache type.</li>
+<li>Inspect incoming strong references.</li>
+<li>Look for closure captures, delegates declared strong, timers, notification observers, Combine subscriptions, task handles, and global singletons.</li>
+<li>Enable Malloc Stack in the scheme Diagnostics tab when allocation stack traces are needed.</li>
+<li>Export the memory graph when sharing evidence.</li>
+</ul>
+<p>Report:</p>
+<pre><code class="language-text">INSPECTED: Memory Graph shows FeedViewModel retained by SearchCoordinator.onComplete closure.
+Fix: capture self weakly or clear onComplete in stop().
+Still unverified: no device rerun after patch.
+</code></pre>
+<h2 id="instruments-allocations-workflow">Instruments Allocations workflow</h2>
+<p>Use Instruments Allocations when memory grows but the owner is unclear, allocations churn during scrolling, or the issue involves malloc, images, buffers, or anonymous virtual memory.</p>
+<p>Checklist:</p>
+<ul>
+<li>Profile with the Allocations instrument.</li>
+<li>Mark a generation before entering the feature.</li>
+<li>Exercise the feature.</li>
+<li>Mark another generation after leaving.</li>
+<li>Inspect persistent allocations by type, size, count, and responsible stack.</li>
+<li>Compare before and after the fix with the same interaction.</li>
+</ul>
+<p>Prefer this over guessing from code when the problem is "memory keeps going up."</p>
+<h2 id="sanitizers-and-runtime-diagnostics">Sanitizers and runtime diagnostics</h2>
+<p>Use scheme Diagnostics or test plans to enable the right tool:</p>
+<ul>
+<li>Address Sanitizer: memory access errors such as use-after-free and buffer overflow.</li>
+<li>Thread Sanitizer: data races in supported simulator runs.</li>
+<li>Main Thread Checker: system APIs used off the main thread.</li>
+<li>Undefined Behavior Sanitizer: C-family undefined behavior; do not describe it as a Swift-only checker.</li>
+<li>Guard Malloc: targeted investigation of memory access crashes when the overhead is acceptable.</li>
+</ul>
+<p>Sanitizers change timing and resource use. A sanitizer finding is strong evidence. A clean sanitizer run is not proof that no bug exists.</p>
+<h2 id="crash-logs-jetsam-and-metrickit">Crash logs, jetsam, and MetricKit</h2>
+<p>Use crash reports and device logs when the issue comes from TestFlight, App Store, or a build without debugger entitlements.</p>
+<p>Checklist:</p>
+<ul>
+<li>Symbolicate crash reports before making code claims.</li>
+<li>Distinguish <code>EXC_BAD_ACCESS</code>, language exception aborts, watchdog terminations, and jetsam.</li>
+<li>Treat jetsam as memory pressure evidence, not as a normal crash.</li>
+<li>Use Xcode Organizer and MetricKit for production peak-memory and memory-at-suspension trends.</li>
+<li>Attach the relevant OS version, app version, device, and stack or report summary.</li>
+</ul>
+<h2 id="reducing-memory">Reducing memory</h2>
+<p>Start with the largest measured source, not the easiest code to edit.</p>
+<p>Common fixes:</p>
+<ul>
+<li>Decode images to display size instead of full camera size.</li>
+<li>Downsample thumbnails.</li>
+<li>Bound in-memory caches by count and cost.</li>
+<li>Release feature-scoped resources when leaving the flow.</li>
+<li>Stream large files instead of reading them fully.</li>
+<li>Cancel long-running async work.</li>
+<li>Avoid retaining entire response models when only a small projection is needed.</li>
+<li>Reuse buffers carefully in image, audio, and Metal paths.</li>
+<li>Label Metal resources and release temporary render targets promptly.</li>
+</ul>
+<h2 id="metal-memory-viewer">Metal Memory viewer</h2>
+<p>Use Xcode GPU capture and the Metal Memory viewer when GPU resources grow, AR sessions stutter, texture memory spikes, or render passes allocate unexpected buffers.</p>
+<p>Checklist:</p>
+<ul>
+<li>Capture a GPU frame near the memory spike.</li>
+<li>Inspect textures, buffers, heaps, and render targets by allocated size.</li>
+<li>Verify resource labels are meaningful.</li>
+<li>Look for per-frame resource creation.</li>
+<li>Export GPU trace or CSV when sharing evidence.</li>
+<li>Cross-reference local Metal code in <code>docs/frameworks/metal.md</code>.</li>
+</ul>
+<h2 id="report-template">Report template</h2>
+<pre><code class="language-text">Status: INSPECTED / VERIFIED / UNVERIFIED
+Environment: device/simulator, OS, Xcode, build configuration
+Symptom: what grows, crashes, or remains retained
+Evidence: Memory Graph / Allocations / sanitizer / crash log / jetsam / MetricKit / Metal Memory viewer
+Likely cause: ownership path, allocation source, or resource lifetime
+Change made: exact code or configuration change
+Remaining risk: what was not rerun or not available
+</code></pre></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

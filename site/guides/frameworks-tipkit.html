@@ -1,0 +1,702 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TipKit — iOS Agent Skill</title><meta name="description" content="Repository guidance for TipKit. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-tipkit.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="TipKit"><meta property="og:description" content="Repository guidance for TipKit. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-tipkit.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "TipKit", "description": "Repository guidance for TipKit. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-tipkit.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Core UI and Apps · Reference guide</p><h1>TipKit</h1><p class="lead">Repository guidance for TipKit. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/frameworks/tipkit.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#tip-protocol-title-message-image-actions">Tip Protocol (Title, Message, Image, Actions)</a></li>
+<li><a href="#tipview-and-popovertip-modifier">TipView and popoverTip Modifier</a></li>
+<li><a href="#tip-rules-parameter-based-and-event-based">Tip Rules (Parameter-Based and Event-Based)</a></li>
+<li><a href="#tipevent-and-donation">Tip.Event and Donation</a></li>
+<li><a href="#maxdisplaycount-and-display-frequency">MaxDisplayCount and Display Frequency</a></li>
+<li><a href="#tipsconfigure-setup">Tips.configure() Setup</a></li>
+<li><a href="#invalidation-and-status">Invalidation and Status</a></li>
+<li><a href="#updating-parameters-at-runtime">Updating Parameters at Runtime</a></li>
+<li><a href="#complete-onboarding-tips-example">Complete Onboarding Tips Example</a></li>
+<li><a href="#key-considerations">Key Considerations</a></li>
+</ul>
+</div>
+</aside><p>TipKit is Apple's framework for creating contextual, rule-based tips that educate users about features in your app. Tips appear as inline views or popovers and are managed by a centralized system that handles display frequency, eligibility rules, and synchronization across devices via iCloud.</p>
+<h2 id="tip-protocol-title-message-image-actions">Tip Protocol (Title, Message, Image, Actions)</h2>
+<p>Define tips by conforming to the <code>Tip</code> protocol. Each tip has a title, optional message, image, and action buttons.</p>
+<pre><code class="language-swift">import TipKit
+
+struct FavoritesTip: Tip {
+    // Required: the tip title
+    var title: Text {
+        Text(&quot;Save Your Favorites&quot;)
+    }
+
+    // Optional: detailed message
+    var message: Text? {
+        Text(&quot;Tap the heart icon to save articles for later reading.&quot;)
+    }
+
+    // Optional: leading image
+    var image: Image? {
+        Image(systemName: &quot;heart.fill&quot;)
+    }
+
+    // Optional: action buttons
+    var actions: [Action] {
+        Action(id: &quot;learn-more&quot;, title: &quot;Learn More&quot;)
+        Action(id: &quot;dismiss&quot;, title: &quot;Got It&quot;)
+    }
+}
+
+struct ShareTip: Tip {
+    var title: Text {
+        Text(&quot;Share with Friends&quot;)
+    }
+
+    var message: Text? {
+        Text(&quot;Use the share button to send articles to friends and family.&quot;)
+    }
+
+    var image: Image? {
+        Image(systemName: &quot;square.and.arrow.up&quot;)
+    }
+}
+
+struct FilterTip: Tip {
+    var title: Text {
+        Text(&quot;Filter Your Feed&quot;)
+    }
+
+    var message: Text? {
+        Text(&quot;Swipe down to reveal filter options and find exactly what you need.&quot;)
+    }
+
+    var image: Image? {
+        Image(systemName: &quot;line.3.horizontal.decrease.circle&quot;)
+    }
+}
+</code></pre>
+<h2 id="tipview-and-popovertip-modifier">TipView and popoverTip Modifier</h2>
+<p>Display tips as inline views or popovers attached to any SwiftUI element.</p>
+<pre><code class="language-swift">import SwiftUI
+import TipKit
+
+struct ArticleListView: View {
+    let favoritesTip = FavoritesTip()
+    let shareTip = ShareTip()
+    let filterTip = FilterTip()
+    let articles: [Article]
+
+    var body: some View {
+        NavigationStack {
+            List {
+                // Inline tip — appears as a row in the list
+                TipView(favoritesTip) { action in
+                    if action.id == &quot;learn-more&quot; {
+                        // Handle action
+                    } else if action.id == &quot;dismiss&quot; {
+                        favoritesTip.invalidate(reason: .actionPerformed)
+                    }
+                }
+
+                ForEach(articles) { article in
+                    ArticleRow(article: article)
+                }
+            }
+            .navigationTitle(&quot;Articles&quot;)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        // Share action
+                    } label: {
+                        Image(systemName: &quot;square.and.arrow.up&quot;)
+                    }
+                    // Popover tip — anchored to the share button
+                    .popoverTip(shareTip, arrowEdge: .top)
+                }
+
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        // Filter action
+                    } label: {
+                        Image(systemName: &quot;line.3.horizontal.decrease.circle&quot;)
+                    }
+                    .popoverTip(filterTip)
+                }
+            }
+        }
+    }
+}
+
+// Customizing tip appearance
+struct StyledTipView: View {
+    let tip = FavoritesTip()
+
+    var body: some View {
+        VStack {
+            // Style the inline TipView
+            TipView(tip)
+                .tipBackground(Color.blue.opacity(0.1))
+
+            // Popover tip on custom view
+            Image(systemName: &quot;heart&quot;)
+                .font(.largeTitle)
+                .popoverTip(tip, arrowEdge: .bottom) { action in
+                    if action.id == &quot;dismiss&quot; {
+                        tip.invalidate(reason: .actionPerformed)
+                    }
+                }
+        }
+    }
+}
+</code></pre>
+<h2 id="tip-rules-parameter-based-and-event-based">Tip Rules (Parameter-Based and Event-Based)</h2>
+<p>Rules determine when a tip is eligible for display. Combine parameter rules and event rules for precise targeting.</p>
+<pre><code class="language-swift">import TipKit
+
+struct ProFeatureTip: Tip {
+    // Parameter-based rule — tip eligible when condition is met
+    @Parameter
+    static var isLoggedIn: Bool = false
+
+    @Parameter
+    static var hasUsedBasicFeatures: Bool = false
+
+    var title: Text {
+        Text(&quot;Unlock Pro Features&quot;)
+    }
+
+    var message: Text? {
+        Text(&quot;Upgrade to access advanced analytics and priority support.&quot;)
+    }
+
+    var image: Image? {
+        Image(systemName: &quot;star.circle.fill&quot;)
+    }
+
+    // Rules that must ALL be true for the tip to display
+    var rules: [Rule] {
+        // Show only when user is logged in
+        #Rule(Self.$isLoggedIn) { $0 == true }
+
+        // Show only after user has explored basic features
+        #Rule(Self.$hasUsedBasicFeatures) { $0 == true }
+    }
+}
+
+// Event-based rules — tip appears after specific events occur
+struct AdvancedSearchTip: Tip {
+    // Define an event that can be donated multiple times
+    static let searchPerformed = Event(id: &quot;searchPerformed&quot;)
+
+    var title: Text {
+        Text(&quot;Try Advanced Search&quot;)
+    }
+
+    var message: Text? {
+        Text(&quot;Use filters and operators to find exactly what you need.&quot;)
+    }
+
+    var image: Image? {
+        Image(systemName: &quot;magnifyingglass&quot;)
+    }
+
+    var rules: [Rule] {
+        // Show after the user has searched at least 3 times
+        #Rule(Self.searchPerformed) { event in
+            event.donations.count &gt;= 3
+        }
+    }
+}
+
+// Combined rules
+struct WeeklyReportTip: Tip {
+    static let appLaunched = Event(id: &quot;appLaunched&quot;)
+
+    @Parameter
+    static var hasActiveSubscription: Bool = false
+
+    var title: Text {
+        Text(&quot;Check Your Weekly Report&quot;)
+    }
+
+    var message: Text? {
+        Text(&quot;Your personalized weekly insights are ready to view.&quot;)
+    }
+
+    var rules: [Rule] {
+        // Must have an active subscription
+        #Rule(Self.$hasActiveSubscription) { $0 == true }
+
+        // Must have launched the app at least 5 times
+        #Rule(Self.appLaunched) { event in
+            event.donations.count &gt;= 5
+        }
+    }
+}
+</code></pre>
+<h2 id="tipevent-and-donation">Tip.Event and Donation</h2>
+<p>Donate events to track user actions. The system evaluates event-based rules against accumulated donations.</p>
+<pre><code class="language-swift">import TipKit
+import SwiftUI
+
+struct SearchView: View {
+    @State private var searchText = &quot;&quot;
+    let advancedSearchTip = AdvancedSearchTip()
+
+    var body: some View {
+        VStack {
+            HStack {
+                TextField(&quot;Search...&quot;, text: $searchText)
+                    .textFieldStyle(.roundedBorder)
+
+                Button(&quot;Search&quot;) {
+                    performSearch()
+                }
+                .popoverTip(advancedSearchTip)
+            }
+            .padding()
+        }
+    }
+
+    private func performSearch() {
+        // Donate the event each time the user searches
+        Task {
+            await AdvancedSearchTip.searchPerformed.donate()
+        }
+
+        // Perform the actual search...
+    }
+}
+
+// Donate events with associated values for richer rules
+struct PurchaseTip: Tip {
+    static let itemViewed = Event(id: &quot;itemViewed&quot;)
+
+    var title: Text {
+        Text(&quot;Ready to Buy?&quot;)
+    }
+
+    var message: Text? {
+        Text(&quot;Items in your recently viewed list are available at a discount.&quot;)
+    }
+
+    var rules: [Rule] {
+        // Show after viewing 5+ items within the last 3 days
+        #Rule(Self.itemViewed) { event in
+            event.donations.filter {
+                $0.date &gt; Date.now.addingTimeInterval(-3 * 24 * 60 * 60)
+            }.count &gt;= 5
+        }
+    }
+}
+
+// Donating the event
+func userViewedItem(_ item: Item) {
+    Task {
+        await PurchaseTip.itemViewed.donate()
+    }
+}
+</code></pre>
+<h2 id="maxdisplaycount-and-display-frequency">MaxDisplayCount and Display Frequency</h2>
+<p>Control how often tips appear to prevent user fatigue.</p>
+<pre><code class="language-swift">import TipKit
+
+struct DailyTip: Tip {
+    var title: Text {
+        Text(&quot;Daily Insight&quot;)
+    }
+
+    var message: Text? {
+        Text(&quot;Check your daily statistics in the dashboard.&quot;)
+    }
+
+    // Limit how many times this specific tip is shown
+    var options: [TipOption] {
+        // Show this tip a maximum of 3 times
+        MaxDisplayCount(3)
+    }
+}
+
+struct OneTimeTip: Tip {
+    var title: Text {
+        Text(&quot;Welcome!&quot;)
+    }
+
+    var message: Text? {
+        Text(&quot;Swipe through to explore all features.&quot;)
+    }
+
+    var options: [TipOption] {
+        // Show only once
+        MaxDisplayCount(1)
+    }
+}
+</code></pre>
+<h2 id="tipsconfigure-setup">Tips.configure() Setup</h2>
+<p>Configure TipKit when your app launches. This sets global display frequency and data store options.</p>
+<pre><code class="language-swift">import SwiftUI
+import TipKit
+
+@main
+struct MyApp: App {
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+                .task {
+                    configureTips()
+                }
+        }
+    }
+
+    private func configureTips() {
+        do {
+            try Tips.configure([
+                // How often any tip can appear across the app
+                .displayFrequency(.daily),
+
+                // Use .immediate for testing (shows tips right away)
+                // .displayFrequency(.immediate),
+
+                // Data store location — use .applicationDefault for production
+                .datastoreLocation(.applicationDefault)
+            ])
+        } catch {
+            print(&quot;Failed to configure TipKit: \(error)&quot;)
+        }
+    }
+}
+
+// Display frequency options:
+// .immediate    — no delay between tips (best for testing)
+// .hourly       — at most one tip per hour
+// .daily        — at most one tip per day
+// .weekly       — at most one tip per week
+// .monthly      — at most one tip per month
+</code></pre>
+<h2 id="invalidation-and-status">Invalidation and Status</h2>
+<p>Invalidate tips when users complete the associated action, or check tip status programmatically.</p>
+<pre><code class="language-swift">import TipKit
+import SwiftUI
+
+struct FeatureView: View {
+    let featureTip = FavoritesTip()
+
+    var body: some View {
+        VStack {
+            TipView(featureTip)
+
+            Button(&quot;Add to Favorites&quot;) {
+                addToFavorites()
+
+                // Invalidate the tip — it won't appear again
+                featureTip.invalidate(reason: .actionPerformed)
+            }
+
+            Button(&quot;Dismiss Tip&quot;) {
+                // Tip can potentially reappear in the future
+                featureTip.invalidate(reason: .tipClosed)
+            }
+        }
+    }
+
+    private func addToFavorites() {
+        // Perform the action...
+    }
+}
+
+// Check tip status programmatically
+struct ConditionalTipView: View {
+    let tip = ShareTip()
+
+    var body: some View {
+        VStack {
+            switch tip.status {
+            case .available:
+                TipView(tip)
+            case .invalidated(let reason):
+                switch reason {
+                case .actionPerformed:
+                    Text(&quot;You've already used this feature!&quot;)
+                        .foregroundStyle(.green)
+                case .tipClosed:
+                    EmptyView()
+                case .maxDisplayCountExceeded:
+                    EmptyView()
+                default:
+                    EmptyView()
+                }
+            case .pending:
+                // Rules not yet met
+                EmptyView()
+            }
+        }
+    }
+}
+
+// Reset all tips (useful for testing or settings screen)
+func resetAllTips() {
+    try? Tips.resetDatastore()
+}
+
+// Show all tips immediately (testing)
+func showAllTipsForTesting() {
+    try? Tips.configure([
+        .displayFrequency(.immediate),
+        .datastoreLocation(.applicationDefault)
+    ])
+}
+</code></pre>
+<h2 id="updating-parameters-at-runtime">Updating Parameters at Runtime</h2>
+<p>Set parameters dynamically as the user interacts with your app.</p>
+<pre><code class="language-swift">import TipKit
+import SwiftUI
+
+struct LoginView: View {
+    var body: some View {
+        Button(&quot;Log In&quot;) {
+            performLogin()
+        }
+    }
+
+    private func performLogin() {
+        // After successful login, update the parameter
+        ProFeatureTip.isLoggedIn = true
+    }
+}
+
+struct OnboardingCompletionView: View {
+    var body: some View {
+        Button(&quot;Complete Setup&quot;) {
+            completeOnboarding()
+        }
+    }
+
+    private func completeOnboarding() {
+        ProFeatureTip.hasUsedBasicFeatures = true
+    }
+}
+
+struct AppLaunchHandler {
+    static func trackLaunch() {
+        Task {
+            await WeeklyReportTip.appLaunched.donate()
+        }
+    }
+}
+</code></pre>
+<h2 id="complete-onboarding-tips-example">Complete Onboarding Tips Example</h2>
+<p>A full onboarding flow using TipKit with sequential tips that guide users through key features.</p>
+<pre><code class="language-swift">import TipKit
+import SwiftUI
+
+// MARK: - Onboarding Tips Definition
+
+struct WelcomeTip: Tip {
+    var title: Text { Text(&quot;Welcome to ReadIt&quot;) }
+    var message: Text? { Text(&quot;Discover a curated feed of articles tailored to your interests.&quot;) }
+    var image: Image? { Image(systemName: &quot;hand.wave.fill&quot;) }
+    var options: [TipOption] { MaxDisplayCount(1) }
+}
+
+struct SwipeActionTip: Tip {
+    static let articleViewed = Event(id: &quot;articleViewed&quot;)
+
+    var title: Text { Text(&quot;Swipe for Quick Actions&quot;) }
+    var message: Text? { Text(&quot;Swipe left on any article to save, share, or archive it.&quot;) }
+    var image: Image? { Image(systemName: &quot;hand.draw.fill&quot;) }
+    var options: [TipOption] { MaxDisplayCount(2) }
+
+    var rules: [Rule] {
+        #Rule(Self.articleViewed) { $0.donations.count &gt;= 2 }
+    }
+}
+
+struct PersonalizeTip: Tip {
+    static let savedArticle = Event(id: &quot;savedArticle&quot;)
+
+    @Parameter
+    static var hasCompletedOnboarding: Bool = false
+
+    var title: Text { Text(&quot;Personalize Your Feed&quot;) }
+    var message: Text? { Text(&quot;Go to Settings to select your favorite topics and sources.&quot;) }
+    var image: Image? { Image(systemName: &quot;slider.horizontal.3&quot;) }
+    var options: [TipOption] { MaxDisplayCount(1) }
+
+    var actions: [Action] {
+        Action(id: &quot;go-to-settings&quot;, title: &quot;Open Settings&quot;)
+    }
+
+    var rules: [Rule] {
+        #Rule(Self.$hasCompletedOnboarding) { $0 == true }
+        #Rule(Self.savedArticle) { $0.donations.count &gt;= 1 }
+    }
+}
+
+// MARK: - Main View with Onboarding Tips
+
+struct OnboardingArticleListView: View {
+    let welcomeTip = WelcomeTip()
+    let swipeActionTip = SwipeActionTip()
+    let personalizeTip = PersonalizeTip()
+
+    @State private var articles: [Article] = Article.sampleData
+    @State private var showSettings = false
+
+    var body: some View {
+        NavigationStack {
+            List {
+                // Welcome tip at the top
+                TipView(welcomeTip)
+
+                // Personalize tip with action handler
+                TipView(personalizeTip) { action in
+                    if action.id == &quot;go-to-settings&quot; {
+                        showSettings = true
+                        personalizeTip.invalidate(reason: .actionPerformed)
+                    }
+                }
+
+                ForEach(articles) { article in
+                    ArticleRowView(article: article)
+                        .onTapGesture {
+                            Task {
+                                await SwipeActionTip.articleViewed.donate()
+                            }
+                        }
+                        .swipeActions(edge: .trailing) {
+                            Button {
+                                saveArticle(article)
+                            } label: {
+                                Label(&quot;Save&quot;, systemImage: &quot;bookmark&quot;)
+                            }
+                            .tint(.blue)
+
+                            Button {
+                                // Share
+                            } label: {
+                                Label(&quot;Share&quot;, systemImage: &quot;square.and.arrow.up&quot;)
+                            }
+                            .tint(.green)
+                        }
+                }
+            }
+            .navigationTitle(&quot;ReadIt&quot;)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        showSettings = true
+                    } label: {
+                        Image(systemName: &quot;gearshape&quot;)
+                    }
+                    .popoverTip(swipeActionTip)
+                }
+            }
+            .sheet(isPresented: $showSettings) {
+                SettingsView()
+            }
+        }
+    }
+
+    private func saveArticle(_ article: Article) {
+        Task {
+            await PersonalizeTip.savedArticle.donate()
+        }
+    }
+}
+
+// MARK: - Supporting Views
+
+struct ArticleRowView: View {
+    let article: Article
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(article.title)
+                .font(.headline)
+            Text(article.summary)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .lineLimit(2)
+            HStack {
+                Text(article.source)
+                    .font(.caption)
+                    .foregroundStyle(.blue)
+                Spacer()
+                Text(article.date, style: .relative)
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
+            }
+        }
+        .padding(.vertical, 4)
+    }
+}
+
+struct SettingsView: View {
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            List {
+                Section(&quot;Topics&quot;) {
+                    ForEach([&quot;Technology&quot;, &quot;Science&quot;, &quot;Design&quot;, &quot;Business&quot;], id: \.self) { topic in
+                        Toggle(topic, isOn: .constant(false))
+                    }
+                }
+
+                Section(&quot;Debug&quot;) {
+                    Button(&quot;Reset All Tips&quot;) {
+                        try? Tips.resetDatastore()
+                    }
+                }
+            }
+            .navigationTitle(&quot;Settings&quot;)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button(&quot;Done&quot;) {
+                        PersonalizeTip.hasCompletedOnboarding = true
+                        dismiss()
+                    }
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Data Model
+
+struct Article: Identifiable {
+    let id = UUID()
+    let title: String
+    let summary: String
+    let source: String
+    let date: Date
+
+    static var sampleData: [Article] {
+        [
+            Article(title: &quot;SwiftUI 6 Announced&quot;, summary: &quot;Apple reveals major updates to SwiftUI at WWDC.&quot;, source: &quot;Apple Newsroom&quot;, date: .now.addingTimeInterval(-3600)),
+            Article(title: &quot;The Future of AI&quot;, summary: &quot;How artificial intelligence is reshaping every industry.&quot;, source: &quot;Tech Review&quot;, date: .now.addingTimeInterval(-7200)),
+            Article(title: &quot;Design Systems at Scale&quot;, summary: &quot;Building consistent design systems for large organizations.&quot;, source: &quot;Design Weekly&quot;, date: .now.addingTimeInterval(-10800))
+        ]
+    }
+}
+
+// MARK: - App Entry Point
+
+@main
+struct ReadItApp: App {
+    var body: some Scene {
+        WindowGroup {
+            OnboardingArticleListView()
+                .task {
+                    try? Tips.configure([
+                        .displayFrequency(.immediate),
+                        .datastoreLocation(.applicationDefault)
+                    ])
+                }
+        }
+    }
+}
+</code></pre>
+<h2 id="key-considerations">Key Considerations</h2>
+<ul>
+<li><strong>Availability</strong>: TipKit requires iOS 17+, macOS 14+, watchOS 10+, tvOS 17+.</li>
+<li><strong>iCloud sync</strong>: Tip state syncs across devices via iCloud by default. A tip dismissed on iPhone won't reappear on iPad.</li>
+<li><strong>Display frequency</strong>: Set at the global level via <code>Tips.configure()</code>. Individual tips respect <code>MaxDisplayCount</code> independently.</li>
+<li><strong>Testing</strong>: Use <code>Tips.resetDatastore()</code> to clear all tip state. Use <code>.displayFrequency(.immediate)</code> during development.</li>
+<li><strong>Invalidation reasons</strong>: <code>.actionPerformed</code> means the user completed the action (permanent). <code>.tipClosed</code> means the user dismissed the tip (may reappear if display count allows).</li>
+<li><strong>Performance</strong>: Tips are lightweight. The system evaluates rules lazily and only renders tips when eligible.</li>
+<li><strong>Accessibility</strong>: TipKit views automatically support VoiceOver and Dynamic Type.</li>
+</ul></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

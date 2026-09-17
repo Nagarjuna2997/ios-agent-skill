@@ -1,0 +1,52 @@
+{
+  "date": "2026-09-17T01:03:56.604Z",
+  "package": "ios-agent-mcp@2.7.0",
+  "tool": "review_swift_concurrency",
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "# Swift Concurrency Review\n\nScanned **1** Swift file.\n\n**2 findings** — 🔴 1 blocker · 🟠 1 serious · 🟡 0 minor\n\n### 🔴 FeedModel.swift:3 — @Observable type is not @MainActor-isolated.\n\n```swift\n@Observable\n```\n\n**Why it matters:** @Observable grants no isolation. SwiftUI reads this state during layout while any task may write it — a data race under Swift 5 mode, a compile error under Swift 6.\n\n**Fix:** Annotate the type: `@MainActor @Observable final class …`. Annotate the type, not individual members — per-member isolation leaves gaps.\n\n_Rule `observable-without-mainactor` · see `docs/swift/swift-concurrency.md`_\n\n### 🟠 FeedModel.swift:7 — Task.detached drops actor isolation, priority, and task-locals.\n\n```swift\nTask.detached { self.title = \"Updated\" }\n```\n\n**Why it matters:** Writes to isolated state from the detached task are cross-actor: a data race under Swift 5, a compile error under Swift 6.\n\n**Fix:** Use `Task { }` (which inherits the enclosing actor), a `nonisolated async` function, or an actor.\n\n_Rule `task-detached` · see `docs/swift/swift-concurrency.md`_\n\n---\n\n_Static analysis only. It cannot prove the app builds or behaves correctly — run `swift build` and `swift test` for that._"
+      }
+    ],
+    "structuredContent": {
+      "summary": "Swift Concurrency Review: 1 blocker, 1 serious across 1 file.",
+      "score": 0,
+      "counts": {
+        "blocker": 1,
+        "serious": 1,
+        "minor": 0,
+        "total": 2
+      },
+      "files_checked": 1,
+      "issues": [
+        {
+          "file": "FeedModel.swift",
+          "line": 3,
+          "severity": "blocker",
+          "rule": "observable-without-mainactor",
+          "message": "@Observable type is not @MainActor-isolated.",
+          "consequence": "@Observable grants no isolation. SwiftUI reads this state during layout while any task may write it — a data race under Swift 5 mode, a compile error under Swift 6.",
+          "fix": "Annotate the type: `@MainActor @Observable final class …`. Annotate the type, not individual members — per-member isolation leaves gaps.",
+          "doc": "docs/swift/swift-concurrency.md",
+          "excerpt": "@Observable"
+        },
+        {
+          "file": "FeedModel.swift",
+          "line": 7,
+          "severity": "serious",
+          "rule": "task-detached",
+          "message": "Task.detached drops actor isolation, priority, and task-locals.",
+          "consequence": "Writes to isolated state from the detached task are cross-actor: a data race under Swift 5, a compile error under Swift 6.",
+          "fix": "Use `Task { }` (which inherits the enclosing actor), a `nonisolated async` function, or an actor.",
+          "doc": "docs/swift/swift-concurrency.md",
+          "excerpt": "Task.detached { self.title = \"Updated\" }"
+        }
+      ],
+      "suggestions": [
+        "observable-without-mainactor: Annotate the type: `@MainActor @Observable final class …`. Annotate the type, not individual members — per-member isolation leaves gaps.",
+        "task-detached: Use `Task { }` (which inherits the enclosing actor), a `nonisolated async` function, or an actor."
+      ]
+    }
+  }
+}

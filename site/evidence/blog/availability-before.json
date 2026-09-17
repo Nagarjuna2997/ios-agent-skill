@@ -1,0 +1,74 @@
+{
+  "date": "2026-09-17T01:03:56.614Z",
+  "package": "ios-agent-mcp@2.7.0",
+  "tool": "check_availability_guards",
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "# Availability Guard Check\n\nScanned **4** Swift files.\n\n**4 findings** — 🔴 3 blocker · 🟠 1 serious · 🟡 0 minor\n\n### 🔴 Cloud.swift:2 — PrivateCloudComputeLanguageModel requires iOS 27 but the file has no availability guard.\n\n```swift\nlet symbol = PrivateCloudComputeLanguageModel.self\n```\n\n**Why it matters:** The app fails to compile against an older deployment target, or crashes on launch if the symbol is weakly linked.\n\n**Fix:** Wrap in `if #available(iOS 27.0, *)` or annotate with `@available(iOS 27.0, *)`, and provide a fallback.\n\n_Rule `missing-availability-guard` · see `docs/compatibility-matrix.md`_\n\n### 🔴 Profile.swift:2 — DynamicProfile requires iOS 27 but the file has no availability guard.\n\n```swift\nlet symbol = DynamicProfile.self\n```\n\n**Why it matters:** The app fails to compile against an older deployment target, or crashes on launch if the symbol is weakly linked.\n\n**Fix:** Wrap in `if #available(iOS 27.0, *)` or annotate with `@available(iOS 27.0, *)`, and provide a fallback.\n\n_Rule `missing-availability-guard` · see `docs/compatibility-matrix.md`_\n\n### 🔴 Tools.swift:2 — built-in system tools requires iOS 27 but the file has no availability guard.\n\n```swift\nlet symbol = OCRTool.self\n```\n\n**Why it matters:** The app fails to compile against an older deployment target, or crashes on launch if the symbol is weakly linked.\n\n**Fix:** Wrap in `if #available(iOS 27.0, *)` or annotate with `@available(iOS 27.0, *)`, and provide a fallback.\n\n_Rule `missing-availability-guard` · see `docs/compatibility-matrix.md`_\n\n### 🟠 Card.swift:6 — glassEffect was introduced in iOS 26 but is guarded at iOS 27.\n\n```swift\nText(\"Reading\").glassEffect()\n```\n\n**Why it matters:** Every device on iOS 26–26 falls back unnecessarily, losing the feature for a large installed base. This is invisible when testing on a current device.\n\n**Fix:** Guard on iOS 26, the version where the symbol was introduced — not the newest SDK.\n\n_Rule `over-restrictive-guard` · see `docs/compatibility-matrix.md`_\n\n---\n\n_Static analysis only. It cannot prove the app builds or behaves correctly — run `swift build` and `swift test` for that._"
+      }
+    ],
+    "structuredContent": {
+      "summary": "Availability Guard Check: 3 blocker, 1 serious across 4 files.",
+      "score": 18,
+      "counts": {
+        "blocker": 3,
+        "serious": 1,
+        "minor": 0,
+        "total": 4
+      },
+      "files_checked": 4,
+      "issues": [
+        {
+          "file": "Cloud.swift",
+          "line": 2,
+          "severity": "blocker",
+          "rule": "missing-availability-guard",
+          "message": "PrivateCloudComputeLanguageModel requires iOS 27 but the file has no availability guard.",
+          "consequence": "The app fails to compile against an older deployment target, or crashes on launch if the symbol is weakly linked.",
+          "fix": "Wrap in `if #available(iOS 27.0, *)` or annotate with `@available(iOS 27.0, *)`, and provide a fallback.",
+          "doc": "docs/compatibility-matrix.md",
+          "excerpt": "let symbol = PrivateCloudComputeLanguageModel.self"
+        },
+        {
+          "file": "Profile.swift",
+          "line": 2,
+          "severity": "blocker",
+          "rule": "missing-availability-guard",
+          "message": "DynamicProfile requires iOS 27 but the file has no availability guard.",
+          "consequence": "The app fails to compile against an older deployment target, or crashes on launch if the symbol is weakly linked.",
+          "fix": "Wrap in `if #available(iOS 27.0, *)` or annotate with `@available(iOS 27.0, *)`, and provide a fallback.",
+          "doc": "docs/compatibility-matrix.md",
+          "excerpt": "let symbol = DynamicProfile.self"
+        },
+        {
+          "file": "Tools.swift",
+          "line": 2,
+          "severity": "blocker",
+          "rule": "missing-availability-guard",
+          "message": "built-in system tools requires iOS 27 but the file has no availability guard.",
+          "consequence": "The app fails to compile against an older deployment target, or crashes on launch if the symbol is weakly linked.",
+          "fix": "Wrap in `if #available(iOS 27.0, *)` or annotate with `@available(iOS 27.0, *)`, and provide a fallback.",
+          "doc": "docs/compatibility-matrix.md",
+          "excerpt": "let symbol = OCRTool.self"
+        },
+        {
+          "file": "Card.swift",
+          "line": 6,
+          "severity": "serious",
+          "rule": "over-restrictive-guard",
+          "message": "glassEffect was introduced in iOS 26 but is guarded at iOS 27.",
+          "consequence": "Every device on iOS 26–26 falls back unnecessarily, losing the feature for a large installed base. This is invisible when testing on a current device.",
+          "fix": "Guard on iOS 26, the version where the symbol was introduced — not the newest SDK.",
+          "doc": "docs/compatibility-matrix.md",
+          "excerpt": "Text(\"Reading\").glassEffect()"
+        }
+      ],
+      "suggestions": [
+        "missing-availability-guard (3 occurrences): Wrap in `if #available(iOS 27.0, *)` or annotate with `@available(iOS 27.0, *)`, and provide a fallback.",
+        "over-restrictive-guard: Guard on iOS 26, the version where the symbol was introduced — not the newest SDK."
+      ]
+    }
+  }
+}

@@ -1,0 +1,366 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PassKit &amp; FinanceKit — iOS Agent Skill</title><meta name="description" content="Repository guidance for PassKit. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-services-passkit.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="PassKit &amp; FinanceKit"><meta property="og:description" content="Repository guidance for PassKit. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-services-passkit.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "PassKit & FinanceKit", "description": "Repository guidance for PassKit. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-services-passkit.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Commerce and Wallet · Reference guide</p><h1>PassKit &amp; FinanceKit</h1><p class="lead">Repository guidance for PassKit. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/frameworks/services/passkit.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#pkpaymentrequest-setup">PKPaymentRequest Setup</a></li>
+<li><a href="#checking-apple-pay-availability">Checking Apple Pay Availability</a></li>
+<li><a href="#swiftui-paywithapplepaybutton-ios-16">SwiftUI PayWithApplePayButton (iOS 16+)</a></li>
+<li><a href="#uikit-pkpaymentauthorizationviewcontroller">UIKit PKPaymentAuthorizationViewController</a></li>
+<li><a href="#payment-processing-flow">Payment Processing Flow</a></li>
+<li><a href="#wallet-passes-pkpass-pkpasslibrary">Wallet Passes (PKPass &amp; PKPassLibrary)</a></li>
+<li><a href="#financekit-apple-cardcash-transactions-ios-17">FinanceKit: Apple Card/Cash Transactions (iOS 17+)</a></li>
+<li><a href="#complete-apple-pay-checkout-example">Complete Apple Pay Checkout Example</a></li>
+</ul>
+</div>
+</aside><h2 id="pkpaymentrequest-setup">PKPaymentRequest Setup</h2>
+<p>Configure Apple Pay with merchant details and supported networks.</p>
+<pre><code class="language-swift">import PassKit
+
+func makePaymentRequest(amount: Decimal) -&gt; PKPaymentRequest {
+    let request = PKPaymentRequest()
+    request.merchantIdentifier = &quot;merchant.com.yourapp.pay&quot;
+    request.supportedNetworks = [.visa, .masterCard, .amex, .discover]
+    request.merchantCapabilities = [.capability3DS, .capabilityDebit, .capabilityCredit]
+    request.countryCode = &quot;US&quot;
+    request.currencyCode = &quot;USD&quot;
+
+    let item = PKPaymentSummaryItem(
+        label: &quot;My App Purchase&quot;,
+        amount: NSDecimalNumber(decimal: amount)
+    )
+    let total = PKPaymentSummaryItem(
+        label: &quot;Your Company&quot;,
+        amount: NSDecimalNumber(decimal: amount),
+        type: .final
+    )
+    request.paymentSummaryItems = [item, total]
+
+    // Optional: require shipping
+    request.requiredShippingContactFields = [.postalAddress, .emailAddress]
+    request.requiredBillingContactFields = [.postalAddress]
+
+    // Shipping methods
+    let standard = PKShippingMethod(label: &quot;Standard&quot;, amount: NSDecimalNumber(value: 0))
+    standard.identifier = &quot;standard&quot;
+    standard.detail = &quot;Arrives in 5-7 days&quot;
+    let express = PKShippingMethod(label: &quot;Express&quot;, amount: NSDecimalNumber(value: 9.99))
+    express.identifier = &quot;express&quot;
+    express.detail = &quot;Arrives in 1-2 days&quot;
+    request.shippingMethods = [standard, express]
+
+    return request
+}
+</code></pre>
+<h2 id="checking-apple-pay-availability">Checking Apple Pay Availability</h2>
+<pre><code class="language-swift">func canMakePayments() -&gt; Bool {
+    PKPaymentAuthorizationViewController.canMakePayments(
+        usingNetworks: [.visa, .masterCard, .amex, .discover],
+        capabilities: [.capability3DS]
+    )
+}
+</code></pre>
+<h2 id="swiftui-paywithapplepaybutton-ios-16">SwiftUI PayWithApplePayButton (iOS 16+)</h2>
+<pre><code class="language-swift">import SwiftUI
+import PassKit
+
+struct CheckoutView: View {
+    @State private var paymentStatus: PaymentStatus = .idle
+
+    var body: some View {
+        VStack(spacing: 24) {
+            OrderSummaryView()
+
+            PayWithApplePayButton(.checkout, action: handlePayment)
+                .frame(height: 50)
+                .payWithApplePayButtonStyle(.black)
+                .padding(.horizontal)
+        }
+    }
+
+    func handlePayment() {
+        let request = makePaymentRequest(amount: 49.99)
+        let controller = PKPaymentAuthorizationController(paymentRequest: request)
+        controller.delegate = PaymentDelegate.shared
+        controller.present()
+    }
+}
+</code></pre>
+<h2 id="uikit-pkpaymentauthorizationviewcontroller">UIKit PKPaymentAuthorizationViewController</h2>
+<pre><code class="language-swift">import UIKit
+import PassKit
+
+final class PaymentViewController: UIViewController, PKPaymentAuthorizationViewControllerDelegate {
+
+    func startPayment(amount: Decimal) {
+        guard PKPaymentAuthorizationViewController.canMakePayments() else {
+            showSetupApplePay()
+            return
+        }
+
+        let request = makePaymentRequest(amount: amount)
+        guard let vc = PKPaymentAuthorizationViewController(paymentRequest: request) else { return }
+        vc.delegate = self
+        present(vc, animated: true)
+    }
+
+    func paymentAuthorizationViewController(
+        _ controller: PKPaymentAuthorizationViewController,
+        didAuthorizePayment payment: PKPayment,
+        handler completion: @escaping (PKPaymentAuthorizationResult) -&gt; Void
+    ) {
+        // Send payment.token.paymentData to your server
+        Task {
+            do {
+                try await PaymentService.processPayment(token: payment.token)
+                completion(PKPaymentAuthorizationResult(status: .success, errors: nil))
+            } catch {
+                let pkError = PKPaymentRequest.paymentShippingAddressUnserviceableError(
+                    withLocalizedDescription: &quot;Payment failed. Please try again.&quot;
+                )
+                completion(PKPaymentAuthorizationResult(status: .failure, errors: [pkError]))
+            }
+        }
+    }
+
+    func paymentAuthorizationViewControllerDidFinish(
+        _ controller: PKPaymentAuthorizationViewController
+    ) {
+        controller.dismiss(animated: true)
+    }
+
+    private func showSetupApplePay() {
+        let setup = PKPassLibrary().openPaymentSetup()
+        if !setup {
+            // Fallback: show manual card entry
+        }
+    }
+}
+</code></pre>
+<h2 id="payment-processing-flow">Payment Processing Flow</h2>
+<pre><code class="language-swift">enum PaymentService {
+    static func processPayment(token: PKPaymentToken) async throws {
+        // 1. Extract payment data
+        let paymentData = token.paymentData  // Encrypted by Apple
+        let method = token.paymentMethod
+        let network = method.network?.rawValue ?? &quot;unknown&quot;
+        let type = method.type  // .debit, .credit, .prepaid, .store
+
+        // 2. Send encrypted token to your payment processor
+        var request = URLRequest(url: URL(string: &quot;https://api.yourserver.com/pay&quot;)!)
+        request.httpMethod = &quot;POST&quot;
+        request.setValue(&quot;application/json&quot;, forHTTPHeaderField: &quot;Content-Type&quot;)
+        request.httpBody = try JSONEncoder().encode([
+            &quot;paymentData&quot;: paymentData.base64EncodedString(),
+            &quot;network&quot;: network,
+            &quot;transactionId&quot;: token.transactionIdentifier
+        ])
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
+            throw PaymentError.serverDeclined
+        }
+    }
+}
+
+enum PaymentError: LocalizedError {
+    case serverDeclined, networkUnavailable
+
+    var errorDescription: String? {
+        switch self {
+        case .serverDeclined: &quot;Payment was declined. Please try another card.&quot;
+        case .networkUnavailable: &quot;No network connection. Please try again.&quot;
+        }
+    }
+}
+</code></pre>
+<h2 id="wallet-passes-pkpass-pkpasslibrary">Wallet Passes (PKPass &amp; PKPassLibrary)</h2>
+<pre><code class="language-swift">import PassKit
+
+final class WalletPassManager {
+    private let library = PKPassLibrary()
+
+    /// Add a pass from downloaded .pkpass data
+    func addPass(data: Data) async throws {
+        guard PKPassLibrary.isPassLibraryAvailable() else {
+            throw WalletError.notAvailable
+        }
+
+        let pass = try PKPass(data: data)
+
+        if library.containsPass(pass) {
+            // Pass already in wallet — replace
+            library.replacePass(with: pass)
+        } else {
+            // Show the add-pass UI
+            guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                  let root = scene.keyWindow?.rootViewController else { return }
+            let addController = PKAddPassesViewController(pass: pass)
+            root.present(addController!, animated: true)
+        }
+    }
+
+    /// List all passes of a specific type
+    func passes(ofType type: PKPassType = .barcode) -&gt; [PKPass] {
+        library.passes(of: type)
+    }
+
+    /// Remove a pass
+    func removePass(_ pass: PKPass) {
+        library.removePass(pass)
+    }
+
+    /// Download a .pkpass file from server
+    func downloadPass(from url: URL) async throws -&gt; Data {
+        var request = URLRequest(url: url)
+        request.setValue(&quot;application/vnd.apple.pkpass&quot;, forHTTPHeaderField: &quot;Accept&quot;)
+        let (data, _) = try await URLSession.shared.data(for: request)
+        return data
+    }
+}
+
+enum WalletError: LocalizedError {
+    case notAvailable
+    var errorDescription: String? { &quot;Wallet is not available on this device.&quot; }
+}
+</code></pre>
+<h2 id="financekit-apple-cardcash-transactions-ios-17">FinanceKit: Apple Card/Cash Transactions (iOS 17+)</h2>
+<pre><code class="language-swift">import FinanceKit
+
+@available(iOS 17, *)
+final class FinanceManager {
+
+    func requestAuthorization() async -&gt; FinanceKit.AuthorizationStatus {
+        await FinanceStore.shared.requestAuthorization()
+    }
+
+    func fetchTransactions() async throws -&gt; [FinanceKit.Transaction] {
+        let store = FinanceStore.shared
+
+        let status = await store.requestAuthorization()
+        guard status == .authorized else {
+            throw FinanceError.notAuthorized
+        }
+
+        // Query recent Apple Card transactions
+        let now = Date()
+        let thirtyDaysAgo = Calendar.current.date(byAdding: .day, value: -30, to: now)!
+
+        let query = TransactionQuery(
+            startDate: thirtyDaysAgo,
+            endDate: now
+        )
+
+        let transactions = try await store.transactions(query: query)
+        return transactions
+    }
+
+    func fetchAccountBalances() async throws -&gt; [FinanceKit.AccountBalance] {
+        let store = FinanceStore.shared
+        return try await store.accountBalances()
+    }
+}
+
+enum FinanceError: LocalizedError {
+    case notAuthorized
+    var errorDescription: String? { &quot;Finance data access not authorized.&quot; }
+}
+</code></pre>
+<h2 id="complete-apple-pay-checkout-example">Complete Apple Pay Checkout Example</h2>
+<pre><code class="language-swift">import SwiftUI
+import PassKit
+
+enum PaymentStatus {
+    case idle, processing, success, failed(String)
+}
+
+@Observable
+final class CheckoutViewModel {
+    var items: [CartItem] = []
+    var paymentStatus: PaymentStatus = .idle
+
+    var total: Decimal {
+        items.reduce(0) { $0 + $1.price * Decimal($1.quantity) }
+    }
+
+    var canPay: Bool {
+        PKPaymentAuthorizationController.canMakePayments(
+            usingNetworks: [.visa, .masterCard, .amex],
+            capabilities: [.capability3DS]
+        )
+    }
+
+    func checkout() async {
+        paymentStatus = .processing
+
+        let request = PKPaymentRequest()
+        request.merchantIdentifier = &quot;merchant.com.yourapp.pay&quot;
+        request.supportedNetworks = [.visa, .masterCard, .amex]
+        request.merchantCapabilities = [.capability3DS]
+        request.countryCode = &quot;US&quot;
+        request.currencyCode = &quot;USD&quot;
+
+        request.paymentSummaryItems = items.map {
+            PKPaymentSummaryItem(
+                label: $0.name,
+                amount: NSDecimalNumber(decimal: $0.price * Decimal($0.quantity))
+            )
+        } + [
+            PKPaymentSummaryItem(label: &quot;Your Store&quot;, amount: NSDecimalNumber(decimal: total))
+        ]
+
+        let controller = PKPaymentAuthorizationController(paymentRequest: request)
+        // Present and handle via delegate pattern
+        controller.present()
+    }
+}
+
+struct CartItem: Identifiable {
+    let id = UUID()
+    let name: String
+    let price: Decimal
+    var quantity: Int
+}
+
+struct ApplePayCheckoutView: View {
+    @State private var viewModel = CheckoutViewModel()
+
+    var body: some View {
+        NavigationStack {
+            List {
+                ForEach(viewModel.items) { item in
+                    HStack {
+                        Text(item.name)
+                        Spacer()
+                        Text(&quot;\(item.quantity)x&quot;)
+                        Text(item.price, format: .currency(code: &quot;USD&quot;))
+                    }
+                }
+
+                Section {
+                    HStack {
+                        Text(&quot;Total&quot;).fontWeight(.bold)
+                        Spacer()
+                        Text(viewModel.total, format: .currency(code: &quot;USD&quot;))
+                            .fontWeight(.bold)
+                    }
+                }
+            }
+            .navigationTitle(&quot;Checkout&quot;)
+            .safeAreaInset(edge: .bottom) {
+                if viewModel.canPay {
+                    PayWithApplePayButton(.checkout) {
+                        Task { await viewModel.checkout() }
+                    }
+                    .frame(height: 50)
+                    .padding()
+                }
+            }
+            .overlay {
+                if case .processing = viewModel.paymentStatus {
+                    ProgressView(&quot;Processing...&quot;)
+                        .padding()
+                        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
+                }
+            }
+        }
+    }
+}
+</code></pre></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

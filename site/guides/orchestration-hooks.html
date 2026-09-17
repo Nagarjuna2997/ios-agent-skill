@@ -1,0 +1,306 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Hooks — Deterministic Enforcement — iOS Agent Skill</title><meta name="description" content="Repository guidance for Hooks — Deterministic Enforcement. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/orchestration-hooks.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="Hooks — Deterministic Enforcement"><meta property="og:description" content="Repository guidance for Hooks — Deterministic Enforcement. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/orchestration-hooks.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "Hooks \u2014 Deterministic Enforcement", "description": "Repository guidance for Hooks \u2014 Deterministic Enforcement. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/orchestration-hooks.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Orchestration · Reference guide</p><h1>Hooks — Deterministic Enforcement</h1><p class="lead">Repository guidance for Hooks — Deterministic Enforcement. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/orchestration/hooks.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#1-hook-vs-ci-vs-reviewer">1. Hook vs. CI vs. reviewer</a></li>
+<li><a href="#2-events">2. Events</a></li>
+<li><a href="#3-the-exit-code-contract">3. The exit-code contract</a></li>
+<li><a href="#4-configuration">4. Configuration</a></li>
+<li><a href="#5-this-repositorys-hooks">5. This repository's hooks</a></li>
+<li><a href="#6-hooks-for-ios-projects">6. Hooks for iOS projects</a></li>
+<li><a href="#7-design-rules">7. Design rules</a></li>
+<li><a href="#8-anti-patterns">8. Anti-patterns</a></li>
+<li><a href="#checklist-for-a-new-hook">Checklist for a new hook</a></li>
+</ul>
+</div>
+</aside><p><strong>Load this when:</strong> a rule must hold every time rather than usually, you are
+repeating the same correction to an agent, or you are deciding between a hook,
+a CI check, and a reviewer subagent.</p>
+<p>A hook is a shell command that runs automatically at a fixed lifecycle point.
+It is not a suggestion the model weighs — it executes, and its exit code decides
+what happens next. That makes it the correct home for anything a script can
+decide.</p>
+<hr />
+<h2 id="1-hook-vs-ci-vs-reviewer">1. Hook vs. CI vs. reviewer</h2>
+<p>Three enforcement layers. Use the cheapest one that can decide the question.</p>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Decides</th>
+<th>Cost</th>
+<th>Feedback speed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hook</strong></td>
+<td>Rules a script can evaluate</td>
+<td>~free</td>
+<td>Immediate — model self-corrects mid-turn</td>
+</tr>
+<tr>
+<td><strong>CI</strong></td>
+<td>Same, plus full build/test</td>
+<td>minutes</td>
+<td>After push</td>
+</tr>
+<tr>
+<td><strong>Reviewer subagent</strong></td>
+<td>Judgment: is this correct, does it match intent</td>
+<td>tokens</td>
+<td>End of task</td>
+</tr>
+</tbody>
+</table>
+<p>The ordering matters. Spending a reviewer subagent on "did you use
+<code>DispatchQueue.main.async</code>" is waste — a grep answers that for free, instantly,
+and cannot be argued with. Reserve model judgment for what rules cannot express.</p>
+<p><strong>Rule of thumb:</strong> if you can write the check as a grep or an exit code, it is a
+hook. If it needs to understand intent, it is a reviewer.</p>
+<hr />
+<h2 id="2-events">2. Events</h2>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Fires</th>
+<th>Typical use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PreToolUse</code></td>
+<td>Before a tool runs</td>
+<td>Block edits to generated or protected files</td>
+</tr>
+<tr>
+<td><code>PostToolUse</code></td>
+<td>After a tool succeeds</td>
+<td>Format, lint, check the file just written</td>
+</tr>
+<tr>
+<td><code>UserPromptSubmit</code></td>
+<td>On each user message</td>
+<td>Inject project context</td>
+</tr>
+<tr>
+<td><code>Stop</code></td>
+<td>Before the turn ends</td>
+<td>Build/test verification</td>
+</tr>
+<tr>
+<td><code>SubagentStop</code></td>
+<td>When a subagent finishes</td>
+<td>Validate a subagent's output</td>
+</tr>
+<tr>
+<td><code>SessionStart</code></td>
+<td>Session begins</td>
+<td>Environment setup, load state</td>
+</tr>
+<tr>
+<td><code>SessionEnd</code></td>
+<td>Session ends</td>
+<td>Cleanup</td>
+</tr>
+<tr>
+<td><code>PreCompact</code></td>
+<td>Before context compaction</td>
+<td>Persist state that must survive</td>
+</tr>
+</tbody>
+</table>
+<p><code>PreToolUse</code>, <code>PostToolUse</code>, and <code>Stop</code> cover almost every practical need.</p>
+<hr />
+<h2 id="3-the-exit-code-contract">3. The exit-code contract</h2>
+<p>This is the whole interface:</p>
+<table>
+<thead>
+<tr>
+<th>Exit</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0</code></td>
+<td>Pass. stdout goes to the transcript.</td>
+</tr>
+<tr>
+<td><code>2</code></td>
+<td><strong>Block.</strong> stderr is fed back to the model as the reason.</td>
+</tr>
+<tr>
+<td>other</td>
+<td>Non-blocking error, surfaced to the user.</td>
+</tr>
+</tbody>
+</table>
+<p>Exit 2 is what makes hooks valuable: the model reads the failure and fixes it
+without the user having to notice, let alone intervene.</p>
+<pre><code class="language-bash"># The message on stderr IS the instruction the model acts on.
+# Say what is wrong AND what to do instead.
+echo &quot;BLOCKED: CLAUDE.md is generated from SKILL.md.&quot; &gt;&amp;2
+echo &quot;Edit SKILL.md, then run ./scripts/sync-mirrors.sh&quot; &gt;&amp;2
+exit 2
+</code></pre>
+<p>A blocking message that only says "not allowed" wastes the round trip. Every
+exit-2 message names the fix.</p>
+<p>Hooks receive JSON on stdin — <code>tool_name</code>, <code>tool_input</code>, <code>cwd</code>, <code>session_id</code>,
+and for <code>PostToolUse</code> also <code>tool_response</code>. Parse it rather than guessing:</p>
+<pre><code class="language-bash">INPUT=&quot;$(cat)&quot;
+FILE_PATH=&quot;$(printf '%s' &quot;$INPUT&quot; | python3 -c '
+import json, sys
+print(json.load(sys.stdin).get(&quot;tool_input&quot;, {}).get(&quot;file_path&quot;, &quot;&quot;))
+')&quot;
+</code></pre>
+<hr />
+<h2 id="4-configuration">4. Configuration</h2>
+<pre><code class="language-json">{
+  &quot;hooks&quot;: {
+    &quot;PostToolUse&quot;: [
+      {
+        &quot;matcher&quot;: &quot;Edit|Write|MultiEdit&quot;,
+        &quot;hooks&quot;: [
+          {
+            &quot;type&quot;: &quot;command&quot;,
+            &quot;command&quot;: &quot;\&quot;$CLAUDE_PROJECT_DIR\&quot;/.claude/hooks/swift-format.sh&quot;,
+            &quot;timeout&quot;: 30
+          }
+        ]
+      }
+    ]
+  }
+}
+</code></pre>
+<ul>
+<li><code>matcher</code> is a regex over the tool name. Omit it to match every invocation of
+  the event.</li>
+<li>Always use <code>$CLAUDE_PROJECT_DIR</code> for paths — a relative path breaks the moment
+  the working directory differs.</li>
+<li>Set a <code>timeout</code>. A hook that hangs blocks the session.</li>
+</ul>
+<hr />
+<h2 id="5-this-repositorys-hooks">5. This repository's hooks</h2>
+<p>Wired in <code>.claude/settings.json</code>, implemented in <code>scripts/hooks/</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Hook</th>
+<th>Event</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>guard-generated-files.sh</code></td>
+<td>PreToolUse</td>
+<td>Denies edits to the 24 generated mirror files, points at <code>SKILL.md</code></td>
+</tr>
+<tr>
+<td><code>sync-mirrors-on-edit.sh</code></td>
+<td>PostToolUse</td>
+<td>Regenerates all mirrors whenever <code>SKILL.md</code> changes</td>
+</tr>
+<tr>
+<td><code>verify-repo.sh</code></td>
+<td>Stop</td>
+<td>Runs the CI checks — mirror sync, frontmatter, doc references, subagent frontmatter</td>
+</tr>
+</tbody>
+</table>
+<p>Together these make an entire class of mistake impossible rather than merely
+discouraged: a hand-edited mirror is blocked, a forgotten sync is automatic, and
+a broken doc reference cannot survive the end of a turn.</p>
+<hr />
+<h2 id="6-hooks-for-ios-projects">6. Hooks for iOS projects</h2>
+<p>Drop-in templates live in <code>templates/hooks/</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Hook</th>
+<th>Event</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>swift-format.sh</code></td>
+<td>PostToolUse</td>
+<td>SwiftFormat + SwiftLint autocorrect on the edited file</td>
+</tr>
+<tr>
+<td><code>forbid-antipatterns.sh</code></td>
+<td>PostToolUse</td>
+<td>Blocks <code>SKILL.md</code>'s banned patterns with line numbers and the fix</td>
+</tr>
+<tr>
+<td><code>build-check.sh</code></td>
+<td>Stop</td>
+<td>Builds (and tests) before the turn ends</td>
+</tr>
+</tbody>
+</table>
+<p><code>forbid-antipatterns.sh</code> catches, among others: <code>DispatchQueue.main.async</code>,
+<code>Task.detached</code>, <code>@Observable</code> without <code>@MainActor</code>, empty <code>catch</code>, <code>try!</code>,
+<code>NavigationView</code>, <code>AnyView</code>, fixed font sizes, live-implementation default
+arguments, <code>print()</code>, and a type named <code>Task</code>. Test and mock files are exempt
+from the app-code-only rules.</p>
+<p>Installation is in <code>templates/hooks/README.md</code>.</p>
+<hr />
+<h2 id="7-design-rules">7. Design rules</h2>
+<p><strong>Fail fast, and say what to do.</strong> A hook that blocks without naming the fix
+costs a round trip and teaches nothing.</p>
+<p><strong>Be conservative about blocking.</strong> A false positive on exit 2 stops legitimate
+work. When a rule has real exceptions, either exempt them by path (as
+<code>forbid-antipatterns.sh</code> does for test and mock files) or downgrade to a warning
+on exit 0.</p>
+<p><strong>Keep them fast.</strong> <code>PostToolUse</code> runs on every edit. Check the single file that
+changed, never the whole tree.</p>
+<p><strong>Degrade gracefully.</strong> A missing formatter or absent toolchain is not a failure
+— exit 0 and say the check was skipped. <code>build-check.sh</code> prints <code>UNVERIFIED</code>
+rather than implying a build that never ran, which keeps it honest under the
+evidence contract in <code>verification.md</code>.</p>
+<p><strong>Never let a hook fabricate a pass.</strong> A check that cannot run reports that it
+could not run. Silence reads as success and is the one failure mode that makes
+the whole layer untrustworthy.</p>
+<hr />
+<h2 id="8-anti-patterns">8. Anti-patterns</h2>
+<pre><code># 1. Using a reviewer subagent for what a grep decides.
+-&gt; Tokens spent on something free and deterministic.
+
+# 2. Blocking without naming the fix.
+echo &quot;Not allowed&quot; &gt;&amp;2; exit 2
+-&gt; The model does not know what to do next.
+
+# 3. A PostToolUse hook that scans the whole repo.
+-&gt; Runs on every edit. Check only the changed file.
+
+# 4. Treating a missing tool as a failure.
+swiftformat ... || exit 2
+-&gt; The project may not use it. Exit 0 and skip.
+
+# 5. A hook with no timeout.
+-&gt; One hang blocks the session.
+
+# 6. Relative paths in the command.
+&quot;command&quot;: &quot;./hooks/check.sh&quot;
+-&gt; Breaks whenever cwd differs. Use $CLAUDE_PROJECT_DIR.
+
+# 7. A check that silently passes when it could not run.
+-&gt; Reports success for work nobody verified.
+
+# 8. Enforcing style opinions with exit 2.
+-&gt; Reserve blocking for correctness. Formatting is auto-fixed, not blocked.
+</code></pre>
+<hr />
+<h2 id="checklist-for-a-new-hook">Checklist for a new hook</h2>
+<ul>
+<li>[ ] The rule is genuinely deterministic — no judgment required.</li>
+<li>[ ] It checks only what changed, not the whole tree.</li>
+<li>[ ] Exit 2 messages name both the problem and the fix.</li>
+<li>[ ] Legitimate exceptions are exempted by path, not by weakening the rule.</li>
+<li>[ ] A missing tool or toolchain exits 0 and says the check was skipped.</li>
+<li>[ ] A <code>timeout</code> is set.</li>
+<li>[ ] The command uses <code>$CLAUDE_PROJECT_DIR</code>.</li>
+<li>[ ] It has been run against both a passing and a failing input.</li>
+</ul></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

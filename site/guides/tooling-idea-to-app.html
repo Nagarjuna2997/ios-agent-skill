@@ -1,0 +1,40 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>From an Idea to a Running Apple App — iOS Agent Skill</title><meta name="description" content="Repository guidance for From an Idea to a Running Apple App. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-idea-to-app.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="From an Idea to a Running Apple App"><meta property="og:description" content="Repository guidance for From an Idea to a Running Apple App. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-idea-to-app.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "From an Idea to a Running Apple App", "description": "Repository guidance for From an Idea to a Running Apple App. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-idea-to-app.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Tooling · Reference guide</p><h1>From an Idea to a Running Apple App</h1><p class="lead">Repository guidance for From an Idea to a Running Apple App. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/tooling/idea-to-app.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#context">Context</a></li>
+<li><a href="#pattern">Pattern</a><ul>
+<li><a href="#one-command-to-start">One command to start</a></li>
+<li><a href="#build-and-see-it">Build and see it</a></li>
+<li><a href="#finish-the-app-identity">Finish the app identity</a></li>
+<li><a href="#client-capabilities">Client capabilities</a></li>
+</ul>
+</li>
+<li><a href="#anti-patterns">Anti-Patterns</a></li>
+</ul>
+</div>
+</aside><h2 id="context">Context</h2>
+<p>Use this when the user gives an app description and wants the coding agent to implement it. The CLI creates a project starting point; the agent implements the requested features and verifies them with Xcode.</p>
+<h2 id="pattern">Pattern</h2>
+<h3 id="one-command-to-start">One command to start</h3>
+<pre><code class="language-bash">npx -y @nagarjuna2002/ios-agent@0.2.0 new MyApp --brief &quot;A reading tracker with offline reading sessions and weekly goals&quot; --xcodegen
+</code></pre>
+<p>The output includes SwiftUI source, an editable implementation brief, an XcodeGen project specification, and separate SVG icon layers. It preserves an existing nonempty project unless explicitly instructed; even force mode does not silently overwrite generated-file collisions.</p>
+<p>Open the new folder in Claude Code, Codex, or Gemini CLI with this skill installed. Ask the agent to implement <code>App/APP_BRIEF.md</code> through build and visual verification. It should translate the idea into screens, data models, persistence, user flows, error states, and a small testable first release. Build the actual requested product instead of stopping at the starter screen.</p>
+<h3 id="build-and-see-it">Build and see it</h3>
+<p>On macOS with Xcode and XcodeGen installed:</p>
+<pre><code class="language-bash">cd MyApp/App
+xcodegen generate --spec project.yml
+open MyApp.xcodeproj
+xcodebuild -project MyApp.xcodeproj -scheme MyApp -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath ../.ios-agent/build build CODE_SIGNING_ALLOWED=NO
+</code></pre>
+<p>Use Xcode’s destination list for simulator tests. The optional simulator MCP can help run and inspect the app; it requires local Xcode and is not exposed by the public knowledge server. Keep account credentials, service configuration and signing identities in the user’s environment.</p>
+<h3 id="finish-the-app-identity">Finish the app identity</h3>
+<p>Customize the generated background, foreground and accent SVGs in the app’s IconLayers folder. Follow <a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/design/icon-composer.md">Icon Composer</a> to create a native icon with editable groups and appearance variants, then assign it to the target and verify it in a build. The starter layers are intentionally generic artwork.</p>
+<h3 id="client-capabilities">Client capabilities</h3>
+<p>Claude Code, Codex and Gemini CLI can perform local implementation when granted filesystem/terminal access. The portable ChatGPT plugin supplies the same workflow and bundled references. ChatGPT without a coding environment can prepare a plan and code artifacts; a local macOS environment must perform iOS simulator builds. A remote MCP knowledge endpoint supplies public reference tools and never gets access to the user’s local source tree.</p>
+<h2 id="anti-patterns">Anti-Patterns</h2>
+<ul>
+<li>Calling the app complete just because scaffolding succeeded.</li>
+<li>Claiming automatic App Store publication, signing, backend provisioning or native icon creation.</li>
+<li>Replacing an existing app’s architecture with the starter scaffold.</li>
+<li>Presenting mock services or placeholder test assertions as production features.</li>
+</ul></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

@@ -1,0 +1,164 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Translation — iOS Agent Skill</title><meta name="description" content="Repository guidance for Translation. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-ml-translation.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="Translation"><meta property="og:description" content="Repository guidance for Translation. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-ml-translation.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "Translation", "description": "Repository guidance for Translation. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-ml-translation.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">AI and Machine Learning · Reference guide</p><h1>Translation</h1><p class="lead">Repository guidance for Translation. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/frameworks/ml/translation.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#context">Context</a></li>
+<li><a href="#choosing-the-api">Choosing the API</a></li>
+<li><a href="#system-translation-ui">System translation UI</a></li>
+<li><a href="#custom-translation-flow">Custom translation flow</a></li>
+<li><a href="#language-availability">Language availability</a></li>
+<li><a href="#product-and-privacy-rules">Product and privacy rules</a></li>
+<li><a href="#verification-checklist">Verification checklist</a></li>
+<li><a href="#source-anchor">Source anchor</a></li>
+</ul>
+</div>
+</aside><h2 id="context">Context</h2>
+<p>Load this when an app needs in-app text translation, system translation UI, custom translation flows, language-pair availability checks, model download handling, or multilingual user-generated content workflows.</p>
+<p>Use the Translation framework for text translation. Use Natural Language for text analysis, Speech for speech-to-text, and Foundation Models only when translation is part of a broader generative workflow that still needs review.</p>
+<h2 id="choosing-the-api">Choosing the API</h2>
+<table>
+<thead>
+<tr>
+<th>Need</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Simple user-facing translation popover</td>
+<td><code>translationPresentation(...)</code></td>
+</tr>
+<tr>
+<td>Replace selected text with a translation</td>
+<td><code>translationPresentation(..., replacementAction:)</code></td>
+</tr>
+<tr>
+<td>Custom UI with one or more translated strings</td>
+<td><code>translationTask(...)</code> and <code>TranslationSession</code></td>
+</tr>
+<tr>
+<td>Batch translation</td>
+<td><code>TranslationSession</code> batch APIs</td>
+</tr>
+<tr>
+<td>Check if languages are supported/installed</td>
+<td><code>LanguageAvailability</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="system-translation-ui">System translation UI</h2>
+<p>Use the system presentation when the product needs a familiar, lightweight translation affordance and does not need custom layout.</p>
+<pre><code class="language-swift">import SwiftUI
+import Translation
+
+struct MessageRow: View {
+    let text: String
+    @State private var showingTranslation = false
+
+    var body: some View {
+        Text(text)
+            .textSelection(.enabled)
+            .contextMenu {
+                Button(&quot;Translate&quot;) {
+                    showingTranslation = true
+                }
+            }
+            .translationPresentation(
+                isPresented: $showingTranslation,
+                text: text
+            )
+    }
+}
+</code></pre>
+<p>Rules:</p>
+<ul>
+<li>Attach the presentation to the view that owns the source text.</li>
+<li>Do not present translation for empty or already-redacted private text.</li>
+<li>Keep the original text available so users can compare.</li>
+</ul>
+<h2 id="custom-translation-flow">Custom translation flow</h2>
+<p>Use a custom session when the app owns the layout, wants batch translation, or needs to store a translated draft.</p>
+<pre><code class="language-swift">import SwiftUI
+import Translation
+
+struct TranslationDraftView: View {
+    let sourceText: String
+    let source: Locale.Language?
+    let target: Locale.Language?
+
+    @State private var translatedText = &quot;&quot;
+    @State private var errorMessage: String?
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            Text(sourceText)
+            Divider()
+            Text(translatedText.isEmpty ? &quot;Translation unavailable&quot; : translatedText)
+        }
+        .translationTask(source: source, target: target) { session in
+            do {
+                let response = try await session.translate(sourceText)
+                translatedText = response.targetText
+            } catch is CancellationError {
+                return
+            } catch {
+                errorMessage = error.localizedDescription
+            }
+        }
+    }
+}
+</code></pre>
+<p>Rules:</p>
+<ul>
+<li>Keep translation work tied to view/task lifetime.</li>
+<li>Cancel or let SwiftUI cancel translation when inputs change.</li>
+<li>Show source and target language when user trust matters.</li>
+<li>Do not silently replace legal, medical, financial, or safety-critical text.</li>
+</ul>
+<h2 id="language-availability">Language availability</h2>
+<p>Check availability before offering a custom translation control.</p>
+<pre><code class="language-swift">import Translation
+
+func translationIsSupported(
+    from source: Locale.Language,
+    to target: Locale.Language
+) async -&gt; Bool {
+    let availability = LanguageAvailability()
+    let status = await availability.status(from: source, to: target)
+
+    switch status {
+    case .installed, .supported:
+        return true
+    case .unsupported:
+        return false
+    @unknown default:
+        return false
+    }
+}
+</code></pre>
+<p>Rules:</p>
+<ul>
+<li><code>supported</code> may still require a model download before use.</li>
+<li>Treat unsupported language pairs as a normal UI state.</li>
+<li>Test source-language auto-detection separately from explicit source language.</li>
+</ul>
+<h2 id="product-and-privacy-rules">Product and privacy rules</h2>
+<ul>
+<li>Explain when translated text is generated by the system.</li>
+<li>Let users inspect the original text.</li>
+<li>Do not use translation as a hidden moderation, compliance, or policy decision.</li>
+<li>Avoid storing translations unless the product needs persistence.</li>
+<li>If stored, mark the translated language and source text version.</li>
+<li>Handle mixed-language text, names, code snippets, and domain terms carefully.</li>
+</ul>
+<h2 id="verification-checklist">Verification checklist</h2>
+<ul>
+<li>[ ] Source and target languages are explicit or intentionally auto-detected.</li>
+<li>[ ] <code>LanguageAvailability</code> is checked for custom flows.</li>
+<li>[ ] Unsupported language pairs have a clear fallback.</li>
+<li>[ ] Model download or permission prompts are not surprising.</li>
+<li>[ ] Cancellation is tested when text/language changes.</li>
+<li>[ ] Original text remains reachable.</li>
+<li>[ ] Localized UI labels fit at accessibility text sizes.</li>
+<li>[ ] Privacy copy matches the actual data path.</li>
+</ul>
+<h2 id="source-anchor">Source anchor</h2>
+<p>Use only to verify API signatures and availability: <a href="https://developer.apple.com/documentation/translation">https://developer.apple.com/documentation/translation</a></p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

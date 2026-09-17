@@ -1,0 +1,135 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Sound Analysis — iOS Agent Skill</title><meta name="description" content="Repository guidance for Sound Analysis. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-ml-sound-analysis.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="Sound Analysis"><meta property="og:description" content="Repository guidance for Sound Analysis. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-ml-sound-analysis.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "Sound Analysis", "description": "Repository guidance for Sound Analysis. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-ml-sound-analysis.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">AI and Machine Learning · Reference guide</p><h1>Sound Analysis</h1><p class="lead">Repository guidance for Sound Analysis. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/frameworks/ml/sound-analysis.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#context">Context</a></li>
+<li><a href="#choosing-the-analyzer">Choosing the analyzer</a></li>
+<li><a href="#audio-file-analysis">Audio file analysis</a></li>
+<li><a href="#live-audio-stream-analysis">Live audio stream analysis</a></li>
+<li><a href="#custom-sound-classifiers">Custom sound classifiers</a></li>
+<li><a href="#privacy-and-ux">Privacy and UX</a></li>
+<li><a href="#verification-checklist">Verification checklist</a></li>
+<li><a href="#source-anchor">Source anchor</a></li>
+</ul>
+</div>
+</aside><h2 id="context">Context</h2>
+<p>Load this when an app needs sound classification, audio-event detection, built-in sound labels, custom Core ML sound classifiers, live microphone sound analysis, file-based audio tagging, or sound timestamps.</p>
+<p>Use Sound Analysis for non-speech sounds. Use Speech for spoken-word transcription, ShazamKit for music recognition/matching, AVFoundation for capture/playback, and Core ML when the app owns a model that is not routed through <code>SNClassifySoundRequest</code>.</p>
+<h2 id="choosing-the-analyzer">Choosing the analyzer</h2>
+<table>
+<thead>
+<tr>
+<th>Need</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Analyze an existing audio file</td>
+<td><code>SNAudioFileAnalyzer</code></td>
+</tr>
+<tr>
+<td>Analyze microphone or live stream buffers</td>
+<td><code>SNAudioStreamAnalyzer</code></td>
+</tr>
+<tr>
+<td>Use Apple's built-in sound classifier</td>
+<td><code>SNClassifySoundRequest(classifierIdentifier:)</code></td>
+</tr>
+<tr>
+<td>Use a custom sound classifier</td>
+<td><code>SNClassifySoundRequest(mlModel:)</code></td>
+</tr>
+<tr>
+<td>Receive results</td>
+<td><code>SNResultsObserving</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="audio-file-analysis">Audio file analysis</h2>
+<pre><code class="language-swift">import Foundation
+import SoundAnalysis
+
+final class SoundFileClassifier {
+    private var observer: SoundResultsObserver?
+
+    func classifyFile(at url: URL) throws {
+        let request = try SNClassifySoundRequest(classifierIdentifier: .version1)
+        let analyzer = try SNAudioFileAnalyzer(url: url)
+
+        let observer = SoundResultsObserver()
+        self.observer = observer
+
+        try analyzer.add(request, withObserver: observer)
+        analyzer.analyze()
+    }
+}
+
+final class SoundResultsObserver: NSObject, SNResultsObserving {
+    func request(_ request: SNRequest, didProduce result: SNResult) {
+        guard let result = result as? SNClassificationResult,
+              let best = result.classifications.first else {
+            return
+        }
+
+        let time = result.timeRange.start.seconds
+        print(&quot;Sound at \(time): \(best.identifier), confidence \(best.confidence)&quot;)
+    }
+
+    func request(_ request: SNRequest, didFailWithError error: Error) {
+        print(&quot;Sound analysis failed: \(error)&quot;)
+    }
+
+    func requestDidComplete(_ request: SNRequest) {
+        print(&quot;Sound analysis complete&quot;)
+    }
+}
+</code></pre>
+<p>Important: keep a strong reference to the observer. Sound analyzers do not keep observers alive for you.</p>
+<h2 id="live-audio-stream-analysis">Live audio stream analysis</h2>
+<p>For microphone analysis:</p>
+<ol>
+<li>Request microphone permission with clear purpose text.</li>
+<li>Configure <code>AVAudioEngine</code>.</li>
+<li>Create <code>SNAudioStreamAnalyzer</code> with the input format.</li>
+<li>Add <code>SNClassifySoundRequest</code>.</li>
+<li>Feed audio buffers from the audio tap.</li>
+<li>Stop the engine and remove taps when the feature ends.</li>
+</ol>
+<p>Rules:</p>
+<ul>
+<li>Keep audio work off the main actor.</li>
+<li>Avoid retaining raw audio unless the product explicitly needs it.</li>
+<li>Debounce classifications before updating UI.</li>
+<li>Treat low-confidence labels as suggestions, not facts.</li>
+</ul>
+<h2 id="custom-sound-classifiers">Custom sound classifiers</h2>
+<p>Use a custom Core ML sound classifier when built-in labels are not enough.</p>
+<p>Rules:</p>
+<ul>
+<li>Train with representative audio from the real environment.</li>
+<li>Keep train/test splits clean.</li>
+<li>Validate noisy rooms, silence, overlapping sounds, and device microphones.</li>
+<li>Version the model and labels together.</li>
+<li>Keep confidence thresholds product-specific.</li>
+</ul>
+<h2 id="privacy-and-ux">Privacy and UX</h2>
+<ul>
+<li>Explain microphone use before requesting permission.</li>
+<li>Show when live listening is active.</li>
+<li>Provide a clear stop control.</li>
+<li>Avoid background listening unless the product, entitlement, and policy story are explicit.</li>
+<li>Do not upload raw audio by default.</li>
+<li>Tell users when results are approximate.</li>
+</ul>
+<h2 id="verification-checklist">Verification checklist</h2>
+<ul>
+<li>[ ] Microphone permission states are tested.</li>
+<li>[ ] File-based and stream-based paths are tested separately.</li>
+<li>[ ] Observer lifetime is strong and documented.</li>
+<li>[ ] Confidence threshold is defined.</li>
+<li>[ ] Silence, noise, and overlapping sounds are tested.</li>
+<li>[ ] Audio engine stop/removal is tested.</li>
+<li>[ ] Memory and battery are measured for long sessions.</li>
+<li>[ ] Privacy copy matches the audio data path.</li>
+</ul>
+<h2 id="source-anchor">Source anchor</h2>
+<p>Use only to verify API signatures and availability: <a href="https://developer.apple.com/documentation/soundanalysis">https://developer.apple.com/documentation/soundanalysis</a></p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

@@ -1,0 +1,668 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NaturalLanguage Framework -- Complete Guide for Text Processing and NLP — iOS Agent Skill</title><meta name="description" content="Repository guidance for Natural Language. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-ml-natural-language.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="NaturalLanguage Framework -- Complete Guide for Text Processing and NLP"><meta property="og:description" content="Repository guidance for Natural Language. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-ml-natural-language.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "NaturalLanguage Framework -- Complete Guide for Text Processing and NLP", "description": "Repository guidance for Natural Language. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-ml-natural-language.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">AI and Machine Learning · Reference guide</p><h1>NaturalLanguage Framework -- Complete Guide for Text Processing and NLP</h1><p class="lead">Repository guidance for Natural Language. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/frameworks/ml/natural-language.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#1-tokenization-nltokenizer">1. Tokenization -- NLTokenizer</a><ul>
+<li><a href="#tokenizing-with-language-hint">Tokenizing with Language Hint</a></li>
+</ul>
+</li>
+<li><a href="#2-part-of-speech-tagging-nltagger">2. Part-of-Speech Tagging -- NLTagger</a></li>
+<li><a href="#3-named-entity-recognition">3. Named Entity Recognition</a></li>
+<li><a href="#4-lemmatization">4. Lemmatization</a></li>
+<li><a href="#5-language-identification-nllanguagerecognizer">5. Language Identification -- NLLanguageRecognizer</a></li>
+<li><a href="#6-sentiment-analysis">6. Sentiment Analysis</a><ul>
+<li><a href="#sentence-level-sentiment-analysis">Sentence-Level Sentiment Analysis</a></li>
+</ul>
+</li>
+<li><a href="#7-text-embeddings-nlembedding">7. Text Embeddings -- NLEmbedding</a><ul>
+<li><a href="#word-embeddings">Word Embeddings</a></li>
+<li><a href="#sentence-embeddings">Sentence Embeddings</a></li>
+</ul>
+</li>
+<li><a href="#8-custom-nlmodel-with-create-ml">8. Custom NLModel with Create ML</a></li>
+<li><a href="#9-complete-text-analysis-pipeline">9. Complete Text Analysis Pipeline</a></li>
+<li><a href="#quick-reference">Quick Reference</a></li>
+</ul>
+</div>
+</aside><h2 id="overview">Overview</h2>
+<p>The NaturalLanguage framework provides on-device natural language processing for tokenization, language identification, named entity recognition, part-of-speech tagging, sentiment analysis, lemmatization, and text embeddings. All processing runs locally with no network dependency. Every code example below compiles and follows production best practices.</p>
+<hr />
+<h2 id="1-tokenization-nltokenizer">1. Tokenization -- NLTokenizer</h2>
+<p>Split text into words, sentences, or paragraphs with locale-aware boundary detection.</p>
+<pre><code class="language-swift">import NaturalLanguage
+
+func tokenize(_ text: String, unit: NLTokenUnit) -&gt; [String] {
+    let tokenizer = NLTokenizer(unit: unit)
+    tokenizer.string = text
+
+    var tokens: [String] = []
+    tokenizer.enumerateTokens(in: text.startIndex..&lt;text.endIndex) { range, _ in
+        tokens.append(String(text[range]))
+        return true  // continue enumeration
+    }
+    return tokens
+}
+
+// Usage
+let sentence = &quot;The quick brown fox jumps over the lazy dog. It was a sunny day.&quot;
+
+let words = tokenize(sentence, unit: .word)
+// [&quot;The&quot;, &quot;quick&quot;, &quot;brown&quot;, &quot;fox&quot;, &quot;jumps&quot;, &quot;over&quot;, &quot;the&quot;, &quot;lazy&quot;, &quot;dog&quot;, &quot;It&quot;, &quot;was&quot;, &quot;a&quot;, &quot;sunny&quot;, &quot;day&quot;]
+
+let sentences = tokenize(sentence, unit: .sentence)
+// [&quot;The quick brown fox jumps over the lazy dog. &quot;, &quot;It was a sunny day.&quot;]
+
+let paragraphs = tokenize(&quot;First paragraph.\n\nSecond paragraph.&quot;, unit: .paragraph)
+// [&quot;First paragraph.\n\n&quot;, &quot;Second paragraph.&quot;]
+</code></pre>
+<h3 id="tokenizing-with-language-hint">Tokenizing with Language Hint</h3>
+<pre><code class="language-swift">import NaturalLanguage
+
+func tokenizeWithLanguage(_ text: String, language: NLLanguage) -&gt; [String] {
+    let tokenizer = NLTokenizer(unit: .word)
+    tokenizer.string = text
+    tokenizer.setLanguage(language)
+
+    var tokens: [String] = []
+    tokenizer.enumerateTokens(in: text.startIndex..&lt;text.endIndex) { range, attributes in
+        let token = String(text[range])
+        tokens.append(token)
+        return true
+    }
+    return tokens
+}
+
+// Japanese text tokenization
+let japaneseTokens = tokenizeWithLanguage(&quot;東京は日本の首都です&quot;, language: .japanese)
+// Properly segments into Japanese word boundaries
+
+// Chinese text tokenization
+let chineseTokens = tokenizeWithLanguage(&quot;北京是中国的首都&quot;, language: .simplifiedChinese)
+</code></pre>
+<hr />
+<h2 id="2-part-of-speech-tagging-nltagger">2. Part-of-Speech Tagging -- NLTagger</h2>
+<p>Identify the grammatical role of each word: noun, verb, adjective, etc.</p>
+<pre><code class="language-swift">import NaturalLanguage
+
+struct TaggedWord {
+    let word: String
+    let tag: NLTag?
+    let tagName: String
+}
+
+func tagPartsOfSpeech(_ text: String) -&gt; [TaggedWord] {
+    let tagger = NLTagger(tagSchemes: [.lexicalClass])
+    tagger.string = text
+
+    var results: [TaggedWord] = []
+
+    tagger.enumerateTags(
+        in: text.startIndex..&lt;text.endIndex,
+        unit: .word,
+        scheme: .lexicalClass,
+        options: [.omitWhitespace, .omitPunctuation]
+    ) { tag, range in
+        let word = String(text[range])
+        let tagName: String = switch tag {
+        case .noun:              &quot;Noun&quot;
+        case .verb:              &quot;Verb&quot;
+        case .adjective:         &quot;Adjective&quot;
+        case .adverb:            &quot;Adverb&quot;
+        case .pronoun:           &quot;Pronoun&quot;
+        case .determiner:        &quot;Determiner&quot;
+        case .particle:          &quot;Particle&quot;
+        case .preposition:       &quot;Preposition&quot;
+        case .conjunction:       &quot;Conjunction&quot;
+        case .interjection:      &quot;Interjection&quot;
+        case .number:            &quot;Number&quot;
+        default:                 tag?.rawValue ?? &quot;Unknown&quot;
+        }
+        results.append(TaggedWord(word: word, tag: tag, tagName: tagName))
+        return true
+    }
+
+    return results
+}
+
+// Usage
+let tagged = tagPartsOfSpeech(&quot;The quick brown fox jumps over the lazy dog&quot;)
+for item in tagged {
+    print(&quot;\(item.word): \(item.tagName)&quot;)
+}
+// The: Determiner
+// quick: Adjective
+// brown: Adjective
+// fox: Noun
+// jumps: Verb
+// over: Preposition
+// the: Determiner
+// lazy: Adjective
+// dog: Noun
+</code></pre>
+<hr />
+<h2 id="3-named-entity-recognition">3. Named Entity Recognition</h2>
+<p>Identify people, places, organizations, and other named entities.</p>
+<pre><code class="language-swift">import NaturalLanguage
+
+struct NamedEntity {
+    let text: String
+    let type: String
+}
+
+func extractNamedEntities(_ text: String) -&gt; [NamedEntity] {
+    let tagger = NLTagger(tagSchemes: [.nameType])
+    tagger.string = text
+
+    var entities: [NamedEntity] = []
+
+    tagger.enumerateTags(
+        in: text.startIndex..&lt;text.endIndex,
+        unit: .word,
+        scheme: .nameType,
+        options: [.omitWhitespace, .omitPunctuation, .joinNames]
+    ) { tag, range in
+        guard let tag else { return true }
+
+        let entityText = String(text[range])
+        let entityType: String = switch tag {
+        case .personalName:       &quot;Person&quot;
+        case .placeName:          &quot;Place&quot;
+        case .organizationName:   &quot;Organization&quot;
+        default:                  tag.rawValue
+        }
+
+        entities.append(NamedEntity(text: entityText, type: entityType))
+        return true
+    }
+
+    return entities
+}
+
+// Usage
+let entities = extractNamedEntities(&quot;Tim Cook announced the new iPhone at Apple Park in Cupertino.&quot;)
+// [(&quot;Tim Cook&quot;, &quot;Person&quot;), (&quot;iPhone&quot;, &quot;Organization&quot;), (&quot;Apple Park&quot;, &quot;Organization&quot;), (&quot;Cupertino&quot;, &quot;Place&quot;)]
+</code></pre>
+<hr />
+<h2 id="4-lemmatization">4. Lemmatization</h2>
+<p>Reduce words to their base (dictionary) form.</p>
+<pre><code class="language-swift">import NaturalLanguage
+
+func lemmatize(_ text: String) -&gt; [(word: String, lemma: String)] {
+    let tagger = NLTagger(tagSchemes: [.lemma])
+    tagger.string = text
+
+    var results: [(word: String, lemma: String)] = []
+
+    tagger.enumerateTags(
+        in: text.startIndex..&lt;text.endIndex,
+        unit: .word,
+        scheme: .lemma,
+        options: [.omitWhitespace, .omitPunctuation]
+    ) { tag, range in
+        let word = String(text[range])
+        let lemma = tag?.rawValue ?? word
+        results.append((word: word, lemma: lemma))
+        return true
+    }
+
+    return results
+}
+
+// Usage
+let lemmas = lemmatize(&quot;The dogs were running quickly through the forests&quot;)
+// [(&quot;dogs&quot;, &quot;dog&quot;), (&quot;were&quot;, &quot;be&quot;), (&quot;running&quot;, &quot;run&quot;), (&quot;quickly&quot;, &quot;quickly&quot;), (&quot;forests&quot;, &quot;forest&quot;)]
+</code></pre>
+<hr />
+<h2 id="5-language-identification-nllanguagerecognizer">5. Language Identification -- NLLanguageRecognizer</h2>
+<p>Detect the language of a text string or rank probable languages.</p>
+<pre><code class="language-swift">import NaturalLanguage
+
+func identifyLanguage(_ text: String) -&gt; NLLanguage? {
+    let recognizer = NLLanguageRecognizer()
+    recognizer.processString(text)
+    return recognizer.dominantLanguage
+}
+
+func rankLanguages(_ text: String, maxResults: Int = 5) -&gt; [(NLLanguage, Double)] {
+    let recognizer = NLLanguageRecognizer()
+    recognizer.processString(text)
+
+    let hypotheses = recognizer.languageHypotheses(withMaximum: maxResults)
+    return hypotheses
+        .sorted { $0.value &gt; $1.value }
+        .map { ($0.key, $0.value) }
+}
+
+// Constrain to expected languages for better accuracy
+func identifyLanguageConstrained(_ text: String, candidates: [NLLanguage]) -&gt; NLLanguage? {
+    let recognizer = NLLanguageRecognizer()
+    recognizer.languageConstraints = candidates
+    recognizer.processString(text)
+    return recognizer.dominantLanguage
+}
+
+// Usage
+let language = identifyLanguage(&quot;Bonjour, comment allez-vous?&quot;)
+// .french
+
+let ranked = rankLanguages(&quot;Das ist ein Test&quot;)
+// [(.german, 0.98), (.dutch, 0.01), ...]
+
+let constrained = identifyLanguageConstrained(
+    &quot;Ciao, come stai?&quot;,
+    candidates: [.italian, .spanish, .french]
+)
+// .italian
+</code></pre>
+<hr />
+<h2 id="6-sentiment-analysis">6. Sentiment Analysis</h2>
+<p>Determine the emotional tone of text using the built-in sentiment tagger.</p>
+<pre><code class="language-swift">import NaturalLanguage
+
+/// Returns a sentiment score between -1.0 (negative) and 1.0 (positive)
+func analyzeSentiment(_ text: String) -&gt; Double {
+    let tagger = NLTagger(tagSchemes: [.sentimentScore])
+    tagger.string = text
+
+    let (sentimentTag, _) = tagger.tag(
+        at: text.startIndex,
+        unit: .paragraph,
+        scheme: .sentimentScore
+    )
+
+    return Double(sentimentTag?.rawValue ?? &quot;0&quot;) ?? 0.0
+}
+
+enum Sentiment: String {
+    case positive, negative, neutral
+}
+
+func classifySentiment(_ text: String) -&gt; Sentiment {
+    let score = analyzeSentiment(text)
+    if score &gt; 0.1 { return .positive }
+    if score &lt; -0.1 { return .negative }
+    return .neutral
+}
+
+// Usage
+let score1 = analyzeSentiment(&quot;I absolutely love this product! It's amazing!&quot;)
+// ~0.8 (positive)
+
+let score2 = analyzeSentiment(&quot;This is terrible. Worst experience ever.&quot;)
+// ~-0.7 (negative)
+
+let score3 = analyzeSentiment(&quot;The meeting is at 3pm in the conference room.&quot;)
+// ~0.0 (neutral)
+
+let sentiment = classifySentiment(&quot;Great job on the presentation!&quot;)
+// .positive
+</code></pre>
+<h3 id="sentence-level-sentiment-analysis">Sentence-Level Sentiment Analysis</h3>
+<pre><code class="language-swift">import NaturalLanguage
+
+struct SentenceSentiment {
+    let sentence: String
+    let score: Double
+    let label: Sentiment
+}
+
+func analyzeSentimentBySentence(_ text: String) -&gt; [SentenceSentiment] {
+    // First, split into sentences
+    let sentenceTokenizer = NLTokenizer(unit: .sentence)
+    sentenceTokenizer.string = text
+
+    var results: [SentenceSentiment] = []
+
+    sentenceTokenizer.enumerateTokens(in: text.startIndex..&lt;text.endIndex) { range, _ in
+        let sentence = String(text[range]).trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !sentence.isEmpty else { return true }
+
+        let score = analyzeSentiment(sentence)
+        let label: Sentiment
+        if score &gt; 0.1 { label = .positive }
+        else if score &lt; -0.1 { label = .negative }
+        else { label = .neutral }
+
+        results.append(SentenceSentiment(sentence: sentence, score: score, label: label))
+        return true
+    }
+
+    return results
+}
+</code></pre>
+<hr />
+<h2 id="7-text-embeddings-nlembedding">7. Text Embeddings -- NLEmbedding</h2>
+<p>Compute vector representations of words and sentences for semantic similarity.</p>
+<h3 id="word-embeddings">Word Embeddings</h3>
+<pre><code class="language-swift">import NaturalLanguage
+
+func wordSimilarity(_ word1: String, _ word2: String, language: NLLanguage = .english) -&gt; Double? {
+    guard let embedding = NLEmbedding.wordEmbedding(for: language) else { return nil }
+
+    // Distance is between 0 (identical) and 2 (opposite)
+    let distance = embedding.distance(between: word1, and: word2)
+
+    // Convert to similarity (1.0 = identical, 0.0 = unrelated)
+    return 1.0 - (distance / 2.0)
+}
+
+func findNearestWords(to word: String, maxResults: Int = 10, language: NLLanguage = .english) -&gt; [(String, Double)] {
+    guard let embedding = NLEmbedding.wordEmbedding(for: language) else { return [] }
+
+    var results: [(String, Double)] = []
+    embedding.enumerateNeighbors(for: word, maximumCount: maxResults) { neighbor, distance in
+        let similarity = 1.0 - (distance / 2.0)
+        results.append((neighbor, similarity))
+        return true
+    }
+    return results
+}
+
+func wordVector(_ word: String, language: NLLanguage = .english) -&gt; [Double]? {
+    guard let embedding = NLEmbedding.wordEmbedding(for: language) else { return nil }
+    return embedding.vector(for: word)
+}
+
+// Usage
+let similarity = wordSimilarity(&quot;king&quot;, &quot;queen&quot;)
+// ~0.85 (very similar)
+
+let neighbors = findNearestWords(to: &quot;swift&quot;, maxResults: 5)
+// [(&quot;fast&quot;, 0.82), (&quot;quick&quot;, 0.78), (&quot;rapid&quot;, 0.75), ...]
+</code></pre>
+<h3 id="sentence-embeddings">Sentence Embeddings</h3>
+<pre><code class="language-swift">import NaturalLanguage
+
+@available(iOS 15.0, *)
+func sentenceSimilarity(_ sentence1: String, _ sentence2: String, language: NLLanguage = .english) -&gt; Double? {
+    guard let embedding = NLEmbedding.sentenceEmbedding(for: language) else { return nil }
+    let distance = embedding.distance(between: sentence1, and: sentence2)
+    return 1.0 - (distance / 2.0)
+}
+
+@available(iOS 15.0, *)
+func findSimilarSentences(to query: String, in candidates: [String], language: NLLanguage = .english) -&gt; [(String, Double)] {
+    guard let embedding = NLEmbedding.sentenceEmbedding(for: language) else { return [] }
+
+    return candidates.compactMap { candidate in
+        let distance = embedding.distance(between: query, and: candidate)
+        let similarity = 1.0 - (distance / 2.0)
+        return (candidate, similarity)
+    }
+    .sorted { $0.1 &gt; $1.1 }
+}
+
+// Usage
+let sim = sentenceSimilarity(
+    &quot;How is the weather today?&quot;,
+    &quot;What's the forecast for today?&quot;
+)
+// ~0.85 (semantically similar)
+
+let results = findSimilarSentences(
+    to: &quot;I need help with my account&quot;,
+    in: [
+        &quot;How do I reset my password?&quot;,
+        &quot;Where is the nearest restaurant?&quot;,
+        &quot;I want to change my profile settings&quot;,
+        &quot;What time does the store close?&quot;
+    ]
+)
+// Ranked by semantic similarity to the query
+</code></pre>
+<hr />
+<h2 id="8-custom-nlmodel-with-create-ml">8. Custom NLModel with Create ML</h2>
+<p>Train a custom text classifier and use it with NLTagger.</p>
+<pre><code class="language-swift">import NaturalLanguage
+import CoreML
+
+// Loading and using a custom NLModel (trained with Create ML)
+func loadCustomModel() throws -&gt; NLModel {
+    let modelURL = Bundle.main.url(forResource: &quot;CustomTextClassifier&quot;, withExtension: &quot;mlmodelc&quot;)!
+    return try NLModel(contentsOf: modelURL)
+}
+
+// Standalone prediction
+func classifyText(_ text: String, model: NLModel) -&gt; String? {
+    return model.predictedLabel(for: text)
+}
+
+// Prediction with confidence scores
+func classifyTextWithConfidence(_ text: String, model: NLModel) -&gt; [(String, Double)] {
+    let hypotheses = model.predictedLabelHypotheses(for: text, maximumCount: 5)
+    return hypotheses
+        .sorted { $0.value &gt; $1.value }
+        .map { ($0.key, $0.value) }
+}
+
+// Using a custom model with NLTagger for per-token classification
+func tagWithCustomModel(_ text: String, model: NLModel) -&gt; [(String, String?)] {
+    let tagger = NLTagger(tagSchemes: [.nameType])
+    tagger.string = text
+    tagger.setModels([model], forTagScheme: .nameType)
+
+    var results: [(String, String?)] = []
+
+    tagger.enumerateTags(
+        in: text.startIndex..&lt;text.endIndex,
+        unit: .word,
+        scheme: .nameType,
+        options: [.omitWhitespace, .omitPunctuation]
+    ) { tag, range in
+        let word = String(text[range])
+        results.append((word, tag?.rawValue))
+        return true
+    }
+
+    return results
+}
+</code></pre>
+<hr />
+<h2 id="9-complete-text-analysis-pipeline">9. Complete Text Analysis Pipeline</h2>
+<p>A full SwiftUI view combining multiple NaturalLanguage features.</p>
+<pre><code class="language-swift">import SwiftUI
+import NaturalLanguage
+
+@Observable
+final class TextAnalysisViewModel {
+    var inputText = &quot;&quot;
+    var detectedLanguage = &quot;&quot;
+    var sentimentScore = 0.0
+    var sentimentLabel = &quot;&quot;
+    var wordCount = 0
+    var sentenceCount = 0
+    var entities: [NamedEntity] = []
+    var posTagged: [TaggedWord] = []
+
+    func analyze() {
+        guard !inputText.isEmpty else { return }
+
+        // Language detection
+        let recognizer = NLLanguageRecognizer()
+        recognizer.processString(inputText)
+        detectedLanguage = recognizer.dominantLanguage?.rawValue ?? &quot;Unknown&quot;
+
+        // Sentiment
+        let sentimentTagger = NLTagger(tagSchemes: [.sentimentScore])
+        sentimentTagger.string = inputText
+        let (tag, _) = sentimentTagger.tag(at: inputText.startIndex, unit: .paragraph, scheme: .sentimentScore)
+        sentimentScore = Double(tag?.rawValue ?? &quot;0&quot;) ?? 0.0
+        if sentimentScore &gt; 0.1 { sentimentLabel = &quot;Positive&quot; }
+        else if sentimentScore &lt; -0.1 { sentimentLabel = &quot;Negative&quot; }
+        else { sentimentLabel = &quot;Neutral&quot; }
+
+        // Tokenization counts
+        let wordTokenizer = NLTokenizer(unit: .word)
+        wordTokenizer.string = inputText
+        wordCount = 0
+        wordTokenizer.enumerateTokens(in: inputText.startIndex..&lt;inputText.endIndex) { _, _ in
+            wordCount += 1
+            return true
+        }
+
+        let sentenceTokenizer = NLTokenizer(unit: .sentence)
+        sentenceTokenizer.string = inputText
+        sentenceCount = 0
+        sentenceTokenizer.enumerateTokens(in: inputText.startIndex..&lt;inputText.endIndex) { _, _ in
+            sentenceCount += 1
+            return true
+        }
+
+        // Named entities
+        entities = extractNamedEntities(inputText)
+
+        // POS tagging (first 20 words)
+        posTagged = Array(tagPartsOfSpeech(inputText).prefix(20))
+    }
+}
+
+struct TextAnalysisView: View {
+    @State private var viewModel = TextAnalysisViewModel()
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
+                    TextEditor(text: $viewModel.inputText)
+                        .frame(minHeight: 120)
+                        .padding(8)
+                        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
+
+                    Button(&quot;Analyze&quot;) {
+                        viewModel.analyze()
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .frame(maxWidth: .infinity)
+
+                    if !viewModel.detectedLanguage.isEmpty {
+                        GroupBox(&quot;Overview&quot;) {
+                            LabeledContent(&quot;Language&quot;, value: viewModel.detectedLanguage)
+                            LabeledContent(&quot;Words&quot;, value: &quot;\(viewModel.wordCount)&quot;)
+                            LabeledContent(&quot;Sentences&quot;, value: &quot;\(viewModel.sentenceCount)&quot;)
+                        }
+
+                        GroupBox(&quot;Sentiment&quot;) {
+                            LabeledContent(&quot;Score&quot;, value: String(format: &quot;%.2f&quot;, viewModel.sentimentScore))
+                            LabeledContent(&quot;Label&quot;, value: viewModel.sentimentLabel)
+                        }
+
+                        if !viewModel.entities.isEmpty {
+                            GroupBox(&quot;Named Entities&quot;) {
+                                ForEach(viewModel.entities, id: \.text) { entity in
+                                    LabeledContent(entity.text, value: entity.type)
+                                }
+                            }
+                        }
+
+                        if !viewModel.posTagged.isEmpty {
+                            GroupBox(&quot;Parts of Speech&quot;) {
+                                LazyVGrid(columns: [
+                                    GridItem(.flexible()),
+                                    GridItem(.flexible()),
+                                    GridItem(.flexible())
+                                ], spacing: 8) {
+                                    ForEach(viewModel.posTagged, id: \.word) { item in
+                                        VStack(spacing: 4) {
+                                            Text(item.word)
+                                                .font(.body.bold())
+                                            Text(item.tagName)
+                                                .font(.caption)
+                                                .foregroundStyle(.secondary)
+                                        }
+                                        .padding(8)
+                                        .background(.quaternary, in: RoundedRectangle(cornerRadius: 8))
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                .padding()
+            }
+            .navigationTitle(&quot;Text Analysis&quot;)
+        }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="quick-reference">Quick Reference</h2>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>NLTokenizer</code></td>
+<td>Split text into words, sentences, or paragraphs</td>
+</tr>
+<tr>
+<td><code>NLTagger</code></td>
+<td>Tag tokens with POS, NER, lemma, sentiment</td>
+</tr>
+<tr>
+<td><code>NLLanguageRecognizer</code></td>
+<td>Detect the language of a string</td>
+</tr>
+<tr>
+<td><code>NLEmbedding</code></td>
+<td>Word and sentence vector embeddings</td>
+</tr>
+<tr>
+<td><code>NLModel</code></td>
+<td>Load and use custom Create ML text models</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Tag Scheme</th>
+<th>Tags Produced</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.lexicalClass</code></td>
+<td>Noun, Verb, Adjective, Adverb, Pronoun, Determiner, etc.</td>
+</tr>
+<tr>
+<td><code>.nameType</code></td>
+<td>PersonalName, PlaceName, OrganizationName</td>
+</tr>
+<tr>
+<td><code>.lemma</code></td>
+<td>Base/dictionary form of each word</td>
+</tr>
+<tr>
+<td><code>.sentimentScore</code></td>
+<td>Floating-point score from -1.0 to 1.0</td>
+</tr>
+<tr>
+<td><code>.language</code></td>
+<td>Per-token language identification</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Embedding Type</th>
+<th>Available From</th>
+<th>Dimensions</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Word embedding</td>
+<td>iOS 13+</td>
+<td>~128-300 dimensions</td>
+</tr>
+<tr>
+<td>Sentence embedding</td>
+<td>iOS 15+</td>
+<td>~512 dimensions</td>
+</tr>
+</tbody>
+</table></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

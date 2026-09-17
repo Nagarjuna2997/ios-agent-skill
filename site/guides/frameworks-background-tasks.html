@@ -1,0 +1,382 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>BackgroundTasks — iOS Agent Skill</title><meta name="description" content="Repository guidance for BackgroundTasks. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-background-tasks.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="BackgroundTasks"><meta property="og:description" content="Repository guidance for BackgroundTasks. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-background-tasks.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "BackgroundTasks", "description": "Repository guidance for BackgroundTasks. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-background-tasks.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">System Integration · Reference guide</p><h1>BackgroundTasks</h1><p class="lead">Repository guidance for BackgroundTasks. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/frameworks/background-tasks.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#bgtaskscheduler-registration">BGTaskScheduler Registration</a></li>
+<li><a href="#bgapprefreshtask-for-periodic-updates">BGAppRefreshTask for Periodic Updates</a></li>
+<li><a href="#bgprocessingtask-for-long-operations">BGProcessingTask for Long Operations</a></li>
+<li><a href="#urlsession-background-transfers">URLSession Background Transfers</a></li>
+<li><a href="#appdelegate-integration-for-background-sessions">AppDelegate Integration for Background Sessions</a></li>
+<li><a href="#testing-background-tasks-in-xcode">Testing Background Tasks in Xcode</a></li>
+<li><a href="#complete-background-sync-example">Complete Background Sync Example</a></li>
+</ul>
+</div>
+</aside><h2 id="bgtaskscheduler-registration">BGTaskScheduler Registration</h2>
+<p>Register task identifiers in <code>Info.plist</code> under <code>BGTaskSchedulerPermittedIdentifiers</code>:</p>
+<pre><code class="language-xml">&lt;key&gt;BGTaskSchedulerPermittedIdentifiers&lt;/key&gt;
+&lt;array&gt;
+    &lt;string&gt;com.yourapp.refresh&lt;/string&gt;
+    &lt;string&gt;com.yourapp.db-cleanup&lt;/string&gt;
+    &lt;string&gt;com.yourapp.sync&lt;/string&gt;
+&lt;/array&gt;
+</code></pre>
+<p>Register handlers at app launch (before the end of the first <code>applicationDidFinishLaunching</code> call or in the <code>@main</code> App <code>init</code>):</p>
+<pre><code class="language-swift">import BackgroundTasks
+
+@main
+struct MyApp: App {
+    init() {
+        registerBackgroundTasks()
+    }
+
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+        }
+    }
+
+    private func registerBackgroundTasks() {
+        BGTaskScheduler.shared.register(
+            forTaskWithIdentifier: &quot;com.yourapp.refresh&quot;,
+            using: nil  // nil = main queue
+        ) { task in
+            guard let task = task as? BGAppRefreshTask else { return }
+            handleAppRefresh(task: task)
+        }
+
+        BGTaskScheduler.shared.register(
+            forTaskWithIdentifier: &quot;com.yourapp.db-cleanup&quot;,
+            using: nil
+        ) { task in
+            guard let task = task as? BGProcessingTask else { return }
+            handleDatabaseCleanup(task: task)
+        }
+
+        BGTaskScheduler.shared.register(
+            forTaskWithIdentifier: &quot;com.yourapp.sync&quot;,
+            using: nil
+        ) { task in
+            guard let task = task as? BGProcessingTask else { return }
+            handleSync(task: task)
+        }
+    }
+}
+</code></pre>
+<h2 id="bgapprefreshtask-for-periodic-updates">BGAppRefreshTask for Periodic Updates</h2>
+<p>App refresh tasks are short-lived (up to 30 seconds). Use for lightweight data fetches.</p>
+<pre><code class="language-swift">func handleAppRefresh(task: BGAppRefreshTask) {
+    // Schedule the next refresh before doing work
+    scheduleAppRefresh()
+
+    let refreshTask = Task {
+        do {
+            let newData = try await DataService.shared.fetchLatestData()
+            await MainActor.run {
+                DataStore.shared.update(with: newData)
+            }
+            task.setTaskCompleted(success: true)
+        } catch {
+            task.setTaskCompleted(success: false)
+        }
+    }
+
+    // Handle system cancelling the task
+    task.expirationHandler = {
+        refreshTask.cancel()
+    }
+}
+
+func scheduleAppRefresh() {
+    let request = BGAppRefreshTaskRequest(identifier: &quot;com.yourapp.refresh&quot;)
+    request.earliestBeginDate = Date(timeIntervalSinceNow: 15 * 60) // 15 minutes minimum
+
+    do {
+        try BGTaskScheduler.shared.submit(request)
+    } catch {
+        print(&quot;Could not schedule app refresh: \(error)&quot;)
+    }
+}
+</code></pre>
+<h2 id="bgprocessingtask-for-long-operations">BGProcessingTask for Long Operations</h2>
+<p>Processing tasks can run for several minutes. Require device to be charging and/or on Wi-Fi.</p>
+<pre><code class="language-swift">func handleDatabaseCleanup(task: BGProcessingTask) {
+    // Schedule the next cleanup
+    scheduleDatabaseCleanup()
+
+    let cleanupTask = Task {
+        do {
+            try await DatabaseManager.shared.performCleanup()
+            try await DatabaseManager.shared.vacuumDatabase()
+            try await CacheManager.shared.pruneExpiredEntries()
+            task.setTaskCompleted(success: true)
+        } catch {
+            task.setTaskCompleted(success: false)
+        }
+    }
+
+    task.expirationHandler = {
+        cleanupTask.cancel()
+    }
+}
+
+func scheduleDatabaseCleanup() {
+    let request = BGProcessingTaskRequest(identifier: &quot;com.yourapp.db-cleanup&quot;)
+    request.earliestBeginDate = Date(timeIntervalSinceNow: 24 * 60 * 60) // Daily
+    request.requiresNetworkConnectivity = false
+    request.requiresExternalPower = true  // Only when charging
+
+    do {
+        try BGTaskScheduler.shared.submit(request)
+    } catch {
+        print(&quot;Could not schedule cleanup: \(error)&quot;)
+    }
+}
+
+func handleSync(task: BGProcessingTask) {
+    scheduleSync()
+
+    let syncTask = Task {
+        do {
+            try await SyncEngine.shared.performFullSync()
+            task.setTaskCompleted(success: true)
+        } catch {
+            task.setTaskCompleted(success: false)
+        }
+    }
+
+    task.expirationHandler = {
+        syncTask.cancel()
+    }
+}
+
+func scheduleSync() {
+    let request = BGProcessingTaskRequest(identifier: &quot;com.yourapp.sync&quot;)
+    request.earliestBeginDate = Date(timeIntervalSinceNow: 60 * 60) // 1 hour
+    request.requiresNetworkConnectivity = true
+    request.requiresExternalPower = false
+
+    do {
+        try BGTaskScheduler.shared.submit(request)
+    } catch {
+        print(&quot;Could not schedule sync: \(error)&quot;)
+    }
+}
+</code></pre>
+<h2 id="urlsession-background-transfers">URLSession Background Transfers</h2>
+<p>Background transfers continue even when your app is suspended or terminated.</p>
+<pre><code class="language-swift">final class BackgroundDownloadManager: NSObject, URLSessionDownloadDelegate {
+    static let shared = BackgroundDownloadManager()
+
+    private lazy var backgroundSession: URLSession = {
+        let config = URLSessionConfiguration.background(
+            withIdentifier: &quot;com.yourapp.background-download&quot;
+        )
+        config.isDiscretionary = true           // System chooses optimal time
+        config.sessionSendsLaunchEvents = true  // Wake app on completion
+        config.allowsCellularAccess = false     // Wi-Fi only
+        config.timeoutIntervalForResource = 60 * 60 * 24 // 24 hours
+        return URLSession(configuration: config, delegate: self, delegateQueue: nil)
+    }()
+
+    /// Completion handler stored from AppDelegate for background session events
+    var backgroundCompletionHandler: (() -&gt; Void)?
+
+    /// Start a background download
+    func download(url: URL) -&gt; URLSessionDownloadTask {
+        let task = backgroundSession.downloadTask(with: url)
+        task.earliestBeginDate = Date(timeIntervalSinceNow: 60) // Delay start
+        task.countOfBytesClientExpectsToSend = 200    // Request size estimate
+        task.countOfBytesClientExpectsToReceive = 5_000_000 // Response size estimate
+        task.resume()
+        return task
+    }
+
+    /// Start a background upload
+    func upload(data: Data, to url: URL) -&gt; URLSessionUploadTask {
+        var request = URLRequest(url: url)
+        request.httpMethod = &quot;POST&quot;
+
+        // Write data to temp file (required for background uploads)
+        let tempURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString)
+        try? data.write(to: tempURL)
+
+        let task = backgroundSession.uploadTask(with: request, fromFile: tempURL)
+        task.resume()
+        return task
+    }
+
+    // MARK: - URLSessionDownloadDelegate
+
+    func urlSession(
+        _ session: URLSession,
+        downloadTask: URLSessionDownloadTask,
+        didFinishDownloadingTo location: URL
+    ) {
+        // Move file from temp location before this method returns
+        let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let destinationURL = documentsURL.appendingPathComponent(
+            downloadTask.originalRequest?.url?.lastPathComponent ?? &quot;download&quot;
+        )
+
+        try? FileManager.default.removeItem(at: destinationURL)
+        try? FileManager.default.moveItem(at: location, to: destinationURL)
+    }
+
+    func urlSession(
+        _ session: URLSession,
+        downloadTask: URLSessionDownloadTask,
+        didWriteData bytesWritten: Int64,
+        totalBytesWritten: Int64,
+        totalBytesExpectedToWrite: Int64
+    ) {
+        let progress = Double(totalBytesWritten) / Double(totalBytesExpectedToWrite)
+        Task { @MainActor in
+            NotificationCenter.default.post(
+                name: .downloadProgress,
+                object: nil,
+                userInfo: [&quot;progress&quot;: progress, &quot;taskID&quot;: downloadTask.taskIdentifier]
+            )
+        }
+    }
+
+    func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+        if let error {
+            print(&quot;Background transfer failed: \(error.localizedDescription)&quot;)
+        }
+    }
+
+    // Called when all background events have been delivered
+    func urlSessionDidFinishEvents(forBackgroundURLSession session: URLSession) {
+        Task { @MainActor in
+            backgroundCompletionHandler?()
+            backgroundCompletionHandler = nil
+        }
+    }
+}
+
+extension Notification.Name {
+    static let downloadProgress = Notification.Name(&quot;downloadProgress&quot;)
+}
+</code></pre>
+<h2 id="appdelegate-integration-for-background-sessions">AppDelegate Integration for Background Sessions</h2>
+<pre><code class="language-swift">import UIKit
+
+class AppDelegate: NSObject, UIApplicationDelegate {
+    func application(
+        _ application: UIApplication,
+        handleEventsForBackgroundURLSession identifier: String,
+        completionHandler: @escaping () -&gt; Void
+    ) {
+        BackgroundDownloadManager.shared.backgroundCompletionHandler = completionHandler
+    }
+}
+
+// In your @main App:
+@main
+struct MyApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+
+    var body: some Scene {
+        WindowGroup { ContentView() }
+    }
+}
+</code></pre>
+<h2 id="testing-background-tasks-in-xcode">Testing Background Tasks in Xcode</h2>
+<p>Use the Xcode debugger console to simulate background task execution:</p>
+<pre><code># Simulate app refresh task launch
+e -l objc -- (void)[[BGTaskScheduler sharedScheduler] _simulateLaunchForTaskWithIdentifier:@&quot;com.yourapp.refresh&quot;]
+
+# Simulate processing task launch
+e -l objc -- (void)[[BGTaskScheduler sharedScheduler] _simulateLaunchForTaskWithIdentifier:@&quot;com.yourapp.db-cleanup&quot;]
+
+# Simulate expiration of a running task
+e -l objc -- (void)[[BGTaskScheduler sharedScheduler] _simulateExpirationForTaskWithIdentifier:@&quot;com.yourapp.refresh&quot;]
+</code></pre>
+<h2 id="complete-background-sync-example">Complete Background Sync Example</h2>
+<pre><code class="language-swift">import BackgroundTasks
+import OSLog
+
+@Observable
+final class SyncEngine {
+    static let shared = SyncEngine()
+
+    private(set) var lastSyncDate: Date?
+    private(set) var isSyncing = false
+
+    private let logger = Logger(subsystem: &quot;com.yourapp&quot;, category: &quot;Sync&quot;)
+
+    func performFullSync() async throws {
+        guard !isSyncing else { return }
+        isSyncing = true
+        defer { isSyncing = false }
+
+        logger.info(&quot;Starting full sync&quot;)
+
+        // 1. Push local changes
+        let pendingChanges = try await LocalStore.shared.pendingChanges()
+        if !pendingChanges.isEmpty {
+            logger.info(&quot;Pushing \(pendingChanges.count) local changes&quot;)
+            try await APIClient.shared.pushChanges(pendingChanges)
+            try await LocalStore.shared.markSynced(pendingChanges)
+        }
+
+        // 2. Pull remote changes
+        let remoteChanges = try await APIClient.shared.pullChanges(since: lastSyncDate)
+        logger.info(&quot;Pulled \(remoteChanges.count) remote changes&quot;)
+        try await LocalStore.shared.applyRemoteChanges(remoteChanges)
+
+        // 3. Update sync timestamp
+        lastSyncDate = Date()
+        UserDefaults.standard.set(lastSyncDate, forKey: &quot;lastSyncDate&quot;)
+
+        logger.info(&quot;Sync completed successfully&quot;)
+    }
+}
+
+// Schedule sync when app backgrounds
+struct ContentView: View {
+    @Environment(\.scenePhase) private var scenePhase
+    @State private var syncEngine = SyncEngine.shared
+
+    var body: some View {
+        NavigationStack {
+            VStack {
+                if syncEngine.isSyncing {
+                    ProgressView(&quot;Syncing...&quot;)
+                }
+                if let lastSync = syncEngine.lastSyncDate {
+                    Text(&quot;Last sync: \(lastSync, format: .relative(presentation: .named))&quot;)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .background {
+                scheduleSync()
+                scheduleAppRefresh()
+            }
+        }
+        .task {
+            // Sync on app launch if stale
+            if let last = syncEngine.lastSyncDate,
+               Date().timeIntervalSince(last) &gt; 300 { // 5 minutes
+                try? await syncEngine.performFullSync()
+            }
+        }
+    }
+}
+
+// Placeholder protocols for completeness
+enum LocalStore {
+    static let shared = LocalStore.self
+    static func pendingChanges() async throws -&gt; [Any] { [] }
+    static func markSynced(_ changes: [Any]) async throws {}
+    static func applyRemoteChanges(_ changes: [Any]) async throws {}
+}
+
+enum APIClient {
+    static let shared = APIClient.self
+    static func pushChanges(_ changes: [Any]) async throws {}
+    static func pullChanges(since date: Date?) async throws -&gt; [Any] { [] }
+}
+</code></pre></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

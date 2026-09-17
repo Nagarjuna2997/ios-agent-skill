@@ -1,0 +1,550 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MCP Tool Reference — iOS Agent Skill</title><meta name="description" content="Repository guidance for MCP Tool Reference. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/mcp-tools.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="MCP Tool Reference"><meta property="og:description" content="Repository guidance for MCP Tool Reference. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/mcp-tools.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "MCP Tool Reference", "description": "Repository guidance for MCP Tool Reference. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/mcp-tools.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Mcp · Reference guide</p><h1>MCP Tool Reference</h1><p class="lead">Repository guidance for MCP Tool Reference. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/mcp/tools.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#choosing-a-tool">Choosing a tool</a></li>
+<li><a href="#severity">Severity</a></li>
+<li><a href="#analyze_swift_project">analyze_swift_project</a></li>
+<li><a href="#review_swift_concurrency">review_swift_concurrency</a></li>
+<li><a href="#review_swift_architecture">review_swift_architecture</a></li>
+<li><a href="#review_swiftui">review_swiftui</a></li>
+<li><a href="#check_availability_guards">check_availability_guards</a></li>
+<li><a href="#audit_app_store_readiness">audit_app_store_readiness</a></li>
+<li><a href="#review_swift_memory">review_swift_memory</a></li>
+<li><a href="#review_swift_security">review_swift_security</a></li>
+<li><a href="#review_swift_testing">review_swift_testing</a></li>
+<li><a href="#review_swift_performance">review_swift_performance</a></li>
+<li><a href="#lint_skill">lint_skill</a></li>
+<li><a href="#structured-output">Structured output</a></li>
+<li><a href="#limits">Limits</a></li>
+<li><a href="#review_app_intents">review_app_intents</a></li>
+</ul>
+</div>
+</aside><p><strong>Load this when:</strong> choosing which <code>ios-agent-mcp</code> tool to call, or interpreting
+a finding it returned.</p>
+<p>Every tool takes one argument — an <strong>absolute</strong> path to the project root:</p>
+<pre><code class="language-json">{ &quot;path&quot;: &quot;/Users/you/Projects/MyApp&quot; }
+</code></pre>
+<p>Ten of the eleven analyze Swift source. <code>lint_skill</code> is the exception: it reads a
+skill repository's own metadata, so its path is the folder containing
+<code>SKILL.md</code>.</p>
+<hr />
+<h2 id="choosing-a-tool">Choosing a tool</h2>
+<table>
+<thead>
+<tr>
+<th>You want to…</th>
+<th>Tool</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Understand an unfamiliar codebase</td>
+<td><code>analyze_swift_project</code></td>
+</tr>
+<tr>
+<td>Diagnose a data race or migrate to Swift 6</td>
+<td><code>review_swift_concurrency</code></td>
+</tr>
+<tr>
+<td>Find out why a screen can't be previewed</td>
+<td><code>review_swift_architecture</code></td>
+</tr>
+<tr>
+<td>Review SwiftUI views and state</td>
+<td><code>review_swiftui</code></td>
+</tr>
+<tr>
+<td>Check before shipping, or after an SDK bump</td>
+<td><code>check_availability_guards</code></td>
+</tr>
+<tr>
+<td>Prepare an App Store submission</td>
+<td><code>audit_app_store_readiness</code></td>
+</tr>
+<tr>
+<td>Memory grows, or <code>deinit</code> never runs</td>
+<td><code>review_swift_memory</code></td>
+</tr>
+<tr>
+<td>Handle credentials, or run a security pass</td>
+<td><code>review_swift_security</code></td>
+</tr>
+<tr>
+<td>Tests are flaky, or a green suite looks too easy</td>
+<td><code>review_swift_testing</code></td>
+</tr>
+<tr>
+<td>Scrolling stutters or launch is slow</td>
+<td><code>review_swift_performance</code></td>
+</tr>
+<tr>
+<td>Author or review an Agent Skill, or work out why a subagent never gets invoked</td>
+<td><code>lint_skill</code></td>
+</tr>
+</tbody>
+</table>
+<p>Start with <code>analyze_swift_project</code> — it reports counts per category and names
+the tool to run for each, so you do not run all ten blindly. <code>lint_skill</code> sits
+outside that flow; it inspects skill metadata, not Swift.</p>
+<hr />
+<h2 id="severity">Severity</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Meaning</th>
+<th>Act</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>🔴 <strong>blocker</strong></td>
+<td>Crash, data race, or App Review rejection</td>
+<td>Before shipping</td>
+</tr>
+<tr>
+<td>🟠 <strong>serious</strong></td>
+<td>Real defect — untestable code, accessibility failure, deprecated API</td>
+<td>This sprint</td>
+</tr>
+<tr>
+<td>🟡 <strong>minor</strong></td>
+<td>Maintainability and consistency</td>
+<td>When touching the file</td>
+</tr>
+</tbody>
+</table>
+<p>Findings are sorted most severe first.</p>
+<hr />
+<h2 id="analyze_swift_project"><code>analyze_swift_project</code></h2>
+<p>Structure — Swift file count, line count, deployment target, Swift tools
+version, frameworks in use, whether tests exist — plus a finding count for every
+category with the tool that explains it.</p>
+<p>It also reports the project's <strong>shape</strong>: UI framework, inferred architecture,
+third-party dependencies, and whether dependency injection is in use.</p>
+<p>The architecture read always ships its <strong>evidence</strong>. "MVVM" alone is a guess
+presented as a fact; "MVVM — 12 ViewModel types, Views/ and ViewModels/
+directories" is a claim you can check. When the signals are weak it says
+<code>not determined</code> rather than picking the most popular answer.</p>
+<p>Dependency injection is detected from <code>any Protocol</code> parameters in initializers,
+not from a directory named <code>DI/</code> — a project that only ever constructs concrete
+types has no seam, whatever it calls itself.</p>
+<h2 id="review_swift_concurrency"><code>review_swift_concurrency</code></h2>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Severity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>observable-without-mainactor</code></td>
+<td>🔴</td>
+</tr>
+<tr>
+<td><code>type-named-task</code></td>
+<td>🔴</td>
+</tr>
+<tr>
+<td><code>task-detached</code></td>
+<td>🟠</td>
+</tr>
+<tr>
+<td><code>dispatchqueue-main-async</code></td>
+<td>🟠</td>
+</tr>
+<tr>
+<td><code>unchecked-sendable</code></td>
+<td>🟠</td>
+</tr>
+<tr>
+<td><code>task-in-onappear</code></td>
+<td>🟠</td>
+</tr>
+<tr>
+<td><code>empty-catch</code></td>
+<td>🟠</td>
+</tr>
+<tr>
+<td><code>redundant-mainactor-run</code></td>
+<td>🟡</td>
+</tr>
+<tr>
+<td><code>nonisolated-unsafe</code></td>
+<td>🟡</td>
+</tr>
+<tr>
+<td><code>observable-not-final</code></td>
+<td>🟡</td>
+</tr>
+</tbody>
+</table>
+<p>Background: <code>../swift/swift-concurrency.md</code>, <code>../../patterns/mvvm.md</code>.</p>
+<h2 id="review_swift_architecture"><code>review_swift_architecture</code></h2>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Severity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>live-default-dependency</code></td>
+<td>🔴</td>
+</tr>
+<tr>
+<td><code>domain-imports-ui</code></td>
+<td>🔴</td>
+</tr>
+<tr>
+<td><code>presentation-names-data-type</code></td>
+<td>🟠</td>
+</tr>
+<tr>
+<td><code>singleton-in-viewmodel</code></td>
+<td>🟠</td>
+</tr>
+<tr>
+<td><code>nested-navigation-stack</code></td>
+<td>🟠</td>
+</tr>
+<tr>
+<td><code>deprecated-navigationview</code></td>
+<td>🟠</td>
+</tr>
+</tbody>
+</table>
+<p>Background: <code>../../patterns/clean-architecture.md</code>.</p>
+<h2 id="review_swiftui"><code>review_swiftui</code></h2>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Severity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>environmentobject</code></td>
+<td>🟠</td>
+</tr>
+<tr>
+<td><code>force-try</code></td>
+<td>🟠</td>
+</tr>
+<tr>
+<td><code>fixed-font-size</code></td>
+<td>🟠</td>
+</tr>
+<tr>
+<td><code>any-view</code>, <code>fixed-height</code>, <code>literal-spacing</code>, <code>deprecated-corner-radius</code>, <code>material-possibly-on-solid</code>, <code>view-state-on-model</code>, <code>legacy-observableobject</code></td>
+<td>🟡</td>
+</tr>
+</tbody>
+</table>
+<p>Only runs on files that <code>import SwiftUI</code>.</p>
+<p>Background: <code>../swiftui/state-and-data-flow.md</code>, <code>../design/design-tokens.md</code>.</p>
+<h2 id="check_availability_guards"><code>check_availability_guards</code></h2>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Severity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>missing-availability-guard</code></td>
+<td>🔴</td>
+</tr>
+<tr>
+<td><code>missing-runtime-model-check</code></td>
+<td>🔴</td>
+</tr>
+<tr>
+<td><code>over-restrictive-guard</code></td>
+<td>🟠</td>
+</tr>
+</tbody>
+</table>
+<p><code>over-restrictive-guard</code> is the one worth understanding. Guarding an <strong>iOS 26</strong>
+API at <code>#available(iOS 27, *)</code> compiles, ships, and silently sends every iOS 26
+device down your fallback path. It is invisible when testing on a current
+device, which is why a rule catches it.</p>
+<p><code>missing-runtime-model-check</code> covers the other half: an <code>@available</code> guard proves
+the <em>symbol</em> exists; it does not prove Foundation Models is usable on this
+device, in this region, with Apple Intelligence enabled.</p>
+<p>Background: <code>../compatibility-matrix.md</code>, <code>../frameworks/foundation-models.md</code>.</p>
+<h2 id="audit_app_store_readiness"><code>audit_app_store_readiness</code></h2>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Severity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>missing-purpose-string</code></td>
+<td>🔴</td>
+</tr>
+<tr>
+<td><code>missing-privacy-manifest</code></td>
+<td>🔴</td>
+</tr>
+<tr>
+<td><code>unlabeled-icon-button</code></td>
+<td>🟠</td>
+</tr>
+<tr>
+<td><code>hardcoded-string</code>, <code>print-logging</code></td>
+<td>🟡</td>
+</tr>
+</tbody>
+</table>
+<p><code>missing-privacy-manifest</code> only fires on <strong>apps</strong> (an Info.plist or <code>.xcodeproj</code>
+is present). A library is never submitted to App Review.</p>
+<p>Background: <code>../../checklists/app-store-submission.md</code>, <code>../frameworks/accessibility.md</code>.</p>
+<hr />
+<h2 id="review_swift_memory"><code>review_swift_memory</code></h2>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Severity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>timer-retain-cycle</code>, <code>notification-observer-retain</code>, <code>sink-retain-cycle</code></td>
+<td>🟠</td>
+</tr>
+<tr>
+<td><code>strong-delegate</code>, <code>stored-closure-captures-self</code>, <code>long-lived-task-captures-self</code></td>
+<td>🟠</td>
+</tr>
+<tr>
+<td><code>unowned-self</code></td>
+<td>🟠</td>
+</tr>
+</tbody>
+</table>
+<p>Deliberately narrow. A closure capturing <code>self</code> is <strong>not</strong> a leak — most closures
+are consumed immediately. A leak needs the closure to be <em>stored</em> by something
+the object itself owns, so these rules fire on the specific storing APIs rather
+than on <code>self.</code> inside any closure, which would bury the real findings.</p>
+<p><code>unowned-self</code> is a crash rather than a leak: unlike <code>weak</code> it does not nil out,
+so an escaping closure running after deallocation traps instead of no-oping.</p>
+<h2 id="review_swift_security"><code>review_swift_security</code></h2>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Severity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>hardcoded-secret</code>, <code>secret-in-userdefaults</code>, <code>ats-disabled</code></td>
+<td>🔴</td>
+</tr>
+<tr>
+<td><code>tls-validation-bypassed</code>, <code>keychain-always-accessible</code></td>
+<td>🔴</td>
+</tr>
+<tr>
+<td><code>cleartext-http</code>, <code>weak-hash</code>, <code>non-cryptographic-randomness</code>, <code>secret-logged</code></td>
+<td>🟠</td>
+</tr>
+<tr>
+<td><code>javascript-string-interpolation</code></td>
+<td>🟠</td>
+</tr>
+<tr>
+<td><code>keychain-migrates-to-new-device</code></td>
+<td>🟡</td>
+</tr>
+</tbody>
+</table>
+<p><code>hardcoded-secret</code> skips the placeholders people legitimately commit
+(<code>YOUR_API_KEY</code>, <code>&lt;your-key&gt;</code>, <code>changeme</code>) and values under 8 characters —
+flagging those trains readers to ignore the rule, which is worse than not having
+it. <code>cleartext-http</code> allows <code>localhost</code> and loopback.</p>
+<h2 id="review_swift_testing"><code>review_swift_testing</code></h2>
+<p>The inverse of every other analyzer: it runs <strong>only</strong> on test files.</p>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Severity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>await-inside-xctassert</code></td>
+<td>🔴</td>
+</tr>
+<tr>
+<td><code>test-sleeps</code>, <code>test-without-assertion</code>, <code>network-in-test</code>, <code>no-tests</code></td>
+<td>🟠</td>
+</tr>
+<tr>
+<td><code>force-try-in-test</code>, <code>shared-mutable-test-state</code>, <code>long-test-timeout</code></td>
+<td>🟡</td>
+</tr>
+<tr>
+<td><code>assert-true-on-equality</code>, <code>sparse-tests</code></td>
+<td>🟡</td>
+</tr>
+</tbody>
+</table>
+<p>A flaky or vacuous test is worse than a missing one: it costs the same to run
+and reports success either way. <code>test-without-assertion</code> catches the case that
+passes as long as nothing throws; <code>await-inside-xctassert</code> catches code that
+does not compile at all, because <code>XCTAssert</code> takes an autoclosure.</p>
+<h2 id="review_swift_performance"><code>review_swift_performance</code></h2>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Severity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>blocking-io-in-body</code></td>
+<td>🔴</td>
+</tr>
+<tr>
+<td><code>formatter-allocated-in-body</code>, <code>collection-work-in-body</code>, <code>foreach-over-indices</code></td>
+<td>🟠</td>
+</tr>
+<tr>
+<td><code>eager-stack-in-scrollview</code>, <code>image-decode-in-body</code></td>
+<td>🟠</td>
+</tr>
+<tr>
+<td><code>asyncimage-without-frame</code>, <code>geometryreader-wraps-body</code>, <code>formatter-allocated-repeatedly</code></td>
+<td>🟡</td>
+</tr>
+</tbody>
+</table>
+<p>The unifying rule: <code>body</code> runs many times per second, on the main actor, for
+reasons you do not control. Anything expensive inside it is multiplied by a
+number nobody measured. Rules that only matter on that path are scoped to the
+<code>var body: some View</code> block and are silent elsewhere — the same <code>DateFormatter()</code>
+is 🟠 inside <code>body</code> and 🟡 outside it.</p>
+<hr />
+<h2 id="lint_skill"><code>lint_skill</code></h2>
+<p>The one tool that does not read Swift. It checks whether an Agent Skill
+repository is <strong>well-formed and internally consistent</strong> — the class of defect
+that produces no error anywhere, just an instruction nobody follows.</p>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Severity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>skill-file-missing</code>, <code>skill-missing-frontmatter</code>, <code>skill-frontmatter-missing-key</code></td>
+<td>🔴</td>
+</tr>
+<tr>
+<td><code>agent-missing-frontmatter</code></td>
+<td>🔴</td>
+</tr>
+<tr>
+<td><code>agent-read-only-holds-write-tool</code></td>
+<td>🔴</td>
+</tr>
+<tr>
+<td><code>skill-version-not-semver</code>, <code>skill-name-not-kebab-case</code>, <code>skill-description-too-long</code></td>
+<td>🟠</td>
+</tr>
+<tr>
+<td><code>skill-unknown-tool</code>, <code>agent-unknown-tool</code></td>
+<td>🟠</td>
+</tr>
+<tr>
+<td><code>agent-name-filename-mismatch</code>, <code>agent-missing-name</code>, <code>agent-missing-description</code>, <code>agent-missing-tools</code>, <code>agent-name-not-kebab-case</code></td>
+<td>🟠</td>
+</tr>
+<tr>
+<td><code>mirror-out-of-sync</code>, <code>broken-doc-reference</code></td>
+<td>🟠</td>
+</tr>
+<tr>
+<td><code>skill-description-too-short</code>, <code>agent-description-lacks-trigger</code></td>
+<td>🟡</td>
+</tr>
+</tbody>
+</table>
+<p>Three of these are worth calling out, because each fails <strong>silently</strong>:</p>
+<ul>
+<li><strong><code>agent-read-only-holds-write-tool</code></strong> — a subagent whose description promises
+  it is read-only while its frontmatter grants <code>Edit</code> or <code>Write</code>. The main agent
+  delegates on the strength of that promise. A reviewer that can edit will fix
+  what it was meant to report, and the separation of duties the review depends
+  on is gone with nothing in the output to show it.</li>
+<li><strong><code>agent-name-filename-mismatch</code></strong> — rename the file, forget the frontmatter,
+  and every delegation prompt references an identifier the loader never
+  registered.</li>
+<li><strong><code>*-unknown-tool</code></strong> — a misspelled tool name is not granted <em>and not
+  reported</em>. The agent's prompt assumes a capability it does not have, and only
+  finds out at the moment it tries to use it.</li>
+</ul>
+<p><strong>Mirror checking is self-calibrating.</strong> Files like <code>CLAUDE.md</code> and <code>AGENTS.md</code>
+are compared against <code>SKILL.md</code>'s body only when at least one of them already
+matches byte-for-byte. That proves the repository generates its mirrors; without
+it, a project with a hand-written <code>CLAUDE.md</code> would be told all supported mirrors had
+drifted. When no mirror matches, the check is skipped and the report says so.</p>
+<p>The report opens with what it inspected — SKILL.md found or not, agents counted,
+mirrors compared, references resolved — because a clean report that never states
+its scope is indistinguishable from a check that never ran.</p>
+<p>Background: <code>../orchestration/subagents.md</code>, <code>../orchestration/verification.md</code>.</p>
+<hr />
+<h2 id="structured-output">Structured output</h2>
+<p>Every review tool returns <strong>both</strong> halves of a result:</p>
+<ul>
+<li><code>content</code> — markdown, for a human reading the transcript.</li>
+<li><code>structuredContent</code> — typed data, declared via <code>outputSchema</code>, for a workflow
+  that must branch on the result without regexing prose.</li>
+</ul>
+<pre><code class="language-jsonc">{
+  &quot;summary&quot;: &quot;Security Review: 1 blocker, 2 serious across 34 files.&quot;,
+  &quot;score&quot;: 91,
+  &quot;counts&quot;: { &quot;blocker&quot;: 1, &quot;serious&quot;: 2, &quot;minor&quot;: 0, &quot;total&quot;: 3 },
+  &quot;files_checked&quot;: 34,
+  &quot;issues&quot;: [ { &quot;file&quot;: &quot;…&quot;, &quot;line&quot;: 12, &quot;severity&quot;: &quot;blocker&quot;, &quot;rule&quot;: &quot;…&quot;, &quot;fix&quot;: &quot;…&quot; } ],
+  &quot;suggestions&quot;: [ &quot;hardcoded-secret: Move it server-side…&quot; ]
+}
+</code></pre>
+<p><strong>About <code>score</code>.</strong> It is a defect <em>density</em>, computed as
+<code>100 × (1 − penalty / capacity)</code> where <code>penalty = 10·blockers + 3·serious +
+1·minor</code> and <code>capacity = files × 10</code>, clamped to 0–100. The formula is fixed and
+published so the number is reproducible rather than a vibe.</p>
+<p>It is <strong>not comparable between projects</strong> — a UI-heavy app and a networking
+library have different rule surfaces. Use it as a direction of travel for one
+codebase, and use <code>counts</code> for anything that matters.</p>
+<p><code>suggestions</code> deduplicates by rule rather than restating every issue's <code>fix</code>:
+forty literal-spacing findings produce one instruction, not forty.</p>
+<hr />
+<h2 id="limits">Limits</h2>
+<p><strong>Static analysis.</strong> It reads source; it does not build, run, or type-check.
+A clean report is not a passing build — run <code>swift build</code> and <code>swift test</code>.</p>
+<p><strong><code>lint_skill</code> checks form, not content.</strong> It can prove a subagent is declared
+correctly and that its tool grant matches its stated contract. It cannot judge
+whether the instructions in it are any good.</p>
+<p><strong>Heuristics on paths.</strong> Layer rules infer the presentation and domain layers
+from directory names (<code>Views/</code>, <code>Presentation/</code>, <code>Domain/</code>). An unconventional
+layout produces fewer architecture findings, not wrong ones.</p>
+<p><strong>Exemptions are deliberate.</strong> Test, mock, stub, fake, and preview files skip
+the app-code-only rules; <code>Package.swift</code> is skipped entirely. Doubling the noise
+would halve the chance anyone reads the output.</p>
+<p><strong>Caps.</strong> 2000 files and 512 KB per file, so a huge monorepo returns something
+rather than hanging.</p>
+<h2 id="review_app_intents">review_app_intents</h2>
+<p>Read-only project review. Inputs: absolute <code>path</code>, optional booleans <code>appleIntelligence</code> and <code>onscreenContent</code> (both default false). Returns the same structured findings as other reviewers. SiriKit migration, missing schema and missing onscreen association are minor advisories with scope limitations; no blanket SiriKit deprecation is asserted. See <a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/frameworks/app-intents-intelligence.md#static-integration-review">rule semantics</a>.</p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

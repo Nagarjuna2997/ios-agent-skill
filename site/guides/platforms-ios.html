@@ -1,0 +1,417 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>iOS Platform Guide — iOS Agent Skill</title><meta name="description" content="Repository guidance for iOS. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/platforms-ios.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="iOS Platform Guide"><meta property="og:description" content="Repository guidance for iOS. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/platforms-ios.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "iOS Platform Guide", "description": "Repository guidance for iOS. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/platforms-ios.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Platforms · Reference guide</p><h1>iOS Platform Guide</h1><p class="lead">Repository guidance for iOS. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/platforms/ios.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#app-lifecycle">App Lifecycle</a><ul>
+<li><a href="#uiapplicationdelegate-uikit">UIApplicationDelegate (UIKit)</a></li>
+<li><a href="#scenedelegate-uikit-multi-window">SceneDelegate (UIKit Multi-Window)</a></li>
+<li><a href="#swiftui-app-lifecycle">SwiftUI App Lifecycle</a></li>
+</ul>
+</li>
+<li><a href="#background-tasks">Background Tasks</a><ul>
+<li><a href="#bgtaskscheduler">BGTaskScheduler</a></li>
+</ul>
+</li>
+<li><a href="#deep-linking">Deep Linking</a><ul>
+<li><a href="#universal-links">Universal Links</a></li>
+<li><a href="#custom-url-schemes">Custom URL Schemes</a></li>
+</ul>
+</li>
+<li><a href="#share-extensions">Share Extensions</a></li>
+<li><a href="#healthkit-basics">HealthKit Basics</a></li>
+<li><a href="#core-haptics">Core Haptics</a></li>
+<li><a href="#document-based-apps">Document-Based Apps</a></li>
+<li><a href="#key-ios-capabilities-summary">Key iOS Capabilities Summary</a></li>
+</ul>
+</div>
+</aside><h2 id="app-lifecycle">App Lifecycle</h2>
+<h3 id="uiapplicationdelegate-uikit">UIApplicationDelegate (UIKit)</h3>
+<pre><code class="language-swift">@main
+class AppDelegate: UIResponder, UIApplicationDelegate {
+    func application(
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+    ) -&gt; Bool {
+        // Configure services, SDKs, appearance
+        return true
+    }
+
+    func application(
+        _ application: UIApplication,
+        configurationForConnecting connectingSceneSession: UISceneSession,
+        options: UIScene.ConnectionOptions
+    ) -&gt; UISceneConfiguration {
+        UISceneConfiguration(name: &quot;Default&quot;, sessionRole: connectingSceneSession.role)
+    }
+}
+</code></pre>
+<h3 id="scenedelegate-uikit-multi-window">SceneDelegate (UIKit Multi-Window)</h3>
+<pre><code class="language-swift">class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+    var window: UIWindow?
+
+    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options: UIScene.ConnectionOptions) {
+        guard let windowScene = scene as? UIWindowScene else { return }
+        window = UIWindow(windowScene: windowScene)
+        window?.rootViewController = MainViewController()
+        window?.makeKeyAndVisible()
+
+        // Handle incoming URL
+        if let urlContext = options.urlContexts.first {
+            handleDeepLink(urlContext.url)
+        }
+    }
+
+    func sceneDidBecomeActive(_ scene: UIScene) { }
+    func sceneWillResignActive(_ scene: UIScene) { }
+    func sceneDidEnterBackground(_ scene: UIScene) { }
+}
+</code></pre>
+<h3 id="swiftui-app-lifecycle">SwiftUI App Lifecycle</h3>
+<pre><code class="language-swift">@main
+struct MyApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    @Environment(\.scenePhase) private var scenePhase
+
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+        }
+        .onChange(of: scenePhase) { oldPhase, newPhase in
+            switch newPhase {
+            case .active:    print(&quot;App is active&quot;)
+            case .inactive:  print(&quot;App is inactive&quot;)
+            case .background:
+                scheduleBackgroundTasks()
+            @unknown default: break
+            }
+        }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="background-tasks">Background Tasks</h2>
+<h3 id="bgtaskscheduler">BGTaskScheduler</h3>
+<pre><code class="language-swift">// 1. Register in Info.plist under BGTaskSchedulerPermittedIdentifiers:
+//    [&quot;com.app.refresh&quot;, &quot;com.app.processing&quot;]
+
+// 2. Register handlers at launch
+func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -&gt; Bool {
+    BGTaskScheduler.shared.register(forTaskWithIdentifier: &quot;com.app.refresh&quot;, using: nil) { task in
+        self.handleAppRefresh(task: task as! BGAppRefreshTask)
+    }
+    BGTaskScheduler.shared.register(forTaskWithIdentifier: &quot;com.app.processing&quot;, using: nil) { task in
+        self.handleProcessing(task: task as! BGProcessingTask)
+    }
+    return true
+}
+
+// 3. Schedule
+func scheduleBackgroundTasks() {
+    let refreshRequest = BGAppRefreshTaskRequest(identifier: &quot;com.app.refresh&quot;)
+    refreshRequest.earliestBeginDate = Date(timeIntervalSinceNow: 15 * 60)
+
+    let processingRequest = BGProcessingTaskRequest(identifier: &quot;com.app.processing&quot;)
+    processingRequest.requiresNetworkConnectivity = true
+    processingRequest.requiresExternalPower = false
+
+    try? BGTaskScheduler.shared.submit(refreshRequest)
+    try? BGTaskScheduler.shared.submit(processingRequest)
+}
+
+// 4. Handle
+func handleAppRefresh(task: BGAppRefreshTask) {
+    scheduleBackgroundTasks() // Reschedule
+
+    let operation = RefreshOperation()
+    task.expirationHandler = { operation.cancel() }
+
+    operation.completionBlock = {
+        task.setTaskCompleted(success: !operation.isCancelled)
+    }
+    OperationQueue().addOperation(operation)
+}
+</code></pre>
+<hr />
+<h2 id="deep-linking">Deep Linking</h2>
+<h3 id="universal-links">Universal Links</h3>
+<pre><code class="language-json">// apple-app-site-association (hosted at https://example.com/.well-known/)
+{
+    &quot;applinks&quot;: {
+        &quot;apps&quot;: [],
+        &quot;details&quot;: [
+            {
+                &quot;appID&quot;: &quot;TEAMID.com.example.app&quot;,
+                &quot;paths&quot;: [&quot;/product/*&quot;, &quot;/user/*&quot;],
+                &quot;components&quot;: [
+                    { &quot;/&quot;: &quot;/product/*&quot;, &quot;comment&quot;: &quot;Product pages&quot; }
+                ]
+            }
+        ]
+    }
+}
+</code></pre>
+<pre><code class="language-swift">// SwiftUI handling
+@main
+struct MyApp: App {
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+                .onOpenURL { url in
+                    DeepLinkRouter.shared.handle(url)
+                }
+        }
+    }
+}
+
+// Router
+@Observable
+class DeepLinkRouter {
+    static let shared = DeepLinkRouter()
+    var selectedTab: Tab = .home
+    var navigationPath = NavigationPath()
+
+    func handle(_ url: URL) {
+        guard let components = URLComponents(url: url, resolvingAgainstBaseURL: true) else { return }
+        let pathComponents = components.path.split(separator: &quot;/&quot;).map(String.init)
+
+        switch pathComponents.first {
+        case &quot;product&quot;:
+            if let id = pathComponents[safe: 1] {
+                selectedTab = .shop
+                navigationPath.append(Route.product(id: id))
+            }
+        case &quot;user&quot;:
+            if let id = pathComponents[safe: 1] {
+                selectedTab = .profile
+                navigationPath.append(Route.profile(id: id))
+            }
+        default: break
+        }
+    }
+}
+</code></pre>
+<h3 id="custom-url-schemes">Custom URL Schemes</h3>
+<pre><code class="language-swift">// Info.plist: CFBundleURLSchemes = [&quot;myapp&quot;]
+// Usage: myapp://action/param
+
+func scene(_ scene: UIScene, openURLContexts URLContexts: Set&lt;UIOpenURLContext&gt;) {
+    guard let url = URLContexts.first?.url else { return }
+    // Parse myapp://product/123
+    if url.host == &quot;product&quot;, let id = url.pathComponents[safe: 1] {
+        navigateToProduct(id: id)
+    }
+}
+</code></pre>
+<hr />
+<h2 id="share-extensions">Share Extensions</h2>
+<pre><code class="language-swift">// ShareViewController.swift (in Share Extension target)
+import UIKit
+import Social
+
+class ShareViewController: SLComposeServiceViewController {
+    override func isContentValid() -&gt; Bool {
+        return !contentText.isEmpty
+    }
+
+    override func didSelectPost() {
+        guard let items = extensionContext?.inputItems as? [NSExtensionItem] else {
+            extensionContext?.completeRequest(returningItems: [], completionHandler: nil)
+            return
+        }
+
+        for item in items {
+            for provider in item.attachments ?? [] {
+                if provider.hasItemConformingToTypeIdentifier(&quot;public.url&quot;) {
+                    provider.loadItem(forTypeIdentifier: &quot;public.url&quot;) { [weak self] data, error in
+                        if let url = data as? URL {
+                            self?.saveSharedURL(url)
+                        }
+                        self?.extensionContext?.completeRequest(returningItems: [], completionHandler: nil)
+                    }
+                }
+            }
+        }
+    }
+
+    private func saveSharedURL(_ url: URL) {
+        // Save to App Group shared container
+        let defaults = UserDefaults(suiteName: &quot;group.com.example.app&quot;)
+        var urls = defaults?.stringArray(forKey: &quot;sharedURLs&quot;) ?? []
+        urls.append(url.absoluteString)
+        defaults?.set(urls, forKey: &quot;sharedURLs&quot;)
+    }
+}
+</code></pre>
+<hr />
+<h2 id="healthkit-basics">HealthKit Basics</h2>
+<pre><code class="language-swift">import HealthKit
+
+class HealthKitManager {
+    private let store = HKHealthStore()
+
+    func requestAuthorization() async throws {
+        guard HKHealthStore.isHealthDataAvailable() else {
+            throw HealthError.notAvailable
+        }
+
+        let readTypes: Set&lt;HKObjectType&gt; = [
+            HKQuantityType(.stepCount),
+            HKQuantityType(.heartRate),
+            HKCategoryType(.sleepAnalysis)
+        ]
+        let writeTypes: Set&lt;HKSampleType&gt; = [
+            HKQuantityType(.stepCount)
+        ]
+
+        try await store.requestAuthorization(toShare: writeTypes, read: readTypes)
+    }
+
+    func fetchTodaySteps() async throws -&gt; Double {
+        let stepsType = HKQuantityType(.stepCount)
+        let startOfDay = Calendar.current.startOfDay(for: .now)
+        let predicate = HKQuery.predicateForSamples(withStart: startOfDay, end: .now)
+
+        let descriptor = HKStatisticsQueryDescriptor(
+            predicate: .init(quantityType: stepsType, predicate: predicate),
+            options: .cumulativeSum
+        )
+        let result = try await descriptor.result(for: store)
+        return result?.sumQuantity()?.doubleValue(for: .count()) ?? 0
+    }
+}
+</code></pre>
+<hr />
+<h2 id="core-haptics">Core Haptics</h2>
+<pre><code class="language-swift">import CoreHaptics
+
+class HapticsManager {
+    private var engine: CHHapticEngine?
+
+    func prepareEngine() {
+        guard CHHapticEngine.capabilitiesForHardware().supportsHaptics else { return }
+        engine = try? CHHapticEngine()
+        try? engine?.start()
+
+        engine?.resetHandler = { [weak self] in
+            try? self?.engine?.start()
+        }
+    }
+
+    func playSuccessPattern() {
+        let sharpness = CHHapticEventParameter(parameterID: .hapticSharpness, value: 0.5)
+        let intensity = CHHapticEventParameter(parameterID: .hapticIntensity, value: 1.0)
+
+        let events = [
+            CHHapticEvent(eventType: .hapticTransient, parameters: [intensity, sharpness], relativeTime: 0),
+            CHHapticEvent(eventType: .hapticTransient, parameters: [intensity, sharpness], relativeTime: 0.15),
+        ]
+
+        let pattern = try? CHHapticPattern(events: events, parameters: [])
+        let player = try? engine?.makePlayer(with: pattern!)
+        try? player?.start(atTime: 0)
+    }
+
+    /// Simple feedback using UIKit
+    static func impact(_ style: UIImpactFeedbackGenerator.FeedbackStyle = .medium) {
+        UIImpactFeedbackGenerator(style: style).impactOccurred()
+    }
+
+    static func notification(_ type: UINotificationFeedbackGenerator.FeedbackType) {
+        UINotificationFeedbackGenerator().notificationOccurred(type)
+    }
+}
+
+// SwiftUI usage
+Button(&quot;Tap&quot;) { }
+    .sensoryFeedback(.success, trigger: didSucceed)
+</code></pre>
+<hr />
+<h2 id="document-based-apps">Document-Based Apps</h2>
+<pre><code class="language-swift">import SwiftUI
+import UniformTypeIdentifiers
+
+// Define document type
+struct MarkdownDocument: FileDocument {
+    static var readableContentTypes: [UTType] { [.plainText] }
+
+    var text: String
+
+    init(text: String = &quot;&quot;) {
+        self.text = text
+    }
+
+    init(configuration: ReadConfiguration) throws {
+        guard let data = configuration.file.regularFileContents,
+              let string = String(data: data, encoding: .utf8)
+        else { throw CocoaError(.fileReadCorruptFile) }
+        text = string
+    }
+
+    func fileWrapper(configuration: WriteConfiguration) throws -&gt; FileWrapper {
+        let data = Data(text.utf8)
+        return .init(regularFileWithContents: data)
+    }
+}
+
+// App entry point
+@main
+struct DocApp: App {
+    var body: some Scene {
+        DocumentGroup(newDocument: MarkdownDocument()) { file in
+            TextEditor(text: file.$document.text)
+                .font(.system(.body, design: .monospaced))
+        }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="key-ios-capabilities-summary">Key iOS Capabilities Summary</h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Framework</th>
+<th>Min iOS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Background Tasks</td>
+<td>BackgroundTasks</td>
+<td>13.0</td>
+</tr>
+<tr>
+<td>Universal Links</td>
+<td>Associated Domains</td>
+<td>9.0</td>
+</tr>
+<tr>
+<td>HealthKit</td>
+<td>HealthKit</td>
+<td>8.0</td>
+</tr>
+<tr>
+<td>Core Haptics</td>
+<td>CoreHaptics</td>
+<td>13.0</td>
+</tr>
+<tr>
+<td>SwiftUI App Lifecycle</td>
+<td>SwiftUI</td>
+<td>14.0</td>
+</tr>
+<tr>
+<td>Observation framework</td>
+<td>Observation</td>
+<td>17.0</td>
+</tr>
+<tr>
+<td>Swift Testing</td>
+<td>Testing</td>
+<td>16.0+</td>
+</tr>
+<tr>
+<td>Interactive Widgets</td>
+<td>WidgetKit</td>
+<td>17.0</td>
+</tr>
+</tbody>
+</table></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

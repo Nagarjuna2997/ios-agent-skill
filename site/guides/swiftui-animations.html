@@ -1,0 +1,1142 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SwiftUI Animations — iOS Agent Skill</title><meta name="description" content="Repository guidance for SwiftUI Animation. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/swiftui-animations.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="SwiftUI Animations"><meta property="og:description" content="Repository guidance for SwiftUI Animation. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/swiftui-animations.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "SwiftUI Animations", "description": "Repository guidance for SwiftUI Animation. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/swiftui-animations.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Design and Motion · Reference guide</p><h1>SwiftUI Animations</h1><p class="lead">Repository guidance for SwiftUI Animation. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/swiftui/animations.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#implicit-animations-animation-modifier">Implicit Animations (.animation modifier)</a></li>
+<li><a href="#explicit-animations-withanimation">Explicit Animations (withAnimation)</a></li>
+<li><a href="#animation-types">Animation Types</a><ul>
+<li><a href="#built-in-animations">Built-in Animations</a></li>
+<li><a href="#animation-modifiers">Animation Modifiers</a></li>
+</ul>
+</li>
+<li><a href="#transitions">Transitions</a><ul>
+<li><a href="#custom-transitions">Custom Transitions</a></li>
+</ul>
+</li>
+<li><a href="#matchedgeometryeffect">matchedGeometryEffect</a></li>
+<li><a href="#phaseanimator-ios-17">PhaseAnimator (iOS 17+)</a></li>
+<li><a href="#keyframeanimator-ios-17">KeyframeAnimator (iOS 17+)</a></li>
+<li><a href="#contenttransition-ios-16">.contentTransition() (iOS 16+)</a></li>
+<li><a href="#sensoryfeedback-ios-17">.sensoryFeedback() (iOS 17+)</a></li>
+<li><a href="#symbol-effects-ios-17">Symbol Effects (iOS 17+)</a></li>
+<li><a href="#transaction-and-animation-completion">Transaction and Animation Completion</a><ul>
+<li><a href="#transaction">Transaction</a></li>
+<li><a href="#animation-completion-ios-17">Animation Completion (iOS 17+)</a></li>
+</ul>
+</li>
+<li><a href="#practical-animation-patterns">Practical Animation Patterns</a><ul>
+<li><a href="#staggered-list-animation">Staggered List Animation</a></li>
+<li><a href="#loading-shimmer">Loading Shimmer</a></li>
+<li><a href="#breathing-pulsing-effect">Breathing / Pulsing Effect</a></li>
+</ul>
+</li>
+<li><a href="#performance-tips">Performance Tips</a></li>
+<li><a href="#ios-1718-advanced-visual-effects">iOS 17/18 Advanced Visual Effects</a><ul>
+<li><a href="#visualeffect-modifier-ios-17">visualEffect Modifier (iOS 17+)</a><ul>
+<li><a href="#complete-parallax-scroll-example">Complete Parallax Scroll Example</a></li>
+<li><a href="#position-based-rotation-and-scale">Position-Based Rotation and Scale</a></li>
+</ul>
+</li>
+<li><a href="#scrolltransition-ios-17">scrollTransition (iOS 17+)</a><ul>
+<li><a href="#complete-example-cards-that-scale-up-as-they-enter">Complete Example: Cards That Scale Up as They Enter</a></li>
+<li><a href="#horizontal-scroll-with-rotation">Horizontal Scroll with Rotation</a></li>
+</ul>
+</li>
+<li><a href="#meshgradient-ios-18">MeshGradient (iOS 18+)</a><ul>
+<li><a href="#complete-animated-mesh-gradient-background">Complete Animated Mesh Gradient Background</a></li>
+<li><a href="#mesh-gradient-with-color-cycling">Mesh Gradient with Color Cycling</a></li>
+</ul>
+</li>
+<li><a href="#textrenderer-protocol-ios-18">TextRenderer Protocol (iOS 18+)</a><ul>
+<li><a href="#textrenderer-protocol-basics">TextRenderer Protocol Basics</a></li>
+<li><a href="#complete-custom-text-animation-per-character-fade-in">Complete Custom Text Animation: Per-Character Fade-In</a></li>
+<li><a href="#typing-effect-with-textrenderer">Typing Effect with TextRenderer</a></li>
+<li><a href="#wave-text-animation">Wave Text Animation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</aside><p>Complete reference for implicit and explicit animations, transitions, matched geometry, phase animators, keyframe animators, and haptics.</p>
+<hr />
+<h2 id="implicit-animations-animation-modifier">Implicit Animations (.animation modifier)</h2>
+<p>Attach an animation to a view that triggers whenever a tracked value changes.</p>
+<pre><code class="language-swift">struct ImplicitExample: View {
+    @State private var isExpanded = false
+
+    var body: some View {
+        VStack {
+            RoundedRectangle(cornerRadius: isExpanded ? 20 : 50)
+                .fill(.blue)
+                .frame(
+                    width: isExpanded ? 300 : 100,
+                    height: isExpanded ? 200 : 100
+                )
+                .animation(.easeInOut(duration: 0.4), value: isExpanded)
+
+            Button(&quot;Toggle&quot;) { isExpanded.toggle() }
+        }
+    }
+}
+</code></pre>
+<p><strong>Important:</strong> Always use the <code>value:</code> parameter version. The parameterless <code>.animation(.easeInOut)</code> is deprecated and applies to all state changes, causing unexpected behavior.</p>
+<hr />
+<h2 id="explicit-animations-withanimation">Explicit Animations (withAnimation)</h2>
+<p>Wrap state changes in <code>withAnimation</code> to animate all views affected by those changes.</p>
+<pre><code class="language-swift">struct ExplicitExample: View {
+    @State private var offset: CGFloat = 0
+    @State private var opacity: Double = 1
+    @State private var scale: CGFloat = 1
+
+    var body: some View {
+        Circle()
+            .fill(.blue)
+            .frame(width: 80, height: 80)
+            .offset(y: offset)
+            .opacity(opacity)
+            .scaleEffect(scale)
+
+        Button(&quot;Animate&quot;) {
+            withAnimation(.spring(duration: 0.6, bounce: 0.3)) {
+                offset = offset == 0 ? -100 : 0
+                opacity = opacity == 1 ? 0.5 : 1
+                scale = scale == 1 ? 1.5 : 1
+            }
+        }
+    }
+}
+
+// Async version
+Button(&quot;Animate and Continue&quot;) {
+    Task {
+        await withAnimation(.easeInOut(duration: 0.5)) {
+            showContent = true
+        }.value
+        // This runs after animation completes
+        loadData()
+    }
+}
+</code></pre>
+<hr />
+<h2 id="animation-types">Animation Types</h2>
+<h3 id="built-in-animations">Built-in Animations</h3>
+<pre><code class="language-swift">// Timing curves
+.animation(.linear(duration: 0.3), value: trigger)
+.animation(.easeIn(duration: 0.3), value: trigger)
+.animation(.easeOut(duration: 0.3), value: trigger)
+.animation(.easeInOut(duration: 0.3), value: trigger)
+
+// Spring animations (iOS 17+ simplified)
+.animation(.spring, value: trigger)                    // Default spring
+.animation(.bouncy, value: trigger)                    // High bounce
+.animation(.bouncy(duration: 0.5, extraBounce: 0.2), value: trigger)
+.animation(.snappy, value: trigger)                    // Quick and snappy
+.animation(.snappy(duration: 0.3, extraBounce: 0.1), value: trigger)
+.animation(.smooth, value: trigger)                    // Smooth, no bounce
+.animation(.smooth(duration: 0.4), value: trigger)
+
+// Spring with full control
+.animation(.spring(response: 0.5, dampingFraction: 0.7, blendDuration: 0), value: trigger)
+.animation(.spring(duration: 0.5, bounce: 0.3), value: trigger)
+
+// Interactive spring (no overshoot)
+.animation(.interactiveSpring(response: 0.3, dampingFraction: 0.8), value: trigger)
+
+// Custom timing curve
+.animation(.timingCurve(0.2, 0.8, 0.2, 1.0, duration: 0.5), value: trigger)
+</code></pre>
+<h3 id="animation-modifiers">Animation Modifiers</h3>
+<pre><code class="language-swift">// Delay
+.animation(.easeInOut(duration: 0.5).delay(0.2), value: trigger)
+
+// Repeat
+.animation(.easeInOut(duration: 1).repeatForever(autoreverses: true), value: trigger)
+.animation(.linear(duration: 2).repeatCount(3, autoreverses: false), value: trigger)
+
+// Speed
+.animation(.spring.speed(2), value: trigger)
+
+// Combine
+.animation(
+    .spring(duration: 0.6, bounce: 0.3)
+    .delay(0.1)
+    .speed(1.2),
+    value: trigger
+)
+</code></pre>
+<hr />
+<h2 id="transitions">Transitions</h2>
+<p>Transitions define how a view appears and disappears when inserted/removed from the hierarchy.</p>
+<pre><code class="language-swift">struct TransitionExample: View {
+    @State private var showDetail = false
+
+    var body: some View {
+        VStack {
+            if showDetail {
+                DetailCard()
+                    .transition(.opacity)                    // Fade
+                    .transition(.slide)                      // Slide from leading
+                    .transition(.scale)                      // Scale from center
+                    .transition(.scale(scale: 0.5, anchor: .bottom))
+                    .transition(.move(edge: .bottom))        // Slide from edge
+                    .transition(.push(from: .bottom))        // Push (iOS 16+)
+                    .transition(.offset(x: 0, y: 200))
+
+                    // Combined
+                    .transition(.opacity.combined(with: .scale))
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+
+                    // Asymmetric (different for insert vs remove)
+                    .transition(.asymmetric(
+                        insertion: .push(from: .trailing),
+                        removal: .push(from: .leading)
+                    ))
+            }
+
+            Button(&quot;Toggle&quot;) {
+                withAnimation(.spring(duration: 0.5, bounce: 0.3)) {
+                    showDetail.toggle()
+                }
+            }
+        }
+    }
+}
+</code></pre>
+<h3 id="custom-transitions">Custom Transitions</h3>
+<pre><code class="language-swift">struct SlideAndFade: Transition {
+    func body(content: Content, phase: TransitionPhase) -&gt; some View {
+        content
+            .opacity(phase.isIdentity ? 1 : 0)
+            .offset(y: phase.isIdentity ? 0 : 30)
+            .scaleEffect(phase.isIdentity ? 1 : 0.95)
+    }
+}
+
+extension AnyTransition {
+    static var slideAndFade: AnyTransition {
+        .modifier(
+            active: SlideAndFadeModifier(opacity: 0, offset: 30),
+            identity: SlideAndFadeModifier(opacity: 1, offset: 0)
+        )
+    }
+}
+
+struct SlideAndFadeModifier: ViewModifier {
+    let opacity: Double
+    let offset: CGFloat
+
+    func body(content: Content) -&gt; some View {
+        content
+            .opacity(opacity)
+            .offset(y: offset)
+    }
+}
+</code></pre>
+<hr />
+<h2 id="matchedgeometryeffect">matchedGeometryEffect</h2>
+<p>Creates hero animations between views that share an identity.</p>
+<pre><code class="language-swift">struct HeroAnimation: View {
+    @Namespace private var animation
+    @State private var isExpanded = false
+    @State private var selectedItem: Item?
+
+    var body: some View {
+        ZStack {
+            if let item = selectedItem {
+                // Expanded view
+                VStack {
+                    Image(item.imageName)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .matchedGeometryEffect(id: &quot;image-\(item.id)&quot;, in: animation)
+                        .frame(height: 300)
+                        .clipShape(RoundedRectangle(cornerRadius: 20))
+
+                    Text(item.title)
+                        .font(.title)
+                        .matchedGeometryEffect(id: &quot;title-\(item.id)&quot;, in: animation)
+
+                    Text(item.description)
+                        .padding()
+
+                    Spacer()
+                }
+                .background(.background)
+                .onTapGesture {
+                    withAnimation(.spring(duration: 0.5, bounce: 0.2)) {
+                        selectedItem = nil
+                    }
+                }
+            } else {
+                // Grid view
+                ScrollView {
+                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 150))]) {
+                        ForEach(items) { item in
+                            VStack {
+                                Image(item.imageName)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                                    .matchedGeometryEffect(id: &quot;image-\(item.id)&quot;, in: animation)
+                                    .frame(height: 150)
+                                    .clipShape(RoundedRectangle(cornerRadius: 12))
+
+                                Text(item.title)
+                                    .font(.headline)
+                                    .matchedGeometryEffect(id: &quot;title-\(item.id)&quot;, in: animation)
+                            }
+                            .onTapGesture {
+                                withAnimation(.spring(duration: 0.5, bounce: 0.2)) {
+                                    selectedItem = item
+                                }
+                            }
+                        }
+                    }
+                    .padding()
+                }
+            }
+        }
+    }
+}
+</code></pre>
+<p><strong>Key rules:</strong>
+- Both source and destination must be visible at transition time (use <code>ZStack</code> and conditional rendering).
+- Use the same <code>id</code> and <code>Namespace</code> across both states.
+- Only one view per <code>id</code> should be in the hierarchy at a time (use <code>isSource: false</code> if needed).</p>
+<hr />
+<h2 id="phaseanimator-ios-17">PhaseAnimator (iOS 17+)</h2>
+<p>Cycles through a sequence of phases, applying different modifiers at each phase.</p>
+<pre><code class="language-swift">// Continuous animation
+PhaseAnimator([false, true]) { phase in
+    Image(systemName: &quot;heart.fill&quot;)
+        .font(.largeTitle)
+        .foregroundStyle(.red)
+        .scaleEffect(phase ? 1.2 : 1.0)
+        .opacity(phase ? 1.0 : 0.7)
+} animation: { phase in
+    phase ? .easeIn(duration: 0.3) : .easeOut(duration: 0.5)
+}
+
+// Multi-phase animation
+enum PulsePhase: CaseIterable {
+    case initial, grow, shrink, fade
+
+    var scale: CGFloat {
+        switch self {
+        case .initial: 1.0
+        case .grow: 1.3
+        case .shrink: 0.9
+        case .fade: 1.0
+        }
+    }
+
+    var opacity: Double {
+        switch self {
+        case .initial: 1.0
+        case .grow: 0.8
+        case .shrink: 0.6
+        case .fade: 1.0
+        }
+    }
+}
+
+PhaseAnimator(PulsePhase.allCases) { phase in
+    Circle()
+        .fill(.blue)
+        .frame(width: 100, height: 100)
+        .scaleEffect(phase.scale)
+        .opacity(phase.opacity)
+} animation: { phase in
+    switch phase {
+    case .initial: .spring(duration: 0.3)
+    case .grow: .easeOut(duration: 0.4)
+    case .shrink: .easeIn(duration: 0.2)
+    case .fade: .easeInOut(duration: 0.3)
+    }
+}
+
+// Trigger-based (animates once when trigger changes)
+@State private var triggerCount = 0
+
+PhaseAnimator([0.0, 1.0], trigger: triggerCount) { scale in
+    Image(systemName: &quot;checkmark.circle.fill&quot;)
+        .font(.system(size: 60))
+        .scaleEffect(scale == 0 ? 0.5 : 1.0)
+        .opacity(scale)
+} animation: { _ in
+    .spring(duration: 0.5, bounce: 0.4)
+}
+
+Button(&quot;Complete&quot;) { triggerCount += 1 }
+</code></pre>
+<hr />
+<h2 id="keyframeanimator-ios-17">KeyframeAnimator (iOS 17+)</h2>
+<p>Define complex multi-property animations with precise timing using keyframe tracks.</p>
+<pre><code class="language-swift">struct BounceValues {
+    var scale: CGFloat = 1.0
+    var yOffset: CGFloat = 0
+    var rotation: Angle = .zero
+}
+
+KeyframeAnimator(initialValue: BounceValues(), trigger: bounceCount) { values in
+    Image(systemName: &quot;star.fill&quot;)
+        .font(.system(size: 60))
+        .foregroundStyle(.yellow)
+        .scaleEffect(values.scale)
+        .offset(y: values.yOffset)
+        .rotationEffect(values.rotation)
+} keyframes: { _ in
+    KeyframeTrack(\.scale) {
+        SpringKeyframe(1.5, duration: 0.2)
+        SpringKeyframe(0.8, duration: 0.15)
+        SpringKeyframe(1.0, duration: 0.3)
+    }
+
+    KeyframeTrack(\.yOffset) {
+        LinearKeyframe(-50, duration: 0.15)
+        SpringKeyframe(0, duration: 0.4, spring: .bouncy)
+    }
+
+    KeyframeTrack(\.rotation) {
+        LinearKeyframe(.degrees(0), duration: 0.1)
+        CubicKeyframe(.degrees(15), duration: 0.15)
+        CubicKeyframe(.degrees(-10), duration: 0.15)
+        SpringKeyframe(.degrees(0), duration: 0.3)
+    }
+}
+</code></pre>
+<p><strong>Keyframe types:</strong>
+- <code>LinearKeyframe</code> -- constant speed between keyframes.
+- <code>SpringKeyframe</code> -- spring dynamics to reach the value.
+- <code>CubicKeyframe</code> -- cubic Bezier curve interpolation.
+- <code>MoveKeyframe</code> -- instant jump to value (no interpolation).</p>
+<hr />
+<h2 id="contenttransition-ios-16">.contentTransition() (iOS 16+)</h2>
+<p>Animate text and numeric changes.</p>
+<pre><code class="language-swift">@State private var count = 0
+
+Text(&quot;\(count)&quot;)
+    .font(.largeTitle)
+    .contentTransition(.numericText(countsDown: false))
+    // The text morphs between numeric values
+
+Button(&quot;Increment&quot;) {
+    withAnimation(.snappy) {
+        count += 1
+    }
+}
+
+// Identity transition for text changes
+Text(statusMessage)
+    .contentTransition(.interpolate)  // Smooth morphing between text states
+</code></pre>
+<hr />
+<h2 id="sensoryfeedback-ios-17">.sensoryFeedback() (iOS 17+)</h2>
+<p>Trigger haptic feedback tied to state changes.</p>
+<pre><code class="language-swift">Button(&quot;Success&quot;) {
+    showSuccess = true
+}
+.sensoryFeedback(.success, trigger: showSuccess)
+
+Toggle(&quot;Setting&quot;, isOn: $isEnabled)
+    .sensoryFeedback(.selection, trigger: isEnabled)
+
+// Feedback types
+.sensoryFeedback(.impact, trigger: value)           // Physical tap
+.sensoryFeedback(.impact(weight: .heavy), trigger: value)
+.sensoryFeedback(.impact(intensity: 0.8), trigger: value)
+.sensoryFeedback(.selection, trigger: value)         // Light selection tick
+.sensoryFeedback(.success, trigger: value)           // Success pattern
+.sensoryFeedback(.warning, trigger: value)           // Warning pattern
+.sensoryFeedback(.error, trigger: value)             // Error pattern
+.sensoryFeedback(.increase, trigger: value)          // Value increasing
+.sensoryFeedback(.decrease, trigger: value)          // Value decreasing
+
+// Conditional feedback
+.sensoryFeedback(.success, trigger: taskComplete) { oldValue, newValue in
+    newValue == true  // Only trigger when becoming true
+}
+</code></pre>
+<hr />
+<h2 id="symbol-effects-ios-17">Symbol Effects (iOS 17+)</h2>
+<p>Built-in animations for SF Symbols.</p>
+<pre><code class="language-swift">Image(systemName: &quot;wifi&quot;)
+    .symbolEffect(.variableColor.iterative)
+
+Image(systemName: &quot;bell&quot;)
+    .symbolEffect(.bounce, value: notificationCount)
+
+Image(systemName: &quot;arrow.down.circle&quot;)
+    .symbolEffect(.pulse, isActive: isDownloading)
+
+Image(systemName: &quot;checkmark.circle&quot;)
+    .symbolEffect(.appear, isActive: showCheck)
+    .symbolEffect(.disappear, isActive: hideCheck)
+
+// Replace symbol with animation
+Image(systemName: isPlaying ? &quot;pause.fill&quot; : &quot;play.fill&quot;)
+    .contentTransition(.symbolEffect(.replace))
+</code></pre>
+<hr />
+<h2 id="transaction-and-animation-completion">Transaction and Animation Completion</h2>
+<h3 id="transaction">Transaction</h3>
+<p>Override animations for specific state changes.</p>
+<pre><code class="language-swift">// Disable animation for specific change
+var transaction = Transaction()
+transaction.disablesAnimations = true
+withTransaction(transaction) {
+    showPanel = false
+}
+
+// Custom transaction
+var transaction = Transaction(animation: .spring(duration: 0.3))
+withTransaction(transaction) {
+    selectedTab = .home
+}
+
+// Transaction modifier on a view
+Text(&quot;No animation here&quot;)
+    .transaction { transaction in
+        transaction.animation = nil  // Suppress animations for this view
+    }
+</code></pre>
+<h3 id="animation-completion-ios-17">Animation Completion (iOS 17+)</h3>
+<pre><code class="language-swift">withAnimation(.easeInOut(duration: 0.5)) {
+    isVisible = true
+} completion: {
+    // Runs when animation finishes
+    loadNextStep()
+}
+</code></pre>
+<hr />
+<h2 id="practical-animation-patterns">Practical Animation Patterns</h2>
+<h3 id="staggered-list-animation">Staggered List Animation</h3>
+<pre><code class="language-swift">struct StaggeredList: View {
+    @State private var items: [Item] = []
+    @State private var visibleItems: Set&lt;UUID&gt; = []
+
+    var body: some View {
+        ScrollView {
+            LazyVStack(spacing: 12) {
+                ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
+                    ItemRow(item: item)
+                        .opacity(visibleItems.contains(item.id) ? 1 : 0)
+                        .offset(y: visibleItems.contains(item.id) ? 0 : 20)
+                        .onAppear {
+                            withAnimation(.spring(duration: 0.4).delay(Double(index) * 0.05)) {
+                                visibleItems.insert(item.id)
+                            }
+                        }
+                }
+            }
+            .padding()
+        }
+    }
+}
+</code></pre>
+<h3 id="loading-shimmer">Loading Shimmer</h3>
+<pre><code class="language-swift">struct ShimmerView: View {
+    @State private var phase: CGFloat = -1
+
+    var body: some View {
+        RoundedRectangle(cornerRadius: 8)
+            .fill(.gray.opacity(0.3))
+            .overlay {
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(
+                        LinearGradient(
+                            colors: [.clear, .white.opacity(0.4), .clear],
+                            startPoint: .init(x: phase, y: 0.5),
+                            endPoint: .init(x: phase + 1, y: 0.5)
+                        )
+                    )
+            }
+            .onAppear {
+                withAnimation(.linear(duration: 1.5).repeatForever(autoreverses: false)) {
+                    phase = 2
+                }
+            }
+    }
+}
+</code></pre>
+<h3 id="breathing-pulsing-effect">Breathing / Pulsing Effect</h3>
+<pre><code class="language-swift">struct PulsingDot: View {
+    @State private var isPulsing = false
+
+    var body: some View {
+        Circle()
+            .fill(.green)
+            .frame(width: 12, height: 12)
+            .overlay {
+                Circle()
+                    .stroke(.green, lineWidth: 2)
+                    .scaleEffect(isPulsing ? 2.5 : 1)
+                    .opacity(isPulsing ? 0 : 1)
+            }
+            .onAppear {
+                withAnimation(.easeOut(duration: 1.5).repeatForever(autoreverses: false)) {
+                    isPulsing = true
+                }
+            }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="performance-tips">Performance Tips</h2>
+<ol>
+<li>Prefer <code>withAnimation</code> over <code>.animation(value:)</code> when only some state changes should animate.</li>
+<li>Use <code>.drawingGroup()</code> on complex animated views to rasterize into a single Metal layer.</li>
+<li>Avoid animating <code>GeometryReader</code> size changes -- they cause expensive relayouts.</li>
+<li>Use <code>Animation.spring</code> over custom spring parameters when possible -- the system optimizes it.</li>
+<li>Profile with Instruments (Core Animation template) to verify 60fps.</li>
+<li>Reduce use of <code>blur</code> and <code>shadow</code> modifiers during active animations.</li>
+</ol>
+<hr />
+<h2 id="ios-1718-advanced-visual-effects">iOS 17/18 Advanced Visual Effects</h2>
+<h3 id="visualeffect-modifier-ios-17">visualEffect Modifier (iOS 17+)</h3>
+<p>The <code>.visualEffect</code> modifier lets you read a view's geometry proxy and apply visual transforms without triggering layout passes. Unlike <code>GeometryReader</code>, it never changes the size or position of the view in the layout -- it only applies render-time effects like scale, offset, rotation, opacity, and blur.</p>
+<pre><code class="language-swift">// Basic usage -- read size and position for visual-only transforms
+Rectangle()
+    .fill(.blue)
+    .frame(width: 200, height: 200)
+    .visualEffect { content, proxy in
+        content
+            .offset(y: proxy.frame(in: .global).minY * 0.1)
+            .scaleEffect(proxy.size.width / 300)
+    }
+</code></pre>
+<p><strong>When to use <code>visualEffect</code> instead of <code>GeometryReader</code>:</strong>
+- Parallax scrolling effects
+- Scale or rotation based on scroll position
+- Blur or opacity that depends on a view's position
+- Any visual tweak that should not alter layout</p>
+<h4 id="complete-parallax-scroll-example">Complete Parallax Scroll Example</h4>
+<pre><code class="language-swift">struct ParallaxScrollView: View {
+    let images = [&quot;photo1&quot;, &quot;photo2&quot;, &quot;photo3&quot;, &quot;photo4&quot;, &quot;photo5&quot;]
+
+    var body: some View {
+        ScrollView {
+            LazyVStack(spacing: 16) {
+                ForEach(images, id: \.self) { imageName in
+                    ParallaxCard(imageName: imageName)
+                }
+            }
+            .padding()
+        }
+    }
+}
+
+struct ParallaxCard: View {
+    let imageName: String
+
+    var body: some View {
+        RoundedRectangle(cornerRadius: 20)
+            .fill(.gray.opacity(0.2))
+            .frame(height: 250)
+            .overlay {
+                Image(imageName)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(height: 300) // Slightly taller than container
+                    .visualEffect { content, proxy in
+                        let frame = proxy.frame(in: .scrollView(axis: .vertical))
+                        let distance = min(0, frame.minY)
+                        return content
+                            .offset(y: -distance * 0.4)
+                    }
+            }
+            .clipShape(RoundedRectangle(cornerRadius: 20))
+            .shadow(color: .black.opacity(0.15), radius: 10, y: 5)
+    }
+}
+</code></pre>
+<h4 id="position-based-rotation-and-scale">Position-Based Rotation and Scale</h4>
+<pre><code class="language-swift">struct VisualEffectGallery: View {
+    let colors: [Color] = [.red, .orange, .yellow, .green, .blue, .purple]
+
+    var body: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 16) {
+                ForEach(colors, id: \.self) { color in
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(color.gradient)
+                        .frame(width: 200, height: 280)
+                        .visualEffect { content, proxy in
+                            let frame = proxy.frame(in: .scrollView(axis: .horizontal))
+                            let midX = frame.midX
+                            let screenMidX = UIScreen.main.bounds.width / 2
+                            let distance = abs(midX - screenMidX)
+                            let maxDistance: CGFloat = 300
+                            let normalizedDistance = min(distance / maxDistance, 1.0)
+
+                            return content
+                                .scaleEffect(1.0 - normalizedDistance * 0.15)
+                                .rotation3DEffect(
+                                    .degrees(Double(midX - screenMidX) / 10),
+                                    axis: (x: 0, y: 1, z: 0)
+                                )
+                                .opacity(1.0 - Double(normalizedDistance) * 0.3)
+                        }
+                }
+            }
+            .padding(.horizontal, 80)
+        }
+        .scrollTargetBehavior(.viewAligned)
+    }
+}
+</code></pre>
+<hr />
+<h3 id="scrolltransition-ios-17">scrollTransition (iOS 17+)</h3>
+<p>The <code>.scrollTransition</code> modifier animates views as they enter and leave the visible area of a <code>ScrollView</code>. It provides a <code>phase</code> value that indicates where the view is relative to the viewport.</p>
+<p><strong>Phase values:</strong>
+- <code>.topLeading</code> -- the view is above or to the leading side of the viewport (about to enter from top/leading).
+- <code>.identity</code> -- the view is fully within the visible area.
+- <code>.bottomTrailing</code> -- the view is below or to the trailing side of the viewport (about to exit bottom/trailing).</p>
+<p><strong>The closure receives a <code>VisualEffect</code>, not a <code>View</code>.</strong> This is the single most
+important fact about the modifier and it is easy to miss, because the parameter
+is conventionally named <code>content</code> and every example uses it like a view.</p>
+<p><code>VisualEffect</code> supports only effects that can be applied to already-rendered
+content on the GPU:</p>
+<table>
+<thead>
+<tr>
+<th>Supported inside <code>scrollTransition</code></th>
+<th>Not supported</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.opacity(_:)</code></td>
+<td><code>.shadow(...)</code></td>
+</tr>
+<tr>
+<td><code>.scaleEffect(_:anchor:)</code></td>
+<td><code>.background(...)</code> / <code>.overlay(...)</code></td>
+</tr>
+<tr>
+<td><code>.rotationEffect(_:anchor:)</code></td>
+<td><code>.blur(radius:)</code> on some OS versions</td>
+</tr>
+<tr>
+<td><code>.rotation3DEffect(_:axis:anchor:perspective:)</code></td>
+<td><code>.foregroundStyle(...)</code></td>
+</tr>
+<tr>
+<td><code>.offset(x:y:)</code></td>
+<td><code>.clipShape(...)</code> / <code>.mask(...)</code></td>
+</tr>
+<tr>
+<td><code>.brightness</code>, <code>.saturation</code>, <code>.contrast</code>, <code>.grayscale</code>, <code>.hueRotation</code></td>
+<td>any layout modifier</td>
+</tr>
+<tr>
+<td><code>.blendMode(_:)</code></td>
+<td>anything that changes the view's identity or size</td>
+</tr>
+</tbody>
+</table>
+<p>Reaching for <code>.shadow</code> inside the closure — the obvious way to make scrolling
+cards read as receding — produces one of Swift's worst diagnostics:</p>
+<pre><code class="language-swift">// WRONG — .shadow is not a VisualEffect member.
+.scrollTransition { content, phase in
+    content
+        .opacity(phase.isIdentity ? 1 : 0.4)
+        .shadow(radius: phase.isIdentity ? 20 : 4)
+}
+
+// error: the compiler is unable to type-check this expression
+//        in reasonable time; try breaking up the expression into
+//        distinct sub-expressions
+</code></pre>
+<p>That message points at expression complexity, which is not the problem. The
+problem is a missing overload, and no amount of breaking up the expression will
+fix it.</p>
+<pre><code class="language-swift">// RIGHT — the shadow lives outside the transition, driven by the same phase
+// through a plain modifier on the view itself.
+RoundedRectangle(cornerRadius: 16)
+    .fill(.blue.gradient)
+    .shadow(color: .black.opacity(0.15), radius: 12, y: 6)
+    .scrollTransition { content, phase in
+        content
+            .opacity(phase.isIdentity ? 1 : 0.4)
+            .scaleEffect(phase.isIdentity ? 1 : 0.92)
+    }
+</code></pre>
+<p>If a shadow genuinely has to change with scroll position, drive it from
+<code>GeometryReader</code> or <code>onScrollGeometryChange</code> and apply it as a normal modifier —
+it will cost more, which is precisely why <code>VisualEffect</code> excludes it.</p>
+<pre><code class="language-swift">// Basic fade and scale on scroll
+ScrollView {
+    LazyVStack(spacing: 16) {
+        ForEach(0..&lt;20) { index in
+            RoundedRectangle(cornerRadius: 16)
+                .fill(.blue.gradient)
+                .frame(height: 120)
+                .overlay {
+                    Text(&quot;Card \(index)&quot;)
+                        .font(.title2)
+                        .fontWeight(.bold)
+                        .foregroundStyle(.white)
+                }
+                .scrollTransition { content, phase in
+                    content
+                        .opacity(phase.isIdentity ? 1.0 : 0.3)
+                        .scaleEffect(phase.isIdentity ? 1.0 : 0.85)
+                }
+        }
+    }
+    .padding()
+}
+</code></pre>
+<h4 id="complete-example-cards-that-scale-up-as-they-enter">Complete Example: Cards That Scale Up as They Enter</h4>
+<pre><code class="language-swift">struct ScrollTransitionDemo: View {
+    struct CardItem: Identifiable {
+        let id = UUID()
+        let title: String
+        let subtitle: String
+        let color: Color
+    }
+
+    let items: [CardItem] = [
+        CardItem(title: &quot;Design&quot;, subtitle: &quot;Create beautiful interfaces&quot;, color: .blue),
+        CardItem(title: &quot;Develop&quot;, subtitle: &quot;Build with SwiftUI&quot;, color: .purple),
+        CardItem(title: &quot;Test&quot;, subtitle: &quot;Ensure quality everywhere&quot;, color: .orange),
+        CardItem(title: &quot;Deploy&quot;, subtitle: &quot;Ship to the App Store&quot;, color: .green),
+        CardItem(title: &quot;Monitor&quot;, subtitle: &quot;Track performance&quot;, color: .red),
+        CardItem(title: &quot;Iterate&quot;, subtitle: &quot;Improve continuously&quot;, color: .teal),
+        CardItem(title: &quot;Scale&quot;, subtitle: &quot;Grow your user base&quot;, color: .indigo),
+        CardItem(title: &quot;Optimize&quot;, subtitle: &quot;Fine-tune performance&quot;, color: .pink),
+    ]
+
+    var body: some View {
+        ScrollView {
+            LazyVStack(spacing: 20) {
+                ForEach(items) { item in
+                    HStack(spacing: 16) {
+                        Circle()
+                            .fill(item.color.gradient)
+                            .frame(width: 56, height: 56)
+                            .overlay {
+                                Image(systemName: &quot;star.fill&quot;)
+                                    .foregroundStyle(.white)
+                                    .font(.title3)
+                            }
+
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(item.title)
+                                .font(.headline)
+                            Text(item.subtitle)
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
+
+                        Spacer()
+
+                        Image(systemName: &quot;chevron.right&quot;)
+                            .foregroundStyle(.tertiary)
+                    }
+                    .padding()
+                    .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
+                    .scrollTransition(.animated(.spring(duration: 0.4))) { content, phase in
+                        content
+                            .opacity(phase.isIdentity ? 1.0 : 0.0)
+                            .scaleEffect(phase.isIdentity ? 1.0 : 0.75)
+                            .offset(y: phase == .bottomTrailing ? 30 : phase == .topLeading ? -30 : 0)
+                            .blur(radius: phase.isIdentity ? 0 : 2)
+                    }
+                }
+            }
+            .padding()
+        }
+    }
+}
+</code></pre>
+<h4 id="horizontal-scroll-with-rotation">Horizontal Scroll with Rotation</h4>
+<pre><code class="language-swift">ScrollView(.horizontal, showsIndicators: false) {
+    HStack(spacing: 12) {
+        ForEach(0..&lt;10) { index in
+            RoundedRectangle(cornerRadius: 20)
+                .fill(Color(hue: Double(index) / 10, saturation: 0.7, brightness: 0.9).gradient)
+                .frame(width: 200, height: 280)
+                .scrollTransition(.interactive) { content, phase in
+                    content
+                        .rotation3DEffect(
+                            .degrees(phase.value * 25),
+                            axis: (x: 0, y: 1, z: 0)
+                        )
+                        .scaleEffect(phase.isIdentity ? 1.0 : 0.9)
+                }
+        }
+    }
+    .padding(.horizontal)
+}
+.scrollTargetBehavior(.viewAligned)
+</code></pre>
+<hr />
+<h3 id="meshgradient-ios-18">MeshGradient (iOS 18+)</h3>
+<p><code>MeshGradient</code> creates a two-dimensional gradient defined by a grid of control points, each with an associated color. The colors blend smoothly across the mesh, creating organic, flowing gradients far more complex than linear or radial gradients.</p>
+<pre><code class="language-swift">// Static mesh gradient
+MeshGradient(
+    width: 3,
+    height: 3,
+    points: [
+        [0.0, 0.0], [0.5, 0.0], [1.0, 0.0],
+        [0.0, 0.5], [0.5, 0.5], [1.0, 0.5],
+        [0.0, 1.0], [0.5, 1.0], [1.0, 1.0]
+    ],
+    colors: [
+        .red,    .purple, .indigo,
+        .orange, .pink,   .blue,
+        .yellow, .mint,   .teal
+    ]
+)
+.frame(width: 300, height: 300)
+.clipShape(RoundedRectangle(cornerRadius: 24))
+</code></pre>
+<h4 id="complete-animated-mesh-gradient-background">Complete Animated Mesh Gradient Background</h4>
+<pre><code class="language-swift">struct AnimatedMeshBackground: View {
+    @State private var animationPhase: CGFloat = 0.0
+
+    var body: some View {
+        TimelineView(.animation) { context in
+            let time = context.date.timeIntervalSinceReferenceDate
+
+            MeshGradient(
+                width: 3,
+                height: 3,
+                points: [
+                    [0.0, 0.0],
+                    [Float(0.5 + 0.3 * cos(time * 0.7)), 0.0],
+                    [1.0, 0.0],
+
+                    [0.0, Float(0.5 + 0.2 * sin(time * 0.5))],
+                    [Float(0.5 + 0.2 * sin(time * 0.8)), Float(0.5 + 0.2 * cos(time * 0.6))],
+                    [1.0, Float(0.5 + 0.3 * sin(time * 0.4))],
+
+                    [0.0, 1.0],
+                    [Float(0.5 + 0.2 * sin(time * 0.9)), 1.0],
+                    [1.0, 1.0]
+                ],
+                colors: [
+                    .red,    .purple, .indigo,
+                    .orange, .pink,   .blue,
+                    .yellow, .mint,   .teal
+                ]
+            )
+            .ignoresSafeArea()
+        }
+    }
+}
+
+// Usage as a background
+struct MeshGradientScreen: View {
+    var body: some View {
+        ZStack {
+            AnimatedMeshBackground()
+
+            VStack(spacing: 16) {
+                Text(&quot;Welcome&quot;)
+                    .font(.largeTitle)
+                    .fontWeight(.bold)
+                    .foregroundStyle(.white)
+
+                Text(&quot;Beautiful animated gradients&quot;)
+                    .font(.title3)
+                    .foregroundStyle(.white.opacity(0.8))
+            }
+        }
+    }
+}
+</code></pre>
+<h4 id="mesh-gradient-with-color-cycling">Mesh Gradient with Color Cycling</h4>
+<pre><code class="language-swift">struct ColorCyclingMesh: View {
+    let baseColors: [Color] = [
+        .red, .orange, .yellow,
+        .green, .mint, .teal,
+        .blue, .indigo, .purple
+    ]
+
+    var body: some View {
+        TimelineView(.animation) { context in
+            let time = context.date.timeIntervalSinceReferenceDate
+            let shift = Int(time * 2) % baseColors.count
+
+            MeshGradient(
+                width: 3,
+                height: 3,
+                points: [
+                    [0.0, 0.0], [0.5, 0.0], [1.0, 0.0],
+                    [0.0, 0.5], [0.5, 0.5], [1.0, 0.5],
+                    [0.0, 1.0], [0.5, 1.0], [1.0, 1.0]
+                ],
+                colors: (0..&lt;9).map { index in
+                    baseColors[(index + shift) % baseColors.count]
+                }
+            )
+            .ignoresSafeArea()
+        }
+    }
+}
+</code></pre>
+<hr />
+<h3 id="textrenderer-protocol-ios-18">TextRenderer Protocol (iOS 18+)</h3>
+<p>The <code>TextRenderer</code> protocol lets you customize how each glyph or line of text is drawn. You conform to <code>TextRenderer</code> and implement <code>draw(layout:in:)</code>, where you receive the resolved text layout and a <code>GraphicsContext</code>. This enables per-character animations like typing effects, wave motion, and fade-in sequences.</p>
+<h4 id="textrenderer-protocol-basics">TextRenderer Protocol Basics</h4>
+<pre><code class="language-swift">import SwiftUI
+
+struct WaveTextRenderer: TextRenderer {
+    var timeOffset: Double
+
+    var animatableData: Double {
+        get { timeOffset }
+        set { timeOffset = newValue }
+    }
+
+    func draw(layout: Text.Layout, in context: inout GraphicsContext) {
+        for line in layout {
+            for run in line {
+                for (index, glyph) in run.enumerated() {
+                    var copy = context
+                    let yOffset = sin(Double(index) * 0.5 + timeOffset) * 5
+                    copy.translateBy(x: 0, y: yOffset)
+                    copy.draw(glyph)
+                }
+            }
+        }
+    }
+}
+</code></pre>
+<h4 id="complete-custom-text-animation-per-character-fade-in">Complete Custom Text Animation: Per-Character Fade-In</h4>
+<pre><code class="language-swift">import SwiftUI
+
+struct FadeInTextRenderer: TextRenderer {
+    var progress: Double
+
+    var animatableData: Double {
+        get { progress }
+        set { progress = newValue }
+    }
+
+    func draw(layout: Text.Layout, in context: inout GraphicsContext) {
+        var characterIndex = 0
+        var totalCharacters = 0
+
+        // Count total characters
+        for line in layout {
+            for run in line {
+                for _ in run {
+                    totalCharacters += 1
+                }
+            }
+        }
+
+        // Draw each character with staggered opacity
+        for line in layout {
+            for run in line {
+                for glyph in run {
+                    let threshold = Double(characterIndex) / Double(max(totalCharacters - 1, 1))
+                    let characterProgress = max(0, min(1, (progress - threshold) * Double(totalCharacters) / 3.0))
+
+                    var copy = context
+                    copy.opacity = characterProgress
+                    let yShift = (1.0 - characterProgress) * 10
+                    copy.translateBy(x: 0, y: yShift)
+                    copy.draw(glyph)
+
+                    characterIndex += 1
+                }
+            }
+        }
+    }
+}
+
+struct FadeInTextDemo: View {
+    @State private var progress: Double = 0.0
+
+    var body: some View {
+        VStack(spacing: 40) {
+            Text(&quot;Hello, SwiftUI!&quot;)
+                .font(.largeTitle)
+                .fontWeight(.bold)
+                .textRenderer(FadeInTextRenderer(progress: progress))
+
+            Button(&quot;Animate&quot;) {
+                progress = 0
+                withAnimation(.easeInOut(duration: 1.5)) {
+                    progress = 1.0
+                }
+            }
+            .buttonStyle(.borderedProminent)
+        }
+        .padding()
+    }
+}
+</code></pre>
+<h4 id="typing-effect-with-textrenderer">Typing Effect with TextRenderer</h4>
+<pre><code class="language-swift">struct TypingTextRenderer: TextRenderer {
+    var visibleCount: Int
+
+    var animatableData: Double {
+        get { Double(visibleCount) }
+        set { visibleCount = Int(newValue) }
+    }
+
+    func draw(layout: Text.Layout, in context: inout GraphicsContext) {
+        var characterIndex = 0
+        for line in layout {
+            for run in line {
+                for glyph in run {
+                    if characterIndex &lt; visibleCount {
+                        context.draw(glyph)
+                    }
+                    characterIndex += 1
+                }
+            }
+        }
+    }
+}
+
+struct TypingEffectDemo: View {
+    @State private var visibleCount = 0
+    private let message = &quot;Welcome to the future of text rendering.&quot;
+
+    var body: some View {
+        VStack(spacing: 30) {
+            Text(message)
+                .font(.title2)
+                .fontWeight(.medium)
+                .textRenderer(TypingTextRenderer(visibleCount: visibleCount))
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            Button(&quot;Start Typing&quot;) {
+                visibleCount = 0
+                withAnimation(.linear(duration: 2.0)) {
+                    visibleCount = message.count
+                }
+            }
+            .buttonStyle(.borderedProminent)
+        }
+        .padding()
+    }
+}
+</code></pre>
+<h4 id="wave-text-animation">Wave Text Animation</h4>
+<pre><code class="language-swift">struct WaveTextDemo: View {
+    @State private var wavePhase: Double = 0
+
+    var body: some View {
+        Text(&quot;SwiftUI Waves&quot;)
+            .font(.largeTitle)
+            .fontWeight(.heavy)
+            .textRenderer(WaveTextRenderer(timeOffset: wavePhase))
+            .onAppear {
+                withAnimation(.linear(duration: 2).repeatForever(autoreverses: false)) {
+                    wavePhase = .pi * 2
+                }
+            }
+    }
+}
+</code></pre>
+<p><strong>Key rules for TextRenderer:</strong>
+- The <code>animatableData</code> property is required if you want SwiftUI to interpolate your renderer over time.
+- <code>Text.Layout</code> provides an iterable hierarchy: layout -&gt; lines -&gt; runs -&gt; glyphs.
+- Use <code>GraphicsContext.draw(_:)</code> to render individual glyphs. You can modify the context (translate, rotate, set opacity) before each draw call.
+- TextRenderer only works with <code>Text</code> views. It does not apply to <code>TextField</code>, <code>Label</code>, or other text-containing views.</p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

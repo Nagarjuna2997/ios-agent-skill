@@ -1,0 +1,717 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CoreBluetooth — iOS Agent Skill</title><meta name="description" content="Repository guidance for Core Bluetooth. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-hardware-core-bluetooth.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="CoreBluetooth"><meta property="og:description" content="Repository guidance for Core Bluetooth. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-hardware-core-bluetooth.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "CoreBluetooth", "description": "Repository guidance for Core Bluetooth. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-hardware-core-bluetooth.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Networking and Connectivity · Reference guide</p><h1>CoreBluetooth</h1><p class="lead">Repository guidance for Core Bluetooth. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/frameworks/hardware/core-bluetooth.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#cbcentralmanager-setup-and-state-handling">CBCentralManager Setup and State Handling</a></li>
+<li><a href="#scanning-for-peripherals">Scanning for Peripherals</a></li>
+<li><a href="#connecting-and-discovering-servicescharacteristics">Connecting and Discovering Services/Characteristics</a></li>
+<li><a href="#reading-writing-and-subscribing-to-characteristics">Reading, Writing, and Subscribing to Characteristics</a></li>
+<li><a href="#cbperipheralmanager-acting-as-a-peripheral">CBPeripheralManager — Acting as a Peripheral</a></li>
+<li><a href="#background-ble-execution-modes">Background BLE Execution Modes</a></li>
+<li><a href="#error-handling-and-timeout-patterns">Error Handling and Timeout Patterns</a></li>
+<li><a href="#complete-ble-heart-rate-monitor-example">Complete BLE Heart Rate Monitor Example</a></li>
+</ul>
+</div>
+</aside><h2 id="cbcentralmanager-setup-and-state-handling">CBCentralManager Setup and State Handling</h2>
+<p>Add to <code>Info.plist</code>:
+- <code>NSBluetoothAlwaysUsageDescription</code> — required for Bluetooth access
+- <code>UIBackgroundModes</code> — include <code>bluetooth-central</code> and/or <code>bluetooth-peripheral</code> for background BLE</p>
+<pre><code class="language-swift">import CoreBluetooth
+
+@Observable
+class BLEManager: NSObject, CBCentralManagerDelegate {
+    static let shared = BLEManager()
+
+    var centralManager: CBCentralManager!
+    var isBluetoothReady = false
+    var bluetoothState: CBManagerState = .unknown
+    var discoveredPeripherals: [CBPeripheral] = []
+    var connectedPeripheral: CBPeripheral?
+
+    override init() {
+        super.init()
+        centralManager = CBCentralManager(delegate: self, queue: nil)
+    }
+
+    func centralManagerDidUpdateState(_ central: CBCentralManager) {
+        bluetoothState = central.state
+
+        switch central.state {
+        case .poweredOn:
+            isBluetoothReady = true
+        case .poweredOff:
+            isBluetoothReady = false
+        case .unauthorized:
+            isBluetoothReady = false
+        case .unsupported:
+            isBluetoothReady = false
+        case .resetting:
+            isBluetoothReady = false
+        case .unknown:
+            break
+        @unknown default:
+            break
+        }
+    }
+}
+</code></pre>
+<h2 id="scanning-for-peripherals">Scanning for Peripherals</h2>
+<pre><code class="language-swift">// Define service UUIDs to scan for
+let heartRateServiceUUID = CBUUID(string: &quot;180D&quot;)
+let batteryServiceUUID = CBUUID(string: &quot;180F&quot;)
+
+extension BLEManager {
+    func startScanning() {
+        guard isBluetoothReady else { return }
+
+        // Scan for specific services (recommended) or pass nil for all
+        centralManager.scanForPeripherals(
+            withServices: [heartRateServiceUUID],
+            options: [CBCentralManagerScanOptionAllowDuplicatesKey: false]
+        )
+    }
+
+    func stopScanning() {
+        centralManager.stopScan()
+    }
+
+    func centralManager(
+        _ central: CBCentralManager,
+        didDiscover peripheral: CBPeripheral,
+        advertisementData: [String: Any],
+        rssi RSSI: NSNumber
+    ) {
+        // Filter by signal strength
+        guard RSSI.intValue &gt; -80 else { return }
+
+        // Parse advertisement data
+        let localName = advertisementData[CBAdvertisementDataLocalNameKey] as? String
+        let isConnectable = advertisementData[CBAdvertisementDataIsConnectable] as? Bool ?? false
+
+        if !discoveredPeripherals.contains(where: { $0.identifier == peripheral.identifier }) {
+            discoveredPeripherals.append(peripheral)
+        }
+    }
+}
+</code></pre>
+<h2 id="connecting-and-discovering-servicescharacteristics">Connecting and Discovering Services/Characteristics</h2>
+<pre><code class="language-swift">extension BLEManager: CBPeripheralDelegate {
+    func connect(to peripheral: CBPeripheral) {
+        centralManager.stopScan()
+        peripheral.delegate = self
+        centralManager.connect(peripheral, options: nil)
+    }
+
+    func disconnect() {
+        guard let peripheral = connectedPeripheral else { return }
+        centralManager.cancelPeripheralConnection(peripheral)
+    }
+
+    // Connection callbacks
+    func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
+        connectedPeripheral = peripheral
+        // Discover services after connecting
+        peripheral.discoverServices([heartRateServiceUUID, batteryServiceUUID])
+    }
+
+    func centralManager(
+        _ central: CBCentralManager,
+        didFailToConnect peripheral: CBPeripheral,
+        error: Error?
+    ) {
+        connectedPeripheral = nil
+    }
+
+    func centralManager(
+        _ central: CBCentralManager,
+        didDisconnectPeripheral peripheral: CBPeripheral,
+        error: Error?
+    ) {
+        connectedPeripheral = nil
+        // Auto-reconnect if unexpected disconnect
+        if error != nil {
+            centralManager.connect(peripheral, options: nil)
+        }
+    }
+
+    // Service discovery
+    func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
+        guard let services = peripheral.services else { return }
+
+        for service in services {
+            peripheral.discoverCharacteristics(nil, for: service)
+        }
+    }
+
+    // Characteristic discovery
+    func peripheral(
+        _ peripheral: CBPeripheral,
+        didDiscoverCharacteristicsFor service: CBService,
+        error: Error?
+    ) {
+        guard let characteristics = service.characteristics else { return }
+
+        for characteristic in characteristics {
+            if characteristic.properties.contains(.notify) {
+                peripheral.setNotifyValue(true, for: characteristic)
+            }
+            if characteristic.properties.contains(.read) {
+                peripheral.readValue(for: characteristic)
+            }
+        }
+    }
+}
+</code></pre>
+<h2 id="reading-writing-and-subscribing-to-characteristics">Reading, Writing, and Subscribing to Characteristics</h2>
+<pre><code class="language-swift">let heartRateMeasurementUUID = CBUUID(string: &quot;2A37&quot;)
+let bodySensorLocationUUID = CBUUID(string: &quot;2A38&quot;)
+
+extension BLEManager {
+    // Read a characteristic value
+    func readCharacteristic(_ characteristic: CBCharacteristic) {
+        guard let peripheral = connectedPeripheral else { return }
+        peripheral.readValue(for: characteristic)
+    }
+
+    // Write a value to a characteristic
+    func writeCharacteristic(
+        _ characteristic: CBCharacteristic,
+        data: Data,
+        withResponse: Bool = true
+    ) {
+        guard let peripheral = connectedPeripheral else { return }
+        let type: CBCharacteristicWriteType = withResponse ? .withResponse : .withoutResponse
+        peripheral.writeValue(data, for: characteristic, type: type)
+    }
+
+    // Subscribe to notifications
+    func subscribeToCharacteristic(_ characteristic: CBCharacteristic) {
+        guard let peripheral = connectedPeripheral else { return }
+        peripheral.setNotifyValue(true, for: characteristic)
+    }
+
+    // Handle updated values
+    func peripheral(
+        _ peripheral: CBPeripheral,
+        didUpdateValueFor characteristic: CBCharacteristic,
+        error: Error?
+    ) {
+        guard let data = characteristic.value, error == nil else { return }
+
+        switch characteristic.uuid {
+        case heartRateMeasurementUUID:
+            let heartRate = parseHeartRate(from: data)
+            // Update UI with heart rate
+        case bodySensorLocationUUID:
+            let location = parseSensorLocation(from: data)
+            // Update UI with sensor location
+        default:
+            break
+        }
+    }
+
+    // Write confirmation
+    func peripheral(
+        _ peripheral: CBPeripheral,
+        didWriteValueFor characteristic: CBCharacteristic,
+        error: Error?
+    ) {
+        if let error {
+            // Handle write error
+        }
+    }
+
+    private func parseHeartRate(from data: Data) -&gt; Int {
+        let bytes = [UInt8](https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/frameworks/hardware/data)
+        // Bit 0 of first byte indicates format: 0 = UInt8, 1 = UInt16
+        let isUInt16 = (bytes[0] &amp; 0x01) == 1
+        if isUInt16 {
+            return Int(UInt16(bytes[1]) | (UInt16(bytes[2]) &lt;&lt; 8))
+        } else {
+            return Int(bytes[1])
+        }
+    }
+
+    private func parseSensorLocation(from data: Data) -&gt; String {
+        let bytes = [UInt8](https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/frameworks/hardware/data)
+        switch bytes[0] {
+        case 0: return &quot;Other&quot;
+        case 1: return &quot;Chest&quot;
+        case 2: return &quot;Wrist&quot;
+        case 3: return &quot;Finger&quot;
+        case 4: return &quot;Hand&quot;
+        case 5: return &quot;Ear Lobe&quot;
+        case 6: return &quot;Foot&quot;
+        default: return &quot;Unknown&quot;
+        }
+    }
+}
+</code></pre>
+<h2 id="cbperipheralmanager-acting-as-a-peripheral">CBPeripheralManager — Acting as a Peripheral</h2>
+<pre><code class="language-swift">@Observable
+class BLEPeripheralManager: NSObject, CBPeripheralManagerDelegate {
+    var peripheralManager: CBPeripheralManager!
+    var isAdvertising = false
+
+    private var heartRateCharacteristic: CBMutableCharacteristic?
+    private var subscribedCentrals: [CBCentral] = []
+
+    override init() {
+        super.init()
+        peripheralManager = CBPeripheralManager(delegate: self, queue: nil)
+    }
+
+    func peripheralManagerDidUpdateState(_ peripheral: CBPeripheralManager) {
+        guard peripheral.state == .poweredOn else { return }
+        setupServices()
+    }
+
+    private func setupServices() {
+        // Create characteristic
+        let heartRateChar = CBMutableCharacteristic(
+            type: CBUUID(string: &quot;2A37&quot;),
+            properties: [.notify, .read],
+            value: nil,
+            permissions: [.readable]
+        )
+        heartRateCharacteristic = heartRateChar
+
+        // Create service
+        let heartRateService = CBMutableService(
+            type: CBUUID(string: &quot;180D&quot;),
+            primary: true
+        )
+        heartRateService.characteristics = [heartRateChar]
+
+        peripheralManager.add(heartRateService)
+    }
+
+    func peripheralManager(
+        _ peripheral: CBPeripheralManager,
+        didAdd service: CBService,
+        error: Error?
+    ) {
+        guard error == nil else { return }
+        startAdvertising()
+    }
+
+    func startAdvertising() {
+        peripheralManager.startAdvertising([
+            CBAdvertisementDataServiceUUIDsKey: [CBUUID(string: &quot;180D&quot;)],
+            CBAdvertisementDataLocalNameKey: &quot;MyHeartMonitor&quot;
+        ])
+        isAdvertising = true
+    }
+
+    func stopAdvertising() {
+        peripheralManager.stopAdvertising()
+        isAdvertising = false
+    }
+
+    // Handle subscription from central
+    func peripheralManager(
+        _ peripheral: CBPeripheralManager,
+        central: CBCentral,
+        didSubscribeTo characteristic: CBCharacteristic
+    ) {
+        subscribedCentrals.append(central)
+    }
+
+    // Send updated heart rate to subscribers
+    func updateHeartRate(_ bpm: Int) {
+        guard let characteristic = heartRateCharacteristic else { return }
+
+        var data = Data()
+        data.append(UInt8(0x00)) // Flags: UInt8 format
+        data.append(UInt8(bpm))
+
+        let didSend = peripheralManager.updateValue(
+            data,
+            for: characteristic,
+            onSubscribedCentrals: nil
+        )
+
+        if !didSend {
+            // Queue is full; will retry when peripheralManagerIsReady is called
+        }
+    }
+
+    func peripheralManagerIsReadyToUpdateSubscribers(_ peripheral: CBPeripheralManager) {
+        // Retry sending queued updates
+    }
+}
+</code></pre>
+<h2 id="background-ble-execution-modes">Background BLE Execution Modes</h2>
+<p>Add to <code>Info.plist</code>:</p>
+<pre><code class="language-xml">&lt;key&gt;UIBackgroundModes&lt;/key&gt;
+&lt;array&gt;
+    &lt;string&gt;bluetooth-central&lt;/string&gt;
+    &lt;string&gt;bluetooth-peripheral&lt;/string&gt;
+&lt;/array&gt;
+</code></pre>
+<pre><code class="language-swift">// Initialize with state restoration for background operation
+class BackgroundBLEManager: NSObject, CBCentralManagerDelegate {
+    static let restorationIdentifier = &quot;com.app.ble.central&quot;
+
+    var centralManager: CBCentralManager!
+
+    override init() {
+        super.init()
+        centralManager = CBCentralManager(
+            delegate: self,
+            queue: nil,
+            options: [
+                CBCentralManagerOptionRestoreIdentifierKey: Self.restorationIdentifier
+            ]
+        )
+    }
+
+    func centralManagerDidUpdateState(_ central: CBCentralManager) {
+        if central.state == .poweredOn {
+            // Scanning in background requires specific service UUIDs
+            central.scanForPeripherals(
+                withServices: [CBUUID(string: &quot;180D&quot;)],
+                options: [CBCentralManagerScanOptionAllowDuplicatesKey: false]
+            )
+        }
+    }
+
+    // State restoration — called when app is relaunched in background
+    func centralManager(
+        _ central: CBCentralManager,
+        willRestoreState dict: [String: Any]
+    ) {
+        // Restore previously connected peripherals
+        if let peripherals = dict[CBCentralManagerRestoredStatePeripheralsKey] as? [CBPeripheral] {
+            for peripheral in peripherals {
+                peripheral.delegate = self // reassign delegate
+                // Re-discover services if needed
+                if peripheral.state == .connected {
+                    peripheral.discoverServices([CBUUID(string: &quot;180D&quot;)])
+                }
+            }
+        }
+
+        // Restore scan services
+        if let scanServices = dict[CBCentralManagerRestoredStateScanServicesKey] as? [CBUUID] {
+            // App was scanning for these services
+        }
+    }
+}
+
+extension BackgroundBLEManager: CBPeripheralDelegate {
+    func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {}
+    func peripheral(
+        _ peripheral: CBPeripheral,
+        didDiscoverCharacteristicsFor service: CBService,
+        error: Error?
+    ) {}
+    func peripheral(
+        _ peripheral: CBPeripheral,
+        didUpdateValueFor characteristic: CBCharacteristic,
+        error: Error?
+    ) {}
+}
+</code></pre>
+<h2 id="error-handling-and-timeout-patterns">Error Handling and Timeout Patterns</h2>
+<pre><code class="language-swift">enum BLEError: LocalizedError {
+    case bluetoothUnavailable
+    case connectionTimeout
+    case connectionFailed(Error?)
+    case serviceNotFound
+    case characteristicNotFound
+    case writeFailed(Error?)
+    case readFailed(Error?)
+
+    var errorDescription: String? {
+        switch self {
+        case .bluetoothUnavailable:
+            return &quot;Bluetooth is not available on this device.&quot;
+        case .connectionTimeout:
+            return &quot;Connection to the device timed out.&quot;
+        case .connectionFailed(let error):
+            return &quot;Failed to connect: \(error?.localizedDescription ?? &quot;Unknown error&quot;)&quot;
+        case .serviceNotFound:
+            return &quot;Required service not found on device.&quot;
+        case .characteristicNotFound:
+            return &quot;Required characteristic not found.&quot;
+        case .writeFailed(let error):
+            return &quot;Write failed: \(error?.localizedDescription ?? &quot;Unknown error&quot;)&quot;
+        case .readFailed(let error):
+            return &quot;Read failed: \(error?.localizedDescription ?? &quot;Unknown error&quot;)&quot;
+        }
+    }
+}
+
+actor BLEConnectionManager {
+    private var connectionContinuation: CheckedContinuation&lt;CBPeripheral, Error&gt;?
+    private var centralManager: CBCentralManager
+    private var delegate: BLEConnectionDelegate
+
+    init(centralManager: CBCentralManager) {
+        self.centralManager = centralManager
+        self.delegate = BLEConnectionDelegate()
+    }
+
+    func connect(to peripheral: CBPeripheral, timeout: Duration = .seconds(10)) async throws -&gt; CBPeripheral {
+        try await withThrowingTaskGroup(of: CBPeripheral.self) { group in
+            group.addTask {
+                try await withCheckedThrowingContinuation { continuation in
+                    Task { await self.storeContinuation(continuation) }
+                    self.centralManager.connect(peripheral, options: nil)
+                }
+            }
+
+            group.addTask {
+                try await Task.sleep(for: timeout)
+                throw BLEError.connectionTimeout
+            }
+
+            let result = try await group.next()!
+            group.cancelAll()
+            return result
+        }
+    }
+
+    private func storeContinuation(_ continuation: CheckedContinuation&lt;CBPeripheral, Error&gt;) {
+        connectionContinuation = continuation
+    }
+
+    func didConnect(_ peripheral: CBPeripheral) {
+        connectionContinuation?.resume(returning: peripheral)
+        connectionContinuation = nil
+    }
+
+    func didFailToConnect(_ peripheral: CBPeripheral, error: Error?) {
+        connectionContinuation?.resume(throwing: BLEError.connectionFailed(error))
+        connectionContinuation = nil
+    }
+}
+
+private class BLEConnectionDelegate: NSObject {}
+</code></pre>
+<h2 id="complete-ble-heart-rate-monitor-example">Complete BLE Heart Rate Monitor Example</h2>
+<pre><code class="language-swift">import SwiftUI
+import CoreBluetooth
+
+@Observable
+class HeartRateMonitor: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
+    var heartRate: Int = 0
+    var sensorLocation: String = &quot;Unknown&quot;
+    var isConnected = false
+    var isScanning = false
+    var discoveredDevices: [CBPeripheral] = []
+    var statusMessage = &quot;Tap Scan to find devices&quot;
+
+    private var centralManager: CBCentralManager!
+    private var heartRatePeripheral: CBPeripheral?
+
+    private let heartRateServiceUUID = CBUUID(string: &quot;180D&quot;)
+    private let heartRateMeasurementUUID = CBUUID(string: &quot;2A37&quot;)
+    private let bodySensorLocationUUID = CBUUID(string: &quot;2A38&quot;)
+
+    override init() {
+        super.init()
+        centralManager = CBCentralManager(delegate: self, queue: nil)
+    }
+
+    func startScan() {
+        guard centralManager.state == .poweredOn else {
+            statusMessage = &quot;Bluetooth is not ready&quot;
+            return
+        }
+        discoveredDevices.removeAll()
+        centralManager.scanForPeripherals(
+            withServices: [heartRateServiceUUID],
+            options: nil
+        )
+        isScanning = true
+        statusMessage = &quot;Scanning...&quot;
+    }
+
+    func stopScan() {
+        centralManager.stopScan()
+        isScanning = false
+    }
+
+    func connect(to peripheral: CBPeripheral) {
+        stopScan()
+        heartRatePeripheral = peripheral
+        peripheral.delegate = self
+        centralManager.connect(peripheral, options: nil)
+        statusMessage = &quot;Connecting to \(peripheral.name ?? &quot;device&quot;)...&quot;
+    }
+
+    func disconnectDevice() {
+        guard let peripheral = heartRatePeripheral else { return }
+        centralManager.cancelPeripheralConnection(peripheral)
+    }
+
+    // MARK: - CBCentralManagerDelegate
+
+    func centralManagerDidUpdateState(_ central: CBCentralManager) {
+        switch central.state {
+        case .poweredOn:
+            statusMessage = &quot;Ready to scan&quot;
+        case .poweredOff:
+            statusMessage = &quot;Bluetooth is off&quot;
+        case .unauthorized:
+            statusMessage = &quot;Bluetooth permission denied&quot;
+        default:
+            statusMessage = &quot;Bluetooth unavailable&quot;
+        }
+    }
+
+    func centralManager(
+        _ central: CBCentralManager,
+        didDiscover peripheral: CBPeripheral,
+        advertisementData: [String: Any],
+        rssi RSSI: NSNumber
+    ) {
+        if !discoveredDevices.contains(where: { $0.identifier == peripheral.identifier }) {
+            discoveredDevices.append(peripheral)
+        }
+    }
+
+    func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
+        isConnected = true
+        statusMessage = &quot;Connected to \(peripheral.name ?? &quot;device&quot;)&quot;
+        peripheral.discoverServices([heartRateServiceUUID])
+    }
+
+    func centralManager(
+        _ central: CBCentralManager,
+        didDisconnectPeripheral peripheral: CBPeripheral,
+        error: Error?
+    ) {
+        isConnected = false
+        heartRate = 0
+        statusMessage = &quot;Disconnected&quot;
+    }
+
+    // MARK: - CBPeripheralDelegate
+
+    func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
+        guard let services = peripheral.services else { return }
+        for service in services where service.uuid == heartRateServiceUUID {
+            peripheral.discoverCharacteristics(
+                [heartRateMeasurementUUID, bodySensorLocationUUID],
+                for: service
+            )
+        }
+    }
+
+    func peripheral(
+        _ peripheral: CBPeripheral,
+        didDiscoverCharacteristicsFor service: CBService,
+        error: Error?
+    ) {
+        guard let characteristics = service.characteristics else { return }
+        for characteristic in characteristics {
+            switch characteristic.uuid {
+            case heartRateMeasurementUUID:
+                peripheral.setNotifyValue(true, for: characteristic)
+            case bodySensorLocationUUID:
+                peripheral.readValue(for: characteristic)
+            default:
+                break
+            }
+        }
+    }
+
+    func peripheral(
+        _ peripheral: CBPeripheral,
+        didUpdateValueFor characteristic: CBCharacteristic,
+        error: Error?
+    ) {
+        guard let data = characteristic.value else { return }
+        let bytes = [UInt8](https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/frameworks/hardware/data)
+
+        switch characteristic.uuid {
+        case heartRateMeasurementUUID:
+            let isUInt16 = (bytes[0] &amp; 0x01) == 1
+            heartRate = isUInt16
+                ? Int(UInt16(bytes[1]) | (UInt16(bytes[2]) &lt;&lt; 8))
+                : Int(bytes[1])
+
+        case bodySensorLocationUUID:
+            let locations = [&quot;Other&quot;, &quot;Chest&quot;, &quot;Wrist&quot;, &quot;Finger&quot;, &quot;Hand&quot;, &quot;Ear Lobe&quot;, &quot;Foot&quot;]
+            let index = Int(bytes[0])
+            sensorLocation = index &lt; locations.count ? locations[index] : &quot;Unknown&quot;
+
+        default:
+            break
+        }
+    }
+}
+
+struct HeartRateView: View {
+    @State private var monitor = HeartRateMonitor()
+
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 24) {
+                // Heart rate display
+                VStack(spacing: 8) {
+                    Image(systemName: &quot;heart.fill&quot;)
+                        .font(.system(size: 60))
+                        .foregroundStyle(.red)
+                        .symbolEffect(.pulse, isActive: monitor.isConnected)
+
+                    Text(&quot;\(monitor.heartRate)&quot;)
+                        .font(.system(size: 72, weight: .bold, design: .rounded))
+                        .contentTransition(.numericText())
+                        .animation(.spring, value: monitor.heartRate)
+
+                    Text(&quot;BPM&quot;)
+                        .font(.title3)
+                        .foregroundStyle(.secondary)
+
+                    Text(&quot;Sensor: \(monitor.sensorLocation)&quot;)
+                        .font(.caption)
+                        .foregroundStyle(.tertiary)
+                }
+                .padding()
+
+                Text(monitor.statusMessage)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+
+                // Device list
+                if !monitor.discoveredDevices.isEmpty {
+                    List(monitor.discoveredDevices, id: \.identifier) { device in
+                        Button {
+                            monitor.connect(to: device)
+                        } label: {
+                            HStack {
+                                Image(systemName: &quot;heart.circle&quot;)
+                                Text(device.name ?? &quot;Unknown Device&quot;)
+                                Spacer()
+                                Image(systemName: &quot;chevron.right&quot;)
+                                    .foregroundStyle(.tertiary)
+                            }
+                        }
+                    }
+                    .listStyle(.insetGrouped)
+                }
+
+                Spacer()
+            }
+            .navigationTitle(&quot;Heart Rate&quot;)
+            .toolbar {
+                if monitor.isConnected {
+                    Button(&quot;Disconnect&quot;) {
+                        monitor.disconnectDevice()
+                    }
+                } else {
+                    Button(monitor.isScanning ? &quot;Stop&quot; : &quot;Scan&quot;) {
+                        if monitor.isScanning {
+                            monitor.stopScan()
+                        } else {
+                            monitor.startScan()
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+</code></pre></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

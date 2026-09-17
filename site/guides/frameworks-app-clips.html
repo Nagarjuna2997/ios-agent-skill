@@ -1,0 +1,808 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>App Clips — iOS Agent Skill</title><meta name="description" content="Repository guidance for App Clips. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-app-clips.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="App Clips"><meta property="og:description" content="Repository guidance for App Clips. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-app-clips.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "App Clips", "description": "Repository guidance for App Clips. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-app-clips.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Core UI and Apps · Reference guide</p><h1>App Clips</h1><p class="lead">Repository guidance for App Clips. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/frameworks/app-clips.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#app-clip-target-setup-in-xcode">App Clip Target Setup in Xcode</a></li>
+<li><a href="#invocation-urls-and-advanced-matching">Invocation URLs and Advanced Matching</a></li>
+<li><a href="#nfc-tag-and-qr-code-triggers">NFC Tag and QR Code Triggers</a></li>
+<li><a href="#app-clip-card-configuration">App Clip Card Configuration</a></li>
+<li><a href="#size-limitations-15-mb">Size Limitations (15 MB)</a></li>
+<li><a href="#app-group-data-handoff-to-full-app">App Group Data Handoff to Full App</a></li>
+<li><a href="#location-confirmation-with-clappclipcodelocation">Location Confirmation with CLAppClipCodeLocation</a></li>
+<li><a href="#skoverlay-for-full-app-promotion">SKOverlay for Full App Promotion</a></li>
+<li><a href="#complete-app-clip-example">Complete App Clip Example</a></li>
+<li><a href="#key-considerations">Key Considerations</a></li>
+</ul>
+</div>
+</aside><p>App Clips are lightweight versions of your app that users can discover and launch instantly from NFC tags, QR codes, Safari Smart Banners, Maps, and Messages. They provide focused functionality without requiring a full app download, with a strict 15 MB size limit.</p>
+<h2 id="app-clip-target-setup-in-xcode">App Clip Target Setup in Xcode</h2>
+<p>An App Clip is a separate target in your Xcode project that shares code with the main app through shared frameworks or file membership.</p>
+<pre><code class="language-swift">// 1. In Xcode: File &gt; New &gt; Target &gt; App Clip
+// 2. The App Clip target gets its own bundle identifier:
+//    Main app: com.example.myapp
+//    App Clip: com.example.myapp.Clip
+
+// 3. App Clip entry point — same as a regular SwiftUI app
+import SwiftUI
+
+@main
+struct MyAppClip: App {
+    var body: some Scene {
+        WindowGroup {
+            AppClipRootView()
+                .onContinueUserActivity(NSUserActivityTypeBrowsingWeb) { activity in
+                    // Handle the invocation URL
+                    handleInvocation(activity)
+                }
+        }
+    }
+
+    private func handleInvocation(_ activity: NSUserActivity) {
+        guard let url = activity.webpageURL else { return }
+        // Parse the URL to determine what to show
+        // e.g., https://example.com/store/123 → show store 123
+        AppClipRouter.shared.route(to: url)
+    }
+}
+
+// 4. Share code between the main app and App Clip
+// Use a shared framework or add files to both targets
+// In Build Settings, set:
+//   _APP_CLIP = 1  (for the App Clip target)
+
+// Conditional compilation for target-specific code
+#if APPCLIP
+let isAppClip = true
+#else
+let isAppClip = false
+#endif
+</code></pre>
+<h2 id="invocation-urls-and-advanced-matching">Invocation URLs and Advanced Matching</h2>
+<p>Configure invocation URLs in App Store Connect. Each URL maps to a specific App Clip experience.</p>
+<pre><code class="language-swift">import SwiftUI
+
+// URL routing for the App Clip
+@Observable
+class AppClipRouter {
+    static let shared = AppClipRouter()
+
+    var currentExperience: AppClipExperience = .default
+
+    enum AppClipExperience {
+        case `default`
+        case store(storeID: String)
+        case product(productID: String)
+        case orderPickup(orderID: String)
+    }
+
+    func route(to url: URL) {
+        guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
+            currentExperience = .default
+            return
+        }
+
+        let pathComponents = components.path.split(separator: &quot;/&quot;).map(String.init)
+
+        // Match URL patterns:
+        // https://example.com/store/123        → Store experience
+        // https://example.com/product/abc      → Product experience
+        // https://example.com/order/pickup/789 → Order pickup
+        switch (pathComponents.first, pathComponents.dropFirst().first) {
+        case (&quot;store&quot;, let storeID?):
+            currentExperience = .store(storeID: storeID)
+        case (&quot;product&quot;, let productID?):
+            currentExperience = .product(productID: productID)
+        case (&quot;order&quot;, _):
+            if let orderID = pathComponents.last, pathComponents.contains(&quot;pickup&quot;) {
+                currentExperience = .orderPickup(orderID: orderID)
+            }
+        default:
+            currentExperience = .default
+        }
+    }
+}
+
+// Root view that renders based on the invocation URL
+struct AppClipRootView: View {
+    var router = AppClipRouter.shared
+
+    var body: some View {
+        Group {
+            switch router.currentExperience {
+            case .default:
+                DefaultExperienceView()
+            case .store(let storeID):
+                StoreExperienceView(storeID: storeID)
+            case .product(let productID):
+                ProductExperienceView(productID: productID)
+            case .orderPickup(let orderID):
+                OrderPickupView(orderID: orderID)
+            }
+        }
+    }
+}
+</code></pre>
+<h2 id="nfc-tag-and-qr-code-triggers">NFC Tag and QR Code Triggers</h2>
+<p>App Clips can be triggered by NFC tags and QR codes that encode your registered invocation URL.</p>
+<pre><code class="language-swift">// NFC Tag Configuration:
+// 1. Write an NDEF record to the NFC tag containing your invocation URL
+// 2. The URL must match a registered App Clip experience in App Store Connect
+// 3. Use Apple App Clip Codes (designed NFC + visual codes) for best UX
+
+// QR Code Generation (for server or marketing team):
+// The QR code simply encodes the invocation URL
+// Example: https://appclip.example.com/store/downtown
+
+// Reading NFC tag data within the App Clip (if needed)
+import CoreNFC
+
+class NFCReader: NSObject, NFCNDEFReaderSessionDelegate {
+    var session: NFCNDEFReaderSession?
+
+    func startScanning() {
+        guard NFCNDEFReaderSession.readingAvailable else {
+            print(&quot;NFC not available on this device&quot;)
+            return
+        }
+
+        session = NFCNDEFReaderSession(
+            delegate: self,
+            queue: nil,
+            invalidateAfterFirstRead: true
+        )
+        session?.alertMessage = &quot;Hold your iPhone near the tag.&quot;
+        session?.begin()
+    }
+
+    func readerSession(_ session: NFCNDEFReaderSession, didDetectNDEFs messages: [NFCNDEFMessage]) {
+        for message in messages {
+            for record in message.records {
+                if let url = record.wellKnownTypeURIPayload() {
+                    print(&quot;NFC URL: \(url)&quot;)
+                    Task { @MainActor in
+                        AppClipRouter.shared.route(to: url)
+                    }
+                }
+            }
+        }
+    }
+
+    func readerSession(_ session: NFCNDEFReaderSession, didInvalidateWithError error: Error) {
+        print(&quot;NFC session invalidated: \(error.localizedDescription)&quot;)
+    }
+}
+</code></pre>
+<h2 id="app-clip-card-configuration">App Clip Card Configuration</h2>
+<p>The App Clip Card is the system UI that appears before the App Clip launches. Configure it in App Store Connect.</p>
+<pre><code class="language-swift">// App Clip Card metadata is set in App Store Connect, not in code:
+// - Header image: 3000 x 2000 px recommended
+// - Title: Your app name or experience title
+// - Subtitle: Brief description (up to 56 characters)
+// - Call-to-action button: &quot;Open&quot; (default) or custom text
+
+// In your app, provide metadata for the card via the associated website
+// Add this to your webpage's &lt;head&gt;:
+//
+// &lt;meta name=&quot;apple-itunes-app&quot;
+//       content=&quot;app-id=123456789,
+//                app-clip-bundle-id=com.example.myapp.Clip,
+//                app-clip-display=card&quot;&gt;
+
+// Smart App Banner for Safari (also triggers App Clip Card)
+// &lt;meta name=&quot;apple-itunes-app&quot; content=&quot;app-id=123456789&quot;&gt;
+
+// Programmatically check if running as App Clip
+import StoreKit
+
+struct AppClipBanner: View {
+    @State private var showingFullAppOverlay = false
+
+    var body: some View {
+        VStack {
+            Text(&quot;You're using the App Clip&quot;)
+                .font(.headline)
+            Text(&quot;Download the full app for all features.&quot;)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+        }
+    }
+}
+</code></pre>
+<h2 id="size-limitations-15-mb">Size Limitations (15 MB)</h2>
+<p>App Clips must be under 15 MB (uncompressed, thinned for a specific device). Strategies to stay within the limit.</p>
+<pre><code class="language-swift">// Strategies to minimize App Clip size:
+
+// 1. Share only necessary code — don't include unused frameworks
+// In Build Phases, only include files the App Clip needs
+
+// 2. Use on-demand resources for images and assets
+// In the asset catalog, assign assets to &quot;App Clip&quot; tag
+// Load them at runtime:
+import Foundation
+
+func loadOnDemandImage(tag: String) async throws -&gt; Data {
+    let request = NSBundleResourceRequest(tags: [tag])
+    try await request.beginAccessingResources()
+    // Access the resource
+    guard let url = Bundle.main.url(forResource: &quot;hero&quot;, withExtension: &quot;jpg&quot;) else {
+        throw AppClipError.resourceNotFound
+    }
+    let data = try Data(contentsOf: url)
+    request.endAccessingResources()
+    return data
+}
+
+enum AppClipError: Error {
+    case resourceNotFound
+}
+
+// 3. Use SF Symbols instead of custom images where possible
+// 4. Use system fonts instead of bundled custom fonts
+// 5. Remove unused localizations
+// 6. Use Asset Catalog slicing for images
+// 7. Check size: Product &gt; Archive &gt; Distribute App &gt; App Thinning report
+
+// 8. Verify the thinned size:
+// $ xcrun app-clip-size --app-clip-path path/to/MyAppClip.app
+</code></pre>
+<h2 id="app-group-data-handoff-to-full-app">App Group Data Handoff to Full App</h2>
+<p>Share data from the App Clip to the full app using App Groups so users don't lose progress.</p>
+<pre><code class="language-swift">import Foundation
+
+// Both the App Clip and main app must have the same App Group entitlement:
+// group.com.example.myapp.shared
+
+struct SharedDataManager {
+    static let suiteName = &quot;group.com.example.myapp.shared&quot;
+
+    // Save data from App Clip for the full app to read
+    static func saveFromAppClip(userPreferences: UserPreferences) {
+        guard let defaults = UserDefaults(suiteName: suiteName) else { return }
+
+        if let data = try? JSONEncoder().encode(userPreferences) {
+            defaults.set(data, forKey: &quot;userPreferences&quot;)
+        }
+        defaults.set(true, forKey: &quot;hasAppClipData&quot;)
+        defaults.set(Date(), forKey: &quot;appClipLastUsed&quot;)
+    }
+
+    // Read App Clip data from the full app
+    static func loadAppClipData() -&gt; UserPreferences? {
+        guard let defaults = UserDefaults(suiteName: suiteName) else { return nil }
+        guard defaults.bool(forKey: &quot;hasAppClipData&quot;) else { return nil }
+
+        guard let data = defaults.data(forKey: &quot;userPreferences&quot;) else { return nil }
+        return try? JSONDecoder().decode(UserPreferences.self, from: data)
+    }
+
+    // Share files via the shared container
+    static var sharedContainerURL: URL? {
+        FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: suiteName)
+    }
+
+    static func saveOrderData(_ order: Order) throws {
+        guard let containerURL = sharedContainerURL else {
+            throw AppClipError.resourceNotFound
+        }
+        let fileURL = containerURL.appendingPathComponent(&quot;pending_order.json&quot;)
+        let data = try JSONEncoder().encode(order)
+        try data.write(to: fileURL)
+    }
+
+    static func loadPendingOrder() throws -&gt; Order? {
+        guard let containerURL = sharedContainerURL else { return nil }
+        let fileURL = containerURL.appendingPathComponent(&quot;pending_order.json&quot;)
+        guard FileManager.default.fileExists(atPath: fileURL.path) else { return nil }
+        let data = try Data(contentsOf: fileURL)
+        return try JSONDecoder().decode(Order.self, from: data)
+    }
+}
+
+struct UserPreferences: Codable {
+    var favoriteStoreID: String?
+    var preferredPaymentMethod: String?
+    var hasCompletedOnboarding: Bool
+}
+
+struct Order: Codable {
+    let id: String
+    let items: [OrderItem]
+    let total: Decimal
+    let storeID: String
+}
+
+struct OrderItem: Codable {
+    let name: String
+    let quantity: Int
+    let price: Decimal
+}
+</code></pre>
+<h2 id="location-confirmation-with-clappclipcodelocation">Location Confirmation with CLAppClipCodeLocation</h2>
+<p>Verify that the user is physically present at the expected location to prevent relay attacks.</p>
+<pre><code class="language-swift">import AppClip
+import CoreLocation
+
+class LocationVerifier {
+    func verifyLocation(for activity: NSUserActivity) async -&gt; Bool {
+        // Check if the invocation included location data
+        guard let payload = activity.appClipActivationPayload else {
+            print(&quot;No App Clip activation payload&quot;)
+            return false
+        }
+
+        // Define the expected region (set in App Store Connect)
+        let expectedCenter = CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194)
+        let expectedRegion = CLCircularRegion(
+            center: expectedCenter,
+            radius: 100,  // meters
+            identifier: &quot;store-downtown&quot;
+        )
+
+        do {
+            try await payload.confirmAcquired(in: expectedRegion)
+            print(&quot;Location confirmed — user is at the expected location&quot;)
+            return true
+        } catch let error as APActivationPayloadError {
+            switch error.code {
+            case .disallowed:
+                print(&quot;User denied location access&quot;)
+            case .doesNotMatch:
+                print(&quot;User is not at the expected location&quot;)
+            @unknown default:
+                print(&quot;Unknown location error: \(error)&quot;)
+            }
+            return false
+        } catch {
+            print(&quot;Location verification failed: \(error)&quot;)
+            return false
+        }
+    }
+}
+
+// Use in the App Clip's onContinueUserActivity handler
+struct LocationAwareAppClip: View {
+    @State private var isVerified = false
+    @State private var isVerifying = true
+    let verifier = LocationVerifier()
+
+    var body: some View {
+        Group {
+            if isVerifying {
+                ProgressView(&quot;Verifying location...&quot;)
+            } else if isVerified {
+                StoreExperienceView(storeID: &quot;downtown&quot;)
+            } else {
+                ContentUnavailableView(
+                    &quot;Location Required&quot;,
+                    systemImage: &quot;location.slash&quot;,
+                    description: Text(&quot;Please visit the store to use this App Clip.&quot;)
+                )
+            }
+        }
+        .onContinueUserActivity(NSUserActivityTypeBrowsingWeb) { activity in
+            Task {
+                isVerified = await verifier.verifyLocation(for: activity)
+                isVerifying = false
+            }
+        }
+    }
+}
+</code></pre>
+<h2 id="skoverlay-for-full-app-promotion">SKOverlay for Full App Promotion</h2>
+<p>Show an App Store overlay that encourages users to download the full app.</p>
+<pre><code class="language-swift">import StoreKit
+import SwiftUI
+
+// SwiftUI approach using appStoreOverlay
+struct AppClipWithOverlay: View {
+    @State private var showOverlay = false
+
+    var body: some View {
+        VStack(spacing: 20) {
+            Text(&quot;Thanks for your order!&quot;)
+                .font(.title.bold())
+
+            Text(&quot;Download the full app to earn rewards, track orders, and more.&quot;)
+                .font(.body)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal)
+
+            Button(&quot;Get the Full App&quot;) {
+                showOverlay = true
+            }
+            .buttonStyle(.borderedProminent)
+        }
+        .appStoreOverlay(isPresented: $showOverlay) {
+            SKOverlay.AppClipConfiguration(position: .bottom)
+        }
+        .onAppear {
+            // Show overlay automatically after a delay
+            Task {
+                try? await Task.sleep(for: .seconds(3))
+                showOverlay = true
+            }
+        }
+    }
+}
+
+// UIKit approach for more control
+import UIKit
+
+class AppClipOverlayViewController: UIViewController, SKOverlayDelegate {
+    private var overlay: SKOverlay?
+
+    func presentFullAppOverlay() {
+        let config = SKOverlay.AppClipConfiguration(position: .bottom)
+        overlay = SKOverlay(configuration: config)
+        overlay?.delegate = self
+
+        guard let windowScene = view.window?.windowScene else { return }
+        overlay?.present(in: windowScene)
+    }
+
+    func dismissOverlay() {
+        guard let windowScene = view.window?.windowScene else { return }
+        SKOverlay.dismiss(in: windowScene)
+    }
+
+    // SKOverlayDelegate
+    func storeOverlayDidFinishDismissal(_ overlay: SKOverlay, transitionContext: SKOverlay.TransitionContext) {
+        print(&quot;Overlay dismissed&quot;)
+    }
+
+    func storeOverlayDidFinishPresentation(_ overlay: SKOverlay, transitionContext: SKOverlay.TransitionContext) {
+        print(&quot;Overlay presented&quot;)
+    }
+
+    func storeOverlay(_ overlay: SKOverlay, didFailToLoadWithError error: Error) {
+        print(&quot;Overlay failed to load: \(error)&quot;)
+    }
+}
+</code></pre>
+<h2 id="complete-app-clip-example">Complete App Clip Example</h2>
+<p>A full coffee shop ordering App Clip that demonstrates invocation handling, location verification, ordering flow, data handoff, and full app promotion.</p>
+<pre><code class="language-swift">import SwiftUI
+import AppClip
+import StoreKit
+
+// MARK: - App Entry Point
+
+@main
+struct CoffeeShopClip: App {
+    @State private var router = ClipRouter()
+
+    var body: some Scene {
+        WindowGroup {
+            ClipContentView()
+                .environment(router)
+                .onContinueUserActivity(NSUserActivityTypeBrowsingWeb) { activity in
+                    router.handleInvocation(activity)
+                }
+        }
+    }
+}
+
+// MARK: - Router
+
+@Observable
+class ClipRouter {
+    var shopID: String?
+    var isLocationVerified = false
+    var isLoading = true
+
+    func handleInvocation(_ activity: NSUserActivity) {
+        guard let url = activity.webpageURL,
+              let components = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
+            isLoading = false
+            return
+        }
+
+        // Parse shop ID from URL: https://coffeeapp.example.com/shop/downtown
+        let parts = components.path.split(separator: &quot;/&quot;).map(String.init)
+        if let shopIndex = parts.firstIndex(of: &quot;shop&quot;),
+           shopIndex + 1 &lt; parts.count {
+            shopID = parts[shopIndex + 1]
+        }
+
+        // Verify location
+        Task {
+            await verifyLocation(activity)
+            isLoading = false
+        }
+    }
+
+    private func verifyLocation(_ activity: NSUserActivity) async {
+        guard let payload = activity.appClipActivationPayload else {
+            isLocationVerified = true  // Allow without location for testing
+            return
+        }
+
+        let region = CLCircularRegion(
+            center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194),
+            radius: 200,
+            identifier: &quot;shop&quot;
+        )
+
+        do {
+            try await payload.confirmAcquired(in: region)
+            isLocationVerified = true
+        } catch {
+            isLocationVerified = false
+        }
+    }
+}
+
+// MARK: - Content View
+
+struct ClipContentView: View {
+    @Environment(ClipRouter.self) private var router
+
+    var body: some View {
+        Group {
+            if router.isLoading {
+                ProgressView(&quot;Loading...&quot;)
+            } else if let shopID = router.shopID {
+                CoffeeOrderView(shopID: shopID)
+            } else {
+                ContentUnavailableView(
+                    &quot;Scan to Order&quot;,
+                    systemImage: &quot;qrcode.viewfinder&quot;,
+                    description: Text(&quot;Scan a QR code at a participating coffee shop to start ordering.&quot;)
+                )
+            }
+        }
+    }
+}
+
+// MARK: - Order View
+
+struct CoffeeOrderView: View {
+    let shopID: String
+
+    @State private var menuItems: [MenuItem] = MenuItem.sampleMenu
+    @State private var cart: [CartItem] = []
+    @State private var showCheckout = false
+    @State private var showFullAppOverlay = false
+
+    var cartTotal: Decimal {
+        cart.reduce(0) { $0 + $1.menuItem.price * Decimal($1.quantity) }
+    }
+
+    var body: some View {
+        NavigationStack {
+            List {
+                Section(&quot;Menu&quot;) {
+                    ForEach(menuItems) { item in
+                        MenuItemRow(item: item) {
+                            addToCart(item)
+                        }
+                    }
+                }
+
+                if !cart.isEmpty {
+                    Section(&quot;Your Order&quot;) {
+                        ForEach(cart) { cartItem in
+                            HStack {
+                                Text(cartItem.menuItem.name)
+                                Spacer()
+                                Text(&quot;\(cartItem.quantity)x&quot;)
+                                    .foregroundStyle(.secondary)
+                                Text(&quot;$\(cartItem.menuItem.price * Decimal(cartItem.quantity))&quot;)
+                                    .fontWeight(.medium)
+                            }
+                        }
+                    }
+                }
+            }
+            .navigationTitle(&quot;Order Coffee&quot;)
+            .toolbar {
+                ToolbarItem(placement: .bottomBar) {
+                    if !cart.isEmpty {
+                        Button {
+                            showCheckout = true
+                        } label: {
+                            HStack {
+                                Text(&quot;Checkout&quot;)
+                                Spacer()
+                                Text(&quot;$\(cartTotal)&quot;)
+                            }
+                            .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(.large)
+                    }
+                }
+            }
+            .sheet(isPresented: $showCheckout) {
+                CheckoutView(
+                    cart: cart,
+                    total: cartTotal,
+                    shopID: shopID,
+                    onComplete: {
+                        showFullAppOverlay = true
+                        saveOrderForFullApp()
+                    }
+                )
+            }
+            .appStoreOverlay(isPresented: $showFullAppOverlay) {
+                SKOverlay.AppClipConfiguration(position: .bottom)
+            }
+        }
+    }
+
+    private func addToCart(_ item: MenuItem) {
+        if let index = cart.firstIndex(where: { $0.menuItem.id == item.id }) {
+            cart[index].quantity += 1
+        } else {
+            cart.append(CartItem(menuItem: item, quantity: 1))
+        }
+    }
+
+    private func saveOrderForFullApp() {
+        let order = Order(
+            id: UUID().uuidString,
+            items: cart.map { OrderItem(name: $0.menuItem.name, quantity: $0.quantity, price: $0.menuItem.price) },
+            total: cartTotal,
+            storeID: shopID
+        )
+        try? SharedDataManager.saveOrderData(order)
+    }
+}
+
+// MARK: - Checkout View
+
+struct CheckoutView: View {
+    let cart: [CartItem]
+    let total: Decimal
+    let shopID: String
+    let onComplete: () -&gt; Void
+
+    @Environment(\.dismiss) private var dismiss
+    @State private var isProcessing = false
+    @State private var orderComplete = false
+
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 24) {
+                if orderComplete {
+                    VStack(spacing: 16) {
+                        Image(systemName: &quot;checkmark.circle.fill&quot;)
+                            .font(.system(size: 60))
+                            .foregroundStyle(.green)
+
+                        Text(&quot;Order Placed!&quot;)
+                            .font(.title.bold())
+
+                        Text(&quot;Your order will be ready in 5-10 minutes.&quot;)
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding(.top, 40)
+                } else {
+                    List {
+                        Section(&quot;Order Summary&quot;) {
+                            ForEach(cart) { item in
+                                HStack {
+                                    Text(&quot;\(item.quantity)x \(item.menuItem.name)&quot;)
+                                    Spacer()
+                                    Text(&quot;$\(item.menuItem.price * Decimal(item.quantity))&quot;)
+                                }
+                            }
+                        }
+
+                        Section {
+                            HStack {
+                                Text(&quot;Total&quot;)
+                                    .fontWeight(.bold)
+                                Spacer()
+                                Text(&quot;$\(total)&quot;)
+                                    .fontWeight(.bold)
+                            }
+                        }
+                    }
+
+                    Button {
+                        placeOrder()
+                    } label: {
+                        if isProcessing {
+                            ProgressView()
+                                .frame(maxWidth: .infinity)
+                        } else {
+                            Text(&quot;Pay $\(total)&quot;)
+                                .frame(maxWidth: .infinity)
+                        }
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.large)
+                    .disabled(isProcessing)
+                    .padding()
+                }
+
+                Spacer()
+            }
+            .navigationTitle(orderComplete ? &quot;Confirmed&quot; : &quot;Checkout&quot;)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button(&quot;Close&quot;) {
+                        dismiss()
+                    }
+                }
+            }
+        }
+    }
+
+    private func placeOrder() {
+        isProcessing = true
+        Task {
+            // Simulate payment processing
+            try? await Task.sleep(for: .seconds(2))
+            isProcessing = false
+            orderComplete = true
+            onComplete()
+        }
+    }
+}
+
+// MARK: - Supporting Views and Models
+
+struct MenuItemRow: View {
+    let item: MenuItem
+    let onAdd: () -&gt; Void
+
+    var body: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(item.name)
+                    .font(.headline)
+                Text(item.itemDescription)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            Spacer()
+            Text(&quot;$\(item.price)&quot;)
+                .font(.subheadline.bold())
+            Button {
+                onAdd()
+            } label: {
+                Image(systemName: &quot;plus.circle.fill&quot;)
+                    .font(.title3)
+            }
+            .buttonStyle(.plain)
+            .foregroundStyle(.blue)
+        }
+    }
+}
+
+struct MenuItem: Identifiable {
+    let id = UUID()
+    let name: String
+    let itemDescription: String
+    let price: Decimal
+
+    static var sampleMenu: [MenuItem] {
+        [
+            MenuItem(name: &quot;Espresso&quot;, itemDescription: &quot;Rich single shot&quot;, price: 3.50),
+            MenuItem(name: &quot;Latte&quot;, itemDescription: &quot;Espresso with steamed milk&quot;, price: 5.00),
+            MenuItem(name: &quot;Cold Brew&quot;, itemDescription: &quot;Smooth, cold-steeped coffee&quot;, price: 4.50),
+            MenuItem(name: &quot;Matcha Latte&quot;, itemDescription: &quot;Ceremonial grade matcha&quot;, price: 5.50),
+            MenuItem(name: &quot;Croissant&quot;, itemDescription: &quot;Buttery, flaky pastry&quot;, price: 3.75)
+        ]
+    }
+}
+
+struct CartItem: Identifiable {
+    let id = UUID()
+    let menuItem: MenuItem
+    var quantity: Int
+}
+</code></pre>
+<h2 id="key-considerations">Key Considerations</h2>
+<ul>
+<li><strong>Size limit</strong>: App Clips must be under 15 MB (thinned, uncompressed). Check with <code>xcrun app-clip-size</code>.</li>
+<li><strong>Capabilities</strong>: App Clips support Sign in with Apple, Apple Pay, notifications (for 8 hours after launch), and App Groups. They cannot access HealthKit, CallKit, or perform background networking.</li>
+<li><strong>Data persistence</strong>: App Clip data may be deleted by the system after a period of inactivity. Use App Groups to hand off important data to the full app.</li>
+<li><strong>Invocation URLs</strong>: Register all URLs in App Store Connect. URLs must use HTTPS. Each URL maps to one App Clip experience.</li>
+<li><strong>Apple App Clip Codes</strong>: These are Apple-designed visual codes that combine NFC and visual scanning. Generate them in App Store Connect.</li>
+<li><strong>Notifications</strong>: App Clips can request notification permission, but it expires 8 hours after last launch. Encourage users to download the full app for persistent notifications.</li>
+<li><strong>Sign in with Apple</strong>: Credentials are shared between the App Clip and full app if both use the same team ID.</li>
+<li><strong>Testing</strong>: Use the <code>_XCAppClipURL</code> environment variable in the Xcode scheme to simulate invocation URLs during development.</li>
+</ul></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

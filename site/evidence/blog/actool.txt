@@ -1,0 +1,2 @@
+/* com.apple.actool.compilation-results */
+/local/example/compiled-assets/Assets.car

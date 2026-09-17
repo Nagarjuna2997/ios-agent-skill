@@ -1,0 +1,75 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AI-assisted issue previews — iOS Agent Skill</title><meta name="description" content="Repository guidance for AI-assisted issue previews. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-issue-reporting.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="AI-assisted issue previews"><meta property="og:description" content="Repository guidance for AI-assisted issue previews. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-issue-reporting.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "AI-assisted issue previews", "description": "Repository guidance for AI-assisted issue previews. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-issue-reporting.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Tooling · Reference guide</p><h1>AI-assisted issue previews</h1><p class="lead">Repository guidance for AI-assisted issue previews. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/tooling/issue-reporting.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#local-developer-feedback-on-every-failed-step">Local developer feedback on every failed step</a></li>
+<li><a href="#private-feedback-from-the-ai-chat-source-preview-only">Private feedback from the AI chat — source preview only</a></li>
+</ul>
+</div>
+</aside><p><strong>Availability:</strong> ios-agent-mcp 2.7.0 and later, with 36 unified tools.</p>
+<p>When an iOS Agent operation fails, the AI can prepare a report using
+<code>prepare_issue_report</code>. Report problems with this package, not ordinary errors
+in the user's app. A preview is not a diagnosis or proof of a package bug.</p>
+<p>Example MCP arguments:</p>
+<pre><code class="language-json">{
+  &quot;feature&quot;: &quot;asset-generation&quot;,
+  &quot;symptom&quot;: &quot;invalid-output&quot;,
+  &quot;client&quot;: &quot;claude&quot;,
+  &quot;platform&quot;: &quot;macos&quot;,
+  &quot;reproducibility&quot;: &quot;repeated&quot;
+}
+</code></pre>
+<ol>
+<li>Report only significant missing/incorrect guidance or a blocking package failure.
+   Minor warnings and normal bugs in the generated app do not belong here.</li>
+<li>Show the complete category-only preview and say the GitHub issue will be public.</li>
+<li>If the developer requested reporting for this issue or enabled opening major-issue
+   drafts for this session, the AI opens the prefilled <code>submissionUrl</code> through its
+   client's browser capability. Otherwise ask before opening. If browser access is
+   unavailable, display the link. Never claim the tool itself launches a browser.</li>
+<li>The developer reviews the draft, signs into GitHub if needed, and clicks Submit.
+   Opening the draft does not submit it. No automatic submission or private backend
+   is needed. Do not open repeat drafts after dismissal or for the same failure.</li>
+</ol>
+<p>The source also supports <code>missing-guidance</code> and <code>incorrect-guidance</code> symptoms;
+these additions are pending the next npm release. Use <code>feature: "local-references"</code>
+for knowledge gaps. Disclose missing knowledge and label any outside research as
+external, rather than attributing it to this repository.</p>
+<p>The tool takes fixed enums only. Unknown fields and arbitrary text are rejected.
+It does not read files, environment variables, project names or machine identity;
+collect logs; open URLs; write a report file; or send network requests. It returns
+package version, selected categories, a non-user-specific grouping key, preview
+text and URLs. Missing client/platform values stay <code>unknown</code>.</p>
+<p>Opening the URLs sends the fixed fields to GitHub. Submitting creates a public
+issue. The grouping key only aids search: this tool does not search remotely,
+assert that duplicates are absent, or suppress duplicates automatically.</p>
+<h2 id="local-developer-feedback-on-every-failed-step">Local developer feedback on every failed step</h2>
+<p>The unified server appends troubleshooting guidance to returned unified tool errors, preserving the original diagnostic and structured result. The agent should explain the observed error, distinguish evidence from guesses, attempt a bounded fix within the approved task, and show the verification result. Compiler/test failures returned as successful tool calls and thrown transport errors are covered by agent instructions rather than this error-result decorator. Actual presentation depends on the coding client and agent following those instructions.</p>
+<p>This feedback stays in the coding session, not in the generated app or the public website. Redact secrets before repeating diagnostics. It does not transmit additional details or confirm a GitHub submission. Repeated failures get local attention and public submission remains separately authorized. For an actionable public bug report, separately review and authorize a minimal synthetic reproduction; never attach private app code or raw logs automatically.</p>
+<h2 id="private-feedback-from-the-ai-chat-source-preview-only">Private feedback from the AI chat — source preview only</h2>
+<p>The source adds <code>private_feedback</code> as a 37th tool. It is not in npm 2.7.0 and the
+receiver is not deployed. Without <code>IOS_AGENT_PRIVATE_FEEDBACK_URL</code>, it returns
+<code>not-configured</code> and sends nothing. There is no automatic public fallback.</p>
+<p>Once an operator deploys the receiver, the user does not need a GitHub account:</p>
+<ol>
+<li>The AI calls <code>private_feedback</code> with <code>action: "preview"</code> and a <code>report</code> containing
+   the same fixed categories shown above. No raw errors, logs, app source or names.</li>
+<li>Show the complete payload, destination and privacy notice in chat. Ask whether
+   to send it privately; declining must not interrupt development or cause repeated prompts.</li>
+<li>Only after explicit approval, call it with <code>action: "submit"</code>, the returned
+   <code>previewId</code>, and <code>userApproved: true</code>. Approval expires after 15 minutes and is
+   consumed on the first attempt. The AI must never assert approval on its own.</li>
+<li>Tell the user whether the receiver confirmed it. An unknown/network result is
+   not success; do not retry silently. No issue URL or private issue content is returned.</li>
+</ol>
+<p>Example preview arguments:</p>
+<pre><code class="language-json">{&quot;action&quot;:&quot;preview&quot;,&quot;report&quot;:{&quot;feature&quot;:&quot;simulator&quot;,&quot;symptom&quot;:&quot;timeout&quot;,&quot;client&quot;:&quot;claude&quot;}}
+</code></pre>
+<p>Only the category fields and package version leave the device. The hosting provider
+sees the request IP and may retain access logs; repository collaborators and GitHub
+can access reports. Private repository access is not end-to-end encryption. Category
+reports show patterns, not enough detail to prove or fix every bug. Any detailed
+reproduction needs a separately approved privacy review.</p>
+<p>The receiver rechecks that its fixed destination is private before every submission,
+reserves uncertain requests against duplication, and applies bounded limits. It cannot
+independently prove that an AI obtained consent; client instructions and the coding
+client’s tool-approval controls remain important. There is no background failure hook
+or automatic report on every tool call. See the <a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/services/private-feedback/README.md">operator setup</a>.</p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

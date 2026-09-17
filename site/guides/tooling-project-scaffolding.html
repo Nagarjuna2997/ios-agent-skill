@@ -1,0 +1,462 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Project Scaffolding and Layout — iOS Agent Skill</title><meta name="description" content="Repository guidance for Project Scaffolding and Layout. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-project-scaffolding.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="Project Scaffolding and Layout"><meta property="og:description" content="Repository guidance for Project Scaffolding and Layout. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-project-scaffolding.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "Project Scaffolding and Layout", "description": "Repository guidance for Project Scaffolding and Layout. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-project-scaffolding.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Tooling · Reference guide</p><h1>Project Scaffolding and Layout</h1><p class="lead">Repository guidance for Project Scaffolding and Layout. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/tooling/project-scaffolding.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#1-the-layout">1. The layout</a></li>
+<li><a href="#create-from-a-description">Create from a description</a></li>
+<li><a href="#2-the-rule-that-decides-where-anything-goes">2. The rule that decides where anything goes</a><ul>
+<li><a href="#the-one-exception-and-why-it-is-not-a-violation">The one exception, and why it is not a violation</a></li>
+</ul>
+</li>
+<li><a href="#3-why-hiding-internals-is-not-cosmetic">3. Why hiding internals is not cosmetic</a><ul>
+<li><a href="#what-the-reference-tools-actually-do">What the reference tools actually do</a></li>
+</ul>
+</li>
+<li><a href="#4-one-declaration-four-behaviours">4. One declaration, four behaviours</a><ul>
+<li><a href="#the-same-move-applied-to-the-command-surface">The same move, applied to the command surface</a></li>
+<li><a href="#exit-codes-are-part-of-the-interface">Exit codes are part of the interface</a></li>
+<li><a href="#what-a-fix-flag-may-repair">What a --fix flag may repair</a></li>
+</ul>
+</li>
+<li><a href="#5-root-discovery-how-two-processes-agree">5. Root discovery — how two processes agree</a><ul>
+<li><a href="#interop">Interop</a></li>
+</ul>
+</li>
+<li><a href="#6-cross-platform">6. Cross-platform</a></li>
+<li><a href="#anti-patterns">Anti-Patterns</a></li>
+<li><a href="#checklist">Checklist</a></li>
+</ul>
+</div>
+</aside><p><strong>Load this when:</strong> designing what a tool writes into a user's project, deciding
+where caches and state belong, or reviewing a scaffold that puts more than a
+handful of entries at the project root.</p>
+<p>Covers the layout <code>ios-agent</code> generates, the rule that decides where any new
+file goes, why hiding internals is not cosmetic, and how the CLI and the MCP
+server agree on a project root without configuring each other.</p>
+<p>Implementation: <code>cli/</code> (the <code>ios-agent</code> package). Every claim here is enforced
+by a test in <code>cli/test/</code>.</p>
+<hr />
+<h2 id="1-the-layout">1. The layout</h2>
+<pre><code>MyApp/
+├── App/                    # the user's source — the only directory they edit
+│   ├── MyApp/
+│   └── MyAppTests/
+├── README.md
+├── LICENSE
+├── .gitignore
+└── .ios-agent/             # tool-owned; deleting it loses nothing
+    ├── .gitignore          # generated
+    ├── config.json         # tracked
+    ├── state.json
+    ├── metadata.json
+    ├── cache/
+    ├── logs/
+    ├── build/
+    ├── screenshots/
+    ├── templates/          # tracked
+    ├── plugins/            # tracked
+    └── tmp/
+</code></pre>
+<p>With <code>--minimal</code>, the whole project is <code>MyApp/App/</code>, and <code>.ios-agent/</code>
+materialises the first time a command needs it.</p>
+<hr />
+<h2 id="create-from-a-description">Create from a description</h2>
+<pre><code class="language-sh">ios-agent new TeaLog --brief 'An offline tea journal with tasting notes' --xcodegen
+cd TeaLog/App
+xcodegen generate --spec project.yml
+open TeaLog.xcodeproj
+</code></pre>
+<p><code>--brief</code> saves the description and an implementation checklist in
+<code>App/APP_BRIEF.md</code> for your coding agent. It does not call an AI service or
+implement the described features. Both flags are optional and work with
+<code>--minimal</code>; the visible root remains <code>App/</code>, <code>README.md</code>, and <code>LICENSE</code>
+(or only <code>App/</code> in minimal mode).</p>
+<p><code>--xcodegen</code> writes an editable <code>App/project.yml</code>, <code>App/BUILD.md</code>, and separate
+SVG starters under <code>App/&lt;Name&gt;/IconLayers/</code>. The specification includes an iOS
+17+ SwiftUI app, a unit-test target, and a shared scheme. The included test is a
+placeholder to replace before shipping. Requires macOS, Xcode 15+ with an iOS
+simulator runtime, and XcodeGen installed separately. The CLI neither installs
+nor invokes them. Use an XcodeGen version compatible with your Xcode.</p>
+<p>The layer folder contains background, foreground, and accent SVGs plus a manifest
+and import instructions. Import them into <a href="https://developer.apple.com/icon-composer/">Icon Composer</a>
+using a compatible Xcode installation, customize the appearance, save a native
+icon, configure the target, and validate it in Xcode. The manifest is our source
+layer inventory, not Apple's format; no native <code>.icon</code> is generated or validated.
+The starter layers are excluded from app resources.</p>
+<p><code>--force</code> permits a non-empty destination but refuses existing generated file
+paths or symlink destinations before writing. It never overwrites your source,
+brief, specification, README, or configuration. Choose a new app directory when
+regenerating a starter.</p>
+<p>Project configuration follows the <a href="https://github.com/yonaskolb/XcodeGen/blob/master/Docs/ProjectSpec.md">XcodeGen specification</a>.
+The CLI emits no <code>.xcodeproj</code>; running XcodeGen creates the real project.</p>
+<hr />
+<h2 id="2-the-rule-that-decides-where-anything-goes">2. The rule that decides where anything goes</h2>
+<p><strong>Split by authorship, not by importance.</strong></p>
+<blockquote>
+<p>If a <strong>human</strong> writes it, it is visible. If the <strong>tool</strong> writes it, it is
+hidden.</p>
+</blockquote>
+<p>Importance is the tempting axis and it is the wrong one, because it has no
+edge. Everything feels important to whoever added it, so a layout sorted by
+importance grows a new root directory per release until the project root is a
+list of implementation details. Authorship has a sharp edge: either a person
+typed it or a program emitted it, and nobody argues about which.</p>
+<p>Two consequences fall out immediately, and both are worth more than the tidiness:</p>
+<p><strong><code>clean</code> needs no confirmation prompt.</strong> Nothing in <code>.ios-agent/</code> was authored,
+so there is nothing to lose. A prompt would be theatre.</p>
+<p><strong>Deleting <code>.ios-agent/</code> is a supported recovery step.</strong> "Delete it and re-run"
+is only safe advice if it is structurally true, and here it is — which turns the
+most common support answer in this class of tool from a risk into a fix.</p>
+<h3 id="the-one-exception-and-why-it-is-not-a-violation">The one exception, and why it is not a violation</h3>
+<p><code>config.json</code> is tracked, and a human may edit it. That is the same bargain
+<code>.git/config</code> makes: tool-managed by default, legible and editable by anyone who
+opens it. It stays inside <code>.ios-agent/</code> because it is <em>maintained</em> by the tool —
+<code>ios-agent init</code> writes it, and future commands will update it.</p>
+<p>If it ever becomes a file people are expected to hand-edit as the primary
+workflow, it should move to the root and become visible, the way <code>pubspec.yaml</code>,
+<code>app.json</code>, <code>firebase.json</code>, and <code>Cargo.toml</code> all are. <strong>No professional tool
+hides configuration its users are expected to author</strong> — a hidden file is one
+they cannot discover, and one that reads as noise in a pull request.</p>
+<hr />
+<h2 id="3-why-hiding-internals-is-not-cosmetic">3. Why hiding internals is not cosmetic</h2>
+<p>Four concrete costs, none of them aesthetic:</p>
+<p><strong>A root directory is an API.</strong> Anything visible gets referenced — in a script,
+a CI job, a README someone wrote. <code>cache/</code> at the root will be depended on
+within a release, and then it cannot be renamed. Inside <code>.ios-agent/</code>, the whole
+tree stays private and refactorable.</p>
+<p><strong>Every root entry is a question the user has to answer.</strong> Nine directories at
+the root is nine decisions about whether to touch each one, made by someone who
+wanted to write a view. One <code>App/</code> is no decision at all.</p>
+<p><strong>Review noise trains people to skim.</strong> A generated <code>metadata/</code> that changes on
+every build turns pull requests into scroll-past exercises, and reviewers who
+learn to skim generated files skim the real ones too.</p>
+<p><strong><code>.gitignore</code> drift is a silent failure.</strong> With internals at the root, every new
+tool directory needs a matching root <code>.gitignore</code> line that someone must
+remember. They forget, a cache lands in the repository, and nobody notices until
+a clone is slow. The generated <code>.ios-agent/.gitignore</code> uses ignore-everything
+then unignore, so a directory added tomorrow is ignored the moment it is
+declared.</p>
+<h3 id="what-the-reference-tools-actually-do">What the reference tools actually do</h3>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Visible, human-authored</th>
+<th>Hidden, tool-authored</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Flutter</td>
+<td><code>pubspec.yaml</code>, <code>lib/</code></td>
+<td><code>.dart_tool/</code></td>
+</tr>
+<tr>
+<td>Expo</td>
+<td><code>app.json</code>, <code>app/</code></td>
+<td><code>.expo/</code></td>
+</tr>
+<tr>
+<td>Firebase CLI</td>
+<td><code>firebase.json</code></td>
+<td><code>.firebase/</code></td>
+</tr>
+<tr>
+<td>Cargo</td>
+<td><code>Cargo.toml</code>, <code>src/</code></td>
+<td><code>target/</code></td>
+</tr>
+<tr>
+<td>npm</td>
+<td><code>package.json</code>, <code>src/</code></td>
+<td><code>node_modules/</code></td>
+</tr>
+<tr>
+<td>Xcode</td>
+<td><code>project.pbxproj</code></td>
+<td><code>xcuserdata/</code>, DerivedData</td>
+</tr>
+<tr>
+<td>git</td>
+<td>—</td>
+<td><code>.git/</code></td>
+</tr>
+</tbody>
+</table>
+<p>The pattern is unanimous, and the split is authorship every time. Note also that
+every one of them keeps its <strong>hand-edited config visible at the root</strong> — which
+is the point in §2 about where <code>config.json</code> would have to move.</p>
+<hr />
+<h2 id="4-one-declaration-four-behaviours">4. One declaration, four behaviours</h2>
+<p>The design's leverage is not the directory name; it is that everything derives
+from a single table (<code>cli/src/layout.ts</code>):</p>
+<pre><code class="language-ts">export const INTERNAL_ENTRIES: readonly InternalEntry[] = [
+  { name: &quot;config.json&quot;, kind: &quot;file&quot;,      tracked: true,  eager: true,  purpose: &quot;…&quot; },
+  { name: &quot;cache&quot;,       kind: &quot;directory&quot;, tracked: false, eager: false, purpose: &quot;…&quot; },
+  // …
+];
+</code></pre>
+<p>Adding a future feature — simulator state, plugin cache, build artifacts — is
+one row. That row then automatically produces:</p>
+<ol>
+<li>its entry in the generated <code>.ios-agent/.gitignore</code></li>
+<li>inclusion in, or exclusion from, <code>ios-agent clean</code></li>
+<li>a path in <code>ios-agent where --json</code></li>
+<li>a <code>doctor</code> check that it has not leaked to the project root</li>
+</ol>
+<p>The alternative — a constant here, a gitignore line there, a <code>clean</code> list
+somewhere else — is three places that must be edited together and eventually are
+not. The failure mode is specific and quiet: a new cache directory that <code>clean</code>
+skips and git happily commits.</p>
+<p>This is also why the tests assert the <em>relationship</em> rather than the contents:</p>
+<pre><code class="language-js">test(&quot;clean never targets a tracked entry&quot;, () =&gt; {
+  const disposable = new Set(disposableEntries().map((e) =&gt; e.name));
+  for (const name of INTERNAL_ENTRIES.filter((e) =&gt; e.tracked).map((e) =&gt; e.name)) {
+    assert.ok(!disposable.has(name), `${name} is both tracked and disposable`);
+  }
+});
+</code></pre>
+<p>That test does not care what the entries are. It fails the day someone adds a
+row that is both tracked and deletable, which is the bug that would cost a user
+their template overrides.</p>
+<h3 id="the-same-move-applied-to-the-command-surface">The same move, applied to the command surface</h3>
+<p><code>COMMANDS</code> in <code>cli/src/commands.ts</code> is the second instance of the pattern.
+Dispatch, <code>help</code>, and the bash and zsh completion scripts all read one table, so
+help text cannot describe a flag the parser rejects and completions cannot offer
+a command that no longer exists. Hand-maintained help drifts, and the drift is
+invisible until a user follows the documentation and gets an error.</p>
+<p>The test is the same shape as the layout one — it asserts coverage rather than
+content:</p>
+<pre><code class="language-js">test(&quot;completions cover every dispatchable command&quot;, () =&gt; {
+  for (const shell of [&quot;bash&quot;, &quot;zsh&quot;]) {
+    const script = capture(run([&quot;completions&quot;, shell]));
+    for (const name of commandNames()) assert.ok(script.includes(name));
+  }
+});
+</code></pre>
+<h3 id="exit-codes-are-part-of-the-interface">Exit codes are part of the interface</h3>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>Success</td>
+</tr>
+<tr>
+<td>1</td>
+<td>Usage error, or no project found</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>doctor</code> found problems</td>
+</tr>
+</tbody>
+</table>
+<p><code>doctor</code> returns 2 rather than 1 so a caller can distinguish "the project is
+unhealthy" from "you invoked it wrong". Collapsing both into 1 forces scripts to
+parse stderr, which is exactly what <code>--json</code> exists to prevent.</p>
+<h3 id="what-a-fix-flag-may-repair">What a <code>--fix</code> flag may repair</h3>
+<p>Only defects with a <strong>derivable correct value</strong>: a stale generated gitignore, a
+missing internal directory, a config behind the current layout version. A
+missing <code>App/</code> is reported and left alone — creating it would invent a project
+structure the user never asked for.</p>
+<p>The line is worth stating explicitly because it is easy to cross by accident: a
+<code>--fix</code> that guesses turns a diagnostic into a source of surprise changes, and
+users stop trusting the command that was supposed to be the safe one.</p>
+<hr />
+<h2 id="5-root-discovery-how-two-processes-agree">5. Root discovery — how two processes agree</h2>
+<p><code>.ios-agent/</code> doubles as a <strong>root marker</strong>, exactly as <code>.git/</code> does. Both the
+CLI and the MCP server walk up from the working directory until they find one:</p>
+<pre><code>1. an explicit --project / argument
+2. IOS_AGENT_HOME (CLI) or IOS_AGENT_PROJECT (server)
+3. the nearest ancestor containing .ios-agent/
+4. cwd  (server only — the CLI reports failure instead)
+</code></pre>
+<p>This is why <code>ios-agent where</code> works from <code>App/MyApp/Views/</code>, and it is why the
+MCP server no longer analyses whatever subtree a client happened to spawn it in.</p>
+<p><strong>Both report how the root was resolved</strong>, not just what it is:</p>
+<pre><code class="language-json">{ &quot;project_root&quot;: &quot;/Users/you/MyApp&quot;, &quot;resolved_from&quot;: &quot;marker&quot; }
+</code></pre>
+<p>An implicit root is unfalsifiable. Without <code>resolved_from</code>, "0 Swift files" is
+identical whether the project is empty or the tool is pointed at the wrong
+directory — and that ambiguity is the most expensive minute in using a tool like
+this.</p>
+<p><strong>The server reads the marker; it never creates it.</strong> That keeps
+<code>ios-agent-mcp</code>'s declared <code>filesystem: read, network: none</code> contract intact.
+Scaffolding writes, so it lives in a separate package rather than quietly
+turning the analyzer into something that mutates your project.</p>
+<h3 id="interop">Interop</h3>
+<p>Other tools should ask rather than hardcode:</p>
+<pre><code>ios-agent where --json
+</code></pre>
+<p>One process owns the layout; everything else queries it. A rename then stays a
+change in one package instead of a coordinated release across several.</p>
+<hr />
+<h2 id="6-cross-platform">6. Cross-platform</h2>
+<p><strong>Per-project vs. user-level caches are different things.</strong> Anything shared
+across projects — downloaded templates, SDK metadata, plugin code — belongs in
+the user-level cache, or every project duplicates it and every fresh clone
+re-downloads it. <code>.ios-agent/cache/</code> is only for data derived from <em>this</em>
+project.</p>
+<table>
+<thead>
+<tr>
+<th>Platform</th>
+<th>User-level cache</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>macOS</td>
+<td><code>~/Library/Caches/ios-agent</code></td>
+</tr>
+<tr>
+<td>Windows</td>
+<td><code>%LOCALAPPDATA%\ios-agent\Cache</code></td>
+</tr>
+<tr>
+<td>Linux/other</td>
+<td><code>$XDG_CACHE_HOME/ios-agent</code>, else <code>~/.cache/ios-agent</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>~/.ios-agent</code> is not on that list deliberately: a dotfile in <code>$HOME</code> is the
+convention every platform has since moved away from, and on macOS and Windows it
+is excluded from the OS's own cache-eviction handling.</p>
+<p><strong>Windows specifics:</strong></p>
+<ul>
+<li>A leading dot does not hide a directory in Explorer. <code>doctor</code> says so and
+  suggests <code>attrib +h</code>, rather than pretending the name is enough.</li>
+<li><code>CON</code>, <code>PRN</code>, <code>AUX</code>, <code>NUL</code>, <code>COM1</code>–<code>COM9</code>, <code>LPT1</code>–<code>LPT9</code> are reserved
+  regardless of extension. <code>validateProjectName</code> rejects them on every platform,
+  so a project created on macOS still checks out on Windows.</li>
+<li>Tracked paths in <code>config.json</code> are stored POSIX-style. That file crosses
+  machines by design, and <code>App\MyApp</code> is unreadable on the Mac that builds it.</li>
+</ul>
+<p><strong>macOS specifics:</strong> the default filesystem is case-insensitive but
+case-<em>preserving</em>, so <code>App/</code> and <code>app/</code> collide on a Mac and not on Linux CI.
+Never generate two paths differing only in case.</p>
+<hr />
+<h2 id="anti-patterns">Anti-Patterns</h2>
+<pre><code class="language-text"># WRONG — internals at the project root.
+MyApp/
+├── cache/          # depended on by a script within a release, now frozen
+├── logs/           # in every pull request
+├── metadata/       # regenerated on build, diffed by humans forever
+├── config/
+├── generated/
+└── App/            # the one directory the user wanted, 1 of 6
+
+# RIGHT — one hidden directory.
+MyApp/
+├── App/
+└── .ios-agent/
+</code></pre>
+<pre><code class="language-ts">// WRONG — the internal directory name written out at a call site.
+const cache = path.join(root, &quot;.ios-agent&quot;, &quot;cache&quot;);
+
+// A rename half-lands: the CLI writes to the new directory while the MCP
+// server still reads the old one, and the symptom is an empty result with no
+// error anywhere.
+
+// RIGHT — derive from the layout.
+const { cache } = layoutFor(root);
+</code></pre>
+<pre><code class="language-ts">// WRONG — clean deletes a hand-maintained list.
+const REMOVE = [&quot;cache&quot;, &quot;logs&quot;, &quot;tmp&quot;];
+
+// It drifts from the gitignore the first time someone adds a directory to one
+// and not the other. Then either a cache gets committed, or clean deletes a
+// tracked template override.
+
+// RIGHT — derive both from one declaration.
+for (const entry of disposableEntries()) { … }
+</code></pre>
+<pre><code class="language-ts">// WRONG — the tool falls back to cwd and says nothing.
+const root = process.cwd();
+
+// &quot;0 Swift files&quot; now means either an empty project or a wrong directory, and
+// nothing in the output distinguishes them.
+
+// RIGHT — resolve, and report how.
+const { root, source } = resolveRootFrom(argv, env);   // &quot;flag&quot; | &quot;marker&quot; | &quot;cwd&quot;
+</code></pre>
+<pre><code class="language-ts">// WRONG — a per-project cache for data that is not project-specific.
+const templates = path.join(root, &quot;.ios-agent&quot;, &quot;cache&quot;, &quot;templates&quot;);
+
+// Ten projects, ten copies, ten downloads.
+
+// RIGHT — user-level, per platform.
+const templates = path.join(globalCacheDir(), &quot;templates&quot;);
+</code></pre>
+<pre><code class="language-ts">// WRONG — ~/.ios-agent as the user-level location.
+const home = path.join(os.homedir(), &quot;.ios-agent&quot;);
+
+// Ignored by macOS cache eviction and by Windows roaming rules, and wrong on
+// every platform's own convention.
+
+// RIGHT — the documented per-platform directory, overridable.
+globalCacheDir(process.env, process.platform);
+</code></pre>
+<pre><code class="language-ts">// WRONG — the project name accepted as given.
+fs.mkdirSync(path.join(parent, name));
+
+// &quot;../evil&quot; escapes the parent, &quot;my-app&quot; is not a Swift type name, and &quot;CON&quot;
+// produces a directory Windows cannot open.
+
+// RIGHT — validate before anything exists on disk.
+validateProjectName(name);
+</code></pre>
+<pre><code class="language-ts">// WRONG — scaffolding into a directory with contents already in it.
+fs.mkdirSync(root, { recursive: true });
+write(readme);
+
+// Silently overwrites a README someone spent an afternoon on.
+
+// RIGHT — refuse, and make --force explicit and non-destructive.
+if (existing.length &gt; 0 &amp;&amp; !force) throw new ScaffoldError(…);
+</code></pre>
+<pre><code class="language-json">// WRONG — a single source directory, to be widened later.
+{ &quot;sourceDir&quot;: &quot;App/MyApp&quot; }
+
+// Multiple apps were always coming, and the widening is a breaking change to
+// every consumer of a tracked file.
+
+// RIGHT — a list from day one, even with one entry.
+{ &quot;apps&quot;: [{ &quot;name&quot;: &quot;MyApp&quot;, &quot;path&quot;: &quot;App/MyApp&quot;, &quot;platforms&quot;: [&quot;iOS&quot;] }] }
+</code></pre>
+<pre><code># WRONG — writing a fake .xcodeproj or claiming source files are a built app.
+
+# RIGHT — emit Swift sources and an optional XcodeGen specification.
+# Let Xcode or XcodeGen create the real project, then verify its build.
+</code></pre>
+<hr />
+<h2 id="checklist">Checklist</h2>
+<ul>
+<li>[ ] Exactly one tool-owned directory, and it is hidden</li>
+<li>[ ] Nothing the tool writes appears at the project root — asserted by a test</li>
+<li>[ ] Every internal path derives from one declaration, not a string literal</li>
+<li>[ ] The gitignore is generated from that declaration, not hand-maintained</li>
+<li>[ ] What <code>clean</code> deletes is the complement of what is tracked, provably</li>
+<li>[ ] Deleting the internal directory loses nothing a human authored</li>
+<li>[ ] The internal directory is created lazily, not as an empty promise</li>
+<li>[ ] Root discovery walks up from cwd, like git</li>
+<li>[ ] Every path-reporting output states how the root was resolved</li>
+<li>[ ] A machine-readable <code>where --json</code> exists, so nothing else hardcodes the name</li>
+<li>[ ] Read-only consumers stay read-only — scaffolding lives in its own package</li>
+<li>[ ] Cross-project caches are user-level, per each platform's own convention</li>
+<li>[ ] Windows reserved names rejected on every platform</li>
+<li>[ ] Tracked config stores POSIX-style paths</li>
+<li>[ ] Project names validated before anything is written</li>
+<li>[ ] A non-empty target directory is refused unless explicitly forced</li>
+<li>[ ] Config carries a layout version, and a newer one is refused rather than rewritten</li>
+<li>[ ] Lists are lists from day one where more than one is coming</li>
+<li>[ ] <code>doctor</code> fails when the layout is broken — proven by mutation tests</li>
+<li>[ ] <code>--fix</code> repairs only what has a derivable correct value, and never invents structure</li>
+<li>[ ] Help text and shell completions are generated from the command table, not maintained</li>
+<li>[ ] Exit codes distinguish usage errors from an unhealthy project</li>
+<li>[ ] <code>--json</code> is available on every command a script would call</li>
+</ul></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

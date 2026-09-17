@@ -1,0 +1,459 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>watchOS Platform Guide — iOS Agent Skill</title><meta name="description" content="Repository guidance for watchOS. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/platforms-watchos.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="watchOS Platform Guide"><meta property="og:description" content="Repository guidance for watchOS. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/platforms-watchos.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "watchOS Platform Guide", "description": "Repository guidance for watchOS. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/platforms-watchos.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Platforms · Reference guide</p><h1>watchOS Platform Guide</h1><p class="lead">Repository guidance for watchOS. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/platforms/watchos.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#watchkit-app-structure">WatchKit App Structure</a><ul>
+<li><a href="#swiftui-app-lifecycle-watchos-7">SwiftUI App Lifecycle (watchOS 7+)</a></li>
+<li><a href="#navigation-patterns">Navigation Patterns</a></li>
+</ul>
+</li>
+<li><a href="#complications-widgetkit-on-watchos">Complications (WidgetKit on watchOS)</a></li>
+<li><a href="#watch-connectivity-wcsession">Watch Connectivity (WCSession)</a></li>
+<li><a href="#healthkit-workouts">HealthKit Workouts</a></li>
+<li><a href="#digital-crown">Digital Crown</a></li>
+<li><a href="#always-on-display">Always-On Display</a></li>
+<li><a href="#background-app-refresh">Background App Refresh</a></li>
+<li><a href="#watchos-design-guidelines">watchOS Design Guidelines</a></li>
+</ul>
+</div>
+</aside><h2 id="watchkit-app-structure">WatchKit App Structure</h2>
+<h3 id="swiftui-app-lifecycle-watchos-7">SwiftUI App Lifecycle (watchOS 7+)</h3>
+<pre><code class="language-swift">@main
+struct MyWatchApp: App {
+    @WKApplicationDelegateAdaptor(AppDelegate.self) var delegate
+
+    var body: some Scene {
+        WindowGroup {
+            NavigationStack {
+                ContentView()
+            }
+        }
+    }
+}
+
+class AppDelegate: NSObject, WKApplicationDelegate {
+    func applicationDidFinishLaunching() {
+        // Setup HealthKit, WCSession, etc.
+        WatchConnectivityManager.shared.activate()
+    }
+
+    func applicationDidBecomeActive() { }
+
+    func applicationWillResignActive() { }
+
+    func handle(_ backgroundTasks: Set&lt;WKRefreshBackgroundTask&gt;) {
+        for task in backgroundTasks {
+            switch task {
+            case let refreshTask as WKApplicationRefreshBackgroundTask:
+                scheduleNextRefresh()
+                refreshTask.setTaskCompletedWithSnapshot(false)
+            case let snapshotTask as WKSnapshotRefreshBackgroundTask:
+                snapshotTask.setTaskCompleted(restoredDefaultState: true, estimatedSnapshotExpiration: .distantFuture, userInfo: nil)
+            case let urlTask as WKURLSessionRefreshBackgroundTask:
+                urlTask.setTaskCompletedWithSnapshot(false)
+            default:
+                task.setTaskCompletedWithSnapshot(false)
+            }
+        }
+    }
+}
+</code></pre>
+<h3 id="navigation-patterns">Navigation Patterns</h3>
+<pre><code class="language-swift">struct ContentView: View {
+    var body: some View {
+        NavigationStack {
+            List {
+                NavigationLink(&quot;Workout&quot;) { WorkoutView() }
+                NavigationLink(&quot;Activity&quot;) { ActivityView() }
+                NavigationLink(&quot;Settings&quot;) { SettingsView() }
+            }
+            .navigationTitle(&quot;My App&quot;)
+        }
+    }
+}
+
+// Tab-based layout
+struct TabContentView: View {
+    var body: some View {
+        TabView {
+            DashboardView()
+            WorkoutListView()
+            SettingsView()
+        }
+        .tabViewStyle(.verticalPage)
+    }
+}
+</code></pre>
+<hr />
+<h2 id="complications-widgetkit-on-watchos">Complications (WidgetKit on watchOS)</h2>
+<pre><code class="language-swift">import WidgetKit
+import SwiftUI
+
+struct StepsWidget: Widget {
+    let kind = &quot;StepsWidget&quot;
+
+    var body: some WidgetConfiguration {
+        StaticConfiguration(kind: kind, provider: StepsProvider()) { entry in
+            StepsWidgetView(entry: entry)
+        }
+        .configurationDisplayName(&quot;Steps&quot;)
+        .description(&quot;Track your daily steps.&quot;)
+        .supportedFamilies([
+            .accessoryCircular,
+            .accessoryRectangular,
+            .accessoryInline,
+            .accessoryCorner
+        ])
+    }
+}
+
+struct StepsEntry: TimelineEntry {
+    let date: Date
+    let steps: Int
+    let goal: Int
+}
+
+struct StepsProvider: TimelineProvider {
+    func placeholder(in context: Context) -&gt; StepsEntry {
+        StepsEntry(date: .now, steps: 5000, goal: 10000)
+    }
+
+    func getSnapshot(in context: Context, completion: @escaping (StepsEntry) -&gt; Void) {
+        completion(StepsEntry(date: .now, steps: 7500, goal: 10000))
+    }
+
+    func getTimeline(in context: Context, completion: @escaping (Timeline&lt;StepsEntry&gt;) -&gt; Void) {
+        Task {
+            let steps = await HealthKitManager.shared.fetchTodaySteps()
+            let entry = StepsEntry(date: .now, steps: Int(steps), goal: 10000)
+            let nextUpdate = Calendar.current.date(byAdding: .minute, value: 15, to: .now)!
+            let timeline = Timeline(entries: [entry], policy: .after(nextUpdate))
+            completion(timeline)
+        }
+    }
+}
+
+struct StepsWidgetView: View {
+    let entry: StepsEntry
+    @Environment(\.widgetFamily) var family
+
+    var body: some View {
+        switch family {
+        case .accessoryCircular:
+            Gauge(value: Double(entry.steps), in: 0...Double(entry.goal)) {
+                Text(&quot;\(entry.steps)&quot;)
+            }
+            .gaugeStyle(.accessoryCircularCapacity)
+
+        case .accessoryRectangular:
+            VStack(alignment: .leading) {
+                Text(&quot;Steps&quot;)
+                    .font(.headline)
+                    .widgetAccentable()
+                Text(&quot;\(entry.steps) / \(entry.goal)&quot;)
+                    .font(.caption)
+                ProgressView(value: Double(entry.steps), total: Double(entry.goal))
+            }
+
+        case .accessoryInline:
+            Text(&quot;Steps: \(entry.steps)&quot;)
+
+        default:
+            Text(&quot;\(entry.steps)&quot;)
+        }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="watch-connectivity-wcsession">Watch Connectivity (WCSession)</h2>
+<pre><code class="language-swift">import WatchConnectivity
+
+class WatchConnectivityManager: NSObject, ObservableObject, WCSessionDelegate {
+    static let shared = WatchConnectivityManager()
+
+    @Published var receivedMessage: [String: Any] = [:]
+
+    func activate() {
+        guard WCSession.isSupported() else { return }
+        WCSession.default.delegate = self
+        WCSession.default.activate()
+    }
+
+    // MARK: - Send data (phone &lt;-&gt; watch)
+
+    /// Immediate messaging (both apps must be reachable)
+    func sendMessage(_ message: [String: Any]) {
+        guard WCSession.default.isReachable else { return }
+        WCSession.default.sendMessage(message, replyHandler: { reply in
+            print(&quot;Reply: \(reply)&quot;)
+        }, errorHandler: { error in
+            print(&quot;Error: \(error)&quot;)
+        })
+    }
+
+    /// Background transfer - application context (latest state)
+    func updateContext(_ context: [String: Any]) {
+        try? WCSession.default.updateApplicationContext(context)
+    }
+
+    /// Background transfer - user info queue (guaranteed delivery)
+    func transferUserInfo(_ info: [String: Any]) {
+        WCSession.default.transferUserInfo(info)
+    }
+
+    /// File transfer
+    func transferFile(_ url: URL, metadata: [String: Any]? = nil) {
+        WCSession.default.transferFile(url, metadata: metadata)
+    }
+
+    // MARK: - WCSessionDelegate
+
+    func session(_ session: WCSession, activationDidCompleteWith state: WCSessionActivationState, error: Error?) {
+        print(&quot;WCSession activated: \(state.rawValue)&quot;)
+    }
+
+    func session(_ session: WCSession, didReceiveMessage message: [String: Any]) {
+        DispatchQueue.main.async { self.receivedMessage = message }
+    }
+
+    func session(_ session: WCSession, didReceiveApplicationContext context: [String: Any]) {
+        DispatchQueue.main.async { self.receivedMessage = context }
+    }
+
+    // iOS only
+    #if os(iOS)
+    func sessionDidBecomeInactive(_ session: WCSession) { }
+    func sessionDidDeactivate(_ session: WCSession) {
+        WCSession.default.activate()
+    }
+    #endif
+}
+</code></pre>
+<hr />
+<h2 id="healthkit-workouts">HealthKit Workouts</h2>
+<pre><code class="language-swift">import HealthKit
+
+@Observable
+class WorkoutManager: NSObject, HKWorkoutSessionDelegate, HKLiveWorkoutBuilderDelegate {
+    let store = HKHealthStore()
+    var session: HKWorkoutSession?
+    var builder: HKLiveWorkoutBuilder?
+
+    var heartRate: Double = 0
+    var activeCalories: Double = 0
+    var elapsedTime: TimeInterval = 0
+    var isActive = false
+
+    func startWorkout(type: HKWorkoutActivityType) async throws {
+        let config = HKWorkoutConfiguration()
+        config.activityType = type
+        config.locationType = .outdoor
+
+        session = try HKWorkoutSession(healthStore: store, configuration: config)
+        builder = session?.associatedWorkoutBuilder()
+
+        session?.delegate = self
+        builder?.delegate = self
+        builder?.dataSource = HKLiveWorkoutDataSource(healthStore: store, workoutConfiguration: config)
+
+        let start = Date()
+        session?.startActivity(with: start)
+        try await builder?.beginCollection(at: start)
+        isActive = true
+    }
+
+    func pause() { session?.pause() }
+    func resume() { session?.resume() }
+
+    func endWorkout() async throws {
+        session?.end()
+        try await builder?.endCollection(at: .now)
+        try await builder?.finishWorkout()
+        isActive = false
+    }
+
+    // MARK: - HKWorkoutSessionDelegate
+
+    func workoutSession(_ session: HKWorkoutSession, didChangeTo toState: HKWorkoutSessionState, from fromState: HKWorkoutSessionState, date: Date) {
+        DispatchQueue.main.async {
+            self.isActive = toState == .running
+        }
+    }
+
+    func workoutSession(_ session: HKWorkoutSession, didFailWithError error: Error) { }
+
+    // MARK: - HKLiveWorkoutBuilderDelegate
+
+    func workoutBuilderDidCollectEvent(_ workoutBuilder: HKLiveWorkoutBuilder) { }
+
+    func workoutBuilder(_ workoutBuilder: HKLiveWorkoutBuilder, didCollectDataOf collectedTypes: Set&lt;HKSampleType&gt;) {
+        for type in collectedTypes {
+            guard let quantityType = type as? HKQuantityType else { continue }
+            let stats = workoutBuilder.statistics(for: quantityType)
+
+            DispatchQueue.main.async {
+                switch quantityType {
+                case HKQuantityType(.heartRate):
+                    self.heartRate = stats?.mostRecentQuantity()?.doubleValue(for: .count().unitDivided(by: .minute())) ?? 0
+                case HKQuantityType(.activeEnergyBurned):
+                    self.activeCalories = stats?.sumQuantity()?.doubleValue(for: .kilocalorie()) ?? 0
+                default: break
+                }
+            }
+        }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="digital-crown">Digital Crown</h2>
+<pre><code class="language-swift">struct CrownScrollView: View {
+    @State private var crownValue: Double = 0
+    @State private var isCrownIdle = true
+
+    var body: some View {
+        VStack {
+            Text(&quot;Value: \(crownValue, specifier: &quot;%.1f&quot;)&quot;)
+                .font(.largeTitle)
+
+            Gauge(value: crownValue, in: 0...100) {
+                Text(&quot;Level&quot;)
+            }
+            .gaugeStyle(.accessoryLinearCapacity)
+        }
+        .focusable()
+        .digitalCrownRotation(
+            $crownValue,
+            from: 0,
+            through: 100,
+            by: 1,
+            sensitivity: .medium,
+            isContinuous: false,
+            isHapticFeedbackEnabled: true
+        )
+        .onChange(of: crownValue) {
+            isCrownIdle = false
+        }
+    }
+}
+
+// Crown with detents
+struct DetentCrownView: View {
+    @State private var selectedIndex: Int = 0
+    let options = [&quot;Small&quot;, &quot;Medium&quot;, &quot;Large&quot;, &quot;Extra Large&quot;]
+
+    var body: some View {
+        Text(options[selectedIndex])
+            .font(.title3)
+            .focusable()
+            .digitalCrownRotation(
+                detent: $selectedIndex,
+                from: 0,
+                through: options.count - 1,
+                by: 1,
+                sensitivity: .low,
+                isContinuous: false,
+                isHapticFeedbackEnabled: true
+            ) { event in
+                // Detent feedback
+            }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="always-on-display">Always-On Display</h2>
+<pre><code class="language-swift">struct WorkoutActiveView: View {
+    @Environment(\.isLuminanceReduced) var isLuminanceReduced
+
+    let heartRate: Double
+    let duration: TimeInterval
+
+    var body: some View {
+        VStack {
+            if isLuminanceReduced {
+                // Simplified always-on display
+                TimelineView(.periodic(from: .now, by: 1)) { context in
+                    Text(duration.formatted(.time(pattern: .hourMinuteSecond)))
+                        .font(.title2)
+                }
+                Text(&quot;\(Int(heartRate)) BPM&quot;)
+                    .foregroundStyle(.red)
+            } else {
+                // Full interactive display
+                TimelineView(.periodic(from: .now, by: 1)) { context in
+                    Text(duration.formatted(.time(pattern: .hourMinuteSecond)))
+                        .font(.system(size: 40, weight: .bold, design: .rounded))
+                }
+                HStack {
+                    Image(systemName: &quot;heart.fill&quot;)
+                        .foregroundStyle(.red)
+                    Text(&quot;\(Int(heartRate)) BPM&quot;)
+                }
+                .font(.title3)
+            }
+        }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="background-app-refresh">Background App Refresh</h2>
+<pre><code class="language-swift">// Schedule refresh
+func scheduleNextRefresh() {
+    WKExtension.shared().scheduleBackgroundRefresh(
+        withPreferredDate: Date(timeIntervalSinceNow: 15 * 60),
+        userInfo: nil
+    ) { error in
+        if let error { print(&quot;Scheduling failed: \(error)&quot;) }
+    }
+}
+
+// Handle in AppDelegate.handle(_:) — see App Structure section above
+
+// Background URLSession
+func scheduleBackgroundDownload() {
+    let config = URLSessionConfiguration.background(withIdentifier: &quot;com.app.watch.background&quot;)
+    config.isDiscretionary = false
+    config.sessionSendsLaunchEvents = true
+
+    let session = URLSession(configuration: config, delegate: self, delegateQueue: nil)
+    let task = session.downloadTask(with: URL(string: &quot;https://api.example.com/data&quot;)!)
+    task.resume()
+}
+</code></pre>
+<hr />
+<h2 id="watchos-design-guidelines">watchOS Design Guidelines</h2>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>Recommendation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Glance-ability</td>
+<td>Show key info at a glance; minimize scrolling</td>
+</tr>
+<tr>
+<td>Interactions</td>
+<td>Keep to 2-3 taps maximum per task</td>
+</tr>
+<tr>
+<td>Text input</td>
+<td>Prefer voice, scribble, or preset options</td>
+</tr>
+<tr>
+<td>Complications</td>
+<td>Always provide at least one complication family</td>
+</tr>
+<tr>
+<td>Haptics</td>
+<td>Use WKInterfaceDevice.default().play(.success) for feedback</td>
+</tr>
+<tr>
+<td>Layout</td>
+<td>Use vertical stacks; avoid horizontal scrolling</td>
+</tr>
+<tr>
+<td>Always-on</td>
+<td>Reduce luminance, hide seconds, dim colors</td>
+</tr>
+</tbody>
+</table></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

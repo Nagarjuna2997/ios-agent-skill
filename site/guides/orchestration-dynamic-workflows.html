@@ -1,0 +1,263 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Dynamic Workflows and Large-Scale Jobs — iOS Agent Skill</title><meta name="description" content="Repository guidance for Dynamic Workflows and Large-Scale Jobs. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/orchestration-dynamic-workflows.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="Dynamic Workflows and Large-Scale Jobs"><meta property="og:description" content="Repository guidance for Dynamic Workflows and Large-Scale Jobs. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/orchestration-dynamic-workflows.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "Dynamic Workflows and Large-Scale Jobs", "description": "Repository guidance for Dynamic Workflows and Large-Scale Jobs. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/orchestration-dynamic-workflows.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Orchestration · Reference guide</p><h1>Dynamic Workflows and Large-Scale Jobs</h1><p class="lead">Repository guidance for Dynamic Workflows and Large-Scale Jobs. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/orchestration/dynamic-workflows.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#1-the-scale-ladder">1. The scale ladder</a></li>
+<li><a href="#2-batch-many-isolated-changes">2. /batch — many isolated changes</a><ul>
+<li><a href="#making-a-batch-succeed">Making a batch succeed</a></li>
+<li><a href="#worktrees">Worktrees</a></li>
+</ul>
+</li>
+<li><a href="#3-dynamic-workflows-orchestration-in-code">3. Dynamic workflows — orchestration in code</a><ul>
+<li><a href="#when-not-to-script-it">When not to script it</a></li>
+</ul>
+</li>
+<li><a href="#4-failure-handling-at-scale">4. Failure handling at scale</a></li>
+<li><a href="#5-cost">5. Cost</a></li>
+<li><a href="#6-anti-patterns">6. Anti-patterns</a></li>
+<li><a href="#checklist-before-scaling-out">Checklist before scaling out</a></li>
+</ul>
+</div>
+</aside><p><strong>Load this when:</strong> the work is too large for a handful of delegated tasks —
+a codebase-wide migration, a rule applied across dozens of modules, or a batch of
+independent changes that each want their own PR.</p>
+<p>There is a scale at which conversational delegation stops working. Somewhere
+around ten parallel units, the main agent's context becomes the bottleneck: it
+is spending more effort tracking who is doing what than doing anything. Past
+that point, the orchestration belongs in a script.</p>
+<hr />
+<h2 id="1-the-scale-ladder">1. The scale ladder</h2>
+<p>Pick the cheapest rung that fits. Climbing early costs more than it saves.</p>
+<table>
+<thead>
+<tr>
+<th>Scale</th>
+<th>Approach</th>
+<th>Coordination lives in</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1–2 files</td>
+<td>Do it inline</td>
+<td>Your own context</td>
+</tr>
+<tr>
+<td>3–8 units, related</td>
+<td>Delegate to subagents in one session</td>
+<td>The main agent</td>
+</tr>
+<tr>
+<td>Repeated until a condition</td>
+<td>A loop, optionally with a verifier</td>
+<td>The loop contract</td>
+</tr>
+<tr>
+<td>5–30 isolated changes, each wanting its own PR</td>
+<td><code>/batch</code></td>
+<td>The batch tooling</td>
+</tr>
+<tr>
+<td>Dozens of units, custom logic, non-linear</td>
+<td>A dynamic workflow (script + SDK)</td>
+<td>Your script</td>
+</tr>
+</tbody>
+</table>
+<p>Two questions decide it:</p>
+<ol>
+<li><strong>Are the units independent?</strong> If unit 7 needs unit 3's result, it is not a
+   batch — it is a pipeline, and the dependency has to be encoded somewhere.</li>
+<li><strong>Does each unit want its own review boundary?</strong> Thirty commits on one branch
+   is unreviewable; thirty PRs is thirty reviews someone can actually do.</li>
+</ol>
+<hr />
+<h2 id="2-batch-many-isolated-changes">2. <code>/batch</code> — many isolated changes</h2>
+<p><code>/batch</code> is a packaged use of subagents plus <strong>git worktrees</strong>, aimed at roughly
+5–30 isolated changes that each become their own PR. Each unit gets a fresh
+subagent working in its own worktree, so the changes cannot collide on disk.</p>
+<p>Good fits:</p>
+<ul>
+<li>Apply one mechanical rule across many modules — "add <code>@MainActor</code> to every
+  view model", "replace literal spacing with <code>Space.*</code> tokens".</li>
+<li>Fix the same class of bug in many independent places.</li>
+<li>Bump a dependency across several packages.</li>
+<li>Migrate N files to a new API where each file stands alone.</li>
+</ul>
+<p>Bad fits:</p>
+<ul>
+<li><strong>Units that share files.</strong> Two workers editing <code>AppDelegate.swift</code> will
+  produce conflicting PRs.</li>
+<li><strong>Units with ordering constraints.</strong> Batch has no dependency graph.</li>
+<li><strong>Exploratory work.</strong> Batch executes a known change; it does not decide what
+  the change should be. Plan first (<code>ios-plan</code>), then batch.</li>
+<li><strong>One large refactor.</strong> That is one PR, not thirty.</li>
+</ul>
+<h3 id="making-a-batch-succeed">Making a batch succeed</h3>
+<p>The per-unit prompt must be <strong>complete and self-contained</strong> — each worker starts
+cold and cannot see the others.</p>
+<pre><code>For &lt;module&gt;:
+  goal:     every @Observable type the UI renders is @MainActor final class
+  scope:    only files under &lt;module&gt;/ — do not touch shared/ or Package.swift
+  rules:    behavior must not change; add nothing but the isolation annotations
+  verify:   swift build &amp;&amp; swift test --filter &lt;module&gt;
+  report:   the diff, plus the real output of the verify command
+  if the module has no such types: report &quot;no change needed&quot; and stop
+</code></pre>
+<p>That last line matters. Without an explicit no-op path, workers invent work to
+justify their existence.</p>
+<h3 id="worktrees">Worktrees</h3>
+<p>Each unit gets its own working copy, so parallel writes are safe:</p>
+<pre><code class="language-bash">git worktree add ../wt-cart -b batch/cart-mainactor
+git worktree add ../wt-orders -b batch/orders-mainactor
+# … worker per worktree …
+git worktree remove ../wt-cart
+</code></pre>
+<p>Isolation is the whole point. Without it, parallel writers corrupt each other's
+work in ways that are extremely hard to diagnose after the fact.</p>
+<hr />
+<h2 id="3-dynamic-workflows-orchestration-in-code">3. Dynamic workflows — orchestration in code</h2>
+<p>When the job needs logic that does not fit a fixed batch — conditional
+branching, fan-out that depends on discovered results, retries with different
+strategies, a dependency graph — move the orchestration into a script that
+drives many subagents through the Agent SDK.</p>
+<p>The shape:</p>
+<pre><code>discover  -&gt; a read-only pass produces the work list
+plan      -&gt; group into independent units; identify ordering constraints
+fan out   -&gt; one worker per unit, in parallel, each isolated
+verify    -&gt; an independent verifier per unit
+gather    -&gt; collect verdicts; retry, escalate, or report
+</code></pre>
+<pre><code class="language-python"># orchestrate.py — illustrative shape, not a copy-paste script.
+# The point is the control flow, not the API surface.
+
+units = discover_units()                 # e.g. every module with a view model
+
+results = []
+for unit in units:                       # parallelize as your runner allows
+    worker_report = run_agent(
+        agent=&quot;swift-refactorer&quot;,
+        prompt=build_unit_prompt(unit),  # complete and self-contained
+        worktree=make_worktree(unit),
+    )
+
+    review = run_agent(
+        agent=&quot;swift-reviewer&quot;,          # cold, read-only, no stake
+        prompt=f&quot;Verify this change in {unit.path}. Run the build and tests &quot;
+               f&quot;and return their real output.\n\n{worker_report.diff}&quot;,
+        worktree=worker_report.worktree,
+    )
+
+    results.append((unit, worker_report, review))
+
+report(results)                          # verdicts + evidence, not narrative
+</code></pre>
+<p>Three properties make this work, and all three are easy to get wrong:</p>
+<ol>
+<li><strong>Each unit is self-contained.</strong> Workers start cold. Everything they need is
+   in the prompt.</li>
+<li><strong>The verifier is separate from the worker.</strong> Same rule as everywhere else in
+   <code>verification.md</code> — the thing declaring success is not the thing that wants
+   success.</li>
+<li><strong>The script owns the state.</strong> Not the model's memory. The script knows what
+   ran, what passed, and what to retry.</li>
+</ol>
+<h3 id="when-not-to-script-it">When <em>not</em> to script it</h3>
+<p>Scripted orchestration is a real system with real maintenance cost. If the job
+runs once and has under ten units, a session with subagents is cheaper and
+easier to steer. Write the script when the workflow recurs, or when the unit
+count makes conversational tracking unreliable.</p>
+<hr />
+<h2 id="4-failure-handling-at-scale">4. Failure handling at scale</h2>
+<p>At thirty units, some will fail. Decide the policy up front:</p>
+<table>
+<thead>
+<tr>
+<th>Policy</th>
+<th>Behavior</th>
+<th>Use when</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Fail fast</td>
+<td>Stop the whole run on first failure</td>
+<td>Units share risk; a failure implies a bad plan</td>
+</tr>
+<tr>
+<td>Isolate and continue</td>
+<td>Mark it failed, keep going, report at the end</td>
+<td>Units are genuinely independent</td>
+</tr>
+<tr>
+<td>Retry once, then isolate</td>
+<td>One retry with the failure fed back</td>
+<td>Flaky infra, transient toolchain issues</td>
+</tr>
+</tbody>
+</table>
+<p>Default to <strong>isolate and continue</strong> for independent units, with a summary at the
+end that lists every failure. Twenty-eight successes and two clearly-reported
+failures is a good run. Twenty-eight successes and two silently-skipped units is
+a bad one that looks identical from the outside — which is exactly why the final
+report must enumerate failures explicitly.</p>
+<p><strong>Never let a unit "succeed" by doing nothing.</strong> A worker that finds no work
+should say "no change needed" — that is a distinct outcome from "changed and
+verified", and collapsing the two hides coverage gaps.</p>
+<hr />
+<h2 id="5-cost">5. Cost</h2>
+<p>Every subagent starts cold, which means re-establishing context it does not
+inherit. Thirty subagents that each read the same five files pay that cost thirty
+times.</p>
+<p>Reduce it by:</p>
+<ul>
+<li><strong>Putting shared context in the prompt</strong> rather than making each worker
+  rediscover it. One <code>ios-explore</code> pass up front, its findings pasted into every
+  unit prompt, beats thirty independent explorations.</li>
+<li><strong>Using cheaper models for mechanical units.</strong> <code>sonnet</code> for a token
+  replacement; reserve <code>inherit</code>/<code>opus</code> for planning and review.</li>
+<li><strong>Scoping tightly.</strong> A worker told exactly which files to touch does not spend
+  its budget searching.</li>
+<li><strong>Not delegating what is inline-sized.</strong> The most common waste is spawning an
+  agent for a two-call task.</li>
+</ul>
+<hr />
+<h2 id="6-anti-patterns">6. Anti-patterns</h2>
+<pre><code># 1. Batching units that share files.
+-&gt; Conflicting PRs, and neither worker knows.
+
+# 2. Batching work with ordering constraints.
+-&gt; Batch has no dependency graph. Sequence it, or encode the order in a script.
+
+# 3. Batching exploratory work.
+-&gt; Plan first. Batch executes a decided change.
+
+# 4. Scripting a one-off ten-unit job.
+-&gt; A session with subagents is cheaper and easier to redirect.
+
+# 5. Workers that grade themselves at scale.
+-&gt; Thirty self-assessed successes is thirty unverified claims.
+
+# 6. No explicit no-op path.
+-&gt; Workers invent work rather than report &quot;nothing to do&quot;.
+
+# 7. Silently dropping failed units.
+-&gt; Enumerate every failure in the final report.
+
+# 8. Thirty cold agents rediscovering the same context.
+-&gt; One discovery pass, results pasted into each prompt.
+
+# 9. Parallel writers without worktrees.
+-&gt; Corrupted working tree, unattributable damage.
+</code></pre>
+<hr />
+<h2 id="checklist-before-scaling-out">Checklist before scaling out</h2>
+<ul>
+<li>[ ] The units are genuinely independent — no shared files, no ordering.</li>
+<li>[ ] Each unit prompt is complete and self-contained (workers start cold).</li>
+<li>[ ] Each unit has an explicit no-op path.</li>
+<li>[ ] Each unit has a <code>verify</code> command and returns its real output.</li>
+<li>[ ] Parallel writers are isolated in worktrees.</li>
+<li>[ ] The verifier is separate from the worker.</li>
+<li>[ ] A failure policy is chosen: fail fast, isolate, or retry-then-isolate.</li>
+<li>[ ] The final report enumerates failures, not just successes.</li>
+<li>[ ] Shared context was discovered once, not thirty times.</li>
+</ul></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

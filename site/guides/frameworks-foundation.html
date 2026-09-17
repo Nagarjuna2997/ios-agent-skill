@@ -1,0 +1,323 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Foundation Framework — iOS Agent Skill</title><meta name="description" content="Repository guidance for Foundation. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-foundation.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="Foundation Framework"><meta property="og:description" content="Repository guidance for Foundation. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-foundation.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "Foundation Framework", "description": "Repository guidance for Foundation. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-foundation.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Data Management · Reference guide</p><h1>Foundation Framework</h1><p class="lead">Repository guidance for Foundation. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/frameworks/foundation.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#urlsession-async-networking">URLSession — Async Networking</a></li>
+<li><a href="#filemanager">FileManager</a></li>
+<li><a href="#userdefaults-and-appstorage">UserDefaults and @AppStorage</a></li>
+<li><a href="#jsonencoderjsondecoder-and-codable">JSONEncoder/JSONDecoder and Codable</a></li>
+<li><a href="#formatters">Formatters</a></li>
+<li><a href="#notificationcenter">NotificationCenter</a></li>
+<li><a href="#timer-and-runloop">Timer and RunLoop</a></li>
+<li><a href="#processinfo-and-bundle">ProcessInfo and Bundle</a></li>
+</ul>
+</div>
+</aside><h2 id="urlsession-async-networking">URLSession — Async Networking</h2>
+<pre><code class="language-swift">// Basic async data request
+func fetchUser(id: Int) async throws -&gt; User {
+    let url = URL(string: &quot;https://api.example.com/users/\(id)&quot;)!
+    let (data, response) = try await URLSession.shared.data(from: url)
+
+    guard let httpResponse = response as? HTTPURLResponse,
+          (200...299).contains(httpResponse.statusCode) else {
+        throw URLError(.badServerResponse)
+    }
+    return try JSONDecoder().decode(User.self, from: data)
+}
+
+// Download with progress
+func downloadFile(from url: URL) async throws -&gt; URL {
+    let (localURL, response) = try await URLSession.shared.download(from: url)
+
+    guard let httpResponse = response as? HTTPURLResponse,
+          httpResponse.statusCode == 200 else {
+        throw URLError(.badServerResponse)
+    }
+    // Move from temp to permanent location
+    let destination = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        .appendingPathComponent(url.lastPathComponent)
+    try FileManager.default.moveItem(at: localURL, to: destination)
+    return destination
+}
+
+// Upload data
+func uploadImage(_ imageData: Data) async throws -&gt; UploadResponse {
+    var request = URLRequest(url: URL(string: &quot;https://api.example.com/upload&quot;)!)
+    request.httpMethod = &quot;POST&quot;
+    request.setValue(&quot;image/jpeg&quot;, forHTTPHeaderField: &quot;Content-Type&quot;)
+
+    let (data, _) = try await URLSession.shared.upload(for: request, from: imageData)
+    return try JSONDecoder().decode(UploadResponse.self, from: data)
+}
+
+// Custom URLSession configuration
+let config = URLSessionConfiguration.default
+config.timeoutIntervalForRequest = 30
+config.waitsForConnectivity = true
+config.requestCachePolicy = .returnCacheDataElseLoad
+config.httpAdditionalHeaders = [&quot;Authorization&quot;: &quot;Bearer \(token)&quot;]
+let session = URLSession(configuration: config)
+</code></pre>
+<h2 id="filemanager">FileManager</h2>
+<pre><code class="language-swift">let fm = FileManager.default
+
+// App directories
+let documentsURL = fm.urls(for: .documentDirectory, in: .userDomainMask).first!
+let cachesURL = fm.urls(for: .cachesDirectory, in: .userDomainMask).first!
+let appSupportURL = fm.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+
+// Create directory
+let logsDir = documentsURL.appendingPathComponent(&quot;Logs&quot;, isDirectory: true)
+try fm.createDirectory(at: logsDir, withIntermediateDirectories: true)
+
+// Write and read string
+let filePath = documentsURL.appendingPathComponent(&quot;notes.txt&quot;)
+try &quot;Hello, world!&quot;.write(to: filePath, atomically: true, encoding: .utf8)
+let contents = try String(contentsOf: filePath, encoding: .utf8)
+
+// Write and read JSON
+let encoder = JSONEncoder()
+encoder.outputFormatting = .prettyPrinted
+let jsonData = try encoder.encode(myModel)
+try jsonData.write(to: documentsURL.appendingPathComponent(&quot;data.json&quot;))
+
+// File attributes
+let attrs = try fm.attributesOfItem(atPath: filePath.path)
+let fileSize = attrs[.size] as? UInt64
+let modified = attrs[.modificationDate] as? Date
+
+// List directory contents
+let items = try fm.contentsOfDirectory(
+    at: documentsURL,
+    includingPropertiesForKeys: [.fileSizeKey, .creationDateKey],
+    options: .skipsHiddenFiles
+)
+
+// Check existence and delete
+if fm.fileExists(atPath: filePath.path) {
+    try fm.removeItem(at: filePath)
+}
+
+// Copy and move
+try fm.copyItem(at: source, to: destination)
+try fm.moveItem(at: source, to: destination)
+</code></pre>
+<h2 id="userdefaults-and-appstorage">UserDefaults and @AppStorage</h2>
+<pre><code class="language-swift">// Basic UserDefaults
+let defaults = UserDefaults.standard
+defaults.set(&quot;dark&quot;, forKey: &quot;theme&quot;)
+defaults.set(true, forKey: &quot;notificationsEnabled&quot;)
+defaults.set(42, forKey: &quot;launchCount&quot;)
+let theme = defaults.string(forKey: &quot;theme&quot;) ?? &quot;system&quot;
+
+// Register defaults (call in AppDelegate or App init)
+UserDefaults.standard.register(defaults: [
+    &quot;theme&quot;: &quot;system&quot;,
+    &quot;notificationsEnabled&quot;: true,
+    &quot;launchCount&quot;: 0,
+])
+
+// App Groups for sharing between app and extensions
+let sharedDefaults = UserDefaults(suiteName: &quot;group.com.myapp.shared&quot;)
+sharedDefaults?.set(true, forKey: &quot;isPremium&quot;)
+
+// @AppStorage in SwiftUI — auto-persists to UserDefaults
+struct SettingsView: View {
+    @AppStorage(&quot;theme&quot;) private var theme = &quot;system&quot;
+    @AppStorage(&quot;fontSize&quot;) private var fontSize = 16.0
+    @AppStorage(&quot;isPremium&quot;, store: UserDefaults(suiteName: &quot;group.com.myapp.shared&quot;))
+    private var isPremium = false
+
+    var body: some View {
+        Form {
+            Picker(&quot;Theme&quot;, selection: $theme) {
+                Text(&quot;System&quot;).tag(&quot;system&quot;)
+                Text(&quot;Light&quot;).tag(&quot;light&quot;)
+                Text(&quot;Dark&quot;).tag(&quot;dark&quot;)
+            }
+            Slider(value: $fontSize, in: 12...24, step: 1) {
+                Text(&quot;Font Size: \(Int(fontSize))&quot;)
+            }
+        }
+    }
+}
+</code></pre>
+<h2 id="jsonencoderjsondecoder-and-codable">JSONEncoder/JSONDecoder and Codable</h2>
+<pre><code class="language-swift">// Basic Codable model
+struct Article: Codable, Identifiable {
+    let id: Int
+    let title: String
+    let body: String
+    let publishedAt: Date
+    let author: Author
+    let tags: [String]
+
+    struct Author: Codable {
+        let name: String
+        let avatarURL: URL
+
+        enum CodingKeys: String, CodingKey {
+            case name
+            case avatarURL = &quot;avatar_url&quot;
+        }
+    }
+}
+
+// Configured decoder
+let decoder = JSONDecoder()
+decoder.keyDecodingStrategy = .convertFromSnakeCase
+decoder.dateDecodingStrategy = .iso8601
+let articles = try decoder.decode([Article].self, from: jsonData)
+
+// Configured encoder
+let encoder = JSONEncoder()
+encoder.keyEncodingStrategy = .convertToSnakeCase
+encoder.dateEncodingStrategy = .iso8601
+encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+let data = try encoder.encode(articles)
+
+// Custom Codable for complex JSON
+struct SearchResult: Codable {
+    let query: String
+    let results: [Item]
+
+    struct Item: Codable {
+        let id: String
+        let score: Double
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case query = &quot;q&quot;
+        case results = &quot;hits&quot;
+    }
+
+    // Custom decoding
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        query = try container.decode(String.self, forKey: .query)
+        results = try container.decodeIfPresent([Item].self, forKey: .results) ?? []
+    }
+}
+</code></pre>
+<h2 id="formatters">Formatters</h2>
+<pre><code class="language-swift">// DateFormatter
+let dateFormatter = DateFormatter()
+dateFormatter.dateStyle = .medium
+dateFormatter.timeStyle = .short
+dateFormatter.locale = Locale(identifier: &quot;en_US&quot;)
+let dateString = dateFormatter.string(from: Date()) // &quot;Mar 30, 2026 at 3:45 PM&quot;
+
+// ISO 8601
+let isoFormatter = ISO8601DateFormatter()
+isoFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+let isoString = isoFormatter.string(from: Date())
+
+// RelativeDateTimeFormatter
+let relativeFormatter = RelativeDateTimeFormatter()
+relativeFormatter.unitsStyle = .full
+relativeFormatter.string(from: Date().addingTimeInterval(-3600)) // &quot;1 hour ago&quot;
+
+// NumberFormatter
+let currencyFormatter = NumberFormatter()
+currencyFormatter.numberStyle = .currency
+currencyFormatter.locale = Locale(identifier: &quot;en_US&quot;)
+currencyFormatter.string(from: 49.99) // &quot;$49.99&quot;
+
+let percentFormatter = NumberFormatter()
+percentFormatter.numberStyle = .percent
+percentFormatter.maximumFractionDigits = 1
+percentFormatter.string(from: 0.856) // &quot;85.6%&quot;
+
+// Modern formatted API (iOS 15+)
+let formatted = Date.now.formatted(.dateTime.month(.wide).day().year())
+let price = 49.99.formatted(.currency(code: &quot;USD&quot;))
+let percent = 0.856.formatted(.percent.precision(.fractionLength(1)))
+</code></pre>
+<h2 id="notificationcenter">NotificationCenter</h2>
+<pre><code class="language-swift">// Define custom notification
+extension Notification.Name {
+    static let userDidLogin = Notification.Name(&quot;userDidLogin&quot;)
+    static let cartUpdated = Notification.Name(&quot;cartUpdated&quot;)
+}
+
+// Post notification with userInfo
+NotificationCenter.default.post(
+    name: .userDidLogin,
+    object: nil,
+    userInfo: [&quot;userId&quot;: &quot;abc123&quot;, &quot;timestamp&quot;: Date()]
+)
+
+// Observe with closure (returns token — store it)
+let token = NotificationCenter.default.addObserver(
+    forName: .cartUpdated,
+    object: nil,
+    queue: .main
+) { notification in
+    if let count = notification.userInfo?[&quot;itemCount&quot;] as? Int {
+        print(&quot;Cart has \(count) items&quot;)
+    }
+}
+
+// Observe with async sequence (iOS 17+)
+func observeLoginEvents() async {
+    for await notification in NotificationCenter.default.notifications(named: .userDidLogin) {
+        if let userId = notification.userInfo?[&quot;userId&quot;] as? String {
+            print(&quot;User logged in: \(userId)&quot;)
+        }
+    }
+}
+
+// Remove observer
+NotificationCenter.default.removeObserver(token)
+</code></pre>
+<h2 id="timer-and-runloop">Timer and RunLoop</h2>
+<pre><code class="language-swift">// Scheduled repeating timer
+let timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
+    print(&quot;Tick&quot;)
+}
+timer.invalidate() // Stop the timer
+
+// Timer with tolerance for battery efficiency
+let efficientTimer = Timer.scheduledTimer(withTimeInterval: 60.0, repeats: true) { _ in
+    refreshData()
+}
+efficientTimer.tolerance = 5.0 // System can delay up to 5 seconds
+
+// Async timer pattern
+func startCountdown(from seconds: Int) async {
+    for remaining in stride(from: seconds, through: 0, by: -1) {
+        print(&quot;\(remaining)...&quot;)
+        try? await Task.sleep(for: .seconds(1))
+    }
+}
+
+// Timer publisher (Combine)
+import Combine
+let timerPublisher = Timer.publish(every: 1.0, on: .main, in: .common).autoconnect()
+</code></pre>
+<h2 id="processinfo-and-bundle">ProcessInfo and Bundle</h2>
+<pre><code class="language-swift">// ProcessInfo
+let processInfo = ProcessInfo.processInfo
+let systemUptime = processInfo.systemUptime
+let isLowPowerMode = processInfo.isLowPowerModeEnabled
+let thermalState = processInfo.thermalState // .nominal, .fair, .serious, .critical
+let osVersion = processInfo.operatingSystemVersion // (major: 18, minor: 0, patch: 0)
+
+// Check for Xcode preview or simulator
+#if DEBUG
+let isPreview = processInfo.environment[&quot;XCODE_RUNNING_FOR_PREVIEWS&quot;] == &quot;1&quot;
+#endif
+
+// Bundle
+let appVersion = Bundle.main.infoDictionary?[&quot;CFBundleShortVersionString&quot;] as? String
+let buildNumber = Bundle.main.infoDictionary?[&quot;CFBundleVersion&quot;] as? String
+let bundleId = Bundle.main.bundleIdentifier
+
+// Load bundled resource
+if let url = Bundle.main.url(forResource: &quot;config&quot;, withExtension: &quot;json&quot;),
+   let data = try? Data(contentsOf: url) {
+    let config = try JSONDecoder().decode(AppConfig.self, from: data)
+}
+
+// Localized strings
+let greeting = Bundle.main.localizedString(forKey: &quot;greeting&quot;, value: nil, table: nil)
+// Or use the macro: String(localized: &quot;greeting&quot;)
+</code></pre></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

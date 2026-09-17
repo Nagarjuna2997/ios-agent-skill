@@ -1,0 +1,120 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>VisionKit — iOS Agent Skill</title><meta name="description" content="Repository guidance for VisionKit. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-visionkit.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="VisionKit"><meta property="og:description" content="Repository guidance for VisionKit. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-visionkit.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "VisionKit", "description": "Repository guidance for VisionKit. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-visionkit.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Core UI and Apps · Reference guide</p><h1>VisionKit</h1><p class="lead">Repository guidance for VisionKit. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/frameworks/visionkit.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#context">Context</a></li>
+<li><a href="#pattern">Pattern</a></li>
+<li><a href="#framework-choice">Framework Choice</a></li>
+<li><a href="#availability-and-privacy">Availability and Privacy</a></li>
+<li><a href="#anti-patterns">Anti-Patterns</a></li>
+<li><a href="#checklist">Checklist</a></li>
+</ul>
+</div>
+</aside><h2 id="context">Context</h2>
+<p>Use VisionKit when the app needs Apple-provided camera/document UI for scanning, data capture, Live Text-style interaction, or visual lookup workflows. Use Vision when you need lower-level image analysis requests. Use AVFoundation when you need a custom camera pipeline.</p>
+<p>VisionKit is a UI-facing framework: it gives you system experiences that already handle camera presentation, capture affordances, and platform interaction patterns. Keep business logic outside the VisionKit view/controller and pass extracted results into an injected service.</p>
+<h2 id="pattern">Pattern</h2>
+<p>Wrap VisionKit behind a protocol so SwiftUI views can preview without camera hardware:</p>
+<pre><code class="language-swift">import Foundation
+
+protocol DocumentScanning {
+    func scanReceipt() async throws -&gt; ScannedDocument
+}
+
+struct ScannedDocument: Sendable, Equatable {
+    var pages: [Data]
+    var recognizedText: String
+}
+</code></pre>
+<p>The UI layer asks for a scan; it does not own parsing, persistence, or network upload:</p>
+<pre><code class="language-swift">import SwiftUI
+
+@MainActor
+@Observable
+final class ReceiptScanModel {
+    private let scanner: any DocumentScanning
+
+    var document: ScannedDocument?
+    var errorMessage: String?
+
+    init(scanner: any DocumentScanning) {
+        self.scanner = scanner
+    }
+
+    func scan() async {
+        do {
+            document = try await scanner.scanReceipt()
+        } catch {
+            errorMessage = &quot;Scanning failed. Please try again.&quot;
+        }
+    }
+}
+</code></pre>
+<p>For UIKit-backed VisionKit controllers, keep the delegate bridge small and mark UI updates as main-actor work. Do not store scanned images in <code>UserDefaults</code>; persist them through the app's document store, SwiftData/Core Data metadata, or an encrypted file path.</p>
+<h2 id="framework-choice">Framework Choice</h2>
+<table>
+<thead>
+<tr>
+<th>Need</th>
+<th>Prefer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>System document scanner UI</td>
+<td>VisionKit</td>
+</tr>
+<tr>
+<td>Live Text / visual lookup style interaction</td>
+<td>VisionKit</td>
+</tr>
+<tr>
+<td>Barcode/text/object analysis without system UI</td>
+<td>Vision</td>
+</tr>
+<tr>
+<td>Fully custom camera preview and capture</td>
+<td>AVFoundation</td>
+</tr>
+<tr>
+<td>OCR results feeding an on-device LLM</td>
+<td>VisionKit or Vision -&gt; Foundation Models, with private local context</td>
+</tr>
+</tbody>
+</table>
+<h2 id="availability-and-privacy">Availability and Privacy</h2>
+<ul>
+<li>Gate VisionKit features by platform and API availability.</li>
+<li>Provide camera usage copy when the flow opens camera capture.</li>
+<li>Keep extracted text and images local unless the user explicitly exports or syncs them.</li>
+<li>Show a manual fallback for unsupported devices, simulator runs, parental controls, or camera denial.</li>
+</ul>
+<h2 id="anti-patterns">Anti-Patterns</h2>
+<pre><code class="language-swift">// WRONG: force camera-only scanning with no fallback.
+Button(&quot;Scan&quot;) {
+    showScanner = true
+}
+</code></pre>
+<pre><code class="language-swift">// RIGHT: branch by availability and authorization, then offer import/manual entry.
+if scannerIsAvailable {
+    Button(&quot;Scan&quot;) {
+        showScanner = true
+    }
+} else {
+    Button(&quot;Import File&quot;) {
+        showImporter = true
+    }
+}
+</code></pre>
+<pre><code class="language-swift">// WRONG: upload recognized text automatically.
+try await api.upload(scan.recognizedText)
+</code></pre>
+<pre><code class="language-swift">// RIGHT: make export explicit and explain where content goes.
+try await exporter.share(scan, destination: selectedDestination)
+</code></pre>
+<h2 id="checklist">Checklist</h2>
+<ul>
+<li>[ ] VisionKit is chosen for system UI, not low-level image analysis.</li>
+<li>[ ] Camera permission copy explains the user-visible scanning purpose.</li>
+<li>[ ] The simulator and unsupported devices have a manual/import fallback.</li>
+<li>[ ] Extracted text/images do not leave the device without explicit user action.</li>
+<li>[ ] The SwiftUI screen previews with a fake <code>DocumentScanning</code> implementation.</li>
+</ul></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

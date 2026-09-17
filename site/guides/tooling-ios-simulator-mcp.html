@@ -1,0 +1,270 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>iOS Simulator MCP — iOS Agent Skill</title><meta name="description" content="Repository guidance for iOS Simulator MCP. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-ios-simulator-mcp.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="iOS Simulator MCP"><meta property="og:description" content="Repository guidance for iOS Simulator MCP. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-ios-simulator-mcp.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "iOS Simulator MCP", "description": "Repository guidance for iOS Simulator MCP. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-ios-simulator-mcp.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Developer Tools · Reference guide</p><h1>iOS Simulator MCP</h1><p class="lead">Repository guidance for iOS Simulator MCP. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/tooling/ios-simulator-mcp.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#context">Context</a></li>
+<li><a href="#package-boundary">Package Boundary</a></li>
+<li><a href="#sidebar-preview-and-current-device-discovery">Sidebar preview and current device discovery</a><ul>
+<li><a href="#optional-mcp-configuration">Optional MCP configuration</a></li>
+</ul>
+</li>
+<li><a href="#current-package">Current Package</a></li>
+<li><a href="#planned-tool-surface">Planned Tool Surface</a></li>
+<li><a href="#safety-rules">Safety Rules</a></li>
+<li><a href="#evidence-contract">Evidence Contract</a></li>
+<li><a href="#anti-patterns">Anti-Patterns</a></li>
+</ul>
+</div>
+</aside><h2 id="context">Context</h2>
+<p>Use this when the task needs evidence from a running app: screenshots, videos, logs, deep links, accessibility trees, gestures, app install/launch, or repeated design iteration.</p>
+<p>Do not add these tools to <code>ios-agent-mcp</code>. The existing package is intentionally a read-only static analyzer that runs without Xcode, without a simulator, without network, and without writes. Simulator control has a different runtime contract: macOS, Xcode, a booted simulator, and user-visible side effects.</p>
+<h2 id="package-boundary">Package Boundary</h2>
+<table>
+<thead>
+<tr>
+<th>Package</th>
+<th>Contract</th>
+<th>Good for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ios-agent-mcp</code></td>
+<td>Read project files, analyze Swift, return findings</td>
+<td>Concurrency, architecture, SwiftUI, security, testing, performance, App Store readiness</td>
+</tr>
+<tr>
+<td><code>ios-simulator-mcp</code></td>
+<td>Drive Xcode and a booted simulator</td>
+<td>Build, test, install, launch, open native Simulator and preview screenshots</td>
+</tr>
+</tbody>
+</table>
+<p>The split keeps a Swift linter lightweight while still giving agents a path to runtime validation.</p>
+<h2 id="sidebar-preview-and-current-device-discovery">Sidebar preview and current device discovery</h2>
+<p>Published package: <code>@nagarjuna2002/ios-simulator-mcp@0.2.0</code> (the scoped name belongs to this repository; the unscoped npm name belongs to a different publisher).</p>
+<p>Use <code>simulator_environment</code> to inspect installed Xcode, runtimes and actual device types. For iPhone Duo, see <code>docs/platforms/iphone-duo.md</code>; do not claim a profile exists before discovery confirms it.</p>
+<ol>
+<li>Call <code>simulator_list</code> and choose a real UDID.</li>
+<li>Call <code>simulator_show</code> to boot, wait and open the native Simulator window.</li>
+<li>Build, install and launch the app with the existing runtime tools.</li>
+<li>Call <code>simulator_preview_start</code>. Open the returned loopback URL in the client's browser/sidebar, or any browser on the same Mac.</li>
+<li>Interact in the native Simulator window. The browser shows refreshed screenshots with pause and fit controls; it does not send taps or keyboard input.</li>
+<li>Call <code>simulator_preview_stop</code> when done. This removes preview screenshots and closes its listener; it leaves the Simulator running.</li>
+</ol>
+<p>From a terminal, for a device that is already booted:</p>
+<pre><code class="language-bash">npx -y @nagarjuna2002/ios-simulator-mcp@0.2.0 --viewer DEVICE-UDID
+</code></pre>
+<p>Open the printed URL. Stop with Ctrl-C. It is an opt-in local viewer, not a cloud simulator or a public sharing link. The browser viewer does not upload screenshots. When <code>screenshot</code> uses <code>includeImage: true</code>, pixels are sent to the MCP client and may be processed by its model/provider. The tokenized URL grants access to simulator screenshots while running, so treat it as private.</p>
+<h3 id="optional-mcp-configuration">Optional MCP configuration</h3>
+<p>Add this server to a local MCP-capable client (Claude Desktop/Code, Codex or Gemini CLI) on a Mac with Xcode:</p>
+<pre><code class="language-json">{
+  &quot;mcpServers&quot;: {
+    &quot;ios-simulator&quot;: {
+      &quot;command&quot;: &quot;npx&quot;,
+      &quot;args&quot;: [&quot;-y&quot;, &quot;@nagarjuna2002/ios-simulator-mcp@0.2.0&quot;]
+    }
+  }
+}
+</code></pre>
+<p>Adapt the surrounding configuration format to the client. The portable knowledge plugin stays independent of Xcode; simulator control is opt-in. Hosted ChatGPT cannot reach another computer's localhost just by installing this package. Use a local client for runtime control; screenshots can be returned as MCP images by calling <code>screenshot</code> with <code>includeImage: true</code>.</p>
+<h2 id="current-package">Current Package</h2>
+<p>The first executable slice now lives in <code>ios-simulator-mcp/</code>. It is deliberately
+separate from <code>ios-agent-mcp</code> because it requires macOS, Xcode, and simulator
+side effects.</p>
+<p>Install from source:</p>
+<pre><code class="language-bash">cd ios-simulator-mcp
+npm install
+npm run build
+node dist/index.js --help
+</code></pre>
+<p>Implemented tools:</p>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Purpose</th>
+<th>Backend</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>simulator_environment</code></td>
+<td>Inspect Xcode, runtimes and device profiles</td>
+<td><code>xcodebuild</code>, <code>xcode-select</code>, <code>simctl list</code></td>
+</tr>
+<tr>
+<td><code>simulator_show</code></td>
+<td>Boot, wait and open native Simulator</td>
+<td><code>bootstatus</code>, <code>open</code></td>
+</tr>
+<tr>
+<td><code>simulator_preview_start</code> / <code>simulator_preview_stop</code></td>
+<td>Start/stop private loopback screenshot viewer</td>
+<td>local HTTP + <code>simctl io screenshot</code></td>
+</tr>
+<tr>
+<td><code>simulator_list</code></td>
+<td>List available device instances</td>
+<td><code>xcrun simctl list --json</code></td>
+</tr>
+<tr>
+<td><code>simulator_boot</code></td>
+<td>Boot a simulator by UDID</td>
+<td><code>xcrun simctl boot</code></td>
+</tr>
+<tr>
+<td><code>simulator_shutdown</code></td>
+<td>Shut down a booted simulator</td>
+<td><code>xcrun simctl shutdown</code></td>
+</tr>
+<tr>
+<td><code>build_project</code></td>
+<td>Build an app or test target</td>
+<td><code>xcodebuild build</code></td>
+</tr>
+<tr>
+<td><code>run_tests</code></td>
+<td>Run tests with captured result output</td>
+<td><code>xcodebuild test</code></td>
+</tr>
+<tr>
+<td><code>install_app</code></td>
+<td>Install an <code>.app</code> bundle</td>
+<td><code>xcrun simctl install</code></td>
+</tr>
+<tr>
+<td><code>launch_app</code></td>
+<td>Launch by bundle identifier</td>
+<td><code>xcrun simctl launch</code></td>
+</tr>
+<tr>
+<td><code>terminate_app</code></td>
+<td>Terminate by bundle identifier</td>
+<td><code>xcrun simctl terminate</code></td>
+</tr>
+<tr>
+<td><code>open_deep_link</code></td>
+<td>Open a URL or universal link</td>
+<td><code>xcrun simctl openurl</code></td>
+</tr>
+<tr>
+<td><code>screenshot</code></td>
+<td>Capture a PNG for review</td>
+<td><code>xcrun simctl io screenshot</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="planned-tool-surface">Planned Tool Surface</h2>
+<p>Next, extend the deterministic Apple-tooling tier:</p>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Purpose</th>
+<th>Backend</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>record_video</code></td>
+<td>Record and stop simulator video</td>
+<td><code>xcrun simctl io recordVideo</code></td>
+</tr>
+<tr>
+<td><code>stream_logs</code></td>
+<td>Capture app logs with predicates</td>
+<td><code>xcrun simctl spawn log stream</code></td>
+</tr>
+<tr>
+<td><code>reset_app_state</code></td>
+<td>Reset one app's container and permissions</td>
+<td>app uninstall/install or container cleanup</td>
+</tr>
+</tbody>
+</table>
+<p>Add UI-driving tools only after the backend spike chooses XCUITest, WebDriverAgent, or idb:</p>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>inspect_accessibility_tree</code></td>
+<td>Return visible elements, labels, roles, frames, enabled state</td>
+</tr>
+<tr>
+<td><code>tap</code></td>
+<td>Tap by accessibility id, text, or coordinates</td>
+</tr>
+<tr>
+<td><code>double_tap</code></td>
+<td>Double tap an element or point</td>
+</tr>
+<tr>
+<td><code>long_press</code></td>
+<td>Long press with a duration</td>
+</tr>
+<tr>
+<td><code>swipe</code></td>
+<td>Swipe by direction or coordinate path</td>
+</tr>
+<tr>
+<td><code>type_text</code></td>
+<td>Type into a focused or targeted field</td>
+</tr>
+<tr>
+<td><code>wait_for_element</code></td>
+<td>Poll until an element appears, disappears, or changes state</td>
+</tr>
+</tbody>
+</table>
+<h2 id="safety-rules">Safety Rules</h2>
+<ul>
+<li>Never erase all simulator content without explicit user approval.</li>
+<li>Prefer resetting one app's state over resetting the entire simulator.</li>
+<li>Return exact command output, screenshot paths, video paths, and log excerpts as evidence.</li>
+<li>Capture simulator identity in every result: device name, UDID, runtime, app bundle id, and build configuration.</li>
+<li>Time-bound every long-running command and return handles for recording/log streams.</li>
+<li>Do not claim visual correctness from a build alone. A visual task needs a screenshot or video.</li>
+<li>Do not type secrets into apps unless the user explicitly provides test credentials for that run.</li>
+</ul>
+<h2 id="evidence-contract">Evidence Contract</h2>
+<p>Every runtime tool should return structured data suitable for workflow branching:</p>
+<pre><code class="language-json">{
+  &quot;status&quot;: &quot;passed&quot;,
+  &quot;device&quot;: {
+    &quot;name&quot;: &quot;iPhone 17 Pro&quot;,
+    &quot;udid&quot;: &quot;SIMULATOR-UDID&quot;,
+    &quot;runtime&quot;: &quot;iOS 27.0&quot;
+  },
+  &quot;app&quot;: {
+    &quot;bundle_id&quot;: &quot;com.example.App&quot;,
+    &quot;configuration&quot;: &quot;Debug&quot;
+  },
+  &quot;artifacts&quot;: {
+    &quot;screenshot&quot;: &quot;artifacts/screens/home.png&quot;,
+    &quot;video&quot;: &quot;artifacts/videos/flow.mov&quot;,
+    &quot;logs&quot;: &quot;artifacts/logs/app.log&quot;
+  },
+  &quot;summary&quot;: &quot;Launched app and captured home screen.&quot;
+}
+</code></pre>
+<p>For failure results, include the failing command, exit code, stderr, and the nearest useful artifact. A failed build with no artifact is still useful evidence; a visual claim with no artifact is not.</p>
+<h2 id="anti-patterns">Anti-Patterns</h2>
+<pre><code class="language-text">// WRONG: add simulator control to ios-agent-mcp
+Why: makes every static-analysis install depend on Xcode and a booted simulator.
+
+// RIGHT: create ios-simulator-mcp with a macOS/Xcode runtime contract.
+</code></pre>
+<pre><code class="language-text">// WRONG: treat screenshot capture as enough for UI automation.
+Why: screenshots prove pixels, not element identity or accessibility state.
+
+// RIGHT: pair screenshots with accessibility-tree inspection once a UI backend is chosen.
+</code></pre>
+<pre><code class="language-text">// WRONG: expose &quot;reset simulator&quot; as a casual command.
+Why: erasing content is destructive and surprises users.
+
+// RIGHT: expose reset_app_state first, and require approval for simulator erase.
+</code></pre></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

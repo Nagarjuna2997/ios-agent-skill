@@ -1,0 +1,131 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Core Spotlight RAG -- Private App-Local Retrieval for Foundation Models — iOS Agent Skill</title><meta name="description" content="Repository guidance for Core Spotlight RAG, Core Spotlight. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-core-spotlight-rag.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="Core Spotlight RAG -- Private App-Local Retrieval for Foundation Models"><meta property="og:description" content="Repository guidance for Core Spotlight RAG, Core Spotlight. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-core-spotlight-rag.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "Core Spotlight RAG -- Private App-Local Retrieval for Foundation Models", "description": "Repository guidance for Core Spotlight RAG, Core Spotlight. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-core-spotlight-rag.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">AI and Machine Learning · Reference guide</p><h1>Core Spotlight RAG -- Private App-Local Retrieval for Foundation Models</h1><p class="lead">Repository guidance for Core Spotlight RAG, Core Spotlight. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/frameworks/core-spotlight-rag.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#1-architecture">1. Architecture</a></li>
+<li><a href="#2-index-app-content">2. Index App Content</a></li>
+<li><a href="#3-use-spotlightsearchtool">3. Use SpotlightSearchTool</a></li>
+<li><a href="#4-contact-and-identity-queries">4. Contact and Identity Queries</a></li>
+<li><a href="#5-grounding-rules">5. Grounding Rules</a></li>
+<li><a href="#6-testing">6. Testing</a></li>
+<li><a href="#7-review-checklist">7. Review Checklist</a></li>
+</ul>
+</div>
+</aside><h2 id="overview">Overview</h2>
+<p>Core Spotlight indexes app content on device. In the iOS 27 generation, Apple adds <code>SpotlightSearchTool</code>, a Foundation Models <code>Tool</code> that lets a <code>LanguageModelSession</code> use app-indexed content as private retrieval context.</p>
+<p>Use this for app-local RAG: notes, documents, tasks, messages, projects, photos, or any user-owned content the app already manages.</p>
+<blockquote>
+<p>Core Spotlight indexes remain private to the device owner. Do not mirror this content to a server unless the product explicitly requires sync and explains it.</p>
+</blockquote>
+<hr />
+<h2 id="1-architecture">1. Architecture</h2>
+<pre><code class="language-text">App content store
+  -&gt; CSSearchableItem + CSSearchableItemAttributeSet
+  -&gt; CSSearchableIndex
+  -&gt; SpotlightSearchTool
+  -&gt; LanguageModelSession
+  -&gt; grounded answer with app-local context
+</code></pre>
+<p>Core Spotlight is not just a search UI feature. It becomes the retrieval substrate the model can query through a tool.</p>
+<hr />
+<h2 id="2-index-app-content">2. Index App Content</h2>
+<pre><code class="language-swift">import CoreSpotlight
+import UniformTypeIdentifiers
+
+struct Note: Identifiable {
+    let id: String
+    let title: String
+    let body: String
+    let modifiedAt: Date
+}
+
+func searchableItem(for note: Note) -&gt; CSSearchableItem {
+    let attributes = CSSearchableItemAttributeSet(contentType: .text)
+    attributes.title = note.title
+    attributes.contentDescription = note.body
+    attributes.subject = note.title
+    attributes.contentCreationDate = note.modifiedAt
+
+    return CSSearchableItem(
+        uniqueIdentifier: note.id,
+        domainIdentifier: &quot;notes&quot;,
+        attributeSet: attributes
+    )
+}
+
+func index(notes: [Note]) async throws {
+    let items = notes.map(searchableItem(for:))
+    try await CSSearchableIndex.default().indexSearchableItems(items)
+}
+</code></pre>
+<p>Index content as it changes. A model cannot retrieve what the app never indexed, and stale indexes create stale answers.</p>
+<hr />
+<h2 id="3-use-spotlightsearchtool">3. Use <code>SpotlightSearchTool</code></h2>
+<pre><code class="language-swift">import CoreSpotlight
+import FoundationModels
+
+@available(iOS 27.0, macOS 27.0, *)
+func makeNotesSession() -&gt; LanguageModelSession {
+    var source = CoreSpotlightSource(
+        fetchAttributes: [.subject, .contentDescription, .contentCreationDate]
+    )
+    source.maximumResultCount = 12
+
+    let configuration = SpotlightSearchTool.Configuration(
+        sources: [.coreSpotlight(source)]
+    )
+    let searchTool = SpotlightSearchTool(configuration: configuration)
+
+    return LanguageModelSession(
+        tools: [searchTool],
+        instructions: &quot;&quot;&quot;
+        Answer using the user's indexed notes when relevant.
+        Cite note titles when you use note content.
+        Say when the notes do not contain enough information.
+        &quot;&quot;&quot;
+    )
+}
+</code></pre>
+<p>Configure the source narrowly. Fetch only attributes the answer needs, set a bounded result count, and provide instructions for attribution and uncertainty.</p>
+<hr />
+<h2 id="4-contact-and-identity-queries">4. Contact and Identity Queries</h2>
+<p>Searches involving "me", "my manager", or people in messages can require identity resolution. If your app supports person-centric retrieval, implement Apple's contact resolution hooks with your app's account/profile source.</p>
+<p>Rules:</p>
+<ul>
+<li>Do not infer identity from Contacts without permission and purpose.</li>
+<li>Prefer the signed-in app profile when it is authoritative.</li>
+<li>Keep identity resolution deterministic in tests.</li>
+<li>Redact or avoid sensitive attributes unless the answer needs them.</li>
+</ul>
+<hr />
+<h2 id="5-grounding-rules">5. Grounding Rules</h2>
+<p>The answer should distinguish retrieved facts from model reasoning:</p>
+<ul>
+<li>Include source titles or stable item names in UI.</li>
+<li>Use a "not found" answer when retrieval returns nothing relevant.</li>
+<li>Do not let the model invent records that are absent from the index.</li>
+<li>Reindex immediately after edits, deletes, imports, and sync conflict resolution.</li>
+<li>Delete index entries when app content is deleted.</li>
+</ul>
+<hr />
+<h2 id="6-testing">6. Testing</h2>
+<p>Create a deterministic test index:</p>
+<ol>
+<li>Seed a few known <code>CSSearchableItem</code> values.</li>
+<li>Ask queries with expected hits.</li>
+<li>Ask queries with expected misses.</li>
+<li>Verify the model calls the Spotlight tool before answering.</li>
+<li>Verify answers cite retrieved item titles.</li>
+</ol>
+<p>For model behavior, pair this with <code>docs/testing/evaluations.md</code> and a <code>ToolCallEvaluator</code>.</p>
+<hr />
+<h2 id="7-review-checklist">7. Review Checklist</h2>
+<ul>
+<li>[ ] Indexed fields are minimal, useful, and privacy-reviewed</li>
+<li>[ ] Index updates run on create/update/delete/import/sync</li>
+<li>[ ] <code>SpotlightSearchTool</code> result count and attributes are bounded</li>
+<li>[ ] Instructions require source attribution and uncertainty</li>
+<li>[ ] Deleted app content is removed from the Spotlight index</li>
+<li>[ ] Tests cover hit, miss, stale-index, and tool-failure paths</li>
+<li>[ ] No server RAG is used for private app-local content without explicit product need</li>
+</ul>
+<p>See also: <code>docs/frameworks/foundation-models.md</code>, <code>docs/frameworks/app-intents-intelligence.md</code>, <code>docs/frameworks/usernotifications.md</code>, <code>docs/testing/evaluations.md</code>.</p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

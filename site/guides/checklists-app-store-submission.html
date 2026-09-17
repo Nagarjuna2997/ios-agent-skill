@@ -1,0 +1,215 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>App Store Submission Checklist — iOS Agent Skill</title><meta name="description" content="Repository guidance for Privacy Manifest. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/checklists-app-store-submission.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="App Store Submission Checklist"><meta property="og:description" content="Repository guidance for Privacy Manifest. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/checklists-app-store-submission.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "App Store Submission Checklist", "description": "Repository guidance for Privacy Manifest. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/checklists-app-store-submission.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Authentication, Security, and Privacy · Reference guide</p><h1>App Store Submission Checklist</h1><p class="lead">Repository guidance for Privacy Manifest. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/checklists/app-store-submission.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#app-metadata">App Metadata</a></li>
+<li><a href="#screenshots-and-previews">Screenshots and Previews</a></li>
+<li><a href="#app-review-guidelines-compliance">App Review Guidelines Compliance</a><ul>
+<li><a href="#10-safety">1.0 Safety</a></li>
+<li><a href="#20-performance">2.0 Performance</a></li>
+<li><a href="#30-business">3.0 Business</a></li>
+<li><a href="#40-design">4.0 Design</a></li>
+<li><a href="#50-legal">5.0 Legal</a></li>
+</ul>
+</li>
+<li><a href="#privacy">Privacy</a></li>
+<li><a href="#app-transport-security">App Transport Security</a></li>
+<li><a href="#required-device-capabilities">Required Device Capabilities</a></li>
+<li><a href="#launch-screen-and-app-icons">Launch Screen and App Icons</a></li>
+<li><a href="#entitlements-and-capabilities">Entitlements and Capabilities</a></li>
+<li><a href="#build-configuration">Build Configuration</a></li>
+<li><a href="#testflight-beta-testing">TestFlight Beta Testing</a></li>
+<li><a href="#common-rejection-reasons-and-fixes">Common Rejection Reasons and Fixes</a></li>
+<li><a href="#xcode-archive-and-upload">Xcode Archive and Upload</a></li>
+<li><a href="#post-submission">Post-Submission</a></li>
+</ul>
+</div>
+</aside><p>A comprehensive checklist for submitting an iOS app. Work through each section before uploading your archive to App Store Connect.</p>
+<hr />
+<h2 id="app-metadata">App Metadata</h2>
+<ul>
+<li>[ ] App name finalized (30 character limit, no keyword stuffing)</li>
+<li>[ ] Subtitle written (30 character limit, descriptive and compelling)</li>
+<li>[ ] App description written (up to 4000 characters, most important info first)</li>
+<li>[ ] Promotional text set (170 characters, can be updated without a new build)</li>
+<li>[ ] Keywords optimized (100 character budget, comma-separated, no spaces after commas)</li>
+<li>[ ] Primary and secondary categories selected</li>
+<li>[ ] Support URL provided (must be a working webpage)</li>
+<li>[ ] Marketing URL provided (optional but recommended)</li>
+<li>[ ] Copyright field filled (e.g., "2026 Your Company Name")</li>
+<li>[ ] Version number follows semantic versioning (e.g., 1.0.0)</li>
+</ul>
+<h2 id="screenshots-and-previews">Screenshots and Previews</h2>
+<ul>
+<li>[ ] Screenshots provided for 6.7" display (iPhone 15 Pro Max / 16 Pro Max -- 1290 x 2796)</li>
+<li>[ ] Screenshots provided for 6.5" display (iPhone 11 Pro Max -- 1242 x 2688) if targeting older devices</li>
+<li>[ ] Screenshots provided for 5.5" display (iPhone 8 Plus -- 1242 x 2208) if supporting iPhone SE</li>
+<li>[ ] iPad Pro 12.9" screenshots (2048 x 2732) if universal app</li>
+<li>[ ] iPad Pro 13" (M4) screenshots (2064 x 2752) if targeting latest iPads</li>
+<li>[ ] Minimum 3 screenshots per device size (maximum 10)</li>
+<li>[ ] Screenshots show actual app UI (not misleading)</li>
+<li>[ ] App preview videos uploaded (optional, 15-30 seconds, no watermarks)</li>
+<li>[ ] All screenshots and previews localized for each supported language</li>
+</ul>
+<h2 id="app-review-guidelines-compliance">App Review Guidelines Compliance</h2>
+<h3 id="10-safety">1.0 Safety</h3>
+<ul>
+<li>[ ] No objectionable content without proper age gating</li>
+<li>[ ] User-generated content has reporting and blocking mechanisms</li>
+<li>[ ] No realistic violence in icons or screenshots for apps aimed at children</li>
+</ul>
+<h3 id="20-performance">2.0 Performance</h3>
+<ul>
+<li>[ ] App is complete and functional (no beta, demo, or trial labels)</li>
+<li>[ ] No hidden or undocumented features</li>
+<li>[ ] App does not download additional executable code after install</li>
+<li>[ ] App works without requiring additional hardware to review</li>
+</ul>
+<h3 id="30-business">3.0 Business</h3>
+<ul>
+<li>[ ] In-app purchases use StoreKit (not third-party payment for digital goods)</li>
+<li>[ ] Subscriptions include clear pricing and terms</li>
+<li>[ ] Subscription offers restore previous purchases</li>
+<li>[ ] Free trials clearly state what happens when trial ends</li>
+<li>[ ] No bait-and-switch pricing</li>
+</ul>
+<h3 id="40-design">4.0 Design</h3>
+<ul>
+<li>[ ] App uses standard system UI or well-designed custom UI</li>
+<li>[ ] App functions on all supported device sizes (no black bars)</li>
+<li>[ ] No use of private APIs</li>
+<li>[ ] App does not mimic native iOS system UI in misleading ways</li>
+<li>[ ] Extensions (widgets, keyboards, etc.) include sufficient standalone functionality</li>
+</ul>
+<h3 id="50-legal">5.0 Legal</h3>
+<ul>
+<li>[ ] App complies with all local laws in each territory</li>
+<li>[ ] Developer Program License Agreement followed</li>
+<li>[ ] No use of copyrighted material without permission</li>
+<li>[ ] GDPR and CCPA compliance if targeting EU/California users</li>
+</ul>
+<h2 id="privacy">Privacy</h2>
+<ul>
+<li>[ ] Privacy policy URL provided (required for all apps)</li>
+<li>[ ] Privacy policy is accessible and clearly written</li>
+<li>[ ] App Privacy labels configured in App Store Connect (Data Types questionnaire)</li>
+<li>[ ] Each data type categorized correctly (collected vs. tracked vs. linked)</li>
+<li>[ ] App Tracking Transparency (ATT) prompt implemented if tracking users across apps</li>
+<li>[ ] ATT prompt shown before any tracking begins</li>
+<li>[ ] <code>NSUserTrackingUsageDescription</code> added to Info.plist if using ATT</li>
+<li>[ ] Purpose strings (usage descriptions) provided for all permission requests:</li>
+<li>[ ] <code>NSCameraUsageDescription</code></li>
+<li>[ ] <code>NSPhotoLibraryUsageDescription</code></li>
+<li>[ ] <code>NSLocationWhenInUseUsageDescription</code></li>
+<li>[ ] <code>NSLocationAlwaysAndWhenInUseUsageDescription</code> (if applicable)</li>
+<li>[ ] <code>NSMicrophoneUsageDescription</code></li>
+<li>[ ] <code>NSContactsUsageDescription</code></li>
+<li>[ ] <code>NSCalendarsUsageDescription</code></li>
+<li>[ ] <code>NSBluetoothAlwaysUsageDescription</code></li>
+<li>[ ] <code>NSFaceIDUsageDescription</code></li>
+<li>[ ] <code>NSHealthShareUsageDescription</code> / <code>NSHealthUpdateUsageDescription</code></li>
+<li>[ ] Each purpose string clearly explains why the permission is needed (in user-friendly language)</li>
+</ul>
+<h2 id="app-transport-security">App Transport Security</h2>
+<ul>
+<li>[ ] ATS enabled (default in modern Xcode projects)</li>
+<li>[ ] No blanket <code>NSAllowsArbitraryLoads = YES</code> in production</li>
+<li>[ ] Any ATS exceptions are justified and documented</li>
+<li>[ ] All API endpoints use HTTPS with TLS 1.2+</li>
+<li>[ ] Third-party SDKs do not require ATS exceptions (or exceptions are scoped narrowly)</li>
+</ul>
+<h2 id="required-device-capabilities">Required Device Capabilities</h2>
+<ul>
+<li>[ ] <code>UIRequiredDeviceCapabilities</code> in Info.plist lists only truly required capabilities</li>
+<li>[ ] Do not require capabilities unnecessarily (this restricts compatible devices)</li>
+<li>[ ] Common capabilities reviewed:</li>
+<li>[ ] <code>armv7</code> / <code>arm64</code> -- processor architecture</li>
+<li>[ ] <code>camera-flash</code> -- only if core feature needs it</li>
+<li>[ ] <code>gps</code> -- only if precise location is essential</li>
+<li>[ ] <code>nfc</code> -- only if NFC is core to the app</li>
+<li>[ ] <code>arkit</code> -- only if AR is mandatory</li>
+</ul>
+<h2 id="launch-screen-and-app-icons">Launch Screen and App Icons</h2>
+<ul>
+<li>[ ] Launch screen configured (storyboard or Info.plist configuration)</li>
+<li>[ ] Launch screen matches initial app state (no logos per HIG unless branding)</li>
+<li>[ ] App icon provided as a single 1024x1024 asset in the asset catalog</li>
+<li>[ ] App icon does not contain alpha channel / transparency</li>
+<li>[ ] App icon is not a photograph of an iPhone or iPad</li>
+<li>[ ] App icon renders well at small sizes (no fine details lost)</li>
+<li>[ ] Alternate app icons configured if supported (optional)</li>
+</ul>
+<h2 id="entitlements-and-capabilities">Entitlements and Capabilities</h2>
+<ul>
+<li>[ ] Only required entitlements are enabled in Signing &amp; Capabilities</li>
+<li>[ ] Push Notifications: APNs certificate or key configured, entitlement enabled</li>
+<li>[ ] Sign In with Apple: entitlement enabled if using Apple ID sign-in</li>
+<li>[ ] Associated Domains: configured for universal links / web credentials</li>
+<li>[ ] App Groups: configured if sharing data between app and extensions</li>
+<li>[ ] Background Modes: only required modes selected</li>
+<li>[ ] HealthKit: entitlement and usage descriptions set</li>
+<li>[ ] iCloud / CloudKit: container configured if using cloud sync</li>
+<li>[ ] In-App Purchase: capability enabled, products configured in App Store Connect</li>
+<li>[ ] Provisioning profile matches entitlements (no mismatch errors)</li>
+</ul>
+<h2 id="build-configuration">Build Configuration</h2>
+<ul>
+<li>[ ] Deployment target set appropriately (check analytics for user base)</li>
+<li>[ ] Build number incremented from last upload</li>
+<li>[ ] Release build configuration used (not Debug)</li>
+<li>[ ] Bitcode setting matches project requirements (deprecated in Xcode 16+)</li>
+<li>[ ] All architectures included (arm64 required)</li>
+<li>[ ] dSYM files generated for crash reporting</li>
+<li>[ ] No compiler warnings in Release build</li>
+<li>[ ] No <code>#if DEBUG</code> code leaking into release paths</li>
+<li>[ ] All test/staging API URLs replaced with production URLs</li>
+<li>[ ] Logging level reduced for production (no verbose console output)</li>
+</ul>
+<h2 id="testflight-beta-testing">TestFlight Beta Testing</h2>
+<ul>
+<li>[ ] Internal testing group created (up to 100 testers)</li>
+<li>[ ] External testing group created if needed (up to 10,000 testers)</li>
+<li>[ ] Beta App Description written</li>
+<li>[ ] Beta build uploaded and processed successfully</li>
+<li>[ ] Compliance information answered (encryption export regulations)</li>
+<li>[ ] If using non-exempt encryption, proper export compliance documentation filed</li>
+<li>[ ] Test notes written for each build describing what to test</li>
+<li>[ ] At least one full round of beta testing completed</li>
+<li>[ ] Critical crash reports from TestFlight addressed</li>
+<li>[ ] Beta feedback reviewed and acted upon</li>
+</ul>
+<h2 id="common-rejection-reasons-and-fixes">Common Rejection Reasons and Fixes</h2>
+<ul>
+<li>[ ] <strong>Crashes/bugs</strong>: Test every user flow, including edge cases and poor network</li>
+<li>[ ] <strong>Broken links</strong>: Verify every URL in the app (support, privacy policy, terms)</li>
+<li>[ ] <strong>Placeholder content</strong>: Remove all lorem ipsum, test data, TODO comments visible to users</li>
+<li>[ ] <strong>Incomplete information</strong>: App description, screenshots, and metadata must be final</li>
+<li>[ ] <strong>Login required but no demo account</strong>: Provide demo credentials in review notes</li>
+<li>[ ] <strong>Permissions without features</strong>: Do not request permissions until the feature needs them</li>
+<li>[ ] <strong>Third-party sign-in without Sign In with Apple</strong>: If you offer Google/Facebook sign-in, you must also offer Sign In with Apple</li>
+<li>[ ] <strong>Subscription issues</strong>: Clearly disclose pricing before paywall; include restore purchases button</li>
+<li>[ ] <strong>Minimum functionality</strong>: App must provide lasting value beyond a simple website wrapper</li>
+<li>[ ] <strong>Misleading metadata</strong>: Keywords, description, and screenshots must accurately represent the app</li>
+</ul>
+<h2 id="xcode-archive-and-upload">Xcode Archive and Upload</h2>
+<ul>
+<li>[ ] Select "Any iOS Device (arm64)" as build destination</li>
+<li>[ ] Product &gt; Archive (builds the release archive)</li>
+<li>[ ] Archive appears in Organizer window without errors</li>
+<li>[ ] Validate the archive (Organizer &gt; Validate App)</li>
+<li>[ ] Resolve any validation warnings or errors</li>
+<li>[ ] Distribute App &gt; App Store Connect &gt; Upload</li>
+<li>[ ] Upload succeeds without errors</li>
+<li>[ ] Build appears in App Store Connect under TestFlight within 15-30 minutes</li>
+<li>[ ] Build processing completes (check for processing errors via email)</li>
+<li>[ ] Select build in App Store Connect release</li>
+<li>[ ] Submit for Review</li>
+</ul>
+<h2 id="post-submission">Post-Submission</h2>
+<ul>
+<li>[ ] Monitor App Store Connect for review status changes</li>
+<li>[ ] Respond to any App Review questions promptly (via Resolution Center)</li>
+<li>[ ] Prepare release notes for the version</li>
+<li>[ ] Decide release method: manual release, automatic after approval, or phased rollout</li>
+<li>[ ] Phased release recommended for major updates (1% &gt; 2% &gt; 5% &gt; 10% &gt; 20% &gt; 50% &gt; 100% over 7 days)</li>
+<li>[ ] Monitor crash reports after release via Xcode Organizer or third-party tool</li>
+<li>[ ] Monitor App Store reviews and respond to user feedback</li>
+</ul></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

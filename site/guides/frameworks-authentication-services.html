@@ -1,0 +1,467 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AuthenticationServices — iOS Agent Skill</title><meta name="description" content="Repository guidance for AuthenticationServices. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-authentication-services.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="AuthenticationServices"><meta property="og:description" content="Repository guidance for AuthenticationServices. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-authentication-services.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "AuthenticationServices", "description": "Repository guidance for AuthenticationServices. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-authentication-services.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Authentication, Security, and Privacy · Reference guide</p><h1>AuthenticationServices</h1><p class="lead">Repository guidance for AuthenticationServices. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/frameworks/authentication-services.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#1-the-three-facts-that-cause-most-sign-in-with-apple-bugs">1. The three facts that cause most Sign in with Apple bugs</a></li>
+<li><a href="#2-sign-in-with-apple">2. Sign in with Apple</a><ul>
+<li><a href="#the-seam">The seam</a></li>
+<li><a href="#bridging-the-delegate-to-asyncawait">Bridging the delegate to async/await</a></li>
+<li><a href="#the-nonce">The nonce</a></li>
+<li><a href="#view-model">View model</a></li>
+<li><a href="#the-button">The button</a></li>
+</ul>
+</li>
+<li><a href="#3-revocation-the-check-people-forget">3. Revocation — the check people forget</a></li>
+<li><a href="#4-passkeys-ios-16">4. Passkeys (iOS 16+)</a></li>
+<li><a href="#5-oauth-via-aswebauthenticationsession">5. OAuth via ASWebAuthenticationSession</a></li>
+<li><a href="#6-storing-what-comes-back">6. Storing what comes back</a></li>
+<li><a href="#anti-patterns">Anti-Patterns</a></li>
+<li><a href="#app-store-notes">App Store notes</a></li>
+<li><a href="#checklist">Checklist</a></li>
+</ul>
+</div>
+</aside><p><strong>Load this when:</strong> adding Sign in with Apple, passkeys, or an OAuth/OIDC web
+flow; storing or refreshing auth tokens; or handling an account that the user
+can revoke from outside your app.</p>
+<p>Covers <code>AuthenticationServices</code> — Sign in with Apple, passkeys
+(<code>ASAuthorizationPlatformPublicKeyCredentialProvider</code>), and
+<code>ASWebAuthenticationSession</code>.</p>
+<p><strong>Availability:</strong> framework iOS 12+; Sign in with Apple iOS 13+;
+<code>SignInWithAppleButton</code> (SwiftUI) iOS 14+; <strong>passkeys iOS 16+</strong>.</p>
+<hr />
+<h2 id="1-the-three-facts-that-cause-most-sign-in-with-apple-bugs">1. The three facts that cause most Sign in with Apple bugs</h2>
+<p>Read these before the code. Each one produces a bug that only appears in
+production, days after sign-in.</p>
+<p><strong>1. Name and email are returned exactly once — on the very first
+authorization.</strong> Every subsequent sign-in returns <code>nil</code> for both, forever, even
+after a reinstall. If you do not persist them at first authorization, they are
+gone. There is no API to ask again; the user must revoke the app in Settings and
+re-authorize.</p>
+<p><strong>2. The user can revoke access outside your app</strong> (Settings → Apple Account →
+Sign-In &amp; Security → Sign in with Apple). Your stored credential keeps looking
+valid. You must check <code>getCredentialState</code> on launch and sign the user out when
+it is not <code>.authorized</code>.</p>
+<p><strong>3. The identity token is the only thing your server may trust.</strong> The user
+identifier alone is not proof of anything — it arrives on-device and can be
+forged by a modified client. Send the JWT and verify it server-side against
+Apple's public keys.</p>
+<hr />
+<h2 id="2-sign-in-with-apple">2. Sign in with Apple</h2>
+<h3 id="the-seam">The seam</h3>
+<p><code>ASAuthorizationController</code> is delegate-based, which does not compose with
+<code>async</code>/<code>await</code> or with this skill's testability rules. Wrap it once behind a
+protocol.</p>
+<pre><code class="language-swift">import AuthenticationServices
+
+/// What the app actually needs. The view model depends on this, never on
+/// ASAuthorizationController — see patterns/clean-architecture.md.
+protocol AppleSignInService: Sendable {
+    func signIn(nonce: String) async throws -&gt; AppleCredential
+    func credentialState(for userID: String) async -&gt; ASAuthorizationAppleIDProvider.CredentialState
+}
+
+struct AppleCredential: Sendable {
+    let userID: String
+    /// JWT for your server. The ONLY value your backend should trust.
+    let identityToken: Data
+    let authorizationCode: Data
+    /// Present on FIRST authorization only. Never returned again.
+    let email: String?
+    let fullName: PersonNameComponents?
+}
+</code></pre>
+<h3 id="bridging-the-delegate-to-asyncawait">Bridging the delegate to async/await</h3>
+<pre><code class="language-swift">@MainActor
+final class LiveAppleSignInService: NSObject, AppleSignInService {
+    // Held for the lifetime of one request. The system does NOT retain the
+    // controller — dropping it silently cancels the flow with no callback.
+    private var controller: ASAuthorizationController?
+    private var continuation: CheckedContinuation&lt;AppleCredential, any Error&gt;?
+
+    func signIn(nonce: String) async throws -&gt; AppleCredential {
+        try await withCheckedThrowingContinuation { continuation in
+            self.continuation = continuation
+
+            let request = ASAuthorizationAppleIDProvider().createRequest()
+            request.requestedScopes = [.fullName, .email]
+            // Hash of a random nonce. Your server compares this against the
+            // claim in the identity token to reject replayed tokens.
+            request.nonce = sha256(nonce)
+
+            let controller = ASAuthorizationController(authorizationRequests: [request])
+            controller.delegate = self
+            controller.presentationContextProvider = self
+            self.controller = controller
+            controller.performRequests()
+        }
+    }
+
+    func credentialState(
+        for userID: String
+    ) async -&gt; ASAuthorizationAppleIDProvider.CredentialState {
+        await withCheckedContinuation { continuation in
+            ASAuthorizationAppleIDProvider().getCredentialState(forUserID: userID) { state, _ in
+                continuation.resume(returning: state)
+            }
+        }
+    }
+
+    /// Resume exactly once, then clear. Resuming a continuation twice is a
+    /// runtime crash; never resuming leaks the task forever.
+    private func finish(_ result: Result&lt;AppleCredential, any Error&gt;) {
+        let pending = continuation
+        continuation = nil
+        controller = nil
+        pending?.resume(with: result)
+    }
+}
+
+extension LiveAppleSignInService: ASAuthorizationControllerDelegate {
+    func authorizationController(
+        controller: ASAuthorizationController,
+        didCompleteWithAuthorization authorization: ASAuthorization
+    ) {
+        guard
+            let credential = authorization.credential as? ASAuthorizationAppleIDCredential,
+            let identityToken = credential.identityToken,
+            let authorizationCode = credential.authorizationCode
+        else {
+            finish(.failure(AuthError.malformedCredential))
+            return
+        }
+
+        finish(.success(AppleCredential(
+            userID: credential.user,
+            identityToken: identityToken,
+            authorizationCode: authorizationCode,
+            email: credential.email,                 // first authorization only
+            fullName: credential.fullName            // first authorization only
+        )))
+    }
+
+    func authorizationController(
+        controller: ASAuthorizationController,
+        didCompleteWithError error: any Error
+    ) {
+        // The user tapping Cancel is not a failure to report.
+        if let authError = error as? ASAuthorizationError, authError.code == .canceled {
+            finish(.failure(CancellationError()))
+        } else {
+            finish(.failure(error))
+        }
+    }
+}
+
+extension LiveAppleSignInService: ASAuthorizationControllerPresentationContextProviding {
+    func presentationAnchor(for controller: ASAuthorizationController) -&gt; ASPresentationAnchor {
+        // Do not use UIApplication.shared.windows.first — it is deprecated and
+        // wrong under multiple scenes.
+        UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .flatMap(\.windows)
+            .first { $0.isKeyWindow } ?? ASPresentationAnchor()
+    }
+}
+</code></pre>
+<h3 id="the-nonce">The nonce</h3>
+<pre><code class="language-swift">import CryptoKit
+
+func makeNonce(length: Int = 32) -&gt; String {
+    var bytes = [UInt8](repeating: 0, count: length)
+    let status = SecRandomCopyBytes(kSecRandomDefault, length, &amp;bytes)
+    precondition(status == errSecSuccess, &quot;SecRandomCopyBytes failed&quot;)
+    return Data(bytes).base64EncodedString()
+}
+
+func sha256(_ input: String) -&gt; String {
+    SHA256.hash(data: Data(input.utf8))
+        .map { String(format: &quot;%02x&quot;, $0) }
+        .joined()
+}
+</code></pre>
+<p>Send the <strong>raw</strong> nonce to your server and the <strong>hashed</strong> one to Apple. The
+server checks that the token's <code>nonce</code> claim equals <code>sha256(rawNonce)</code>. Skipping
+this means a stolen identity token can be replayed.</p>
+<h3 id="view-model">View model</h3>
+<pre><code class="language-swift">@MainActor
+@Observable
+final class SignInModel {
+    private(set) var isSigningIn = false
+    var errorMessage: String?
+
+    private let appleSignIn: any AppleSignInService
+    private let session: any SessionStore
+
+    init(appleSignIn: any AppleSignInService, session: any SessionStore) {
+        self.appleSignIn = appleSignIn
+        self.session = session
+    }
+
+    func signInWithApple() async {
+        isSigningIn = true
+        defer { isSigningIn = false }
+
+        let nonce = makeNonce()
+        do {
+            let credential = try await appleSignIn.signIn(nonce: nonce)
+            // Persist name/email NOW — they will never be returned again.
+            try await session.establish(credential: credential, rawNonce: nonce)
+            errorMessage = nil
+        } catch is CancellationError {
+            return                                   // user tapped Cancel
+        } catch {
+            errorMessage = String(localized: &quot;Couldn't sign in. Please try again.&quot;)
+        }
+    }
+}
+</code></pre>
+<h3 id="the-button">The button</h3>
+<pre><code class="language-swift">import AuthenticationServices
+import SwiftUI
+
+SignInWithAppleButton(.signIn) { request in
+    request.requestedScopes = [.fullName, .email]
+    request.nonce = sha256(model.currentNonce)
+} onCompletion: { _ in
+    // Handled by the service above; this closure exists only to satisfy the API.
+}
+.signInWithAppleButtonStyle(colorScheme == .dark ? .white : .black)
+.frame(height: 50)          // Apple's HIG: 44pt minimum
+</code></pre>
+<p>Use <code>SignInWithAppleButton</code>, not a custom button. App Review rejects
+reimplementations that do not match Apple's specified appearance, and the system
+button handles localization and Dynamic Type for you.</p>
+<hr />
+<h2 id="3-revocation-the-check-people-forget">3. Revocation — the check people forget</h2>
+<pre><code class="language-swift">@MainActor
+@Observable
+final class SessionModel {
+    private(set) var isSignedIn = false
+    private let appleSignIn: any AppleSignInService
+    private let session: any SessionStore
+
+    /// Call from `.task` on the root view, every launch and every foreground.
+    func validateSession() async {
+        guard let userID = await session.storedAppleUserID() else {
+            isSignedIn = false
+            return
+        }
+
+        switch await appleSignIn.credentialState(for: userID) {
+        case .authorized:
+            isSignedIn = true
+        case .revoked, .notFound:
+            // The user revoked access in Settings, or the account is gone.
+            await session.clear()
+            isSignedIn = false
+        case .transferred:
+            // App was transferred between developer teams — migrate server-side.
+            await session.beginTeamTransferMigration()
+        @unknown default:
+            isSignedIn = false
+        }
+    }
+}
+</code></pre>
+<p>Also observe the revocation notification while running:</p>
+<pre><code class="language-swift">.task {
+    for await _ in NotificationCenter.default.notifications(
+        named: ASAuthorizationAppleIDProvider.credentialRevokedNotification
+    ) {
+        await model.validateSession()
+    }
+}
+</code></pre>
+<hr />
+<h2 id="4-passkeys-ios-16">4. Passkeys (iOS 16+)</h2>
+<p>Passkeys replace passwords with a WebAuthn credential bound to your domain.
+They require the <strong>Associated Domains</strong> capability with
+<code>webcredentials:example.com</code>, and a matching <code>apple-app-site-association</code> file.</p>
+<pre><code class="language-swift">@available(iOS 16.0, *)
+@MainActor
+final class PasskeyService: NSObject {
+    private let domain = &quot;example.com&quot;
+    private var continuation: CheckedContinuation&lt;ASAuthorization, any Error&gt;?
+    private var controller: ASAuthorizationController?
+
+    /// Registration: the challenge and userID come from YOUR server.
+    func register(userName: String, userID: Data, challenge: Data) async throws -&gt; ASAuthorization {
+        let provider = ASAuthorizationPlatformPublicKeyCredentialProvider(
+            relyingPartyIdentifier: domain
+        )
+        let request = provider.createCredentialRegistrationRequest(
+            challenge: challenge,
+            name: userName,
+            userID: userID
+        )
+        return try await perform(request)
+    }
+
+    /// Assertion: signing in with an existing passkey.
+    func signIn(challenge: Data) async throws -&gt; ASAuthorization {
+        let provider = ASAuthorizationPlatformPublicKeyCredentialProvider(
+            relyingPartyIdentifier: domain
+        )
+        return try await perform(provider.createCredentialAssertionRequest(challenge: challenge))
+    }
+
+    private func perform(_ request: ASAuthorizationRequest) async throws -&gt; ASAuthorization {
+        try await withCheckedThrowingContinuation { continuation in
+            self.continuation = continuation
+            let controller = ASAuthorizationController(authorizationRequests: [request])
+            controller.delegate = self
+            controller.presentationContextProvider = self
+            self.controller = controller
+            controller.performRequests()
+        }
+    }
+}
+</code></pre>
+<p><strong>The challenge must come from your server and be single-use.</strong> A
+client-generated challenge defeats the entire protocol.</p>
+<p>For a sign-in field that offers both passkeys and a saved password, use
+<code>performAutoFillAssistedRequests()</code> together with
+<code>.textContentType(.username)</code> on the field.</p>
+<hr />
+<h2 id="5-oauth-via-aswebauthenticationsession">5. OAuth via ASWebAuthenticationSession</h2>
+<p>For a third-party identity provider that has no native SDK.</p>
+<pre><code class="language-swift">@MainActor
+final class WebAuthService: NSObject {
+    private var session: ASWebAuthenticationSession?
+
+    func authenticate(url: URL, callbackScheme: String) async throws -&gt; URL {
+        try await withCheckedThrowingContinuation { continuation in
+            let session = ASWebAuthenticationSession(
+                url: url,
+                callbackURLScheme: callbackScheme
+            ) { callbackURL, error in
+                if let error {
+                    let cancelled = (error as? ASWebAuthenticationSessionError)?.code == .canceledLogin
+                    continuation.resume(throwing: cancelled ? CancellationError() : error)
+                } else if let callbackURL {
+                    continuation.resume(returning: callbackURL)
+                } else {
+                    continuation.resume(throwing: AuthError.malformedCredential)
+                }
+            }
+
+            session.presentationContextProvider = self
+            // true = no shared cookies, so the user must log in each time.
+            // false = single sign-on with Safari. Choose deliberately.
+            session.prefersEphemeralWebBrowserSession = false
+            self.session = session
+            session.start()
+        }
+    }
+}
+</code></pre>
+<p>Use <strong>PKCE</strong> for any OAuth flow from a mobile client. The implicit flow and
+embedded <code>WKWebView</code> login are both rejected by most providers and by App Review.</p>
+<hr />
+<h2 id="6-storing-what-comes-back">6. Storing what comes back</h2>
+<p>Tokens go in the <strong>Keychain</strong>, never <code>UserDefaults</code> — see
+<code>checklists/security.md</code> and <code>docs/frameworks/cryptokit.md</code>.</p>
+<pre><code class="language-swift">actor KeychainSessionStore: SessionStore {
+    func establish(credential: AppleCredential, rawNonce: String) async throws {
+        // Exchange with your server FIRST — it verifies the identity token and
+        // the nonce, then returns your own session token.
+        let session = try await api.exchange(
+            identityToken: credential.identityToken,
+            authorizationCode: credential.authorizationCode,
+            rawNonce: rawNonce,
+            // Send these on first authorization only — they are never resent.
+            email: credential.email,
+            fullName: credential.fullName.map(PersonNameComponentsFormatter().string(from:))
+        )
+        try store(session.token, account: &quot;session&quot;)
+        try store(credential.userID, account: &quot;appleUserID&quot;)
+    }
+}
+</code></pre>
+<p>Use <code>kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly</code> for session tokens:
+available to background tasks after first unlock, and never restored onto a
+different device from a backup.</p>
+<hr />
+<h2 id="anti-patterns">Anti-Patterns</h2>
+<pre><code class="language-swift">// 1. Not persisting name/email at first authorization.
+if let email = credential.email { showWelcome(email) }   // and then discarded
+// They are returned ONCE, ever. Persist immediately or lose them permanently.
+
+// 2. Trusting the user identifier as authentication.
+api.login(userID: credential.user)
+// Arrives on-device, forgeable. Send the identity token; verify server-side.
+
+// 3. No nonce.
+let request = provider.createRequest()
+request.requestedScopes = [.fullName, .email]     // no request.nonce
+// A stolen identity token can be replayed indefinitely.
+
+// 4. Never checking credential state.
+// The user revokes in Settings; your app stays &quot;signed in&quot; forever.
+// Check getCredentialState on launch and on foreground.
+
+// 5. Dropping the controller.
+func signIn() {
+    let controller = ASAuthorizationController(...)   // local, deallocated
+    controller.performRequests()                      // silently never calls back
+}
+
+// 6. Resuming a continuation twice — or not at all.
+continuation.resume(returning: credential)
+continuation.resume(returning: credential)   // CRASH
+// Every exit path resumes exactly once. Clear the stored continuation first.
+
+// 7. Treating cancellation as an error.
+catch { errorMessage = &quot;Sign in failed&quot; }    // fires when the user taps Cancel
+catch is CancellationError { return }        // correct
+
+// 8. Tokens in UserDefaults.
+UserDefaults.standard.set(token, forKey: &quot;authToken&quot;)   // plaintext, backed up
+// Keychain.
+
+// 9. A custom Sign in with Apple button.
+Button(&quot;Sign in with Apple&quot;) { … }
+// App Review rejects appearances that do not match the specification.
+
+// 10. Embedded WKWebView for OAuth.
+// Rejected by providers and by App Review. Use ASWebAuthenticationSession.
+
+// 11. UIApplication.shared.windows.first as the presentation anchor.
+// Deprecated, and wrong with multiple scenes. Use connectedScenes.
+
+// 12. A client-generated passkey challenge.
+// Defeats the protocol. The challenge is server-issued and single-use.
+
+// 13. The view model naming ASAuthorizationController directly.
+// Untestable and un-previewable. Depend on a protocol.
+</code></pre>
+<hr />
+<h2 id="app-store-notes">App Store notes</h2>
+<ul>
+<li>If your app offers third-party or social login, App Review requires an
+  equivalent privacy-preserving option. Sign in with Apple satisfies this —
+  check the current text of Guideline 4.8 before submitting, as the wording has
+  changed across revisions.</li>
+<li>Offer account <strong>deletion</strong> in-app if you offer account creation (Guideline
+  5.1.1(v)), and revoke the Apple token server-side when the user deletes.</li>
+<li>Passkeys need Associated Domains and a served
+  <code>apple-app-site-association</code>. Verify it responds over HTTPS with no redirect
+  before submitting — this is the usual cause of "passkeys work in debug, not in
+  TestFlight".</li>
+</ul>
+<hr />
+<h2 id="checklist">Checklist</h2>
+<ul>
+<li>[ ] <code>email</code> and <code>fullName</code> persisted on first authorization.</li>
+<li>[ ] A random nonce per request; hashed to Apple, raw to your server.</li>
+<li>[ ] Server verifies the identity token against Apple's public keys.</li>
+<li>[ ] <code>getCredentialState</code> checked on launch and on foreground.</li>
+<li>[ ] <code>credentialRevokedNotification</code> observed while running.</li>
+<li>[ ] <code>ASAuthorizationController</code> retained for the request's lifetime.</li>
+<li>[ ] Every continuation resumes exactly once on every path.</li>
+<li>[ ] <code>CancellationError</code> handled as a deliberate no-op.</li>
+<li>[ ] Tokens in the Keychain with an appropriate accessibility class.</li>
+<li>[ ] <code>SignInWithAppleButton</code>, not a custom control.</li>
+<li>[ ] Passkeys: Associated Domains configured, challenge server-issued.</li>
+<li>[ ] OAuth: <code>ASWebAuthenticationSession</code> with PKCE, never a <code>WKWebView</code>.</li>
+<li>[ ] The view model depends on a protocol; sign-in previews with a stub.</li>
+<li>[ ] Account deletion offered and the Apple token revoked server-side.</li>
+</ul></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

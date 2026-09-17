@@ -1,0 +1,360 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ARKit -- Complete Guide for Augmented Reality on iOS and iPadOS — iOS Agent Skill</title><meta name="description" content="Repository guidance for ARKit. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-arkit.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="ARKit -- Complete Guide for Augmented Reality on iOS and iPadOS"><meta property="og:description" content="Repository guidance for ARKit. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-arkit.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "ARKit -- Complete Guide for Augmented Reality on iOS and iPadOS", "description": "Repository guidance for ARKit. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-arkit.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Graphics, 3D, and Games · Reference guide</p><h1>ARKit -- Complete Guide for Augmented Reality on iOS and iPadOS</h1><p class="lead">Repository guidance for ARKit. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/frameworks/arkit.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#1-permissions-and-infoplist">1. Permissions and Info.plist</a></li>
+<li><a href="#2-choosing-a-configuration">2. Choosing a Configuration</a></li>
+<li><a href="#3-running-an-ar-session-with-realitykit-recommended">3. Running an AR Session with RealityKit (Recommended)</a><ul>
+<li><a href="#swiftui-lifecycle">SwiftUI lifecycle</a></li>
+</ul>
+</li>
+<li><a href="#4-plane-and-mesh-detection">4. Plane and Mesh Detection</a><ul>
+<li><a href="#plane-anchors">Plane anchors</a></li>
+<li><a href="#lidar-scene-reconstruction">LiDAR scene reconstruction</a></li>
+</ul>
+</li>
+<li><a href="#5-image-and-object-tracking">5. Image and Object Tracking</a></li>
+<li><a href="#6-face-tracking-and-blendshapes">6. Face Tracking and Blendshapes</a></li>
+<li><a href="#7-body-tracking-motion-capture">7. Body Tracking (Motion Capture)</a></li>
+<li><a href="#8-people-occlusion-and-person-segmentation">8. People Occlusion and Person Segmentation</a></li>
+<li><a href="#9-geo-anchors-city-locked-ar">9. Geo Anchors (City-Locked AR)</a></li>
+<li><a href="#10-saving-and-loading-world-maps">10. Saving and Loading World Maps</a></li>
+<li><a href="#11-lifecycle-interruptions-and-cleanup">11. Lifecycle, Interruptions, and Cleanup</a></li>
+<li><a href="#12-common-pitfalls">12. Common Pitfalls</a></li>
+<li><a href="#13-when-to-pick-each-renderer">13. When to Pick Each Renderer</a></li>
+<li><a href="#14-migration-notes">14. Migration Notes</a></li>
+</ul>
+</div>
+</aside><h2 id="overview">Overview</h2>
+<p>ARKit is Apple's framework for building augmented reality experiences on iPhone and iPad with LiDAR-class devices. It fuses motion sensors and camera input to produce world tracking, plane detection, scene reconstruction, image/object recognition, body tracking, face tracking, and people occlusion. ARKit produces the <em>data</em> (anchors, meshes, transforms); rendering is done by <strong>RealityKit</strong> (preferred), SceneKit, Metal, or SpriteKit.</p>
+<blockquote>
+<p>Use ARKit on <strong>iOS 11+</strong> / <strong>iPadOS 11+</strong>. Many modern features (mesh reconstruction, motion capture, geo-anchors, scene depth) require LiDAR or A12+ chips. ARKit is <strong>not available on visionOS</strong> -- use ARKit-for-visionOS APIs (<code>import ARKit</code> from <code>visionOS</code>) which expose a different surface.</p>
+</blockquote>
+<hr />
+<h2 id="1-permissions-and-infoplist">1. Permissions and Info.plist</h2>
+<pre><code class="language-xml">&lt;key&gt;NSCameraUsageDescription&lt;/key&gt;
+&lt;string&gt;This app uses the camera to deliver augmented reality features.&lt;/string&gt;
+
+&lt;!-- For face/world tracking with audio --&gt;
+&lt;key&gt;NSMicrophoneUsageDescription&lt;/key&gt;
+&lt;string&gt;Audio is captured to enrich AR experiences.&lt;/string&gt;
+
+&lt;!-- For ARGeoTrackingConfiguration --&gt;
+&lt;key&gt;NSLocationWhenInUseUsageDescription&lt;/key&gt;
+&lt;string&gt;Location is used to anchor AR content to real-world coordinates.&lt;/string&gt;
+</code></pre>
+<p>Always check device support <strong>before</strong> instantiating a session:</p>
+<pre><code class="language-swift">import ARKit
+
+guard ARWorldTrackingConfiguration.isSupported else {
+    // Fall back to a non-AR experience
+    return
+}
+</code></pre>
+<hr />
+<h2 id="2-choosing-a-configuration">2. Choosing a Configuration</h2>
+<table>
+<thead>
+<tr>
+<th>Configuration</th>
+<th>Use Case</th>
+<th>Min Device</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ARWorldTrackingConfiguration</code></td>
+<td>6-DOF camera + plane/mesh detection</td>
+<td>A9+</td>
+</tr>
+<tr>
+<td><code>ARFaceTrackingConfiguration</code></td>
+<td>Face anchors, blendshapes, Animoji-style</td>
+<td>TrueDepth camera</td>
+</tr>
+<tr>
+<td><code>ARImageTrackingConfiguration</code></td>
+<td>Track moving 2D images (no world tracking)</td>
+<td>A9+</td>
+</tr>
+<tr>
+<td><code>ARObjectScanningConfiguration</code></td>
+<td>Author <code>.arobject</code> reference files</td>
+<td>A11+</td>
+</tr>
+<tr>
+<td><code>ARBodyTrackingConfiguration</code></td>
+<td>Skeleton tracking</td>
+<td>A12+</td>
+</tr>
+<tr>
+<td><code>ARGeoTrackingConfiguration</code></td>
+<td>World-locked content via VPS</td>
+<td>A12+, supported cities</td>
+</tr>
+<tr>
+<td><code>ARPositionalTrackingConfiguration</code></td>
+<td>6-DOF only (lowest power)</td>
+<td>A9+</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-swift">let configuration = ARWorldTrackingConfiguration()
+configuration.planeDetection = [.horizontal, .vertical]
+configuration.environmentTexturing = .automatic
+configuration.frameSemantics.insert(.sceneDepth)         // LiDAR
+configuration.sceneReconstruction = .meshWithClassification // LiDAR
+configuration.userFaceTrackingEnabled = true             // Front+back camera fusion
+</code></pre>
+<p>Always confirm optional capabilities before opting in:</p>
+<pre><code class="language-swift">if ARWorldTrackingConfiguration.supportsSceneReconstruction(.meshWithClassification) {
+    configuration.sceneReconstruction = .meshWithClassification
+}
+
+if ARWorldTrackingConfiguration.supportsFrameSemantics(.sceneDepth) {
+    configuration.frameSemantics.insert(.sceneDepth)
+}
+</code></pre>
+<hr />
+<h2 id="3-running-an-ar-session-with-realitykit-recommended">3. Running an AR Session with RealityKit (Recommended)</h2>
+<pre><code class="language-swift">import SwiftUI
+import RealityKit
+import ARKit
+
+struct ARContainerView: UIViewRepresentable {
+    func makeUIView(context: Context) -&gt; ARView {
+        let arView = ARView(frame: .zero, cameraMode: .ar, automaticallyConfigureSession: false)
+
+        let configuration = ARWorldTrackingConfiguration()
+        configuration.planeDetection = [.horizontal]
+        configuration.environmentTexturing = .automatic
+
+        arView.session.delegate = context.coordinator
+        arView.session.run(configuration, options: [.resetTracking, .removeExistingAnchors])
+
+        // Place a model when the user taps on a detected plane
+        let tap = UITapGestureRecognizer(target: context.coordinator,
+                                         action: #selector(Coordinator.handleTap(_:)))
+        arView.addGestureRecognizer(tap)
+        context.coordinator.arView = arView
+        return arView
+    }
+
+    func updateUIView(_ uiView: ARView, context: Context) {}
+
+    func makeCoordinator() -&gt; Coordinator { Coordinator() }
+
+    final class Coordinator: NSObject, ARSessionDelegate {
+        weak var arView: ARView?
+
+        @objc func handleTap(_ gesture: UITapGestureRecognizer) {
+            guard let arView else { return }
+            let location = gesture.location(in: arView)
+
+            // Ray-cast against estimated planes
+            let results = arView.raycast(from: location,
+                                         allowing: .estimatedPlane,
+                                         alignment: .horizontal)
+            guard let first = results.first else { return }
+
+            let anchor = AnchorEntity(world: first.worldTransform)
+            let model = ModelEntity(mesh: .generateBox(size: 0.1),
+                                    materials: [SimpleMaterial(color: .systemBlue, isMetallic: false)])
+            model.generateCollisionShapes(recursive: true)
+            anchor.addChild(model)
+            arView.scene.addAnchor(anchor)
+        }
+    }
+}
+</code></pre>
+<h3 id="swiftui-lifecycle">SwiftUI lifecycle</h3>
+<pre><code class="language-swift">struct ContentView: View {
+    var body: some View {
+        ARContainerView()
+            .ignoresSafeArea()
+    }
+}
+</code></pre>
+<hr />
+<h2 id="4-plane-and-mesh-detection">4. Plane and Mesh Detection</h2>
+<h3 id="plane-anchors">Plane anchors</h3>
+<pre><code class="language-swift">func session(_ session: ARSession, didAdd anchors: [ARAnchor]) {
+    for case let plane as ARPlaneAnchor in anchors {
+        // plane.alignment, plane.classification, plane.geometry
+    }
+}
+</code></pre>
+<h3 id="lidar-scene-reconstruction">LiDAR scene reconstruction</h3>
+<pre><code class="language-swift">configuration.sceneReconstruction = .meshWithClassification
+
+func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
+    for case let mesh as ARMeshAnchor in anchors {
+        let geometry = mesh.geometry
+        // geometry.vertices, geometry.faces, geometry.classification
+    }
+}
+</code></pre>
+<p>Mesh classifications include <code>.wall</code>, <code>.floor</code>, <code>.ceiling</code>, <code>.table</code>, <code>.seat</code>, <code>.window</code>, <code>.door</code>, <code>.none</code>.</p>
+<hr />
+<h2 id="5-image-and-object-tracking">5. Image and Object Tracking</h2>
+<pre><code class="language-swift">guard let referenceImages = ARReferenceImage.referenceImages(
+    inGroupNamed: &quot;ARImages&quot;, bundle: .main
+) else { fatalError(&quot;Missing AR Resources group&quot;) }
+
+let configuration = ARWorldTrackingConfiguration()
+configuration.detectionImages = referenceImages
+configuration.maximumNumberOfTrackedImages = 4
+</code></pre>
+<p>For physical objects, scan a <code>.arobject</code> with the official Apple sample, then:</p>
+<pre><code class="language-swift">guard let referenceObjects = ARReferenceObject.referenceObjects(
+    inGroupNamed: &quot;ARObjects&quot;, bundle: .main
+) else { return }
+configuration.detectionObjects = referenceObjects
+</code></pre>
+<hr />
+<h2 id="6-face-tracking-and-blendshapes">6. Face Tracking and Blendshapes</h2>
+<pre><code class="language-swift">guard ARFaceTrackingConfiguration.isSupported else { return }
+
+let config = ARFaceTrackingConfiguration()
+config.maximumNumberOfTrackedFaces = 1
+arView.session.run(config)
+
+func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
+    for case let face as ARFaceAnchor in anchors {
+        let smile = face.blendShapes[.mouthSmileLeft]?.floatValue ?? 0
+        let blink = face.blendShapes[.eyeBlinkLeft]?.floatValue ?? 0
+        // Drive an avatar with these values
+    }
+}
+</code></pre>
+<hr />
+<h2 id="7-body-tracking-motion-capture">7. Body Tracking (Motion Capture)</h2>
+<pre><code class="language-swift">guard ARBodyTrackingConfiguration.isSupported else { return }
+
+let config = ARBodyTrackingConfiguration()
+arView.session.run(config)
+
+let characterAnchor = AnchorEntity()
+arView.scene.addAnchor(characterAnchor)
+
+func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
+    for case let body as ARBodyAnchor in anchors {
+        characterAnchor.transform = Transform(matrix: body.transform)
+        // body.skeleton.jointModelTransforms drives a rigged BodyTrackedEntity
+    }
+}
+</code></pre>
+<hr />
+<h2 id="8-people-occlusion-and-person-segmentation">8. People Occlusion and Person Segmentation</h2>
+<pre><code class="language-swift">if ARWorldTrackingConfiguration.supportsFrameSemantics(.personSegmentationWithDepth) {
+    configuration.frameSemantics.insert(.personSegmentationWithDepth)
+}
+</code></pre>
+<p>RealityKit's <code>ARView</code> automatically composites people in front of virtual content when this is enabled.</p>
+<hr />
+<h2 id="9-geo-anchors-city-locked-ar">9. Geo Anchors (City-Locked AR)</h2>
+<pre><code class="language-swift">guard ARGeoTrackingConfiguration.isSupported else { return }
+
+ARGeoTrackingConfiguration.checkAvailability { available, error in
+    guard available else { return }
+
+    let config = ARGeoTrackingConfiguration()
+    arView.session.run(config)
+
+    let coordinate = CLLocationCoordinate2D(latitude: 37.3349, longitude: -122.0090)
+    let anchor = ARGeoAnchor(coordinate: coordinate, altitude: 25.0)
+    arView.session.add(anchor: anchor)
+}
+</code></pre>
+<p>Only supported in select metropolitan areas -- always call <code>checkAvailability</code> first.</p>
+<hr />
+<h2 id="10-saving-and-loading-world-maps">10. Saving and Loading World Maps</h2>
+<pre><code class="language-swift">arView.session.getCurrentWorldMap { map, error in
+    guard let map else { return }
+    let data = try? NSKeyedArchiver.archivedData(withRootObject: map, requiringSecureCoding: true)
+    try? data?.write(to: worldMapURL)
+}
+
+let data = try Data(contentsOf: worldMapURL)
+let map = try NSKeyedUnarchiver.unarchivedObject(ofClass: ARWorldMap.self, from: data)
+
+let config = ARWorldTrackingConfiguration()
+config.initialWorldMap = map
+arView.session.run(config)
+</code></pre>
+<p>For multi-user shared experiences, replace world maps with <strong>ARKit collaborative sessions</strong> (<code>isCollaborationEnabled = true</code>) and a <code>MultipeerConnectivity</code> transport.</p>
+<hr />
+<h2 id="11-lifecycle-interruptions-and-cleanup">11. Lifecycle, Interruptions, and Cleanup</h2>
+<pre><code class="language-swift">final class SessionDelegate: NSObject, ARSessionDelegate {
+    func session(_ session: ARSession, didFailWithError error: Error) {
+        // Surface an alert; ARError.Code tells you what failed
+    }
+
+    func sessionWasInterrupted(_ session: ARSession) {
+        // Camera was occluded or app backgrounded
+    }
+
+    func sessionInterruptionEnded(_ session: ARSession) {
+        // Reset tracking to recover quickly
+        guard let configuration = session.configuration else { return }
+        session.run(configuration, options: [.resetTracking, .removeExistingAnchors])
+    }
+
+    func session(_ session: ARSession, cameraDidChangeTrackingState camera: ARCamera) {
+        switch camera.trackingState {
+        case .notAvailable: break
+        case .limited(let reason): break // .initializing, .relocalizing, .insufficientFeatures, .excessiveMotion
+        case .normal: break
+        }
+    }
+}
+</code></pre>
+<p>Always pause the session when the view disappears:</p>
+<pre><code class="language-swift">.onDisappear { arView.session.pause() }
+</code></pre>
+<hr />
+<h2 id="12-common-pitfalls">12. Common Pitfalls</h2>
+<ol>
+<li><strong>Forgetting <code>NSCameraUsageDescription</code></strong> -- the app crashes silently on first session run.</li>
+<li><strong>Running <code>ARWorldTrackingConfiguration</code> on the simulator</strong> -- it isn't supported. Guard with <code>#if !targetEnvironment(simulator)</code>.</li>
+<li><strong>Not gating by capability</strong> (<code>isSupported</code>, <code>supportsFrameSemantics(_:)</code>) -- causes runtime crashes on older devices.</li>
+<li><strong>Holding strong references to <code>ARFrame</code></strong> -- frames are pooled. Copy what you need (transforms, pixel buffer) and release the frame promptly.</li>
+<li><strong>Mixing front and back camera tracking carelessly</strong> -- enabling <code>userFaceTrackingEnabled</code> requires both cameras to be available; check first.</li>
+<li><strong>Recreating the <code>ARView</code> on every SwiftUI update</strong> -- <code>UIViewRepresentable.makeUIView</code> runs once; do session setup there, not in <code>updateUIView</code>.</li>
+<li><strong>Skipping <code>arView.session.pause()</code></strong> on disappear -- drains battery, keeps camera light on.</li>
+</ol>
+<hr />
+<h2 id="13-when-to-pick-each-renderer">13. When to Pick Each Renderer</h2>
+<table>
+<thead>
+<tr>
+<th>Renderer</th>
+<th>Use When</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>RealityKit</strong> (default)</td>
+<td>Modern iOS 13+ apps, USDZ, photorealistic PBR materials, ECS gameplay</td>
+</tr>
+<tr>
+<td><strong>SceneKit</strong></td>
+<td>Existing SceneKit codebases, custom shader modifiers, advanced animations</td>
+</tr>
+<tr>
+<td><strong>Metal</strong></td>
+<td>Custom render pipelines, post-processing, shipping a custom renderer</td>
+</tr>
+<tr>
+<td><strong>SpriteKit</strong></td>
+<td>2D AR overlays, simple gameplay</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="14-migration-notes">14. Migration Notes</h2>
+<ul>
+<li><strong>iOS 17+</strong>: <code>ARView</code> gained explicit object capture APIs via <code>ObjectCaptureSession</code> (in RealityKit).</li>
+<li><strong>iOS 18+</strong>: Room Plan, improved hand tracking on visionOS pair, expanded geo coverage.</li>
+<li><strong>visionOS</strong>: ARKit on visionOS uses <strong>data providers</strong> (<code>HandTrackingProvider</code>, <code>WorldTrackingProvider</code>) instead of <code>ARSession</code>. Code is not source-compatible.</li>
+</ul>
+<p>See also: <code>docs/frameworks/realitykit.md</code>, <code>docs/platforms/visionos.md</code>.</p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

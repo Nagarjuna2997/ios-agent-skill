@@ -1,0 +1,72 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Foundation Models `fm` CLI — iOS Agent Skill</title><meta name="description" content="Repository guidance for fm CLI. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-fm-cli.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="Foundation Models `fm` CLI"><meta property="og:description" content="Repository guidance for fm CLI. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-fm-cli.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "Foundation Models `fm` CLI", "description": "Repository guidance for fm CLI. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-fm-cli.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Developer Tools · Reference guide</p><h1>Foundation Models `fm` CLI</h1><p class="lead">Repository guidance for fm CLI. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/tooling/fm-cli.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#1-use-cases">1. Use Cases</a></li>
+<li><a href="#2-safe-workflow">2. Safe Workflow</a></li>
+<li><a href="#3-agent-integration-pattern">3. Agent Integration Pattern</a></li>
+<li><a href="#4-what-not-to-do">4. What Not to Do</a></li>
+<li><a href="#5-review-checklist">5. Review Checklist</a></li>
+</ul>
+</div>
+</aside><h2 id="overview">Overview</h2>
+<p>Apple announced the <code>fm</code> command-line tool for prompting Foundation Models from the terminal. This fits agent workflows: use it to explore prompts, inspect model behavior, and produce quick repros before moving a prompt into app code or Evaluations.</p>
+<blockquote>
+<p>Do not hardcode undocumented flags in automation. Use the installed tool's <code>fm --help</code> output for exact syntax in the current Xcode seed.</p>
+</blockquote>
+<hr />
+<h2 id="1-use-cases">1. Use Cases</h2>
+<ul>
+<li>quick prompt exploration</li>
+<li>comparing short instruction variants</li>
+<li>creating repro steps for prompt bugs</li>
+<li>generating sample outputs for evaluation design</li>
+<li>validating model availability on a development Mac</li>
+<li>pairing with the Foundation Models Python SDK for scripts</li>
+</ul>
+<p>Do not treat manual CLI output as a release gate. Promote important cases into <code>docs/testing/evaluations.md</code>.</p>
+<hr />
+<h2 id="2-safe-workflow">2. Safe Workflow</h2>
+<pre><code class="language-bash">xcrun --find fm
+fm --help
+</code></pre>
+<p>Then run the current seed's documented prompt/evaluation commands. Capture:</p>
+<ul>
+<li>Xcode version</li>
+<li>OS version</li>
+<li>model/provider route if shown</li>
+<li>prompt</li>
+<li>instructions</li>
+<li>output</li>
+<li>token/latency data if shown</li>
+</ul>
+<p>Keep prompt experiments under <code>work/</code> or another ignored scratch location. Do not commit transcripts that contain private user data.</p>
+<hr />
+<h2 id="3-agent-integration-pattern">3. Agent Integration Pattern</h2>
+<ol>
+<li>Draft a prompt in a plain text file.</li>
+<li>Run it through <code>fm</code> manually.</li>
+<li>Save only sanitized outputs that illustrate a failure or improvement.</li>
+<li>Convert the prompt into app code with availability checks.</li>
+<li>Add an Evaluations dataset before merging.</li>
+<li>Profile the real app path with Instruments.</li>
+</ol>
+<p>This keeps terminal exploration useful without letting it replace app-level testing.</p>
+<hr />
+<h2 id="4-what-not-to-do">4. What Not to Do</h2>
+<ul>
+<li>Do not rely on undocumented CLI output formats for stable CI parsing.</li>
+<li>Do not paste real user data into terminal prompts.</li>
+<li>Do not commit large generated transcripts.</li>
+<li>Do not assume CLI behavior matches a device with different model availability.</li>
+<li>Do not ship prompt changes based only on one or two successful CLI samples.</li>
+</ul>
+<hr />
+<h2 id="5-review-checklist">5. Review Checklist</h2>
+<ul>
+<li>[ ] CLI experiment includes Xcode/OS seed info</li>
+<li>[ ] Exact <code>fm --help</code> syntax was checked locally</li>
+<li>[ ] Private data removed from prompt/output artifacts</li>
+<li>[ ] Important cases promoted to Evaluations</li>
+<li>[ ] Real app path profiled with Foundation Models Instruments</li>
+</ul>
+<p>See also: <code>docs/frameworks/foundation-models.md</code>, <code>docs/testing/evaluations.md</code>, <code>docs/tooling/foundation-models-instruments.md</code>.</p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

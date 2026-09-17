@@ -1,0 +1,938 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SwiftUI State and Data Flow — iOS Agent Skill</title><meta name="description" content="Repository guidance for SwiftUI State and Data Flow. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/swiftui-state-and-data-flow.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="SwiftUI State and Data Flow"><meta property="og:description" content="Repository guidance for SwiftUI State and Data Flow. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/swiftui-state-and-data-flow.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "SwiftUI State and Data Flow", "description": "Repository guidance for SwiftUI State and Data Flow. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/swiftui-state-and-data-flow.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Swiftui · Reference guide</p><h1>SwiftUI State and Data Flow</h1><p class="lead">Repository guidance for SwiftUI State and Data Flow. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/swiftui/state-and-data-flow.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#state">@State</a></li>
+<li><a href="#binding">@Binding</a></li>
+<li><a href="#observable-ios-17-observation-framework">@Observable (iOS 17+, Observation Framework)</a></li>
+<li><a href="#observable-and-actor-isolation">@Observable and Actor Isolation</a><ul>
+<li><a href="#where-the-mainactor-goes">Where the @MainActor goes</a></li>
+<li><a href="#observable-models-that-are-not-view-models">Observable models that are not view models</a></li>
+</ul>
+</li>
+<li><a href="#observation-traps-in-child-views">Observation Traps in Child Views</a><ul>
+<li><a href="#trap-1-reads-outside-body-are-never-tracked">Trap 1: reads outside body are never tracked</a></li>
+<li><a href="#trap-2-passing-the-whole-model-down-over-invalidates-the-child">Trap 2: passing the whole model down over-invalidates the child</a></li>
+<li><a href="#trap-3-the-wrong-wrapper-in-the-child-detaches-it-from-the-parent">Trap 3: the wrong wrapper in the child detaches it from the parent</a></li>
+<li><a href="#trap-4-mutating-observable-state-during-body">Trap 4: mutating observable state during body</a></li>
+<li><a href="#trap-5-a-collection-element-replaced-wholesale-invalidates-every-row">Trap 5: a collection element replaced wholesale invalidates every row</a></li>
+</ul>
+</li>
+<li><a href="#async-boundaries-in-views">Async Boundaries in Views</a><ul>
+<li><a href="#task-over-task-in-onappear">.task over Task { } in onAppear</a></li>
+<li><a href="#state-written-after-an-await-may-be-stale">State written after an await may be stale</a></li>
+<li><a href="#overlapping-calls-need-an-explicit-in-flight-task">Overlapping calls need an explicit in-flight task</a></li>
+</ul>
+</li>
+<li><a href="#bindable-ios-17">@Bindable (iOS 17+)</a></li>
+<li><a href="#observableobject-and-published-legacy-pre-ios-17">@ObservableObject and @Published (Legacy, pre-iOS 17)</a><ul>
+<li><a href="#stateobject-vs-observedobject">@StateObject vs @ObservedObject</a></li>
+</ul>
+</li>
+<li><a href="#environment">@Environment</a><ul>
+<li><a href="#custom-environmentkey">Custom EnvironmentKey</a></li>
+<li><a href="#environment-with-observable-ios-17">Environment with @Observable (iOS 17+)</a></li>
+</ul>
+</li>
+<li><a href="#environmentobject-legacy">@EnvironmentObject (Legacy)</a></li>
+<li><a href="#appstorage-and-scenestorage">@AppStorage and @SceneStorage</a><ul>
+<li><a href="#appstorage">@AppStorage</a></li>
+<li><a href="#scenestorage">@SceneStorage</a></li>
+</ul>
+</li>
+<li><a href="#query-swiftdata-integration">@Query (SwiftData Integration)</a></li>
+<li><a href="#data-flow-patterns-and-best-practices">Data Flow Patterns and Best Practices</a><ul>
+<li><a href="#when-to-use-which-property-wrapper">When to Use Which Property Wrapper</a></li>
+<li><a href="#recommended-architecture-ios-17">Recommended Architecture (iOS 17+)</a></li>
+<li><a href="#state-hoisting-pattern">State Hoisting Pattern</a></li>
+<li><a href="#action-closure-pattern">Action Closure Pattern</a></li>
+<li><a href="#avoiding-common-pitfalls">Avoiding Common Pitfalls</a></li>
+<li><a href="#property-wrapper-decision-checklist">Property Wrapper Decision Checklist</a></li>
+<li><a href="#anti-patterns-summary">Anti-Patterns Summary</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</aside><p>Complete reference for property wrappers, the Observation framework, and data flow patterns.</p>
+<hr />
+<h2 id="state">@State</h2>
+<p>Owns mutable state local to a view. SwiftUI manages storage; the view re-renders when the value changes.</p>
+<pre><code class="language-swift">struct CounterView: View {
+    @State private var count = 0
+    @State private var items: [String] = []
+
+    var body: some View {
+        VStack {
+            Text(&quot;Count: \(count)&quot;)
+            Button(&quot;Increment&quot;) { count += 1 }
+            Button(&quot;Add Item&quot;) { items.append(&quot;Item \(items.count)&quot;) }
+        }
+    }
+}
+</code></pre>
+<p><strong>Rules:</strong>
+- Always mark <code>@State</code> properties <code>private</code>.
+- Do not initialize <code>@State</code> from an initializer parameter when the view may be recreated -- use <code>@Binding</code> or a model instead.
+- Works with value types (structs, enums, primitives) and, on iOS 17+, with <code>@Observable</code> classes.</p>
+<hr />
+<h2 id="binding">@Binding</h2>
+<p>A two-way reference to state owned by a parent view. Does not own the data.</p>
+<pre><code class="language-swift">struct ToggleRow: View {
+    let title: String
+    @Binding var isOn: Bool
+
+    var body: some View {
+        Toggle(title, isOn: $isOn)
+    }
+}
+
+struct SettingsView: View {
+    @State private var wifiEnabled = true
+
+    var body: some View {
+        ToggleRow(title: &quot;Wi-Fi&quot;, isOn: $wifiEnabled)
+    }
+}
+</code></pre>
+<p><strong>Constant binding (for previews or tests):</strong></p>
+<pre><code class="language-swift">ToggleRow(title: &quot;Preview&quot;, isOn: .constant(true))
+</code></pre>
+<p><strong>Custom binding:</strong></p>
+<pre><code class="language-swift">let binding = Binding&lt;Bool&gt;(
+    get: { preferences.isDarkMode },
+    set: { preferences.isDarkMode = $0 }
+)
+Toggle(&quot;Dark Mode&quot;, isOn: binding)
+</code></pre>
+<hr />
+<h2 id="observable-ios-17-observation-framework">@Observable (iOS 17+, Observation Framework)</h2>
+<p><strong>The Observation framework is the default for all new code.</strong> <code>ObservableObject</code>
++ <code>@Published</code> is legacy: it is coarser (any published change invalidates every
+observing view), it needs a wrapper on every property, and it forces
+<code>@StateObject</code>/<code>@ObservedObject</code> distinctions that <code>@State</code> handles on its own.
+Use it only when you must support iOS 16 or earlier, or when integrating with an
+existing Combine pipeline — and label those as legacy where they appear.</p>
+<p>Every sample in this document uses <code>@Observable</code> with <code>@MainActor</code> on any type
+the UI renders. That pairing is not stylistic: see <em>@Observable and Actor
+Isolation</em> below for why the annotation is required rather than optional.</p>
+<pre><code class="language-swift">import Observation
+
+@Observable
+class UserProfile {
+    var name = &quot;&quot;
+    var email = &quot;&quot;
+    var avatarURL: URL?
+
+    // Computed properties are automatically tracked
+    var isComplete: Bool {
+        !name.isEmpty &amp;&amp; !email.isEmpty
+    }
+}
+
+struct ProfileView: View {
+    // Just use @State for owned observable objects
+    @State private var profile = UserProfile()
+
+    var body: some View {
+        Form {
+            TextField(&quot;Name&quot;, text: $profile.name)
+            TextField(&quot;Email&quot;, text: $profile.email)
+            if profile.isComplete {
+                Text(&quot;Profile complete!&quot;)
+            }
+        }
+    }
+}
+
+// Pass to child views as plain parameters -- no wrapper needed
+struct ProfileHeader: View {
+    var profile: UserProfile  // Automatically tracks changes
+
+    var body: some View {
+        Text(profile.name)
+    }
+}
+</code></pre>
+<p><strong>Key advantages over ObservableObject:</strong>
+- Fine-grained tracking: only properties actually read by a view trigger re-renders.
+- No need for <code>@Published</code> on every property.
+- Child views do not need <code>@ObservedObject</code> -- just accept as a regular parameter.
+- Works with <code>@State</code> for ownership.</p>
+<hr />
+<h2 id="observable-and-actor-isolation">@Observable and Actor Isolation</h2>
+<p><code>@Observable</code> is <strong>not</strong> an isolation annotation. It generates observation
+plumbing and nothing else. An <code>@Observable</code> class with no other annotation is
+<code>nonisolated</code>, which means any task on any thread may mutate it while SwiftUI is
+reading it during layout.</p>
+<pre><code class="language-swift">// WRONG -- nonisolated observable state mutated from a background task.
+@Observable
+final class SearchModel {
+    var results: [Result] = []
+
+    func search(_ query: String) {
+        Task.detached {
+            let found = await api.search(query)
+            self.results = found        // races with SwiftUI's read of `results`
+        }
+    }
+}
+
+// RIGHT -- isolate the whole type to the main actor.
+@MainActor
+@Observable
+final class SearchModel {
+    private(set) var results: [Result] = []
+    private let api: any SearchService
+
+    init(api: any SearchService) { self.api = api }
+
+    func search(_ query: String) async {
+        results = await api.search(query)   // resumes on the main actor
+    }
+}
+</code></pre>
+<p><strong>Rule: any <code>@Observable</code> type that a view renders is <code>@MainActor</code>.</strong> Under
+Swift 6 language mode the compiler enforces this; under Swift 5 mode it is a
+silent data race.</p>
+<p>Isolating the type costs nothing at runtime for UI work. <code>await api.search(query)</code>
+still runs its network work off the main actor -- the main actor is occupied only
+while your own statements execute, not across the suspension.</p>
+<h3 id="where-the-mainactor-goes">Where the <code>@MainActor</code> goes</h3>
+<pre><code class="language-swift">// Preferred -- one annotation, whole type isolated, no accidental gaps.
+@MainActor @Observable final class ViewModel { … }
+
+// Fragile -- per-member isolation leaves `items` nonisolated and mutable
+// from anywhere, which is exactly the race you were trying to prevent.
+@Observable final class ViewModel {
+    var items: [Item] = []
+    @MainActor func reload() async { … }
+}
+</code></pre>
+<p>Mark the type <code>final</code> as well: <code>@Observable</code> on a non-final class allows a
+subclass to add unobserved stored properties, and it costs a dynamic dispatch on
+every access.</p>
+<h3 id="observable-models-that-are-not-view-models">Observable models that are not view models</h3>
+<p>A shared <code>@Observable</code> model touched from background work should be an <code>actor</code>
+that publishes to a <code>@MainActor</code> projection, not a nonisolated observable:</p>
+<pre><code class="language-swift">actor SyncEngine {
+    func pendingCount() async -&gt; Int { … }
+}
+
+@MainActor
+@Observable
+final class SyncStatusModel {
+    private(set) var pending = 0
+    private let engine: SyncEngine
+
+    init(engine: SyncEngine) { self.engine = engine }
+
+    func refresh() async {
+        pending = await engine.pendingCount()
+    }
+}
+</code></pre>
+<hr />
+<h2 id="observation-traps-in-child-views">Observation Traps in Child Views</h2>
+<p><code>@Observable</code> tracks the properties a view reads <strong>during <code>body</code> evaluation</strong>.
+Everything below follows from that one sentence.</p>
+<h3 id="trap-1-reads-outside-body-are-never-tracked">Trap 1: reads outside <code>body</code> are never tracked</h3>
+<pre><code class="language-swift">// WRONG -- `status` is read in onAppear, so no dependency is registered and
+// the label never updates when status changes.
+struct StatusBadge: View {
+    let monitor: ConnectionMonitor          // @Observable
+    @State private var label = &quot;&quot;
+
+    var body: some View {
+        Text(label)
+            .onAppear { label = monitor.status.description }
+    }
+}
+
+// RIGHT -- read it in body.
+struct StatusBadge: View {
+    let monitor: ConnectionMonitor
+
+    var body: some View {
+        Text(monitor.status.description)
+    }
+}
+</code></pre>
+<p>The same applies to reads inside <code>Task { }</code> closures, gesture handlers, and any
+helper method not called from <code>body</code>. If a view must react to a property it does
+not render, observe it explicitly:</p>
+<pre><code class="language-swift">.onChange(of: monitor.status) { _, newValue in
+    analytics.record(newValue)
+}
+</code></pre>
+<h3 id="trap-2-passing-the-whole-model-down-over-invalidates-the-child">Trap 2: passing the whole model down over-invalidates the child</h3>
+<pre><code class="language-swift">// WRONG -- CartBadge re-renders on EVERY change to the store, including
+// unrelated properties like isLoading or searchText.
+struct CartBadge: View {
+    let store: AppStore
+    var body: some View { Text(&quot;\(store.cart.count)&quot;) }
+}
+
+// RIGHT -- pass only the value the child renders.
+struct CartBadge: View {
+    let count: Int
+    var body: some View { Text(&quot;\(count)&quot;) }
+}
+</code></pre>
+<p>Fine-grained tracking works at the <em>property</em> level, not the <em>object</em> level: a
+child that reads <code>store.cart</code> is invalidated by any write to <code>store.cart</code>, but a
+child handed <code>count: Int</code> is invalidated only when that number actually changes.</p>
+<h3 id="trap-3-the-wrong-wrapper-in-the-child-detaches-it-from-the-parent">Trap 3: the wrong wrapper in the child detaches it from the parent</h3>
+<pre><code class="language-swift">// WRONG -- @State in a child captures the object ONCE. If the parent later
+// hands down a different instance, the child keeps rendering the old one.
+struct DetailView: View {
+    @State private var model: ItemModel
+    init(model: ItemModel) { _model = State(initialValue: model) }
+}
+
+// RIGHT -- borrow it. Plain `let` for read-only, @Bindable when you need `$`.
+struct DetailView: View {
+    let model: ItemModel                    // read-only
+}
+
+struct EditView: View {
+    @Bindable var model: ItemModel          // needs TextField bindings
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>In the child you need to…</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Read properties only</td>
+<td><code>let model: Model</code></td>
+</tr>
+<tr>
+<td>Create <code>$</code> bindings</td>
+<td><code>@Bindable var model: Model</code></td>
+</tr>
+<tr>
+<td>Own and create the object</td>
+<td><code>@State private var model = Model()</code></td>
+</tr>
+<tr>
+<td>Read it from far up the tree</td>
+<td><code>@Environment(Model.self) private var model</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="trap-4-mutating-observable-state-during-body">Trap 4: mutating observable state during <code>body</code></h3>
+<p>Writing to observed state while SwiftUI is evaluating <code>body</code> causes
+"Modifying state during view update" warnings and undefined update behaviour.</p>
+<pre><code class="language-swift">// WRONG
+var body: some View {
+    if model.items.isEmpty { model.loadPlaceholder() }   // mutation during update
+    return List(model.items) { … }
+}
+
+// RIGHT -- move it into a lifecycle modifier.
+var body: some View {
+    List(model.items) { … }
+        .task { await model.loadIfNeeded() }
+}
+</code></pre>
+<h3 id="trap-5-a-collection-element-replaced-wholesale-invalidates-every-row">Trap 5: a collection element replaced wholesale invalidates every row</h3>
+<pre><code class="language-swift">// If `items` is [Item] (value type), replacing the array re-evaluates every row.
+// For large lists where individual elements change frequently, make the element
+// an @Observable reference type so only the changed row re-renders.
+@Observable final class RowModel: Identifiable {
+    let id: UUID
+    var isFavorite: Bool
+    init(id: UUID, isFavorite: Bool) { self.id = id; self.isFavorite = isFavorite }
+}
+
+struct FeedView: View {
+    let rows: [RowModel]
+    var body: some View {
+        List(rows) { row in
+            RowView(row: row)               // only the toggled row re-renders
+        }
+    }
+}
+</code></pre>
+<p>This is a trade-off, not a rule: value-type elements are simpler and correct by
+default. Reach for observable elements only when profiling shows list-wide
+invalidation is the bottleneck.</p>
+<hr />
+<h2 id="async-boundaries-in-views">Async Boundaries in Views</h2>
+<h3 id="task-over-task-in-onappear"><code>.task</code> over <code>Task { }</code> in <code>onAppear</code></h3>
+<pre><code class="language-swift">// WRONG -- the task outlives the view. It keeps running after the screen is
+// popped and can write to a model whose UI no longer exists.
+.onAppear { Task { await model.load() } }
+
+// RIGHT -- .task is bound to the view's lifetime and cancelled on disappear.
+.task { await model.load() }
+
+// RIGHT -- .task(id:) cancels and restarts when the id changes.
+.task(id: selectedID) { await model.loadDetail(selectedID) }
+</code></pre>
+<p>Because <code>.task</code> cancels, every async method it calls must treat
+<code>CancellationError</code> as a deliberate no-op rather than a user-facing failure:</p>
+<pre><code class="language-swift">func load() async {
+    do {
+        items = try await service.fetch()
+    } catch is CancellationError {
+        return                              // superseded or dismissed
+    } catch {
+        errorMessage = error.localizedDescription
+    }
+}
+</code></pre>
+<h3 id="state-written-after-an-await-may-be-stale">State written after an await may be stale</h3>
+<p>Actor isolation guarantees exclusivity <em>between</em> suspension points, not across
+them. Anything you captured before an <code>await</code> may be out of date after it.</p>
+<pre><code class="language-swift">// WRONG -- `index` was computed before the await; the array may have been
+// reloaded, filtered, or reordered in the meantime.
+func toggle(at index: Int) async {
+    let item = items[index]
+    try? await service.save(item)
+    items[index].isSynced = true            // may write to the wrong row -- or crash
+}
+
+// RIGHT -- re-resolve by identity after the await.
+func toggle(id: UUID) async {
+    guard let item = items.first(where: { $0.id == id }) else { return }
+    try? await service.save(item)
+    guard let index = items.firstIndex(where: { $0.id == id }) else { return }
+    items[index].isSynced = true
+}
+</code></pre>
+<h3 id="overlapping-calls-need-an-explicit-in-flight-task">Overlapping calls need an explicit in-flight task</h3>
+<pre><code class="language-swift">@MainActor
+@Observable
+final class FeedModel {
+    private(set) var posts: [Post] = []
+    private var loadTask: Task&lt;Void, Never&gt;?
+
+    func load() async {
+        loadTask?.cancel()                  // supersede the previous load
+        let task = Task { await performLoad() }
+        loadTask = task
+        await task.value
+    }
+
+    private func performLoad() async {
+        do {
+            let fetched = try await service.posts()
+            try Task.checkCancellation()    // don't publish a superseded result
+            posts = fetched
+        } catch {
+            // handle
+        }
+    }
+}
+</code></pre>
+<p>Without this, a slow first request can land <em>after</em> a fast second one and
+overwrite fresh data with stale data -- a bug that only reproduces on bad
+networks.</p>
+<hr />
+<h2 id="bindable-ios-17">@Bindable (iOS 17+)</h2>
+<p>Creates bindings to properties of an <code>@Observable</code> object that is not owned via <code>@State</code>.</p>
+<pre><code class="language-swift">struct EditProfileView: View {
+    @Bindable var profile: UserProfile  // passed in, not owned
+
+    var body: some View {
+        Form {
+            TextField(&quot;Name&quot;, text: $profile.name)
+            TextField(&quot;Email&quot;, text: $profile.email)
+        }
+    }
+}
+
+// Parent
+struct ParentView: View {
+    @State private var profile = UserProfile()
+
+    var body: some View {
+        EditProfileView(profile: profile)
+    }
+}
+</code></pre>
+<p>Use <code>@Bindable</code> when you receive an <code>@Observable</code> object as a parameter and need <code>$</code> binding syntax.</p>
+<hr />
+<h2 id="observableobject-and-published-legacy-pre-ios-17">@ObservableObject and @Published (Legacy, pre-iOS 17)</h2>
+<pre><code class="language-swift">class SettingsStore: ObservableObject {
+    @Published var fontSize: Double = 14
+    @Published var isDarkMode = false
+    @Published var username = &quot;&quot;
+}
+</code></pre>
+<h3 id="stateobject-vs-observedobject">@StateObject vs @ObservedObject</h3>
+<pre><code class="language-swift">struct ParentView: View {
+    // @StateObject: OWNS the object. Created once, survives re-renders.
+    @StateObject private var store = SettingsStore()
+
+    var body: some View {
+        ChildView(store: store)
+    }
+}
+
+struct ChildView: View {
+    // @ObservedObject: BORROWS the object. Does not own it.
+    @ObservedObject var store: SettingsStore
+
+    var body: some View {
+        Text(&quot;Font: \(store.fontSize)&quot;)
+    }
+}
+</code></pre>
+<p><strong>Critical rule:</strong> Use <code>@StateObject</code> for creation, <code>@ObservedObject</code> for injection. Using <code>@ObservedObject</code> for creation causes the object to be recreated on every parent re-render.</p>
+<hr />
+<h2 id="environment">@Environment</h2>
+<p>Reads values from the SwiftUI environment.</p>
+<pre><code class="language-swift">struct DetailView: View {
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.horizontalSizeClass) private var sizeClass
+    @Environment(\.dynamicTypeSize) private var typeSize
+    @Environment(\.locale) private var locale
+    @Environment(\.calendar) private var calendar
+    @Environment(\.openURL) private var openURL
+    @Environment(\.isSearching) private var isSearching
+    @Environment(\.editMode) private var editMode
+
+    var body: some View {
+        VStack {
+            Text(colorScheme == .dark ? &quot;Dark Mode&quot; : &quot;Light Mode&quot;)
+            Button(&quot;Done&quot;) { dismiss() }
+            Button(&quot;Open Link&quot;) {
+                openURL(URL(string: &quot;https://apple.com&quot;)!)
+            }
+        }
+    }
+}
+</code></pre>
+<h3 id="custom-environmentkey">Custom EnvironmentKey</h3>
+<pre><code class="language-swift">// 1. Define the key
+struct ThemeKey: EnvironmentKey {
+    static let defaultValue = AppTheme.standard
+}
+
+// 2. Extend EnvironmentValues
+extension EnvironmentValues {
+    var theme: AppTheme {
+        get { self[ThemeKey.self] }
+        set { self[ThemeKey.self] = newValue }
+    }
+}
+
+// 3. Set in parent
+ContentView()
+    .environment(\.theme, AppTheme.premium)
+
+// 4. Read in child
+struct ThemedButton: View {
+    @Environment(\.theme) private var theme
+
+    var body: some View {
+        Button(&quot;Action&quot;) { }
+            .tint(theme.accentColor)
+    }
+}
+</code></pre>
+<h3 id="environment-with-observable-ios-17">Environment with @Observable (iOS 17+)</h3>
+<pre><code class="language-swift">@Observable
+class AppSettings {
+    var accentColor: Color = .blue
+    var fontSize: Double = 16
+}
+
+// Inject via environment
+ContentView()
+    .environment(AppSettings())
+
+// Read in any descendant
+struct ChildView: View {
+    @Environment(AppSettings.self) private var settings
+
+    var body: some View {
+        // For bindings, use @Bindable locally
+        @Bindable var settings = settings
+        Slider(value: $settings.fontSize, in: 12...24)
+    }
+}
+</code></pre>
+<hr />
+<h2 id="environmentobject-legacy">@EnvironmentObject (Legacy)</h2>
+<p>Injects an <code>ObservableObject</code> into the view hierarchy.</p>
+<pre><code class="language-swift">class AuthManager: ObservableObject {
+    @Published var isLoggedIn = false
+    @Published var currentUser: User?
+}
+
+// Inject at root
+ContentView()
+    .environmentObject(AuthManager())
+
+// Read in any descendant
+struct ProfileView: View {
+    @EnvironmentObject var auth: AuthManager
+
+    var body: some View {
+        if let user = auth.currentUser {
+            Text(user.name)
+        }
+    }
+}
+</code></pre>
+<p><strong>Warning:</strong> Crashes at runtime if the object is not provided in the hierarchy. Prefer <code>@Environment</code> with <code>@Observable</code> on iOS 17+.</p>
+<hr />
+<h2 id="appstorage-and-scenestorage">@AppStorage and @SceneStorage</h2>
+<h3 id="appstorage">@AppStorage</h3>
+<p>Reads and writes to <code>UserDefaults</code>. The view updates when the value changes.</p>
+<pre><code class="language-swift">struct SettingsView: View {
+    @AppStorage(&quot;username&quot;) private var username = &quot;Guest&quot;
+    @AppStorage(&quot;isDarkMode&quot;) private var isDarkMode = false
+    @AppStorage(&quot;fontSize&quot;) private var fontSize = 14.0
+    @AppStorage(&quot;selectedTab&quot;) private var selectedTab = 0
+
+    // Custom suite
+    @AppStorage(&quot;token&quot;, store: UserDefaults(suiteName: &quot;group.com.app.shared&quot;))
+    private var token = &quot;&quot;
+
+    var body: some View {
+        Form {
+            TextField(&quot;Username&quot;, text: $username)
+            Toggle(&quot;Dark Mode&quot;, isOn: $isDarkMode)
+            Slider(value: $fontSize, in: 10...30)
+        }
+    }
+}
+</code></pre>
+<p><strong>Supported types:</strong> <code>Bool</code>, <code>Int</code>, <code>Double</code>, <code>String</code>, <code>URL</code>, <code>Data</code>, and <code>RawRepresentable</code> where <code>RawValue</code> is <code>Int</code> or <code>String</code>.</p>
+<pre><code class="language-swift">enum AppTab: String {
+    case home, search, profile
+}
+
+@AppStorage(&quot;currentTab&quot;) private var currentTab: AppTab = .home
+</code></pre>
+<h3 id="scenestorage">@SceneStorage</h3>
+<p>Persists state per scene (restored after app relaunch). Ideal for scroll positions, selected tabs, draft text.</p>
+<pre><code class="language-swift">struct EditorView: View {
+    @SceneStorage(&quot;draft&quot;) private var draft = &quot;&quot;
+    @SceneStorage(&quot;scrollPosition&quot;) private var scrollPosition: String?
+
+    var body: some View {
+        TextEditor(text: $draft)
+    }
+}
+</code></pre>
+<hr />
+<h2 id="query-swiftdata-integration">@Query (SwiftData Integration)</h2>
+<p>Fetches model objects from SwiftData and keeps the view updated.</p>
+<pre><code class="language-swift">import SwiftData
+
+@Model
+class Task {
+    var title: String
+    var isComplete: Bool
+    var createdAt: Date
+
+    init(title: String, isComplete: Bool = false) {
+        self.title = title
+        self.isComplete = isComplete
+        self.createdAt = .now
+    }
+}
+
+struct TaskListView: View {
+    @Query(sort: \Task.createdAt, order: .reverse)
+    private var tasks: [Task]
+
+    // With filter
+    @Query(filter: #Predicate&lt;Task&gt; { !$0.isComplete },
+           sort: \Task.createdAt)
+    private var pendingTasks: [Task]
+
+    @Environment(\.modelContext) private var context
+
+    var body: some View {
+        List(tasks) { task in
+            Text(task.title)
+        }
+    }
+}
+
+// Dynamic queries with init
+struct FilteredTaskList: View {
+    @Query private var tasks: [Task]
+
+    init(showComplete: Bool) {
+        let predicate = #Predicate&lt;Task&gt; { task in
+            showComplete || !task.isComplete
+        }
+        _tasks = Query(filter: predicate, sort: \Task.createdAt)
+    }
+
+    var body: some View {
+        List(tasks) { task in Text(task.title) }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="data-flow-patterns-and-best-practices">Data Flow Patterns and Best Practices</h2>
+<h3 id="when-to-use-which-property-wrapper">When to Use Which Property Wrapper</h3>
+<table>
+<thead>
+<tr>
+<th>Wrapper</th>
+<th>Ownership</th>
+<th>Use Case</th>
+<th>iOS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>@State</code></td>
+<td>Owns</td>
+<td>Simple value types, local UI state</td>
+<td>13+</td>
+</tr>
+<tr>
+<td><code>@State</code> + <code>@Observable</code></td>
+<td>Owns</td>
+<td>Observable model created by this view</td>
+<td>17+</td>
+</tr>
+<tr>
+<td><code>@Binding</code></td>
+<td>Borrows</td>
+<td>Two-way reference to parent state</td>
+<td>13+</td>
+</tr>
+<tr>
+<td><code>@Bindable</code></td>
+<td>Borrows</td>
+<td>Bindings to Observable object properties</td>
+<td>17+</td>
+</tr>
+<tr>
+<td><code>@Environment</code></td>
+<td>Reads</td>
+<td>System or custom environment values</td>
+<td>13+</td>
+</tr>
+<tr>
+<td><code>@Environment(Type.self)</code></td>
+<td>Reads</td>
+<td>Observable objects via environment</td>
+<td>17+</td>
+</tr>
+<tr>
+<td><code>@AppStorage</code></td>
+<td>Owns</td>
+<td>UserDefaults-backed persistence</td>
+<td>14+</td>
+</tr>
+<tr>
+<td><code>@SceneStorage</code></td>
+<td>Owns</td>
+<td>Per-scene state restoration</td>
+<td>14+</td>
+</tr>
+<tr>
+<td><code>@Query</code></td>
+<td>Reads</td>
+<td>SwiftData model queries</td>
+<td>17+</td>
+</tr>
+<tr>
+<td><code>@StateObject</code></td>
+<td>Owns</td>
+<td>ObservableObject creation (legacy)</td>
+<td>14+</td>
+</tr>
+<tr>
+<td><code>@ObservedObject</code></td>
+<td>Borrows</td>
+<td>ObservableObject injection (legacy)</td>
+<td>13+</td>
+</tr>
+<tr>
+<td><code>@EnvironmentObject</code></td>
+<td>Reads</td>
+<td>ObservableObject via environment (legacy)</td>
+<td>13+</td>
+</tr>
+</tbody>
+</table>
+<h3 id="recommended-architecture-ios-17">Recommended Architecture (iOS 17+)</h3>
+<pre><code class="language-swift">// Model layer -- isolated, final, protocol-injected.
+@MainActor
+@Observable
+final class Store {
+    private(set) var items: [Item] = []
+    private(set) var isLoading = false
+    var errorMessage: String?
+
+    private let api: any ItemService
+
+    init(api: any ItemService) { self.api = api }
+
+    func fetchItems() async {
+        isLoading = true
+        defer { isLoading = false }
+        do {
+            items = try await api.getItems()
+            errorMessage = nil
+        } catch is CancellationError {
+            return
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+}
+
+// App entry point
+@main
+struct MyApp: App {
+    @State private var store = Store(api: LiveItemService())
+
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+                .environment(store)
+        }
+    }
+}
+
+// Feature view
+struct ItemListView: View {
+    @Environment(Store.self) private var store
+
+    var body: some View {
+        List(store.items) { item in
+            ItemRow(item: item)
+        }
+        .overlay {
+            if store.isLoading {
+                ProgressView()
+            }
+        }
+        .task {
+            await store.fetchItems()
+        }
+    }
+}
+</code></pre>
+<h3 id="state-hoisting-pattern">State Hoisting Pattern</h3>
+<p>Keep state at the lowest common ancestor that needs it.</p>
+<pre><code class="language-swift">// Parent owns the state
+struct FilterableList: View {
+    @State private var searchText = &quot;&quot;
+    @State private var sortOrder: SortOrder = .name
+
+    var body: some View {
+        VStack {
+            SearchBar(text: $searchText)           // Binding down
+            SortPicker(selection: $sortOrder)       // Binding down
+            ResultsList(query: searchText, sort: sortOrder)  // Values down
+        }
+    }
+}
+</code></pre>
+<h3 id="action-closure-pattern">Action Closure Pattern</h3>
+<p>Pass actions down instead of state up.</p>
+<pre><code class="language-swift">struct ItemRow: View {
+    let item: Item
+    let onDelete: () -&gt; Void
+    let onToggle: (Bool) -&gt; Void
+
+    var body: some View {
+        HStack {
+            Text(item.title)
+            Spacer()
+            Toggle(&quot;&quot;, isOn: Binding(
+                get: { item.isComplete },
+                set: { onToggle($0) }
+            ))
+        }
+        .swipeActions {
+            Button(role: .destructive) { onDelete() } label: {
+                Label(&quot;Delete&quot;, systemImage: &quot;trash&quot;)
+            }
+        }
+    }
+}
+</code></pre>
+<h3 id="avoiding-common-pitfalls">Avoiding Common Pitfalls</h3>
+<pre><code class="language-swift">// BAD: Creating @StateObject/@State Observable in a child view that gets recreated
+struct ParentView: View {
+    @State private var toggle = false
+    var body: some View {
+        VStack {
+            ChildView()  // ChildView recreated when toggle changes
+            Button(&quot;Toggle&quot;) { toggle.toggle() }
+        }
+    }
+}
+
+struct ChildView: View {
+    // BAD with ObservableObject -- this resets on every parent re-render
+    @ObservedObject var vm = ViewModel()
+    // GOOD -- use @StateObject instead
+    @StateObject private var vm = ViewModel()
+}
+
+// On iOS 17+, @State with @Observable handles this correctly:
+struct ChildView: View {
+    @State private var vm = ViewModel()  // Survives re-renders
+}
+</code></pre>
+<h3 id="property-wrapper-decision-checklist">Property Wrapper Decision Checklist</h3>
+<p>Before writing any state declaration, answer these in order:</p>
+<ol>
+<li><strong>Does this view create the value, or receive it?</strong> Creates → <code>@State</code>.
+   Receives → <code>@Binding</code> (value), <code>let</code> (read-only object), <code>@Bindable</code>
+   (object you need <code>$</code> on), or <code>@Environment</code> (from far up the tree).</li>
+<li><strong>Is it transient UI state (sheet flags, draft text, focus, scroll offset)?</strong>
+   → <code>@State</code> on the view. It does <strong>not</strong> belong on a view model.</li>
+<li><strong>Is it screen state derived from data (loaded items, error, isLoading)?</strong>
+   → a <code>@MainActor @Observable</code> model owned by <code>@State</code> at the screen root.</li>
+<li><strong>Is it app-wide (session, theme, feature flags)?</strong> → <code>@Observable</code> injected
+   with <code>.environment(_:)</code>, read with <code>@Environment(Type.self)</code>.</li>
+<li><strong>Does it need to survive relaunch?</strong> → <code>@AppStorage</code> (user preference) or
+   <code>@SceneStorage</code> (per-scene restoration). Neither is a place for a model.</li>
+<li><strong>Is it persisted model data?</strong> → <code>@Query</code> with SwiftData.</li>
+</ol>
+<h3 id="anti-patterns-summary">Anti-Patterns Summary</h3>
+<pre><code class="language-swift">// 1. Observable model without isolation.
+@Observable final class VM { var items: [Item] = [] }        // race
+@MainActor @Observable final class VM { … }                  // correct
+
+// 2. Non-final observable class -- allows unobserved subclass state.
+@Observable class VM { }                                     // avoid
+@Observable final class VM { }                               // correct
+
+// 3. View-local transient state stored on the model.
+@Observable final class VM { var showSheet = false }         // belongs in @State
+
+// 4. @State in a child for an object the parent owns.
+@State private var model: Model                              // detaches
+@Bindable var model: Model                                   // correct
+
+// 5. Reading observable properties outside body and expecting updates.
+.onAppear { label = model.title }                            // never re-reads
+Text(model.title)                                            // correct
+
+// 6. Mutating observed state during body evaluation.
+var body: some View { model.prepare(); return List(…) }      // warning + UB
+
+// 7. Unstructured Task in onAppear instead of .task.
+.onAppear { Task { await model.load() } }                    // leaks past dismissal
+
+// 8. Hand-rolled main-thread hops inside an already-isolated type.
+DispatchQueue.main.async { self.items = new }                // obsolete
+await MainActor.run { self.items = new }                     // redundant
+items = new                                                  // correct
+
+// 9. @EnvironmentObject / @ObservedObject in new iOS 17+ code.
+@EnvironmentObject var auth: AuthManager                     // legacy, crashes if unset
+@Environment(AuthManager.self) private var auth              // correct
+</code></pre></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

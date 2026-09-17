@@ -1,0 +1,51 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Layer-by-Layer Icons with Icon Composer — iOS Agent Skill</title><meta name="description" content="Repository guidance for Layer-by-Layer Icons with Icon Composer. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/design-icon-composer.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="Layer-by-Layer Icons with Icon Composer"><meta property="og:description" content="Repository guidance for Layer-by-Layer Icons with Icon Composer. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/design-icon-composer.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "Layer-by-Layer Icons with Icon Composer", "description": "Repository guidance for Layer-by-Layer Icons with Icon Composer. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/design-icon-composer.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Design · Reference guide</p><h1>Layer-by-Layer Icons with Icon Composer</h1><p class="lead">Repository guidance for Layer-by-Layer Icons with Icon Composer. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/design/icon-composer.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#context">Context</a></li>
+<li><a href="#pattern">Pattern</a><ul>
+<li><a href="#make-the-layer-plan-first">Make the layer plan first</a></li>
+<li><a href="#compose-and-annotate">Compose and annotate</a></li>
+<li><a href="#integrate-with-the-app">Integrate with the app</a></li>
+<li><a href="#what-an-agent-must-report">What an agent must report</a></li>
+</ul>
+</li>
+<li><a href="#anti-patterns">Anti-Patterns</a></li>
+</ul>
+</div>
+</aside><h2 id="context">Context</h2>
+<p>Use this for app identity, layered app icons, Liquid Glass icon treatments, and Xcode icon integration. The output should include separately editable artwork, a layer manifest, appearance decisions, and a verified Icon Composer document when the tool is available.</p>
+<p>Official sources checked 2026-09-10:</p>
+<ul>
+<li><a href="https://developer.apple.com/icon-composer/">Icon Composer</a></li>
+<li><a href="https://developer.apple.com/documentation/xcode/creating-your-app-icon-using-icon-composer">Create an app icon in Icon Composer</a></li>
+<li><a href="https://developer.apple.com/design/human-interface-guidelines/app-icons">App icon design guidance</a></li>
+<li><a href="https://developer.apple.com/videos/play/wwdc2025/361/">Create icons with Icon Composer</a></li>
+</ul>
+<h2 id="pattern">Pattern</h2>
+<h3 id="make-the-layer-plan-first">Make the layer plan first</h3>
+<p>Define the app’s recognizable symbol and a single visual idea. Separate the background, supporting shape, primary symbol, and optional accent. Use semantic names and stable ordering. For example, a reading app can use a background fill, a book silhouette, a page mark, and a small bookmark accent; each foreground shape remains editable independently.</p>
+<p>Prefer clean vector foregrounds. Use SVG or transparent PNG assets for import, exported on the same canvas so positions remain aligned. Keep text outlined. For raster art, retain transparent backgrounds around foreground artwork. Keep imported background art opaque and full bleed. Do not rasterize all pieces into one image.</p>
+<p>A useful project handoff contains:</p>
+<pre><code class="language-text">IconLayers/
+  01-base.svg
+  02-symbol.svg
+  03-accent.svg
+  manifest.json
+  README.md
+</code></pre>
+<p>These filenames are a recommended project convention, not an Apple file-format requirement. The CLI’s <code>--xcodegen</code> starter creates editable layers as a starting point; replace their shapes and colors for the actual brand.</p>
+<h3 id="compose-and-annotate">Compose and annotate</h3>
+<p>Launch Icon Composer from Xcode’s developer tools menu or the standalone app. Start a new document, choose the supported platforms, and set its background fill. Import foreground artwork, organize it into no more than four groups, and arrange depth from back to front. Use its material controls for highlights, refraction, translucency, and shadow rather than painting those effects into every asset.</p>
+<p>Tune Default, Dark, and Mono appearances. Inspect at small sizes and against different surrounding backgrounds. Keep the silhouette recognizable when decorative detail disappears. Save the native <code>.icon</code> document, reopen it, and check that its layers and appearance settings remain editable.</p>
+<h3 id="integrate-with-the-app">Integrate with the app</h3>
+<p>Add the saved icon document to the Xcode project and associate it with the app target’s icon setting. Build with the actual SDK and inspect the installed icon. Use Apple’s asset-catalog image-stack workflow for platforms whose icon format differs, including tvOS and visionOS; do not assume the same Composer workflow applies to every platform.</p>
+<p>Export flattened images only for marketing, previews, or compatibility workflows that specifically require them. Retain the editable source and native document alongside those exports.</p>
+<h3 id="what-an-agent-must-report">What an agent must report</h3>
+<p>List the artwork files, layer ordering, appearance variants checked, native document path if created, and Xcode verification performed. If Icon Composer is unavailable, deliver the SVG/PNG layer pack plus import instructions and explicitly leave native <code>.icon</code> verification pending. Do not invent an undocumented <code>.icon</code> schema or rename a JSON file to make it appear native.</p>
+<h2 id="anti-patterns">Anti-Patterns</h2>
+<ul>
+<li>One flattened image presented as a layered icon project.</li>
+<li>System shadows, corner masks, or highlights baked into foreground layers and then applied again by the compositor.</li>
+<li>A tiny detailed logo that loses its identity at home-screen size.</li>
+<li>A generic starter icon described as finished brand artwork.</li>
+<li>Claiming a native <code>.icon</code> file was verified without opening it in Icon Composer.</li>
+</ul></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

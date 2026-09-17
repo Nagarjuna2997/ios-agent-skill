@@ -1,0 +1,548 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>RealityKit -- Complete Guide for 3D Rendering, AR, and Spatial Apps — iOS Agent Skill</title><meta name="description" content="Repository guidance for RealityKit. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-realitykit.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="RealityKit -- Complete Guide for 3D Rendering, AR, and Spatial Apps"><meta property="og:description" content="Repository guidance for RealityKit. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-realitykit.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "RealityKit -- Complete Guide for 3D Rendering, AR, and Spatial Apps", "description": "Repository guidance for RealityKit. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-realitykit.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Graphics, 3D, and Games · Reference guide</p><h1>RealityKit -- Complete Guide for 3D Rendering, AR, and Spatial Apps</h1><p class="lead">Repository guidance for RealityKit. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/frameworks/realitykit.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#1-core-concepts-entity-component-system">1. Core Concepts: Entity Component System</a></li>
+<li><a href="#2-swiftui-realityview-ios-18-visionos-1">2. SwiftUI: RealityView (iOS 18 / visionOS 1+)</a><ul>
+<li><a href="#loading-a-usdz-asset">Loading a USDZ asset</a></li>
+<li><a href="#reality-composer-pro-scenes-visionos">Reality Composer Pro scenes (visionOS)</a></li>
+</ul>
+</li>
+<li><a href="#3-uikit-arview-for-ios-ar">3. UIKit: ARView for iOS AR</a></li>
+<li><a href="#4-materials-and-lighting">4. Materials and Lighting</a><ul>
+<li><a href="#pbr-physicallybasedmaterial">PBR (PhysicallyBasedMaterial)</a></li>
+<li><a href="#unlit-shaded-surface-materials">Unlit / shaded surface materials</a></li>
+<li><a href="#custom-shader-graphs">Custom shader graphs</a></li>
+</ul>
+</li>
+<li><a href="#5-animation">5. Animation</a><ul>
+<li><a href="#built-in-skeletal-animations">Built-in skeletal animations</a></li>
+<li><a href="#transform-animation-movescalerotate">Transform animation (move/scale/rotate)</a></li>
+</ul>
+</li>
+<li><a href="#6-physics">6. Physics</a></li>
+<li><a href="#7-input-and-gestures-visionos">7. Input and Gestures (visionOS)</a></li>
+<li><a href="#8-audio">8. Audio</a></li>
+<li><a href="#9-lighting-visionos-macos">9. Lighting (visionOS / macOS)</a></li>
+<li><a href="#10-networking-and-multipeer-sync">10. Networking and Multipeer Sync</a></li>
+<li><a href="#11-ecs-custom-components-and-systems">11. ECS: Custom Components and Systems</a><ul>
+<li><a href="#component">Component</a></li>
+<li><a href="#system">System</a></li>
+</ul>
+</li>
+<li><a href="#12-object-capture-ios-17">12. Object Capture (iOS 17+)</a></li>
+<li><a href="#13-performance-tips">13. Performance Tips</a></li>
+<li><a href="#14-common-pitfalls">14. Common Pitfalls</a></li>
+<li><a href="#15-platform-differences">15. Platform Differences</a></li>
+<li><a href="#16-3d-content-in-an-ordinary-ios-screen-non-ar">16. 3D Content in an Ordinary iOS Screen (non-AR)</a><ul>
+<li><a href="#the-two-lines-that-opt-out">The two lines that opt out</a></li>
+<li><a href="#a-light-rig-because-non-ar-scenes-have-no-environment">A light rig, because non-AR scenes have no environment</a></li>
+<li><a href="#framing-on-a-phone-you-have-about-27-degrees-not-55">Framing on a phone: you have about 27 degrees, not 55</a></li>
+<li><a href="#orbit-controls-silently-override-your-camera">Orbit controls silently override your camera</a></li>
+<li><a href="#text-in-3d-meshresourcegeneratetext-does-not-exist-on-ios">Text in 3D: MeshResource.generateText does not exist on iOS</a></li>
+<li><a href="#scene-is-ambiguous-when-both-frameworks-are-imported">Scene is ambiguous when both frameworks are imported</a></li>
+<li><a href="#checklist-for-non-ar-3d-on-ios">Checklist for non-AR 3D on iOS</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</aside><h2 id="overview">Overview</h2>
+<p>RealityKit is Apple's modern 3D engine and the default renderer for AR on iOS/iPadOS and for spatial content on visionOS. It uses a Swift-first <strong>Entity Component System (ECS)</strong>, ships with PBR materials, physics, audio, networking sync, and tightly integrates with USDZ and Reality Composer Pro. Pair it with <strong>ARKit</strong> for sensor data on iOS, or with <code>RealityView</code> / <code>ImmersiveSpace</code> on visionOS.</p>
+<blockquote>
+<p>Available on <strong>iOS 13+</strong>, <strong>macOS 10.15+</strong>, <strong>tvOS 16+</strong>, and <strong>visionOS 1.0+</strong>. SwiftUI integration via <code>RealityView</code> requires iOS 18+ / visionOS 1+ / macOS 15+ for the unified API; older code uses <code>ARView</code> (UIKit) wrapped in <code>UIViewRepresentable</code>.</p>
+</blockquote>
+<hr />
+<h2 id="1-core-concepts-entity-component-system">1. Core Concepts: Entity Component System</h2>
+<pre><code class="language-swift">import RealityKit
+
+// Entity: a node in the scene graph
+let cube = ModelEntity(
+    mesh: .generateBox(size: 0.2),
+    materials: [SimpleMaterial(color: .systemBlue, isMetallic: false)]
+)
+
+// Components: data attached to entities
+cube.components.set(InputTargetComponent())
+cube.components.set(CollisionComponent(shapes: [.generateBox(size: [0.2, 0.2, 0.2])]))
+cube.components.set(HoverEffectComponent())                // visionOS hover
+
+// Anchor: where in the world the subtree lives
+let anchor = AnchorEntity(world: .zero)
+anchor.addChild(cube)
+</code></pre>
+<p>The full hierarchy: <code>Scene</code> -&gt; <code>AnchorEntity</code> -&gt; <code>Entity</code> (with components and children).</p>
+<hr />
+<h2 id="2-swiftui-realityview-ios-18-visionos-1">2. SwiftUI: <code>RealityView</code> (iOS 18 / visionOS 1+)</h2>
+<pre><code class="language-swift">import SwiftUI
+import RealityKit
+
+struct GalaxyView: View {
+    var body: some View {
+        RealityView { content in
+            // Initial setup -- runs once
+            let sphere = ModelEntity(
+                mesh: .generateSphere(radius: 0.1),
+                materials: [SimpleMaterial(color: .orange, roughness: 0.3, isMetallic: true)]
+            )
+            sphere.position = [0, 1.5, -1]
+            content.add(sphere)
+        } update: { content in
+            // Re-runs whenever bound state changes
+        }
+    }
+}
+</code></pre>
+<h3 id="loading-a-usdz-asset">Loading a USDZ asset</h3>
+<pre><code class="language-swift">RealityView { content in
+    if let model = try? await Entity(named: &quot;Toy_robot&quot;, in: .main) {
+        model.position = [0, 0, -1]
+        content.add(model)
+    }
+}
+</code></pre>
+<h3 id="reality-composer-pro-scenes-visionos">Reality Composer Pro scenes (visionOS)</h3>
+<pre><code class="language-swift">RealityView { content in
+    if let scene = try? await Entity(named: &quot;GalaxyScene&quot;, in: realityKitContentBundle) {
+        content.add(scene)
+    }
+}
+</code></pre>
+<hr />
+<h2 id="3-uikit-arview-for-ios-ar">3. UIKit: <code>ARView</code> for iOS AR</h2>
+<pre><code class="language-swift">import RealityKit
+import ARKit
+
+let arView = ARView(frame: .zero, cameraMode: .ar, automaticallyConfigureSession: true)
+
+// Place an entity 1 meter in front of the camera
+let anchor = AnchorEntity(plane: .horizontal, classification: .floor, minimumBounds: [0.5, 0.5])
+let modelEntity = try ModelEntity.load(named: &quot;Robot&quot;)
+anchor.addChild(modelEntity)
+arView.scene.addAnchor(anchor)
+</code></pre>
+<p><code>ARView</code> automatically composites people occlusion, depth, and lighting estimation when the session opts in -- see <code>docs/frameworks/arkit.md</code>.</p>
+<hr />
+<h2 id="4-materials-and-lighting">4. Materials and Lighting</h2>
+<h3 id="pbr-physicallybasedmaterial">PBR (PhysicallyBasedMaterial)</h3>
+<pre><code class="language-swift">var material = PhysicallyBasedMaterial()
+material.baseColor = .init(tint: .systemTeal)
+material.metallic = 0.9
+material.roughness = 0.2
+material.emissiveColor = .init(color: .blue)
+material.emissiveIntensity = 0.5
+
+// Texture maps
+material.baseColor = .init(texture: .init(try .load(named: &quot;albedo&quot;)))
+material.normal = .init(texture: .init(try .load(named: &quot;normal&quot;)))
+
+let entity = ModelEntity(mesh: .generateSphere(radius: 0.1), materials: [material])
+</code></pre>
+<h3 id="unlit-shaded-surface-materials">Unlit / shaded surface materials</h3>
+<pre><code class="language-swift">let unlit = UnlitMaterial(color: .white)
+</code></pre>
+<h3 id="custom-shader-graphs">Custom shader graphs</h3>
+<p>Author shaders visually in <strong>Reality Composer Pro</strong>, then bind parameters at runtime:</p>
+<pre><code class="language-swift">guard var material = entity.model?.materials.first as? ShaderGraphMaterial else { return }
+try material.setParameter(name: &quot;Tint&quot;, value: .color(.systemPink))
+entity.model?.materials = [material]
+</code></pre>
+<hr />
+<h2 id="5-animation">5. Animation</h2>
+<h3 id="built-in-skeletal-animations">Built-in skeletal animations</h3>
+<pre><code class="language-swift">let robot = try ModelEntity.load(named: &quot;Robot&quot;)
+if let animation = robot.availableAnimations.first {
+    robot.playAnimation(animation.repeat(duration: .infinity), transitionDuration: 0.5)
+}
+</code></pre>
+<h3 id="transform-animation-movescalerotate">Transform animation (move/scale/rotate)</h3>
+<pre><code class="language-swift">let move = FromToByAnimation&lt;Transform&gt;(
+    name: &quot;slide&quot;,
+    from: .init(translation: [0, 0, 0]),
+    to: .init(translation: [0.5, 0, 0]),
+    duration: 1.0,
+    bindTarget: .transform
+)
+
+let resource = try AnimationResource.generate(with: move)
+entity.playAnimation(resource)
+</code></pre>
+<hr />
+<h2 id="6-physics">6. Physics</h2>
+<pre><code class="language-swift">// 1. Generate collision shapes from the mesh
+entity.generateCollisionShapes(recursive: true)
+
+// 2. Add a physics body
+entity.components.set(
+    PhysicsBodyComponent(
+        massProperties: .init(mass: 1.0),
+        material: .generate(friction: 0.4, restitution: 0.2),
+        mode: .dynamic
+    )
+)
+
+// 3. Apply forces / impulses
+entity.applyLinearImpulse([0, 2, 0], relativeTo: nil)
+</code></pre>
+<p><code>PhysicsBodyComponent.mode</code>: <code>.dynamic</code>, <code>.kinematic</code>, or <code>.static</code>.</p>
+<hr />
+<h2 id="7-input-and-gestures-visionos">7. Input and Gestures (visionOS)</h2>
+<pre><code class="language-swift">RealityView { content in
+    let cube = ModelEntity(mesh: .generateBox(size: 0.2),
+                           materials: [SimpleMaterial(color: .green, isMetallic: false)])
+    cube.components.set(InputTargetComponent())
+    cube.components.set(CollisionComponent(shapes: [.generateBox(size: [0.2, 0.2, 0.2])]))
+    content.add(cube)
+}
+.gesture(
+    DragGesture()
+        .targetedToAnyEntity()
+        .onChanged { value in
+            value.entity.position = value.convert(value.location3D, from: .local, to: value.entity.parent!)
+        }
+)
+</code></pre>
+<p>For iOS, use <code>arView.installGestures([.translation, .rotation, .scale], for: entity)</code>.</p>
+<hr />
+<h2 id="8-audio">8. Audio</h2>
+<pre><code class="language-swift">let resource = try AudioFileResource.load(named: &quot;spaceship.wav&quot;,
+                                          configuration: .init(shouldLoop: true))
+let controller = entity.prepareAudio(resource)
+controller.gain = -6
+controller.play()
+</code></pre>
+<p>Spatial audio is automatic when the entity has a position; head-tracked rendering happens for free on visionOS / AirPods Pro.</p>
+<hr />
+<h2 id="9-lighting-visionos-macos">9. Lighting (visionOS / macOS)</h2>
+<pre><code class="language-swift">let light = DirectionalLight()
+light.light.intensity = 5000
+light.light.color = .white
+light.shadow = .init(maximumDistance: 10, depthBias: 0.001)
+light.orientation = simd_quatf(angle: -.pi / 4, axis: [1, 0, 0])
+content.add(light)
+</code></pre>
+<p>For image-based lighting:</p>
+<pre><code class="language-swift">let env = try await EnvironmentResource(named: &quot;studio_small&quot;)
+content.environment.lighting.resource = env
+</code></pre>
+<p>iOS AR uses real-world lighting estimation automatically -- do not add manual lights unless you want extra fill.</p>
+<hr />
+<h2 id="10-networking-and-multipeer-sync">10. Networking and Multipeer Sync</h2>
+<pre><code class="language-swift">import MultipeerConnectivity
+
+let session = MCSession(peer: MCPeerID(displayName: UIDevice.current.name))
+arView.scene.synchronizationService = try? MultipeerConnectivityService(session: session)
+
+// Tag entities you want replicated
+entity.synchronization?.ownershipTransferMode = .autoAccept
+</code></pre>
+<p>All entities with a <code>SynchronizationComponent</code> (added by default to AnchorEntity) are kept in sync across peers.</p>
+<hr />
+<h2 id="11-ecs-custom-components-and-systems">11. ECS: Custom Components and Systems</h2>
+<h3 id="component">Component</h3>
+<pre><code class="language-swift">struct SpinComponent: Component {
+    var radiansPerSecond: Float = .pi
+}
+</code></pre>
+<h3 id="system">System</h3>
+<pre><code class="language-swift">final class SpinSystem: System {
+    static let query = EntityQuery(where: .has(SpinComponent.self))
+
+    init(scene: Scene) {}
+
+    func update(context: SceneUpdateContext) {
+        for entity in context.scene.performQuery(Self.query) {
+            guard let spin = entity.components[SpinComponent.self] else { continue }
+            entity.transform.rotation *= simd_quatf(
+                angle: spin.radiansPerSecond * Float(context.deltaTime),
+                axis: [0, 1, 0]
+            )
+        }
+    }
+}
+
+// Register once at app start
+SpinComponent.registerComponent()
+SpinSystem.registerSystem()
+</code></pre>
+<p>Now any entity with <code>SpinComponent()</code> rotates automatically -- no per-entity update logic.</p>
+<hr />
+<h2 id="12-object-capture-ios-17">12. Object Capture (iOS 17+)</h2>
+<pre><code class="language-swift">import RealityKit
+
+let session = ObjectCaptureSession()
+session.start(imagesDirectory: capturesURL,
+              configuration: .init(isOverCaptureEnabled: true))
+
+// Later, generate the model
+let photogrammetry = try PhotogrammetrySession(input: capturesURL)
+try photogrammetry.process(requests: [
+    .modelFile(url: outputURL, detail: .reduced)
+])
+</code></pre>
+<p>Requires LiDAR for guided capture; works on Macs for cloud-quality processing.</p>
+<hr />
+<h2 id="13-performance-tips">13. Performance Tips</h2>
+<ol>
+<li><strong>Reuse mesh and material resources</strong> -- <code>MeshResource.generateBox(...)</code> is cheap, but loading a USDZ multiple times is not. Load once, clone with <code>entity.clone(recursive: true)</code>.</li>
+<li><strong>Disable shadows on high-poly entities</strong> when frame-rate dips -- <code>model.components[ShadowComponent.self] = nil</code>.</li>
+<li><strong>Cap physics body count</strong> -- mark static geometry as <code>.static</code>; only player/interactable items as <code>.dynamic</code>.</li>
+<li><strong>Use <code>LowLevelMesh</code> (iOS 18+)</strong> for procedural geometry instead of regenerating <code>MeshResource</code> every frame.</li>
+<li><strong>Profile with the RealityKit Trace template in Instruments</strong> -- shows GPU time per pass and ECS update breakdown.</li>
+<li><strong>Bake lighting into Reality Composer Pro scenes</strong> rather than adding runtime lights when possible.</li>
+</ol>
+<hr />
+<h2 id="14-common-pitfalls">14. Common Pitfalls</h2>
+<ol>
+<li><strong>Forgetting <code>generateCollisionShapes(recursive:)</code></strong> -- raycasts and gestures silently miss the entity.</li>
+<li><strong>Adding entities outside an <code>AnchorEntity</code></strong> -- nothing renders. Always parent under an anchor or <code>content</code>.</li>
+<li><strong>Using <code>SimpleMaterial</code> for production</strong> -- it lacks PBR. Switch to <code>PhysicallyBasedMaterial</code>.</li>
+<li><strong>Modifying <code>entity.transform</code> from a background thread</strong> -- RealityKit is <strong>main-thread only</strong>. Schedule updates inside <code>RealityView.update</code> or a <code>System</code>.</li>
+<li><strong>Skipping <code>registerComponent()</code> / <code>registerSystem()</code></strong> -- custom ECS code silently does nothing if not registered.</li>
+<li><strong>Loading USDZ synchronously</strong> -- use <code>try await Entity(named:)</code> to avoid stalling the render loop.</li>
+<li><strong>Confusing iOS RealityKit with visionOS RealityKit</strong> -- <code>ImmersiveSpace</code>, hand tracking, and eye tracking are visionOS-only. <strong><code>RealityView</code> and its content closure are not</strong>: they exist on iOS 18+ and macOS 15+, where the content type is <code>RealityViewCameraContent</code>. See the platform table immediately below, and section 16 for building non-AR 3D on iOS.</li>
+</ol>
+<hr />
+<h2 id="15-platform-differences">15. Platform Differences</h2>
+<table>
+<thead>
+<tr>
+<th>Capability</th>
+<th style="text-align: center;">iOS</th>
+<th style="text-align: center;">macOS</th>
+<th style="text-align: center;">visionOS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>RealityView</code> (SwiftUI)</td>
+<td style="text-align: center;">iOS 18+</td>
+<td style="text-align: center;">macOS 15+</td>
+<td style="text-align: center;">visionOS 1+</td>
+</tr>
+<tr>
+<td><code>ARView</code> (UIKit/AppKit)</td>
+<td style="text-align: center;">All</td>
+<td style="text-align: center;">All</td>
+<td style="text-align: center;">--</td>
+</tr>
+<tr>
+<td>AR session</td>
+<td style="text-align: center;">ARKit</td>
+<td style="text-align: center;">--</td>
+<td style="text-align: center;">ARKit-for-visionOS</td>
+</tr>
+<tr>
+<td>Hand/eye input</td>
+<td style="text-align: center;">--</td>
+<td style="text-align: center;">--</td>
+<td style="text-align: center;">Yes</td>
+</tr>
+<tr>
+<td>Reality Composer Pro scenes</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">Yes</td>
+</tr>
+<tr>
+<td>Object capture</td>
+<td style="text-align: center;">iOS 17+</td>
+<td style="text-align: center;">macOS 12+</td>
+<td style="text-align: center;">--</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="16-3d-content-in-an-ordinary-ios-screen-non-ar">16. 3D Content in an Ordinary iOS Screen (non-AR)</h2>
+<p><strong>Load this when</strong> you want 3D in a normal app screen — a product viewer, a
+card carousel, a data sculpture — with no camera and no world tracking.</p>
+<p>This is the most common 3D request on iOS and the easiest one to get wrong,
+because <strong><code>RealityView</code> on iOS defaults to world tracking</strong>. Follow the AR
+sections above for a non-AR screen and you get a camera-permission prompt and a
+live camera feed behind your content — on a screen that was never meant to see
+through the phone.</p>
+<h3 id="the-two-lines-that-opt-out">The two lines that opt out</h3>
+<pre><code class="language-swift">import RealityKit
+import SwiftUI
+
+struct GalleryView: View {
+    var body: some View {
+        RealityView { content in
+            // 1. Opt out of world tracking. Without this the view starts an AR
+            //    session, prompts for camera access, and composites your scene
+            //    over the camera feed.
+            content.camera = .virtual
+
+            // 2. Having opted out, you own the camera. There is no default one,
+            //    so without this the scene renders from the origin.
+            let camera = PerspectiveCamera()
+            camera.camera.fieldOfViewInDegrees = 55
+            camera.look(at: .zero, from: [0, 0.35, 1.6], relativeTo: nil)
+            content.add(camera)
+
+            content.add(makeLightRig())
+            content.add(makeScene())
+        }
+    }
+}
+</code></pre>
+<p><code>content.camera</code> and <code>PerspectiveCamera</code> require <strong>iOS 18+</strong>. On iOS 17 the
+equivalent is <code>ARView(frame:cameraMode:automaticallyConfigureSession:)</code> with
+<code>cameraMode: .nonAR</code>, wrapped in a <code>UIViewRepresentable</code>:</p>
+<pre><code class="language-swift">struct LegacyRealityView: UIViewRepresentable {
+    func makeUIView(context: Context) -&gt; ARView {
+        // .nonAR is the iOS 17 equivalent of `content.camera = .virtual`.
+        let view = ARView(frame: .zero, cameraMode: .nonAR, automaticallyConfigureSession: false)
+        view.environment.background = .color(.clear)
+        return view
+    }
+
+    func updateUIView(_ view: ARView, context: Context) {}
+}
+</code></pre>
+<h3 id="a-light-rig-because-non-ar-scenes-have-no-environment">A light rig, because non-AR scenes have no environment</h3>
+<p>An AR scene inherits real-world lighting estimation. A virtual one inherits
+nothing, so <code>PhysicallyBasedMaterial</code> renders black until you light it. The
+minimum that reads well:</p>
+<pre><code class="language-swift">private func makeLightRig() -&gt; Entity {
+    let rig = Entity()
+
+    let key = DirectionalLight()
+    key.light.intensity = 2_500
+    key.light.color = .white
+    key.look(at: .zero, from: [1.2, 1.8, 1.4], relativeTo: nil)
+    rig.addChild(key)
+
+    let fill = DirectionalLight()
+    fill.light.intensity = 800
+    fill.look(at: .zero, from: [-1.5, 0.4, 1.0], relativeTo: nil)
+    rig.addChild(fill)
+
+    return rig
+}
+</code></pre>
+<h3 id="framing-on-a-phone-you-have-about-27-degrees-not-55">Framing on a phone: you have about 27 degrees, not 55</h3>
+<p><code>PerspectiveCamera.camera.fieldOfViewInDegrees</code> is the <strong>vertical</strong> field.
+Horizontal is derived from the aspect ratio, and a portrait iPhone is roughly
+0.46 wide-to-tall:</p>
+<pre><code>horizontal = 2 · atan( tan(vertical / 2) · aspect )
+           = 2 · atan( tan(55° / 2) · 0.46 )
+           ≈ 27°
+</code></pre>
+<p><strong>Twenty-seven degrees is narrow.</strong> The natural first idea — a ring of cards
+around the camera — puts all but one of them outside the frustum: you see one
+card face and the backs of its neighbours. There is no warning; the content is
+simply not there.</p>
+<p>The rule that follows: <strong>on iPhone, spend depth and height, not width.</strong> A
+vertical stack receding into the distance reads well in portrait; a horizontal
+carousel does not, unless the items are close to the camera and few.</p>
+<table>
+<thead>
+<tr>
+<th>Layout</th>
+<th>Portrait phone</th>
+<th>Landscape / iPad</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Vertical stack, receding in Z</td>
+<td>Works</td>
+<td>Works</td>
+</tr>
+<tr>
+<td>Depth-sorted deck toward camera</td>
+<td>Works</td>
+<td>Works</td>
+</tr>
+<tr>
+<td>Horizontal ring or carousel</td>
+<td>Falls out of frame</td>
+<td>Works</td>
+</tr>
+</tbody>
+</table>
+<h3 id="orbit-controls-silently-override-your-camera">Orbit controls silently override your camera</h3>
+<p><code>.realityViewCameraControls(.orbit)</code> is the quickest way to make a scene
+inspectable. Combined with <code>content.cameraTarget</code>, it <strong>auto-frames the
+target's bounds and discards the <code>PerspectiveCamera</code> transform you just set.</strong></p>
+<p>Two failures follow, both easy to hit:</p>
+<pre><code class="language-swift">// WRONG — the target is assigned before its contents exist.
+// Entities built in an async task have not been added yet, so the target has
+// no bounds. The camera frames nothing and parks at the origin, inside the
+// scene, looking at the backs of the cards.
+content.cameraTarget = gallery
+Task { await populate(gallery) }
+
+// RIGHT — populate first, then hand it over.
+await populate(gallery)
+content.cameraTarget = gallery
+</code></pre>
+<pre><code class="language-swift">// WRONG — auto-framing with no floor on scene size.
+// With one small entity the bounds are tiny, so the camera zooms in until that
+// single card fills the screen.
+content.cameraTarget = gallery
+
+// RIGHT — give the target a minimum extent so small scenes frame sanely.
+let bounds = gallery.visualBounds(relativeTo: nil)
+if bounds.boundingRadius &lt; 0.25 {
+    gallery.addChild(makeInvisibleFramingBox(radius: 0.25))
+}
+content.cameraTarget = gallery
+</code></pre>
+<h3 id="text-in-3d-meshresourcegeneratetext-does-not-exist-on-ios">Text in 3D: <code>MeshResource.generateText</code> does not exist on iOS</h3>
+<p>It is macOS and visionOS only — it is not in the iOS SDK at all, so the fix is
+not an availability guard, it is a different approach. Render a SwiftUI view to
+an image and use it as a texture:</p>
+<pre><code class="language-swift">@MainActor
+func makeLabel(_ text: String) throws -&gt; ModelEntity {
+    let renderer = ImageRenderer(content:
+        Text(text)
+            .font(.system(.title2, design: .rounded).weight(.semibold))
+            .foregroundStyle(.white)
+            .padding(24)
+    )
+    renderer.scale = 3
+
+    guard let cgImage = renderer.cgImage else { throw LabelError.renderFailed }
+
+    let texture = try TextureResource(image: cgImage, options: .init(semantic: .color))
+    var material = UnlitMaterial()
+    material.color = .init(texture: .init(texture))
+    material.blending = .transparent(opacity: 1)
+
+    let plane = MeshResource.generatePlane(width: 0.4, height: 0.1)
+    return ModelEntity(mesh: plane, materials: [material])
+}
+</code></pre>
+<p><code>UnlitMaterial</code>, not <code>PhysicallyBasedMaterial</code>: rendered text should not pick up
+scene lighting, or it dims as the camera moves and stops looking like text.</p>
+<h3 id="scene-is-ambiguous-when-both-frameworks-are-imported"><code>Scene</code> is ambiguous when both frameworks are imported</h3>
+<p>RealityKit and SwiftUI each declare a <code>Scene</code>. The <code>@main</code> App file is where
+they collide, because that is where components and systems get registered:</p>
+<pre><code class="language-swift">// WRONG — `some Scene` no longer resolves.
+import RealityKit
+import SwiftUI
+
+@main
+struct GalleryApp: App {
+    var body: some Scene { WindowGroup { GalleryView() } }   // ambiguous
+}
+
+// RIGHT — qualify it, or keep RealityKit out of this file entirely.
+var body: some SwiftUI.Scene { WindowGroup { GalleryView() } }
+</code></pre>
+<p>Preferably the second: register components from the view that uses them, and
+the <code>@main</code> file never imports RealityKit.</p>
+<h3 id="checklist-for-non-ar-3d-on-ios">Checklist for non-AR 3D on iOS</h3>
+<ul>
+<li>[ ] <code>content.camera = .virtual</code> set — no camera prompt, no live feed</li>
+<li>[ ] A <code>PerspectiveCamera</code> added, since opting out removes the default</li>
+<li>[ ] A light rig added; PBR materials render black without one</li>
+<li>[ ] Layout spends depth and height, not width, on portrait phones</li>
+<li>[ ] <code>cameraTarget</code> assigned only after the target has contents</li>
+<li>[ ] Small scenes given a minimum framing extent</li>
+<li>[ ] No <code>MeshResource.generateText</code> — texture route for labels</li>
+<li>[ ] <code>SwiftUI.Scene</code> qualified, or RealityKit kept out of the <code>@main</code> file</li>
+<li>[ ] iOS 17 fallback via <code>ARView(cameraMode: .nonAR)</code> if the target allows it</li>
+</ul>
+<hr />
+<p>See also: <code>docs/frameworks/arkit.md</code>, <code>docs/platforms/visionos.md</code>.</p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

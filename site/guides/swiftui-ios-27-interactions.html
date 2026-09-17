@@ -1,0 +1,121 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SwiftUI iOS 27 Interactions — iOS Agent Skill</title><meta name="description" content="Repository guidance for SwiftUI iOS 27 Interactions. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/swiftui-ios-27-interactions.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="SwiftUI iOS 27 Interactions"><meta property="og:description" content="Repository guidance for SwiftUI iOS 27 Interactions. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/swiftui-ios-27-interactions.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "SwiftUI iOS 27 Interactions", "description": "Repository guidance for SwiftUI iOS 27 Interactions. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/swiftui-ios-27-interactions.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Swiftui · Reference guide</p><h1>SwiftUI iOS 27 Interactions</h1><p class="lead">Repository guidance for SwiftUI iOS 27 Interactions. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/swiftui/ios-27-interactions.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#1-reordering-in-lists-stacks-grids-and-custom-layouts">1. Reordering in Lists, Stacks, Grids, and Custom Layouts</a></li>
+<li><a href="#2-swipe-actions-outside-list">2. Swipe Actions Outside List</a></li>
+<li><a href="#3-adaptive-toolbars">3. Adaptive Toolbars</a></li>
+<li><a href="#4-testing">4. Testing</a></li>
+<li><a href="#5-review-checklist">5. Review Checklist</a></li>
+<li><a href="#released-api-review-2026-09-16">Released API review (2026-09-16)</a></li>
+</ul>
+</div>
+</aside><h2 id="overview">Overview</h2>
+<p>SwiftUI's iOS 27 generation adds interaction APIs for custom containers that previously required <code>List</code> or hand-rolled drag/swipe behavior: reorderable content, swipe actions in arbitrary row containers, and richer toolbar adaptation.</p>
+<blockquote>
+<p>iOS 27 is released. Guard new APIs with availability; this guide’s iOS 27 examples still require compilation with Xcode 27. <a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/apple/ios-27-release-verification.md">Release verification</a>.</p>
+</blockquote>
+<hr />
+<h2 id="1-reordering-in-lists-stacks-grids-and-custom-layouts">1. Reordering in Lists, Stacks, Grids, and Custom Layouts</h2>
+<p>Use <code>reorderable()</code> on the <code>ForEach</code> that produces reorderable views, then place a <code>reorderContainer</code> on the enclosing container.</p>
+<pre><code class="language-swift">import SwiftUI
+
+@available(iOS 27.0, macOS 27.0, *)
+struct PhotoGrid: View {
+    @State private var photos: [Photo] = []
+
+    var body: some View {
+        LazyVGrid(columns: [.init(.adaptive(minimum: 120))]) {
+            ForEach(photos) { photo in
+                PhotoTile(photo: photo)
+            }
+            .reorderable()
+        }
+        .reorderContainer(for: Photo.self) { difference in
+            apply(difference)
+        }
+    }
+
+    private func apply(_ difference: ReorderDifference&lt;Photo.ID, ReorderableSingleCollectionIdentifier&gt;) {
+        // Update the source of truth from the system-provided difference.
+    }
+}
+</code></pre>
+<p>Rules:</p>
+<ul>
+<li>Item identifiers must be stable, <code>Hashable</code>, and <code>Sendable</code>.</li>
+<li>Update the data source in the <code>move</code> closure; do not rely on view order alone.</li>
+<li>Disable reordering while saves or sync merges are in flight.</li>
+<li>For multiple sections, use <code>reorderable(collectionID:)</code>.</li>
+</ul>
+<hr />
+<h2 id="2-swipe-actions-outside-list">2. Swipe Actions Outside <code>List</code></h2>
+<p>Use the new <code>swipeActions</code> overload when you need presentation state, and add <code>swipeActionsContainer()</code> to the scroll/container view.</p>
+<pre><code class="language-swift">@available(iOS 27.0, *)
+struct MessagesView: View {
+    @State private var swipedMessageID: Message.ID?
+    let messages: [Message]
+
+    var body: some View {
+        ScrollView {
+            LazyVStack {
+                ForEach(messages) { message in
+                    MessageRow(message: message)
+                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                            Button(role: .destructive) {
+                                delete(message)
+                            } label: {
+                                Label(&quot;Delete&quot;, systemImage: &quot;trash&quot;)
+                            }
+                        } onPresentationChanged: { isPresented in
+                            swipedMessageID = isPresented ? message.id : nil
+                        }
+                }
+            }
+        }
+        .swipeActionsContainer()
+    }
+}
+</code></pre>
+<p><code>List</code> already coordinates swipe actions. Use <code>swipeActionsContainer()</code> for <code>ScrollView</code>, stacks, grids, and custom row layouts so only one row is open and scrolling/tapping dismisses actions.</p>
+<hr />
+<h2 id="3-adaptive-toolbars">3. Adaptive Toolbars</h2>
+<p>The iOS 27 toolbar direction is adaptive: content should survive compact widths, overflow, user customization, and platform differences.</p>
+<p>Review toolbars for:</p>
+<ul>
+<li>semantic placement instead of hardcoded positions</li>
+<li>stable labels and SF Symbols</li>
+<li>priority for actions that must remain visible</li>
+<li>overflow behavior for secondary actions</li>
+<li>pinned trailing items only when the task requires persistent access</li>
+<li>keyboard and pointer alternatives on iPad/macOS</li>
+</ul>
+<p>Avoid toolbar-only workflows. Every critical action still needs an accessible path when it moves to overflow.</p>
+<hr />
+<h2 id="4-testing">4. Testing</h2>
+<p>Test these interaction surfaces on:</p>
+<ul>
+<li>compact iPhone portrait</li>
+<li>iPhone landscape</li>
+<li>iPad split view</li>
+<li>iPad Stage Manager / resizable windows</li>
+<li>Dynamic Type accessibility sizes</li>
+<li>VoiceOver</li>
+<li>pointer/keyboard input</li>
+</ul>
+<p>For reordering, include sync and persistence tests. For swipe actions, include dismissal, full-swipe, destructive confirmation, and VoiceOver action alternatives.</p>
+<hr />
+<h2 id="5-review-checklist">5. Review Checklist</h2>
+<ul>
+<li>[ ] iOS 27 APIs have availability guards</li>
+<li>[ ] Reorder identifiers are stable, <code>Hashable</code>, and <code>Sendable</code></li>
+<li>[ ] Reorder closure updates the source of truth</li>
+<li>[ ] Reordering disables during conflicting saves/sync</li>
+<li>[ ] Custom swipe rows use <code>swipeActionsContainer()</code></li>
+<li>[ ] Destructive swipe actions have undo or confirmation where needed</li>
+<li>[ ] Toolbar actions remain reachable in compact/overflow states</li>
+<li>[ ] Interaction tests cover iPad resizability and accessibility</li>
+</ul>
+<p>See also: <code>docs/swiftui/views-and-controls.md</code>, <code>docs/swiftui/layout.md</code>, <code>docs/tooling/device-hub.md</code>.</p>
+<h2 id="released-api-review-2026-09-16">Released API review (2026-09-16)</h2>
+<p><a href="https://developer.apple.com/documentation/updates/swiftui">Apple’s SwiftUI updates</a> document <code>reorderable()</code> with <code>reorderContainer(for:isEnabled:move:)</code>, and URL-based documents using <code>ReadableDocument</code>, <code>WritableDocument</code>, and <code>URLDocumentConfiguration</code>. Keep the actual availability guards; older document protocols and container approaches do not become deprecated merely because these additions exist.</p>
+<p>The static SwiftUI reviewer’s regression tests accept these new names. No speculative deprecation list was added. Prefetching and widget styling require API-specific review and runtime tests; a lexical scan cannot establish their performance or Siri behavior.</p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

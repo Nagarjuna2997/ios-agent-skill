@@ -1,0 +1,260 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Verification and the Evidence Contract — iOS Agent Skill</title><meta name="description" content="Repository guidance for Verification and the Evidence Contract. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/orchestration-verification.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="Verification and the Evidence Contract"><meta property="og:description" content="Repository guidance for Verification and the Evidence Contract. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/orchestration-verification.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "Verification and the Evidence Contract", "description": "Repository guidance for Verification and the Evidence Contract. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/orchestration-verification.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Orchestration · Reference guide</p><h1>Verification and the Evidence Contract</h1><p class="lead">Repository guidance for Verification and the Evidence Contract. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/orchestration/verification.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#1-the-rule">1. The rule</a></li>
+<li><a href="#2-every-claim-carries-a-label">2. Every claim carries a label</a></li>
+<li><a href="#3-what-counts-as-evidence">3. What counts as evidence</a><ul>
+<li><a href="#evidence-for-ios-specifically">Evidence for iOS specifically</a></li>
+<li><a href="#when-you-genuinely-cannot-build">When you genuinely cannot build</a></li>
+</ul>
+</li>
+<li><a href="#4-separation-of-duties">4. Separation of duties</a><ul>
+<li><a href="#three-layers-cheapest-first">Three layers, cheapest first</a></li>
+</ul>
+</li>
+<li><a href="#5-the-report-format">5. The report format</a></li>
+<li><a href="#6-reporting-failure">6. Reporting failure</a></li>
+<li><a href="#7-anti-patterns">7. Anti-patterns</a></li>
+<li><a href="#checklist-before-reporting-done">Checklist before reporting "done"</a></li>
+</ul>
+</div>
+</aside><p><strong>Load this when:</strong> you are about to report that something works, reviewing
+another agent's output, closing a loop, or deciding whether a task is done.</p>
+<p>This is the most important document in <code>docs/orchestration/</code>. Everything else
+scales work out; this is what stops the scaled-out work from being confidently
+wrong.</p>
+<hr />
+<h2 id="1-the-rule">1. The rule</h2>
+<blockquote>
+<p><strong>Never assert that something works. Show the output that proves it.</strong></p>
+</blockquote>
+<p>"The tests pass" is a claim. This is evidence:</p>
+<pre><code>$ swift test
+Test Suite 'All tests' passed at 2026-07-27 14:02:11.
+     Executed 47 tests, with 0 failures (0 unexpected) in 2.314 seconds
+</code></pre>
+<p>The difference is not stylistic. An agent that has written code has a strong
+prior that the code is correct — it wrote it <em>intending</em> to be correct, and it
+reads its own output through that intent. Requiring pasted command output
+replaces that prior with a fact.</p>
+<hr />
+<h2 id="2-every-claim-carries-a-label">2. Every claim carries a label</h2>
+<p>Each factual claim in a report falls into exactly one bucket, and the report
+says which:</p>
+<table>
+<thead>
+<tr>
+<th>Label</th>
+<th>Means</th>
+<th>Requires</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>VERIFIED</strong></td>
+<td>A command was run; this is its real output</td>
+<td>The command and its output, verbatim</td>
+</tr>
+<tr>
+<td><strong>INSPECTED</strong></td>
+<td>The code was read and reasoned about</td>
+<td>The <code>file:line</code> that was read</td>
+</tr>
+<tr>
+<td><strong>UNVERIFIED</strong></td>
+<td>Could not be checked</td>
+<td>The reason (no scheme, no simulator, no network)</td>
+</tr>
+</tbody>
+</table>
+<p>A report with zero VERIFIED claims and no explanation of why is a failed report,
+regardless of how confident it sounds.</p>
+<p><strong>UNVERIFIED is a legitimate, useful result.</strong> "I could not build this — there is
+no Xcode on this machine, so the isolation fix is INSPECTED only" is honest and
+actionable. Quietly implying it built is not.</p>
+<hr />
+<h2 id="3-what-counts-as-evidence">3. What counts as evidence</h2>
+<p>Ordered by strength:</p>
+<ol>
+<li><strong>Test output</strong> — the suite ran, with counts and pass/fail state.</li>
+<li><strong>Build output</strong> — it compiles, with the exact command shown.</li>
+<li><strong>Command output</strong> — a lint run, a script, a grep whose emptiness is the point.</li>
+<li><strong>A screenshot</strong> — for UI work, the actual rendered result.</li>
+<li><strong>A file diff</strong> — what changed, when the change itself is the deliverable.</li>
+<li><strong>A <code>file:line</code> citation</strong> — for claims about what code does.</li>
+</ol>
+<p>What does <strong>not</strong> count:</p>
+<ul>
+<li>"It should work now."</li>
+<li>"The change is correct."</li>
+<li>"I verified the logic."</li>
+<li>A summary of what a command would print.</li>
+<li>A test you wrote but did not run.</li>
+</ul>
+<h3 id="evidence-for-ios-specifically">Evidence for iOS specifically</h3>
+<pre><code class="language-bash"># Build — SPM
+swift build 2&gt;&amp;1 | tail -40
+
+# Build — Xcode. List schemes first; never guess one.
+xcodebuild -list -project MyApp.xcodeproj
+xcodebuild build -scheme &quot;MyApp&quot; \
+  -destination 'platform=iOS Simulator,name=iPhone 16' 2&gt;&amp;1 | tail -40
+
+# Tests
+swift test 2&gt;&amp;1 | tail -60
+xcodebuild test -scheme &quot;MyApp&quot; \
+  -destination 'platform=iOS Simulator,name=iPhone 16' 2&gt;&amp;1 | tail -60
+
+# Lint
+swiftlint lint --quiet
+swiftformat --lint .
+
+# Rule checks whose empty output IS the evidence
+grep -rn &quot;DispatchQueue.main.async&quot; Sources/          # expect: nothing
+grep -rn &quot;APIClient\|URLSession&quot; Sources/Presentation/ # expect: nothing
+</code></pre>
+<p>When a grep is the check, <strong>show that it returned nothing</strong>. An empty result you
+did not display is indistinguishable from a check you did not run.</p>
+<h3 id="when-you-genuinely-cannot-build">When you genuinely cannot build</h3>
+<p>Common on Linux CI, in containers without Xcode, or in a docs-only repository.
+Say it once, plainly, and downgrade the affected claims:</p>
+<pre><code>UNVERIFIED — no Xcode toolchain in this environment (`xcodebuild: command not
+found`). All Swift samples are INSPECTED against the framework docs in
+docs/frameworks/, not compiled. A human should build before merging.
+</code></pre>
+<p>Then verify what you <em>can</em>: markdown structure, cross-references, script syntax
+(<code>bash -n</code>), JSON/YAML validity. Partial verification honestly labelled beats
+none.</p>
+<hr />
+<h2 id="4-separation-of-duties">4. Separation of duties</h2>
+<p><strong>The agent that did the work does not decide whether the work is done.</strong></p>
+<table>
+<thead>
+<tr>
+<th>Setup</th>
+<th>Trust level</th>
+<th>Use when</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Worker self-checks</td>
+<td>Low</td>
+<td>Trivial, reversible changes</td>
+</tr>
+<tr>
+<td>Worker self-checks with pasted output</td>
+<td>Medium</td>
+<td>Most routine work</td>
+</tr>
+<tr>
+<td>Independent <code>swift-reviewer</code> subagent</td>
+<td>High</td>
+<td>Anything shipping, anything you will not manually read</td>
+</tr>
+<tr>
+<td>Reviewer + deterministic hooks/CI</td>
+<td>Highest</td>
+<td>Rules that must never regress</td>
+</tr>
+</tbody>
+</table>
+<p>The reviewer must:
+- Have <strong>no write tools</strong> — so it cannot fix what it should report.
+- Start <strong>cold</strong> — so it evaluates the diff, not the author's intent.
+- Return a <strong>verdict plus evidence</strong>, not a narrative.</p>
+<pre><code>worker    -&gt; writes the change
+reviewer  -&gt; cold context, read + Bash only, runs the build and tests
+           -&gt; VERDICT: pass | pass-with-findings | fail  + real output
+main agent -&gt; routes findings back, or accepts
+</code></pre>
+<h3 id="three-layers-cheapest-first">Three layers, cheapest first</h3>
+<ol>
+<li><strong>Hooks</strong> — deterministic, run automatically, no model judgment. Formatting,
+   forbidden patterns, mirror sync. See <code>../../.claude/settings.json</code> and
+   <code>templates/hooks/</code>.</li>
+<li><strong>CI</strong> — deterministic, runs on push. Build, tests, repo consistency.</li>
+<li><strong>Reviewer subagent</strong> — model judgment for what rules cannot express:
+   is this correct, does it match intent, is the test meaningful.</li>
+</ol>
+<p>Never use a reviewer subagent for something a hook can decide. A hook is free,
+instant, and cannot be talked out of its opinion.</p>
+<hr />
+<h2 id="5-the-report-format">5. The report format</h2>
+<p>Every agent in this repository returns this shape:</p>
+<pre><code>VERDICT: &lt;done | blocked | partial&gt;
+
+EVIDENCE
+$ &lt;command&gt;
+&lt;real output&gt;
+
+$ &lt;command&gt;
+&lt;real output&gt;
+
+WHAT CHANGED
+- path/to/File.swift:88 — &lt;what and why&gt;
+
+NOT VERIFIED
+- &lt;claim&gt; — &lt;why it could not be checked&gt;
+
+FOLLOW-UPS
+- &lt;anything deliberately left, so nobody assumes it is covered&gt;
+</code></pre>
+<p><code>NOT VERIFIED</code> is not optional. An empty section is fine; omitting the section
+suggests everything was verified, which is rarely true.</p>
+<hr />
+<h2 id="6-reporting-failure">6. Reporting failure</h2>
+<p>Report outcomes faithfully. Specifically:</p>
+<ul>
+<li>If tests fail, say so and paste the failure.</li>
+<li>If you skipped a step, say which and why.</li>
+<li>If you could not reproduce a bug, say that — do not ship a speculative fix as
+  a confirmed one.</li>
+<li>If part of the scope is blocked, finish everything else in full and state
+  exactly what you left out.</li>
+</ul>
+<p>A partial result honestly labelled is more useful than a complete-looking result
+that is wrong, because the human can act on the first and will be misled by the
+second.</p>
+<hr />
+<h2 id="7-anti-patterns">7. Anti-patterns</h2>
+<pre><code># 1. Asserting without evidence.
+&quot;Fixed — tests pass now.&quot;
+-&gt; Paste the output.
+
+# 2. Reporting a test you wrote but never ran.
+&quot;Added a test covering the cancellation path.&quot;
+-&gt; Did it pass? Did it fail before the fix?
+
+# 3. Implying a build you could not run.
+&quot;The code compiles cleanly.&quot;   (on a box with no Xcode)
+-&gt; UNVERIFIED, and say why.
+
+# 4. A grep check with no output shown.
+&quot;Confirmed no DispatchQueue usage remains.&quot;
+-&gt; Show the empty grep.
+
+# 5. The author reviewing their own work and passing it.
+-&gt; Cold reviewer, no write tools.
+
+# 6. Burying a failure in a success summary.
+&quot;Done. (One test is still red but it seems unrelated.)&quot;
+-&gt; Lead with the failure. &quot;Seems unrelated&quot; needs evidence too.
+
+# 7. Predicting a pending subagent's result.
+&quot;The reviewer will confirm this is fine.&quot;
+-&gt; It has not reported. Say it is still running.
+
+# 8. A green check achieved by weakening the check.
+-&gt; Deleting a test, widening a catch, or loosening an assertion is not a pass.
+</code></pre>
+<hr />
+<h2 id="checklist-before-reporting-done">Checklist before reporting "done"</h2>
+<ul>
+<li>[ ] The final check's real output is pasted, not summarized.</li>
+<li>[ ] Every claim is labelled VERIFIED, INSPECTED, or UNVERIFIED.</li>
+<li>[ ] Anything unverifiable in this environment says so, with the reason.</li>
+<li>[ ] The verifier is not the author, for anything that ships.</li>
+<li>[ ] Failures are stated plainly, not softened.</li>
+<li>[ ] Skipped or out-of-scope work is listed explicitly.</li>
+<li>[ ] No test was deleted, skipped, or loosened to reach green.</li>
+</ul></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

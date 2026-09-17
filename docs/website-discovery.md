@@ -27,3 +27,7 @@ Google states that ordinary SEO fundamentals apply to AI Overviews and AI Mode; 
 ## Evidence to measure
 
 Track Search Console queries and clicks, GitHub referrers and npm downloads separately. Downloads include automation and do not identify active users. A directory mention or referral does not establish endorsement. Review real queries before adding new tutorials; write useful answers with source and test evidence instead of producing near-duplicate keyword pages.
+
+## Educational blog and guide library
+
+Install `scripts/requirements-site.txt`, then run `python3 scripts/render-library.py`. This renders the blog and sitemap first, then the source-linked guide library. Five evidence walkthroughs are maintained in `content/blog/articles.json`; the existing practical articles remain in `scripts/render-blog.py`. Framework coverage comes from `frameworks.json`, with additional design, tooling, SwiftUI, orchestration and MCP guides. Preserve per-guide verification limits. Article covers are conceptual editorial artwork; linked evidence files are the actual test records.

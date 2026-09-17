@@ -1,0 +1,448 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>macOS Platform Guide — iOS Agent Skill</title><meta name="description" content="Repository guidance for macOS. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/platforms-macos.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="macOS Platform Guide"><meta property="og:description" content="Repository guidance for macOS. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/platforms-macos.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "macOS Platform Guide", "description": "Repository guidance for macOS. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/platforms-macos.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Platforms · Reference guide</p><h1>macOS Platform Guide</h1><p class="lead">Repository guidance for macOS. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/platforms/macos.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#menu-bar-and-nsmenu">Menu Bar and NSMenu</a><ul>
+<li><a href="#main-menu-customization">Main Menu Customization</a></li>
+<li><a href="#menu-bar-extra-status-bar-app">Menu Bar Extra (Status Bar App)</a></li>
+</ul>
+</li>
+<li><a href="#nswindow-customization">NSWindow Customization</a></li>
+<li><a href="#toolbar-and-sidebar-patterns">Toolbar and Sidebar Patterns</a></li>
+<li><a href="#document-based-apps">Document-Based Apps</a></li>
+<li><a href="#sandboxing-and-entitlements">Sandboxing and Entitlements</a><ul>
+<li><a href="#common-entitlements">Common Entitlements</a></li>
+<li><a href="#security-scoped-bookmarks">Security-Scoped Bookmarks</a></li>
+</ul>
+</li>
+<li><a href="#appkit-swiftui-interop">AppKit-SwiftUI Interop</a><ul>
+<li><a href="#nsviewrepresentable">NSViewRepresentable</a></li>
+<li><a href="#hosting-swiftui-in-appkit">Hosting SwiftUI in AppKit</a></li>
+</ul>
+</li>
+<li><a href="#settings-preferences-window">Settings / Preferences Window</a></li>
+<li><a href="#drag-and-drop">Drag and Drop</a></li>
+<li><a href="#macos-specific-patterns-summary">macOS-Specific Patterns Summary</a></li>
+</ul>
+</div>
+</aside><h2 id="menu-bar-and-nsmenu">Menu Bar and NSMenu</h2>
+<h3 id="main-menu-customization">Main Menu Customization</h3>
+<pre><code class="language-swift">// SwiftUI CommandMenu
+@main
+struct MyMacApp: App {
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+        }
+        .commands {
+            // Replace existing group
+            CommandGroup(replacing: .newItem) {
+                Button(&quot;New Document&quot;) { createDocument() }
+                    .keyboardShortcut(&quot;n&quot;)
+                Button(&quot;New from Template...&quot;) { showTemplates() }
+                    .keyboardShortcut(&quot;n&quot;, modifiers: [.command, .shift])
+            }
+
+            // Add custom menu
+            CommandMenu(&quot;Tools&quot;) {
+                Button(&quot;Run Analysis&quot;) { runAnalysis() }
+                    .keyboardShortcut(&quot;r&quot;, modifiers: [.command, .shift])
+                Divider()
+                Toggle(&quot;Auto-Save&quot;, isOn: $autoSave)
+            }
+
+            // Toolbar commands
+            CommandGroup(after: .toolbar) {
+                Button(&quot;Toggle Sidebar&quot;) { toggleSidebar() }
+                    .keyboardShortcut(&quot;s&quot;, modifiers: [.command, .control])
+            }
+        }
+    }
+}
+</code></pre>
+<h3 id="menu-bar-extra-status-bar-app">Menu Bar Extra (Status Bar App)</h3>
+<pre><code class="language-swift">@main
+struct StatusBarApp: App {
+    var body: some Scene {
+        MenuBarExtra(&quot;My App&quot;, systemImage: &quot;star.fill&quot;) {
+            VStack(spacing: 12) {
+                Text(&quot;Status: Active&quot;)
+                    .font(.headline)
+                Divider()
+                Button(&quot;Open Dashboard&quot;) { openDashboard() }
+                    .keyboardShortcut(&quot;d&quot;)
+                Button(&quot;Preferences...&quot;) { openPreferences() }
+                    .keyboardShortcut(&quot;,&quot;)
+                Divider()
+                Button(&quot;Quit&quot;) { NSApplication.shared.terminate(nil) }
+                    .keyboardShortcut(&quot;q&quot;)
+            }
+            .padding()
+        }
+        .menuBarExtraStyle(.window) // .menu for simple dropdown
+    }
+}
+</code></pre>
+<hr />
+<h2 id="nswindow-customization">NSWindow Customization</h2>
+<pre><code class="language-swift">// SwiftUI window styling
+WindowGroup {
+    ContentView()
+}
+.windowStyle(.hiddenTitleBar)
+.windowResizability(.contentSize)
+.defaultSize(width: 800, height: 600)
+.defaultPosition(.center)
+
+// Full NSWindow control via NSViewRepresentable
+struct WindowAccessor: NSViewRepresentable {
+    func makeNSView(context: Context) -&gt; NSView {
+        let view = NSView()
+        DispatchQueue.main.async {
+            if let window = view.window {
+                window.isMovableByWindowBackground = true
+                window.titlebarAppearsTransparent = true
+                window.titleVisibility = .hidden
+                window.styleMask.insert(.fullSizeContentView)
+                window.backgroundColor = .clear
+                window.isOpaque = false
+
+                // Custom traffic light position
+                let buttons = [window.standardWindowButton(.closeButton),
+                               window.standardWindowButton(.miniaturizeButton),
+                               window.standardWindowButton(.zoomButton)]
+                buttons.compactMap { $0 }.enumerated().forEach { i, button in
+                    button.frame.origin = CGPoint(x: 12 + CGFloat(i) * 20, y: 12)
+                }
+            }
+        }
+        return view
+    }
+
+    func updateNSView(_ nsView: NSView, context: Context) {}
+}
+</code></pre>
+<hr />
+<h2 id="toolbar-and-sidebar-patterns">Toolbar and Sidebar Patterns</h2>
+<pre><code class="language-swift">struct ContentView: View {
+    @State private var selectedItem: SidebarItem? = .inbox
+    @State private var columnVisibility = NavigationSplitViewVisibility.all
+
+    var body: some View {
+        NavigationSplitView(columnVisibility: $columnVisibility) {
+            // Sidebar
+            List(selection: $selectedItem) {
+                Section(&quot;Favorites&quot;) {
+                    Label(&quot;Inbox&quot;, systemImage: &quot;tray&quot;)
+                        .tag(SidebarItem.inbox)
+                    Label(&quot;Sent&quot;, systemImage: &quot;paperplane&quot;)
+                        .tag(SidebarItem.sent)
+                }
+                Section(&quot;Folders&quot;) {
+                    Label(&quot;Archive&quot;, systemImage: &quot;archivebox&quot;)
+                        .tag(SidebarItem.archive)
+                }
+            }
+            .listStyle(.sidebar)
+            .navigationSplitViewColumnWidth(min: 180, ideal: 220, max: 300)
+        } content: {
+            // Content list
+            if let selectedItem {
+                ItemListView(category: selectedItem)
+            }
+        } detail: {
+            // Detail
+            DetailView()
+        }
+        .navigationTitle(&quot;Mail&quot;)
+        .toolbar {
+            ToolbarItemGroup(placement: .primaryAction) {
+                Button(action: compose) {
+                    Label(&quot;Compose&quot;, systemImage: &quot;square.and.pencil&quot;)
+                }
+            }
+            ToolbarItem(placement: .navigation) {
+                Button(action: toggleSidebar) {
+                    Label(&quot;Sidebar&quot;, systemImage: &quot;sidebar.leading&quot;)
+                }
+            }
+        }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="document-based-apps">Document-Based Apps</h2>
+<pre><code class="language-swift">@main
+struct TextEditorApp: App {
+    var body: some Scene {
+        DocumentGroup(newDocument: TextDocument()) { file in
+            DocumentEditorView(document: file.$document)
+        }
+        .commands {
+            TextFormattingCommands()
+        }
+
+        // Additional window types
+        Window(&quot;Activity Log&quot;, id: &quot;activity&quot;) {
+            ActivityLogView()
+        }
+        .keyboardShortcut(&quot;0&quot;, modifiers: [.command, .shift])
+        .defaultSize(width: 400, height: 300)
+    }
+}
+
+// Reference-type document (for complex data)
+@Observable
+class ProjectDocument: ReferenceFileDocument {
+    static var readableContentTypes: [UTType] { [.json] }
+
+    var project: Project
+
+    required init(configuration: ReadConfiguration) throws {
+        guard let data = configuration.file.regularFileContents else {
+            throw CocoaError(.fileReadCorruptFile)
+        }
+        project = try JSONDecoder().decode(Project.self, from: data)
+    }
+
+    func snapshot(contentType: UTType) throws -&gt; Data {
+        try JSONEncoder().encode(project)
+    }
+
+    func fileWrapper(snapshot: Data, configuration: WriteConfiguration) throws -&gt; FileWrapper {
+        FileWrapper(regularFileWithContents: snapshot)
+    }
+}
+</code></pre>
+<hr />
+<h2 id="sandboxing-and-entitlements">Sandboxing and Entitlements</h2>
+<h3 id="common-entitlements">Common Entitlements</h3>
+<pre><code class="language-xml">&lt;!-- App.entitlements --&gt;
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;!DOCTYPE plist PUBLIC &quot;-//Apple//DTD PLIST 1.0//EN&quot;
+  &quot;http://www.apple.com/DTDs/PropertyList-1.0.dtd&quot;&gt;
+&lt;plist version=&quot;1.0&quot;&gt;
+&lt;dict&gt;
+    &lt;key&gt;com.apple.security.app-sandbox&lt;/key&gt;           &lt;true/&gt;
+    &lt;key&gt;com.apple.security.files.user-selected.read-write&lt;/key&gt; &lt;true/&gt;
+    &lt;key&gt;com.apple.security.files.bookmarks.app-scope&lt;/key&gt;      &lt;true/&gt;
+    &lt;key&gt;com.apple.security.network.client&lt;/key&gt;         &lt;true/&gt;
+    &lt;key&gt;com.apple.security.network.server&lt;/key&gt;         &lt;true/&gt;
+    &lt;key&gt;com.apple.security.print&lt;/key&gt;                  &lt;true/&gt;
+&lt;/dict&gt;
+&lt;/plist&gt;
+</code></pre>
+<h3 id="security-scoped-bookmarks">Security-Scoped Bookmarks</h3>
+<pre><code class="language-swift">// Persist access to user-selected files
+func saveBookmark(for url: URL) throws {
+    let bookmarkData = try url.bookmarkData(
+        options: .withSecurityScope,
+        includingResourceValuesForKeys: nil,
+        relativeTo: nil
+    )
+    UserDefaults.standard.set(bookmarkData, forKey: &quot;savedFile&quot;)
+}
+
+func resolveBookmark() throws -&gt; URL {
+    guard let data = UserDefaults.standard.data(forKey: &quot;savedFile&quot;) else {
+        throw AppError.noBookmark
+    }
+    var isStale = false
+    let url = try URL(
+        resolvingBookmarkData: data,
+        options: .withSecurityScope,
+        relativeTo: nil,
+        bookmarkDataIsStale: &amp;isStale
+    )
+    guard url.startAccessingSecurityScopedResource() else {
+        throw AppError.accessDenied
+    }
+    // Remember to call url.stopAccessingSecurityScopedResource() when done
+    return url
+}
+</code></pre>
+<hr />
+<h2 id="appkit-swiftui-interop">AppKit-SwiftUI Interop</h2>
+<h3 id="nsviewrepresentable">NSViewRepresentable</h3>
+<pre><code class="language-swift">struct WebView: NSViewRepresentable {
+    let url: URL
+
+    func makeNSView(context: Context) -&gt; WKWebView {
+        let webView = WKWebView()
+        webView.navigationDelegate = context.coordinator
+        return webView
+    }
+
+    func updateNSView(_ webView: WKWebView, context: Context) {
+        webView.load(URLRequest(url: url))
+    }
+
+    func makeCoordinator() -&gt; Coordinator { Coordinator() }
+
+    class Coordinator: NSObject, WKNavigationDelegate {
+        func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+            print(&quot;Page loaded&quot;)
+        }
+    }
+}
+
+// NSViewControllerRepresentable
+struct LegacyEditorView: NSViewControllerRepresentable {
+    func makeNSViewController(context: Context) -&gt; EditorViewController {
+        EditorViewController()
+    }
+
+    func updateNSViewController(_ controller: EditorViewController, context: Context) {}
+}
+</code></pre>
+<h3 id="hosting-swiftui-in-appkit">Hosting SwiftUI in AppKit</h3>
+<pre><code class="language-swift">let swiftUIView = SettingsContentView()
+let hostingController = NSHostingController(rootView: swiftUIView)
+
+// As a popover
+let popover = NSPopover()
+popover.contentViewController = hostingController
+popover.behavior = .transient
+popover.show(relativeTo: button.bounds, of: button, preferredEdge: .maxY)
+</code></pre>
+<hr />
+<h2 id="settings-preferences-window">Settings / Preferences Window</h2>
+<pre><code class="language-swift">@main
+struct MyApp: App {
+    var body: some Scene {
+        WindowGroup { ContentView() }
+
+        Settings {
+            TabView {
+                GeneralSettingsView()
+                    .tabItem { Label(&quot;General&quot;, systemImage: &quot;gear&quot;) }
+                AppearanceSettingsView()
+                    .tabItem { Label(&quot;Appearance&quot;, systemImage: &quot;paintbrush&quot;) }
+                AdvancedSettingsView()
+                    .tabItem { Label(&quot;Advanced&quot;, systemImage: &quot;gearshape.2&quot;) }
+            }
+            .frame(width: 450, height: 300)
+        }
+    }
+}
+
+struct GeneralSettingsView: View {
+    @AppStorage(&quot;launchAtLogin&quot;) private var launchAtLogin = false
+    @AppStorage(&quot;checkForUpdates&quot;) private var checkForUpdates = true
+
+    var body: some View {
+        Form {
+            Toggle(&quot;Launch at Login&quot;, isOn: $launchAtLogin)
+            Toggle(&quot;Check for Updates Automatically&quot;, isOn: $checkForUpdates)
+            Picker(&quot;Default View&quot;, selection: $defaultView) {
+                Text(&quot;List&quot;).tag(ViewMode.list)
+                Text(&quot;Grid&quot;).tag(ViewMode.grid)
+            }
+        }
+        .padding()
+    }
+}
+</code></pre>
+<hr />
+<h2 id="drag-and-drop">Drag and Drop</h2>
+<pre><code class="language-swift">struct DragDropView: View {
+    @State private var items: [DragItem] = []
+    @State private var isTargeted = false
+
+    var body: some View {
+        VStack {
+            // Draggable items
+            ForEach(items) { item in
+                Text(item.name)
+                    .draggable(item) // Requires Transferable conformance
+            }
+
+            // Drop target
+            RoundedRectangle(cornerRadius: 12)
+                .fill(isTargeted ? Color.accentColor.opacity(0.2) : Color.gray.opacity(0.1))
+                .frame(height: 200)
+                .overlay { Text(&quot;Drop files here&quot;) }
+                .dropDestination(for: URL.self) { urls, location in
+                    handleDrop(urls: urls)
+                    return true
+                } isTargeted: { targeted in
+                    isTargeted = targeted
+                }
+        }
+    }
+}
+
+// Transferable conformance
+struct DragItem: Identifiable, Codable, Transferable {
+    let id: UUID
+    let name: String
+
+    static var transferRepresentation: some TransferRepresentation {
+        CodableRepresentation(contentType: .data)
+        ProxyRepresentation(exporting: \.name) // Fallback as plain text
+    }
+}
+
+// NSFilePromiseProvider for files (AppKit interop)
+class FilePromiseProvider: NSFilePromiseProvider {
+    override func fileType() -&gt; String { UTType.png.identifier }
+
+    override func operationQueue() -&gt; OperationQueue { .main }
+
+    override func provideFile(at url: URL) throws {
+        let data = generateFileData()
+        try data.write(to: url)
+    }
+}
+</code></pre>
+<hr />
+<h2 id="macos-specific-patterns-summary">macOS-Specific Patterns Summary</h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>API</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Menu Bar Extra</td>
+<td>MenuBarExtra</td>
+<td>SwiftUI-native in macOS 13+</td>
+</tr>
+<tr>
+<td>Settings Window</td>
+<td>Settings scene</td>
+<td>Replaces NSPreferencesWindow</td>
+</tr>
+<tr>
+<td>Sidebar</td>
+<td>NavigationSplitView</td>
+<td>3-column layout</td>
+</tr>
+<tr>
+<td>Toolbar</td>
+<td>.toolbar modifier</td>
+<td>Placement: .primaryAction, .navigation</td>
+</tr>
+<tr>
+<td>Drag &amp; Drop</td>
+<td>Transferable</td>
+<td>SwiftUI-native; NSFilePromiseProvider for files</td>
+</tr>
+<tr>
+<td>Entitlements</td>
+<td>.entitlements file</td>
+<td>Required for sandboxed apps</td>
+</tr>
+<tr>
+<td>Window styling</td>
+<td>.windowStyle</td>
+<td>.hiddenTitleBar, .plain</td>
+</tr>
+<tr>
+<td>Keyboard shortcuts</td>
+<td>.keyboardShortcut</td>
+<td>Global via CommandMenu</td>
+</tr>
+</tbody>
+</table></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

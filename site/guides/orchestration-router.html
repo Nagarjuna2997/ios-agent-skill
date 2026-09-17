@@ -1,0 +1,242 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Main Agent Router — iOS Agent Skill</title><meta name="description" content="Repository guidance for Main Agent Router. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/orchestration-router.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="Main Agent Router"><meta property="og:description" content="Repository guidance for Main Agent Router. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/orchestration-router.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "Main Agent Router", "description": "Repository guidance for Main Agent Router. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/orchestration-router.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Orchestration · Reference guide</p><h1>Main Agent Router</h1><p class="lead">Repository guidance for Main Agent Router. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/orchestration/router.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#1-the-decision">1. The decision</a></li>
+<li><a href="#2-when-to-delegate">2. When to delegate</a><ul>
+<li><a href="#choosing-the-specialist">Choosing the specialist</a></li>
+</ul>
+</li>
+<li><a href="#3-standard-sequences">3. Standard sequences</a><ul>
+<li><a href="#feature-multi-file">Feature (multi-file)</a></li>
+<li><a href="#bug">Bug</a></li>
+<li><a href="#drive-a-red-suite-to-green">Drive a red suite to green</a></li>
+<li><a href="#codebase-wide-mechanical-change">Codebase-wide mechanical change</a></li>
+</ul>
+</li>
+<li><a href="#4-what-the-main-agent-stays-responsible-for">4. What the main agent stays responsible for</a></li>
+<li><a href="#5-cost-discipline">5. Cost discipline</a></li>
+<li><a href="#6-non-negotiables">6. Non-negotiables</a></li>
+<li><a href="#7-quick-reference">7. Quick reference</a></li>
+</ul>
+</div>
+</aside><p><strong>Load this when:</strong> you are the main agent deciding how to execute a request —
+do it yourself, delegate it, loop on it, or scale it out.</p>
+<p>This is the entry point to <code>docs/orchestration/</code>. It answers one question:
+<strong>given this request, what shape of execution does it need?</strong></p>
+<p>The default is <strong>do it yourself</strong>. Everything below is an exception that has to
+earn its cost.</p>
+<hr />
+<h2 id="1-the-decision">1. The decision</h2>
+<p>Work top to bottom. Take the first row that matches.</p>
+<table>
+<thead>
+<tr>
+<th>If the request…</th>
+<th>Then</th>
+<th>Doc</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Touches 1–2 files you can already see</td>
+<td><strong>Do it inline.</strong> No delegation.</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Is a question you can answer from files you have read</td>
+<td><strong>Answer it.</strong></td>
+<td>—</td>
+</tr>
+<tr>
+<td>Requires sweeping many files to locate something</td>
+<td>Delegate to <code>ios-explore</code></td>
+<td><code>subagents.md</code></td>
+</tr>
+<tr>
+<td>Is a multi-file feature, migration, or architecture change</td>
+<td><code>ios-plan</code> first, then execute</td>
+<td><code>subagents.md</code></td>
+</tr>
+<tr>
+<td>Produced code that will ship</td>
+<td><code>swift-reviewer</code> after</td>
+<td><code>verification.md</code></td>
+</tr>
+<tr>
+<td>Is a failure whose cause is not obvious</td>
+<td><code>swift-debugger</code></td>
+<td><code>subagents.md</code></td>
+</tr>
+<tr>
+<td>Is a behavior-preserving cleanup</td>
+<td><code>swift-refactorer</code></td>
+<td><code>subagents.md</code></td>
+</tr>
+<tr>
+<td>Is documentation, README, or CHANGELOG work</td>
+<td><code>ios-docs</code></td>
+<td><code>subagents.md</code></td>
+</tr>
+<tr>
+<td>Involves Foundation Models, Apple Intelligence, or on-device LLM work</td>
+<td><code>foundation-models</code></td>
+<td><code>../frameworks/foundation-models.md</code></td>
+</tr>
+<tr>
+<td>Is an accessibility audit — VoiceOver, Dynamic Type, contrast</td>
+<td><code>accessibility-reviewer</code></td>
+<td><code>../frameworks/accessibility.md</code></td>
+</tr>
+<tr>
+<td>Is a performance investigation — hitches, memory, main-actor contention</td>
+<td><code>performance-reviewer</code></td>
+<td><code>../../checklists/performance.md</code></td>
+</tr>
+<tr>
+<td>Is migrating legacy SwiftUI/UIKit to modern APIs</td>
+<td><code>swiftui-modernization</code></td>
+<td><code>subagents.md</code></td>
+</tr>
+<tr>
+<td>Must repeat until a condition holds</td>
+<td>A <strong>loop</strong> with a stop condition</td>
+<td><code>looping.md</code></td>
+</tr>
+<tr>
+<td>Is 5–30 isolated changes each wanting its own PR</td>
+<td><code>/batch</code></td>
+<td><code>dynamic-workflows.md</code></td>
+</tr>
+<tr>
+<td>Is dozens of units with branching or dependencies</td>
+<td>A <strong>dynamic workflow</strong></td>
+<td><code>dynamic-workflows.md</code></td>
+</tr>
+<tr>
+<td>Needs workers to talk to each other</td>
+<td><strong>Reconsider.</strong> That is agent teams — experimental, off by default</td>
+<td><code>subagents.md</code> §6</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="2-when-to-delegate">2. When to delegate</h2>
+<p>Delegate when at least one is true:</p>
+<ul>
+<li><strong>Context cost.</strong> The investigation would read more files than you want in
+  context. One paragraph of findings beats forty files.</li>
+<li><strong>Independence.</strong> The work needs judging by something that did not write it.</li>
+<li><strong>Parallelism.</strong> Several genuinely independent read-only investigations.</li>
+<li><strong>Isolation.</strong> The work should happen in a worktree, not your working tree.</li>
+</ul>
+<p>Do <strong>not</strong> delegate because a task sounds big. "Thorough", "multiple angles",
+"several parts", and "check everything" are not delegation triggers — they are
+descriptions of ordinary work. A subagent starts cold and must be told
+everything; for anything you could finish in a few tool calls, that overhead
+exceeds the benefit.</p>
+<h3 id="choosing-the-specialist">Choosing the specialist</h3>
+<pre><code>Where is X? / which files do Y?        -&gt; ios-explore      (read-only, parallel-safe)
+How should I build X?                  -&gt; ios-plan         (read-only, returns a plan)
+Is this change correct? Does it build? -&gt; swift-reviewer   (read + Bash, no writes)
+Why is this broken?                    -&gt; swift-debugger   (reproduce, fix, prove)
+Clean this up without changing behavior-&gt; swift-refactorer (baseline, change, re-verify)
+Write/update docs                      -&gt; ios-docs         (structure + mirror sync)
+Doesn't fit any of these               -&gt; general-purpose  (built-in)
+</code></pre>
+<hr />
+<h2 id="3-standard-sequences">3. Standard sequences</h2>
+<h3 id="feature-multi-file">Feature (multi-file)</h3>
+<pre><code>1. ios-explore    — find the existing seams and conventions      [parallel-safe]
+2. ios-plan       — a step-by-step plan with file paths and verify commands
+3. main agent     — execute the plan
+4. swift-reviewer — cold verification: build + tests + real output
+5. main agent     — route findings back, or report done with evidence
+</code></pre>
+<p>Skip steps 1–2 when the feature is small and the codebase is already familiar.
+Never skip step 4 for code that ships.</p>
+<h3 id="bug">Bug</h3>
+<pre><code>1. swift-debugger — reproduce, isolate, root cause, fix, prove
+2. swift-reviewer — independent confirmation, if the fix is non-trivial
+</code></pre>
+<p>The debugger already proves its own fix by re-running the failing command. A
+second reviewer is for fixes that touch shared code or change behavior beyond
+the bug.</p>
+<h3 id="drive-a-red-suite-to-green">Drive a red suite to green</h3>
+<pre><code>GOAL:  swift test exits 0
+CHECK: $ swift test 2&gt;&amp;1 | tail -20
+MAX:   6
+loop:
+  swift-debugger  — one root cause per iteration
+  swift-reviewer  — verdict + real output
+  stop on: pass | MAX | identical failure twice
+</code></pre>
+<p>See <code>looping.md</code> for stall detection and the rules against faking termination.</p>
+<h3 id="codebase-wide-mechanical-change">Codebase-wide mechanical change</h3>
+<pre><code>1. ios-explore — enumerate every affected file (this is the work list)
+2. ios-plan    — group into independent units; flag shared files
+3. /batch      — one worker per unit, own worktree, own PR
+4. per-unit    — swift-reviewer verdict before the PR opens
+</code></pre>
+<p>If step 2 finds that units share files, it is not a batch. Sequence it instead.</p>
+<hr />
+<h2 id="4-what-the-main-agent-stays-responsible-for">4. What the main agent stays responsible for</h2>
+<p>Delegation moves work, not accountability. The main agent always owns:</p>
+<ul>
+<li><strong>The user's actual request.</strong> Subagents see a slice; you see the whole thing.</li>
+<li><strong>Deciding what "done" means</strong>, and confirming evidence supports it.</li>
+<li><strong>Reconciling reports.</strong> Subagents cannot talk to each other. If explore found
+  something plan needs, <em>you</em> carry it across.</li>
+<li><strong>Reporting faithfully</strong> — including failures, skips, and anything a subagent
+  marked UNVERIFIED. Never launder a subagent's uncertainty into your own
+  confidence.</li>
+<li><strong>Not fabricating pending results.</strong> A background subagent that has not
+  reported has no result. Say it is still running.</li>
+</ul>
+<p>Subagent reports are input, not truth. If one says "tests pass" with no pasted
+output, that is an unverified claim — treat it as such.</p>
+<hr />
+<h2 id="5-cost-discipline">5. Cost discipline</h2>
+<p>Each subagent starts cold. Before spawning, ask:</p>
+<ol>
+<li>Could I do this in two or three tool calls? → Do it.</li>
+<li>Does an already-running subagent have this context? → Continue that one
+   instead of starting fresh.</li>
+<li>Will I re-explain more than the task is worth? → Do it inline.</li>
+<li>Are these units really independent? → If not, do not parallelize.</li>
+</ol>
+<p>Then reduce the cost of the ones you do spawn:</p>
+<ul>
+<li>One discovery pass, its findings pasted into every downstream prompt — not N
+  agents rediscovering the same five files.</li>
+<li><code>sonnet</code> for mechanical work, <code>inherit</code> for reasoning work.</li>
+<li>Tight scope: name the files, state what is out of scope.</li>
+</ul>
+<hr />
+<h2 id="6-non-negotiables">6. Non-negotiables</h2>
+<p>These hold no matter which path you took:</p>
+<ul>
+<li><strong>Evidence, not assertion.</strong> Every "it works" carries the command output that
+  proves it. <code>verification.md</code>.</li>
+<li><strong>The author does not grade the work</strong> for anything that ships.</li>
+<li><strong>Every loop has a stop condition and an iteration cap.</strong> <code>looping.md</code>.</li>
+<li><strong>Parallel writers are isolated</strong> in worktrees, or they are not parallel.</li>
+<li><strong>Failures are reported plainly</strong>, never softened or buried.</li>
+<li><strong>Hooks and CI decide what they can decide.</strong> Do not spend a reviewer subagent
+  on something a grep in a hook settles for free.</li>
+</ul>
+<hr />
+<h2 id="7-quick-reference">7. Quick reference</h2>
+<pre><code>inline                   1–2 files, context already loaded    ← the default
+ios-explore              &quot;where is X&quot; across many files       read-only, parallel
+ios-plan                 multi-file feature or migration      read-only
+swift-reviewer           verify work you or another agent did no write tools
+swift-debugger           something is broken, cause unclear   reproduce → fix → prove
+swift-refactorer         cleanup with no behavior change      green baseline required
+ios-docs                 prose about code                     enforces doc structure
+foundation-models        on-device / PCC LLM work             availability-aware
+swiftui-modernization    legacy → modern API migration        behavior-preserving
+accessibility-reviewer   VoiceOver, Dynamic Type, contrast    read-only audit
+performance-reviewer     hitches, memory, actor contention    measures, never guesses
+loop                     repeat until a measured condition    needs GOAL/CHECK/MAX
+/batch                   5–30 isolated PRs                    worktree per unit
+dynamic workflow         dozens of units, branching logic     orchestration in a script
+</code></pre></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

@@ -1,0 +1,207 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Core AI -- Custom On-Device AI Models on Apple Silicon — iOS Agent Skill</title><meta name="description" content="Repository guidance for Core AI. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-core-ai.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="Core AI -- Custom On-Device AI Models on Apple Silicon"><meta property="og:description" content="Repository guidance for Core AI. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-core-ai.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "Core AI -- Custom On-Device AI Models on Apple Silicon", "description": "Repository guidance for Core AI. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-core-ai.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">AI and Machine Learning · Reference guide</p><h1>Core AI -- Custom On-Device AI Models on Apple Silicon</h1><p class="lead">Repository guidance for Core AI. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/frameworks/core-ai.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#1-when-to-choose-core-ai">1. When to Choose Core AI</a></li>
+<li><a href="#2-xcode-project-setup">2. Xcode Project Setup</a></li>
+<li><a href="#3-load-a-model-and-function">3. Load a Model and Function</a></li>
+<li><a href="#4-run-ndarray-inference">4. Run NDArray Inference</a></li>
+<li><a href="#5-specialization-caching-and-storage">5. Specialization, Caching, and Storage</a></li>
+<li><a href="#6-ahead-of-time-compilation">6. Ahead-of-Time Compilation</a></li>
+<li><a href="#7-debugging-and-profiling">7. Debugging and Profiling</a></li>
+<li><a href="#8-security-and-product-rules">8. Security and Product Rules</a></li>
+<li><a href="#9-review-checklist">9. Review Checklist</a></li>
+<li><a href="#released-sdk-boundary">Released SDK boundary</a></li>
+</ul>
+</div>
+</aside><h2 id="overview">Overview</h2>
+<p>Core AI is Apple's framework for bringing custom AI models into an app and running them efficiently on Apple silicon. Use it when you own or ship a model asset and need on-device inference across CPU, GPU, and Neural Engine with Swift APIs, model specialization, caching, ahead-of-time compilation, and Core AI debugging tools.</p>
+<p>Use <strong>Foundation Models</strong> when you need language generation, structured output, tools, or Apple Intelligence model access. Use <strong>Core ML</strong> when your model is not a neural network workload, or when an existing Core ML pipeline already covers the feature.</p>
+<blockquote>
+<p>Release status checked 2026-09-16: iOS 27 and Xcode 27 are released. This guide describes the released API direction; Core AI examples have not been compiled on this repository’s Xcode 26.6 verification host. See <a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/apple/ios-27-release-verification.md">release verification</a>.</p>
+</blockquote>
+<hr />
+<h2 id="1-when-to-choose-core-ai">1. When to Choose Core AI</h2>
+<table>
+<thead>
+<tr>
+<th>Need</th>
+<th>Prefer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ship a custom neural model in <code>.aimodel</code> / <code>.aimodelc</code> format</td>
+<td>Core AI</td>
+</tr>
+<tr>
+<td>Prompt Apple Foundation models, PCC, or a server LLM through one API</td>
+<td>Foundation Models</td>
+</tr>
+<tr>
+<td>Use trees, classical ML, tabular feature engineering, or existing <code>.mlmodel</code> assets</td>
+<td>Core ML</td>
+</tr>
+<tr>
+<td>Write custom GPU kernels or render/compute pipelines directly</td>
+<td>Metal</td>
+</tr>
+<tr>
+<td>Run MLX models or local agent experiments on macOS</td>
+<td>MLX Swift</td>
+</tr>
+</tbody>
+</table>
+<p>Core AI starts from an <code>.aimodel</code> source asset. Convert and optimize model assets before app integration using Apple's Core AI PyTorch Extensions and Core AI Optimization tooling.</p>
+<hr />
+<h2 id="2-xcode-project-setup">2. Xcode Project Setup</h2>
+<ol>
+<li>Add the <code>.aimodel</code> file to the app or package target.</li>
+<li>Confirm the file appears in the target build phases.</li>
+<li>Install the Metal Toolchain. Builds that include <code>.aimodel</code> files fail without the required compiler.</li>
+<li>Inspect the model in Xcode's model viewer before writing runtime code.</li>
+</ol>
+<p>The model viewer should answer:</p>
+<ul>
+<li>What are the model's function names?</li>
+<li>What input and output names does each function expect?</li>
+<li>Are inputs <code>NDArray</code> values or images?</li>
+<li>What compute/storage precision does the asset use?</li>
+<li>Is the author/license metadata present?</li>
+</ul>
+<hr />
+<h2 id="3-load-a-model-and-function">3. Load a Model and Function</h2>
+<pre><code class="language-swift">import CoreAI
+import Foundation
+
+@available(iOS 27.0, macOS 27.0, visionOS 27.0, *)
+enum ClassifierError: Error {
+    case missingModel
+    case missingFunction(String)
+    case missingOutput(String)
+    case unexpectedOutputType
+}
+
+@available(iOS 27.0, macOS 27.0, visionOS 27.0, *)
+actor ImageClassifier {
+    private let function: InferenceFunction
+
+    init(modelURL: URL) async throws {
+        let model = try await AIModel(contentsOf: modelURL, options: .default)
+
+        guard let descriptor = model.functionDescriptor(for: &quot;main&quot;) else {
+            throw ClassifierError.missingFunction(&quot;main&quot;)
+        }
+
+        // Use the descriptor for logging, validation, or assertions in debug builds.
+        debugPrint(descriptor)
+
+        guard let function = try model.loadFunction(named: &quot;main&quot;) else {
+            throw ClassifierError.missingFunction(&quot;main&quot;)
+        }
+        self.function = function
+    }
+}
+</code></pre>
+<p><code>AIModel</code> represents the specialized model asset for the current device. Loading an <code>InferenceFunction</code> prepares runnable resources for a specific compute graph and can be expensive, so do it before the first user-visible inference path.</p>
+<hr />
+<h2 id="4-run-ndarray-inference">4. Run <code>NDArray</code> Inference</h2>
+<p>The converted model defines the exact input and output names. Match those names in code.</p>
+<pre><code class="language-swift">@available(iOS 27.0, macOS 27.0, visionOS 27.0, *)
+extension ImageClassifier {
+    func predict(features: [Float]) async throws -&gt; [Float] {
+        var input = NDArray(shape: [1, features.count], scalarType: .float32)
+        var mutable = input.mutableView(as: Float.self)
+
+        guard let elements = mutable.contiguousElements else {
+            throw ClassifierError.unexpectedOutputType
+        }
+
+        for index in features.indices {
+            elements[index] = features[index]
+        }
+
+        var outputs = try await function.run(inputs: [&quot;input&quot;: input])
+        guard let predictionValue = outputs.remove(&quot;prediction&quot;) else {
+            throw ClassifierError.missingOutput(&quot;prediction&quot;)
+        }
+        guard let prediction = predictionValue.ndArray else {
+            throw ClassifierError.unexpectedOutputType
+        }
+
+        let view = prediction.view(as: Float.self)
+        guard let values = view.contiguousElements else {
+            throw ClassifierError.unexpectedOutputType
+        }
+        return Array(values)
+    }
+}
+</code></pre>
+<p>Keep the model's conversion metadata and the Swift constants together. A mismatch in input names, shapes, or scalar type is an integration defect, not a prompt problem.</p>
+<hr />
+<h2 id="5-specialization-caching-and-storage">5. Specialization, Caching, and Storage</h2>
+<p>Loading a <code>.aimodel</code> can require device-specific specialization. The default behavior specializes and caches the result so later loads are faster.</p>
+<p>Use explicit specialization when you want to control timing or cache policy:</p>
+<pre><code class="language-swift">let model = try await AIModel.specialize(
+    contentsOf: modelURL,
+    options: .default,
+    cachePolicy: .persistent
+)
+
+let bookmark = model.bookmarkData
+UserDefaults.standard.set(bookmark, forKey: &quot;classifier.model.bookmark&quot;)
+</code></pre>
+<p>Use persistent cache policy only when the product really needs it. Specialized assets are tied to OS versions, source model content, storage pressure, and compute options. If bookmark resolution fails later, redownload or rebundle the source model and specialize again.</p>
+<p>For app groups, use an <code>AIModelCache(appGroup:)</code> so related apps/extensions do not duplicate specialized assets.</p>
+<hr />
+<h2 id="6-ahead-of-time-compilation">6. Ahead-of-Time Compilation</h2>
+<p>Large models can take too long to specialize on first launch. Use <code>coreai-build</code> to move the expensive compile step to the build machine:</p>
+<pre><code class="language-bash">xcodebuild -downloadComponent MetalToolchain
+xcrun coreai-build compile MyModel.aimodel --platform iOS --min-deployment-version 27.0 --output compiled/
+</code></pre>
+<p>At runtime, choose the compiled asset for the current device architecture:</p>
+<pre><code class="language-swift">let arch = AIModel.deviceArchitectureName
+let assetName = &quot;MyModel.\(arch).aimodelc&quot;
+</code></pre>
+<p>Host architecture-specific <code>.aimodelc</code> assets remotely when they are large. Background Assets can manage downloads and updates.</p>
+<hr />
+<h2 id="7-debugging-and-profiling">7. Debugging and Profiling</h2>
+<p>Core AI ships with three main debugging surfaces:</p>
+<ul>
+<li><strong>Xcode model viewer</strong> for metadata, operation distribution, function signatures, precision, and model inspection.</li>
+<li><strong>Core AI debug gauge</strong> during a debug session for model load, specialization, and inference activity.</li>
+<li><strong>Core AI instrument</strong> for timing across CPU, GPU, and Neural Engine.</li>
+<li><strong>Core AI Debugger app</strong> for inspecting <code>.aimodel</code> structure and tracing tensor values back to Python source.</li>
+</ul>
+<p>Use this workflow:</p>
+<ol>
+<li>Validate the <code>.aimodel</code> in the Core AI Debugger before app integration.</li>
+<li>Confirm function names and signatures in Xcode.</li>
+<li>Run with the Xcode gauge while exercising real UI flows.</li>
+<li>Profile with the Core AI instrument before changing compute options.</li>
+<li>Compare outputs against reference data whenever conversion or optimization changes.</li>
+</ol>
+<hr />
+<h2 id="8-security-and-product-rules">8. Security and Product Rules</h2>
+<ul>
+<li>Keep model licenses and attribution in the asset metadata and app documentation.</li>
+<li>Treat downloaded models as executable product inputs: sign, version, checksum, and stage rollout.</li>
+<li>Do not run first-time specialization on a critical interaction without progress UI.</li>
+<li>Provide thermal, battery, and storage fallbacks for large models.</li>
+<li>Prefer <code>.default</code> compute options until profiling proves a need to override.</li>
+<li>Keep user data on device unless the feature explicitly explains network use.</li>
+</ul>
+<hr />
+<h2 id="9-review-checklist">9. Review Checklist</h2>
+<ul>
+<li>[ ] <code>.aimodel</code> target membership and Metal Toolchain setup are documented</li>
+<li>[ ] Function names, input names, output names, shapes, and scalar types are asserted</li>
+<li>[ ] First-run specialization has loading UI and cancellation behavior</li>
+<li>[ ] Cache policy is intentional and storage impact is tested</li>
+<li>[ ] AOT compilation considered for large models</li>
+<li>[ ] Debugger/gauge/Instruments workflow captured in the PR</li>
+<li>[ ] Reference-output regression tests exist for conversion/optimization changes</li>
+<li>[ ] Fallback path exists for unsupported devices, storage pressure, and OS updates</li>
+</ul>
+<p>See also: <code>docs/frameworks/foundation-models.md</code>, <code>docs/frameworks/ml/coreml.md</code>, <code>docs/frameworks/ml/on-device-ai.md</code>, <code>docs/frameworks/metal.md</code>.</p>
+<h2 id="released-sdk-boundary">Released SDK boundary</h2>
+<p><a href="https://developer.apple.com/documentation/coreai">Apple’s Core AI documentation</a> now marks the 27.0 platform APIs as non-beta. Model format, supported operators, memory requirements and device eligibility still need validation per model. Use <a href="https://github.com/apple/coreai-models">Apple’s Core AI model adapter</a> when connecting a supported local model to Foundation Models; it is a separate dependency, not vendored framework code. This repository has not run a converted Core AI model on-device.</p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

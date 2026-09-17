@@ -1,0 +1,756 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Speech Framework -- Complete Guide for Speech Recognition and Transcription — iOS Agent Skill</title><meta name="description" content="Repository guidance for Speech. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-ml-speech.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="Speech Framework -- Complete Guide for Speech Recognition and Transcription"><meta property="og:description" content="Repository guidance for Speech. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-ml-speech.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "Speech Framework -- Complete Guide for Speech Recognition and Transcription", "description": "Repository guidance for Speech. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-ml-speech.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">AI and Machine Learning · Reference guide</p><h1>Speech Framework -- Complete Guide for Speech Recognition and Transcription</h1><p class="lead">Repository guidance for Speech. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/frameworks/ml/speech.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#1-setup-and-authorization">1. Setup and Authorization</a></li>
+<li><a href="#2-creating-a-speech-recognizer">2. Creating a Speech Recognizer</a></li>
+<li><a href="#3-on-device-vs-server-based-recognition">3. On-Device vs Server-Based Recognition</a></li>
+<li><a href="#4-transcribing-audio-files-sfspeechurlrecognitionrequest">4. Transcribing Audio Files -- SFSpeechURLRecognitionRequest</a><ul>
+<li><a href="#transcription-with-confidence-scores-and-alternatives">Transcription with Confidence Scores and Alternatives</a></li>
+</ul>
+</li>
+<li><a href="#5-live-audio-transcription-sfspeechaudiobufferrecognitionrequest">5. Live Audio Transcription -- SFSpeechAudioBufferRecognitionRequest</a></li>
+<li><a href="#6-complete-live-transcription-swiftui-view">6. Complete Live Transcription SwiftUI View</a></li>
+<li><a href="#7-language-selection">7. Language Selection</a></li>
+<li><a href="#8-monitoring-recognizer-availability">8. Monitoring Recognizer Availability</a></li>
+<li><a href="#9-ios-17-improvements">9. iOS 17+ Improvements</a><ul>
+<li><a href="#handling-custom-vocabulary">Handling Custom Vocabulary</a></li>
+</ul>
+</li>
+<li><a href="#10-performance-considerations">10. Performance Considerations</a><ul>
+<li><a href="#restarting-for-long-sessions">Restarting for Long Sessions</a></li>
+</ul>
+</li>
+<li><a href="#quick-reference">Quick Reference</a></li>
+</ul>
+</div>
+</aside><h2 id="overview">Overview</h2>
+<p>The Speech framework provides on-device and server-assisted speech recognition for converting audio to text. It supports live microphone transcription, audio file transcription, multiple languages, confidence scores, and alternative transcriptions. iOS 17+ introduced improvements for on-device recognition quality and reduced latency. Every code example below compiles and follows production best practices.</p>
+<hr />
+<h2 id="1-setup-and-authorization">1. Setup and Authorization</h2>
+<p>Speech recognition requires explicit user permission. Add both keys to your Info.plist:</p>
+<ul>
+<li><code>NSSpeechRecognitionUsageDescription</code> -- why you need speech recognition</li>
+<li><code>NSMicrophoneUsageDescription</code> -- why you need microphone access (for live audio)</li>
+</ul>
+<pre><code class="language-swift">import Speech
+
+func requestSpeechAuthorization() async -&gt; SFSpeechRecognizerAuthorizationStatus {
+    await withCheckedContinuation { continuation in
+        SFSpeechRecognizer.requestAuthorization { status in
+            continuation.resume(returning: status)
+        }
+    }
+}
+
+func checkAuthorizationStatus() -&gt; Bool {
+    switch SFSpeechRecognizer.authorizationStatus() {
+    case .authorized:
+        return true
+    case .denied:
+        print(&quot;User denied speech recognition access&quot;)
+        return false
+    case .restricted:
+        print(&quot;Speech recognition restricted on this device&quot;)
+        return false
+    case .notDetermined:
+        print(&quot;Speech recognition permission not yet requested&quot;)
+        return false
+    @unknown default:
+        return false
+    }
+}
+</code></pre>
+<hr />
+<h2 id="2-creating-a-speech-recognizer">2. Creating a Speech Recognizer</h2>
+<pre><code class="language-swift">import Speech
+
+// Default locale (user's device locale)
+let defaultRecognizer = SFSpeechRecognizer()
+
+// Specific language
+let englishRecognizer = SFSpeechRecognizer(locale: Locale(identifier: &quot;en-US&quot;))
+let japaneseRecognizer = SFSpeechRecognizer(locale: Locale(identifier: &quot;ja-JP&quot;))
+let spanishRecognizer = SFSpeechRecognizer(locale: Locale(identifier: &quot;es-ES&quot;))
+
+// Check availability
+func isRecognizerAvailable(for locale: Locale) -&gt; Bool {
+    guard let recognizer = SFSpeechRecognizer(locale: locale) else { return false }
+    return recognizer.isAvailable
+}
+
+// List all supported locales
+func supportedLocales() -&gt; Set&lt;Locale&gt; {
+    return SFSpeechRecognizer.supportedLocales()
+}
+</code></pre>
+<hr />
+<h2 id="3-on-device-vs-server-based-recognition">3. On-Device vs Server-Based Recognition</h2>
+<pre><code class="language-swift">import Speech
+
+func configureRecognizer() -&gt; SFSpeechRecognizer? {
+    guard let recognizer = SFSpeechRecognizer(locale: Locale(identifier: &quot;en-US&quot;)) else {
+        return nil
+    }
+
+    // Check if on-device recognition is available
+    if recognizer.supportsOnDeviceRecognition {
+        print(&quot;On-device recognition supported -- works offline&quot;)
+    } else {
+        print(&quot;This locale requires server-based recognition&quot;)
+    }
+
+    return recognizer
+}
+
+// When creating a recognition request, you can require on-device processing
+func createOnDeviceRequest() -&gt; SFSpeechAudioBufferRecognitionRequest {
+    let request = SFSpeechAudioBufferRecognitionRequest()
+
+    // Force on-device recognition (fails if not available)
+    request.requiresOnDeviceRecognition = true
+
+    // Additional configuration
+    request.shouldReportPartialResults = true
+    request.addsPunctuation = true  // iOS 16+
+
+    return request
+}
+</code></pre>
+<hr />
+<h2 id="4-transcribing-audio-files-sfspeechurlrecognitionrequest">4. Transcribing Audio Files -- SFSpeechURLRecognitionRequest</h2>
+<pre><code class="language-swift">import Speech
+
+func transcribeAudioFile(at url: URL, locale: Locale = Locale(identifier: &quot;en-US&quot;)) async throws -&gt; String {
+    guard let recognizer = SFSpeechRecognizer(locale: locale),
+          recognizer.isAvailable else {
+        throw SpeechError.recognizerUnavailable
+    }
+
+    let request = SFSpeechURLRecognitionRequest(url: url)
+    request.shouldReportPartialResults = false
+    request.addsPunctuation = true
+
+    if recognizer.supportsOnDeviceRecognition {
+        request.requiresOnDeviceRecognition = true
+    }
+
+    return try await withCheckedThrowingContinuation { continuation in
+        recognizer.recognitionTask(with: request) { result, error in
+            if let error {
+                continuation.resume(throwing: error)
+                return
+            }
+
+            guard let result, result.isFinal else { return }
+            continuation.resume(returning: result.bestTranscription.formattedString)
+        }
+    }
+}
+
+enum SpeechError: LocalizedError {
+    case recognizerUnavailable
+    case audioEngineError
+    case notAuthorized
+
+    var errorDescription: String? {
+        switch self {
+        case .recognizerUnavailable:
+            return &quot;Speech recognizer is not available for the selected language.&quot;
+        case .audioEngineError:
+            return &quot;Audio engine failed to start.&quot;
+        case .notAuthorized:
+            return &quot;Speech recognition is not authorized.&quot;
+        }
+    }
+}
+</code></pre>
+<h3 id="transcription-with-confidence-scores-and-alternatives">Transcription with Confidence Scores and Alternatives</h3>
+<pre><code class="language-swift">import Speech
+
+struct TranscriptionResult {
+    let text: String
+    let confidence: Float
+    let segments: [SegmentDetail]
+    let alternatives: [String]
+}
+
+struct SegmentDetail {
+    let text: String
+    let confidence: Float
+    let timestamp: TimeInterval
+    let duration: TimeInterval
+}
+
+func transcribeWithDetails(at url: URL) async throws -&gt; TranscriptionResult {
+    guard let recognizer = SFSpeechRecognizer(locale: Locale(identifier: &quot;en-US&quot;)),
+          recognizer.isAvailable else {
+        throw SpeechError.recognizerUnavailable
+    }
+
+    let request = SFSpeechURLRecognitionRequest(url: url)
+    request.shouldReportPartialResults = false
+    request.addsPunctuation = true
+
+    return try await withCheckedThrowingContinuation { continuation in
+        recognizer.recognitionTask(with: request) { result, error in
+            if let error {
+                continuation.resume(throwing: error)
+                return
+            }
+
+            guard let result, result.isFinal else { return }
+
+            let bestTranscription = result.bestTranscription
+
+            // Extract per-segment details
+            let segments = bestTranscription.segments.map { segment in
+                SegmentDetail(
+                    text: segment.substring,
+                    confidence: segment.confidence,
+                    timestamp: segment.timestamp,
+                    duration: segment.duration
+                )
+            }
+
+            // Overall confidence (average of segment confidences)
+            let totalConfidence = segments.isEmpty ? 0 :
+                segments.reduce(Float(0)) { $0 + $1.confidence } / Float(segments.count)
+
+            // Alternative transcriptions
+            let alternatives = result.transcriptions.dropFirst().map { $0.formattedString }
+
+            let transcriptionResult = TranscriptionResult(
+                text: bestTranscription.formattedString,
+                confidence: totalConfidence,
+                segments: segments,
+                alternatives: Array(alternatives)
+            )
+
+            continuation.resume(returning: transcriptionResult)
+        }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="5-live-audio-transcription-sfspeechaudiobufferrecognitionrequest">5. Live Audio Transcription -- SFSpeechAudioBufferRecognitionRequest</h2>
+<p>Real-time speech-to-text using the device microphone with AVAudioEngine.</p>
+<pre><code class="language-swift">import Speech
+import AVFoundation
+
+@Observable
+@MainActor
+final class LiveTranscriptionManager {
+    var transcribedText = &quot;&quot;
+    var isRecording = false
+    var errorMessage: String?
+
+    private var audioEngine: AVAudioEngine?
+    private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
+    private var recognitionTask: SFSpeechRecognitionTask?
+    private let speechRecognizer: SFSpeechRecognizer?
+
+    init(locale: Locale = Locale(identifier: &quot;en-US&quot;)) {
+        self.speechRecognizer = SFSpeechRecognizer(locale: locale)
+    }
+
+    func startRecording() async {
+        // Check authorization
+        let authStatus = await requestSpeechAuthorization()
+        guard authStatus == .authorized else {
+            errorMessage = &quot;Speech recognition not authorized&quot;
+            return
+        }
+
+        guard let speechRecognizer, speechRecognizer.isAvailable else {
+            errorMessage = &quot;Speech recognizer not available&quot;
+            return
+        }
+
+        // Stop any existing session
+        stopRecording()
+
+        // Configure audio session
+        let audioSession = AVAudioSession.sharedInstance()
+        do {
+            try audioSession.setCategory(.record, mode: .measurement, options: .duckOthers)
+            try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
+        } catch {
+            errorMessage = &quot;Audio session setup failed: \(error.localizedDescription)&quot;
+            return
+        }
+
+        // Create recognition request
+        let request = SFSpeechAudioBufferRecognitionRequest()
+        request.shouldReportPartialResults = true
+        request.addsPunctuation = true
+
+        if speechRecognizer.supportsOnDeviceRecognition {
+            request.requiresOnDeviceRecognition = true
+        }
+
+        self.recognitionRequest = request
+
+        // Create audio engine
+        let engine = AVAudioEngine()
+        self.audioEngine = engine
+
+        let inputNode = engine.inputNode
+        let recordingFormat = inputNode.outputFormat(forBus: 0)
+
+        // Install a tap on the audio input
+        inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { buffer, _ in
+            request.append(buffer)
+        }
+
+        // Start the audio engine
+        do {
+            engine.prepare()
+            try engine.start()
+        } catch {
+            errorMessage = &quot;Audio engine failed to start: \(error.localizedDescription)&quot;
+            return
+        }
+
+        isRecording = true
+        transcribedText = &quot;&quot;
+
+        // Start recognition task
+        recognitionTask = speechRecognizer.recognitionTask(with: request) { [weak self] result, error in
+            Task { @MainActor in
+                guard let self else { return }
+
+                if let result {
+                    self.transcribedText = result.bestTranscription.formattedString
+                }
+
+                if let error {
+                    self.errorMessage = error.localizedDescription
+                    self.stopRecording()
+                }
+
+                if result?.isFinal == true {
+                    self.stopRecording()
+                }
+            }
+        }
+    }
+
+    func stopRecording() {
+        audioEngine?.stop()
+        audioEngine?.inputNode.removeTap(onBus: 0)
+        audioEngine = nil
+
+        recognitionRequest?.endAudio()
+        recognitionRequest = nil
+
+        recognitionTask?.cancel()
+        recognitionTask = nil
+
+        isRecording = false
+    }
+
+    private func requestSpeechAuthorization() async -&gt; SFSpeechRecognizerAuthorizationStatus {
+        await withCheckedContinuation { continuation in
+            SFSpeechRecognizer.requestAuthorization { status in
+                continuation.resume(returning: status)
+            }
+        }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="6-complete-live-transcription-swiftui-view">6. Complete Live Transcription SwiftUI View</h2>
+<pre><code class="language-swift">import SwiftUI
+import Speech
+
+struct LiveTranscriptionView: View {
+    @State private var manager = LiveTranscriptionManager()
+
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 24) {
+                // Transcribed text display
+                ScrollView {
+                    Text(manager.transcribedText.isEmpty ? &quot;Tap the microphone to start speaking...&quot; : manager.transcribedText)
+                        .font(.body)
+                        .foregroundStyle(manager.transcribedText.isEmpty ? .secondary : .primary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding()
+                }
+                .frame(maxHeight: .infinity)
+                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
+
+                // Recording indicator
+                if manager.isRecording {
+                    HStack(spacing: 8) {
+                        Circle()
+                            .fill(.red)
+                            .frame(width: 10, height: 10)
+                            .opacity(manager.isRecording ? 1 : 0)
+                            .animation(.easeInOut(duration: 0.5).repeatForever(), value: manager.isRecording)
+                        Text(&quot;Listening...&quot;)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+
+                // Error display
+                if let error = manager.errorMessage {
+                    Text(error)
+                        .font(.caption)
+                        .foregroundStyle(.red)
+                        .padding(.horizontal)
+                }
+
+                // Record button
+                Button {
+                    Task {
+                        if manager.isRecording {
+                            manager.stopRecording()
+                        } else {
+                            await manager.startRecording()
+                        }
+                    }
+                } label: {
+                    Image(systemName: manager.isRecording ? &quot;stop.circle.fill&quot; : &quot;mic.circle.fill&quot;)
+                        .font(.system(size: 64))
+                        .foregroundStyle(manager.isRecording ? .red : .accentColor)
+                        .symbolEffect(.bounce, value: manager.isRecording)
+                }
+                .padding(.bottom, 32)
+
+                // Copy button
+                if !manager.transcribedText.isEmpty {
+                    Button {
+                        UIPasteboard.general.string = manager.transcribedText
+                    } label: {
+                        Label(&quot;Copy Transcription&quot;, systemImage: &quot;doc.on.doc&quot;)
+                    }
+                    .buttonStyle(.bordered)
+                }
+            }
+            .padding()
+            .navigationTitle(&quot;Live Transcription&quot;)
+        }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="7-language-selection">7. Language Selection</h2>
+<pre><code class="language-swift">import Speech
+import SwiftUI
+
+struct LanguagePickerView: View {
+    @State private var selectedLocale: Locale = Locale(identifier: &quot;en-US&quot;)
+    @State private var supportedLocales: [Locale] = []
+
+    var body: some View {
+        List {
+            Section(&quot;Select Language&quot;) {
+                ForEach(supportedLocales, id: \.identifier) { locale in
+                    Button {
+                        selectedLocale = locale
+                    } label: {
+                        HStack {
+                            VStack(alignment: .leading) {
+                                Text(locale.localizedString(forIdentifier: locale.identifier) ?? locale.identifier)
+                                    .font(.body)
+                                Text(locale.identifier)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                            Spacer()
+
+                            if locale.identifier == selectedLocale.identifier {
+                                Image(systemName: &quot;checkmark&quot;)
+                                    .foregroundStyle(.accentColor)
+                            }
+
+                            // Show on-device badge
+                            if let recognizer = SFSpeechRecognizer(locale: locale),
+                               recognizer.supportsOnDeviceRecognition {
+                                Text(&quot;On-Device&quot;)
+                                    .font(.caption2)
+                                    .padding(.horizontal, 6)
+                                    .padding(.vertical, 2)
+                                    .background(.green.opacity(0.15), in: Capsule())
+                                    .foregroundStyle(.green)
+                            }
+                        }
+                    }
+                    .tint(.primary)
+                }
+            }
+        }
+        .task {
+            supportedLocales = SFSpeechRecognizer.supportedLocales()
+                .sorted { ($0.identifier) &lt; ($1.identifier) }
+        }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="8-monitoring-recognizer-availability">8. Monitoring Recognizer Availability</h2>
+<pre><code class="language-swift">import Speech
+
+class SpeechRecognizerMonitor: NSObject, SFSpeechRecognizerDelegate {
+    private let recognizer: SFSpeechRecognizer
+    var onAvailabilityChanged: ((Bool) -&gt; Void)?
+
+    init(locale: Locale = Locale(identifier: &quot;en-US&quot;)) {
+        self.recognizer = SFSpeechRecognizer(locale: locale) ?? SFSpeechRecognizer()!
+        super.init()
+        self.recognizer.delegate = self
+    }
+
+    var isAvailable: Bool {
+        recognizer.isAvailable
+    }
+
+    func speechRecognizer(_ speechRecognizer: SFSpeechRecognizer, availabilityDidChange available: Bool) {
+        onAvailabilityChanged?(available)
+    }
+}
+</code></pre>
+<hr />
+<h2 id="9-ios-17-improvements">9. iOS 17+ Improvements</h2>
+<p>iOS 17 introduced several improvements to speech recognition:</p>
+<pre><code class="language-swift">import Speech
+
+@available(iOS 17.0, *)
+func modernTranscription(at url: URL) async throws -&gt; String {
+    guard let recognizer = SFSpeechRecognizer(locale: Locale(identifier: &quot;en-US&quot;)),
+          recognizer.isAvailable else {
+        throw SpeechError.recognizerUnavailable
+    }
+
+    let request = SFSpeechURLRecognitionRequest(url: url)
+
+    // iOS 17+: Improved on-device models with better accuracy
+    request.requiresOnDeviceRecognition = true
+
+    // iOS 16+: Automatic punctuation
+    request.addsPunctuation = true
+
+    // Task-level customization
+    request.shouldReportPartialResults = false
+
+    // iOS 17+: Use the new async recognition API
+    let result = try await recognizer.recognitionTask(with: request)
+    return result.bestTranscription.formattedString
+}
+</code></pre>
+<h3 id="handling-custom-vocabulary">Handling Custom Vocabulary</h3>
+<pre><code class="language-swift">import Speech
+
+func transcribeWithCustomVocabulary(at url: URL, customPhrases: [String]) async throws -&gt; String {
+    guard let recognizer = SFSpeechRecognizer(locale: Locale(identifier: &quot;en-US&quot;)),
+          recognizer.isAvailable else {
+        throw SpeechError.recognizerUnavailable
+    }
+
+    let request = SFSpeechURLRecognitionRequest(url: url)
+    request.shouldReportPartialResults = false
+    request.addsPunctuation = true
+
+    // Add domain-specific vocabulary to improve recognition
+    request.contextualStrings = customPhrases
+
+    return try await withCheckedThrowingContinuation { continuation in
+        recognizer.recognitionTask(with: request) { result, error in
+            if let error {
+                continuation.resume(throwing: error)
+                return
+            }
+            guard let result, result.isFinal else { return }
+            continuation.resume(returning: result.bestTranscription.formattedString)
+        }
+    }
+}
+
+// Usage
+// let text = try await transcribeWithCustomVocabulary(
+//     at: audioURL,
+//     customPhrases: [&quot;SwiftUI&quot;, &quot;CoreML&quot;, &quot;Xcode&quot;, &quot;WWDC&quot;, &quot;visionOS&quot;]
+// )
+</code></pre>
+<hr />
+<h2 id="10-performance-considerations">10. Performance Considerations</h2>
+<table>
+<thead>
+<tr>
+<th>Consideration</th>
+<th>Recommendation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>On-device vs server</td>
+<td>Prefer on-device for privacy and offline; server for broader language support</td>
+</tr>
+<tr>
+<td>Buffer size</td>
+<td>1024 samples is a good default for real-time; increase for batch</td>
+</tr>
+<tr>
+<td>Audio format</td>
+<td>16kHz mono is optimal for speech recognition</td>
+</tr>
+<tr>
+<td>Session duration</td>
+<td>Apple limits recognition to ~1 minute per task; restart for longer sessions</td>
+</tr>
+<tr>
+<td>Battery impact</td>
+<td>On-device recognition uses less battery than server-based</td>
+</tr>
+<tr>
+<td>Memory</td>
+<td>Audio buffers accumulate; call <code>endAudio()</code> promptly when done</td>
+</tr>
+<tr>
+<td>Background</td>
+<td>Speech recognition is not available in the background</td>
+</tr>
+<tr>
+<td>Rate limiting</td>
+<td>Apple throttles server-based requests per device per day</td>
+</tr>
+</tbody>
+</table>
+<h3 id="restarting-for-long-sessions">Restarting for Long Sessions</h3>
+<pre><code class="language-swift">import Speech
+import AVFoundation
+
+@Observable
+@MainActor
+final class ContinuousTranscriptionManager {
+    var fullTranscript = &quot;&quot;
+    var isRecording = false
+
+    private var audioEngine: AVAudioEngine?
+    private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
+    private var recognitionTask: SFSpeechRecognitionTask?
+    private let speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: &quot;en-US&quot;))
+
+    /// Restarts the recognition task to handle Apple's ~1 minute limit
+    func restartRecognition() async {
+        guard isRecording else { return }
+
+        // End current request
+        recognitionRequest?.endAudio()
+        recognitionTask?.cancel()
+
+        // Create a new request and task
+        let request = SFSpeechAudioBufferRecognitionRequest()
+        request.shouldReportPartialResults = true
+        request.addsPunctuation = true
+
+        if speechRecognizer?.supportsOnDeviceRecognition == true {
+            request.requiresOnDeviceRecognition = true
+        }
+
+        self.recognitionRequest = request
+
+        // Reinstall the audio tap
+        let inputNode = audioEngine?.inputNode
+        let format = inputNode?.outputFormat(forBus: 0)
+
+        inputNode?.removeTap(onBus: 0)
+        inputNode?.installTap(onBus: 0, bufferSize: 1024, format: format) { buffer, _ in
+            request.append(buffer)
+        }
+
+        // Start new recognition task
+        recognitionTask = speechRecognizer?.recognitionTask(with: request) { [weak self] result, error in
+            Task { @MainActor in
+                guard let self else { return }
+                if let result {
+                    // Append final results to full transcript
+                    if result.isFinal {
+                        self.fullTranscript += result.bestTranscription.formattedString + &quot; &quot;
+                        // Restart for continuous recognition
+                        await self.restartRecognition()
+                    }
+                }
+            }
+        }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="quick-reference">Quick Reference</h2>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SFSpeechRecognizer</code></td>
+<td>Main class for speech recognition; configure locale and check availability</td>
+</tr>
+<tr>
+<td><code>SFSpeechAudioBufferRecognitionRequest</code></td>
+<td>Recognition request fed with live audio buffers</td>
+</tr>
+<tr>
+<td><code>SFSpeechURLRecognitionRequest</code></td>
+<td>Recognition request for audio files on disk</td>
+</tr>
+<tr>
+<td><code>SFSpeechRecognitionTask</code></td>
+<td>A running recognition operation; cancel or monitor</td>
+</tr>
+<tr>
+<td><code>SFSpeechRecognitionResult</code></td>
+<td>Contains transcriptions, confidence, and finality</td>
+</tr>
+<tr>
+<td><code>SFTranscription</code></td>
+<td>A single transcription with formatted text and segments</td>
+</tr>
+<tr>
+<td><code>SFTranscriptionSegment</code></td>
+<td>Per-word detail: text, confidence, timestamp, duration</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>shouldReportPartialResults</code></td>
+<td><code>Bool</code></td>
+<td>Emit intermediate results during recognition</td>
+</tr>
+<tr>
+<td><code>requiresOnDeviceRecognition</code></td>
+<td><code>Bool</code></td>
+<td>Force on-device processing (no network)</td>
+</tr>
+<tr>
+<td><code>addsPunctuation</code></td>
+<td><code>Bool</code></td>
+<td>Automatic punctuation insertion (iOS 16+)</td>
+</tr>
+<tr>
+<td><code>contextualStrings</code></td>
+<td><code>[String]</code></td>
+<td>Domain-specific vocabulary hints</td>
+</tr>
+<tr>
+<td><code>supportsOnDeviceRecognition</code></td>
+<td><code>Bool</code></td>
+<td>Whether the locale supports offline recognition</td>
+</tr>
+</tbody>
+</table></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

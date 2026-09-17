@@ -1,0 +1,97 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Visual Iteration Loop — iOS Agent Skill</title><meta name="description" content="Repository guidance for Visual Iteration Loop. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-visual-iteration-loop.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="Visual Iteration Loop"><meta property="og:description" content="Repository guidance for Visual Iteration Loop. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-visual-iteration-loop.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "Visual Iteration Loop", "description": "Repository guidance for Visual Iteration Loop. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-visual-iteration-loop.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Tooling · Reference guide</p><h1>Visual Iteration Loop</h1><p class="lead">Repository guidance for Visual Iteration Loop. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/tooling/visual-iteration-loop.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#context">Context</a></li>
+<li><a href="#pattern">Pattern</a></li>
+<li><a href="#stop-conditions">Stop Conditions</a></li>
+<li><a href="#visual-review-checklist">Visual Review Checklist</a></li>
+<li><a href="#artifact-naming">Artifact Naming</a></li>
+<li><a href="#anti-patterns">Anti-Patterns</a></li>
+</ul>
+</div>
+</aside><h2 id="context">Context</h2>
+<p>Use this when the user asks for a screen to look premium, polished, more native, more accessible, more animated, or closer to a reference. Static Swift review can find many issues, but visual quality needs a loop that sees the app running.</p>
+<p>The workflow is:</p>
+<pre><code class="language-text">Design -&gt; Build -&gt; See -&gt; Improve
+</code></pre>
+<h2 id="pattern">Pattern</h2>
+<ol>
+<li><strong>Design</strong>: route to <code>ui-ux-designer</code>, <code>motion-designer</code>, <code>3d-experience-designer</code>, or <code>accessibility-reviewer</code> depending on the requested surface.</li>
+<li><strong>Build</strong>: compile with Xcode and run the narrowest test target available.</li>
+<li><strong>See</strong>: launch the app in the simulator, capture screenshots or video, and inspect the accessibility tree.</li>
+<li><strong>Review</strong>: compare the artifact against the request, platform conventions, Dynamic Type, contrast, spacing, reduced motion, and tap targets.</li>
+<li><strong>Improve</strong>: patch the SwiftUI/UIKit/RealityKit/Metal code and repeat until the stop condition is met.</li>
+</ol>
+<h2 id="stop-conditions">Stop Conditions</h2>
+<p>Declare the stop condition before the first edit. Good examples:</p>
+<pre><code class="language-text">GOAL: Checkout screen matches the provided reference while keeping native iOS controls.
+CHECK: Build passes, home-to-checkout flow launches, screenshots captured at compact and large text sizes.
+MAX: 3 visual passes.
+ON-STALL: Return the best screenshot and the remaining issues.
+</code></pre>
+<h2 id="visual-review-checklist">Visual Review Checklist</h2>
+<table>
+<thead>
+<tr>
+<th>Area</th>
+<th>Questions</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hierarchy</td>
+<td>Is the primary action obvious within two seconds? Does visual weight match importance?</td>
+</tr>
+<tr>
+<td>Spacing</td>
+<td>Are margins, gutters, and component gaps consistent with tokens?</td>
+</tr>
+<tr>
+<td>Typography</td>
+<td>Does the screen use Dynamic Type and avoid fixed font sizes?</td>
+</tr>
+<tr>
+<td>Color</td>
+<td>Does contrast pass, and do semantic roles survive dark mode?</td>
+</tr>
+<tr>
+<td>Motion</td>
+<td>Does animation clarify state, avoid fighting layout, and honor Reduce Motion?</td>
+</tr>
+<tr>
+<td>Haptics</td>
+<td>Are haptics tied to meaningful state transitions, not decoration?</td>
+</tr>
+<tr>
+<td>Accessibility</td>
+<td>Are labels, traits, focus order, tap targets, and content size tested?</td>
+</tr>
+<tr>
+<td>Runtime</td>
+<td>Does the captured screenshot/video prove the actual app state?</td>
+</tr>
+</tbody>
+</table>
+<h2 id="artifact-naming">Artifact Naming</h2>
+<p>Use stable paths so iterations can be compared:</p>
+<pre><code class="language-text">artifacts/visual/home-pass-01-compact.png
+artifacts/visual/home-pass-01-accessibility-xxl.png
+artifacts/visual/home-pass-02-compact.png
+artifacts/visual/home-pass-02.mov
+</code></pre>
+<p>When visual diffing is added, compare the same route, device, appearance, locale, and content-size category. A screenshot from a different simulator configuration is not a clean comparison.</p>
+<h2 id="anti-patterns">Anti-Patterns</h2>
+<pre><code class="language-text">// WRONG: &quot;I made it premium&quot; after editing SwiftUI.
+Why: visual quality was not observed.
+
+// RIGHT: build, launch, capture, review, then report with artifacts.
+</code></pre>
+<pre><code class="language-text">// WRONG: animate every entrance and every state change.
+Why: excessive motion makes the app feel slower and can violate Reduce Motion.
+
+// RIGHT: animate hierarchy changes, confirmations, and spatial continuity.
+</code></pre>
+<pre><code class="language-text">// WRONG: judge accessibility from a screenshot only.
+Why: labels, traits, focus order, and hit targets are semantic/runtime facts.
+
+// RIGHT: pair screenshot review with accessibility-tree inspection and Dynamic Type captures.
+</code></pre></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

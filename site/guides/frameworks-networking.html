@@ -1,0 +1,387 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Networking — iOS Agent Skill</title><meta name="description" content="Repository guidance for Networking. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-networking.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="Networking"><meta property="og:description" content="Repository guidance for Networking. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-networking.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "Networking", "description": "Repository guidance for Networking. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-networking.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Networking and Connectivity · Reference guide</p><h1>Networking</h1><p class="lead">Repository guidance for Networking. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/frameworks/networking.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#urlsession-asyncawait-patterns">URLSession Async/Await Patterns</a></li>
+<li><a href="#generic-api-client">Generic API Client</a></li>
+<li><a href="#authentication-bearer-token-and-oauth">Authentication — Bearer Token and OAuth</a></li>
+<li><a href="#error-handling-and-retry-logic">Error Handling and Retry Logic</a></li>
+<li><a href="#multipart-form-data-upload">Multipart Form Data Upload</a></li>
+<li><a href="#websocket">WebSocket</a></li>
+<li><a href="#network-monitoring">Network Monitoring</a></li>
+</ul>
+</div>
+</aside><h2 id="urlsession-asyncawait-patterns">URLSession Async/Await Patterns</h2>
+<pre><code class="language-swift">// GET request
+func fetchUsers() async throws -&gt; [User] {
+    let url = URL(string: &quot;https://api.example.com/users&quot;)!
+    let (data, response) = try await URLSession.shared.data(from: url)
+
+    guard let http = response as? HTTPURLResponse, (200...299).contains(http.statusCode) else {
+        throw APIError.badResponse
+    }
+    return try JSONDecoder().decode([User].self, from: data)
+}
+
+// POST request
+func createUser(_ user: CreateUserRequest) async throws -&gt; User {
+    var request = URLRequest(url: URL(string: &quot;https://api.example.com/users&quot;)!)
+    request.httpMethod = &quot;POST&quot;
+    request.setValue(&quot;application/json&quot;, forHTTPHeaderField: &quot;Content-Type&quot;)
+    request.httpBody = try JSONEncoder().encode(user)
+
+    let (data, response) = try await URLSession.shared.data(for: request)
+
+    guard let http = response as? HTTPURLResponse, http.statusCode == 201 else {
+        throw APIError.badResponse
+    }
+    return try JSONDecoder().decode(User.self, from: data)
+}
+
+// Download with progress using AsyncBytes
+func downloadWithProgress(from url: URL) async throws -&gt; Data {
+    let (bytes, response) = try await URLSession.shared.bytes(from: url)
+
+    guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
+        throw APIError.badResponse
+    }
+
+    let totalBytes = Int(http.expectedContentLength)
+    var data = Data(capacity: totalBytes)
+
+    for try await byte in bytes {
+        data.append(byte)
+        let progress = Double(data.count) / Double(totalBytes)
+        await MainActor.run { self.downloadProgress = progress }
+    }
+    return data
+}
+</code></pre>
+<h2 id="generic-api-client">Generic API Client</h2>
+<pre><code class="language-swift">enum HTTPMethod: String {
+    case get = &quot;GET&quot;, post = &quot;POST&quot;, put = &quot;PUT&quot;, patch = &quot;PATCH&quot;, delete = &quot;DELETE&quot;
+}
+
+enum APIError: LocalizedError {
+    case badURL
+    case badResponse
+    case unauthorized
+    case notFound
+    case serverError(statusCode: Int)
+    case decodingError(Error)
+    case networkError(Error)
+
+    var errorDescription: String? {
+        switch self {
+        case .badURL: return &quot;Invalid URL&quot;
+        case .badResponse: return &quot;Bad server response&quot;
+        case .unauthorized: return &quot;Authentication required&quot;
+        case .notFound: return &quot;Resource not found&quot;
+        case .serverError(let code): return &quot;Server error (\(code))&quot;
+        case .decodingError(let err): return &quot;Decoding failed: \(err.localizedDescription)&quot;
+        case .networkError(let err): return &quot;Network error: \(err.localizedDescription)&quot;
+        }
+    }
+}
+
+actor APIClient {
+    static let shared = APIClient()
+
+    private let baseURL: URL
+    private let session: URLSession
+    private let decoder: JSONDecoder
+    private let encoder: JSONEncoder
+    private var authToken: String?
+
+    init(
+        baseURL: URL = URL(string: &quot;https://api.example.com&quot;)!,
+        session: URLSession = .shared
+    ) {
+        self.baseURL = baseURL
+        self.session = session
+        self.decoder = JSONDecoder()
+        self.decoder.keyDecodingStrategy = .convertFromSnakeCase
+        self.decoder.dateDecodingStrategy = .iso8601
+        self.encoder = JSONEncoder()
+        self.encoder.keyEncodingStrategy = .convertToSnakeCase
+        self.encoder.dateEncodingStrategy = .iso8601
+    }
+
+    func setToken(_ token: String?) {
+        self.authToken = token
+    }
+
+    func request&lt;T: Decodable&gt;(
+        _ method: HTTPMethod,
+        path: String,
+        body: (any Encodable)? = nil,
+        queryItems: [URLQueryItem]? = nil
+    ) async throws -&gt; T {
+        var components = URLComponents(url: baseURL.appendingPathComponent(path), resolvingAgainstBaseURL: true)!
+        components.queryItems = queryItems
+
+        guard let url = components.url else { throw APIError.badURL }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = method.rawValue
+        request.setValue(&quot;application/json&quot;, forHTTPHeaderField: &quot;Content-Type&quot;)
+        request.setValue(&quot;application/json&quot;, forHTTPHeaderField: &quot;Accept&quot;)
+
+        if let token = authToken {
+            request.setValue(&quot;Bearer \(token)&quot;, forHTTPHeaderField: &quot;Authorization&quot;)
+        }
+
+        if let body {
+            request.httpBody = try encoder.encode(body)
+        }
+
+        let (data, response): (Data, URLResponse)
+        do {
+            (data, response) = try await session.data(for: request)
+        } catch {
+            throw APIError.networkError(error)
+        }
+
+        guard let http = response as? HTTPURLResponse else {
+            throw APIError.badResponse
+        }
+
+        switch http.statusCode {
+        case 200...299:
+            do {
+                return try decoder.decode(T.self, from: data)
+            } catch {
+                throw APIError.decodingError(error)
+            }
+        case 401:
+            throw APIError.unauthorized
+        case 404:
+            throw APIError.notFound
+        default:
+            throw APIError.serverError(statusCode: http.statusCode)
+        }
+    }
+}
+
+// Usage
+let users: [User] = try await APIClient.shared.request(.get, path: &quot;/users&quot;)
+let newUser: User = try await APIClient.shared.request(.post, path: &quot;/users&quot;, body: CreateUserRequest(name: &quot;Alice&quot;))
+</code></pre>
+<h2 id="authentication-bearer-token-and-oauth">Authentication — Bearer Token and OAuth</h2>
+<pre><code class="language-swift">actor AuthManager {
+    static let shared = AuthManager()
+
+    private var accessToken: String?
+    private var refreshToken: String?
+    private var tokenExpiry: Date?
+    private var refreshTask: Task&lt;String, Error&gt;?
+
+    func validToken() async throws -&gt; String {
+        // Return cached token if still valid
+        if let token = accessToken, let expiry = tokenExpiry, expiry &gt; Date() {
+            return token
+        }
+
+        // Deduplicate concurrent refresh calls
+        if let refreshTask {
+            return try await refreshTask.value
+        }
+
+        let task = Task&lt;String, Error&gt; {
+            defer { refreshTask = nil }
+            guard let refresh = refreshToken else { throw APIError.unauthorized }
+            let response = try await performTokenRefresh(refreshToken: refresh)
+            self.accessToken = response.accessToken
+            self.refreshToken = response.refreshToken
+            self.tokenExpiry = Date().addingTimeInterval(TimeInterval(response.expiresIn))
+            return response.accessToken
+        }
+        self.refreshTask = task
+        return try await task.value
+    }
+
+    private func performTokenRefresh(refreshToken: String) async throws -&gt; TokenResponse {
+        var request = URLRequest(url: URL(string: &quot;https://auth.example.com/token&quot;)!)
+        request.httpMethod = &quot;POST&quot;
+        request.setValue(&quot;application/x-www-form-urlencoded&quot;, forHTTPHeaderField: &quot;Content-Type&quot;)
+
+        let body = &quot;grant_type=refresh_token&amp;refresh_token=\(refreshToken)&amp;client_id=\(clientId)&quot;
+        request.httpBody = body.data(using: .utf8)
+
+        let (data, _) = try await URLSession.shared.data(for: request)
+        return try JSONDecoder().decode(TokenResponse.self, from: data)
+    }
+}
+
+struct TokenResponse: Codable {
+    let accessToken: String
+    let refreshToken: String
+    let expiresIn: Int
+}
+</code></pre>
+<h2 id="error-handling-and-retry-logic">Error Handling and Retry Logic</h2>
+<pre><code class="language-swift">func fetchWithRetry&lt;T: Decodable&gt;(
+    _ type: T.Type,
+    url: URL,
+    maxRetries: Int = 3,
+    delay: Duration = .seconds(1)
+) async throws -&gt; T {
+    var lastError: Error?
+
+    for attempt in 0..&lt;maxRetries {
+        do {
+            let (data, response) = try await URLSession.shared.data(from: url)
+            guard let http = response as? HTTPURLResponse, (200...299).contains(http.statusCode) else {
+                throw APIError.badResponse
+            }
+            return try JSONDecoder().decode(T.self, from: data)
+        } catch {
+            lastError = error
+
+            // Don't retry client errors (4xx)
+            if let apiError = error as? APIError, case .unauthorized = apiError { throw error }
+            if let apiError = error as? APIError, case .notFound = apiError { throw error }
+
+            if attempt &lt; maxRetries - 1 {
+                let backoff = Duration.seconds(pow(2.0, Double(attempt)))
+                try await Task.sleep(for: backoff)
+            }
+        }
+    }
+    throw lastError ?? APIError.badResponse
+}
+</code></pre>
+<h2 id="multipart-form-data-upload">Multipart Form Data Upload</h2>
+<pre><code class="language-swift">func uploadMultipart(
+    imageData: Data,
+    filename: String,
+    fields: [String: String] = [:]
+) async throws -&gt; UploadResponse {
+    let boundary = UUID().uuidString
+    var request = URLRequest(url: URL(string: &quot;https://api.example.com/upload&quot;)!)
+    request.httpMethod = &quot;POST&quot;
+    request.setValue(&quot;multipart/form-data; boundary=\(boundary)&quot;, forHTTPHeaderField: &quot;Content-Type&quot;)
+
+    var body = Data()
+
+    // Text fields
+    for (key, value) in fields {
+        body.append(&quot;--\(boundary)\r\n&quot;.data(using: .utf8)!)
+        body.append(&quot;Content-Disposition: form-data; name=\&quot;\(key)\&quot;\r\n\r\n&quot;.data(using: .utf8)!)
+        body.append(&quot;\(value)\r\n&quot;.data(using: .utf8)!)
+    }
+
+    // File field
+    body.append(&quot;--\(boundary)\r\n&quot;.data(using: .utf8)!)
+    body.append(&quot;Content-Disposition: form-data; name=\&quot;file\&quot;; filename=\&quot;\(filename)\&quot;\r\n&quot;.data(using: .utf8)!)
+    body.append(&quot;Content-Type: image/jpeg\r\n\r\n&quot;.data(using: .utf8)!)
+    body.append(imageData)
+    body.append(&quot;\r\n&quot;.data(using: .utf8)!)
+    body.append(&quot;--\(boundary)--\r\n&quot;.data(using: .utf8)!)
+
+    request.httpBody = body
+
+    let (data, _) = try await URLSession.shared.data(for: request)
+    return try JSONDecoder().decode(UploadResponse.self, from: data)
+}
+</code></pre>
+<h2 id="websocket">WebSocket</h2>
+<pre><code class="language-swift">actor WebSocketClient {
+    private var webSocketTask: URLSessionWebSocketTask?
+    private let url: URL
+
+    init(url: URL) {
+        self.url = url
+    }
+
+    func connect() {
+        webSocketTask = URLSession.shared.webSocketTask(with: url)
+        webSocketTask?.resume()
+        listenForMessages()
+    }
+
+    func send(_ message: String) async throws {
+        try await webSocketTask?.send(.string(message))
+    }
+
+    func send(_ data: Data) async throws {
+        try await webSocketTask?.send(.data(data))
+    }
+
+    private func listenForMessages() {
+        webSocketTask?.receive { [weak self] result in
+            switch result {
+            case .success(let message):
+                switch message {
+                case .string(let text):
+                    print(&quot;Received text: \(text)&quot;)
+                case .data(let data):
+                    print(&quot;Received data: \(data.count) bytes&quot;)
+                @unknown default:
+                    break
+                }
+                // Continue listening
+                self?.listenForMessages()
+            case .failure(let error):
+                print(&quot;WebSocket error: \(error)&quot;)
+            }
+        }
+    }
+
+    func disconnect() {
+        webSocketTask?.cancel(with: .normalClosure, reason: nil)
+    }
+}
+</code></pre>
+<h2 id="network-monitoring">Network Monitoring</h2>
+<pre><code class="language-swift">import Network
+
+@Observable
+class NetworkMonitor {
+    static let shared = NetworkMonitor()
+
+    var isConnected = true
+    var connectionType: ConnectionType = .unknown
+
+    enum ConnectionType {
+        case wifi, cellular, ethernet, unknown
+    }
+
+    private let monitor = NWPathMonitor()
+    private let queue = DispatchQueue(label: &quot;NetworkMonitor&quot;)
+
+    init() {
+        monitor.pathUpdateHandler = { [weak self] path in
+            DispatchQueue.main.async {
+                self?.isConnected = path.status == .satisfied
+                self?.connectionType = self?.getConnectionType(path) ?? .unknown
+            }
+        }
+        monitor.start(queue: queue)
+    }
+
+    private func getConnectionType(_ path: NWPath) -&gt; ConnectionType {
+        if path.usesInterfaceType(.wifi) { return .wifi }
+        if path.usesInterfaceType(.cellular) { return .cellular }
+        if path.usesInterfaceType(.wiredEthernet) { return .ethernet }
+        return .unknown
+    }
+
+    deinit {
+        monitor.cancel()
+    }
+}
+
+// Usage in SwiftUI
+struct ContentView: View {
+    let networkMonitor = NetworkMonitor.shared
+
+    var body: some View {
+        Group {
+            if networkMonitor.isConnected {
+                MainContentView()
+            } else {
+                OfflineView()
+            }
+        }
+    }
+}
+</code></pre></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

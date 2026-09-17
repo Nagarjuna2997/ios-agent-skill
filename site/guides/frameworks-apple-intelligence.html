@@ -1,0 +1,234 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Apple Intelligence — iOS Agent Skill</title><meta name="description" content="Repository guidance for Apple Intelligence. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-apple-intelligence.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="Apple Intelligence"><meta property="og:description" content="Repository guidance for Apple Intelligence. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-apple-intelligence.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "Apple Intelligence", "description": "Repository guidance for Apple Intelligence. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-apple-intelligence.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">AI and Machine Learning · Reference guide</p><h1>Apple Intelligence</h1><p class="lead">Repository guidance for Apple Intelligence. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/frameworks/apple-intelligence.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#1-which-framework-does-what">1. Which framework does what</a></li>
+<li><a href="#2-the-privacy-model">2. The privacy model</a><ul>
+<li><a href="#what-you-may-claim">What you may claim</a></li>
+<li><a href="#declare-it">Declare it</a></li>
+</ul>
+</li>
+<li><a href="#3-app-intents-the-front-door-to-siri">3. App Intents — the front door to Siri</a></li>
+<li><a href="#4-image-playground">4. Image Playground</a></li>
+<li><a href="#5-visual-intelligence">5. Visual Intelligence</a></li>
+<li><a href="#6-designing-an-ai-feature-that-degrades">6. Designing an AI feature that degrades</a></li>
+<li><a href="#anti-patterns">Anti-Patterns</a></li>
+<li><a href="#checklist">Checklist</a></li>
+</ul>
+</div>
+</aside><p><strong>Load this when:</strong> deciding how an app should surface AI features, integrating
+with Siri and system intelligence, using Private Cloud Compute, generating
+images, or reasoning about the privacy guarantees you can state to users.</p>
+<p>Apple Intelligence is the system layer, not a single API. Apps reach it through
+several frameworks; this document routes you to the right one and covers the
+privacy model that governs all of them.</p>
+<hr />
+<h2 id="1-which-framework-does-what">1. Which framework does what</h2>
+<table>
+<thead>
+<tr>
+<th>You want to…</th>
+<th>Use</th>
+<th>Doc</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Run a prompt, generate structured data, call tools</td>
+<td><strong>Foundation Models</strong></td>
+<td><code>foundation-models.md</code></td>
+</tr>
+<tr>
+<td>Let Siri and Spotlight invoke your app's actions</td>
+<td><strong>App Intents</strong></td>
+<td><code>app-intents.md</code></td>
+</tr>
+<tr>
+<td>Generate images</td>
+<td><strong>Image Playground API</strong></td>
+<td>this doc, §4</td>
+</tr>
+<tr>
+<td>Identify things in images and act on them</td>
+<td><strong>Visual Intelligence / VisionKit</strong></td>
+<td>this doc, §5</td>
+</tr>
+<tr>
+<td>Run your own ML model</td>
+<td><strong>Core ML</strong></td>
+<td><code>ml/coreml.md</code></td>
+</tr>
+<tr>
+<td>OCR, detection, segmentation</td>
+<td><strong>Vision</strong></td>
+<td><code>ml/vision.md</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>The most common mistake is reaching for a language model when App Intents is
+the answer.</strong> If the user's goal is "do a thing in my app," that is an intent —
+it is faster, deterministic, testable, and works without a model being available.
+Use Foundation Models for open-ended generation, not for dispatching actions.</p>
+<hr />
+<h2 id="2-the-privacy-model">2. The privacy model</h2>
+<p>This is the part you must get right, because it determines what you may tell
+users.</p>
+<p><strong>On-device (<code>SystemLanguageModel</code>)</strong>
+- The prompt never leaves the device.
+- Works offline. No account, no API key, no cost.
+- Bounded by device capability: smaller context, lighter reasoning.</p>
+<p><strong>Private Cloud Compute (<code>PrivateCloudComputeLanguageModel</code>, iOS 27+)</strong>
+- Runs on Apple silicon servers built for this purpose.
+- <strong>Prompts are not retained.</strong> Data is used to serve the request and nothing else.
+- No account setup, authentication, or API key required.
+- Requires a network. Adds latency.
+- Free for developers under the small-business download threshold.</p>
+<p><strong>Third-party models</strong> (via a custom <code>LanguageModel</code> conformance)
+- <strong>Apple's privacy guarantees do not extend to these.</strong> A prompt sent to a
+  third-party endpoint is governed by that vendor's terms.
+- If your app can route to one, say so in your privacy policy and — where the
+  content is sensitive — in the UI at the point of use.</p>
+<h3 id="what-you-may-claim">What you may claim</h3>
+<pre><code>On-device only        &quot;Processed on your device.&quot;                    ✅
+Private Cloud Compute &quot;Processed by Apple. Your data isn't stored.&quot;  ✅
+Third-party model     &quot;Processed on your device.&quot;                    ❌ false
+Any path              &quot;We never see your data&quot; (if you log prompts)  ❌ false
+</code></pre>
+<p>Do not log prompt or response content to your own analytics and simultaneously
+describe the feature as private. If you log, say so.</p>
+<h3 id="declare-it">Declare it</h3>
+<p>User-facing AI features that process personal data need the corresponding entries
+in <code>PrivacyInfo.xcprivacy</code>, and any third-party model SDK carries its own privacy
+manifest requirements. See <code>docs/design/interaction-standards.md</code> §7.</p>
+<hr />
+<h2 id="3-app-intents-the-front-door-to-siri">3. App Intents — the front door to Siri</h2>
+<p>App Intents is how Apple Intelligence discovers what your app can do. It is not
+optional plumbing; it is the integration surface.</p>
+<pre><code class="language-swift">struct AddRecipeIntent: AppIntent {
+    static let title: LocalizedStringResource = &quot;Add Recipe&quot;
+    static let description = IntentDescription(&quot;Saves a recipe to the user's collection.&quot;)
+
+    @Parameter(title: &quot;Name&quot;)
+    var name: String
+
+    @MainActor
+    func perform() async throws -&gt; some IntentResult &amp; ProvidesDialog {
+        try await RecipeStore.shared.add(named: name)
+        return .result(dialog: &quot;Saved \(name).&quot;)
+    }
+}
+</code></pre>
+<p>Points that matter:</p>
+<ul>
+<li><strong>Adopt system-defined schemas</strong> where one fits your domain. A schema-conforming
+  intent gets natural-language handling for free, and does not depend on you
+  guessing phrasings.</li>
+<li><strong>Do not hardcode invocation phrases.</strong> The system maps language to intents and
+  keeps improving; hardcoded phrases freeze you at today's behavior.</li>
+<li><strong>Index your content</strong> with Core Spotlight so semantic search and on-device
+  retrieval can find it.</li>
+<li><strong>New this year:</strong> a View Annotations API for mapping on-screen entities, and an
+  App Intents testing framework that validates intents without UI automation —
+  use it instead of XCUITest for intent coverage.</li>
+</ul>
+<p>Full reference: <code>docs/frameworks/app-intents.md</code>.</p>
+<hr />
+<h2 id="4-image-playground">4. Image Playground</h2>
+<p>Generates images on Private Cloud Compute — photorealistic or stylized, from text
+or a source photo.</p>
+<pre><code class="language-swift">import ImagePlayground
+
+struct ComposeView: View {
+    @State private var showGenerator = false
+    @State private var generatedURL: URL?
+
+    var body: some View {
+        Button(&quot;Generate image&quot;) { showGenerator = true }
+            .imagePlaygroundSheet(isPresented: $showGenerator) { url in
+                generatedURL = url
+            }
+    }
+}
+</code></pre>
+<p>Treat generation as <strong>optional and fallible</strong>: it needs a network, can be
+unavailable by region, and the user can cancel. The compose flow must work
+without it.</p>
+<hr />
+<h2 id="5-visual-intelligence">5. Visual Intelligence</h2>
+<p>Lets the system surface your app's content when the user points at something in
+the real world or on screen. You supply entities and the intents that act on them
+(open, play, buy), and the system routes matches to your app.</p>
+<p>Worth adopting when your app has a catalogue of real-world things — products,
+plants, landmarks, media. Not worth it for a to-do list.</p>
+<hr />
+<h2 id="6-designing-an-ai-feature-that-degrades">6. Designing an AI feature that degrades</h2>
+<p>Apple Intelligence is not available on every device, in every region, or in every
+language. Availability is a runtime condition, not a compile-time one.</p>
+<pre><code class="language-swift">@MainActor
+@Observable
+final class SmartComposeModel {
+    enum Mode { case intelligent, manual }
+
+    private(set) var mode: Mode = .manual
+
+    func configure() {
+        guard #available(iOS 26.0, *) else { return }
+        if case .available = SystemLanguageModel.default.availability {
+            mode = .intelligent
+        }
+    }
+}
+</code></pre>
+<p>Design rules:</p>
+<ul>
+<li><strong>The non-AI path is the product.</strong> The AI path is an enhancement layered on it.
+  If removing the model breaks the feature, the feature is mis-scoped.</li>
+<li><strong>Never show a disabled AI button with no explanation.</strong> Either hide the entry
+  point or state why it is unavailable.</li>
+<li><strong>Label generated content.</strong> Users should be able to tell what a model produced,
+  especially before they send or publish it.</li>
+<li><strong>Always allow editing before commit.</strong> Do not auto-send, auto-post, or
+  auto-purchase from generated output.</li>
+<li><strong>Latency is a design problem.</strong> Stream partial results; do not block the UI on
+  a round trip. See <code>foundation-models.md</code> §2.</li>
+</ul>
+<hr />
+<h2 id="anti-patterns">Anti-Patterns</h2>
+<pre><code class="language-swift">// 1. A language model where an App Intent belongs.
+&quot;Parse the user's sentence and figure out which screen to open.&quot;
+// Use App Intents. Deterministic, testable, works with no model.
+
+// 2. Claiming privacy you do not provide.
+Text(&quot;Processed entirely on your device.&quot;)   // while routing to a third-party API
+
+// 3. Assuming availability.
+let session = LanguageModelSession()          // fails on ineligible devices/regions
+// Check SystemLanguageModel.default.availability.
+
+// 4. An AI-only feature with no fallback.
+// Unusable for every user without Apple Intelligence.
+
+// 5. Auto-committing generated content.
+send(generatedReply)                          // user never saw it
+// Always let the user read and edit first.
+
+// 6. Private Cloud Compute as the default.
+// Costs latency and a network dependency. Start on-device.
+
+// 7. Hardcoded Siri phrases.
+// Freezes you at today's phrasing. Use schemas.
+
+// 8. Logging prompts to analytics while marketing the feature as private.
+</code></pre>
+<hr />
+<h2 id="checklist">Checklist</h2>
+<ul>
+<li>[ ] The right framework is used — App Intents for actions, Foundation Models for
+      generation.</li>
+<li>[ ] Availability is checked at runtime, not just with <code>@available</code>.</li>
+<li>[ ] The feature degrades to a working non-AI path.</li>
+<li>[ ] Privacy claims match the actual execution path, including third-party models.</li>
+<li>[ ] <code>PrivacyInfo.xcprivacy</code> reflects any personal data processed.</li>
+<li>[ ] Generated content is labelled and editable before it is committed.</li>
+<li>[ ] Long generations stream rather than blocking.</li>
+<li>[ ] App content is indexed in Spotlight for retrieval and semantic search.</li>
+<li>[ ] Intents are covered by the App Intents testing framework.</li>
+</ul></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

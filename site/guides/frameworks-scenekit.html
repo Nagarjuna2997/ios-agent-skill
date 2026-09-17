@@ -1,0 +1,354 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SceneKit -- Legacy 3D Scenes, Animation, and AR Rendering — iOS Agent Skill</title><meta name="description" content="Repository guidance for SceneKit. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-scenekit.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="SceneKit -- Legacy 3D Scenes, Animation, and AR Rendering"><meta property="og:description" content="Repository guidance for SceneKit. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-scenekit.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "SceneKit -- Legacy 3D Scenes, Animation, and AR Rendering", "description": "Repository guidance for SceneKit. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-scenekit.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Graphics, 3D, and Games · Reference guide</p><h1>SceneKit -- Legacy 3D Scenes, Animation, and AR Rendering</h1><p class="lead">Repository guidance for SceneKit. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/frameworks/scenekit.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#1-choosing-scenekit-vs-realitykit-vs-metal">1. Choosing SceneKit vs RealityKit vs Metal</a></li>
+<li><a href="#2-swiftui-sceneview">2. SwiftUI SceneView</a></li>
+<li><a href="#3-uikit-scnview">3. UIKit SCNView</a></li>
+<li><a href="#4-loading-assets">4. Loading Assets</a></li>
+<li><a href="#5-nodes-transforms-and-animation">5. Nodes, Transforms, and Animation</a></li>
+<li><a href="#6-materials-and-lighting">6. Materials and Lighting</a></li>
+<li><a href="#7-hit-testing-and-selection">7. Hit Testing and Selection</a></li>
+<li><a href="#8-physics">8. Physics</a></li>
+<li><a href="#9-arkit-with-arscnview">9. ARKit with ARSCNView</a></li>
+<li><a href="#10-custom-rendering-and-metal-interop">10. Custom Rendering and Metal Interop</a></li>
+<li><a href="#11-performance-checklist">11. Performance Checklist</a></li>
+<li><a href="#12-common-pitfalls">12. Common Pitfalls</a></li>
+<li><a href="#13-migration-notes-to-realitykit">13. Migration Notes to RealityKit</a></li>
+<li><a href="#14-review-checklist">14. Review Checklist</a></li>
+</ul>
+</div>
+</aside><h2 id="overview">Overview</h2>
+<p>SceneKit is Apple's high-level scene graph framework for 3D content. It describes a scene as an <code>SCNScene</code> containing an <code>SCNNode</code> hierarchy, with geometry, cameras, lights, materials, animations, physics, and positional audio attached to nodes. SceneKit renders through <code>SCNView</code>, SwiftUI's <code>SceneView</code>, <code>SCNLayer</code>, or <code>SCNRenderer</code>.</p>
+<blockquote>
+<p>Apple describes SceneKit as <strong>soft-deprecated</strong>: existing apps continue to work, but new capabilities and API investment are expected in RealityKit instead. Use SceneKit when maintaining an existing app, when a project relies on <code>.scnassets</code>, shader modifiers, <code>SCNTechnique</code>, or <code>ARSCNView</code>, or when migration risk is higher than the value of moving immediately.</p>
+</blockquote>
+<p>On visionOS, SceneKit content belongs in 2D views or textures. Build immersive spatial experiences with RealityKit and <code>RealityView</code>.</p>
+<hr />
+<h2 id="1-choosing-scenekit-vs-realitykit-vs-metal">1. Choosing SceneKit vs RealityKit vs Metal</h2>
+<table>
+<thead>
+<tr>
+<th>Need</th>
+<th>Prefer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>New AR, spatial, USDZ, physics, SharePlay sync</td>
+<td>RealityKit</td>
+</tr>
+<tr>
+<td>Existing <code>.scnassets</code>, <code>SCNNode</code> graphs, shader modifiers</td>
+<td>SceneKit</td>
+</tr>
+<tr>
+<td>Custom render passes, compute, low-level GPU ownership</td>
+<td>Metal</td>
+</tr>
+<tr>
+<td>AR camera tracking with legacy SceneKit rendering</td>
+<td>ARKit + <code>ARSCNView</code></td>
+</tr>
+</tbody>
+</table>
+<p>Use RealityKit for new features unless the app already has substantial SceneKit investment.</p>
+<hr />
+<h2 id="2-swiftui-sceneview">2. SwiftUI <code>SceneView</code></h2>
+<pre><code class="language-swift">import SwiftUI
+import SceneKit
+
+struct ModelPreview: View {
+    private let scene: SCNScene = {
+        let scene = SCNScene()
+
+        let node = SCNNode(geometry: SCNSphere(radius: 0.35))
+        node.geometry?.firstMaterial?.diffuse.contents = UIColor.systemTeal
+        node.geometry?.firstMaterial?.roughness.contents = 0.45
+        scene.rootNode.addChildNode(node)
+
+        let camera = SCNNode()
+        camera.camera = SCNCamera()
+        camera.position = SCNVector3(0, 0, 2.2)
+        scene.rootNode.addChildNode(camera)
+
+        let light = SCNNode()
+        light.light = SCNLight()
+        light.light?.type = .omni
+        light.position = SCNVector3(0, 1.2, 1.5)
+        scene.rootNode.addChildNode(light)
+
+        scene.background.contents = UIColor.systemBackground
+        return scene
+    }()
+
+    var body: some View {
+        SceneView(
+            scene: scene,
+            options: [.allowsCameraControl, .autoenablesDefaultLighting]
+        )
+        .ignoresSafeArea()
+    }
+}
+</code></pre>
+<p><code>SceneView</code> is convenient for previews and simple viewers. For advanced control, wrap <code>SCNView</code> so you can own renderer delegates, hit testing, camera configuration, and lifecycle.</p>
+<hr />
+<h2 id="3-uikit-scnview">3. UIKit <code>SCNView</code></h2>
+<pre><code class="language-swift">import SceneKit
+import UIKit
+
+final class SceneViewController: UIViewController {
+    private let sceneView = SCNView()
+    private let scene = SCNScene()
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        view.addSubview(sceneView)
+        sceneView.frame = view.bounds
+        sceneView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        sceneView.scene = scene
+        sceneView.allowsCameraControl = true
+        sceneView.autoenablesDefaultLighting = true
+        sceneView.backgroundColor = .systemBackground
+
+        addCamera()
+        addContent()
+    }
+
+    private func addCamera() {
+        let cameraNode = SCNNode()
+        cameraNode.camera = SCNCamera()
+        cameraNode.position = SCNVector3(0, 1, 4)
+        scene.rootNode.addChildNode(cameraNode)
+        sceneView.pointOfView = cameraNode
+    }
+
+    private func addContent() {
+        let box = SCNNode(geometry: SCNBox(width: 1, height: 1, length: 1, chamferRadius: 0.06))
+        box.geometry?.firstMaterial?.diffuse.contents = UIColor.systemBlue
+        scene.rootNode.addChildNode(box)
+
+        let spin = SCNAction.repeatForever(.rotateBy(x: 0, y: .pi * 2, z: 0, duration: 4))
+        box.runAction(spin)
+    }
+}
+</code></pre>
+<hr />
+<h2 id="4-loading-assets">4. Loading Assets</h2>
+<pre><code class="language-swift">import SceneKit
+
+enum SceneAssetError: Error {
+    case missingAsset(String)
+    case missingNode(String)
+}
+
+func loadNode(named nodeName: String, from sceneName: String) throws -&gt; SCNNode {
+    guard let scene = SCNScene(named: sceneName) else {
+        throw SceneAssetError.missingAsset(sceneName)
+    }
+    guard let node = scene.rootNode.childNode(withName: nodeName, recursively: true) else {
+        throw SceneAssetError.missingNode(nodeName)
+    }
+    return node.clone()
+}
+</code></pre>
+<p>Store SceneKit assets in <code>.scnassets</code>. Keep asset names stable and isolate loading behind a small factory so the rest of the app does not know file names.</p>
+<p>If an asset arrives as USDZ or needs Reality Composer Pro authoring, route new work through RealityKit instead of adding more SceneKit-only surface area.</p>
+<hr />
+<h2 id="5-nodes-transforms-and-animation">5. Nodes, Transforms, and Animation</h2>
+<pre><code class="language-swift">let ship = SCNNode()
+ship.position = SCNVector3(0, 0, -2)
+ship.eulerAngles = SCNVector3(0, Float.pi / 4, 0)
+ship.scale = SCNVector3(0.5, 0.5, 0.5)
+
+let moveUp = SCNAction.moveBy(x: 0, y: 0.4, z: 0, duration: 0.8)
+moveUp.timingMode = .easeInEaseOut
+
+let bob = SCNAction.sequence([moveUp, moveUp.reversed()])
+ship.runAction(.repeatForever(bob), forKey: &quot;idle-bob&quot;)
+</code></pre>
+<p>Prefer named action keys so you can stop or replace animations deterministically.</p>
+<hr />
+<h2 id="6-materials-and-lighting">6. Materials and Lighting</h2>
+<pre><code class="language-swift">let material = SCNMaterial()
+material.lightingModel = .physicallyBased
+material.diffuse.contents = UIColor.systemOrange
+material.metalness.contents = 0.8
+material.roughness.contents = 0.25
+
+let sphere = SCNNode(geometry: SCNSphere(radius: 0.25))
+sphere.geometry?.materials = [material]
+
+let keyLight = SCNNode()
+keyLight.light = SCNLight()
+keyLight.light?.type = .area
+keyLight.light?.intensity = 700
+keyLight.position = SCNVector3(0, 2, 2)
+</code></pre>
+<p>Use physically based materials for modern assets. Avoid mixing many lighting models in one scene unless you are matching existing art.</p>
+<hr />
+<h2 id="7-hit-testing-and-selection">7. Hit Testing and Selection</h2>
+<pre><code class="language-swift">@objc
+func handleTap(_ recognizer: UITapGestureRecognizer) {
+    let point = recognizer.location(in: sceneView)
+    let results = sceneView.hitTest(point, options: [
+        .searchMode: SCNHitTestSearchMode.closest.rawValue,
+        .boundingBoxOnly: false,
+    ])
+
+    guard let hit = results.first else { return }
+    hit.node.geometry?.firstMaterial?.emission.contents = UIColor.systemYellow
+}
+</code></pre>
+<p>For SwiftUI wrappers, keep gesture handling in a coordinator and send domain-level events back through closures.</p>
+<hr />
+<h2 id="8-physics">8. Physics</h2>
+<pre><code class="language-swift">let floor = SCNNode(geometry: SCNFloor())
+floor.physicsBody = SCNPhysicsBody.static()
+
+let ball = SCNNode(geometry: SCNSphere(radius: 0.2))
+ball.position = SCNVector3(0, 2, 0)
+ball.physicsBody = SCNPhysicsBody(type: .dynamic, shape: nil)
+ball.physicsBody?.mass = 0.4
+ball.physicsBody?.restitution = 0.7
+
+scene.rootNode.addChildNode(floor)
+scene.rootNode.addChildNode(ball)
+</code></pre>
+<p>Physics bodies are tied to node geometry and transforms. If you change geometry after creating the physics body, recreate the body or provide an explicit <code>SCNPhysicsShape</code>.</p>
+<hr />
+<h2 id="9-arkit-with-arscnview">9. ARKit with <code>ARSCNView</code></h2>
+<pre><code class="language-swift">import ARKit
+import SceneKit
+
+final class ARSceneController: UIViewController, ARSCNViewDelegate {
+    private let sceneView = ARSCNView()
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        sceneView.delegate = self
+        sceneView.scene = SCNScene()
+        view = sceneView
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        guard ARWorldTrackingConfiguration.isSupported else { return }
+
+        let configuration = ARWorldTrackingConfiguration()
+        configuration.planeDetection = [.horizontal, .vertical]
+        configuration.environmentTexturing = .automatic
+        sceneView.session.run(configuration)
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        sceneView.session.pause()
+    }
+
+    func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
+        guard let planeAnchor = anchor as? ARPlaneAnchor else { return }
+
+        let plane = SCNPlane(width: CGFloat(planeAnchor.extent.x),
+                             height: CGFloat(planeAnchor.extent.z))
+        plane.firstMaterial?.diffuse.contents = UIColor.systemBlue.withAlphaComponent(0.2)
+
+        let planeNode = SCNNode(geometry: plane)
+        planeNode.eulerAngles.x = -.pi / 2
+        planeNode.position = SCNVector3(planeAnchor.center.x, 0, planeAnchor.center.z)
+        node.addChildNode(planeNode)
+    }
+}
+</code></pre>
+<p>New AR features should usually use RealityKit's <code>ARView</code>; keep <code>ARSCNView</code> for legacy SceneKit renderers that already depend on <code>SCNNode</code> or <code>SCNMaterial</code>.</p>
+<hr />
+<h2 id="10-custom-rendering-and-metal-interop">10. Custom Rendering and Metal Interop</h2>
+<p>Use SceneKit customization in this order:</p>
+<ol>
+<li><code>SCNMaterial</code> and built-in physically based lighting.</li>
+<li><code>SCNShadable</code> shader modifiers for localized material changes.</li>
+<li><code>SCNTechnique</code> for multipass post-processing.</li>
+<li><code>SCNRenderer</code> inside an existing Metal pipeline.</li>
+<li>A full Metal renderer when SceneKit's frame graph is the constraint.</li>
+</ol>
+<pre><code class="language-swift">let renderer = SCNRenderer(device: metalDevice, options: nil)
+renderer.scene = scene
+
+// In your Metal render loop:
+renderer.render(atTime: currentTime,
+                viewport: viewport,
+                commandBuffer: commandBuffer,
+                passDescriptor: renderPassDescriptor)
+</code></pre>
+<p>SceneKit can coexist with Metal, but once you need deterministic command-buffer ownership, resource heaps, tile shaders, or compute-heavy passes, move that work to Metal directly.</p>
+<hr />
+<h2 id="11-performance-checklist">11. Performance Checklist</h2>
+<ul>
+<li>Keep draw calls low by merging static geometry where practical.</li>
+<li>Reuse <code>SCNMaterial</code> instances for repeated objects.</li>
+<li>Prefer lower-poly preview assets on mobile and load high-detail models only when needed.</li>
+<li>Pause rendering when offscreen: <code>sceneView.isPlaying = false</code>.</li>
+<li>Avoid continuously mutating large node hierarchies from SwiftUI state updates.</li>
+<li>Profile with Instruments and Xcode's GPU tools before rewriting rendering code.</li>
+</ul>
+<hr />
+<h2 id="12-common-pitfalls">12. Common Pitfalls</h2>
+<ol>
+<li><strong>Treating soft-deprecated as removed</strong> -- existing SceneKit apps still run, but long-lived new 3D work should start in RealityKit.</li>
+<li><strong>Using SceneKit for new immersive visionOS apps</strong> -- use RealityKit and <code>RealityView</code> instead.</li>
+<li><strong>Forgetting camera and microphone purpose strings in AR</strong> -- AR sessions need <code>NSCameraUsageDescription</code>; audio capture also needs microphone text.</li>
+<li><strong>Creating physics bodies before final geometry setup</strong> -- collision shapes can become stale.</li>
+<li><strong>Blocking the main thread while loading assets</strong> -- load heavy assets before presentation or behind a loading state.</li>
+<li><strong>Letting SwiftUI recreate scenes on every body pass</strong> -- store scene state in a model or wrapper.</li>
+</ol>
+<hr />
+<h2 id="13-migration-notes-to-realitykit">13. Migration Notes to RealityKit</h2>
+<table>
+<thead>
+<tr>
+<th>SceneKit</th>
+<th>RealityKit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SCNNode</code></td>
+<td><code>Entity</code></td>
+</tr>
+<tr>
+<td><code>SCNGeometry</code></td>
+<td><code>MeshResource</code> / <code>ModelComponent</code></td>
+</tr>
+<tr>
+<td><code>SCNMaterial</code></td>
+<td><code>SimpleMaterial</code>, <code>PhysicallyBasedMaterial</code>, <code>ShaderGraphMaterial</code></td>
+</tr>
+<tr>
+<td><code>SCNAction</code></td>
+<td><code>AnimationResource</code>, systems, timeline animation</td>
+</tr>
+<tr>
+<td><code>ARSCNView</code></td>
+<td><code>ARView</code></td>
+</tr>
+<tr>
+<td><code>.scnassets</code></td>
+<td>USDZ / Reality Composer Pro packages</td>
+</tr>
+</tbody>
+</table>
+<p>Migrate feature by feature. Start with leaf scenes or previews before replacing AR session ownership.</p>
+<hr />
+<h2 id="14-review-checklist">14. Review Checklist</h2>
+<ul>
+<li>[ ] New SceneKit work justified against RealityKit</li>
+<li>[ ] <code>.scnassets</code> loading isolated behind factories</li>
+<li>[ ] Scene lifecycle pauses when view disappears</li>
+<li>[ ] AR usage includes camera purpose strings and device support checks</li>
+<li>[ ] Materials reuse textures and avoid duplicate large allocations</li>
+<li>[ ] Physics shapes match final geometry</li>
+<li>[ ] SwiftUI wrappers keep SceneKit state out of <code>body</code></li>
+<li>[ ] Migration path documented for soft-deprecated SceneKit surfaces</li>
+</ul>
+<p>See also: <code>docs/frameworks/realitykit.md</code>, <code>docs/frameworks/arkit.md</code>, <code>docs/frameworks/metal.md</code>.</p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

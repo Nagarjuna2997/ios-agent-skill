@@ -1,0 +1,781 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CloudKit — iOS Agent Skill</title><meta name="description" content="Repository guidance for CloudKit. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-cloudkit.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="CloudKit"><meta property="og:description" content="Repository guidance for CloudKit. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-cloudkit.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "CloudKit", "description": "Repository guidance for CloudKit. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-cloudkit.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Data Management · Reference guide</p><h1>CloudKit</h1><p class="lead">Repository guidance for CloudKit. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/frameworks/cloudkit.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#ckcontainer-and-ckdatabase-public-private-shared">CKContainer and CKDatabase (Public, Private, Shared)</a></li>
+<li><a href="#ckrecord-crud-operations">CKRecord CRUD Operations</a><ul>
+<li><a href="#create">Create</a></li>
+<li><a href="#read">Read</a></li>
+<li><a href="#update">Update</a></li>
+<li><a href="#delete">Delete</a></li>
+</ul>
+</li>
+<li><a href="#ckquery-with-nspredicate">CKQuery with NSPredicate</a></li>
+<li><a href="#cksubscription-for-real-time-push">CKSubscription for Real-Time Push</a></li>
+<li><a href="#ckshare-and-sharing-records">CKShare and Sharing Records</a></li>
+<li><a href="#cloudkit-dashboard">CloudKit Dashboard</a></li>
+<li><a href="#integration-with-swiftdatacoredata">Integration with SwiftData/CoreData</a><ul>
+<li><a href="#nspersistentcloudkitcontainer-coredata-cloudkit">NSPersistentCloudKitContainer (CoreData + CloudKit)</a></li>
+<li><a href="#swiftdata-with-cloudkit-ios-17">SwiftData with CloudKit (iOS 17+)</a></li>
+</ul>
+</li>
+<li><a href="#custom-record-zones">Custom Record Zones</a></li>
+<li><a href="#modern-cloudkit-ios-17">Modern CloudKit (iOS 17+)</a><ul>
+<li><a href="#cksyncengine">CKSyncEngine</a></li>
+<li><a href="#cksystemsharinguiobserver">CKSystemSharingUIObserver</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</aside><p>CloudKit is Apple's cloud backend framework providing database storage, authentication, and asset management. It syncs data across devices using iCloud with public, private, and shared databases.</p>
+<h2 id="ckcontainer-and-ckdatabase-public-private-shared">CKContainer and CKDatabase (Public, Private, Shared)</h2>
+<pre><code class="language-swift">import CloudKit
+
+class CloudKitManager: ObservableObject {
+    // Default container matches your app's bundle ID
+    let container = CKContainer.default()
+
+    // Custom container identifier
+    let customContainer = CKContainer(identifier: &quot;iCloud.com.yourapp.name&quot;)
+
+    // Access different databases
+    lazy var publicDB = container.publicCloudDatabase     // Accessible to all users
+    lazy var privateDB = container.privateCloudDatabase    // User's private data (counts toward user's iCloud quota)
+    lazy var sharedDB = container.sharedCloudDatabase      // Data shared with this user by others
+
+    // Check iCloud account status
+    func checkAccountStatus() async throws -&gt; CKAccountStatus {
+        let status = try await container.accountStatus()
+        switch status {
+        case .available:
+            print(&quot;iCloud available&quot;)
+        case .noAccount:
+            print(&quot;No iCloud account signed in&quot;)
+        case .restricted:
+            print(&quot;iCloud restricted by parental controls or MDM&quot;)
+        case .couldNotDetermine:
+            print(&quot;Could not determine iCloud status&quot;)
+        case .temporarilyUnavailable:
+            print(&quot;iCloud temporarily unavailable&quot;)
+        @unknown default:
+            break
+        }
+        return status
+    }
+
+    // Get current user record ID
+    func fetchUserRecordID() async throws -&gt; CKRecord.ID {
+        return try await container.userRecordID()
+    }
+
+    // Request user discoverability permission
+    func requestPermission() async throws -&gt; CKContainer.ApplicationPermissionStatus {
+        return try await container.requestApplicationPermission(.userDiscoverability)
+    }
+}
+</code></pre>
+<h2 id="ckrecord-crud-operations">CKRecord CRUD Operations</h2>
+<h3 id="create">Create</h3>
+<pre><code class="language-swift">extension CloudKitManager {
+    func createNote(title: String, body: String, image: UIImage?) async throws -&gt; CKRecord {
+        let record = CKRecord(recordType: &quot;Note&quot;)
+        record[&quot;title&quot;] = title as CKRecordValue
+        record[&quot;body&quot;] = body as CKRecordValue
+        record[&quot;createdAt&quot;] = Date() as CKRecordValue
+        record[&quot;tags&quot;] = [&quot;swift&quot;, &quot;cloudkit&quot;] as CKRecordValue  // Arrays are supported
+
+        // Save an image asset
+        if let image = image, let data = image.jpegData(compressionQuality: 0.8) {
+            let tempURL = FileManager.default.temporaryDirectory
+                .appendingPathComponent(UUID().uuidString + &quot;.jpg&quot;)
+            try data.write(to: tempURL)
+            record[&quot;image&quot;] = CKAsset(fileURL: tempURL)
+        }
+
+        // Reference another record
+        let folderRecordID = CKRecord.ID(recordName: &quot;folder-abc&quot;)
+        record[&quot;folder&quot;] = CKRecord.Reference(recordID: folderRecordID, action: .deleteSelf)
+        // .deleteSelf: child is deleted when parent is deleted
+        // .none: no cascade behavior
+
+        let savedRecord = try await privateDB.save(record)
+        return savedRecord
+    }
+}
+</code></pre>
+<h3 id="read">Read</h3>
+<pre><code class="language-swift">extension CloudKitManager {
+    // Fetch a single record by ID
+    func fetchNote(recordID: CKRecord.ID) async throws -&gt; CKRecord {
+        return try await privateDB.record(for: recordID)
+    }
+
+    // Fetch multiple records efficiently
+    func fetchNotes(recordIDs: [CKRecord.ID]) async throws -&gt; [CKRecord] {
+        let results = try await privateDB.records(for: recordIDs)
+        return results.compactMap { _, result in
+            try? result.get()
+        }
+    }
+
+    // Fetch only specific fields (desiredKeys) to reduce bandwidth
+    func fetchNoteTitles(recordIDs: [CKRecord.ID]) async throws -&gt; [CKRecord] {
+        let results = try await privateDB.records(for: recordIDs, desiredKeys: [&quot;title&quot;, &quot;createdAt&quot;])
+        return results.compactMap { _, result in try? result.get() }
+    }
+}
+</code></pre>
+<h3 id="update">Update</h3>
+<pre><code class="language-swift">extension CloudKitManager {
+    func updateNote(recordID: CKRecord.ID, newTitle: String) async throws -&gt; CKRecord {
+        // Fetch the existing record first to get its change tag
+        let record = try await privateDB.record(for: recordID)
+        record[&quot;title&quot;] = newTitle as CKRecordValue
+        record[&quot;modifiedAt&quot;] = Date() as CKRecordValue
+
+        // Save returns the updated record
+        return try await privateDB.save(record)
+    }
+}
+</code></pre>
+<h3 id="delete">Delete</h3>
+<pre><code class="language-swift">extension CloudKitManager {
+    // Delete a single record
+    func deleteNote(recordID: CKRecord.ID) async throws {
+        try await privateDB.deleteRecord(withID: recordID)
+    }
+
+    // Batch operations using modifyRecords
+    func batchSaveAndDelete(
+        toSave: [CKRecord],
+        toDelete: [CKRecord.ID]
+    ) async throws {
+        let (saveResults, deleteResults) = try await privateDB.modifyRecords(
+            saving: toSave,
+            deleting: toDelete,
+            savePolicy: .changedKeys,       // Only upload changed fields
+            atomicityType: .nonAtomic       // .full for all-or-nothing
+        )
+
+        for (id, result) in saveResults {
+            switch result {
+            case .success(let record):
+                print(&quot;Saved: \(record.recordID.recordName)&quot;)
+            case .failure(let error):
+                print(&quot;Save failed for \(id): \(error)&quot;)
+            }
+        }
+        print(&quot;Deleted \(deleteResults.count) records&quot;)
+    }
+}
+</code></pre>
+<h2 id="ckquery-with-nspredicate">CKQuery with NSPredicate</h2>
+<pre><code class="language-swift">extension CloudKitManager {
+    // Fetch all records of a type
+    func fetchAllNotes() async throws -&gt; [CKRecord] {
+        let predicate = NSPredicate(value: true)
+        let query = CKQuery(recordType: &quot;Note&quot;, predicate: predicate)
+        query.sortDescriptors = [NSSortDescriptor(key: &quot;createdAt&quot;, ascending: false)]
+
+        let (results, _) = try await privateDB.records(matching: query)
+        return results.compactMap { _, result in try? result.get() }
+    }
+
+    // Filtered query with string matching
+    func searchNotes(containing text: String) async throws -&gt; [CKRecord] {
+        // Tokenized field queries use CONTAINS; CloudKit also supports
+        // BEGINSWITH, ==, IN, and tokenized full-text search via allTokens
+        let predicate = NSPredicate(format: &quot;title CONTAINS %@&quot;, text)
+        let query = CKQuery(recordType: &quot;Note&quot;, predicate: predicate)
+
+        let (results, _) = try await privateDB.records(matching: query)
+        return results.compactMap { _, result in try? result.get() }
+    }
+
+    // Compound predicates
+    func fetchRecentNotes(after date: Date, tag: String) async throws -&gt; [CKRecord] {
+        let datePredicate = NSPredicate(format: &quot;createdAt &gt; %@&quot;, date as NSDate)
+        let tagPredicate = NSPredicate(format: &quot;tags CONTAINS %@&quot;, tag)
+        let compound = NSCompoundPredicate(
+            andPredicateWithSubpredicates: [datePredicate, tagPredicate]
+        )
+
+        let query = CKQuery(recordType: &quot;Note&quot;, predicate: compound)
+        let (results, _) = try await privateDB.records(matching: query)
+        return results.compactMap { _, result in try? result.get() }
+    }
+
+    // Paginated query using cursor
+    func fetchNotesPaginated(
+        cursor: CKQueryOperation.Cursor? = nil,
+        limit: Int = 20
+    ) async throws -&gt; ([CKRecord], CKQueryOperation.Cursor?) {
+        if let cursor = cursor {
+            let (results, newCursor) = try await privateDB.records(
+                continuingMatchFrom: cursor,
+                resultsLimit: limit
+            )
+            let records = results.compactMap { _, result in try? result.get() }
+            return (records, newCursor)
+        } else {
+            let query = CKQuery(recordType: &quot;Note&quot;, predicate: NSPredicate(value: true))
+            query.sortDescriptors = [NSSortDescriptor(key: &quot;createdAt&quot;, ascending: false)]
+
+            let (results, newCursor) = try await privateDB.records(
+                matching: query,
+                resultsLimit: limit
+            )
+            let records = results.compactMap { _, result in try? result.get() }
+            return (records, newCursor)
+        }
+    }
+}
+</code></pre>
+<h2 id="cksubscription-for-real-time-push">CKSubscription for Real-Time Push</h2>
+<pre><code class="language-swift">extension CloudKitManager {
+    // Query subscription: fires when records matching a predicate change
+    func subscribeToNoteChanges() async throws {
+        let subscription = CKQuerySubscription(
+            recordType: &quot;Note&quot;,
+            predicate: NSPredicate(value: true),
+            subscriptionID: &quot;note-changes&quot;,
+            options: [.firesOnRecordCreation, .firesOnRecordUpdate, .firesOnRecordDeletion]
+        )
+
+        let notification = CKSubscription.NotificationInfo()
+        notification.title = &quot;Note Updated&quot;
+        notification.alertBody = &quot;A note was modified&quot;
+        notification.shouldBadge = true
+        notification.soundName = &quot;default&quot;
+        notification.shouldSendContentAvailable = true  // Silent push for background refresh
+
+        subscription.notificationInfo = notification
+
+        try await privateDB.save(subscription)
+    }
+
+    // Database subscription: fires on any change in the database
+    func subscribeToDatabaseChanges() async throws {
+        let subscription = CKDatabaseSubscription(subscriptionID: &quot;private-db-changes&quot;)
+
+        let notification = CKSubscription.NotificationInfo()
+        notification.shouldSendContentAvailable = true
+        subscription.notificationInfo = notification
+
+        try await privateDB.save(subscription)
+    }
+
+    // Fetch changes since last sync using server change tokens
+    func fetchChanges(in zoneID: CKRecordZone.ID = .default) async throws {
+        // Load saved token
+        let tokenData = UserDefaults.standard.data(forKey: &quot;zoneChangeToken-\(zoneID.zoneName)&quot;)
+        let token = tokenData.flatMap {
+            try? NSKeyedUnarchiver.unarchivedObject(ofClass: CKServerChangeToken.self, from: $0)
+        }
+
+        let changes = try await privateDB.recordZoneChanges(inZoneWith: zoneID, since: token)
+
+        for modification in changes.modificationResultsByID {
+            let (recordID, result) = modification
+            switch result {
+            case .success(let modification):
+                print(&quot;Modified: \(recordID.recordName), record: \(modification.record.recordType)&quot;)
+            case .failure(let error):
+                print(&quot;Error for \(recordID): \(error)&quot;)
+            }
+        }
+
+        for deletion in changes.deletions {
+            print(&quot;Deleted: \(deletion.recordID.recordName), type: \(deletion.recordType)&quot;)
+        }
+
+        // Persist the new change token for next sync
+        if let newToken = changes.changeToken,
+           let data = try? NSKeyedArchiver.archivedData(
+               withRootObject: newToken, requiringSecureCoding: true
+           ) {
+            UserDefaults.standard.set(data, forKey: &quot;zoneChangeToken-\(zoneID.zoneName)&quot;)
+        }
+    }
+}
+</code></pre>
+<h2 id="ckshare-and-sharing-records">CKShare and Sharing Records</h2>
+<pre><code class="language-swift">extension CloudKitManager {
+    // Create a share for a record
+    func shareRecord(_ record: CKRecord) async throws -&gt; CKShare {
+        let share = CKShare(rootRecord: record)
+        share[CKShare.SystemFieldKey.title] = &quot;Shared Note&quot; as CKRecordValue
+        share[CKShare.SystemFieldKey.shareType] = &quot;com.app.note&quot; as CKRecordValue
+        share.publicPermission = .readOnly  // .none, .readOnly, .readWrite
+
+        // Save both the record and the share atomically
+        let (savedResults, _) = try await privateDB.modifyRecords(
+            saving: [record, share],
+            deleting: []
+        )
+
+        guard let savedShare = try? savedResults[share.recordID]?.get() as? CKShare else {
+            throw CloudKitError.shareFailed
+        }
+
+        // share.url contains the URL to send to participants
+        print(&quot;Share URL: \(savedShare.url?.absoluteString ?? &quot;none&quot;)&quot;)
+
+        return savedShare
+    }
+
+    // Accept a share from a URL
+    func acceptShare(metadata: CKShare.Metadata) async throws {
+        try await container.accept(metadata)
+    }
+
+    // Fetch records shared with this user
+    func fetchSharedRecords() async throws -&gt; [CKRecord] {
+        let zones = try await sharedDB.allRecordZones()
+        var allRecords: [CKRecord] = []
+
+        for zone in zones {
+            let query = CKQuery(recordType: &quot;Note&quot;, predicate: NSPredicate(value: true))
+            let (results, _) = try await sharedDB.records(
+                matching: query,
+                inZoneWith: zone.zoneID
+            )
+            allRecords += results.compactMap { _, result in try? result.get() }
+        }
+        return allRecords
+    }
+}
+
+// SwiftUI wrapper for the system sharing controller
+struct CloudSharingView: UIViewControllerRepresentable {
+    let share: CKShare
+    let container: CKContainer
+
+    func makeUIViewController(context: Context) -&gt; UICloudSharingController {
+        let controller = UICloudSharingController(share: share, container: container)
+        controller.availablePermissions = [.allowReadOnly, .allowReadWrite, .allowPrivate]
+        return controller
+    }
+
+    func updateUIViewController(_ uiViewController: UICloudSharingController, context: Context) {}
+}
+
+enum CloudKitError: Error {
+    case shareFailed
+    case accountUnavailable
+    case recordNotFound
+}
+</code></pre>
+<h2 id="cloudkit-dashboard">CloudKit Dashboard</h2>
+<p>The CloudKit Dashboard at https://icloud.developer.apple.com provides:</p>
+<ul>
+<li><strong>Schema</strong>: View and modify record types, fields, and indexes. Add queryable and sortable indexes for any field used in CKQuery predicates or sort descriptors.</li>
+<li><strong>Data Browser</strong>: Query, create, edit, and delete records in public, private (via Team Development), and shared databases.</li>
+<li><strong>Logs</strong>: View server-side request logs, error breakdowns, and push notification delivery status.</li>
+<li><strong>Telemetry</strong>: Monitor request counts, error rates, latency, and data transfer metrics.</li>
+<li><strong>Subscriptions</strong>: View and manage active CKSubscription objects.</li>
+<li><strong>Security Roles</strong>: Control public database access with custom roles (e.g., allowing authenticated users to create records).</li>
+<li><strong>Deployment</strong>: Promote your development schema to production. This is a one-way operation and cannot be reversed.</li>
+<li><strong>Reset Development</strong>: Reset the development environment schema to match production when needed.</li>
+</ul>
+<h2 id="integration-with-swiftdatacoredata">Integration with SwiftData/CoreData</h2>
+<h3 id="nspersistentcloudkitcontainer-coredata-cloudkit">NSPersistentCloudKitContainer (CoreData + CloudKit)</h3>
+<pre><code class="language-swift">import CoreData
+
+class PersistenceController {
+    static let shared = PersistenceController()
+
+    let container: NSPersistentCloudKitContainer
+
+    init() {
+        container = NSPersistentCloudKitContainer(name: &quot;Model&quot;)
+
+        guard let description = container.persistentStoreDescriptions.first else {
+            fatalError(&quot;No persistent store description found&quot;)
+        }
+
+        // Enable CloudKit sync
+        description.cloudKitContainerOptions = NSPersistentCloudKitContainerOptions(
+            containerIdentifier: &quot;iCloud.com.yourapp.name&quot;
+        )
+
+        // Required: enable remote change notifications
+        description.setOption(
+            true as NSNumber,
+            forKey: NSPersistentStoreRemoteChangeNotificationPostOptionKey
+        )
+
+        // Required: enable history tracking for CloudKit sync
+        description.setOption(
+            true as NSNumber,
+            forKey: NSPersistentHistoryTrackingKey
+        )
+
+        container.loadPersistentStores { description, error in
+            if let error = error {
+                fatalError(&quot;Core Data store failed to load: \(error)&quot;)
+            }
+        }
+
+        // Automatically merge remote changes into the view context
+        container.viewContext.automaticallyMergesChangesFromParent = true
+        container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+
+        // Observe remote changes
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleRemoteChange),
+            name: .NSPersistentStoreRemoteChange,
+            object: container.persistentStoreCoordinator
+        )
+    }
+
+    @objc func handleRemoteChange(_ notification: Notification) {
+        print(&quot;Remote change received from CloudKit&quot;)
+        // Process persistent history if needed
+    }
+}
+</code></pre>
+<h3 id="swiftdata-with-cloudkit-ios-17">SwiftData with CloudKit (iOS 17+)</h3>
+<pre><code class="language-swift">import SwiftData
+
+@Model
+class Note {
+    var title: String
+    var body: String
+    var createdAt: Date
+    var tags: [String]
+
+    // Relationships must be optional for CloudKit compatibility
+    var folder: Folder?
+
+    init(title: String, body: String) {
+        self.title = title
+        self.body = body
+        self.createdAt = Date()
+        self.tags = []
+    }
+}
+
+// SwiftData syncs with CloudKit automatically when the iCloud capability is enabled
+@main
+struct MyApp: App {
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+        }
+        .modelContainer(for: [Note.self])
+    }
+}
+
+// Requirements for SwiftData + CloudKit:
+// 1. Enable iCloud and CloudKit in Signing &amp; Capabilities
+// 2. All stored properties must have default values or be optional
+// 3. No unique constraints (CloudKit does not support them)
+// 4. Relationships must be optional with no required cascade rules
+// 5. @Attribute(.externalStorage) maps to CKAsset for large data
+</code></pre>
+<h2 id="custom-record-zones">Custom Record Zones</h2>
+<pre><code class="language-swift">extension CloudKitManager {
+    // Custom zones allow atomic commits and change tracking
+    func createCustomZone() async throws -&gt; CKRecordZone {
+        let zone = CKRecordZone(zoneName: &quot;NotesZone&quot;)
+        let savedZone = try await privateDB.save(zone)
+        return savedZone
+    }
+
+    func saveToCustomZone(title: String) async throws -&gt; CKRecord {
+        let zoneID = CKRecordZone.ID(zoneName: &quot;NotesZone&quot;)
+        let recordID = CKRecord.ID(recordName: UUID().uuidString, zoneID: zoneID)
+        let record = CKRecord(recordType: &quot;Note&quot;, recordID: recordID)
+        record[&quot;title&quot;] = title as CKRecordValue
+        return try await privateDB.save(record)
+    }
+}
+</code></pre>
+<h2 id="modern-cloudkit-ios-17">Modern CloudKit (iOS 17+)</h2>
+<h3 id="cksyncengine">CKSyncEngine</h3>
+<p><code>CKSyncEngine</code> is Apple's recommended sync engine that replaces manual change token management, zone fetching, and subscription handling. It encapsulates the full sync lifecycle -- scheduling, batching, retry logic, conflict resolution, and account change handling -- into a single, delegate-driven API.</p>
+<p><strong>Why CKSyncEngine replaces manual change token fetching</strong>: Previously, developers had to manually manage <code>CKServerChangeToken</code> objects, handle <code>CKFetchRecordZoneChangesOperation</code>, process <code>CKModifyRecordZonesOperation</code>, manage retry and error logic, and track database subscriptions. <code>CKSyncEngine</code> handles all of this automatically, dramatically reducing boilerplate and the surface area for sync bugs.</p>
+<pre><code class="language-swift">import CloudKit
+
+// MARK: - CKSyncEngine Setup
+
+class SyncManager: CKSyncEngineDelegate {
+    let syncEngine: CKSyncEngine
+
+    init() {
+        // Load any previously persisted sync engine state
+        let lastKnownState = Self.loadSyncEngineState()
+
+        // Configure the sync engine
+        let configuration = CKSyncEngine.Configuration(
+            database: CKContainer.default().privateCloudDatabase,
+            stateSerialization: lastKnownState,
+            delegate: self
+        )
+
+        syncEngine = CKSyncEngine(configuration)
+    }
+
+    // MARK: - CKSyncEngineDelegate Methods
+
+    // Called when the sync engine has events to process
+    func handleEvent(_ event: CKSyncEngine.Event, syncEngine: CKSyncEngine) async {
+        switch event {
+        case .stateUpdate(let stateUpdate):
+            // Persist the sync engine state so it can resume after app relaunch
+            Self.saveSyncEngineState(stateUpdate.stateSerialization)
+
+        case .accountChange(let event):
+            handleAccountChange(event)
+
+        case .fetchedDatabaseChanges(let event):
+            // New zones discovered or zones deleted on the server
+            for modification in event.modifications {
+                print(&quot;Zone modified: \(modification.zoneID)&quot;)
+            }
+            for deletion in event.deletions {
+                print(&quot;Zone deleted: \(deletion.zoneID)&quot;)
+                // Remove local data for this zone
+            }
+
+        case .fetchedRecordZoneChanges(let event):
+            handleFetchedChanges(event)
+
+        case .sentDatabaseChanges(let event):
+            // Confirmation that zone creates/deletes were sent
+            for saved in event.savedZones {
+                print(&quot;Zone saved to server: \(saved.zoneID)&quot;)
+            }
+
+        case .sentRecordZoneChanges(let event):
+            handleSentChanges(event)
+
+        case .willFetchChanges:
+            // Prepare for incoming changes (e.g., show sync indicator)
+            break
+
+        case .didFetchChanges:
+            // All fetched changes have been processed
+            break
+
+        case .willSendChanges:
+            break
+
+        case .didSendChanges:
+            break
+
+        @unknown default:
+            break
+        }
+    }
+
+    // Called when the engine needs the next batch of records to send
+    func nextRecordZoneChangeBatch(
+        _ context: CKSyncEngine.SendChangesContext,
+        syncEngine: CKSyncEngine
+    ) async -&gt; CKSyncEngine.RecordZoneChangeBatch? {
+        // Get pending changes from the engine's state
+        let pendingChanges = syncEngine.state.pendingRecordZoneChanges
+
+        // Build a batch from your local data
+        let batch = await CKSyncEngine.RecordZoneChangeBatch(pendingChanges: pendingChanges) { recordID in
+            // Return the CKRecord for this ID from your local store
+            return self.buildRecord(for: recordID)
+        }
+
+        return batch
+    }
+
+    // MARK: - Handling Fetched Changes
+
+    private func handleFetchedChanges(_ event: CKSyncEngine.Event.FetchedRecordZoneChanges) {
+        // Process modifications (inserts and updates from the server)
+        for modification in event.modifications {
+            let record = modification.record
+            // Upsert into your local store
+            saveLocally(record)
+            print(&quot;Fetched: \(record.recordType) - \(record.recordID.recordName)&quot;)
+        }
+
+        // Process deletions
+        for deletion in event.deletions {
+            deleteLocally(recordID: deletion.recordID)
+            print(&quot;Deleted remotely: \(deletion.recordID.recordName)&quot;)
+        }
+    }
+
+    // MARK: - Handling Sent Changes and Conflicts
+
+    private func handleSentChanges(_ event: CKSyncEngine.Event.SentRecordZoneChanges) {
+        // Records successfully saved to the server
+        for saved in event.savedRecords {
+            // Update local store with server-assigned system fields
+            updateLocalSystemFields(saved)
+            print(&quot;Sent to server: \(saved.recordID.recordName)&quot;)
+        }
+
+        // Records that failed to save
+        for failed in event.failedRecordSaves {
+            let recordID = failed.record.recordID
+
+            switch failed.error.code {
+            case .serverRecordChanged:
+                // CONFLICT: The server has a newer version
+                // Resolve by merging or choosing server/client wins
+                if let serverRecord = failed.error.serverRecord {
+                    resolveConflict(
+                        clientRecord: failed.record,
+                        serverRecord: serverRecord
+                    )
+                }
+
+            case .zoneNotFound:
+                // Zone doesn't exist yet; the engine will auto-create it on next sync
+                break
+
+            case .unknownItem:
+                // Record was already deleted on the server
+                deleteLocally(recordID: recordID)
+
+            default:
+                print(&quot;Failed to save \(recordID): \(failed.error)&quot;)
+            }
+        }
+
+        // Deletions confirmed
+        for deletedID in event.deletedRecordIDs {
+            print(&quot;Server confirmed deletion: \(deletedID.recordName)&quot;)
+        }
+    }
+
+    // MARK: - Conflict Resolution
+
+    private func resolveConflict(clientRecord: CKRecord, serverRecord: CKRecord) {
+        // Strategy: merge non-conflicting fields, server wins for conflicts
+        let mergedRecord = serverRecord
+
+        // Example: merge by taking the latest modification date per field
+        // Or implement custom logic per record type
+        if let clientModified = clientRecord.modificationDate,
+           let serverModified = serverRecord.modificationDate,
+           clientModified &gt; serverModified {
+            // Client is newer for this field — apply client changes
+            for key in clientRecord.allKeys() {
+                mergedRecord[key] = clientRecord[key]
+            }
+        }
+
+        // Tell the engine to retry with the merged record
+        syncEngine.state.add(pendingRecordZoneChanges: [
+            .saveRecord(mergedRecord.recordID)
+        ])
+    }
+
+    // MARK: - Account Changes
+
+    private func handleAccountChange(_ event: CKSyncEngine.Event.AccountChange) {
+        switch event.changeType {
+        case .signIn:
+            // User signed into iCloud — start syncing
+            print(&quot;iCloud account signed in&quot;)
+
+        case .switchAccounts:
+            // Different iCloud account — clear local cache and re-sync
+            clearLocalData()
+            print(&quot;iCloud account switched&quot;)
+
+        case .signOut:
+            // User signed out — optionally keep local data or clear it
+            print(&quot;iCloud account signed out&quot;)
+
+        @unknown default:
+            break
+        }
+    }
+
+    // MARK: - Scheduling Sync
+
+    func addPendingChange(recordID: CKRecord.ID) {
+        // Tell the engine there's a local change to sync
+        syncEngine.state.add(pendingRecordZoneChanges: [
+            .saveRecord(recordID)
+        ])
+    }
+
+    func addPendingDeletion(recordID: CKRecord.ID) {
+        syncEngine.state.add(pendingRecordZoneChanges: [
+            .deleteRecord(recordID)
+        ])
+    }
+
+    // MARK: - State Persistence
+
+    private static func saveSyncEngineState(_ state: CKSyncEngine.State.Serialization) {
+        if let data = try? JSONEncoder().encode(state) {
+            UserDefaults.standard.set(data, forKey: &quot;ckSyncEngineState&quot;)
+        }
+    }
+
+    private static func loadSyncEngineState() -&gt; CKSyncEngine.State.Serialization? {
+        guard let data = UserDefaults.standard.data(forKey: &quot;ckSyncEngineState&quot;) else { return nil }
+        return try? JSONDecoder().decode(CKSyncEngine.State.Serialization.self, from: data)
+    }
+
+    // MARK: - Local Store Helpers (implement with your persistence layer)
+
+    private func buildRecord(for recordID: CKRecord.ID) -&gt; CKRecord? {
+        // Fetch your local model and convert to CKRecord
+        return nil
+    }
+
+    private func saveLocally(_ record: CKRecord) {
+        // Insert or update in your local database (SwiftData, CoreData, etc.)
+    }
+
+    private func deleteLocally(recordID: CKRecord.ID) {
+        // Delete from your local database
+    }
+
+    private func updateLocalSystemFields(_ record: CKRecord) {
+        // Store the server's changeTag and other system fields locally
+    }
+
+    private func clearLocalData() {
+        // Clear all local synced data on account switch
+    }
+}
+</code></pre>
+<h3 id="cksystemsharinguiobserver">CKSystemSharingUIObserver</h3>
+<p><code>CKSystemSharingUIObserver</code> provides modern observation of CloudKit sharing UI events, allowing your app to react when the system sharing controller saves a share or encounters an error.</p>
+<pre><code class="language-swift">import CloudKit
+
+class SharingManager {
+    private var sharingObserver: CKSystemSharingUIObserver?
+
+    func observeSharingUI(for container: CKContainer) {
+        sharingObserver = CKSystemSharingUIObserver(container)
+
+        // Observe when a share is saved from the system UI
+        sharingObserver?.systemSharingUIDidSaveShareBlock = { recordID, result in
+            switch result {
+            case .success(let share):
+                print(&quot;Share saved: \(share.url?.absoluteString ?? &quot;no URL&quot;)&quot;)
+                // Update your UI to reflect the share
+            case .failure(let error):
+                print(&quot;Share save failed: \(error)&quot;)
+            }
+        }
+
+        // Observe when a share is stopped from the system UI
+        sharingObserver?.systemSharingUIDidStopSharingBlock = { recordID, result in
+            switch result {
+            case .success:
+                print(&quot;Sharing stopped for record: \(recordID)&quot;)
+                // Update your UI to remove sharing indicators
+            case .failure(let error):
+                print(&quot;Stop sharing failed: \(error)&quot;)
+            }
+        }
+    }
+}
+</code></pre></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

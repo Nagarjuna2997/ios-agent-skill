@@ -1,0 +1,635 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CoreNFC — iOS Agent Skill</title><meta name="description" content="Repository guidance for Core NFC. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-hardware-core-nfc.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="CoreNFC"><meta property="og:description" content="Repository guidance for Core NFC. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-hardware-core-nfc.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "CoreNFC", "description": "Repository guidance for Core NFC. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-hardware-core-nfc.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Health, Hardware, and Sensors · Reference guide</p><h1>CoreNFC</h1><p class="lead">Repository guidance for Core NFC. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/frameworks/hardware/core-nfc.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#nfcndefreadersession-setup-and-entitlements">NFCNDEFReaderSession Setup and Entitlements</a></li>
+<li><a href="#reading-ndef-tags">Reading NDEF Tags</a></li>
+<li><a href="#parsing-ndef-payloads-url-text-custom">Parsing NDEF Payloads — URL, Text, Custom</a></li>
+<li><a href="#writing-to-ndef-tags">Writing to NDEF Tags</a></li>
+<li><a href="#nfctagreadersession-iso-14443-iso-15693-felica">NFCTagReaderSession — ISO 14443, ISO 15693, FeliCa</a></li>
+<li><a href="#background-tag-reading">Background Tag Reading</a></li>
+<li><a href="#error-handling">Error Handling</a></li>
+<li><a href="#complete-nfc-tag-readerwriter-example">Complete NFC Tag Reader/Writer Example</a></li>
+</ul>
+</div>
+</aside><h2 id="nfcndefreadersession-setup-and-entitlements">NFCNDEFReaderSession Setup and Entitlements</h2>
+<p>Requirements:
+- iPhone 7 or later
+- Add <code>Near Field Communication Tag Reading</code> capability in Xcode
+- Add <code>NFCReaderUsageDescription</code> to <code>Info.plist</code>
+- Add NFC entitlement to your provisioning profile</p>
+<p><code>Info.plist</code> entries:</p>
+<pre><code class="language-xml">&lt;key&gt;NFCReaderUsageDescription&lt;/key&gt;
+&lt;string&gt;This app reads NFC tags to retrieve information.&lt;/string&gt;
+
+&lt;!-- For background tag reading --&gt;
+&lt;key&gt;com.apple.developer.associated-application-identifier&lt;/key&gt;
+&lt;string&gt;$(TeamIdentifierPrefix)com.example.app&lt;/string&gt;
+</code></pre>
+<p>Entitlements file (<code>.entitlements</code>):</p>
+<pre><code class="language-xml">&lt;key&gt;com.apple.developer.nfc.readersession.formats&lt;/key&gt;
+&lt;array&gt;
+    &lt;string&gt;NDEF&lt;/string&gt;
+    &lt;string&gt;TAG&lt;/string&gt;
+&lt;/array&gt;
+</code></pre>
+<pre><code class="language-swift">import CoreNFC
+
+@Observable
+class NFCManager: NSObject {
+    var scannedMessage: String = &quot;&quot;
+    var scannedRecords: [NFCRecord] = []
+    var isScanning = false
+    var error: Error?
+
+    private var ndefSession: NFCNDEFReaderSession?
+    private var writeMessage: NFCNDEFMessage?
+
+    var isNFCAvailable: Bool {
+        NFCNDEFReaderSession.readingAvailable
+    }
+}
+
+struct NFCRecord: Identifiable {
+    let id = UUID()
+    let type: String
+    let payload: String
+    let rawData: Data
+}
+</code></pre>
+<h2 id="reading-ndef-tags">Reading NDEF Tags</h2>
+<pre><code class="language-swift">extension NFCManager: NFCNDEFReaderSessionDelegate {
+    func startReading() {
+        guard isNFCAvailable else {
+            error = NFCError.notAvailable
+            return
+        }
+
+        ndefSession = NFCNDEFReaderSession(
+            delegate: self,
+            queue: nil,
+            invalidateAfterFirstRead: true
+        )
+        ndefSession?.alertMessage = &quot;Hold your iPhone near an NFC tag.&quot;
+        ndefSession?.begin()
+        isScanning = true
+    }
+
+    // MARK: - NFCNDEFReaderSessionDelegate
+
+    func readerSessionDidBecomeActive(_ session: NFCNDEFReaderSession) {
+        // Session is active and scanning
+    }
+
+    func readerSession(
+        _ session: NFCNDEFReaderSession,
+        didDetectNDEFs messages: [NFCNDEFMessage]
+    ) {
+        var records: [NFCRecord] = []
+
+        for message in messages {
+            for record in message.records {
+                let parsed = parseNDEFRecord(record)
+                records.append(parsed)
+            }
+        }
+
+        Task { @MainActor in
+            self.scannedRecords = records
+            self.scannedMessage = records.map(\.payload).joined(separator: &quot;\n&quot;)
+            self.isScanning = false
+        }
+    }
+
+    func readerSession(
+        _ session: NFCNDEFReaderSession,
+        didInvalidateWithError error: Error
+    ) {
+        let readerError = error as? NFCReaderError
+
+        Task { @MainActor in
+            // User cancelled is not a real error
+            if readerError?.code != .readerSessionInvalidationErrorUserCanceled {
+                self.error = error
+            }
+            self.isScanning = false
+        }
+    }
+}
+</code></pre>
+<h2 id="parsing-ndef-payloads-url-text-custom">Parsing NDEF Payloads — URL, Text, Custom</h2>
+<pre><code class="language-swift">extension NFCManager {
+    func parseNDEFRecord(_ record: NFCNDEFPayload) -&gt; NFCRecord {
+        let typeString = String(data: record.type, encoding: .utf8) ?? &quot;Unknown&quot;
+
+        switch record.typeNameFormat {
+        case .nfcWellKnown:
+            return parseWellKnownRecord(record, typeString: typeString)
+        case .media:
+            let mimeType = typeString
+            let payload = String(data: record.payload, encoding: .utf8) ?? &quot;&quot;
+            return NFCRecord(type: mimeType, payload: payload, rawData: record.payload)
+        case .absoluteURI:
+            let uri = String(data: record.payload, encoding: .utf8) ?? &quot;&quot;
+            return NFCRecord(type: &quot;URI&quot;, payload: uri, rawData: record.payload)
+        case .nfcExternal:
+            let payload = String(data: record.payload, encoding: .utf8) ?? &quot;&quot;
+            return NFCRecord(type: &quot;External: \(typeString)&quot;, payload: payload, rawData: record.payload)
+        default:
+            return NFCRecord(
+                type: &quot;Unknown&quot;,
+                payload: record.payload.map { String(format: &quot;%02x&quot;, $0) }.joined(),
+                rawData: record.payload
+            )
+        }
+    }
+
+    private func parseWellKnownRecord(
+        _ record: NFCNDEFPayload,
+        typeString: String
+    ) -&gt; NFCRecord {
+        switch typeString {
+        case &quot;T&quot;:
+            // Text record
+            return parseTextRecord(record)
+        case &quot;U&quot;:
+            // URI record
+            return parseURIRecord(record)
+        default:
+            let payload = String(data: record.payload, encoding: .utf8) ?? &quot;&quot;
+            return NFCRecord(type: typeString, payload: payload, rawData: record.payload)
+        }
+    }
+
+    private func parseTextRecord(_ record: NFCNDEFPayload) -&gt; NFCRecord {
+        let payload = record.payload
+        guard !payload.isEmpty else {
+            return NFCRecord(type: &quot;Text&quot;, payload: &quot;&quot;, rawData: payload)
+        }
+
+        let statusByte = payload[0]
+        let languageCodeLength = Int(statusByte &amp; 0x3F)
+        let isUTF16 = (statusByte &amp; 0x80) != 0
+
+        let textStartIndex = 1 + languageCodeLength
+        guard textStartIndex &lt; payload.count else {
+            return NFCRecord(type: &quot;Text&quot;, payload: &quot;&quot;, rawData: payload)
+        }
+
+        let textData = payload.subdata(in: textStartIndex..&lt;payload.count)
+        let encoding: String.Encoding = isUTF16 ? .utf16 : .utf8
+        let text = String(data: textData, encoding: encoding) ?? &quot;&quot;
+
+        return NFCRecord(type: &quot;Text&quot;, payload: text, rawData: payload)
+    }
+
+    private func parseURIRecord(_ record: NFCNDEFPayload) -&gt; NFCRecord {
+        // Use Apple's built-in helper
+        if let url = record.wellKnownTypeURIPayload() {
+            return NFCRecord(type: &quot;URL&quot;, payload: url.absoluteString, rawData: record.payload)
+        }
+
+        // Manual parsing fallback
+        let prefixes = [
+            0x00: &quot;&quot;,
+            0x01: &quot;http://www.&quot;,
+            0x02: &quot;https://www.&quot;,
+            0x03: &quot;http://&quot;,
+            0x04: &quot;https://&quot;,
+            0x05: &quot;tel:&quot;,
+            0x06: &quot;mailto:&quot;
+        ]
+
+        let payload = record.payload
+        guard !payload.isEmpty else {
+            return NFCRecord(type: &quot;URL&quot;, payload: &quot;&quot;, rawData: payload)
+        }
+
+        let prefix = prefixes[Int(payload[0])] ?? &quot;&quot;
+        let remainder = String(data: payload.subdata(in: 1..&lt;payload.count), encoding: .utf8) ?? &quot;&quot;
+
+        return NFCRecord(type: &quot;URL&quot;, payload: prefix + remainder, rawData: payload)
+    }
+}
+</code></pre>
+<h2 id="writing-to-ndef-tags">Writing to NDEF Tags</h2>
+<pre><code class="language-swift">extension NFCManager {
+    func startWriting(text: String) {
+        guard isNFCAvailable else {
+            error = NFCError.notAvailable
+            return
+        }
+
+        // Create NDEF message to write
+        guard let textPayload = NFCNDEFPayload.wellKnownTypeTextPayload(
+            string: text,
+            locale: .current
+        ) else {
+            error = NFCError.invalidPayload
+            return
+        }
+
+        writeMessage = NFCNDEFMessage(records: [textPayload])
+
+        ndefSession = NFCNDEFReaderSession(
+            delegate: self,
+            queue: nil,
+            invalidateAfterFirstRead: false  // false to allow writing
+        )
+        ndefSession?.alertMessage = &quot;Hold your iPhone near an NFC tag to write.&quot;
+        ndefSession?.begin()
+        isScanning = true
+    }
+
+    func startWritingURL(_ url: URL) {
+        guard isNFCAvailable else {
+            error = NFCError.notAvailable
+            return
+        }
+
+        guard let urlPayload = NFCNDEFPayload.wellKnownTypeURIPayload(url: url) else {
+            error = NFCError.invalidPayload
+            return
+        }
+
+        writeMessage = NFCNDEFMessage(records: [urlPayload])
+
+        ndefSession = NFCNDEFReaderSession(
+            delegate: self,
+            queue: nil,
+            invalidateAfterFirstRead: false
+        )
+        ndefSession?.alertMessage = &quot;Hold your iPhone near an NFC tag to write.&quot;
+        ndefSession?.begin()
+        isScanning = true
+    }
+
+    // Called when a writable tag is detected
+    func readerSession(
+        _ session: NFCNDEFReaderSession,
+        didDetect tags: [any NFCNDEFTag]
+    ) {
+        guard let tag = tags.first else {
+            session.invalidate(errorMessage: &quot;No tag found.&quot;)
+            return
+        }
+
+        session.connect(to: tag) { [weak self] connectionError in
+            guard connectionError == nil, let self else {
+                session.invalidate(errorMessage: &quot;Connection failed.&quot;)
+                return
+            }
+
+            tag.queryNDEFStatus { status, capacity, error in
+                guard error == nil else {
+                    session.invalidate(errorMessage: &quot;Failed to query tag.&quot;)
+                    return
+                }
+
+                switch status {
+                case .notSupported:
+                    session.invalidate(errorMessage: &quot;Tag is not NDEF formatted.&quot;)
+                case .readOnly:
+                    session.invalidate(errorMessage: &quot;Tag is read-only.&quot;)
+                case .readWrite:
+                    guard let message = self.writeMessage else {
+                        session.invalidate(errorMessage: &quot;No message to write.&quot;)
+                        return
+                    }
+
+                    // Check capacity
+                    let messageLength = message.length
+                    guard messageLength &lt;= capacity else {
+                        session.invalidate(
+                            errorMessage: &quot;Message too large for tag (\(messageLength)/\(capacity) bytes).&quot;
+                        )
+                        return
+                    }
+
+                    tag.writeNDEF(message) { writeError in
+                        if let writeError {
+                            session.invalidate(errorMessage: &quot;Write failed: \(writeError.localizedDescription)&quot;)
+                        } else {
+                            session.alertMessage = &quot;Successfully wrote to tag!&quot;
+                            session.invalidate()
+                        }
+                    }
+                @unknown default:
+                    session.invalidate(errorMessage: &quot;Unknown tag status.&quot;)
+                }
+            }
+        }
+    }
+}
+</code></pre>
+<h2 id="nfctagreadersession-iso-14443-iso-15693-felica">NFCTagReaderSession — ISO 14443, ISO 15693, FeliCa</h2>
+<pre><code class="language-swift">@Observable
+class NFCTagReader: NSObject, NFCTagReaderSessionDelegate {
+    var tagID: String = &quot;&quot;
+    var tagType: String = &quot;&quot;
+
+    private var tagSession: NFCTagReaderSession?
+
+    func startTagReading(pollingOption: NFCTagReaderSession.PollingOption = .iso14443) {
+        guard NFCTagReaderSession.readingAvailable else { return }
+
+        tagSession = NFCTagReaderSession(
+            pollingOption: pollingOption,
+            delegate: self,
+            queue: nil
+        )
+        tagSession?.alertMessage = &quot;Hold your iPhone near the tag.&quot;
+        tagSession?.begin()
+    }
+
+    func tagReaderSessionDidBecomeActive(_ session: NFCTagReaderSession) {}
+
+    func tagReaderSession(
+        _ session: NFCTagReaderSession,
+        didInvalidateWithError error: Error
+    ) {}
+
+    func tagReaderSession(
+        _ session: NFCTagReaderSession,
+        didDetect tags: [NFCTag]
+    ) {
+        guard let tag = tags.first else { return }
+
+        session.connect(to: tag) { error in
+            guard error == nil else {
+                session.invalidate(errorMessage: &quot;Connection failed.&quot;)
+                return
+            }
+
+            switch tag {
+            case .iso7816(let iso7816Tag):
+                // ISO 14443 Type A/B — used by payment cards, passports
+                let identifier = iso7816Tag.identifier
+                    .map { String(format: &quot;%02x&quot;, $0) }
+                    .joined(separator: &quot;:&quot;)
+
+                Task { @MainActor in
+                    self.tagID = identifier
+                    self.tagType = &quot;ISO 7816 (ISO 14443)&quot;
+                }
+
+                // Send APDU command
+                let apdu = NFCISO7816APDU(
+                    instructionClass: 0x00,
+                    instructionCode: 0xB0,
+                    p1Parameter: 0x00,
+                    p2Parameter: 0x00,
+                    data: Data(),
+                    expectedResponseLength: 256
+                )
+                iso7816Tag.sendCommand(apdu: apdu) { responseData, sw1, sw2, error in
+                    // Process response
+                    session.alertMessage = &quot;Tag read successfully.&quot;
+                    session.invalidate()
+                }
+
+            case .iso15693(let iso15693Tag):
+                // ISO 15693 — NFC-V, vicinity cards
+                let identifier = iso15693Tag.identifier
+                    .map { String(format: &quot;%02x&quot;, $0) }
+                    .joined(separator: &quot;:&quot;)
+
+                Task { @MainActor in
+                    self.tagID = identifier
+                    self.tagType = &quot;ISO 15693&quot;
+                }
+                session.alertMessage = &quot;Tag read successfully.&quot;
+                session.invalidate()
+
+            case .feliCa(let feliCaTag):
+                // FeliCa — used in Japan (Suica, etc.)
+                let idm = feliCaTag.currentIDm
+                    .map { String(format: &quot;%02x&quot;, $0) }
+                    .joined(separator: &quot;:&quot;)
+
+                Task { @MainActor in
+                    self.tagID = idm
+                    self.tagType = &quot;FeliCa&quot;
+                }
+                session.alertMessage = &quot;Tag read successfully.&quot;
+                session.invalidate()
+
+            case .miFare(let miFareTag):
+                // MiFare — NXP tags
+                let identifier = miFareTag.identifier
+                    .map { String(format: &quot;%02x&quot;, $0) }
+                    .joined(separator: &quot;:&quot;)
+
+                Task { @MainActor in
+                    self.tagID = identifier
+                    self.tagType = &quot;MiFare (\(miFareTag.mifareFamily))&quot;
+                }
+                session.alertMessage = &quot;Tag read successfully.&quot;
+                session.invalidate()
+
+            @unknown default:
+                session.invalidate(errorMessage: &quot;Unsupported tag type.&quot;)
+            }
+        }
+    }
+}
+</code></pre>
+<h2 id="background-tag-reading">Background Tag Reading</h2>
+<p>Add to <code>Info.plist</code> for Universal Links-style NFC launch:</p>
+<pre><code class="language-xml">&lt;key&gt;com.apple.developer.associated-domains&lt;/key&gt;
+&lt;array&gt;
+    &lt;string&gt;applinks:example.com&lt;/string&gt;
+&lt;/array&gt;
+</code></pre>
+<pre><code class="language-swift">import SwiftUI
+
+// Handle background tag reading in your App
+@main
+struct NFCApp: App {
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+                .onContinueUserActivity(
+                    NSUserActivityTypeBrowsingWeb
+                ) { userActivity in
+                    // Handle NFC tag scanned in background
+                    guard let url = userActivity.webpageURL else { return }
+                    handleNFCURL(url)
+                }
+        }
+    }
+
+    func handleNFCURL(_ url: URL) {
+        // Process the URL from the NFC tag
+        // This is called when the user taps the NFC notification
+    }
+}
+</code></pre>
+<h2 id="error-handling">Error Handling</h2>
+<pre><code class="language-swift">enum NFCError: LocalizedError {
+    case notAvailable
+    case invalidPayload
+    case tagNotWritable
+    case messageTooLarge(needed: Int, capacity: Int)
+    case connectionFailed
+    case readFailed(Error)
+    case writeFailed(Error)
+
+    var errorDescription: String? {
+        switch self {
+        case .notAvailable:
+            return &quot;NFC is not available on this device.&quot;
+        case .invalidPayload:
+            return &quot;The NFC payload is invalid.&quot;
+        case .tagNotWritable:
+            return &quot;This NFC tag is read-only.&quot;
+        case .messageTooLarge(let needed, let capacity):
+            return &quot;Message (\(needed) bytes) exceeds tag capacity (\(capacity) bytes).&quot;
+        case .connectionFailed:
+            return &quot;Failed to connect to the NFC tag.&quot;
+        case .readFailed(let error):
+            return &quot;Read failed: \(error.localizedDescription)&quot;
+        case .writeFailed(let error):
+            return &quot;Write failed: \(error.localizedDescription)&quot;
+        }
+    }
+}
+</code></pre>
+<h2 id="complete-nfc-tag-readerwriter-example">Complete NFC Tag Reader/Writer Example</h2>
+<pre><code class="language-swift">import SwiftUI
+import CoreNFC
+
+struct NFCReaderWriterView: View {
+    @State private var nfcManager = NFCManager()
+    @State private var writeText = &quot;&quot;
+    @State private var writeURL = &quot;&quot;
+    @State private var selectedMode: NFCMode = .read
+
+    enum NFCMode: String, CaseIterable {
+        case read = &quot;Read&quot;
+        case writeText = &quot;Write Text&quot;
+        case writeURL = &quot;Write URL&quot;
+    }
+
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 24) {
+                // Mode picker
+                Picker(&quot;Mode&quot;, selection: $selectedMode) {
+                    ForEach(NFCMode.allCases, id: \.self) { mode in
+                        Text(mode.rawValue).tag(mode)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .padding(.horizontal)
+
+                switch selectedMode {
+                case .read:
+                    readModeView
+                case .writeText:
+                    writeTextView
+                case .writeURL:
+                    writeURLView
+                }
+
+                Spacer()
+
+                // NFC availability indicator
+                if !nfcManager.isNFCAvailable {
+                    Label(&quot;NFC not available on this device&quot;, systemImage: &quot;xmark.circle&quot;)
+                        .foregroundStyle(.red)
+                        .font(.caption)
+                }
+            }
+            .navigationTitle(&quot;NFC Tags&quot;)
+        }
+    }
+
+    var readModeView: some View {
+        VStack(spacing: 20) {
+            Image(systemName: &quot;wave.3.right&quot;)
+                .font(.system(size: 60))
+                .foregroundStyle(.blue)
+                .symbolEffect(.variableColor.iterative, isActive: nfcManager.isScanning)
+
+            Button {
+                nfcManager.startReading()
+            } label: {
+                Label(&quot;Scan NFC Tag&quot;, systemImage: &quot;sensor.tag.radiowaves.forward.fill&quot;)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(.blue.gradient, in: RoundedRectangle(cornerRadius: 14))
+                    .foregroundStyle(.white)
+                    .font(.headline)
+            }
+            .disabled(!nfcManager.isNFCAvailable)
+            .padding(.horizontal)
+
+            // Results
+            if !nfcManager.scannedRecords.isEmpty {
+                List(nfcManager.scannedRecords) { record in
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(record.type)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 2)
+                            .background(.blue.opacity(0.1), in: Capsule())
+
+                        Text(record.payload)
+                            .font(.body)
+                            .textSelection(.enabled)
+                    }
+                    .padding(.vertical, 4)
+                }
+                .listStyle(.insetGrouped)
+            }
+        }
+    }
+
+    var writeTextView: some View {
+        VStack(spacing: 20) {
+            TextField(&quot;Enter text to write&quot;, text: $writeText, axis: .vertical)
+                .textFieldStyle(.roundedBorder)
+                .lineLimit(3...6)
+                .padding(.horizontal)
+
+            Button {
+                nfcManager.startWriting(text: writeText)
+            } label: {
+                Label(&quot;Write to Tag&quot;, systemImage: &quot;square.and.pencil&quot;)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(.green.gradient, in: RoundedRectangle(cornerRadius: 14))
+                    .foregroundStyle(.white)
+                    .font(.headline)
+            }
+            .disabled(writeText.isEmpty || !nfcManager.isNFCAvailable)
+            .padding(.horizontal)
+        }
+    }
+
+    var writeURLView: some View {
+        VStack(spacing: 20) {
+            TextField(&quot;https://example.com&quot;, text: $writeURL)
+                .textFieldStyle(.roundedBorder)
+                .keyboardType(.URL)
+                .autocapitalization(.none)
+                .padding(.horizontal)
+
+            Button {
+                if let url = URL(string: writeURL) {
+                    nfcManager.startWritingURL(url)
+                }
+            } label: {
+                Label(&quot;Write URL to Tag&quot;, systemImage: &quot;link&quot;)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(.orange.gradient, in: RoundedRectangle(cornerRadius: 14))
+                    .foregroundStyle(.white)
+                    .font(.headline)
+            }
+            .disabled(URL(string: writeURL) == nil || !nfcManager.isNFCAvailable)
+            .padding(.horizontal)
+        }
+    }
+}
+</code></pre></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

@@ -1,0 +1,622 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>UserNotifications — iOS Agent Skill</title><meta name="description" content="Repository guidance for UserNotifications. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-usernotifications.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="UserNotifications"><meta property="og:description" content="Repository guidance for UserNotifications. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-usernotifications.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "UserNotifications", "description": "Repository guidance for UserNotifications. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-usernotifications.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">System Integration · Reference guide</p><h1>UserNotifications</h1><p class="lead">Repository guidance for UserNotifications. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/frameworks/usernotifications.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#unusernotificationcenter-and-requesting-permission">UNUserNotificationCenter and Requesting Permission</a></li>
+<li><a href="#local-notifications-unnotificationrequest-content-triggers">Local Notifications (UNNotificationRequest, Content, Triggers)</a></li>
+<li><a href="#time-calendar-and-location-triggers">Time, Calendar, and Location Triggers</a><ul>
+<li><a href="#time-interval-trigger">Time Interval Trigger</a></li>
+<li><a href="#calendar-trigger">Calendar Trigger</a></li>
+<li><a href="#location-trigger">Location Trigger</a></li>
+</ul>
+</li>
+<li><a href="#notification-actions-and-categories">Notification Actions and Categories</a></li>
+<li><a href="#handling-notification-actions-via-delegate">Handling Notification Actions via Delegate</a></li>
+<li><a href="#remote-notifications-apns-registration-and-handling">Remote Notifications (APNs Registration and Handling)</a></li>
+<li><a href="#notification-service-extension-for-rich-notifications">Notification Service Extension for Rich Notifications</a></li>
+<li><a href="#provisional-and-critical-alerts">Provisional and Critical Alerts</a></li>
+<li><a href="#managing-pending-and-delivered-notifications">Managing Pending and Delivered Notifications</a></li>
+<li><a href="#complete-example-notification-setup-in-app">Complete Example: Notification Setup in App</a></li>
+</ul>
+</div>
+</aside><p>The UserNotifications framework manages local and remote notifications in iOS. It provides a unified API for scheduling, delivering, and handling notifications with rich content, actions, and various trigger types.</p>
+<h2 id="unusernotificationcenter-and-requesting-permission">UNUserNotificationCenter and Requesting Permission</h2>
+<pre><code class="language-swift">import UserNotifications
+
+class NotificationManager: ObservableObject {
+    static let shared = NotificationManager()
+
+    @Published var isAuthorized = false
+
+    let center = UNUserNotificationCenter.current()
+
+    func requestPermission() async -&gt; Bool {
+        do {
+            let granted = try await center.requestAuthorization(
+                options: [.alert, .sound, .badge, .providesAppNotificationSettings]
+            )
+            await MainActor.run { isAuthorized = granted }
+            return granted
+        } catch {
+            print(&quot;Permission request failed: \(error)&quot;)
+            return false
+        }
+    }
+
+    func checkCurrentSettings() async {
+        let settings = await center.notificationSettings()
+
+        switch settings.authorizationStatus {
+        case .authorized:
+            print(&quot;Fully authorized&quot;)
+        case .denied:
+            print(&quot;Denied - direct user to Settings&quot;)
+        case .provisional:
+            print(&quot;Provisional (quiet delivery)&quot;)
+        case .ephemeral:
+            print(&quot;Ephemeral (App Clips)&quot;)
+        case .notDetermined:
+            print(&quot;Not yet requested&quot;)
+        @unknown default:
+            break
+        }
+
+        // Check individual setting states
+        print(&quot;Alert: \(settings.alertSetting)&quot;)
+        print(&quot;Badge: \(settings.badgeSetting)&quot;)
+        print(&quot;Sound: \(settings.soundSetting)&quot;)
+        print(&quot;Lock screen: \(settings.lockScreenSetting)&quot;)
+        print(&quot;Notification center: \(settings.notificationCenterSetting)&quot;)
+    }
+}
+</code></pre>
+<h2 id="local-notifications-unnotificationrequest-content-triggers">Local Notifications (UNNotificationRequest, Content, Triggers)</h2>
+<pre><code class="language-swift">extension NotificationManager {
+    func scheduleLocalNotification() async throws {
+        let content = UNMutableNotificationContent()
+        content.title = &quot;Reminder&quot;
+        content.subtitle = &quot;Daily Check-in&quot;
+        content.body = &quot;Time to log your progress for today.&quot;
+        content.sound = .default
+        content.badge = 1
+        content.userInfo = [&quot;screen&quot;: &quot;journal&quot;, &quot;entryID&quot;: &quot;abc123&quot;]
+
+        // Thread identifier groups related notifications together
+        content.threadIdentifier = &quot;daily-reminders&quot;
+
+        // Relevance score (0.0 to 1.0) affects position in notification summary
+        content.relevanceScore = 0.8
+
+        // Interruption level (iOS 15+)
+        content.interruptionLevel = .timeSensitive
+        // .passive       - silently added to notification center
+        // .active        - default: sound + banner (respects Focus)
+        // .timeSensitive - breaks through most Focus filters
+        // .critical      - plays sound even on mute (requires entitlement)
+
+        // Attach an image
+        if let imageURL = Bundle.main.url(forResource: &quot;notification&quot;, withExtension: &quot;png&quot;) {
+            let attachment = try UNNotificationAttachment(
+                identifier: &quot;image&quot;,
+                url: imageURL,
+                options: [UNNotificationAttachmentOptionsTypeHintKey: &quot;public.png&quot;]
+            )
+            content.attachments = [attachment]
+        }
+
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
+
+        let request = UNNotificationRequest(
+            identifier: UUID().uuidString,
+            content: content,
+            trigger: trigger
+        )
+
+        try await center.add(request)
+    }
+}
+</code></pre>
+<h2 id="time-calendar-and-location-triggers">Time, Calendar, and Location Triggers</h2>
+<h3 id="time-interval-trigger">Time Interval Trigger</h3>
+<pre><code class="language-swift">extension NotificationManager {
+    // Fire after a delay. For repeating, interval must be &gt;= 60 seconds.
+    func scheduleAfterDelay(seconds: TimeInterval, repeating: Bool = false) -&gt; UNTimeIntervalNotificationTrigger {
+        return UNTimeIntervalNotificationTrigger(timeInterval: seconds, repeats: repeating)
+    }
+}
+</code></pre>
+<h3 id="calendar-trigger">Calendar Trigger</h3>
+<pre><code class="language-swift">extension NotificationManager {
+    // Fire at a specific date and time, optionally repeating
+    func scheduleDailyReminder(hour: Int, minute: Int) async throws {
+        let content = UNMutableNotificationContent()
+        content.title = &quot;Daily Reminder&quot;
+        content.body = &quot;Don't forget to check in!&quot;
+        content.sound = .default
+
+        var dateComponents = DateComponents()
+        dateComponents.hour = hour
+        dateComponents.minute = minute
+        // Omitting day/month/year makes it repeat daily at this time
+
+        let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
+
+        let request = UNNotificationRequest(
+            identifier: &quot;daily-reminder&quot;,
+            content: content,
+            trigger: trigger
+        )
+        try await center.add(request)
+    }
+
+    // Weekly trigger: every Monday at 9:00 AM
+    func scheduleWeeklyReminder() async throws {
+        let content = UNMutableNotificationContent()
+        content.title = &quot;Weekly Review&quot;
+        content.body = &quot;Time for your weekly review.&quot;
+        content.sound = .default
+
+        var dateComponents = DateComponents()
+        dateComponents.weekday = 2  // 1 = Sunday, 2 = Monday, ...
+        dateComponents.hour = 9
+        dateComponents.minute = 0
+
+        let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
+        let request = UNNotificationRequest(
+            identifier: &quot;weekly-review&quot;,
+            content: content,
+            trigger: trigger
+        )
+        try await center.add(request)
+    }
+
+    // One-time notification at a specific date
+    func scheduleOnDate(_ date: Date) async throws {
+        let content = UNMutableNotificationContent()
+        content.title = &quot;Scheduled Event&quot;
+        content.body = &quot;Your event is starting now.&quot;
+        content.sound = .default
+
+        let components = Calendar.current.dateComponents(
+            [.year, .month, .day, .hour, .minute],
+            from: date
+        )
+        let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
+        let request = UNNotificationRequest(
+            identifier: &quot;event-\(date.timeIntervalSince1970)&quot;,
+            content: content,
+            trigger: trigger
+        )
+        try await center.add(request)
+    }
+}
+</code></pre>
+<h3 id="location-trigger">Location Trigger</h3>
+<pre><code class="language-swift">import CoreLocation
+
+extension NotificationManager {
+    func scheduleLocationNotification() async throws {
+        let content = UNMutableNotificationContent()
+        content.title = &quot;Welcome!&quot;
+        content.body = &quot;You've arrived at the office.&quot;
+        content.sound = .default
+
+        let coordinate = CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194)
+        let region = CLCircularRegion(center: coordinate, radius: 100, identifier: &quot;office&quot;)
+        region.notifyOnEntry = true
+        region.notifyOnExit = false
+
+        let trigger = UNLocationNotificationTrigger(region: region, repeats: true)
+        let request = UNNotificationRequest(
+            identifier: &quot;office-arrival&quot;,
+            content: content,
+            trigger: trigger
+        )
+        try await center.add(request)
+    }
+}
+</code></pre>
+<h2 id="notification-actions-and-categories">Notification Actions and Categories</h2>
+<pre><code class="language-swift">extension NotificationManager {
+    func registerCategories() {
+        // Define actions
+        let replyAction = UNTextInputNotificationAction(
+            identifier: &quot;REPLY&quot;,
+            title: &quot;Reply&quot;,
+            options: [],
+            textInputButtonTitle: &quot;Send&quot;,
+            textInputPlaceholder: &quot;Type your reply...&quot;
+        )
+
+        let markReadAction = UNNotificationAction(
+            identifier: &quot;MARK_READ&quot;,
+            title: &quot;Mark as Read&quot;,
+            options: .destructive
+        )
+
+        let viewAction = UNNotificationAction(
+            identifier: &quot;VIEW&quot;,
+            title: &quot;View&quot;,
+            options: .foreground  // Opens the app when tapped
+        )
+
+        // Define category grouping related actions
+        let messageCategory = UNNotificationCategory(
+            identifier: &quot;MESSAGE&quot;,
+            actions: [replyAction, markReadAction, viewAction],
+            intentIdentifiers: [],
+            hiddenPreviewsBodyPlaceholder: &quot;New message&quot;,
+            categorySummaryFormat: &quot;%u more messages&quot;,
+            options: [.customDismissAction]  // Notifies delegate when user dismisses
+        )
+
+        let reminderCategory = UNNotificationCategory(
+            identifier: &quot;REMINDER&quot;,
+            actions: [
+                UNNotificationAction(identifier: &quot;SNOOZE&quot;, title: &quot;Snooze 15 min&quot;, options: []),
+                UNNotificationAction(identifier: &quot;COMPLETE&quot;, title: &quot;Mark Complete&quot;, options: .destructive)
+            ],
+            intentIdentifiers: [],
+            options: []
+        )
+
+        center.setNotificationCategories([messageCategory, reminderCategory])
+    }
+
+    // Send a notification with a category
+    func sendMessageNotification(from sender: String, message: String) async throws {
+        let content = UNMutableNotificationContent()
+        content.title = sender
+        content.body = message
+        content.categoryIdentifier = &quot;MESSAGE&quot;
+        content.sound = .default
+        content.threadIdentifier = &quot;chat-\(sender)&quot;
+
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
+        let request = UNNotificationRequest(
+            identifier: UUID().uuidString,
+            content: content,
+            trigger: trigger
+        )
+        try await center.add(request)
+    }
+}
+</code></pre>
+<h2 id="handling-notification-actions-via-delegate">Handling Notification Actions via Delegate</h2>
+<pre><code class="language-swift">class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
+
+    // Called when user taps a notification or performs an action
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        didReceive response: UNNotificationResponse,
+        withCompletionHandler completionHandler: @escaping () -&gt; Void
+    ) {
+        let actionIdentifier = response.actionIdentifier
+        let userInfo = response.notification.request.content.userInfo
+
+        switch actionIdentifier {
+        case &quot;REPLY&quot;:
+            if let textResponse = response as? UNTextInputNotificationResponse {
+                print(&quot;User replied: \(textResponse.userText)&quot;)
+                // Send the reply to your server
+            }
+        case &quot;MARK_READ&quot;:
+            print(&quot;Marked as read&quot;)
+        case &quot;VIEW&quot;:
+            print(&quot;Opening detail view&quot;)
+            // Navigate to the relevant screen using userInfo
+        case &quot;SNOOZE&quot;:
+            // Reschedule the notification for 15 minutes later
+            Task { try? await rescheduleNotification(from: response.notification.request) }
+        case &quot;COMPLETE&quot;:
+            print(&quot;Task marked complete&quot;)
+        case UNNotificationDefaultActionIdentifier:
+            // User tapped the notification banner itself
+            if let screen = userInfo[&quot;screen&quot;] as? String {
+                print(&quot;Navigate to: \(screen)&quot;)
+            }
+        case UNNotificationDismissActionIdentifier:
+            // User dismissed the notification (requires .customDismissAction)
+            print(&quot;Notification dismissed&quot;)
+        default:
+            break
+        }
+
+        completionHandler()
+    }
+
+    // Called when a notification arrives while the app is in the foreground
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification,
+        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -&gt; Void
+    ) {
+        // Show banner even when app is in foreground
+        completionHandler([.banner, .sound, .badge, .list])
+    }
+
+    private func rescheduleNotification(from request: UNNotificationRequest) async throws {
+        let content = request.content.mutableCopy() as! UNMutableNotificationContent
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 900, repeats: false)
+        let newRequest = UNNotificationRequest(
+            identifier: request.identifier + &quot;-snoozed&quot;,
+            content: content,
+            trigger: trigger
+        )
+        try await UNUserNotificationCenter.current().add(newRequest)
+    }
+}
+</code></pre>
+<h2 id="remote-notifications-apns-registration-and-handling">Remote Notifications (APNs Registration and Handling)</h2>
+<pre><code class="language-swift">class AppDelegate: NSObject, UIApplicationDelegate {
+    func application(
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+    ) -&gt; Bool {
+        UNUserNotificationCenter.current().delegate = NotificationDelegate()
+        application.registerForRemoteNotifications()
+        return true
+    }
+
+    // Called when APNs registration succeeds
+    func application(
+        _ application: UIApplication,
+        didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data
+    ) {
+        let token = deviceToken.map { String(format: &quot;%02.2hhx&quot;, $0) }.joined()
+        print(&quot;APNs device token: \(token)&quot;)
+        // Send this token to your backend server
+    }
+
+    // Called when APNs registration fails
+    func application(
+        _ application: UIApplication,
+        didFailToRegisterForRemoteNotificationsWithError error: Error
+    ) {
+        print(&quot;APNs registration failed: \(error)&quot;)
+    }
+
+    // Handle silent push notifications (content-available: 1)
+    func application(
+        _ application: UIApplication,
+        didReceiveRemoteNotification userInfo: [AnyHashable: Any],
+        fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -&gt; Void
+    ) {
+        if let aps = userInfo[&quot;aps&quot;] as? [String: Any],
+           aps[&quot;content-available&quot;] as? Int == 1 {
+            Task {
+                // Perform background data fetch
+                completionHandler(.newData)
+            }
+        } else {
+            completionHandler(.noData)
+        }
+    }
+}
+
+// Example APNs JSON payload (sent from your server):
+// {
+//   &quot;aps&quot;: {
+//     &quot;alert&quot;: {
+//       &quot;title&quot;: &quot;New Message&quot;,
+//       &quot;subtitle&quot;: &quot;From John&quot;,
+//       &quot;body&quot;: &quot;Hey, are you available?&quot;
+//     },
+//     &quot;badge&quot;: 3,
+//     &quot;sound&quot;: &quot;default&quot;,
+//     &quot;category&quot;: &quot;MESSAGE&quot;,
+//     &quot;mutable-content&quot;: 1,
+//     &quot;thread-id&quot;: &quot;chat-john&quot;,
+//     &quot;interruption-level&quot;: &quot;time-sensitive&quot;
+//   },
+//   &quot;messageId&quot;: &quot;msg-123&quot;,
+//   &quot;senderId&quot;: &quot;user-456&quot;
+// }
+</code></pre>
+<h2 id="notification-service-extension-for-rich-notifications">Notification Service Extension for Rich Notifications</h2>
+<p>Create a new target: File &gt; New &gt; Target &gt; Notification Service Extension. This allows modifying remote notification content before display (download images, decrypt payloads, etc.). The extension has approximately 30 seconds to complete.</p>
+<pre><code class="language-swift">// NotificationService.swift (in the service extension target)
+import UserNotifications
+
+class NotificationService: UNNotificationServiceExtension {
+    var contentHandler: ((UNNotificationContent) -&gt; Void)?
+    var bestAttemptContent: UNMutableNotificationContent?
+
+    override func didReceive(
+        _ request: UNNotificationRequest,
+        withContentHandler contentHandler: @escaping (UNNotificationContent) -&gt; Void
+    ) {
+        self.contentHandler = contentHandler
+        bestAttemptContent = request.content.mutableCopy() as? UNMutableNotificationContent
+
+        guard let content = bestAttemptContent else {
+            contentHandler(request.content)
+            return
+        }
+
+        // Download and attach an image from the payload
+        if let imageURLString = content.userInfo[&quot;imageURL&quot;] as? String,
+           let imageURL = URL(string: imageURLString) {
+            downloadAttachment(from: imageURL) { localURL in
+                if let localURL = localURL,
+                   let attachment = try? UNNotificationAttachment(
+                       identifier: &quot;image&quot;,
+                       url: localURL
+                   ) {
+                    content.attachments = [attachment]
+                }
+                contentHandler(content)
+            }
+        } else {
+            contentHandler(content)
+        }
+    }
+
+    // Called if the extension is about to be terminated (time limit reached)
+    override func serviceExtensionTimeWillExpire() {
+        if let content = bestAttemptContent {
+            contentHandler?(content)
+        }
+    }
+
+    private func downloadAttachment(from url: URL, completion: @escaping (URL?) -&gt; Void) {
+        URLSession.shared.downloadTask(with: url) { localURL, _, error in
+            guard let localURL = localURL, error == nil else {
+                completion(nil)
+                return
+            }
+            let tmpURL = FileManager.default.temporaryDirectory
+                .appendingPathComponent(UUID().uuidString + &quot;.jpg&quot;)
+            try? FileManager.default.moveItem(at: localURL, to: tmpURL)
+            completion(tmpURL)
+        }.resume()
+    }
+}
+</code></pre>
+<h2 id="provisional-and-critical-alerts">Provisional and Critical Alerts</h2>
+<pre><code class="language-swift">extension NotificationManager {
+    // Provisional: delivered quietly without showing a permission prompt.
+    // Notifications appear in Notification Center but not on Lock Screen or as banners.
+    // The user can later promote to prominent or disable entirely.
+    func requestProvisionalPermission() async -&gt; Bool {
+        do {
+            return try await center.requestAuthorization(
+                options: [.alert, .sound, .badge, .provisional]
+            )
+        } catch {
+            return false
+        }
+    }
+
+    // Critical alerts bypass Do Not Disturb and silent mode.
+    // Requires a special entitlement from Apple (medical, security, public safety apps only).
+    func requestCriticalPermission() async -&gt; Bool {
+        do {
+            return try await center.requestAuthorization(
+                options: [.alert, .sound, .badge, .criticalAlert]
+            )
+        } catch {
+            return false
+        }
+    }
+
+    // Send a critical alert
+    func sendCriticalAlert(title: String, body: String) async throws {
+        let content = UNMutableNotificationContent()
+        content.title = title
+        content.body = body
+        content.interruptionLevel = .critical
+        content.sound = UNNotificationSound.criticalSoundNamed(
+            UNNotificationSoundName(&quot;alarm.caf&quot;),
+            withAudioVolume: 1.0
+        )
+
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
+        let request = UNNotificationRequest(
+            identifier: &quot;critical-\(UUID().uuidString)&quot;,
+            content: content,
+            trigger: trigger
+        )
+        try await center.add(request)
+    }
+}
+</code></pre>
+<h2 id="managing-pending-and-delivered-notifications">Managing Pending and Delivered Notifications</h2>
+<pre><code class="language-swift">extension NotificationManager {
+    // List all pending (scheduled but not yet delivered) notifications
+    func getPendingNotifications() async -&gt; [UNNotificationRequest] {
+        return await center.pendingNotificationRequests()
+    }
+
+    // Remove specific pending notifications by identifier
+    func removePending(identifiers: [String]) {
+        center.removePendingNotificationRequests(withIdentifiers: identifiers)
+    }
+
+    // Remove all pending notifications
+    func removeAllPending() {
+        center.removeAllPendingNotificationRequests()
+    }
+
+    // Remove delivered notifications from Notification Center
+    func removeDelivered(identifiers: [String]) {
+        center.removeDeliveredNotifications(withIdentifiers: identifiers)
+    }
+
+    // Clear the badge count
+    func clearBadge() async throws {
+        try await center.setBadgeCount(0)
+    }
+}
+</code></pre>
+<h2 id="complete-example-notification-setup-in-app">Complete Example: Notification Setup in App</h2>
+<pre><code class="language-swift">import SwiftUI
+
+@main
+struct MyApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+                .task {
+                    let manager = NotificationManager.shared
+                    let granted = await manager.requestPermission()
+                    if granted {
+                        manager.registerCategories()
+                    }
+                }
+        }
+    }
+}
+
+struct NotificationSettingsView: View {
+    @StateObject private var manager = NotificationManager.shared
+    @State private var dailyReminderEnabled = false
+    @State private var reminderHour = 9
+
+    var body: some View {
+        Form {
+            Section(&quot;Permissions&quot;) {
+                Button(&quot;Request Notification Permission&quot;) {
+                    Task { await manager.requestPermission() }
+                }
+                Text(manager.isAuthorized ? &quot;Authorized&quot; : &quot;Not authorized&quot;)
+                    .foregroundStyle(manager.isAuthorized ? .green : .red)
+            }
+
+            Section(&quot;Daily Reminder&quot;) {
+                Toggle(&quot;Enable Daily Reminder&quot;, isOn: $dailyReminderEnabled)
+                    .onChange(of: dailyReminderEnabled) { _, enabled in
+                        Task {
+                            if enabled {
+                                try? await manager.scheduleDailyReminder(
+                                    hour: reminderHour,
+                                    minute: 0
+                                )
+                            } else {
+                                manager.removePending(identifiers: [&quot;daily-reminder&quot;])
+                            }
+                        }
+                    }
+
+                if dailyReminderEnabled {
+                    Picker(&quot;Hour&quot;, selection: $reminderHour) {
+                        ForEach(0..&lt;24, id: \.self) { hour in
+                            Text(&quot;\(hour):00&quot;).tag(hour)
+                        }
+                    }
+                }
+            }
+
+            Section(&quot;Debug&quot;) {
+                Button(&quot;Send Test Notification&quot;) {
+                    Task { try? await manager.scheduleLocalNotification() }
+                }
+                Button(&quot;Clear Badge&quot;) {
+                    Task { try? await manager.clearBadge() }
+                }
+            }
+        }
+        .navigationTitle(&quot;Notifications&quot;)
+    }
+}
+</code></pre></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

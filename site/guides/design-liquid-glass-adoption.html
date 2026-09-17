@@ -1,0 +1,349 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Adopting Liquid Glass — iOS Agent Skill</title><meta name="description" content="Repository guidance for Liquid Glass. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/design-liquid-glass-adoption.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="Adopting Liquid Glass"><meta property="og:description" content="Repository guidance for Liquid Glass. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/design-liquid-glass-adoption.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "Adopting Liquid Glass", "description": "Repository guidance for Liquid Glass. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/design-liquid-glass-adoption.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Design and Motion · Reference guide</p><h1>Adopting Liquid Glass</h1><p class="lead">Repository guidance for Liquid Glass. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/design/liquid-glass-adoption.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#1-the-decision-you-make-before-writing-any-code">1. The decision you make before writing any code</a></li>
+<li><a href="#2-what-changes-with-no-code-and-what-you-must-audit">2. What changes with no code, and what you must audit</a></li>
+<li><a href="#3-scroll-edge-effect">3. Scroll edge effect</a></li>
+<li><a href="#4-navigation">4. Navigation</a></li>
+<li><a href="#5-toolbars-and-menus">5. Toolbars and menus</a></li>
+<li><a href="#6-controls-and-shape">6. Controls and shape</a></li>
+<li><a href="#7-lists-forms-and-a-silent-text-change">7. Lists, forms, and a silent text change</a></li>
+<li><a href="#8-app-icons">8. App icons</a></li>
+<li><a href="#9-test-matrix">9. Test matrix</a></li>
+<li><a href="#anti-patterns">Anti-Patterns</a></li>
+<li><a href="#checklist">Checklist</a></li>
+</ul>
+</div>
+</aside><p><strong>Load this when:</strong> rebuilding an existing app against the iOS 26 SDK or later,
+auditing an interface after the rebuild, or deciding whether to take the new
+look at all.</p>
+<p><strong>This is the migration half.</strong> For applying the material to a custom view —
+<code>glassEffect</code>, <code>GlassEffectContainer</code>, the availability guard, the fallback —
+see <code>docs/design/design-tokens.md</code> §4. That document is about opting <em>in</em> on a
+view you own. This one is about what happens to the app you already shipped.</p>
+<hr />
+<h2 id="1-the-decision-you-make-before-writing-any-code">1. The decision you make before writing any code</h2>
+<p>Rebuilding against the iOS 26 SDK <strong>adopts the new design automatically</strong>.
+Standard components from SwiftUI, UIKit, and AppKit pick up Liquid Glass with no
+code change. That is the whole point, and it is also the risk: an app you have
+not re-audited ships a changed interface.</p>
+<p>There is one escape hatch:</p>
+<pre><code class="language-xml">&lt;!-- Info.plist --&gt;
+&lt;key&gt;UIDesignRequiresCompatibility&lt;/key&gt;
+&lt;true/&gt;
+</code></pre>
+<p>This keeps the app looking as it did when built against the previous SDK, while
+still letting you build with the current one.</p>
+<p><strong>Treat it as a stopgap, not a decision.</strong> It buys a release cycle to do the
+audit properly; it does not remove the work. An app frozen on the compatibility
+key looks progressively more dated as the rest of the system moves, and Apple
+has historically retired these keys. Set a date to remove it.</p>
+<table>
+<thead>
+<tr>
+<th>Situation</th>
+<th>Do this</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>You can audit the interface this cycle</td>
+<td>Rebuild, adopt, work through §2–§7</td>
+</tr>
+<tr>
+<td>You must ship urgently and cannot audit</td>
+<td><code>UIDesignRequiresCompatibility</code>, with a tracked removal date</td>
+</tr>
+<tr>
+<td>You are on the previous SDK entirely</td>
+<td>Nothing yet — but the audit list still tells you what to expect</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="2-what-changes-with-no-code-and-what-you-must-audit">2. What changes with no code, and what you must audit</h2>
+<p>The rule that decides most of the work: <strong>the system now owns the background of
+controls and navigation.</strong> Custom backgrounds you added to those elements do not
+merely look dated — they sit on top of Liquid Glass and the scroll edge effect
+and interfere with both.</p>
+<p>Audit and, in most cases, delete custom backgrounds on:</p>
+<ul>
+<li><code>NavigationStack</code>, <code>NavigationSplitView</code>, and split-view columns</li>
+<li>toolbars (<code>toolbar(content:)</code>) and title bars</li>
+<li>tab bars</li>
+<li>sheets and popovers — including any <code>visualEffect</code> view you put behind popover
+  content, which is now duplicated work</li>
+</ul>
+<pre><code class="language-swift">// WRONG — a hand-rolled bar background, from before the system provided one.
+// It overlays Liquid Glass and defeats the scroll edge effect, so content
+// scrolling underneath loses the contrast the system would have given it.
+.toolbarBackground(Color.appSurface, for: .navigationBar)
+.toolbarBackground(.visible, for: .navigationBar)
+
+// RIGHT — let the system decide. It adapts to overlap, focus, and scroll
+// position in ways a static color cannot.
+// (no modifier)
+</code></pre>
+<p><strong>Do not hard-code control metrics.</strong> Controls adopt rounder, larger forms, and
+an extra-large size option. Standard controls resize themselves; a control with
+a pinned <code>.frame(width:height:)</code> will not, and will sit wrong next to the ones
+that did.</p>
+<hr />
+<h2 id="3-scroll-edge-effect">3. Scroll edge effect</h2>
+<p>Scroll views obscure content passing beneath bars so controls stay legible.
+System bars get this for free. <strong>A custom bar does not</strong> — it gets content
+sliding under it at full contrast.</p>
+<pre><code class="language-swift">// A custom bottom bar. Register it so the system applies the scroll edge
+// effect, rather than leaving your controls to fight the content behind them.
+ScrollView {
+    ArticleList(articles: model.articles)
+}
+.safeAreaBar(edge: .bottom) {
+    PlaybackControls(model: model)
+}
+</code></pre>
+<p>Use <code>scrollEdgeEffectStyle(_:for:)</code> when you need to choose the style rather
+than accept the default.</p>
+<hr />
+<h2 id="4-navigation">4. Navigation</h2>
+<p>Navigation is the layer Liquid Glass lives in, so the separation between
+navigation and content has to be real. If your content and your chrome are
+interleaved, the new material has nothing coherent to float above.</p>
+<pre><code class="language-swift">// Tab bar that becomes a sidebar where there is room for one.
+TabView {
+    Tab(&quot;Library&quot;, systemImage: &quot;books.vertical&quot;) { LibraryScreen() }
+    Tab(&quot;Browse&quot;, systemImage: &quot;square.grid.2x2&quot;) { BrowseScreen() }
+
+    // The SEARCH ROLE, not a tab that happens to contain search. The system
+    // pulls it to the trailing end and styles it as search — matching where
+    // users have learned to look for it in every other app.
+    Tab(role: .search) { SearchScreen() }
+}
+.tabViewStyle(.sidebarAdaptable)
+
+// Let the tab bar recede while reading, and come back on the reverse scroll.
+.tabBarMinimizeBehavior(.onScrollDown)
+</code></pre>
+<p><strong>Background extension</strong> makes a hero image read as continuing beneath a
+sidebar or inspector, without actually placing content under it — the system
+mirrors and blurs the adjacent content so the sidebar stays legible:</p>
+<pre><code class="language-swift">NavigationSplitView {
+    LibrarySidebar(selection: $selection)
+} detail: {
+    ScrollView {
+        HeroImage(article: article)
+            .backgroundExtensionEffect()
+        ArticleBody(article: article)
+    }
+}
+</code></pre>
+<p>After adding either, <strong>check the safe areas of the content beside the sidebar
+and inspector</strong> — that is where "peeking through" either works or clips.</p>
+<hr />
+<h2 id="5-toolbars-and-menus">5. Toolbars and menus</h2>
+<p>Toolbar items now group, and the grouping is meaningful: items sharing a
+background read as related.</p>
+<pre><code class="language-swift">.toolbar {
+    ToolbarItemGroup(placement: .primaryAction) {
+        Button(&quot;Bookmark&quot;, systemImage: &quot;bookmark&quot;) { model.bookmark() }
+        Button(&quot;Share&quot;, systemImage: &quot;square.and.arrow.up&quot;) { model.share() }
+    }
+
+    // Separates groups that must not read as one control.
+    ToolbarSpacer(.fixed, placement: .primaryAction)
+
+    ToolbarItem(placement: .primaryAction) {
+        Button(&quot;Delete&quot;, systemImage: &quot;trash&quot;, role: .destructive) { model.delete() }
+    }
+}
+</code></pre>
+<p>Three rules that are easy to get wrong:</p>
+<ul>
+<li><strong>Do not mix text and icons inside one group.</strong> Across items sharing a
+  background it reads as an inconsistency, not a distinction.</li>
+<li><strong>Every icon-only item needs an accessibility label</strong>, regardless of what is
+  on screen. Someone using VoiceOver or Voice Control gets nothing from the
+  glyph. <code>review_swiftui</code> and <code>audit_app_store_readiness</code> both flag this.</li>
+<li><strong>Hide the item, not its content.</strong> A toolbar item whose <em>view</em> is hidden
+  leaves an empty slot the system still lays out.</li>
+</ul>
+<pre><code class="language-swift">// WRONG — an empty toolbar item the system reserves space for.
+ToolbarItem { if canEdit { EditButton() } }
+
+// RIGHT — the item itself goes away.
+ToolbarItem { EditButton() }
+    .hidden(!canEdit)
+</code></pre>
+<hr />
+<h2 id="6-controls-and-shape">6. Controls and shape</h2>
+<p>Reach for the built-in glass button styles before building anything custom:</p>
+<pre><code class="language-swift">Button(&quot;Continue&quot;) { model.advance() }
+    .buttonStyle(.glass)
+
+Button(&quot;Buy Now&quot;) { model.purchase() }
+    .buttonStyle(.glassProminent)
+</code></pre>
+<p>Nested shapes should be <strong>concentric</strong> with their container — the hardware's
+corner radius informs the whole chain of rounded elements:</p>
+<pre><code class="language-swift">// Concentric with whatever contains it, rather than a guessed radius that
+// looks subtly wrong at one screen size and badly wrong at another.
+CardContent(article: article)
+    .clipShape(ConcentricRectangle())
+</code></pre>
+<p><strong>Be sparing with colour on controls and navigation.</strong> Colour on a glass surface
+costs legibility. When you do use it, use a system colour or a custom one with
+light, dark, and increased-contrast variants — the same rule as every other
+token in <code>docs/design/design-tokens.md</code>.</p>
+<hr />
+<h2 id="7-lists-forms-and-a-silent-text-change">7. Lists, forms, and a silent text change</h2>
+<p>Rows and sections gained height, padding, and corner radius. The change that
+bites is quieter:</p>
+<p><strong>Section headers are now title-case, not upper-case.</strong> The system no longer
+force-capitalises them. A header you wrote as <code>"recently played"</code> — relying on
+the old behaviour to render <code>RECENTLY PLAYED</code> — now renders exactly as written.</p>
+<pre><code class="language-swift">// WRONG — depended on the system shouting it for you.
+Section(&quot;recently played&quot;) { … }
+
+// RIGHT — write the capitalisation you want to see.
+Section(&quot;Recently Played&quot;) { … }
+</code></pre>
+<p>Grep for lowercase <code>Section(</code> string literals. Nothing warns about this; it just
+ships.</p>
+<hr />
+<h2 id="8-app-icons">8. App icons</h2>
+<p>Icons are now layered, and the system applies reflection, refraction, shadow,
+blur, and highlights across light, dark, clear, and tinted variants.</p>
+<ul>
+<li><strong>Separate your artwork into foreground / middle / background layers.</strong></li>
+<li><strong>Do not bake in effects.</strong> Shadows and blurs you paint yourself get composited
+  on top of the system's, and the result is muddy.</li>
+<li>Prefer solid, filled, overlapping semi-transparent shapes over fine detail.</li>
+<li>Compose in <strong>Icon Composer</strong> (ships with Xcode; also on Apple Design
+  Resources), which previews the system effects and appearance variants.</li>
+<li>Keep elements centred — the system masks to a rounded rectangle on
+  iOS/iPadOS/macOS and a circle on watchOS. An irregular icon gets a
+  system-provided background.</li>
+</ul>
+<hr />
+<h2 id="9-test-matrix">9. Test matrix</h2>
+<p>Liquid Glass adapts to user settings, and those settings remove or change the
+effects you designed around. Standard components adapt on their own; <strong>anything
+custom is yours to verify.</strong></p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>What to check</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Reduce Transparency</td>
+<td>Custom glass surfaces stay legible when the blur is gone</td>
+</tr>
+<tr>
+<td>Reduce Motion</td>
+<td>Morphing and fluid transitions degrade to something sensible</td>
+</tr>
+<tr>
+<td>Increase Contrast</td>
+<td>Custom colours still meet contrast against a glass background</td>
+</tr>
+<tr>
+<td>Dark mode</td>
+<td>Every custom surface and colour pairing</td>
+</tr>
+<tr>
+<td>Accessibility text sizes</td>
+<td>Controls and bars reflow rather than clip</td>
+</tr>
+<tr>
+<td>The user's Liquid Glass appearance preference</td>
+<td>Custom elements follow it</td>
+</tr>
+</tbody>
+</table>
+<p>Per platform:</p>
+<ul>
+<li><strong>watchOS</strong> — changes are minimal and appear even without rebuilding. Adopt
+  the watchOS 10 toolbar APIs and standard button styles to pick them up.</li>
+<li><strong>tvOS</strong> — controls take on glass <strong>when focused</strong>. Adopt the standard focus
+  APIs (<code>focusable(_:)</code>, <code>isFocused</code>) so custom controls match. Only Apple TV 4K
+  (2nd generation) and newer render the effects; older devices keep the current
+  appearance, which is a fallback you do not have to write.</li>
+<li><strong>iPadOS</strong> — windows resize continuously to a minimum size rather than
+  snapping between presets. See <code>docs/tooling/device-hub.md</code>; rebuilding against
+  the iOS 27 SDK also opts you into resizability.</li>
+</ul>
+<hr />
+<h2 id="anti-patterns">Anti-Patterns</h2>
+<pre><code class="language-swift">// WRONG — glass on every custom control in the app.
+// The material exists to draw attention to content. Applied everywhere it
+// competes with the content and flattens the hierarchy it was meant to create.
+ForEach(filters) { filter in
+    FilterChip(filter).glassEffect()
+}
+
+// RIGHT — reserve it for the few genuinely functional elements.
+</code></pre>
+<pre><code class="language-swift">// WRONG — separate glass effects stacked next to each other.
+// Each is its own render pass, and they will not morph into one another.
+HStack {
+    BackButton().glassEffect()
+    PlayButton().glassEffect()
+}
+
+// RIGHT — one container, so they blend and merge.
+GlassEffectContainer(spacing: Space.tight) {
+    HStack {
+        BackButton().glassEffect().glassEffectID(&quot;back&quot;, in: namespace)
+        PlayButton().glassEffect().glassEffectID(&quot;play&quot;, in: namespace)
+    }
+}
+</code></pre>
+<pre><code class="language-swift">// WRONG — an action sheet with no source.
+// It now originates from the control that triggered it. With no anchor it
+// appears detached from the thing it acts on.
+.confirmationDialog(&quot;Delete?&quot;, isPresented: $isConfirming) { … }
+
+// RIGHT — anchor it to its source so the relationship is visible.
+.confirmationDialog(&quot;Delete?&quot;, isPresented: $isConfirming, presenting: item) { … }
+</code></pre>
+<pre><code class="language-swift">// WRONG — shipping UIDesignRequiresCompatibility with no removal plan.
+// It is a deferral. Left in place the app drifts further from the system every
+// release, and the audit it postponed only grows.
+
+// RIGHT — set it, file the work, remove it next cycle.
+</code></pre>
+<pre><code class="language-swift">// WRONG — assuming every adoption API shares one availability floor.
+// Liquid Glass arrived in iOS 26, but these APIs did not all land together.
+// A blanket #available(iOS 26, *) around a symbol introduced later fails to
+// compile; one at iOS 27 around an iOS 26 symbol silently drops every iOS 26
+// device to the fallback — the mistake this skill flags most often.
+if #available(iOS 26, *) { /* every new API */ }
+
+// RIGHT — check each symbol's own floor in Xcode's documentation and guard on
+// THAT version. `check_availability_guards` catches the over-restrictive case.
+</code></pre>
+<hr />
+<h2 id="checklist">Checklist</h2>
+<ul>
+<li>[ ] Rebuilt against the current SDK and reviewed every screen</li>
+<li>[ ] <code>UIDesignRequiresCompatibility</code> either absent, or present with a removal date</li>
+<li>[ ] Custom backgrounds removed from bars, split views, sheets, popovers</li>
+<li>[ ] No hard-coded control metrics</li>
+<li>[ ] Custom bars registered for the scroll edge effect (<code>safeAreaBar</code>)</li>
+<li>[ ] Navigation clearly separated from content</li>
+<li>[ ] Search uses <code>Tab(role: .search)</code>, not an ordinary tab</li>
+<li>[ ] Toolbar items grouped meaningfully; <code>ToolbarSpacer</code> between unrelated groups</li>
+<li>[ ] No group mixing text and icon items</li>
+<li>[ ] Every icon-only control has an accessibility label</li>
+<li>[ ] Hidden toolbar items hide the item, not the view</li>
+<li>[ ] Section headers written in the capitalisation you want to see</li>
+<li>[ ] Nested shapes concentric with their containers</li>
+<li>[ ] Glass reserved for the few most important elements</li>
+<li>[ ] Multiple glass elements share one <code>GlassEffectContainer</code></li>
+<li>[ ] App icon rebuilt as layers in Icon Composer, with no baked-in effects</li>
+<li>[ ] Verified under Reduce Transparency, Reduce Motion, Increase Contrast, dark
+      mode, and accessibility text sizes</li>
+<li>[ ] Each new API guarded on <strong>its own</strong> introduction version</li>
+</ul></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

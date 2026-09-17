@@ -23,8 +23,11 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+      - name: Install website renderer
+        run: python3 -m pip install -r scripts/requirements-site.txt
       - name: Render illustrated blog and sitemap
-        run: python3 scripts/render-blog.py
+        run: |
+          python3 scripts/render-library.py
       - name: Sync features from README
         run: python3 scripts/render-site.py
       - name: Verify community section

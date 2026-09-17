@@ -1,0 +1,865 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SwiftUI Navigation — iOS Agent Skill</title><meta name="description" content="Repository guidance for SwiftUI Navigation. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/swiftui-navigation.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="SwiftUI Navigation"><meta property="og:description" content="Repository guidance for SwiftUI Navigation. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/swiftui-navigation.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "SwiftUI Navigation", "description": "Repository guidance for SwiftUI Navigation. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/swiftui-navigation.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Swiftui · Reference guide</p><h1>SwiftUI Navigation</h1><p class="lead">Repository guidance for SwiftUI Navigation. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/swiftui/navigation.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#navigationstack">NavigationStack</a><ul>
+<li><a href="#value-based-navigationlink-with-navigationdestination">Value-Based NavigationLink with .navigationDestination</a></li>
+<li><a href="#navigationpath-programmatic-navigation">NavigationPath (Programmatic Navigation)</a></li>
+<li><a href="#typed-path-homogeneous">Typed path (homogeneous)</a></li>
+</ul>
+</li>
+<li><a href="#navigationsplitview">NavigationSplitView</a><ul>
+<li><a href="#two-column">Two-Column</a></li>
+<li><a href="#three-column">Three-Column</a></li>
+</ul>
+</li>
+<li><a href="#sheets-full-screen-covers-and-popovers">Sheets, Full Screen Covers, and Popovers</a><ul>
+<li><a href="#sheet">.sheet()</a></li>
+<li><a href="#presentation-detents-bottom-sheet-sizes">Presentation Detents (Bottom Sheet Sizes)</a></li>
+<li><a href="#fullscreencover">.fullScreenCover()</a></li>
+<li><a href="#popover">.popover()</a></li>
+</ul>
+</li>
+<li><a href="#alerts-and-confirmation-dialogs">Alerts and Confirmation Dialogs</a><ul>
+<li><a href="#alert">.alert()</a></li>
+<li><a href="#confirmationdialog">.confirmationDialog()</a></li>
+</ul>
+</li>
+<li><a href="#inspector-ios-17">.inspector() (iOS 17+)</a></li>
+<li><a href="#tabview">TabView</a><ul>
+<li><a href="#basic-tabview">Basic TabView</a></li>
+<li><a href="#tabview-with-enum">TabView with Enum</a></li>
+<li><a href="#ios-18-tab-api">iOS 18+ Tab API</a></li>
+</ul>
+</li>
+<li><a href="#deep-linking-with-url-handling">Deep Linking with URL Handling</a></li>
+<li><a href="#toolbar-and-navigation-bar-customization">Toolbar and Navigation Bar Customization</a></li>
+<li><a href="#dismiss-and-navigation-actions">Dismiss and Navigation Actions</a></li>
+<li><a href="#type-safe-routing-pattern">Type-Safe Routing Pattern</a></li>
+<li><a href="#ios-18-zoom-navigation-transitions">iOS 18 Zoom Navigation Transitions</a><ul>
+<li><a href="#core-concepts">Core Concepts</a></li>
+<li><a href="#basic-usage">Basic Usage</a></li>
+<li><a href="#complete-example-photo-grid-with-zoom-transition">Complete Example: Photo Grid with Zoom Transition</a></li>
+<li><a href="#using-zoom-transitions-with-lists">Using Zoom Transitions with Lists</a></li>
+<li><a href="#customizing-the-transition-source-appearance">Customizing the Transition Source Appearance</a></li>
+<li><a href="#when-to-use-zoom-transitions-vs-matchedgeometryeffect">When to Use Zoom Transitions vs matchedGeometryEffect</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</aside><p>Complete reference for NavigationStack, NavigationSplitView, sheets, alerts, tabs, deep linking, and programmatic navigation.</p>
+<hr />
+<h2 id="navigationstack">NavigationStack</h2>
+<p>The primary navigation container (iOS 16+). Replaces the deprecated <code>NavigationView</code>.</p>
+<pre><code class="language-swift">struct ContentView: View {
+    var body: some View {
+        NavigationStack {
+            List(items) { item in
+                NavigationLink(item.title) {
+                    DetailView(item: item)
+                }
+            }
+            .navigationTitle(&quot;Items&quot;)
+            .navigationBarTitleDisplayMode(.large) // .inline, .large, .automatic
+            .toolbar {
+                ToolbarItem(placement: .primaryAction) {
+                    Button(&quot;Add&quot;, systemImage: &quot;plus&quot;) { addItem() }
+                }
+            }
+        }
+    }
+}
+</code></pre>
+<h3 id="value-based-navigationlink-with-navigationdestination">Value-Based NavigationLink with .navigationDestination</h3>
+<p>The preferred pattern -- decouples the link from its destination.</p>
+<pre><code class="language-swift">struct ContentView: View {
+    var body: some View {
+        NavigationStack {
+            List {
+                NavigationLink(&quot;Show Profile&quot;, value: Route.profile(&quot;user-123&quot;))
+                NavigationLink(&quot;Settings&quot;, value: Route.settings)
+
+                ForEach(items) { item in
+                    NavigationLink(value: item) {
+                        ItemRow(item: item)
+                    }
+                }
+            }
+            .navigationDestination(for: Item.self) { item in
+                ItemDetailView(item: item)
+            }
+            .navigationDestination(for: Route.self) { route in
+                switch route {
+                case .profile(let id):
+                    ProfileView(userId: id)
+                case .settings:
+                    SettingsView()
+                }
+            }
+        }
+    }
+}
+
+enum Route: Hashable {
+    case profile(String)
+    case settings
+    case detail(Item)
+}
+</code></pre>
+<h3 id="navigationpath-programmatic-navigation">NavigationPath (Programmatic Navigation)</h3>
+<p>A type-erased path that supports heterogeneous value types.</p>
+<pre><code class="language-swift">@Observable
+class Router {
+    var path = NavigationPath()
+
+    func goToProfile(_ id: String) {
+        path.append(Route.profile(id))
+    }
+
+    func goToDetail(_ item: Item) {
+        path.append(item)
+    }
+
+    func popToRoot() {
+        path = NavigationPath()
+    }
+
+    func pop() {
+        if !path.isEmpty {
+            path.removeLast()
+        }
+    }
+}
+
+struct AppView: View {
+    @State private var router = Router()
+
+    var body: some View {
+        NavigationStack(path: $router.path) {
+            HomeView()
+                .navigationDestination(for: Route.self) { route in
+                    routeView(for: route)
+                }
+                .navigationDestination(for: Item.self) { item in
+                    ItemDetailView(item: item)
+                }
+        }
+        .environment(router)
+    }
+
+    @ViewBuilder
+    func routeView(for route: Route) -&gt; some View {
+        switch route {
+        case .profile(let id): ProfileView(userId: id)
+        case .settings: SettingsView()
+        case .detail(let item): ItemDetailView(item: item)
+        }
+    }
+}
+
+// Deep push from anywhere
+struct SomeChildView: View {
+    @Environment(Router.self) private var router
+
+    var body: some View {
+        Button(&quot;Go to Profile&quot;) {
+            router.goToProfile(&quot;user-456&quot;)
+        }
+    }
+}
+</code></pre>
+<h3 id="typed-path-homogeneous">Typed path (homogeneous)</h3>
+<pre><code class="language-swift">@State private var path: [Item] = []
+
+NavigationStack(path: $path) {
+    List(items) { item in
+        NavigationLink(value: item) { Text(item.title) }
+    }
+    .navigationDestination(for: Item.self) { item in
+        DetailView(item: item)
+    }
+}
+</code></pre>
+<hr />
+<h2 id="navigationsplitview">NavigationSplitView</h2>
+<p>Multi-column navigation for iPad and Mac. Falls back to stack on iPhone.</p>
+<h3 id="two-column">Two-Column</h3>
+<pre><code class="language-swift">struct TwoColumnView: View {
+    @State private var selectedItem: Item?
+
+    var body: some View {
+        NavigationSplitView {
+            // Sidebar
+            List(items, selection: $selectedItem) { item in
+                NavigationLink(value: item) {
+                    Text(item.title)
+                }
+            }
+            .navigationTitle(&quot;Items&quot;)
+        } detail: {
+            if let item = selectedItem {
+                ItemDetailView(item: item)
+            } else {
+                ContentUnavailableView(&quot;No Selection&quot;,
+                    systemImage: &quot;doc.text&quot;,
+                    description: Text(&quot;Select an item from the sidebar&quot;))
+            }
+        }
+    }
+}
+</code></pre>
+<h3 id="three-column">Three-Column</h3>
+<pre><code class="language-swift">struct ThreeColumnView: View {
+    @State private var selectedCategory: Category?
+    @State private var selectedItem: Item?
+
+    var body: some View {
+        NavigationSplitView {
+            // Sidebar
+            List(categories, selection: $selectedCategory) { cat in
+                Label(cat.name, systemImage: cat.icon)
+            }
+            .navigationTitle(&quot;Categories&quot;)
+        } content: {
+            // Content list
+            if let category = selectedCategory {
+                List(category.items, selection: $selectedItem) { item in
+                    Text(item.title)
+                }
+                .navigationTitle(category.name)
+            }
+        } detail: {
+            // Detail
+            if let item = selectedItem {
+                ItemDetailView(item: item)
+            } else {
+                ContentUnavailableView.search
+            }
+        }
+        .navigationSplitViewStyle(.balanced) // .balanced, .prominentDetail, .automatic
+        .navigationSplitViewColumnWidth(min: 200, ideal: 250, max: 350)
+    }
+}
+</code></pre>
+<hr />
+<h2 id="sheets-full-screen-covers-and-popovers">Sheets, Full Screen Covers, and Popovers</h2>
+<h3 id="sheet">.sheet()</h3>
+<pre><code class="language-swift">@State private var showSettings = false
+@State private var selectedItem: Item?
+
+var body: some View {
+    VStack {
+        Button(&quot;Settings&quot;) { showSettings = true }
+
+        ForEach(items) { item in
+            Button(item.title) { selectedItem = item }
+        }
+    }
+    // Boolean-driven
+    .sheet(isPresented: $showSettings) {
+        SettingsView()
+            .presentationDetents([.medium, .large])       // iOS 16+
+            .presentationDragIndicator(.visible)
+            .presentationCornerRadius(24)                  // iOS 16.4+
+            .presentationBackground(.ultraThinMaterial)    // iOS 16.4+
+            .interactiveDismissDisabled()                  // Prevent swipe dismiss
+    }
+    // Item-driven (auto-dismisses when nil)
+    .sheet(item: $selectedItem) { item in
+        ItemDetailView(item: item)
+    }
+}
+</code></pre>
+<h3 id="presentation-detents-bottom-sheet-sizes">Presentation Detents (Bottom Sheet Sizes)</h3>
+<pre><code class="language-swift">.sheet(isPresented: $showSheet) {
+    SheetContent()
+        .presentationDetents([.height(200), .medium, .large])
+        .presentationDetents([.fraction(0.25), .medium])
+
+        // Custom detent
+        .presentationDetents([.custom(MyDetent.self)])
+}
+
+struct MyDetent: CustomPresentationDetent {
+    static func height(in context: Context) -&gt; CGFloat? {
+        max(context.maxDetentValue * 0.3, 300)
+    }
+}
+</code></pre>
+<h3 id="fullscreencover">.fullScreenCover()</h3>
+<pre><code class="language-swift">@State private var showOnboarding = false
+
+.fullScreenCover(isPresented: $showOnboarding) {
+    OnboardingView()
+}
+</code></pre>
+<h3 id="popover">.popover()</h3>
+<pre><code class="language-swift">@State private var showPopover = false
+
+Button(&quot;Info&quot;) { showPopover = true }
+    .popover(isPresented: $showPopover, arrowEdge: .top) {
+        VStack {
+            Text(&quot;Helpful info&quot;)
+            Text(&quot;More details here&quot;)
+        }
+        .padding()
+        .frame(minWidth: 200)
+    }
+</code></pre>
+<hr />
+<h2 id="alerts-and-confirmation-dialogs">Alerts and Confirmation Dialogs</h2>
+<h3 id="alert">.alert()</h3>
+<pre><code class="language-swift">@State private var showAlert = false
+@State private var error: AppError?
+
+// Boolean-driven
+.alert(&quot;Delete Item?&quot;, isPresented: $showAlert) {
+    Button(&quot;Delete&quot;, role: .destructive) { deleteItem() }
+    Button(&quot;Cancel&quot;, role: .cancel) { }
+} message: {
+    Text(&quot;This action cannot be undone.&quot;)
+}
+
+// Error-driven with item binding
+.alert(&quot;Error&quot;, isPresented: .constant(error != nil), presenting: error) { _ in
+    Button(&quot;Retry&quot;) { retry() }
+    Button(&quot;OK&quot;, role: .cancel) { error = nil }
+} message: { error in
+    Text(error.localizedDescription)
+}
+</code></pre>
+<h3 id="confirmationdialog">.confirmationDialog()</h3>
+<p>Action sheet style on iPhone, popover on iPad.</p>
+<pre><code class="language-swift">@State private var showDialog = false
+
+.confirmationDialog(&quot;Sort By&quot;, isPresented: $showDialog, titleVisibility: .visible) {
+    Button(&quot;Name&quot;) { sort = .name }
+    Button(&quot;Date&quot;) { sort = .date }
+    Button(&quot;Size&quot;) { sort = .size }
+    Button(&quot;Cancel&quot;, role: .cancel) { }
+} message: {
+    Text(&quot;Choose how to sort your items&quot;)
+}
+</code></pre>
+<hr />
+<h2 id="inspector-ios-17">.inspector() (iOS 17+)</h2>
+<p>A trailing column overlay for supplementary content.</p>
+<pre><code class="language-swift">@State private var showInspector = false
+
+NavigationStack {
+    ContentView()
+        .toolbar {
+            Button(&quot;Inspector&quot;, systemImage: &quot;info.circle&quot;) {
+                showInspector.toggle()
+            }
+        }
+        .inspector(isPresented: $showInspector) {
+            InspectorView()
+                .inspectorColumnWidth(min: 200, ideal: 300, max: 400)
+        }
+}
+</code></pre>
+<hr />
+<h2 id="tabview">TabView</h2>
+<h3 id="basic-tabview">Basic TabView</h3>
+<pre><code class="language-swift">struct MainTabView: View {
+    @State private var selectedTab = 0
+
+    var body: some View {
+        TabView(selection: $selectedTab) {
+            HomeView()
+                .tabItem {
+                    Label(&quot;Home&quot;, systemImage: &quot;house&quot;)
+                }
+                .tag(0)
+
+            SearchView()
+                .tabItem {
+                    Label(&quot;Search&quot;, systemImage: &quot;magnifyingglass&quot;)
+                }
+                .tag(1)
+
+            ProfileView()
+                .tabItem {
+                    Label(&quot;Profile&quot;, systemImage: &quot;person&quot;)
+                }
+                .tag(2)
+                .badge(3)  // Notification badge
+        }
+    }
+}
+</code></pre>
+<h3 id="tabview-with-enum">TabView with Enum</h3>
+<pre><code class="language-swift">enum AppTab: String, CaseIterable {
+    case home, search, favorites, profile
+
+    var title: String { rawValue.capitalized }
+    var icon: String {
+        switch self {
+        case .home: &quot;house&quot;
+        case .search: &quot;magnifyingglass&quot;
+        case .favorites: &quot;heart&quot;
+        case .profile: &quot;person&quot;
+        }
+    }
+}
+
+struct MainView: View {
+    @State private var selectedTab: AppTab = .home
+
+    var body: some View {
+        TabView(selection: $selectedTab) {
+            ForEach(AppTab.allCases, id: \.self) { tab in
+                NavigationStack {
+                    tabContent(for: tab)
+                }
+                .tabItem { Label(tab.title, systemImage: tab.icon) }
+                .tag(tab)
+            }
+        }
+    }
+}
+</code></pre>
+<h3 id="ios-18-tab-api">iOS 18+ Tab API</h3>
+<pre><code class="language-swift">TabView {
+    Tab(&quot;Home&quot;, systemImage: &quot;house&quot;) {
+        HomeView()
+    }
+
+    Tab(&quot;Search&quot;, systemImage: &quot;magnifyingglass&quot;) {
+        SearchView()
+    }
+
+    TabSection(&quot;Library&quot;) {
+        Tab(&quot;Favorites&quot;, systemImage: &quot;heart&quot;) {
+            FavoritesView()
+        }
+        Tab(&quot;Downloads&quot;, systemImage: &quot;arrow.down.circle&quot;) {
+            DownloadsView()
+        }
+    }
+
+    Tab(&quot;Profile&quot;, systemImage: &quot;person&quot;) {
+        ProfileView()
+    }
+}
+.tabViewStyle(.sidebarAdaptable) // Sidebar on iPad, tab bar on iPhone
+</code></pre>
+<hr />
+<h2 id="deep-linking-with-url-handling">Deep Linking with URL Handling</h2>
+<pre><code class="language-swift">@main
+struct MyApp: App {
+    @State private var router = Router()
+
+    var body: some Scene {
+        WindowGroup {
+            RootView()
+                .environment(router)
+                .onOpenURL { url in
+                    router.handle(url)
+                }
+        }
+    }
+}
+
+@Observable
+class Router {
+    var path = NavigationPath()
+    var selectedTab: AppTab = .home
+
+    func handle(_ url: URL) {
+        // myapp://items/123
+        guard let components = URLComponents(url: url, resolvingAgainstBaseURL: true),
+              let host = components.host else { return }
+
+        path = NavigationPath() // Reset
+
+        switch host {
+        case &quot;items&quot;:
+            selectedTab = .home
+            if let id = components.path.split(separator: &quot;/&quot;).first.map(String.init) {
+                path.append(Route.detail(id))
+            }
+        case &quot;profile&quot;:
+            selectedTab = .profile
+        case &quot;settings&quot;:
+            selectedTab = .home
+            path.append(Route.settings)
+        default:
+            break
+        }
+    }
+}
+</code></pre>
+<p><strong>Info.plist URL scheme:</strong></p>
+<pre><code class="language-xml">&lt;key&gt;CFBundleURLTypes&lt;/key&gt;
+&lt;array&gt;
+    &lt;dict&gt;
+        &lt;key&gt;CFBundleURLSchemes&lt;/key&gt;
+        &lt;array&gt;
+            &lt;string&gt;myapp&lt;/string&gt;
+        &lt;/array&gt;
+    &lt;/dict&gt;
+&lt;/array&gt;
+</code></pre>
+<hr />
+<h2 id="toolbar-and-navigation-bar-customization">Toolbar and Navigation Bar Customization</h2>
+<pre><code class="language-swift">.toolbar {
+    // Placement options
+    ToolbarItem(placement: .topBarLeading) {
+        Button(&quot;Edit&quot;) { }
+    }
+    ToolbarItem(placement: .topBarTrailing) {
+        Menu(&quot;Sort&quot;, systemImage: &quot;arrow.up.arrow.down&quot;) {
+            Button(&quot;Name&quot;) { }
+            Button(&quot;Date&quot;) { }
+        }
+    }
+    ToolbarItem(placement: .bottomBar) {
+        Text(&quot;\(items.count) items&quot;)
+    }
+    ToolbarItem(placement: .primaryAction) {
+        Button(&quot;Add&quot;, systemImage: &quot;plus&quot;) { }
+    }
+
+    // Group multiple items
+    ToolbarItemGroup(placement: .topBarTrailing) {
+        Button(&quot;Filter&quot;, systemImage: &quot;line.3.horizontal.decrease.circle&quot;) { }
+        Button(&quot;Add&quot;, systemImage: &quot;plus&quot;) { }
+    }
+}
+.toolbarBackground(.visible, for: .navigationBar)
+.toolbarBackground(.ultraThinMaterial, for: .navigationBar)
+.toolbarColorScheme(.dark, for: .navigationBar)
+.toolbarTitleDisplayMode(.inline)
+
+// Searchable
+.searchable(text: $searchText, prompt: &quot;Search items&quot;)
+.searchSuggestions {
+    ForEach(suggestions) { suggestion in
+        Text(suggestion.title)
+            .searchCompletion(suggestion.title)
+    }
+}
+.searchScopes($scope) {
+    Text(&quot;All&quot;).tag(SearchScope.all)
+    Text(&quot;Recent&quot;).tag(SearchScope.recent)
+}
+</code></pre>
+<hr />
+<h2 id="dismiss-and-navigation-actions">Dismiss and Navigation Actions</h2>
+<pre><code class="language-swift">struct SheetView: View {
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            Form { /* content */ }
+                .navigationTitle(&quot;New Item&quot;)
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button(&quot;Cancel&quot;) { dismiss() }
+                    }
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button(&quot;Save&quot;) {
+                            save()
+                            dismiss()
+                        }
+                    }
+                }
+        }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="type-safe-routing-pattern">Type-Safe Routing Pattern</h2>
+<pre><code class="language-swift">enum Route: Hashable {
+    case itemList(Category)
+    case itemDetail(Item)
+    case profile(userId: String)
+    case settings
+    case settingsDetail(SettingsSection)
+}
+
+@Observable
+class Router {
+    var path = NavigationPath()
+    var sheet: Sheet?
+    var alert: AlertItem?
+
+    enum Sheet: Identifiable {
+        case newItem
+        case editItem(Item)
+        var id: String {
+            switch self {
+            case .newItem: &quot;newItem&quot;
+            case .editItem(let item): &quot;edit-\(item.id)&quot;
+            }
+        }
+    }
+
+    func push(_ route: Route) { path.append(route) }
+    func pop() { if !path.isEmpty { path.removeLast() } }
+    func popToRoot() { path = NavigationPath() }
+    func present(_ sheet: Sheet) { self.sheet = sheet }
+}
+
+struct RootView: View {
+    @State private var router = Router()
+
+    var body: some View {
+        NavigationStack(path: $router.path) {
+            HomeScreen()
+                .navigationDestination(for: Route.self) { route in
+                    destination(for: route)
+                }
+        }
+        .sheet(item: $router.sheet) { sheet in
+            sheetContent(for: sheet)
+        }
+        .environment(router)
+    }
+
+    @ViewBuilder
+    func destination(for route: Route) -&gt; some View {
+        switch route {
+        case .itemList(let category): ItemListView(category: category)
+        case .itemDetail(let item): ItemDetailView(item: item)
+        case .profile(let id): ProfileView(userId: id)
+        case .settings: SettingsView()
+        case .settingsDetail(let section): SettingsDetailView(section: section)
+        }
+    }
+
+    @ViewBuilder
+    func sheetContent(for sheet: Router.Sheet) -&gt; some View {
+        switch sheet {
+        case .newItem: NewItemView()
+        case .editItem(let item): EditItemView(item: item)
+        }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="ios-18-zoom-navigation-transitions">iOS 18 Zoom Navigation Transitions</h2>
+<p>iOS 18 introduces the <code>NavigationTransition</code> protocol and built-in zoom transitions that create fluid, context-preserving animations between source and destination views. This replaces many custom <code>matchedGeometryEffect</code> patterns for navigation-based hero animations.</p>
+<h3 id="core-concepts">Core Concepts</h3>
+<p>The zoom transition system has three parts:</p>
+<ol>
+<li><strong><code>.navigationTransition(.zoom(sourceID:in:))</code></strong> -- applied to the destination view to define how it animates in.</li>
+<li><strong><code>.matchedTransitionSource(id:in:)</code></strong> -- applied to the source view (a grid cell, list row, etc.) to mark the origin of the zoom.</li>
+<li><strong><code>@Namespace</code></strong> -- a shared namespace that links the source and destination together.</li>
+</ol>
+<p>Unlike <code>matchedGeometryEffect</code>, which requires manual <code>ZStack</code> layering and conditional rendering, zoom navigation transitions work directly with <code>NavigationStack</code> and <code>NavigationLink</code>. The system handles the interpolation between source and destination frames automatically.</p>
+<h3 id="basic-usage">Basic Usage</h3>
+<pre><code class="language-swift">struct PhotoGridView: View {
+    @Namespace private var zoomTransition
+
+    let photos: [Photo]
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                LazyVGrid(columns: [GridItem(.adaptive(minimum: 100), spacing: 2)], spacing: 2) {
+                    ForEach(photos) { photo in
+                        NavigationLink(value: photo) {
+                            AsyncImage(url: photo.thumbnailURL) { image in
+                                image
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                            } placeholder: {
+                                Color.gray.opacity(0.3)
+                            }
+                            .frame(minHeight: 100)
+                            .clipped()
+                        }
+                        .matchedTransitionSource(id: photo.id, in: zoomTransition)
+                    }
+                }
+            }
+            .navigationTitle(&quot;Photos&quot;)
+            .navigationDestination(for: Photo.self) { photo in
+                PhotoDetailView(photo: photo)
+                    .navigationTransition(.zoom(sourceID: photo.id, in: zoomTransition))
+            }
+        }
+    }
+}
+</code></pre>
+<h3 id="complete-example-photo-grid-with-zoom-transition">Complete Example: Photo Grid with Zoom Transition</h3>
+<pre><code class="language-swift">import SwiftUI
+
+struct Photo: Identifiable, Hashable {
+    let id: UUID
+    let imageName: String
+    let title: String
+    let date: Date
+}
+
+struct PhotoGalleryView: View {
+    @Namespace private var zoomNamespace
+
+    let photos: [Photo] = [
+        Photo(id: UUID(), imageName: &quot;photo1&quot;, title: &quot;Sunset&quot;, date: .now),
+        Photo(id: UUID(), imageName: &quot;photo2&quot;, title: &quot;Mountain&quot;, date: .now),
+        Photo(id: UUID(), imageName: &quot;photo3&quot;, title: &quot;Ocean&quot;, date: .now),
+        Photo(id: UUID(), imageName: &quot;photo4&quot;, title: &quot;Forest&quot;, date: .now),
+        Photo(id: UUID(), imageName: &quot;photo5&quot;, title: &quot;City&quot;, date: .now),
+        Photo(id: UUID(), imageName: &quot;photo6&quot;, title: &quot;Desert&quot;, date: .now),
+    ]
+
+    private let columns = [
+        GridItem(.adaptive(minimum: 120), spacing: 4)
+    ]
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                LazyVGrid(columns: columns, spacing: 4) {
+                    ForEach(photos) { photo in
+                        NavigationLink(value: photo) {
+                            PhotoThumbnail(photo: photo)
+                        }
+                        .buttonStyle(.plain)
+                        .matchedTransitionSource(id: photo.id, in: zoomNamespace)
+                    }
+                }
+                .padding(4)
+            }
+            .navigationTitle(&quot;Gallery&quot;)
+            .navigationDestination(for: Photo.self) { photo in
+                PhotoDetailView(photo: photo)
+                    .navigationTransition(.zoom(sourceID: photo.id, in: zoomNamespace))
+            }
+        }
+    }
+}
+
+struct PhotoThumbnail: View {
+    let photo: Photo
+
+    var body: some View {
+        Image(photo.imageName)
+            .resizable()
+            .aspectRatio(contentMode: .fill)
+            .frame(minHeight: 120)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+}
+
+struct PhotoDetailView: View {
+    let photo: Photo
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 16) {
+                Image(photo.imageName)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(photo.title)
+                        .font(.title)
+                        .fontWeight(.bold)
+
+                    Text(photo.date, style: .date)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal)
+
+                Spacer()
+            }
+        }
+        .navigationTitle(photo.title)
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
+</code></pre>
+<h3 id="using-zoom-transitions-with-lists">Using Zoom Transitions with Lists</h3>
+<p>Zoom transitions also work with <code>List</code> rows:</p>
+<pre><code class="language-swift">struct ItemListView: View {
+    @Namespace private var listZoom
+
+    let items: [Item]
+
+    var body: some View {
+        NavigationStack {
+            List(items) { item in
+                NavigationLink(value: item) {
+                    HStack {
+                        Image(systemName: item.icon)
+                            .font(.title2)
+                            .frame(width: 44, height: 44)
+                            .background(.blue.opacity(0.1))
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+
+                        VStack(alignment: .leading) {
+                            Text(item.title)
+                                .font(.headline)
+                            Text(item.subtitle)
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                }
+                .matchedTransitionSource(id: item.id, in: listZoom)
+            }
+            .navigationTitle(&quot;Items&quot;)
+            .navigationDestination(for: Item.self) { item in
+                ItemDetailView(item: item)
+                    .navigationTransition(.zoom(sourceID: item.id, in: listZoom))
+            }
+        }
+    }
+}
+</code></pre>
+<h3 id="customizing-the-transition-source-appearance">Customizing the Transition Source Appearance</h3>
+<p>You can style the matched transition source with a clip shape and additional modifiers:</p>
+<pre><code class="language-swift">NavigationLink(value: photo) {
+    PhotoThumbnail(photo: photo)
+}
+.matchedTransitionSource(id: photo.id, in: zoomNamespace) { source in
+    source
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .shadow(radius: 4)
+}
+</code></pre>
+<h3 id="when-to-use-zoom-transitions-vs-matchedgeometryeffect">When to Use Zoom Transitions vs matchedGeometryEffect</h3>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NavigationStack push/pop with grid or list</td>
+<td><strong>Zoom transition</strong> -- built-in, automatic, works with NavigationLink</td>
+</tr>
+<tr>
+<td>Custom overlay expansions (ZStack-based)</td>
+<td><strong>matchedGeometryEffect</strong> -- full control over both states</td>
+</tr>
+<tr>
+<td>Tab switches with shared elements</td>
+<td><strong>matchedGeometryEffect</strong> -- zoom transitions only work within NavigationStack</td>
+</tr>
+<tr>
+<td>Sheet or full-screen cover presentations</td>
+<td><strong>matchedGeometryEffect</strong> -- zoom transitions are navigation-only</td>
+</tr>
+<tr>
+<td>iOS 17 and earlier support required</td>
+<td><strong>matchedGeometryEffect</strong> -- zoom transitions require iOS 18+</td>
+</tr>
+<tr>
+<td>Simple navigation hero animations</td>
+<td><strong>Zoom transition</strong> -- far less boilerplate, fewer edge cases</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Key differences:</strong>
+- <strong>Zoom transitions</strong> are managed entirely by the navigation system. You do not need <code>ZStack</code>, conditional rendering, or manual animation triggers.
+- <strong>matchedGeometryEffect</strong> requires you to manage both source and destination visibility yourself and wrap state changes in <code>withAnimation</code>.
+- Zoom transitions only work with <code>NavigationStack</code> push/pop. They do not work with sheets, full-screen covers, or custom presentation controllers.
+- Zoom transitions gracefully degrade on older OS versions (the standard push animation plays instead).</p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

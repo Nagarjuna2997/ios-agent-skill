@@ -1,0 +1,679 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SwiftUI Views and Controls — iOS Agent Skill</title><meta name="description" content="Repository guidance for SwiftUI. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/swiftui-views-and-controls.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="SwiftUI Views and Controls"><meta property="og:description" content="Repository guidance for SwiftUI. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/swiftui-views-and-controls.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "SwiftUI Views and Controls", "description": "Repository guidance for SwiftUI. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/swiftui-views-and-controls.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Core UI and Apps · Reference guide</p><h1>SwiftUI Views and Controls</h1><p class="lead">Repository guidance for SwiftUI. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/swiftui/views-and-controls.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#text-and-labels">Text and Labels</a><ul>
+<li><a href="#text">Text</a></li>
+<li><a href="#label">Label</a></li>
+<li><a href="#image-and-asyncimage">Image and AsyncImage</a></li>
+</ul>
+</li>
+<li><a href="#buttons-and-toggles">Buttons and Toggles</a><ul>
+<li><a href="#button">Button</a></li>
+<li><a href="#toggle">Toggle</a></li>
+<li><a href="#picker">Picker</a></li>
+<li><a href="#slider-stepper-datepicker-colorpicker">Slider, Stepper, DatePicker, ColorPicker</a></li>
+</ul>
+</li>
+<li><a href="#text-input">Text Input</a></li>
+<li><a href="#lists-and-collections">Lists and Collections</a><ul>
+<li><a href="#list">List</a></li>
+<li><a href="#foreach">ForEach</a></li>
+<li><a href="#scrollview-and-lazy-stacksgrids">ScrollView and Lazy Stacks/Grids</a></li>
+</ul>
+</li>
+<li><a href="#form-section-groupbox-disclosuregroup">Form, Section, GroupBox, DisclosureGroup</a></li>
+<li><a href="#menus-context-menus-links">Menus, Context Menus, Links</a></li>
+<li><a href="#progress-and-gauge">Progress and Gauge</a></li>
+<li><a href="#custom-views-and-viewmodifier">Custom Views and ViewModifier</a></li>
+<li><a href="#view-lifecycle">View Lifecycle</a></li>
+<li><a href="#common-modifiers-reference">Common Modifiers Reference</a></li>
+<li><a href="#key-patterns">Key Patterns</a></li>
+</ul>
+</div>
+</aside><p>Comprehensive reference for every major SwiftUI view, control, modifier, and lifecycle hook.</p>
+<hr />
+<h2 id="text-and-labels">Text and Labels</h2>
+<h3 id="text">Text</h3>
+<p>Displays one or more lines of read-only text.</p>
+<pre><code class="language-swift">Text(&quot;Hello, World!&quot;)
+    .font(.title)
+    .fontWeight(.bold)
+    .foregroundStyle(.primary)
+    .lineLimit(2)
+    .truncationMode(.tail)
+    .multilineTextAlignment(.center)
+
+// Markdown support
+Text(&quot;**Bold** and *italic* and [link](https://apple.com)&quot;)
+
+// String interpolation with formatting
+Text(&quot;Price: \(price, format: .currency(code: &quot;USD&quot;))&quot;)
+Text(&quot;Date: \(date, format: .dateTime.month().day().year())&quot;)
+Text(timerInterval: Date.now...Date.now.addingTimeInterval(300))
+
+// Concatenation
+Text(&quot;Hello &quot;).bold() + Text(&quot;World&quot;).foregroundStyle(.blue)
+
+// AttributedString
+var attributed = AttributedString(&quot;Styled&quot;)
+attributed.foregroundColor = .red
+attributed.font = .largeTitle
+Text(attributed)
+</code></pre>
+<h3 id="label">Label</h3>
+<p>Pairs an icon with a title. Adapts rendering based on context (toolbar shows icon only, list shows both).</p>
+<pre><code class="language-swift">Label(&quot;Favorites&quot;, systemImage: &quot;heart.fill&quot;)
+Label(&quot;Custom&quot;, image: &quot;myIcon&quot;)
+Label {
+    Text(&quot;Downloads&quot;)
+        .font(.headline)
+} icon: {
+    Image(systemName: &quot;arrow.down.circle&quot;)
+        .foregroundStyle(.blue)
+}
+
+// Label styles
+Label(&quot;Item&quot;, systemImage: &quot;star&quot;)
+    .labelStyle(.titleAndIcon)  // .titleOnly, .iconOnly, .automatic
+</code></pre>
+<h3 id="image-and-asyncimage">Image and AsyncImage</h3>
+<pre><code class="language-swift">// SF Symbols
+Image(systemName: &quot;star.fill&quot;)
+    .symbolRenderingMode(.multicolor)
+    .font(.system(size: 40))
+    .symbolEffect(.bounce, value: isFavorite)  // iOS 17+
+
+// Asset catalog
+Image(&quot;photo&quot;)
+    .resizable()
+    .aspectRatio(contentMode: .fill)
+    .frame(width: 200, height: 200)
+    .clipShape(RoundedRectangle(cornerRadius: 16))
+
+// AsyncImage (remote images)
+AsyncImage(url: URL(string: &quot;https://example.com/photo.jpg&quot;)) { phase in
+    switch phase {
+    case .empty:
+        ProgressView()
+    case .success(let image):
+        image
+            .resizable()
+            .aspectRatio(contentMode: .fill)
+    case .failure:
+        Image(systemName: &quot;photo.badge.exclamationmark&quot;)
+            .foregroundStyle(.secondary)
+    @unknown default:
+        EmptyView()
+    }
+}
+.frame(width: 300, height: 200)
+</code></pre>
+<hr />
+<h2 id="buttons-and-toggles">Buttons and Toggles</h2>
+<h3 id="button">Button</h3>
+<pre><code class="language-swift">// Basic
+Button(&quot;Tap Me&quot;) { doSomething() }
+
+// With role
+Button(&quot;Delete&quot;, role: .destructive) { deleteItem() }
+Button(&quot;Cancel&quot;, role: .cancel) { dismiss() }
+
+// Custom label
+Button {
+    performAction()
+} label: {
+    HStack {
+        Image(systemName: &quot;plus.circle.fill&quot;)
+        Text(&quot;Add Item&quot;)
+    }
+    .font(.headline)
+    .padding()
+    .background(.blue)
+    .foregroundStyle(.white)
+    .clipShape(Capsule())
+}
+
+// Button styles
+Button(&quot;Bordered&quot;) { }
+    .buttonStyle(.bordered)       // .automatic, .plain, .borderless
+    .tint(.green)
+
+Button(&quot;Prominent&quot;) { }
+    .buttonStyle(.borderedProminent)
+    .controlSize(.large)          // .mini, .small, .regular, .large, .extraLarge
+
+// Repeat behavior (iOS 17+)
+Button(&quot;Increment&quot;, repeatBehavior: .enabled) { count += 1 }
+</code></pre>
+<h3 id="toggle">Toggle</h3>
+<pre><code class="language-swift">@State private var isOn = false
+
+Toggle(&quot;Airplane Mode&quot;, isOn: $isOn)
+Toggle(isOn: $isOn) {
+    Label(&quot;Wi-Fi&quot;, systemImage: &quot;wifi&quot;)
+}
+.toggleStyle(.switch)   // .switch, .button, .checkbox (macOS)
+.tint(.orange)
+</code></pre>
+<h3 id="picker">Picker</h3>
+<pre><code class="language-swift">@State private var selection = &quot;Red&quot;
+let colors = [&quot;Red&quot;, &quot;Green&quot;, &quot;Blue&quot;]
+
+// Inline
+Picker(&quot;Color&quot;, selection: $selection) {
+    ForEach(colors, id: \.self) { Text($0) }
+}
+.pickerStyle(.segmented)  // .menu, .wheel, .inline, .navigationLink, .palette
+
+// With enum
+enum Flavor: String, CaseIterable, Identifiable {
+    case chocolate, vanilla, strawberry
+    var id: Self { self }
+}
+
+@State private var flavor: Flavor = .chocolate
+
+Picker(&quot;Flavor&quot;, selection: $flavor) {
+    ForEach(Flavor.allCases) { flavor in
+        Text(flavor.rawValue.capitalized).tag(flavor)
+    }
+}
+</code></pre>
+<h3 id="slider-stepper-datepicker-colorpicker">Slider, Stepper, DatePicker, ColorPicker</h3>
+<pre><code class="language-swift">// Slider
+@State private var speed = 50.0
+Slider(value: $speed, in: 0...100, step: 5) {
+    Text(&quot;Speed&quot;)
+} minimumValueLabel: { Text(&quot;0&quot;) }
+  maximumValueLabel: { Text(&quot;100&quot;) }
+
+// Stepper
+@State private var quantity = 1
+Stepper(&quot;Quantity: \(quantity)&quot;, value: $quantity, in: 1...99)
+Stepper(&quot;Custom&quot;) { quantity += 5 } onDecrement: { quantity -= 5 }
+
+// DatePicker
+@State private var date = Date.now
+DatePicker(&quot;Date&quot;, selection: $date, displayedComponents: [.date, .hourAndMinute])
+    .datePickerStyle(.graphical)  // .compact, .wheel, .graphical
+
+DatePicker(&quot;Range&quot;, selection: $date, in: Date.now...)
+
+// ColorPicker
+@State private var color = Color.blue
+ColorPicker(&quot;Theme&quot;, selection: $color, supportsOpacity: true)
+</code></pre>
+<hr />
+<h2 id="text-input">Text Input</h2>
+<pre><code class="language-swift">// TextField
+@State private var name = &quot;&quot;
+TextField(&quot;Enter name&quot;, text: $name)
+    .textFieldStyle(.roundedBorder)
+    .textContentType(.name)
+    .autocorrectionDisabled()
+    .textInputAutocapitalization(.words)
+    .submitLabel(.done)
+    .onSubmit { saveProfile() }
+
+// With format
+@State private var amount = 0.0
+TextField(&quot;Amount&quot;, value: $amount, format: .currency(code: &quot;USD&quot;))
+    .keyboardType(.decimalPad)
+
+// With prompt and axis (iOS 16+)
+TextField(&quot;Bio&quot;, text: $bio, prompt: Text(&quot;Tell us about yourself&quot;), axis: .vertical)
+    .lineLimit(3...6)
+
+// SecureField
+@State private var password = &quot;&quot;
+SecureField(&quot;Password&quot;, text: $password)
+    .textContentType(.password)
+
+// TextEditor (multiline)
+@State private var notes = &quot;&quot;
+TextEditor(text: $notes)
+    .frame(minHeight: 100)
+    .scrollContentBackground(.hidden)  // iOS 16+ to customize background
+    .background(Color(.systemGray6))
+    .clipShape(RoundedRectangle(cornerRadius: 8))
+
+// Focused state
+@FocusState private var isNameFocused: Bool
+TextField(&quot;Name&quot;, text: $name)
+    .focused($isNameFocused)
+
+Button(&quot;Focus&quot;) { isNameFocused = true }
+</code></pre>
+<hr />
+<h2 id="lists-and-collections">Lists and Collections</h2>
+<h3 id="list">List</h3>
+<pre><code class="language-swift">// Static
+List {
+    Text(&quot;Row 1&quot;)
+    Text(&quot;Row 2&quot;)
+    Text(&quot;Row 3&quot;)
+}
+
+// Dynamic
+struct Item: Identifiable {
+    let id = UUID()
+    var title: String
+}
+
+List(items) { item in
+    Text(item.title)
+}
+
+// Mixed static and dynamic
+List {
+    Section(&quot;Favorites&quot;) {
+        ForEach(favorites) { item in
+            Text(item.title)
+        }
+    }
+    Section(&quot;All Items&quot;) {
+        ForEach(allItems) { item in
+            Text(item.title)
+        }
+    }
+}
+.listStyle(.insetGrouped)  // .plain, .grouped, .sidebar, .inset, .insetGrouped
+
+// Swipe actions
+List {
+    ForEach(items) { item in
+        Text(item.title)
+            .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                Button(role: .destructive) { delete(item) } label: {
+                    Label(&quot;Delete&quot;, systemImage: &quot;trash&quot;)
+                }
+                Button { pin(item) } label: {
+                    Label(&quot;Pin&quot;, systemImage: &quot;pin&quot;)
+                }
+                .tint(.yellow)
+            }
+            .swipeActions(edge: .leading) {
+                Button { archive(item) } label: {
+                    Label(&quot;Archive&quot;, systemImage: &quot;archivebox&quot;)
+                }
+                .tint(.blue)
+            }
+    }
+    .onDelete { indexSet in items.remove(atOffsets: indexSet) }
+    .onMove { from, to in items.move(fromOffsets: from, toOffset: to) }
+}
+
+// List customization
+.listRowBackground(Color.clear)
+.listRowSeparator(.hidden)
+.listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+.listSectionSeparator(.hidden)
+</code></pre>
+<h3 id="foreach">ForEach</h3>
+<pre><code class="language-swift">// With Identifiable
+ForEach(items) { item in ItemRow(item: item) }
+
+// With id keypath
+ForEach(names, id: \.self) { name in Text(name) }
+
+// With index
+ForEach(Array(items.enumerated()), id: \.offset) { index, item in
+    Text(&quot;\(index): \(item.title)&quot;)
+}
+
+// Range
+ForEach(0..&lt;5) { i in Text(&quot;Item \(i)&quot;) }
+</code></pre>
+<h3 id="scrollview-and-lazy-stacksgrids">ScrollView and Lazy Stacks/Grids</h3>
+<pre><code class="language-swift">// Vertical scroll
+ScrollView {
+    LazyVStack(spacing: 16) {
+        ForEach(items) { item in
+            ItemCard(item: item)
+        }
+    }
+    .padding()
+}
+
+// Horizontal scroll
+ScrollView(.horizontal, showsIndicators: false) {
+    LazyHStack(spacing: 12) {
+        ForEach(items) { item in
+            ItemCard(item: item)
+                .containerRelativeFrame(.horizontal, count: 3, spacing: 12)
+        }
+    }
+    .scrollTargetLayout()  // iOS 17+
+}
+.scrollTargetBehavior(.viewAligned)  // iOS 17+ snapping
+
+// Grid
+let columns = [
+    GridItem(.flexible()),
+    GridItem(.flexible()),
+    GridItem(.flexible())
+]
+
+ScrollView {
+    LazyVGrid(columns: columns, spacing: 16) {
+        ForEach(items) { item in
+            ItemCell(item: item)
+        }
+    }
+}
+
+// Adaptive grid
+let adaptiveColumns = [GridItem(.adaptive(minimum: 120, maximum: 200))]
+
+// Pinned headers
+ScrollView {
+    LazyVStack(pinnedViews: [.sectionHeaders]) {
+        ForEach(sections) { section in
+            Section {
+                ForEach(section.items) { item in ItemRow(item: item) }
+            } header: {
+                Text(section.title)
+                    .font(.headline)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding()
+                    .background(.bar)
+            }
+        }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="form-section-groupbox-disclosuregroup">Form, Section, GroupBox, DisclosureGroup</h2>
+<pre><code class="language-swift">Form {
+    Section(&quot;Profile&quot;) {
+        TextField(&quot;Name&quot;, text: $name)
+        DatePicker(&quot;Birthday&quot;, selection: $birthday, displayedComponents: .date)
+        Picker(&quot;Role&quot;, selection: $role) {
+            ForEach(Role.allCases) { Text($0.rawValue).tag($0) }
+        }
+    }
+
+    Section {
+        Toggle(&quot;Notifications&quot;, isOn: $notificationsEnabled)
+        Toggle(&quot;Sound&quot;, isOn: $soundEnabled)
+    } header: {
+        Text(&quot;Preferences&quot;)
+    } footer: {
+        Text(&quot;Enable notifications to receive updates.&quot;)
+    }
+}
+
+// GroupBox
+GroupBox(&quot;Statistics&quot;) {
+    LabeledContent(&quot;Downloads&quot;, value: &quot;1,234&quot;)
+    LabeledContent(&quot;Rating&quot;, value: &quot;4.8&quot;)
+}
+
+// LabeledContent for key-value display
+LabeledContent(&quot;Version&quot;) {
+    Text(&quot;2.1.0&quot;).foregroundStyle(.secondary)
+}
+
+// DisclosureGroup
+@State private var isExpanded = false
+DisclosureGroup(&quot;Advanced Settings&quot;, isExpanded: $isExpanded) {
+    Toggle(&quot;Debug Mode&quot;, isOn: $debugMode)
+    Slider(value: $cacheSize, in: 0...1000)
+}
+</code></pre>
+<hr />
+<h2 id="menus-context-menus-links">Menus, Context Menus, Links</h2>
+<pre><code class="language-swift">// Menu (pull-down button)
+Menu(&quot;Options&quot;) {
+    Button(&quot;Duplicate&quot;, systemImage: &quot;doc.on.doc&quot;) { duplicate() }
+    Button(&quot;Rename&quot;, systemImage: &quot;pencil&quot;) { rename() }
+    Divider()
+    Button(&quot;Delete&quot;, systemImage: &quot;trash&quot;, role: .destructive) { delete() }
+    Menu(&quot;Sort By&quot;) {
+        Button(&quot;Name&quot;) { sort(.name) }
+        Button(&quot;Date&quot;) { sort(.date) }
+        Button(&quot;Size&quot;) { sort(.size) }
+    }
+}
+.menuStyle(.borderedProminent)
+
+// Context menu (long press)
+Text(&quot;Hold me&quot;)
+    .contextMenu {
+        Button(&quot;Copy&quot;, systemImage: &quot;doc.on.doc&quot;) { copy() }
+        Button(&quot;Share&quot;, systemImage: &quot;square.and.arrow.up&quot;) { share() }
+    } preview: {
+        ItemPreview(item: item)  // Custom preview
+            .frame(width: 300, height: 400)
+    }
+
+// Link
+Link(&quot;Visit Apple&quot;, destination: URL(string: &quot;https://apple.com&quot;)!)
+Link(destination: URL(string: &quot;https://apple.com&quot;)!) {
+    Label(&quot;Apple&quot;, systemImage: &quot;safari&quot;)
+}
+
+// ShareLink (iOS 16+)
+ShareLink(item: URL(string: &quot;https://apple.com&quot;)!) {
+    Label(&quot;Share&quot;, systemImage: &quot;square.and.arrow.up&quot;)
+}
+</code></pre>
+<hr />
+<h2 id="progress-and-gauge">Progress and Gauge</h2>
+<pre><code class="language-swift">// Indeterminate
+ProgressView()
+ProgressView(&quot;Loading...&quot;)
+
+// Determinate
+ProgressView(&quot;Downloading&quot;, value: progress, total: 100)
+    .progressViewStyle(.linear)  // .circular, .linear
+
+// Gauge (iOS 16+)
+Gauge(value: batteryLevel, in: 0...100) {
+    Text(&quot;Battery&quot;)
+} currentValueLabel: {
+    Text(&quot;\(Int(batteryLevel))%&quot;)
+} minimumValueLabel: {
+    Text(&quot;0&quot;)
+} maximumValueLabel: {
+    Text(&quot;100&quot;)
+}
+.gaugeStyle(.accessoryCircular)  // .linearCapacity, .accessoryLinear, .accessoryCircularCapacity
+.tint(Gradient(colors: [.red, .yellow, .green]))
+</code></pre>
+<hr />
+<h2 id="custom-views-and-viewmodifier">Custom Views and ViewModifier</h2>
+<pre><code class="language-swift">// Custom View
+struct ProfileCard: View {
+    let name: String
+    let role: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(name).font(.headline)
+            Text(role).font(.subheadline).foregroundStyle(.secondary)
+        }
+        .padding()
+        .background(.ultraThinMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+}
+
+// ViewModifier
+struct CardStyle: ViewModifier {
+    func body(content: Content) -&gt; some View {
+        content
+            .padding()
+            .background(.ultraThinMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .shadow(color: .black.opacity(0.1), radius: 8, y: 4)
+    }
+}
+
+extension View {
+    func cardStyle() -&gt; some View {
+        modifier(CardStyle())
+    }
+}
+
+// Usage
+Text(&quot;Styled&quot;).cardStyle()
+
+// ViewModifier with configuration
+struct ShimmerModifier: ViewModifier {
+    let isActive: Bool
+    @State private var phase: CGFloat = 0
+
+    func body(content: Content) -&gt; some View {
+        content
+            .overlay {
+                if isActive {
+                    LinearGradient(
+                        colors: [.clear, .white.opacity(0.3), .clear],
+                        startPoint: .init(x: phase - 0.5, y: 0.5),
+                        endPoint: .init(x: phase + 0.5, y: 0.5)
+                    )
+                    .onAppear {
+                        withAnimation(.linear(duration: 1.5).repeatForever(autoreverses: false)) {
+                            phase = 1.5
+                        }
+                    }
+                }
+            }
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+}
+</code></pre>
+<hr />
+<h2 id="view-lifecycle">View Lifecycle</h2>
+<pre><code class="language-swift">struct ContentView: View {
+    @State private var data: [Item] = []
+
+    var body: some View {
+        List(data) { item in
+            Text(item.title)
+        }
+        // Called when view appears
+        .onAppear { loadCachedData() }
+
+        // Called when view disappears
+        .onDisappear { saveState() }
+
+        // Async task tied to view lifetime (cancelled on disappear)
+        .task {
+            data = await fetchItems()
+        }
+
+        // Task with ID (restarts when id changes)
+        .task(id: selectedCategory) {
+            data = await fetchItems(for: selectedCategory)
+        }
+
+        // React to value changes (iOS 17+ syntax)
+        .onChange(of: searchText) { oldValue, newValue in
+            performSearch(newValue)
+        }
+
+        // React to value changes (iOS 14-16 syntax)
+        .onChange(of: searchText) { newValue in
+            performSearch(newValue)
+        }
+
+        // Scene phase
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .background { saveData() }
+        }
+
+        // Receive notifications
+        .onReceive(NotificationCenter.default.publisher(for: .didUpdate)) { _ in
+            refresh()
+        }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="common-modifiers-reference">Common Modifiers Reference</h2>
+<pre><code class="language-swift">// Typography
+.font(.title)                    // .largeTitle, .title, .title2, .title3, .headline,
+                                 // .subheadline, .body, .callout, .footnote, .caption, .caption2
+.font(.system(size: 18, weight: .semibold, design: .rounded))
+.fontDesign(.rounded)            // .default, .rounded, .serif, .monospaced
+.fontWidth(.expanded)            // .compressed, .condensed, .standard, .expanded
+.bold()
+.italic()
+.underline()
+.strikethrough()
+.kerning(2)
+.tracking(1)
+
+// Colors and styles
+.foregroundStyle(.primary)       // Supports ShapeStyle: colors, gradients, hierarchical
+.foregroundStyle(.blue, .secondary)  // Primary, secondary content
+.tint(.blue)
+
+// Layout
+.padding()                       // All edges, default spacing
+.padding(.horizontal, 16)
+.padding(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+.frame(width: 200, height: 100)
+.frame(maxWidth: .infinity, alignment: .leading)
+.frame(minHeight: 44)
+
+// Background and overlay
+.background(.ultraThinMaterial)  // .regularMaterial, .thickMaterial, .bar
+.background { RoundedRectangle(cornerRadius: 12).fill(.blue.gradient) }
+.background(in: RoundedRectangle(cornerRadius: 12))  // Clips background to shape
+.overlay { Badge().offset(x: 10, y: -10) }
+.overlay(alignment: .topTrailing) { NotificationBadge() }
+.border(.gray, width: 1)
+
+// Shape and clipping
+.clipShape(Circle())
+.clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+.clipShape(Capsule())
+.mask { LinearGradient(colors: [.black, .clear], startPoint: .top, endPoint: .bottom) }
+
+// Shadow
+.shadow(color: .black.opacity(0.15), radius: 12, x: 0, y: 4)
+
+// Opacity and visibility
+.opacity(0.8)
+.hidden()                        // Hides but preserves layout space
+
+// Interaction
+.disabled(isLoading)
+.allowsHitTesting(false)
+.contentShape(Rectangle())      // Expand tappable area
+
+// Accessibility
+.accessibilityLabel(&quot;Close button&quot;)
+.accessibilityHint(&quot;Dismisses the dialog&quot;)
+.accessibilityAddTraits(.isButton)
+.accessibilityHidden(true)
+
+// Conditional modifiers (via extension)
+extension View {
+    @ViewBuilder
+    func `if`&lt;Content: View&gt;(_ condition: Bool, transform: (Self) -&gt; Content) -&gt; some View {
+        if condition { transform(self) } else { self }
+    }
+}
+
+// Redaction
+.redacted(reason: .placeholder)
+.privacySensitive()              // Redacted in inactive app states
+
+// Environment overrides
+.environment(\.colorScheme, .dark)
+.dynamicTypeSize(.large ... .accessibility3)
+.environment(\.layoutDirection, .rightToLeft)
+</code></pre>
+<hr />
+<h2 id="key-patterns">Key Patterns</h2>
+<ol>
+<li>Prefer <code>LazyVStack</code>/<code>LazyHStack</code> inside <code>ScrollView</code> for large collections over <code>List</code> when you need custom styling.</li>
+<li>Use <code>ViewModifier</code> to encapsulate reusable styling rather than View extensions with many chained modifiers.</li>
+<li>Always provide <code>.accessibilityLabel</code> for icon-only buttons.</li>
+<li>Use <code>.task {}</code> instead of <code>.onAppear</code> for async work -- it automatically cancels on disappear.</li>
+<li>Prefer <code>.foregroundStyle</code> over the deprecated <code>.foregroundColor</code>.</li>
+<li>Use <code>.background(in: shape)</code> over <code>.background().clipShape(shape)</code> when possible.</li>
+</ol></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

@@ -1,0 +1,579 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CoreMotion — iOS Agent Skill</title><meta name="description" content="Repository guidance for Core Motion. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-hardware-core-motion.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="CoreMotion"><meta property="og:description" content="Repository guidance for Core Motion. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-hardware-core-motion.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "CoreMotion", "description": "Repository guidance for Core Motion. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-hardware-core-motion.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Health, Hardware, and Sensors · Reference guide</p><h1>CoreMotion</h1><p class="lead">Repository guidance for Core Motion. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/frameworks/hardware/core-motion.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#cmmotionmanager-setup">CMMotionManager Setup</a></li>
+<li><a href="#accelerometer-data-cmaccelerometerdata">Accelerometer Data (CMAccelerometerData)</a></li>
+<li><a href="#gyroscope-data-cmgyrodata">Gyroscope Data (CMGyroData)</a></li>
+<li><a href="#device-motion-cmdevicemotion">Device Motion (CMDeviceMotion)</a></li>
+<li><a href="#cmpedometer-steps-distance-floors-cadence">CMPedometer — Steps, Distance, Floors, Cadence</a></li>
+<li><a href="#cmmotionactivitymanager-activity-recognition">CMMotionActivityManager — Activity Recognition</a></li>
+<li><a href="#cmaltimeter-relative-altitude">CMAltimeter — Relative Altitude</a></li>
+<li><a href="#motion-data-frequency-and-battery-considerations">Motion Data Frequency and Battery Considerations</a></li>
+<li><a href="#complete-pedometer-and-motion-tracking-examples">Complete Pedometer and Motion Tracking Examples</a></li>
+</ul>
+</div>
+</aside><h2 id="cmmotionmanager-setup">CMMotionManager Setup</h2>
+<p>Only one <code>CMMotionManager</code> should exist per app. Create it as a shared instance.</p>
+<pre><code class="language-swift">import CoreMotion
+
+@Observable
+class MotionManager {
+    static let shared = MotionManager()
+
+    let motionManager = CMMotionManager()
+
+    var accelerometerData: CMAccelerometerData?
+    var gyroData: CMGyroData?
+    var deviceMotion: CMDeviceMotion?
+
+    var isAccelerometerAvailable: Bool { motionManager.isAccelerometerAvailable }
+    var isGyroAvailable: Bool { motionManager.isGyroAvailable }
+    var isDeviceMotionAvailable: Bool { motionManager.isDeviceMotionAvailable }
+
+    deinit {
+        stopAllUpdates()
+    }
+
+    func stopAllUpdates() {
+        motionManager.stopAccelerometerUpdates()
+        motionManager.stopGyroUpdates()
+        motionManager.stopDeviceMotionUpdates()
+    }
+}
+</code></pre>
+<h2 id="accelerometer-data-cmaccelerometerdata">Accelerometer Data (CMAccelerometerData)</h2>
+<p>Measures acceleration along x, y, z axes in G-force units. Includes gravity.</p>
+<pre><code class="language-swift">extension MotionManager {
+    /// Start accelerometer updates at the given frequency
+    func startAccelerometer(frequency: Double = 60.0) {
+        guard isAccelerometerAvailable else { return }
+
+        motionManager.accelerometerUpdateInterval = 1.0 / frequency
+
+        motionManager.startAccelerometerUpdates(to: .main) { [weak self] data, error in
+            guard let data, error == nil else { return }
+            self?.accelerometerData = data
+
+            // Access raw values
+            let x = data.acceleration.x  // lateral
+            let y = data.acceleration.y  // longitudinal
+            let z = data.acceleration.z  // vertical
+            let magnitude = sqrt(x * x + y * y + z * z)
+        }
+    }
+
+    /// Poll-based accelerometer reading (no callback)
+    func readAccelerometer() -&gt; CMAccelerometerData? {
+        motionManager.startAccelerometerUpdates()
+        return motionManager.accelerometerData
+    }
+
+    func stopAccelerometer() {
+        motionManager.stopAccelerometerUpdates()
+    }
+}
+</code></pre>
+<h2 id="gyroscope-data-cmgyrodata">Gyroscope Data (CMGyroData)</h2>
+<p>Measures rotation rate in radians per second around x, y, z axes.</p>
+<pre><code class="language-swift">extension MotionManager {
+    func startGyroscope(frequency: Double = 60.0) {
+        guard isGyroAvailable else { return }
+
+        motionManager.gyroUpdateInterval = 1.0 / frequency
+
+        motionManager.startGyroUpdates(to: .main) { [weak self] data, error in
+            guard let data, error == nil else { return }
+            self?.gyroData = data
+
+            let rotationX = data.rotationRate.x  // pitch rate
+            let rotationY = data.rotationRate.y  // yaw rate
+            let rotationZ = data.rotationRate.z  // roll rate
+        }
+    }
+
+    func stopGyroscope() {
+        motionManager.stopGyroUpdates()
+    }
+}
+</code></pre>
+<h2 id="device-motion-cmdevicemotion">Device Motion (CMDeviceMotion)</h2>
+<p>Combines accelerometer, gyroscope, and magnetometer into processed motion data. Separates user acceleration from gravity and provides attitude (orientation).</p>
+<pre><code class="language-swift">extension MotionManager {
+    func startDeviceMotion(
+        frequency: Double = 60.0,
+        referenceFrame: CMAttitudeReferenceFrame = .xArbitraryZVertical
+    ) {
+        guard isDeviceMotionAvailable else { return }
+
+        motionManager.deviceMotionUpdateInterval = 1.0 / frequency
+
+        motionManager.startDeviceMotionUpdates(
+            using: referenceFrame,
+            to: .main
+        ) { [weak self] motion, error in
+            guard let motion, error == nil else { return }
+            self?.deviceMotion = motion
+
+            // Attitude — device orientation
+            let pitch = motion.attitude.pitch   // radians, nose up/down
+            let roll = motion.attitude.roll     // radians, tilt left/right
+            let yaw = motion.attitude.yaw       // radians, compass heading
+
+            // Rotation rate (processed, bias removed)
+            let rotRate = motion.rotationRate
+
+            // Gravity vector (unit gravity direction in device frame)
+            let gx = motion.gravity.x
+            let gy = motion.gravity.y
+            let gz = motion.gravity.z
+
+            // User acceleration (gravity removed)
+            let ux = motion.userAcceleration.x
+            let uy = motion.userAcceleration.y
+            let uz = motion.userAcceleration.z
+
+            // Magnetic field (calibrated)
+            let field = motion.magneticField.field
+            let accuracy = motion.magneticField.accuracy
+        }
+    }
+
+    func stopDeviceMotion() {
+        motionManager.stopDeviceMotionUpdates()
+    }
+
+    /// Detect device orientation from gravity
+    func currentOrientation() -&gt; String {
+        guard let gravity = deviceMotion?.gravity else { return &quot;Unknown&quot; }
+
+        if gravity.z &lt; -0.8 { return &quot;Face Up&quot; }
+        if gravity.z &gt; 0.8 { return &quot;Face Down&quot; }
+        if gravity.x &lt; -0.8 { return &quot;Landscape Left&quot; }
+        if gravity.x &gt; 0.8 { return &quot;Landscape Right&quot; }
+        if gravity.y &lt; -0.8 { return &quot;Portrait&quot; }
+        if gravity.y &gt; 0.8 { return &quot;Portrait Upside Down&quot; }
+        return &quot;Unknown&quot;
+    }
+}
+</code></pre>
+<h2 id="cmpedometer-steps-distance-floors-cadence">CMPedometer — Steps, Distance, Floors, Cadence</h2>
+<p>No special permissions needed; data is available if the hardware supports it. Use <code>CMPedometer</code> instead of <code>CMMotionManager</code> for step counting.</p>
+<pre><code class="language-swift">@Observable
+class PedometerManager {
+    let pedometer = CMPedometer()
+
+    var steps: Int = 0
+    var distance: Double = 0        // meters
+    var floorsAscended: Int = 0
+    var floorsDescended: Int = 0
+    var currentCadence: Double = 0  // steps per second
+    var currentPace: Double = 0     // seconds per meter
+    var isAvailable: Bool { CMPedometer.isStepCountingAvailable() }
+
+    /// Query historical pedometer data
+    func fetchSteps(from start: Date, to end: Date = .now) async throws -&gt; CMPedometerData {
+        try await withCheckedThrowingContinuation { continuation in
+            pedometer.queryPedometerData(from: start, to: end) { data, error in
+                if let error {
+                    continuation.resume(throwing: error)
+                    return
+                }
+                guard let data else {
+                    continuation.resume(throwing: PedometerError.noData)
+                    return
+                }
+                continuation.resume(returning: data)
+            }
+        }
+    }
+
+    /// Start live pedometer updates from a given date
+    func startLiveUpdates(from date: Date = Calendar.current.startOfDay(for: .now)) {
+        guard isAvailable else { return }
+
+        pedometer.startUpdates(from: date) { [weak self] data, error in
+            guard let data, error == nil else { return }
+
+            Task { @MainActor in
+                self?.steps = data.numberOfSteps.intValue
+                self?.distance = data.distance?.doubleValue ?? 0
+                self?.floorsAscended = data.floorsAscended?.intValue ?? 0
+                self?.floorsDescended = data.floorsDescended?.intValue ?? 0
+                self?.currentCadence = data.currentCadence?.doubleValue ?? 0
+                self?.currentPace = data.currentPace?.doubleValue ?? 0
+            }
+        }
+    }
+
+    func stopLiveUpdates() {
+        pedometer.stopUpdates()
+    }
+}
+
+enum PedometerError: LocalizedError {
+    case noData
+    case notAvailable
+
+    var errorDescription: String? {
+        switch self {
+        case .noData: return &quot;No pedometer data available.&quot;
+        case .notAvailable: return &quot;Step counting is not available on this device.&quot;
+        }
+    }
+}
+</code></pre>
+<h2 id="cmmotionactivitymanager-activity-recognition">CMMotionActivityManager — Activity Recognition</h2>
+<p>Detects whether the user is walking, running, driving, cycling, or stationary. Requires <code>NSMotionUsageDescription</code> in <code>Info.plist</code>.</p>
+<pre><code class="language-swift">import CoreMotion
+
+@Observable
+class ActivityManager {
+    let activityManager = CMMotionActivityManager()
+
+    var currentActivity: String = &quot;Unknown&quot;
+    var confidence: CMMotionActivityConfidence = .low
+    var isStationary = false
+    var isWalking = false
+    var isRunning = false
+    var isAutomotive = false
+    var isCycling = false
+
+    var isAvailable: Bool { CMMotionActivityManager.isActivityAvailable() }
+
+    func startActivityUpdates() {
+        guard isAvailable else { return }
+
+        activityManager.startActivityUpdates(to: .main) { [weak self] activity in
+            guard let activity, let self else { return }
+
+            self.confidence = activity.confidence
+            self.isStationary = activity.stationary
+            self.isWalking = activity.walking
+            self.isRunning = activity.running
+            self.isAutomotive = activity.automotive
+            self.isCycling = activity.cycling
+
+            self.currentActivity = self.activityDescription(activity)
+        }
+    }
+
+    func stopActivityUpdates() {
+        activityManager.stopActivityUpdates()
+    }
+
+    /// Query historical activities
+    func fetchActivities(from start: Date, to end: Date = .now) async throws -&gt; [CMMotionActivity] {
+        try await withCheckedThrowingContinuation { continuation in
+            activityManager.queryActivityStarting(
+                from: start,
+                to: end,
+                to: .main
+            ) { activities, error in
+                if let error {
+                    continuation.resume(throwing: error)
+                    return
+                }
+                continuation.resume(returning: activities ?? [])
+            }
+        }
+    }
+
+    private func activityDescription(_ activity: CMMotionActivity) -&gt; String {
+        if activity.running { return &quot;Running&quot; }
+        if activity.cycling { return &quot;Cycling&quot; }
+        if activity.automotive { return &quot;Driving&quot; }
+        if activity.walking { return &quot;Walking&quot; }
+        if activity.stationary { return &quot;Stationary&quot; }
+        return &quot;Unknown&quot;
+    }
+}
+</code></pre>
+<h2 id="cmaltimeter-relative-altitude">CMAltimeter — Relative Altitude</h2>
+<p>Measures relative altitude changes using the barometric pressure sensor.</p>
+<pre><code class="language-swift">@Observable
+class AltimeterManager {
+    let altimeter = CMAltimeter()
+
+    var relativeAltitude: Double = 0  // meters, relative to start
+    var pressure: Double = 0          // kilopascals
+
+    var isAvailable: Bool { CMAltimeter.isRelativeAltitudeAvailable() }
+
+    func startAltimeterUpdates() {
+        guard isAvailable else { return }
+
+        altimeter.startRelativeAltitudeUpdates(to: .main) { [weak self] data, error in
+            guard let data, error == nil else { return }
+
+            self?.relativeAltitude = data.relativeAltitude.doubleValue
+            self?.pressure = data.pressure.doubleValue
+        }
+    }
+
+    func stopAltimeterUpdates() {
+        altimeter.stopRelativeAltitudeUpdates()
+    }
+}
+</code></pre>
+<h2 id="motion-data-frequency-and-battery-considerations">Motion Data Frequency and Battery Considerations</h2>
+<pre><code class="language-swift">/// Frequency guidelines:
+/// - UI updates (tilt, orientation): 10-30 Hz
+/// - Games and AR: 60 Hz
+/// - Gesture detection: 50-100 Hz
+/// - Avoid &gt; 100 Hz unless necessary — major battery drain
+
+extension MotionManager {
+    /// Configure for low-power UI-driven usage
+    func configureLowPower() {
+        motionManager.accelerometerUpdateInterval = 1.0 / 10.0  // 10 Hz
+        motionManager.gyroUpdateInterval = 1.0 / 10.0
+        motionManager.deviceMotionUpdateInterval = 1.0 / 10.0
+    }
+
+    /// Configure for high-fidelity game/AR usage
+    func configureHighFidelity() {
+        motionManager.accelerometerUpdateInterval = 1.0 / 60.0  // 60 Hz
+        motionManager.gyroUpdateInterval = 1.0 / 60.0
+        motionManager.deviceMotionUpdateInterval = 1.0 / 60.0
+    }
+}
+
+/// Best practices:
+/// - Stop updates when the app enters the background
+/// - Use the lowest frequency that meets your needs
+/// - Prefer CMDeviceMotion over raw accelerometer/gyro (sensor fusion is better)
+/// - Use CMPedometer for step counting instead of raw accelerometer
+/// - Process data on a background queue, update UI on main queue
+</code></pre>
+<h2 id="complete-pedometer-and-motion-tracking-examples">Complete Pedometer and Motion Tracking Examples</h2>
+<pre><code class="language-swift">import SwiftUI
+import CoreMotion
+
+struct PedometerView: View {
+    @State private var pedometerManager = PedometerManager()
+    @State private var activityManager = ActivityManager()
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(spacing: 24) {
+                    // Step counter ring
+                    ZStack {
+                        Circle()
+                            .stroke(.gray.opacity(0.2), lineWidth: 12)
+
+                        Circle()
+                            .trim(from: 0, to: min(Double(pedometerManager.steps) / 10000.0, 1.0))
+                            .stroke(
+                                .green.gradient,
+                                style: StrokeStyle(lineWidth: 12, lineCap: .round)
+                            )
+                            .rotationEffect(.degrees(-90))
+                            .animation(.spring(duration: 0.8), value: pedometerManager.steps)
+
+                        VStack(spacing: 4) {
+                            Image(systemName: &quot;figure.walk&quot;)
+                                .font(.largeTitle)
+                                .foregroundStyle(.green)
+
+                            Text(&quot;\(pedometerManager.steps)&quot;)
+                                .font(.system(size: 48, weight: .bold, design: .rounded))
+                                .contentTransition(.numericText())
+
+                            Text(&quot;steps today&quot;)
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .frame(width: 200, height: 200)
+
+                    // Current activity
+                    HStack {
+                        Image(systemName: activityIcon)
+                            .font(.title2)
+                            .foregroundStyle(.blue)
+                            .frame(width: 44, height: 44)
+                            .background(.blue.opacity(0.1), in: Circle())
+
+                        VStack(alignment: .leading) {
+                            Text(&quot;Current Activity&quot;)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            Text(activityManager.currentActivity)
+                                .font(.headline)
+                        }
+
+                        Spacer()
+                    }
+                    .padding()
+                    .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
+                    .padding(.horizontal)
+
+                    // Metrics grid
+                    LazyVGrid(columns: [
+                        GridItem(.flexible()),
+                        GridItem(.flexible())
+                    ], spacing: 16) {
+                        MotionMetricCard(
+                            title: &quot;Distance&quot;,
+                            value: String(
+                                format: &quot;%.1f&quot;,
+                                pedometerManager.distance / 1000
+                            ),
+                            unit: &quot;km&quot;,
+                            icon: &quot;location.fill&quot;,
+                            color: .blue
+                        )
+
+                        MotionMetricCard(
+                            title: &quot;Floors Up&quot;,
+                            value: &quot;\(pedometerManager.floorsAscended)&quot;,
+                            unit: &quot;floors&quot;,
+                            icon: &quot;arrow.up&quot;,
+                            color: .orange
+                        )
+
+                        MotionMetricCard(
+                            title: &quot;Cadence&quot;,
+                            value: String(
+                                format: &quot;%.0f&quot;,
+                                pedometerManager.currentCadence * 60
+                            ),
+                            unit: &quot;steps/min&quot;,
+                            icon: &quot;metronome.fill&quot;,
+                            color: .purple
+                        )
+
+                        MotionMetricCard(
+                            title: &quot;Floors Down&quot;,
+                            value: &quot;\(pedometerManager.floorsDescended)&quot;,
+                            unit: &quot;floors&quot;,
+                            icon: &quot;arrow.down&quot;,
+                            color: .teal
+                        )
+                    }
+                    .padding(.horizontal)
+                }
+                .padding(.top)
+            }
+            .navigationTitle(&quot;Pedometer&quot;)
+            .onAppear {
+                pedometerManager.startLiveUpdates()
+                activityManager.startActivityUpdates()
+            }
+            .onDisappear {
+                pedometerManager.stopLiveUpdates()
+                activityManager.stopActivityUpdates()
+            }
+        }
+    }
+
+    var activityIcon: String {
+        if activityManager.isRunning { return &quot;figure.run&quot; }
+        if activityManager.isCycling { return &quot;figure.outdoor.cycle&quot; }
+        if activityManager.isAutomotive { return &quot;car.fill&quot; }
+        if activityManager.isWalking { return &quot;figure.walk&quot; }
+        return &quot;figure.stand&quot;
+    }
+}
+
+struct MotionMetricCard: View {
+    let title: String
+    let value: String
+    let unit: String
+    let icon: String
+    let color: Color
+
+    var body: some View {
+        VStack(spacing: 8) {
+            Image(systemName: icon)
+                .foregroundStyle(color)
+                .font(.title3)
+
+            Text(value)
+                .font(.system(.title2, design: .rounded, weight: .bold))
+                .contentTransition(.numericText())
+
+            Text(unit)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding()
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
+    }
+}
+
+struct MotionTrackerView: View {
+    @State private var motionManager = MotionManager()
+
+    var body: some View {
+        NavigationStack {
+            List {
+                if let motion = motionManager.deviceMotion {
+                    Section(&quot;Attitude (degrees)&quot;) {
+                        MotionRow(label: &quot;Pitch&quot;, value: degrees(motion.attitude.pitch))
+                        MotionRow(label: &quot;Roll&quot;, value: degrees(motion.attitude.roll))
+                        MotionRow(label: &quot;Yaw&quot;, value: degrees(motion.attitude.yaw))
+                    }
+
+                    Section(&quot;User Acceleration (G)&quot;) {
+                        MotionRow(label: &quot;X&quot;, value: motion.userAcceleration.x)
+                        MotionRow(label: &quot;Y&quot;, value: motion.userAcceleration.y)
+                        MotionRow(label: &quot;Z&quot;, value: motion.userAcceleration.z)
+                    }
+
+                    Section(&quot;Gravity (G)&quot;) {
+                        MotionRow(label: &quot;X&quot;, value: motion.gravity.x)
+                        MotionRow(label: &quot;Y&quot;, value: motion.gravity.y)
+                        MotionRow(label: &quot;Z&quot;, value: motion.gravity.z)
+                    }
+
+                    Section(&quot;Rotation Rate (rad/s)&quot;) {
+                        MotionRow(label: &quot;X&quot;, value: motion.rotationRate.x)
+                        MotionRow(label: &quot;Y&quot;, value: motion.rotationRate.y)
+                        MotionRow(label: &quot;Z&quot;, value: motion.rotationRate.z)
+                    }
+
+                    Section(&quot;Orientation&quot;) {
+                        Text(motionManager.currentOrientation())
+                            .font(.headline)
+                    }
+                } else {
+                    ContentUnavailableView(
+                        &quot;No Motion Data&quot;,
+                        systemImage: &quot;gyroscope&quot;,
+                        description: Text(&quot;Waiting for device motion updates.&quot;)
+                    )
+                }
+            }
+            .navigationTitle(&quot;Motion Tracker&quot;)
+            .onAppear {
+                motionManager.startDeviceMotion(frequency: 30)
+            }
+            .onDisappear {
+                motionManager.stopDeviceMotion()
+            }
+        }
+    }
+
+    func degrees(_ radians: Double) -&gt; Double {
+        radians * 180.0 / .pi
+    }
+}
+
+struct MotionRow: View {
+    let label: String
+    let value: Double
+
+    var body: some View {
+        HStack {
+            Text(label)
+                .foregroundStyle(.secondary)
+            Spacer()
+            Text(String(format: &quot;%.3f&quot;, value))
+                .monospacedDigit()
+                .contentTransition(.numericText())
+        }
+    }
+}
+</code></pre></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

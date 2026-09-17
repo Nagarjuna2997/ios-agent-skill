@@ -1,0 +1,26 @@
+{
+  "date": "2026-09-17T01:03:56.606Z",
+  "package": "ios-agent-mcp@2.7.0",
+  "tool": "review_swift_concurrency",
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "# Swift Concurrency Review\n\nScanned **1** Swift file.\n\n**No findings.** Every rule in this category passed.\n\n_This is a static check. It cannot verify behavior — run the build and the test suite for that._"
+      }
+    ],
+    "structuredContent": {
+      "summary": "Swift Concurrency Review: no findings across 1 file.",
+      "score": 100,
+      "counts": {
+        "blocker": 0,
+        "serious": 0,
+        "minor": 0,
+        "total": 0
+      },
+      "files_checked": 1,
+      "issues": [],
+      "suggestions": []
+    }
+  }
+}

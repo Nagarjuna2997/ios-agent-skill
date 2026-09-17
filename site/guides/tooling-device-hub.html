@@ -1,0 +1,221 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Device Hub — iOS Agent Skill</title><meta name="description" content="Repository guidance for Device Hub. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-device-hub.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="Device Hub"><meta property="og:description" content="Repository guidance for Device Hub. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-device-hub.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "Device Hub", "description": "Repository guidance for Device Hub. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-device-hub.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Developer Tools · Reference guide</p><h1>Device Hub</h1><p class="lead">Repository guidance for Device Hub. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/tooling/device-hub.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#september-2026-duo-check">September 2026 Duo check</a></li>
+<li><a href="#1-what-it-replaces">1. What it replaces</a></li>
+<li><a href="#2-the-matrix-that-actually-matters">2. The matrix that actually matters</a><ul>
+<li><a href="#ios-27-app-resizability">iOS 27: app resizability</a></li>
+</ul>
+</li>
+<li><a href="#3-accessibility-testing">3. Accessibility testing</a></li>
+<li><a href="#4-reproducing-a-device-specific-bug">4. Reproducing a device-specific bug</a></li>
+<li><a href="#5-multi-device-workflows">5. Multi-device workflows</a></li>
+<li><a href="#anti-patterns">Anti-Patterns</a></li>
+<li><a href="#checklist">Checklist</a></li>
+</ul>
+</div>
+</aside><p><strong>Load this when:</strong> reproducing a device-specific bug, managing simulators,
+running accessibility checks, or testing across several devices at once.</p>
+<p>Device Hub (Xcode 27) brings devices and simulators together in one place, so you
+can diagnose and reproduce issues, inspect device state, and run testing
+workflows without leaving Xcode.</p>
+<blockquote>
+<p><strong>Verification status (2026-09-16):</strong> Xcode 27 is released. Device Hub UI workflows still require hands-on verification; this repository’s local runtime checks use Xcode 26.6.</p>
+</blockquote>
+<hr />
+<h2 id="september-2026-duo-check">September 2026 Duo check</h2>
+<p>Apple describes Duo support in Device Hub as upcoming. Use the runtime MCP’s <code>simulator_environment</code> to inspect the selected Xcode and installed profiles. See <code>docs/platforms/iphone-duo.md</code> for the dated source and adaptation checks; do not infer simulator availability from the hardware announcement.</p>
+<h2 id="1-what-it-replaces">1. What it replaces</h2>
+<p>Previously these were four separate places — Devices and Simulators, the
+Accessibility Inspector, <code>xcrun simctl</code>, and Console. Device Hub consolidates
+them:</p>
+<table>
+<thead>
+<tr>
+<th>Task</th>
+<th>Before</th>
+<th>Now</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>See connected devices and simulators</td>
+<td>Devices and Simulators window</td>
+<td>Device Hub</td>
+</tr>
+<tr>
+<td>Inspect device state</td>
+<td>Console + Settings on device</td>
+<td>Device Hub</td>
+</tr>
+<tr>
+<td>Reproduce a bug on a specific model</td>
+<td>Manual scheme juggling</td>
+<td>Device Hub</td>
+</tr>
+<tr>
+<td>Run one test across several devices</td>
+<td>Scripted <code>xcodebuild</code> loops</td>
+<td>Device Hub</td>
+</tr>
+</tbody>
+</table>
+<p>The practical gain is fewer context switches while chasing a device-specific
+bug — which is most of the cost of chasing one.</p>
+<hr />
+<h2 id="2-the-matrix-that-actually-matters">2. The matrix that actually matters</h2>
+<p>Testing "on a simulator" is not testing. This skill's rules produce bugs that
+only appear on specific configurations:</p>
+<table>
+<thead>
+<tr>
+<th>Configuration</th>
+<th>Catches</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Smallest supported device (iPhone SE)</td>
+<td>Truncation, layouts that assume height</td>
+</tr>
+<tr>
+<td>Largest + landscape</td>
+<td>Stretched layouts, wasted space</td>
+</tr>
+<tr>
+<td>iPad</td>
+<td>Missing <code>NavigationSplitView</code>, size-class assumptions, <strong>app resizability</strong></td>
+</tr>
+<tr>
+<td>Dark mode</td>
+<td>Gray-on-gray, invisible shadows, unreadable pills</td>
+</tr>
+<tr>
+<td>Accessibility text sizes</td>
+<td>Clipped rows, fixed heights, unreflowed <code>HStack</code>s</td>
+</tr>
+<tr>
+<td>RTL (Arabic, Hebrew)</td>
+<td>Hardcoded leading/trailing, mirrored icons</td>
+</tr>
+<tr>
+<td>Oldest supported OS</td>
+<td>APIs used without an <code>@available</code> guard</td>
+</tr>
+<tr>
+<td>Physical device</td>
+<td>Performance, camera, motion, biometrics, real network</td>
+</tr>
+</tbody>
+</table>
+<p>The last one is not optional. A simulator has your Mac's CPU and no radio;
+main-actor contention and network flakiness both hide there.</p>
+<h3 id="ios-27-app-resizability">iOS 27: app resizability</h3>
+<p>Rebuilding against the iOS 27 SDK <strong>automatically opts your app into
+resizability</strong> on iPad and in iPhone Mirroring. This is a behavior change you
+inherit without asking for it.</p>
+<p>That makes iPad and resized-window testing mandatory on an SDK bump, not a nice
+to have. Anything that assumed a fixed width will surface here:</p>
+<pre><code class="language-swift">// FRAGILE — assumes a width that resizing invalidates.
+.frame(width: 390)
+GeometryReader { geo in
+    if geo.size.width &gt; 700 { … }        // a resized window crosses this constantly
+}
+
+// ROBUST — adapts.
+@Environment(\.horizontalSizeClass) private var sizeClass
+ViewThatFits(in: .horizontal) { wideLayout; narrowLayout }
+</code></pre>
+<p>Verify: launch on iPad, drag the window through every width, and confirm nothing
+clips, overlaps, or jumps layout mid-drag.</p>
+<hr />
+<h2 id="3-accessibility-testing">3. Accessibility testing</h2>
+<p>Device Hub surfaces accessibility inspection alongside the device, which makes
+it practical to check per-device rather than once at the end.</p>
+<p>What to verify — these map to the rules in <code>docs/design/design-tokens.md</code>:</p>
+<ul>
+<li><strong>VoiceOver</strong> reaches every interactive element in a sensible order, and each
+  has a meaningful label. Decorative images are hidden.</li>
+<li><strong>Dynamic Type</strong> at <code>.accessibility5</code> — no clipping, rows reflow.</li>
+<li><strong>Contrast</strong> ≥ 4.5:1 body, 3:1 large text and controls.</li>
+<li><strong>Tap targets</strong> ≥ 44×44pt at every text size.</li>
+<li><strong>Reduce Motion</strong> and <strong>Reduce Transparency</strong> are honoured.</li>
+</ul>
+<pre><code class="language-swift">// The three environment values every screen should respect.
+@Environment(\.dynamicTypeSize) private var typeSize
+@Environment(\.accessibilityReduceMotion) private var reduceMotion
+@Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+</code></pre>
+<p>Automate what you can so it does not depend on remembering:</p>
+<pre><code class="language-swift">@Test(&quot;no element is missing an accessibility label&quot;)
+func labels() throws {
+    let app = XCUIApplication()
+    app.launch()
+    for button in app.buttons.allElementsBoundByIndex {
+        #expect(!button.label.isEmpty)
+    }
+}
+</code></pre>
+<p>Full reference: <code>docs/frameworks/accessibility.md</code>.</p>
+<hr />
+<h2 id="4-reproducing-a-device-specific-bug">4. Reproducing a device-specific bug</h2>
+<pre><code>1. Reproduce it on the exact reported configuration — model, OS, text size,
+   appearance, language. Not an approximation.
+2. Inspect device state at the moment of failure.
+3. Narrow: does it reproduce on a simulator? A different model? A different
+   OS version? Each &quot;no&quot; is information about the cause.
+4. Fix.
+5. Re-verify on the original configuration, then on the matrix above.
+</code></pre>
+<p>Step 1 is the one people skip. "It probably also happens on the 15 Pro" is a
+guess, and the whole point of a device-specific bug is that the device is
+specific.</p>
+<p>This is the <code>swift-debugger</code> method — reproduce, isolate, fix, prove — applied to
+hardware. See <code>.claude/agents/swift-debugger.md</code>.</p>
+<hr />
+<h2 id="5-multi-device-workflows">5. Multi-device workflows</h2>
+<p>Running one test across several devices at once is worth it when:</p>
+<ul>
+<li>You are verifying a <strong>layout</strong> change (widths and text sizes vary).</li>
+<li>You are verifying an <strong>availability</strong> guard (OS versions vary).</li>
+<li>You are checking a <strong>performance</strong> regression (hardware varies).</li>
+</ul>
+<p>It is not worth it for pure logic tests — those are the same everywhere, and a
+unit test is faster than a UI test on five devices. Reserve the matrix for what
+actually varies by device.</p>
+<hr />
+<h2 id="anti-patterns">Anti-Patterns</h2>
+<pre><code># 1. &quot;Works on my simulator.&quot;
+   No radio, your Mac's CPU. Performance and network bugs hide there.
+
+# 2. Testing one device size.
+   iPhone SE and iPad Pro are different products.
+
+# 3. Skipping iPad after an SDK bump.
+   iOS 27 auto-opts you into resizability. Fixed-width assumptions break.
+
+# 4. Accessibility as a pre-release pass.
+   Cheap per screen during development; expensive as a sweep at the end.
+
+# 5. Approximating the reported configuration.
+   The device is the variable. Reproduce it exactly.
+
+# 6. Running the full matrix on logic-only tests.
+   Slow, and it tells you nothing a unit test would not.
+
+# 7. Testing only in English.
+   German truncates, Arabic mirrors.
+</code></pre>
+<hr />
+<h2 id="checklist">Checklist</h2>
+<ul>
+<li>[ ] Verified on the smallest and largest supported devices.</li>
+<li>[ ] Verified on iPad, including dragging the window across widths (iOS 27
+      resizability).</li>
+<li>[ ] Verified in light and dark mode.</li>
+<li>[ ] Verified at <code>.accessibility5</code> text size.</li>
+<li>[ ] Verified in one RTL language.</li>
+<li>[ ] Verified on the oldest supported OS version.</li>
+<li>[ ] Verified on at least one physical device.</li>
+<li>[ ] VoiceOver reaches every control with a meaningful label.</li>
+<li>[ ] A reported bug was reproduced on its exact configuration before fixing.</li>
+</ul></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

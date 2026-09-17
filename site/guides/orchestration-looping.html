@@ -1,0 +1,238 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Loops — iOS Agent Skill</title><meta name="description" content="Repository guidance for Loops. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/orchestration-looping.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="Loops"><meta property="og:description" content="Repository guidance for Loops. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/orchestration-looping.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "Loops", "description": "Repository guidance for Loops. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/orchestration-looping.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Orchestration · Reference guide</p><h1>Loops</h1><p class="lead">Repository guidance for Loops. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/orchestration/looping.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#1-the-four-loop-patterns">1. The four loop patterns</a></li>
+<li><a href="#2-every-loop-declares-four-things">2. Every loop declares four things</a></li>
+<li><a href="#3-goal-based-loops">3. Goal-based loops</a><ul>
+<li><a href="#detecting-a-stall">Detecting a stall</a></li>
+<li><a href="#never-fake-termination">Never fake termination</a></li>
+</ul>
+</li>
+<li><a href="#4-turn-based-loops">4. Turn-based loops</a></li>
+<li><a href="#5-time-based-loops">5. Time-based loops</a></li>
+<li><a href="#6-proactive-loops">6. Proactive loops</a></li>
+<li><a href="#7-loops-and-subagents">7. Loops and subagents</a></li>
+<li><a href="#8-anti-patterns">8. Anti-patterns</a></li>
+<li><a href="#checklist-before-starting-a-loop">Checklist before starting a loop</a></li>
+</ul>
+</div>
+</aside><p><strong>Load this when:</strong> work must repeat until some condition holds — a failing
+suite driven to green, a migration applied file by file, a CI run watched, a
+recurring check — or when you are about to write "keep going until…".</p>
+<p>A loop is a repeated cycle of work that continues until a <strong>stop condition</strong> is
+met. The stop condition is the entire design. A loop without one is not a loop,
+it is a runaway process.</p>
+<hr />
+<h2 id="1-the-four-loop-patterns">1. The four loop patterns</h2>
+<table>
+<thead>
+<tr>
+<th>Pattern</th>
+<th>Stops when</th>
+<th>Use for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Turn-based</strong></td>
+<td>A fixed number of iterations completes</td>
+<td>Bounded batch work: 12 files to migrate</td>
+</tr>
+<tr>
+<td><strong>Goal-based</strong></td>
+<td>A measurable condition becomes true</td>
+<td>"Until <code>swift test</code> is green"</td>
+</tr>
+<tr>
+<td><strong>Time-based</strong></td>
+<td>A schedule fires, or a deadline passes</td>
+<td>Recurring checks, watching CI</td>
+</tr>
+<tr>
+<td><strong>Proactive</strong></td>
+<td>An external event arrives</td>
+<td>Reacting to a webhook, a PR comment, a failure</td>
+</tr>
+</tbody>
+</table>
+<p>Most real work is <strong>goal-based with a turn cap</strong> — repeat until the goal is met,
+but never more than N times, so a goal that turns out to be unreachable
+terminates instead of burning tokens forever.</p>
+<hr />
+<h2 id="2-every-loop-declares-four-things">2. Every loop declares four things</h2>
+<p>Before the first iteration, state these. If you cannot fill all four in, you do
+not yet have a loop you should run.</p>
+<pre><code>GOAL:      swift test exits 0 with no skipped tests
+CHECK:     $ swift test 2&gt;&amp;1 | tail -20   (the exact command, run every iteration)
+MAX:       6 iterations
+ON-STALL:  if two consecutive iterations produce the same failure, stop and report
+</code></pre>
+<ul>
+<li><strong>GOAL</strong> — an outcome, not an activity. "Tests pass" is a goal. "Work on the
+  tests" is not.</li>
+<li><strong>CHECK</strong> — a real command whose output decides whether to continue. Not your
+  own judgment. If the check is "does it look right", the loop cannot terminate
+  reliably.</li>
+<li><strong>MAX</strong> — a hard iteration cap. Always.</li>
+<li><strong>ON-STALL</strong> — what counts as no progress, and what to do about it.</li>
+</ul>
+<hr />
+<h2 id="3-goal-based-loops">3. Goal-based loops</h2>
+<p>The common case. Structure:</p>
+<pre><code>1. Run CHECK. Capture the output.
+2. If the goal is met -&gt; stop, report the passing output.
+3. If MAX iterations reached -&gt; stop, report the last failure and what you tried.
+4. If the failure is identical to the previous iteration -&gt; stop (stalled).
+5. Otherwise: fix ONE thing, then go to 1.
+</code></pre>
+<p>Step 5 is where loops go wrong. Fixing several things per iteration means that
+when the check still fails you cannot tell which change helped, which regressed,
+and which did nothing.</p>
+<h3 id="detecting-a-stall">Detecting a stall</h3>
+<p>Three signals that a loop should stop even though the goal is unmet:</p>
+<ul>
+<li><strong>Identical failure twice.</strong> Your change did not affect the failure. Continuing
+  will not help.</li>
+<li><strong>Oscillation.</strong> Failure A → fix → failure B → fix → failure A. You are
+  trading one problem for another; the design is wrong, not the code.</li>
+<li><strong>Growing blast radius.</strong> Each iteration touches more files than the last. You
+  are chasing symptoms.</li>
+</ul>
+<p>On any of these: stop and report. A loop that halts with "I could not get past
+this, here is the failure and the three approaches I tried" is a good outcome. A
+loop that runs twenty iterations and reports success is usually lying.</p>
+<h3 id="never-fake-termination">Never fake termination</h3>
+<pre><code># WRONG — these make the check pass without meeting the goal.
+- Deleting or skipping the failing test
+- Widening a catch until the error disappears
+- Adding a sleep until a race stops reproducing
+- Loosening an assertion to match wrong output
+- Force-unwrapping to get past a compile error
+
+# RIGHT
+Stop. Report the failure, the root cause if you found it, and what you tried.
+</code></pre>
+<p>If the only way to satisfy the stop condition is to weaken the check, the loop
+has failed and must say so.</p>
+<hr />
+<h2 id="4-turn-based-loops">4. Turn-based loops</h2>
+<p>Bounded, known work. The cap <em>is</em> the stop condition.</p>
+<pre><code>GOAL:  all 14 view models in Features/ are @MainActor-isolated
+CHECK: $ grep -rLn &quot;@MainActor&quot; --include=&quot;*ViewModel.swift&quot; Features/
+MAX:   14 (one per file)
+</code></pre>
+<p>Work one unit per iteration and verify each before moving on. Batching all
+fourteen and verifying once at the end means a single failure invalidates the
+whole pass with no way to tell which file caused it.</p>
+<hr />
+<h2 id="5-time-based-loops">5. Time-based loops</h2>
+<p>Two distinct cases, and the difference matters:</p>
+<p><strong>Fixed schedule</strong> — a recurring task. Use a scheduled trigger rather than a
+sleeping session: "check the release branch for new failures every weekday at
+09:00".</p>
+<p><strong>Self-paced polling</strong> — waiting for something to change. Choose the interval
+from how fast the thing actually changes:</p>
+<table>
+<thead>
+<tr>
+<th>Waiting on</th>
+<th>Interval</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A CI run that takes ~8 minutes</td>
+<td>one check at ~8 min, not eight at 1 min</td>
+</tr>
+<tr>
+<td>A deploy</td>
+<td>matched to the deploy's typical duration</td>
+</tr>
+<tr>
+<td>Nothing specific (idle tick)</td>
+<td>20–30 minutes</td>
+</tr>
+<tr>
+<td>A signal that will notify you anyway</td>
+<td>a long fallback (20 min+), not polling</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Never poll with <code>sleep</code> for something the harness will wake you for.</strong> If
+work is tracked and will notify you on completion, waiting in a sleep loop is
+pure waste. Use a long fallback so the loop survives a hang, and let the
+notification do the work.</p>
+<hr />
+<h2 id="6-proactive-loops">6. Proactive loops</h2>
+<p>Driven by external events rather than your own schedule: a PR comment arrives, a
+CI job fails, a webhook fires.</p>
+<p>Rules:</p>
+<ul>
+<li><strong>Every event gets a visible outcome.</strong> Either an action taken, or a stated
+  reason for not acting. Silently dropping an event is how a "watched" PR sits
+  broken for a day.</li>
+<li><strong>Deduplicate.</strong> The same event can arrive twice. So can an echo of your own
+  action. Neither is a new request.</li>
+<li><strong>Do not narrate every round.</strong> Report when a round resolves the task, hits a
+  blocker, or raises a question.</li>
+<li><strong>The loop ends when the underlying thing is done</strong> — the PR merges, the job
+  goes green — not when you run out of events.</li>
+</ul>
+<hr />
+<h2 id="7-loops-and-subagents">7. Loops and subagents</h2>
+<p>Two ways to combine them, with different properties:</p>
+<p><strong>Loop inside one agent</strong> — the agent iterates itself. Cheaper, keeps context
+across iterations, but the agent is grading its own work at every step.</p>
+<p><strong>Loop with a verifier</strong> — the worker fixes, a fresh <code>swift-reviewer</code> subagent
+checks, the loop continues on the reviewer's verdict. More expensive, and
+substantially more trustworthy: the thing deciding "done" is not the thing that
+wants to be done.</p>
+<p>Use a verifier loop when the cost of a false "it works" is high — anything you
+will not manually check before it ships. See <code>verification.md</code>.</p>
+<pre><code>iterate:
+  worker  -&gt; makes one change
+  reviewer -&gt; runs the build and tests, returns VERDICT + real output
+  if VERDICT == pass -&gt; stop
+  if MAX reached or stalled -&gt; stop and report
+  else -&gt; feed the reviewer's findings back to the worker
+</code></pre>
+<hr />
+<h2 id="8-anti-patterns">8. Anti-patterns</h2>
+<pre><code># 1. No stop condition.
+&quot;Keep improving the code.&quot;
+-&gt; Improve until what is true? Unbounded.
+
+# 2. Self-assessed check.
+CHECK: &quot;does the code look correct now?&quot;
+-&gt; Not a check. Use a command with an exit code.
+
+# 3. No iteration cap.
+-&gt; One unreachable goal burns the whole budget.
+
+# 4. Multiple changes per iteration.
+-&gt; You cannot attribute the result to a cause.
+
+# 5. Polling with sleep for work that notifies you.
+while true; do sleep 30; check_status; done
+-&gt; Wasted turns. Use a long fallback and let the notification wake you.
+
+# 6. Ignoring a stall.
+Same failure, iteration 3, 4, 5, 6…
+-&gt; Stop at 2. Report.
+
+# 7. Weakening the check to terminate.
+-&gt; That is not success, and reporting it as success is a false claim.
+
+# 8. Reporting success without the final check's output.
+-&gt; Paste the passing output. Otherwise it is an assertion.
+</code></pre>
+<hr />
+<h2 id="checklist-before-starting-a-loop">Checklist before starting a loop</h2>
+<ul>
+<li>[ ] GOAL is a measurable outcome, not an activity.</li>
+<li>[ ] CHECK is a real command with an exit code, run every iteration.</li>
+<li>[ ] MAX iteration cap is set.</li>
+<li>[ ] Stall detection is defined (identical failure, oscillation, growth).</li>
+<li>[ ] One change per iteration.</li>
+<li>[ ] The termination report includes the final check's real output.</li>
+<li>[ ] For high-stakes work, an independent verifier decides "done", not the worker.</li>
+</ul></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

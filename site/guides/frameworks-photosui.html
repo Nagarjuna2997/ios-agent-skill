@@ -1,0 +1,1176 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PhotosUI &amp; AVKit — iOS Agent Skill</title><meta name="description" content="Repository guidance for PhotosUI, Photos. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-photosui.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="PhotosUI &amp; AVKit"><meta property="og:description" content="Repository guidance for PhotosUI, Photos. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-photosui.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "PhotosUI & AVKit", "description": "Repository guidance for PhotosUI, Photos. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-photosui.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Core UI and Apps · Reference guide</p><h1>PhotosUI &amp; AVKit</h1><p class="lead">Repository guidance for PhotosUI, Photos. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/frameworks/photosui.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#photospicker-single-multiple-filtered-by-type">PhotosPicker (Single, Multiple, Filtered by Type)</a></li>
+<li><a href="#transferable-protocol-for-photo-loading">Transferable Protocol for Photo Loading</a></li>
+<li><a href="#phpickerviewcontroller-uikit">PHPickerViewController (UIKit)</a></li>
+<li><a href="#avcapturesession-for-custom-camera">AVCaptureSession for Custom Camera</a></li>
+<li><a href="#avcapturephotooutput-and-avcapturevideodataoutput">AVCapturePhotoOutput and AVCaptureVideoDataOutput</a></li>
+<li><a href="#videoplayer-in-swiftui-with-custom-controls">VideoPlayer in SwiftUI with Custom Controls</a></li>
+<li><a href="#picture-in-picture-avpictureinpicturecontroller">Picture-in-Picture (AVPictureInPictureController)</a></li>
+<li><a href="#phphotolibrary-for-saving-photos-and-videos">PHPhotoLibrary for Saving Photos and Videos</a></li>
+<li><a href="#complete-photo-picker-and-custom-camera-example">Complete Photo Picker and Custom Camera Example</a></li>
+<li><a href="#key-considerations">Key Considerations</a></li>
+</ul>
+</div>
+</aside><p>PhotosUI provides the system photo picker for selecting photos and videos. AVKit and AVFoundation provide video playback, custom camera capture, and Picture-in-Picture support. Together they cover the full media pipeline from capture to display.</p>
+<h2 id="photospicker-single-multiple-filtered-by-type">PhotosPicker (Single, Multiple, Filtered by Type)</h2>
+<p>The SwiftUI <code>PhotosPicker</code> presents the system photo picker with privacy-preserving access (no permissions prompt required).</p>
+<pre><code class="language-swift">import SwiftUI
+import PhotosUI
+
+struct SinglePhotoPicker: View {
+    @State private var selectedItem: PhotosPickerItem?
+    @State private var selectedImage: Image?
+
+    var body: some View {
+        VStack(spacing: 20) {
+            if let selectedImage {
+                selectedImage
+                    .resizable()
+                    .scaledToFit()
+                    .frame(maxHeight: 300)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+            }
+
+            // Single photo picker
+            PhotosPicker(
+                selection: $selectedItem,
+                matching: .images,  // Only show images
+                photoLibrary: .shared()
+            ) {
+                Label(&quot;Select Photo&quot;, systemImage: &quot;photo.on.rectangle&quot;)
+            }
+            .buttonStyle(.borderedProminent)
+        }
+        .onChange(of: selectedItem) { oldValue, newValue in
+            Task {
+                if let data = try? await newValue?.loadTransferable(type: Data.self),
+                   let uiImage = UIImage(data: data) {
+                    selectedImage = Image(uiImage: uiImage)
+                }
+            }
+        }
+    }
+}
+
+// Multiple photo selection with type filtering
+struct MultiplePhotoPicker: View {
+    @State private var selectedItems: [PhotosPickerItem] = []
+    @State private var selectedImages: [UIImage] = []
+
+    var body: some View {
+        VStack {
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 12) {
+                    ForEach(selectedImages, id: \.self) { image in
+                        Image(uiImage: image)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 100, height: 100)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                    }
+                }
+                .padding(.horizontal)
+            }
+
+            // Multiple selection with max count and filter
+            PhotosPicker(
+                selection: $selectedItems,
+                maxSelectionCount: 10,
+                selectionBehavior: .ordered,
+                matching: .any(of: [.images, .screenshots, .not(.videos)]),
+                preferredItemEncoding: .compatible,
+                photoLibrary: .shared()
+            ) {
+                Label(&quot;Select Photos (max 10)&quot;, systemImage: &quot;photo.stack&quot;)
+            }
+            .buttonStyle(.bordered)
+
+            // Filter examples:
+            // .images                       — all images
+            // .videos                       — all videos
+            // .livePhotos                   — Live Photos only
+            // .screenshots                  — screenshots only
+            // .any(of: [.images, .videos])  — images or videos
+            // .all(of: [.images, .not(.screenshots)]) — images excluding screenshots
+        }
+        .onChange(of: selectedItems) { oldValue, newValue in
+            Task {
+                selectedImages = []
+                for item in newValue {
+                    if let data = try? await item.loadTransferable(type: Data.self),
+                       let image = UIImage(data: data) {
+                        selectedImages.append(image)
+                    }
+                }
+            }
+        }
+    }
+}
+</code></pre>
+<h2 id="transferable-protocol-for-photo-loading">Transferable Protocol for Photo Loading</h2>
+<p>Use <code>Transferable</code> conformance for type-safe photo loading from <code>PhotosPickerItem</code>.</p>
+<pre><code class="language-swift">import SwiftUI
+import PhotosUI
+import CoreTransferable
+
+// Custom Transferable type for loading images
+struct PickedImage: Transferable {
+    let image: Image
+    let uiImage: UIImage
+
+    static var transferRepresentation: some TransferRepresentation {
+        DataRepresentation(importedContentType: .image) { data in
+            guard let uiImage = UIImage(data: data) else {
+                throw PickerError.importFailed
+            }
+            return PickedImage(image: Image(uiImage: uiImage), uiImage: uiImage)
+        }
+    }
+}
+
+// Transferable for video loading
+struct PickedVideo: Transferable {
+    let url: URL
+
+    static var transferRepresentation: some TransferRepresentation {
+        FileRepresentation(contentType: .movie) { video in
+            SentTransferredFile(video.url)
+        } importing: { received in
+            // Copy to a permanent location
+            let destination = FileManager.default.temporaryDirectory
+                .appendingPathComponent(UUID().uuidString)
+                .appendingPathExtension(&quot;mov&quot;)
+            try FileManager.default.copyItem(at: received.file, to: destination)
+            return PickedVideo(url: destination)
+        }
+    }
+}
+
+enum PickerError: LocalizedError {
+    case importFailed
+
+    var errorDescription: String? {
+        &quot;Failed to import the selected media.&quot;
+    }
+}
+
+// Usage with Transferable
+struct TransferablePickerView: View {
+    @State private var selectedItem: PhotosPickerItem?
+    @State private var pickedImage: PickedImage?
+    @State private var isLoading = false
+
+    var body: some View {
+        VStack(spacing: 20) {
+            if isLoading {
+                ProgressView(&quot;Loading...&quot;)
+            } else if let pickedImage {
+                pickedImage.image
+                    .resizable()
+                    .scaledToFit()
+                    .frame(maxHeight: 300)
+            }
+
+            PhotosPicker(selection: $selectedItem, matching: .images) {
+                Label(&quot;Choose Photo&quot;, systemImage: &quot;photo&quot;)
+            }
+        }
+        .onChange(of: selectedItem) { _, newValue in
+            Task {
+                isLoading = true
+                pickedImage = try? await newValue?.loadTransferable(type: PickedImage.self)
+                isLoading = false
+            }
+        }
+    }
+}
+</code></pre>
+<h2 id="phpickerviewcontroller-uikit">PHPickerViewController (UIKit)</h2>
+<p>For UIKit codebases, use <code>PHPickerViewController</code> which provides the same privacy-preserving picker.</p>
+<pre><code class="language-swift">import UIKit
+import PhotosUI
+
+class PhotoPickerViewController: UIViewController, PHPickerViewControllerDelegate {
+    private var selectedImages: [UIImage] = []
+
+    func presentPicker() {
+        var config = PHPickerConfiguration(photoLibrary: .shared())
+        config.selectionLimit = 5          // 0 = unlimited
+        config.filter = .images            // .videos, .livePhotos, .any(of:)
+        config.preferredAssetRepresentationMode = .current
+        config.selection = .ordered        // Maintain selection order
+
+        let picker = PHPickerViewController(configuration: config)
+        picker.delegate = self
+        present(picker, animated: true)
+    }
+
+    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+        dismiss(animated: true)
+
+        selectedImages = []
+
+        for result in results {
+            let provider = result.itemProvider
+
+            if provider.canLoadObject(ofClass: UIImage.self) {
+                provider.loadObject(ofClass: UIImage.self) { [weak self] image, error in
+                    if let image = image as? UIImage {
+                        DispatchQueue.main.async {
+                            self?.selectedImages.append(image)
+                            self?.updateUI()
+                        }
+                    }
+                }
+            }
+
+            // Load video
+            if provider.hasItemConformingToTypeIdentifier(&quot;public.movie&quot;) {
+                provider.loadFileRepresentation(forTypeIdentifier: &quot;public.movie&quot;) { url, error in
+                    guard let url else { return }
+                    // Copy video to permanent location before the temporary file is deleted
+                    let destination = FileManager.default.temporaryDirectory
+                        .appendingPathComponent(UUID().uuidString + &quot;.mov&quot;)
+                    try? FileManager.default.copyItem(at: url, to: destination)
+                }
+            }
+        }
+    }
+
+    private func updateUI() {
+        // Update your collection view or image views
+    }
+}
+</code></pre>
+<h2 id="avcapturesession-for-custom-camera">AVCaptureSession for Custom Camera</h2>
+<p>Build a custom camera interface using <code>AVCaptureSession</code>, <code>AVCaptureDeviceInput</code>, and preview layers.</p>
+<pre><code class="language-swift">import AVFoundation
+import UIKit
+
+class CameraManager: NSObject {
+    let session = AVCaptureSession()
+    private let photoOutput = AVCapturePhotoOutput()
+    private let videoOutput = AVCaptureVideoDataOutput()
+    private var currentDevice: AVCaptureDevice?
+
+    enum CameraPosition {
+        case front, back
+    }
+
+    func configure(position: CameraPosition = .back) throws {
+        session.beginConfiguration()
+        defer { session.commitConfiguration() }
+
+        session.sessionPreset = .photo
+
+        // Remove existing inputs
+        session.inputs.forEach { session.removeInput($0) }
+
+        // Select camera device
+        let devicePosition: AVCaptureDevice.Position = position == .back ? .back : .front
+        guard let device = AVCaptureDevice.default(
+            .builtInWideAngleCamera,
+            for: .video,
+            position: devicePosition
+        ) else {
+            throw CameraError.deviceNotAvailable
+        }
+
+        currentDevice = device
+
+        // Add input
+        let input = try AVCaptureDeviceInput(device: device)
+        guard session.canAddInput(input) else {
+            throw CameraError.cannotAddInput
+        }
+        session.addInput(input)
+
+        // Add photo output
+        guard session.canAddOutput(photoOutput) else {
+            throw CameraError.cannotAddOutput
+        }
+        session.addOutput(photoOutput)
+        photoOutput.isHighResolutionCaptureEnabled = true
+        photoOutput.maxPhotoQualityPrioritization = .quality
+    }
+
+    func start() {
+        guard !session.isRunning else { return }
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            self?.session.startRunning()
+        }
+    }
+
+    func stop() {
+        guard session.isRunning else { return }
+        session.stopRunning()
+    }
+
+    func switchCamera() throws {
+        let newPosition: CameraPosition = currentDevice?.position == .back ? .front : .back
+        try configure(position: newPosition)
+    }
+}
+
+enum CameraError: LocalizedError {
+    case deviceNotAvailable
+    case cannotAddInput
+    case cannotAddOutput
+    case permissionDenied
+
+    var errorDescription: String? {
+        switch self {
+        case .deviceNotAvailable: return &quot;Camera device not available.&quot;
+        case .cannotAddInput: return &quot;Cannot add camera input.&quot;
+        case .cannotAddOutput: return &quot;Cannot add camera output.&quot;
+        case .permissionDenied: return &quot;Camera access denied.&quot;
+        }
+    }
+}
+</code></pre>
+<h2 id="avcapturephotooutput-and-avcapturevideodataoutput">AVCapturePhotoOutput and AVCaptureVideoDataOutput</h2>
+<p>Capture photos and process live video frames from the camera session.</p>
+<pre><code class="language-swift">import AVFoundation
+import UIKit
+
+// Photo capture delegate
+class PhotoCaptureDelegate: NSObject, AVCapturePhotoCaptureDelegate {
+    private let completion: (Result&lt;UIImage, Error&gt;) -&gt; Void
+
+    init(completion: @escaping (Result&lt;UIImage, Error&gt;) -&gt; Void) {
+        self.completion = completion
+    }
+
+    func photoOutput(
+        _ output: AVCapturePhotoOutput,
+        didFinishProcessingPhoto photo: AVCapturePhoto,
+        error: Error?
+    ) {
+        if let error {
+            completion(.failure(error))
+            return
+        }
+
+        guard let data = photo.fileDataRepresentation(),
+              let image = UIImage(data: data) else {
+            completion(.failure(CameraError.cannotAddOutput))
+            return
+        }
+
+        completion(.success(image))
+    }
+}
+
+// Extend CameraManager with photo capture
+extension CameraManager {
+    private static var captureDelegate: PhotoCaptureDelegate?
+
+    func capturePhoto(completion: @escaping (Result&lt;UIImage, Error&gt;) -&gt; Void) {
+        let settings = AVCapturePhotoSettings()
+        settings.flashMode = .auto
+        settings.isHighResolutionPhotoEnabled = true
+
+        // Configure format
+        if let previewPixelType = settings.availablePreviewPhotoPixelFormatTypes.first {
+            settings.previewPhotoFormat = [
+                kCVPixelBufferPixelFormatTypeKey as String: previewPixelType
+            ]
+        }
+
+        let delegate = PhotoCaptureDelegate(completion: completion)
+        Self.captureDelegate = delegate  // Retain the delegate
+        photoOutput.capturePhoto(with: settings, delegate: delegate)
+    }
+}
+
+// Video frame processing (for real-time analysis, filters, etc.)
+class VideoFrameProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
+    let processingQueue = DispatchQueue(label: &quot;com.app.videoProcessing&quot;)
+    var onFrameCaptured: ((CVPixelBuffer, CMTime) -&gt; Void)?
+
+    func captureOutput(
+        _ output: AVCaptureOutput,
+        didOutput sampleBuffer: CMSampleBuffer,
+        from connection: AVCaptureConnection
+    ) {
+        guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
+        let timestamp = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
+        onFrameCaptured?(pixelBuffer, timestamp)
+    }
+
+    func captureOutput(
+        _ output: AVCaptureOutput,
+        didDrop sampleBuffer: CMSampleBuffer,
+        from connection: AVCaptureConnection
+    ) {
+        // Frame was dropped due to processing backpressure
+        print(&quot;Frame dropped&quot;)
+    }
+}
+
+// Adding video output to camera manager
+extension CameraManager {
+    func addVideoOutput(processor: VideoFrameProcessor) {
+        let videoOutput = AVCaptureVideoDataOutput()
+        videoOutput.setSampleBufferDelegate(processor, queue: processor.processingQueue)
+        videoOutput.alwaysDiscardsLateVideoFrames = true
+
+        if session.canAddOutput(videoOutput) {
+            session.addOutput(videoOutput)
+        }
+    }
+}
+</code></pre>
+<h2 id="videoplayer-in-swiftui-with-custom-controls">VideoPlayer in SwiftUI with Custom Controls</h2>
+<p>Use <code>AVKit.VideoPlayer</code> for standard playback or build custom controls with <code>AVPlayer</code>.</p>
+<pre><code class="language-swift">import SwiftUI
+import AVKit
+
+// Simple video player with built-in controls
+struct SimpleVideoPlayerView: View {
+    @State private var player = AVPlayer(url: URL(string: &quot;https://example.com/video.mp4&quot;)!)
+
+    var body: some View {
+        VideoPlayer(player: player) {
+            // Optional overlay content
+            VStack {
+                Spacer()
+                HStack {
+                    Spacer()
+                    Text(&quot;Live&quot;)
+                        .font(.caption.bold())
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(.red)
+                        .foregroundStyle(.white)
+                        .clipShape(Capsule())
+                        .padding()
+                }
+            }
+        }
+        .frame(height: 300)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .onDisappear {
+            player.pause()
+        }
+    }
+}
+
+// Custom video player with custom controls
+struct CustomVideoPlayerView: View {
+    let url: URL
+
+    @State private var player: AVPlayer?
+    @State private var isPlaying = false
+    @State private var currentTime: Double = 0
+    @State private var duration: Double = 0
+    @State private var showControls = true
+
+    var body: some View {
+        ZStack {
+            // Video layer
+            VideoPlayerLayer(player: player)
+                .onTapGesture {
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        showControls.toggle()
+                    }
+                }
+
+            // Custom controls overlay
+            if showControls {
+                controlsOverlay
+                    .transition(.opacity)
+            }
+        }
+        .frame(height: 300)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .onAppear {
+            setupPlayer()
+        }
+        .onDisappear {
+            player?.pause()
+        }
+    }
+
+    private var controlsOverlay: some View {
+        ZStack {
+            // Semi-transparent background
+            Color.black.opacity(0.4)
+
+            VStack {
+                Spacer()
+
+                // Play/Pause button
+                Button {
+                    togglePlayback()
+                } label: {
+                    Image(systemName: isPlaying ? &quot;pause.circle.fill&quot; : &quot;play.circle.fill&quot;)
+                        .font(.system(size: 50))
+                        .foregroundStyle(.white)
+                }
+
+                Spacer()
+
+                // Progress bar
+                HStack(spacing: 12) {
+                    Text(formatTime(currentTime))
+                        .font(.caption.monospacedDigit())
+                        .foregroundStyle(.white)
+
+                    Slider(value: $currentTime, in: 0...max(duration, 1)) { editing in
+                        if !editing {
+                            player?.seek(to: CMTime(seconds: currentTime, preferredTimescale: 600))
+                        }
+                    }
+                    .tint(.white)
+
+                    Text(formatTime(duration))
+                        .font(.caption.monospacedDigit())
+                        .foregroundStyle(.white)
+                }
+                .padding(.horizontal)
+                .padding(.bottom, 16)
+            }
+        }
+    }
+
+    private func setupPlayer() {
+        player = AVPlayer(url: url)
+
+        // Observe time
+        player?.addPeriodicTimeObserver(
+            forInterval: CMTime(seconds: 0.5, preferredTimescale: 600),
+            queue: .main
+        ) { time in
+            currentTime = time.seconds
+        }
+
+        // Get duration
+        Task {
+            if let durationCM = try? await player?.currentItem?.asset.load(.duration) {
+                duration = durationCM.seconds
+            }
+        }
+    }
+
+    private func togglePlayback() {
+        if isPlaying {
+            player?.pause()
+        } else {
+            player?.play()
+        }
+        isPlaying.toggle()
+    }
+
+    private func formatTime(_ seconds: Double) -&gt; String {
+        let mins = Int(seconds) / 60
+        let secs = Int(seconds) % 60
+        return String(format: &quot;%d:%02d&quot;, mins, secs)
+    }
+}
+
+// UIViewRepresentable for AVPlayerLayer
+struct VideoPlayerLayer: UIViewRepresentable {
+    let player: AVPlayer?
+
+    func makeUIView(context: Context) -&gt; PlayerUIView {
+        PlayerUIView(player: player)
+    }
+
+    func updateUIView(_ uiView: PlayerUIView, context: Context) {
+        uiView.playerLayer.player = player
+    }
+}
+
+class PlayerUIView: UIView {
+    var playerLayer: AVPlayerLayer
+
+    init(player: AVPlayer?) {
+        playerLayer = AVPlayerLayer(player: player)
+        super.init(frame: .zero)
+        playerLayer.videoGravity = .resizeAspectFill
+        layer.addSublayer(playerLayer)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError(&quot;init(coder:) has not been implemented&quot;)
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        playerLayer.frame = bounds
+    }
+}
+</code></pre>
+<h2 id="picture-in-picture-avpictureinpicturecontroller">Picture-in-Picture (AVPictureInPictureController)</h2>
+<p>Enable Picture-in-Picture for video playback so users can continue watching in a floating window.</p>
+<pre><code class="language-swift">import AVKit
+import SwiftUI
+
+class PiPManager: NSObject, AVPictureInPictureControllerDelegate {
+    private var pipController: AVPictureInPictureController?
+    var onPiPStatusChanged: ((Bool) -&gt; Void)?
+
+    func setup(with playerLayer: AVPlayerLayer) {
+        guard AVPictureInPictureController.isPictureInPictureSupported() else {
+            print(&quot;PiP is not supported on this device&quot;)
+            return
+        }
+
+        pipController = AVPictureInPictureController(playerLayer: playerLayer)
+        pipController?.delegate = self
+        pipController?.canStartPictureInPictureAutomaticallyFromInline = true
+    }
+
+    func togglePiP() {
+        guard let pipController else { return }
+
+        if pipController.isPictureInPictureActive {
+            pipController.stopPictureInPicture()
+        } else {
+            pipController.startPictureInPicture()
+        }
+    }
+
+    var isPiPActive: Bool {
+        pipController?.isPictureInPictureActive ?? false
+    }
+
+    var isPiPPossible: Bool {
+        pipController?.isPictureInPicturePossible ?? false
+    }
+
+    // MARK: - AVPictureInPictureControllerDelegate
+
+    func pictureInPictureControllerWillStartPictureInPicture(
+        _ pictureInPictureController: AVPictureInPictureController
+    ) {
+        onPiPStatusChanged?(true)
+    }
+
+    func pictureInPictureControllerDidStopPictureInPicture(
+        _ pictureInPictureController: AVPictureInPictureController
+    ) {
+        onPiPStatusChanged?(false)
+    }
+
+    func pictureInPictureController(
+        _ pictureInPictureController: AVPictureInPictureController,
+        failedToStartPictureInPictureWithError error: Error
+    ) {
+        print(&quot;PiP failed to start: \(error.localizedDescription)&quot;)
+    }
+
+    func pictureInPictureController(
+        _ pictureInPictureController: AVPictureInPictureController,
+        restoreUserInterfaceForPictureInPictureStopWithCompletionHandler completionHandler: @escaping (Bool) -&gt; Void
+    ) {
+        // Restore your UI when PiP stops
+        completionHandler(true)
+    }
+}
+
+// Configure audio session for PiP background audio
+import AVFAudio
+
+func configureAudioSession() {
+    do {
+        let session = AVAudioSession.sharedInstance()
+        try session.setCategory(.playback, mode: .moviePlayback)
+        try session.setActive(true)
+    } catch {
+        print(&quot;Audio session configuration failed: \(error)&quot;)
+    }
+}
+</code></pre>
+<h2 id="phphotolibrary-for-saving-photos-and-videos">PHPhotoLibrary for Saving Photos and Videos</h2>
+<p>Save captured photos and videos to the user's photo library with proper permissions handling.</p>
+<pre><code class="language-swift">import Photos
+import UIKit
+
+class PhotoLibraryManager {
+    // Check and request authorization
+    static func requestAuthorization() async -&gt; PHAuthorizationStatus {
+        let status = PHPhotoLibrary.authorizationStatus(for: .addOnly)
+
+        switch status {
+        case .notDetermined:
+            return await PHPhotoLibrary.requestAuthorization(for: .addOnly)
+        default:
+            return status
+        }
+    }
+
+    // Save a UIImage to the photo library
+    static func saveImage(_ image: UIImage) async throws {
+        let status = await requestAuthorization()
+        guard status == .authorized || status == .limited else {
+            throw PhotoLibraryError.permissionDenied
+        }
+
+        try await PHPhotoLibrary.shared().performChanges {
+            let request = PHAssetCreationRequest.forAsset()
+            guard let imageData = image.jpegData(compressionQuality: 0.9) else {
+                return
+            }
+            request.addResource(with: .photo, data: imageData, options: nil)
+            request.creationDate = Date()
+        }
+    }
+
+    // Save a video file to the photo library
+    static func saveVideo(at url: URL) async throws {
+        let status = await requestAuthorization()
+        guard status == .authorized || status == .limited else {
+            throw PhotoLibraryError.permissionDenied
+        }
+
+        try await PHPhotoLibrary.shared().performChanges {
+            PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: url)
+        }
+    }
+
+    // Save to a specific album (create if needed)
+    static func saveImage(_ image: UIImage, toAlbum albumName: String) async throws {
+        let status = await requestAuthorization()
+        guard status == .authorized else {
+            throw PhotoLibraryError.permissionDenied
+        }
+
+        // Find or create the album
+        let album = try await findOrCreateAlbum(named: albumName)
+
+        try await PHPhotoLibrary.shared().performChanges {
+            let assetRequest = PHAssetCreationRequest.forAsset()
+            guard let imageData = image.jpegData(compressionQuality: 0.9) else { return }
+            assetRequest.addResource(with: .photo, data: imageData, options: nil)
+
+            guard let placeholder = assetRequest.placeholderForCreatedAsset,
+                  let albumChangeRequest = PHAssetCollectionChangeRequest(for: album) else {
+                return
+            }
+            albumChangeRequest.addAssets([placeholder] as NSFastEnumeration)
+        }
+    }
+
+    private static func findOrCreateAlbum(named name: String) async throws -&gt; PHAssetCollection {
+        // Search for existing album
+        let fetchOptions = PHFetchOptions()
+        fetchOptions.predicate = NSPredicate(format: &quot;title = %@&quot;, name)
+        let collections = PHAssetCollection.fetchAssetCollections(
+            with: .album,
+            subtype: .any,
+            options: fetchOptions
+        )
+
+        if let existing = collections.firstObject {
+            return existing
+        }
+
+        // Create new album
+        var placeholder: PHObjectPlaceholder?
+        try await PHPhotoLibrary.shared().performChanges {
+            let request = PHAssetCollectionChangeRequest.creationRequestForAssetCollection(withTitle: name)
+            placeholder = request.placeholderForCreatedAssetCollection
+        }
+
+        guard let placeholder,
+              let album = PHAssetCollection.fetchAssetCollections(
+                  withLocalIdentifiers: [placeholder.localIdentifier],
+                  options: nil
+              ).firstObject else {
+            throw PhotoLibraryError.albumCreationFailed
+        }
+
+        return album
+    }
+}
+
+enum PhotoLibraryError: LocalizedError {
+    case permissionDenied
+    case albumCreationFailed
+
+    var errorDescription: String? {
+        switch self {
+        case .permissionDenied:
+            return &quot;Photo library access denied. Enable it in Settings.&quot;
+        case .albumCreationFailed:
+            return &quot;Failed to create photo album.&quot;
+        }
+    }
+}
+</code></pre>
+<h2 id="complete-photo-picker-and-custom-camera-example">Complete Photo Picker and Custom Camera Example</h2>
+<p>A full-featured media capture app with both a photo picker and custom camera interface.</p>
+<pre><code class="language-swift">import SwiftUI
+import PhotosUI
+import AVFoundation
+
+// MARK: - Main View
+
+struct MediaCaptureView: View {
+    @State private var selectedTab = 0
+    @State private var capturedImages: [UIImage] = []
+
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 0) {
+                // Photo grid
+                ScrollView {
+                    if capturedImages.isEmpty {
+                        ContentUnavailableView(
+                            &quot;No Photos Yet&quot;,
+                            systemImage: &quot;photo.on.rectangle.angled&quot;,
+                            description: Text(&quot;Take a photo or pick from your library.&quot;)
+                        )
+                    } else {
+                        LazyVGrid(columns: [
+                            GridItem(.flexible(), spacing: 2),
+                            GridItem(.flexible(), spacing: 2),
+                            GridItem(.flexible(), spacing: 2)
+                        ], spacing: 2) {
+                            ForEach(capturedImages.indices, id: \.self) { index in
+                                Image(uiImage: capturedImages[index])
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(minHeight: 120)
+                                    .clipped()
+                            }
+                        }
+                    }
+                }
+
+                // Bottom toolbar
+                MediaToolbar(
+                    onPhotoPicked: { images in
+                        capturedImages.append(contentsOf: images)
+                    },
+                    onPhotoTaken: { image in
+                        capturedImages.append(image)
+                    }
+                )
+            }
+            .navigationTitle(&quot;Photos&quot;)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    if !capturedImages.isEmpty {
+                        Button(&quot;Save All&quot;) {
+                            saveAllPhotos()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private func saveAllPhotos() {
+        Task {
+            for image in capturedImages {
+                try? await PhotoLibraryManager.saveImage(image, toAlbum: &quot;My App&quot;)
+            }
+        }
+    }
+}
+
+// MARK: - Media Toolbar
+
+struct MediaToolbar: View {
+    let onPhotoPicked: ([UIImage]) -&gt; Void
+    let onPhotoTaken: (UIImage) -&gt; Void
+
+    @State private var selectedItems: [PhotosPickerItem] = []
+    @State private var showCamera = false
+
+    var body: some View {
+        HStack(spacing: 40) {
+            // Photo picker button
+            PhotosPicker(
+                selection: $selectedItems,
+                maxSelectionCount: 20,
+                matching: .images
+            ) {
+                VStack(spacing: 4) {
+                    Image(systemName: &quot;photo.on.rectangle&quot;)
+                        .font(.title2)
+                    Text(&quot;Library&quot;)
+                        .font(.caption)
+                }
+            }
+
+            // Camera button
+            Button {
+                showCamera = true
+            } label: {
+                VStack(spacing: 4) {
+                    Image(systemName: &quot;camera.fill&quot;)
+                        .font(.title2)
+                    Text(&quot;Camera&quot;)
+                        .font(.caption)
+                }
+            }
+        }
+        .padding()
+        .frame(maxWidth: .infinity)
+        .background(.ultraThinMaterial)
+        .onChange(of: selectedItems) { _, newValue in
+            Task {
+                var images: [UIImage] = []
+                for item in newValue {
+                    if let data = try? await item.loadTransferable(type: Data.self),
+                       let image = UIImage(data: data) {
+                        images.append(image)
+                    }
+                }
+                onPhotoPicked(images)
+                selectedItems = []
+            }
+        }
+        .fullScreenCover(isPresented: $showCamera) {
+            CameraView(onCapture: onPhotoTaken)
+        }
+    }
+}
+
+// MARK: - Camera View
+
+struct CameraView: View {
+    let onCapture: (UIImage) -&gt; Void
+
+    @Environment(\.dismiss) private var dismiss
+    @State private var cameraManager = SwiftUICameraManager()
+    @State private var lastCapturedImage: UIImage?
+    @State private var flashEnabled = false
+    @State private var isFrontCamera = false
+
+    var body: some View {
+        ZStack {
+            // Camera preview
+            CameraPreviewView(session: cameraManager.session)
+                .ignoresSafeArea()
+
+            VStack {
+                // Top bar
+                HStack {
+                    Button(&quot;Cancel&quot;) {
+                        dismiss()
+                    }
+                    .foregroundStyle(.white)
+
+                    Spacer()
+
+                    Button {
+                        flashEnabled.toggle()
+                    } label: {
+                        Image(systemName: flashEnabled ? &quot;bolt.fill&quot; : &quot;bolt.slash&quot;)
+                            .foregroundStyle(.white)
+                            .font(.title3)
+                    }
+                }
+                .padding()
+
+                Spacer()
+
+                // Bottom controls
+                HStack(spacing: 60) {
+                    // Last captured thumbnail
+                    if let lastImage = lastCapturedImage {
+                        Image(uiImage: lastImage)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 50, height: 50)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                    } else {
+                        Color.clear.frame(width: 50, height: 50)
+                    }
+
+                    // Capture button
+                    Button {
+                        capturePhoto()
+                    } label: {
+                        Circle()
+                            .fill(.white)
+                            .frame(width: 70, height: 70)
+                            .overlay(
+                                Circle()
+                                    .stroke(.white, lineWidth: 3)
+                                    .frame(width: 80, height: 80)
+                            )
+                    }
+
+                    // Switch camera
+                    Button {
+                        switchCamera()
+                    } label: {
+                        Image(systemName: &quot;camera.rotate&quot;)
+                            .font(.title2)
+                            .foregroundStyle(.white)
+                            .frame(width: 50, height: 50)
+                    }
+                }
+                .padding(.bottom, 40)
+            }
+        }
+        .onAppear {
+            Task {
+                await cameraManager.checkPermissionAndStart()
+            }
+        }
+        .onDisappear {
+            cameraManager.stop()
+        }
+    }
+
+    private func capturePhoto() {
+        cameraManager.capturePhoto { result in
+            if case .success(let image) = result {
+                lastCapturedImage = image
+                onCapture(image)
+            }
+        }
+    }
+
+    private func switchCamera() {
+        isFrontCamera.toggle()
+        try? cameraManager.switchCamera()
+    }
+}
+
+// MARK: - Camera Preview (UIViewRepresentable)
+
+struct CameraPreviewView: UIViewRepresentable {
+    let session: AVCaptureSession
+
+    func makeUIView(context: Context) -&gt; CameraPreviewUIView {
+        CameraPreviewUIView(session: session)
+    }
+
+    func updateUIView(_ uiView: CameraPreviewUIView, context: Context) {}
+}
+
+class CameraPreviewUIView: UIView {
+    private var previewLayer: AVCaptureVideoPreviewLayer
+
+    init(session: AVCaptureSession) {
+        previewLayer = AVCaptureVideoPreviewLayer(session: session)
+        super.init(frame: .zero)
+        previewLayer.videoGravity = .resizeAspectFill
+        layer.addSublayer(previewLayer)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError(&quot;init(coder:) has not been implemented&quot;)
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        previewLayer.frame = bounds
+    }
+}
+
+// MARK: - SwiftUI Camera Manager
+
+@Observable
+class SwiftUICameraManager {
+    let session = AVCaptureSession()
+    private let photoOutput = AVCapturePhotoOutput()
+    private var captureDelegate: PhotoCaptureHandler?
+
+    func checkPermissionAndStart() async {
+        switch AVCaptureDevice.authorizationStatus(for: .video) {
+        case .authorized:
+            setupAndStart()
+        case .notDetermined:
+            let granted = await AVCaptureDevice.requestAccess(for: .video)
+            if granted { setupAndStart() }
+        default:
+            break
+        }
+    }
+
+    private func setupAndStart() {
+        session.beginConfiguration()
+        session.sessionPreset = .photo
+
+        guard let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back),
+              let input = try? AVCaptureDeviceInput(device: device),
+              session.canAddInput(input) else {
+            session.commitConfiguration()
+            return
+        }
+
+        session.addInput(input)
+
+        if session.canAddOutput(photoOutput) {
+            session.addOutput(photoOutput)
+        }
+
+        session.commitConfiguration()
+
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            self?.session.startRunning()
+        }
+    }
+
+    func stop() {
+        session.stopRunning()
+    }
+
+    func switchCamera() throws {
+        session.beginConfiguration()
+        defer { session.commitConfiguration() }
+
+        guard let currentInput = session.inputs.first as? AVCaptureDeviceInput else { return }
+        session.removeInput(currentInput)
+
+        let newPosition: AVCaptureDevice.Position = currentInput.device.position == .back ? .front : .back
+        guard let newDevice = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: newPosition),
+              let newInput = try? AVCaptureDeviceInput(device: newDevice),
+              session.canAddInput(newInput) else {
+            // Re-add old input if switch fails
+            if session.canAddInput(currentInput) { session.addInput(currentInput) }
+            return
+        }
+        session.addInput(newInput)
+    }
+
+    func capturePhoto(completion: @escaping (Result&lt;UIImage, Error&gt;) -&gt; Void) {
+        let settings = AVCapturePhotoSettings()
+        let handler = PhotoCaptureHandler(completion: completion)
+        captureDelegate = handler
+        photoOutput.capturePhoto(with: settings, delegate: handler)
+    }
+}
+
+class PhotoCaptureHandler: NSObject, AVCapturePhotoCaptureDelegate {
+    private let completion: (Result&lt;UIImage, Error&gt;) -&gt; Void
+
+    init(completion: @escaping (Result&lt;UIImage, Error&gt;) -&gt; Void) {
+        self.completion = completion
+    }
+
+    func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
+        if let error {
+            DispatchQueue.main.async { self.completion(.failure(error)) }
+            return
+        }
+        guard let data = photo.fileDataRepresentation(),
+              let image = UIImage(data: data) else {
+            DispatchQueue.main.async { self.completion(.failure(CameraError.cannotAddOutput)) }
+            return
+        }
+        DispatchQueue.main.async { self.completion(.success(image)) }
+    }
+}
+</code></pre>
+<h2 id="key-considerations">Key Considerations</h2>
+<ul>
+<li><strong>PhotosPicker</strong>: No permissions prompt required. The system mediates access. Available iOS 16+.</li>
+<li><strong>Camera permissions</strong>: Add <code>NSCameraUsageDescription</code> to Info.plist. Always check authorization before accessing <code>AVCaptureSession</code>.</li>
+<li><strong>Photo library permissions</strong>: Add <code>NSPhotoLibraryAddUsageDescription</code> for save-only access. Add <code>NSPhotoLibraryUsageDescription</code> for full read/write access.</li>
+<li><strong>Background audio</strong>: Set the audio session category to <code>.playback</code> and enable the "Audio, AirPlay, and Picture in Picture" background mode for PiP.</li>
+<li><strong>Memory</strong>: Large photos can consume significant memory. Use <code>CGImageSource</code> for progressive loading of very large images.</li>
+<li><strong>Thread safety</strong>: <code>AVCaptureSession</code> configuration must happen on a single thread. Never call <code>startRunning()</code> on the main thread.</li>
+<li><strong>Transferable</strong>: Use <code>Transferable</code> with <code>PhotosPickerItem</code> for type-safe, modern photo loading (iOS 16+).</li>
+<li><strong>Video</strong>: For video playback, prefer <code>AVPlayer</code> with <code>VideoPlayer</code> in SwiftUI. For recording, use <code>AVCaptureMovieFileOutput</code>.</li>
+</ul></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

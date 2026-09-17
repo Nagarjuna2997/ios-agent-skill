@@ -1,0 +1,25 @@
+[
+  {
+    "inputFile": "AGENTS.md",
+    "exitCode": 2,
+    "stderr": "BLOCKED: AGENTS.md is a generated file.\n\nThe supported agent rule files are produced from SKILL.md by scripts/sync-mirrors.sh.\nAn edit here is discarded on the next sync.\n\nEdit SKILL.md instead, then run:\n  ./scripts/sync-mirrors.sh && ./scripts/sync-mirrors.sh --check\n"
+  },
+  {
+    "inputFile": "SKILL.md",
+    "exitCode": 0,
+    "stderr": ""
+  },
+  {
+    "command": "bash scripts/hooks/verify-repo.sh",
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": "sync-mirrors-on-edit.sh",
+    "inputFile": "SKILL.md",
+    "exitCode": 0,
+    "stdout": "Synced 3 mirrors from SKILL.md\n",
+    "stderr": ""
+  }
+]

@@ -1,0 +1,74 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Generate real asset catalogs — iOS Agent Skill</title><meta name="description" content="Repository guidance for Generate real asset catalogs. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/design-asset-generation.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="Generate real asset catalogs"><meta property="og:description" content="Repository guidance for Generate real asset catalogs. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/design-asset-generation.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "Generate real asset catalogs", "description": "Repository guidance for Generate real asset catalogs. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/design-asset-generation.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Design · Reference guide</p><h1>Generate real asset catalogs</h1><p class="lead">Repository guidance for Generate real asset catalogs. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/design/asset-generation.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#icons-without-paid-tools">Icons without paid tools</a></li>
+<li><a href="#optional-figma-handoff">Optional Figma handoff</a></li>
+<li><a href="#evidence-and-limits">Evidence and limits</a></li>
+</ul>
+</div>
+</aside><p>The CLI converts a strict JSON token file into a new <code>Assets.xcassets</code>. It runs
+locally without Figma, a paid service, an AI model or an API key. This is an
+implementation of the semantic color guidance in <a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/design/design-tokens.md">design tokens</a>,
+not a parser for arbitrary Markdown or Swift examples.</p>
+<p>From a source checkout:</p>
+<pre><code class="language-sh">npm ci --prefix cli
+npm run build --prefix cli
+node cli/dist/index.js assets --tokens tokens.json --output App/Assets.xcassets
+</code></pre>
+<p>The output parent directory must exist. An existing catalog is never overwritten;
+generate a sibling catalog, review its diff, then merge the intended changes.
+The combined package includes this CLI starting with ios-agent-mcp 2.7.0.
+Run <code>npx -y ios-agent-mcp@latest assets --tokens tokens.json --output App/Assets.xcassets</code>
+to use it without a source checkout.</p>
+<pre><code class="language-json">{
+  &quot;version&quot;: 1,
+  &quot;colors&quot;: {
+    &quot;AccentColor&quot;: {
+      &quot;light&quot;: &quot;#2457DB&quot;,
+      &quot;dark&quot;: &quot;#90B4FF&quot;,
+      &quot;highContrastLight&quot;: &quot;#12358F&quot;,
+      &quot;highContrastDark&quot;: &quot;#C7DAFF&quot;
+    }
+  }
+}
+</code></pre>
+<p>Names are ASCII identifiers, unique ignoring case; <code>AccentColor</code> is required.
+All four appearances are required. Values are sRGB <code>#RRGGBB</code> or <code>#RRGGBBAA</code>.
+There is no guessed dark-mode conversion. High contrast variants should be chosen
+and contrast-tested against their actual background. The generator does not
+certify contrast, layout accessibility or App Review acceptance.</p>
+<p>New scaffolds include <code>App/design-tokens.json</code>, named <code>AccentColor</code>, <code>Background</code>
+and <code>TextPrimary</code> sets. XcodeGen starters set the global accent to <code>AccentColor</code>.
+Consume named assets with <code>Color("Background")</code> and <code>Color("TextPrimary")</code>.</p>
+<h2 id="icons-without-paid-tools">Icons without paid tools</h2>
+<p><code>new MyApp --xcodegen</code> keeps the three editable SVG layers and also renders their
+ordered composition as an opaque RGB 1024×1024 PNG in <code>AppIcon.appiconset</code>. Xcode
+uses its single-size iOS icon entry. These are placeholder shapes; customize them
+before distributing an app. The generator does not add a person's name or branding.</p>
+<p>After editing the SVG paths in any text editor or a free vector editor, regenerate:</p>
+<pre><code class="language-sh">node cli/dist/index.js assets --tokens App/design-tokens.json \
+  --output App/ReviewedAssets.xcassets \
+  --icon-layers App/MyApp/IconLayers --icon-background '#2457DB'
+</code></pre>
+<p>The existing layer manifest specifies back-to-front order. Inputs are bounded to
+16 square SVGs, each at most 1 MiB. Use paths and shapes; text, linked images,
+external references and entities are rejected. Convert text to paths in your
+editor. The rasterizer is <a href="https://github.com/thx/resvg-js">resvg-js</a>; the PNG encoder
+is <a href="https://github.com/pngjs/pngjs">pngjs</a>. Their dependency licenses are retained.
+No web upload or model call is involved.</p>
+<p>A flattened PNG is not a native Liquid Glass icon. For that, import the separate
+SVG layers into Apple's free Icon Composer, save the <code>.icon</code> document and validate
+it in Xcode. This generator does <strong>not</strong> fabricate an undocumented <code>.icon</code> bundle.
+See <a href="https://developer.apple.com/documentation/xcode/creating-your-app-icon-using-icon-composer">Apple's Icon Composer workflow</a>.</p>
+<h2 id="optional-figma-handoff">Optional Figma handoff</h2>
+<p>Use Figma's own integration to read variables if you already use it. Map semantic
+color names and light/dark/high-contrast modes to the JSON fields above. Resolve
+aliases to explicit sRGB hex values first. The same JSON can be authored by hand;
+Figma and its MCP are optional. There is no maintained Figma parser here.</p>
+<h2 id="evidence-and-limits">Evidence and limits</h2>
+<p>The CLI tests verify schema rejection, appearance slots, alpha conversion,
+non-overwrite behavior, ordered raster pixels, RGB output and 1024×1024 dimensions.
+On macOS, generated colors and the iOS app-icon set were compiled using <code>xcrun
+actool</code> against the installed simulator SDK. This does not verify a native <code>.icon</code>,
+a full screenshot capture pipeline, symbol availability or visual accessibility.</p>
+<p>Catalog format: <a href="https://developer.apple.com/library/archive/documentation/Xcode/Reference/xcode_ref-Asset_Catalog_Format/Named_Color.html">Apple named colors</a>
+and <a href="https://developer.apple.com/documentation/uikit/providing-images-for-different-appearances">appearance variants</a>.</p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

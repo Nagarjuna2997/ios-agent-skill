@@ -1,0 +1,329 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Installing the iOS Agent MCP Server — iOS Agent Skill</title><meta name="description" content="Repository guidance for Installing the iOS Agent MCP Server. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/mcp-installation.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="Installing the iOS Agent MCP Server"><meta property="og:description" content="Repository guidance for Installing the iOS Agent MCP Server. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/mcp-installation.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "Installing the iOS Agent MCP Server", "description": "Repository guidance for Installing the iOS Agent MCP Server. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/mcp-installation.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Mcp · Reference guide</p><h1>Installing the iOS Agent MCP Server</h1><p class="lead">Repository guidance for Installing the iOS Agent MCP Server. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/mcp/installation.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#one-install-one-mcp-connection">One install, one MCP connection</a></li>
+<li><a href="#choose-your-client">Choose your client</a></li>
+<li><a href="#codex">Codex</a></li>
+<li><a href="#chatgpt-plugin-and-remote-mcp">ChatGPT plugin and remote MCP</a></li>
+<li><a href="#gemini-cli">Gemini CLI</a></li>
+<li><a href="#claude-code">Claude Code</a></li>
+<li><a href="#claude-desktop">Claude Desktop</a></li>
+<li><a href="#platform-notes">Platform notes</a><ul>
+<li><a href="#windows">Windows</a></li>
+<li><a href="#macos-and-linux">macOS and Linux</a></li>
+<li><a href="#avoiding-a-fetch-on-every-launch">Avoiding a fetch on every launch</a></li>
+</ul>
+</li>
+<li><a href="#from-source">From source</a></li>
+<li><a href="#requirements">Requirements</a></li>
+<li><a href="#verifying-it-works">Verifying it works</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="#privacy">Privacy</a></li>
+<li><a href="#xcode-27">Xcode 27</a></li>
+<li><a href="#muse-code">Muse Code</a><ul>
+<li><a href="#verified-compatibility-2026-09-16">Verified compatibility, 2026-09-16</a></li>
+<li><a href="#recheck-on-upgrades">Recheck on upgrades</a></li>
+</ul>
+</li>
+<li><a href="#support-scope-and-optional-source-installer">Support scope and optional source installer</a></li>
+</ul>
+</div>
+</aside><h2 id="one-install-one-mcp-connection">One install, one MCP connection</h2>
+<pre><code class="language-bash">claude mcp add ios-agent -- npx -y ios-agent-mcp@latest
+</code></pre>
+<p>The default server exposes 36 tools in 2.7.0: 12 review/metadata tools, 8 Apple reference tools, 14 simulator tools, <code>create_app</code>, and the local <code>prepare_issue_report</code> tool. App scaffolding and simulator packages install automatically as dependencies; no separate installation or MCP connection is needed. Remove the separate knowledge/simulator connections if you previously configured them to avoid duplicate tools.</p>
+<p>Create a starter directly:</p>
+<pre><code class="language-bash">npx -y ios-agent-mcp@latest new MyApp --brief &quot;A reading list with local storage&quot; --xcodegen
+</code></pre>
+<p>Requires Node.js 20+. Simulator operations require macOS and Xcode; XcodeGen is required to generate an Xcode project from the starter specification. The agent implements app features using the starter, source tools and verification tools. One install is not autonomous app generation. The default connection now includes tools that write files and operate the simulator; review and reference tools remain read-only.</p>
+<p><strong>Load this when:</strong> setting up <code>ios-agent-mcp</code> in Claude Code, Claude Desktop,
+ChatGPT/Codex, Gemini, or another MCP-capable client.</p>
+<p>The server includes Swift analysis and App Intents review plus <code>lint_skill</code>, which checks a
+skill repository's own metadata. Full tool reference: <code>tools.md</code>.</p>
+<p>It also serves three <strong>resources</strong> (<code>ios://project/info</code>, <code>.../dependencies</code>,
+<code>.../issues</code>), which need a project root. Resolution order:</p>
+<ol>
+<li><code>--project PATH</code> in the client config</li>
+<li><code>IOS_AGENT_PROJECT</code></li>
+<li>the nearest ancestor of the working directory holding a <code>.ios-agent/</code>
+   directory — the marker <code>ios-agent</code> writes (<code>docs/tooling/project-scaffolding.md</code>)</li>
+<li>the working directory itself</li>
+</ol>
+<p>The analysis tools only <strong>read</strong> that marker; it never creates one, while app creation and simulator tools have separate write/runtime effects. <code>ios://project/info</code>
+reports <code>resolved_from</code> alongside the path, because an implicit root is
+otherwise unfalsifiable — "no Swift files" reads identically whether the project
+is empty or the server is pointed at the wrong directory.</p>
+<p>Tools take an explicit path argument and need no configuration.
+Worked sessions: <code>examples.md</code>.</p>
+<hr />
+<h2 id="choose-your-client">Choose your client</h2>
+<table>
+<thead>
+<tr>
+<th>Client</th>
+<th>Install path</th>
+<th>Capabilities</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Claude Code/Desktop</td>
+<td>Local stdio MCP configuration below</td>
+<td>Unified local tools</td>
+</tr>
+<tr>
+<td>Codex</td>
+<td>Codex MCP CLI/config or the release plugin ZIP</td>
+<td>Local analysis, knowledge and app-building skill</td>
+</tr>
+<tr>
+<td>ChatGPT</td>
+<td>Portable skills-only plugin ZIP; optional hosted knowledge MCP</td>
+<td>Bundled workflows/references; implementation needs a coding environment</td>
+</tr>
+<tr>
+<td>Muse Code</td>
+<td>Local stdio setup below; existing AGENTS.md and Claude-format skills</td>
+<td>MCP discovery and Stop command hook verified; model session unverified</td>
+</tr>
+<tr>
+<td>Gemini CLI</td>
+<td>GitHub extension or local MCP configuration</td>
+<td>GEMINI instructions, analysis and knowledge tools</td>
+</tr>
+</tbody>
+</table>
+<h2 id="codex">Codex</h2>
+<pre><code class="language-bash">codex mcp add ios-agent -- npx -y ios-agent-mcp@latest
+</code></pre>
+<p>Equivalent <code>config.toml</code> entry:</p>
+<pre><code class="language-toml">[mcp_servers.ios-agent]
+command = &quot;npx&quot;
+args = [&quot;-y&quot;, &quot;ios-agent-mcp@latest&quot;]
+</code></pre>
+<p>Pass <code>--project</code> and an absolute app path when project resource discovery needs an explicit root. The release plugin ZIP is an alternative; use one method to avoid duplicate tools.</p>
+<h2 id="chatgpt-plugin-and-remote-mcp">ChatGPT plugin and remote MCP</h2>
+<p>The GitHub release includes <code>ios-agent-chatgpt.zip</code>, a self-contained skills-only plugin with the Apple references and app/icon workflow. It contains no local-process MCP configuration, so it does not pretend a browser can run <code>npx</code> on your Mac. Upload/import it through a supported plugin development or submission flow for your account. Public marketplace listing remains subject to publisher verification and platform review.</p>
+<p>The optional <a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/mcp/knowledge-server.md">knowledge MCP server</a> supports Streamable HTTP. Deploy it at a stable HTTPS URL, then connect <code>/mcp</code> through ChatGPT’s supported developer-mode workflow. OpenAI also supports Secure MCP Tunnel for developer-mode access to a private stdio or HTTP server; see the <a href="https://developers.openai.com/plugins/deploy/connect-chatgpt">official connection guide</a>. This release does not create a tunnel or expose your Mac. Account/workspace policy may limit developer mode. The repository does not invent a production endpoint. Its remote tools serve public references and plans; actual local project analysis stays in the local MCP server.</p>
+<h2 id="gemini-cli">Gemini CLI</h2>
+<p>Gemini CLI 0.49.0 validated the extension manifest and connected to the 2.7.0 server release candidate in an isolated project. A real model-driven app-building session remains unverified.</p>
+<pre><code class="language-bash">gemini mcp add ios-agent -- npx -y ios-agent-mcp@latest
+</code></pre>
+<p>The command above connects to the published package. For bundled <code>GEMINI.md</code> guidance, the repository’s <code>gemini-extension.json</code> is an alternative; check that its pinned npm version is published before running <code>gemini extensions install https://github.com/Nagarjuna2997/ios-agent-skill</code>. Alternatively use the Claude Desktop <code>mcpServers</code> object below in Gemini CLI settings. Use one method; the web chat is a different product and does not load CLI extensions.</p>
+<p>Official client references: <a href="https://developers.openai.com/codex/mcp">Codex MCP</a>, <a href="https://developers.openai.com/plugins/build/plugins">OpenAI plugin packaging</a>, <a href="https://developers.openai.com/plugins/deploy/connect-chatgpt">ChatGPT connection/testing</a>, <a href="https://geminicli.com/docs/extensions/reference/">Gemini extension format</a>.</p>
+<h2 id="claude-code">Claude Code</h2>
+<pre><code class="language-bash">claude mcp add ios-agent -- npx -y ios-agent-mcp
+</code></pre>
+<p>Verify:</p>
+<pre><code class="language-bash">claude mcp list
+</code></pre>
+<h2 id="claude-desktop">Claude Desktop</h2>
+<p>Edit <code>~/Library/Application Support/Claude/claude_desktop_config.json</code>:</p>
+<pre><code class="language-json">{
+  &quot;mcpServers&quot;: {
+    &quot;ios-agent&quot;: {
+      &quot;command&quot;: &quot;npx&quot;,
+      &quot;args&quot;: [&quot;-y&quot;, &quot;ios-agent-mcp&quot;]
+    }
+  }
+}
+</code></pre>
+<p>Restart Claude Desktop. The tools appear under the connectors icon.</p>
+<h2 id="platform-notes">Platform notes</h2>
+<p>Config file locations differ by OS. The command itself is the same everywhere.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Claude Desktop config</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>macOS</strong></td>
+<td><code>~/Library/Application Support/Claude/claude_desktop_config.json</code></td>
+</tr>
+<tr>
+<td><strong>Windows</strong></td>
+<td><code>%APPDATA%\Claude\claude_desktop_config.json</code></td>
+</tr>
+<tr>
+<td><strong>Linux</strong></td>
+<td><code>~/.config/Claude/claude_desktop_config.json</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="windows">Windows</h3>
+<p><code>npx</code> is a shell script, not an executable, so some MCP clients cannot spawn it
+directly. If the server fails to start with no error, wrap it in <code>cmd</code>:</p>
+<pre><code class="language-json">{
+  &quot;mcpServers&quot;: {
+    &quot;ios-agent&quot;: {
+      &quot;command&quot;: &quot;cmd&quot;,
+      &quot;args&quot;: [&quot;/c&quot;, &quot;npx&quot;, &quot;-y&quot;, &quot;ios-agent-mcp&quot;]
+    }
+  }
+}
+</code></pre>
+<p>Use forward slashes or escaped backslashes in any absolute path — raw <code>\</code> in
+JSON is an escape character:</p>
+<pre><code class="language-json">&quot;args&quot;: [&quot;C:/Users/you/ios-agent-skill/mcp-server/dist/unified.js&quot;]
+</code></pre>
+<h3 id="macos-and-linux">macOS and Linux</h3>
+<p>The plain <code>npx</code> form works. If <code>npx</code> is not on the client's <code>PATH</code> (GUI apps do
+not inherit your shell profile), use an absolute path to <code>node</code>:</p>
+<pre><code class="language-bash">which node    # e.g. /opt/homebrew/bin/node
+</code></pre>
+<pre><code class="language-json">{
+  &quot;command&quot;: &quot;/opt/homebrew/bin/node&quot;,
+  &quot;args&quot;: [&quot;/absolute/path/to/mcp-server/dist/unified.js&quot;]
+}
+</code></pre>
+<p>This is the single most common cause of "the server won't start" on macOS.</p>
+<h3 id="avoiding-a-fetch-on-every-launch">Avoiding a fetch on every launch</h3>
+<p><code>npx -y</code> re-resolves the package each time. Install once instead:</p>
+<pre><code class="language-bash">npm install -g ios-agent-mcp
+</code></pre>
+<pre><code class="language-json">{ &quot;command&quot;: &quot;ios-agent-mcp&quot;, &quot;args&quot;: [] }
+</code></pre>
+<h2 id="from-source">From source</h2>
+<pre><code class="language-bash">git clone https://github.com/Nagarjuna2997/ios-agent-skill.git
+cd ios-agent-skill/mcp-server
+npm install &amp;&amp; npm run build
+</code></pre>
+<p>Then point the client at the built entry point:</p>
+<pre><code class="language-json">{
+  &quot;mcpServers&quot;: {
+    &quot;ios-agent&quot;: {
+      &quot;command&quot;: &quot;node&quot;,
+      &quot;args&quot;: [&quot;/absolute/path/to/ios-agent-skill/mcp-server/dist/unified.js&quot;]
+    }
+  }
+}
+</code></pre>
+<p>Use an <strong>absolute</strong> path — a relative one breaks the moment the client's working
+directory differs.</p>
+<hr />
+<h2 id="requirements">Requirements</h2>
+<ul>
+<li><strong>Node 20+</strong>. Check with <code>node --version</code>.</li>
+<li>Review/reference tools do not require Xcode. Simulator builds and tests require macOS/Xcode.</li>
+<li>Local review/reference tools read files. Builds may fetch dependencies, and simulator previews serve on loopback.</li>
+</ul>
+<hr />
+<h2 id="verifying-it-works">Verifying it works</h2>
+<p>Ask the agent:</p>
+<blockquote>
+<p>Analyze the Swift project at /path/to/MyApp</p>
+</blockquote>
+<p>You should get a structure summary and a per-category finding table. If instead
+you get "No Swift files found", the path is wrong — pass the folder containing
+<code>Package.swift</code> or the <code>.xcodeproj</code>, not a subfolder.</p>
+<hr />
+<h2 id="troubleshooting">Troubleshooting</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Cause</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tools do not appear</td>
+<td>Client not restarted, or malformed JSON in the config</td>
+</tr>
+<tr>
+<td>"Path does not exist"</td>
+<td>Relative path passed — use an absolute one</td>
+</tr>
+<tr>
+<td>"No Swift files found"</td>
+<td>Pointed at a build directory, or the wrong folder</td>
+</tr>
+<tr>
+<td>Everything is clean and you doubt it</td>
+<td>Run <code>analyze_swift_project</code> — it reports the file count it scanned</td>
+</tr>
+<tr>
+<td><code>npx</code> fetches every launch</td>
+<td>Install globally: <code>npm i -g ios-agent-mcp</code>, then use <code>ios-agent-mcp</code> as the command</td>
+</tr>
+</tbody>
+</table>
+<p>Build outputs are skipped deliberately: <code>.build</code>, <code>DerivedData</code>, <code>Pods</code>,
+<code>Carthage</code>, <code>node_modules</code>, and <code>*.xcodeproj</code> bundles. So is <code>Package.swift</code> —
+it is build configuration, not app source.</p>
+<hr />
+<h2 id="privacy">Privacy</h2>
+<p>Review and local-reference tools read files. App creation writes a new starter; simulator tools execute Xcode and manage devices. Builds may fetch dependencies, and preview serves on loopback. The MCP client can send tool outputs to its model provider; review that client's settings.</p>
+<h2 id="xcode-27">Xcode 27</h2>
+<p>Use the <a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/tooling/xcode-27-agents.md#connect-this-server-inside-xcode-27">in-Xcode agent setup</a>. Xcode uses its own agent configuration directories. This setup is documented from Apple’s released guidance; runtime acceptance remains unverified on the current Xcode 26.6 host.</p>
+<h2 id="muse-code">Muse Code</h2>
+<p>Muse Code joins Claude, Codex and Gemini CLI through the same unified local MCP
+server. No separate server package, plugin ZIP or <code>MUSE.md</code> is needed.</p>
+<p>Install the server outside the agent sandbox, using Node.js 20 or later:</p>
+<pre><code class="language-sh">npm install -g ios-agent-mcp@latest
+</code></pre>
+<p>Merge this into <code>~/.config/muse/settings.json</code>; preserve your other settings and
+existing server entries. Do not replace the whole file. <code>schema_version</code> is required.</p>
+<pre><code class="language-json">{
+  &quot;schema_version&quot;: 1,
+  &quot;mcpServers&quot;: {
+    &quot;ios-agent&quot;: {
+      &quot;command&quot;: &quot;ios-agent-mcp&quot;,
+      &quot;args&quot;: []
+    }
+  }
+}
+</code></pre>
+<p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/templates/clients/muse-settings.json">Copyable template</a> · <a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/templates/clients/muse-settings.md">Settings-key verification note</a> · <a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/templates/hooks/README.md#muse-code">Hook verification scope</a>. If Muse cannot find
+the command, use the absolute executable path printed by <code>command -v ios-agent-mcp</code>.
+Restart Muse after updating settings. This avoids fetching a package inside Muse's
+default proxy-only sandbox. It does not disable sandboxing or grant network access.</p>
+<p>For local instructions, use the repository's <code>AGENTS.md</code>. For skill discovery,
+keep the original frontmatter-bearing <code>SKILL.md</code> under your project's
+project-local .claude/skills/ios-agent-skill folder with its companion references. Do not rename the
+frontmatter-stripped <code>AGENTS.md</code> to <code>SKILL.md</code>. Trust only workspaces you recognize.</p>
+<h3 id="verified-compatibility-2026-09-16">Verified compatibility, 2026-09-16</h3>
+<p>Muse Code <strong>1.3.0 (1.3.0-R3233.1)</strong> connected to the published <strong>ios-agent-mcp 2.7.0</strong>
+using stdio and discovered <strong>36 tools</strong>, including reviews, local references,
+<code>create_app</code> and simulator tools. Initialization and tool discovery used the actual
+Muse executable with its local <code>echo</code> provider. No account credentials or model
+request were needed. <code>muse init</code> and discovery of the repository's Claude-format
+skill were separately verified earlier.</p>
+<p>A command-based <strong>Stop hook executed</strong> in an isolated test. The
+<a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/templates/hooks/muse-settings.json">optional maintainer hook template</a> runs
+this repository's existing verification script. It is for sessions rooted in this
+repository only: confirm the working directory before enabling it. Do not copy it
+into an unrelated user's app or apply it globally across projects. Hook commands
+execute shell code, so inspect commands before merging them into your settings.</p>
+<p><strong>Not verified:</strong> model-directed tool invocation, PreToolUse/PostToolUse ports,
+verification observer behavior, sandboxed simulator operations and end-to-end
+app creation by Muse. Tool discovery is not evidence that a model completed an app.
+No observer toggle or privacy/pricing-tier claim is supplied without verification.</p>
+<p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/examples/client-verification/muse-1.3.0.json">Recorded verification result</a>.
+The harness asserts four representative tools and records the complete discovered
+catalog and installed server package version.</p>
+<h3 id="recheck-on-upgrades">Recheck on upgrades</h3>
+<p>From this repository, with Muse and the MCP package already installed:</p>
+<pre><code class="language-sh">node scripts/verify-muse.mjs /absolute/path/to/muse /absolute/path/to/ios-agent-mcp/dist/unified.js
+</code></pre>
+<p>This uses temporary configuration, disables foreign personal context, and checks
+MCP discovery plus a Stop hook without a model call. It prints versioned JSON
+results and removes the temporary files. It does not edit your Muse settings.
+Rerun it when either client or server changes; record model-based checks separately.
+Updating npm's <code>@latest</code> does not automatically upgrade an existing global install:
+rerun <code>npm install -g ios-agent-mcp@latest</code> when choosing to upgrade.</p>
+<p>Official sources: <a href="https://research.meta.ai/blog/introducing-muse-code-and-muse-spark-1-2">Meta announcement</a>,
+<a href="https://dev.meta.ai/docs/muse-code/configuration">configuration</a>, and
+<a href="https://dev.meta.ai/docs/muse-code/extending">extensions</a>. The latter documentation
+requires sign-in; the compatibility claims above come from executable tests.</p>
+<h2 id="support-scope-and-optional-source-installer">Support scope and optional source installer</h2>
+<p>Active client families are Claude, ChatGPT/Codex, Gemini CLI and Muse. Other
+standard MCP clients may work, but compatibility is not a maintained support
+claim. Request another client through GitHub Issues and use 👍 reactions to
+register demand; feasibility and verification also determine priorities.</p>
+<p>The optional <code>install.sh</code> requires an explicit <code>--client</code>. It clones source skills
+for Claude, Codex or Muse, and prints dedicated instructions for Gemini/ChatGPT.
+It does not configure MCP. Existing installs update only when the checkout has
+the expected origin, a clean worktree and the main branch.</p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

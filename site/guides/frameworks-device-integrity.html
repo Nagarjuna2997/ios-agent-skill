@@ -1,0 +1,339 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Device Integrity (DeviceCheck &amp; App Attest) — iOS Agent Skill</title><meta name="description" content="Repository guidance for Device Integrity. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-device-integrity.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="Device Integrity (DeviceCheck &amp; App Attest)"><meta property="og:description" content="Repository guidance for Device Integrity. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-device-integrity.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "Device Integrity (DeviceCheck & App Attest)", "description": "Repository guidance for Device Integrity. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-device-integrity.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Authentication, Security, and Privacy · Reference guide</p><h1>Device Integrity (DeviceCheck &amp; App Attest)</h1><p class="lead">Repository guidance for Device Integrity. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/frameworks/device-integrity.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#devicecheck-per-device-bits">DeviceCheck — Per-Device Bits</a></li>
+<li><a href="#dcappattestservice-full-attestation-flow">DCAppAttestService — Full Attestation Flow</a><ul>
+<li><a href="#step-1-generate-a-key">Step 1: Generate a Key</a></li>
+<li><a href="#step-2-attest-the-key-with-apple">Step 2: Attest the Key with Apple</a></li>
+<li><a href="#step-3-generate-assertions-for-api-calls">Step 3: Generate Assertions for API Calls</a></li>
+</ul>
+</li>
+<li><a href="#server-side-verification-reference">Server-Side Verification (Reference)</a></li>
+<li><a href="#fraud-prevention-patterns">Fraud Prevention Patterns</a></li>
+</ul>
+</div>
+</aside><h2 id="devicecheck-per-device-bits">DeviceCheck — Per-Device Bits</h2>
+<p>DeviceCheck lets you store <strong>two bits</strong> per device on Apple's servers, persisting across app reinstalls.</p>
+<pre><code class="language-swift">import DeviceCheck
+
+final class DeviceCheckManager {
+    private let device = DCDevice.current
+
+    /// Check if DeviceCheck is supported
+    var isSupported: Bool {
+        device.isSupported
+    }
+
+    /// Generate a device token to send to your server
+    func generateToken() async throws -&gt; Data {
+        guard isSupported else {
+            throw IntegrityError.deviceCheckNotSupported
+        }
+        return try await device.generateToken()
+    }
+
+    /// Server-side: Query Apple for the two bits
+    /// POST https://api.development.devicecheck.apple.com/v1/query_two_bits
+    ///
+    /// Request body:
+    /// {
+    ///     &quot;device_token&quot;: &quot;&lt;base64 token&gt;&quot;,
+    ///     &quot;transaction_id&quot;: &quot;&lt;uuid&gt;&quot;,
+    ///     &quot;timestamp&quot;: &lt;milliseconds since epoch&gt;
+    /// }
+    ///
+    /// Response:
+    /// { &quot;bit0&quot;: true, &quot;bit1&quot;: false, &quot;last_update_time&quot;: &quot;2025-01&quot; }
+
+    /// Server-side: Update the two bits
+    /// POST https://api.development.devicecheck.apple.com/v1/update_two_bits
+    ///
+    /// Request body:
+    /// {
+    ///     &quot;device_token&quot;: &quot;&lt;base64 token&gt;&quot;,
+    ///     &quot;transaction_id&quot;: &quot;&lt;uuid&gt;&quot;,
+    ///     &quot;timestamp&quot;: &lt;milliseconds since epoch&gt;,
+    ///     &quot;bit0&quot;: true,
+    ///     &quot;bit1&quot;: false
+    /// }
+
+    /// Example: Mark device as having redeemed a promo
+    func markPromoRedeemed() async throws {
+        let token = try await generateToken()
+        let payload: [String: Any] = [
+            &quot;device_token&quot;: token.base64EncodedString(),
+            &quot;transaction_id&quot;: UUID().uuidString,
+            &quot;timestamp&quot;: Int(Date().timeIntervalSince1970 * 1000),
+            &quot;bit0&quot;: true,    // bit0 = promo redeemed
+            &quot;bit1&quot;: false
+        ]
+
+        var request = URLRequest(url: URL(string: &quot;https://api.yourserver.com/devicecheck/update&quot;)!)
+        request.httpMethod = &quot;POST&quot;
+        request.setValue(&quot;application/json&quot;, forHTTPHeaderField: &quot;Content-Type&quot;)
+        request.httpBody = try JSONSerialization.data(withJSONObject: payload)
+
+        let (_, response) = try await URLSession.shared.data(for: request)
+        guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
+            throw IntegrityError.serverError
+        }
+    }
+}
+</code></pre>
+<h2 id="dcappattestservice-full-attestation-flow">DCAppAttestService — Full Attestation Flow</h2>
+<p>App Attest cryptographically proves that API requests come from a genuine, unmodified copy of your app.</p>
+<h3 id="step-1-generate-a-key">Step 1: Generate a Key</h3>
+<pre><code class="language-swift">import DeviceCheck
+
+final class AppAttestManager {
+    private let attest = DCAppAttestService.shared
+
+    /// Check if App Attest is supported
+    var isSupported: Bool {
+        attest.isSupported
+    }
+
+    /// Step 1: Generate an attestation key pair (stored in Secure Enclave)
+    func generateKey() async throws -&gt; String {
+        guard isSupported else {
+            throw IntegrityError.appAttestNotSupported
+        }
+        let keyId = try await attest.generateKey()
+        // Store keyId in Keychain for later use
+        try KeychainHelper.save(keyId, forKey: &quot;appAttestKeyId&quot;)
+        return keyId
+    }
+}
+</code></pre>
+<h3 id="step-2-attest-the-key-with-apple">Step 2: Attest the Key with Apple</h3>
+<pre><code class="language-swift">extension AppAttestManager {
+
+    /// Step 2: Attest the key — do this ONCE per key
+    /// Send the attestation object to your server for verification
+    func attestKey(_ keyId: String) async throws -&gt; Data {
+        // 1. Get a one-time challenge from your server
+        let challenge = try await fetchChallenge()
+
+        // 2. Create a hash of the challenge
+        let challengeHash = Data(SHA256.hash(data: challenge))
+
+        // 3. Request attestation from Apple
+        let attestation = try await attest.attestKey(keyId, clientDataHash: challengeHash)
+
+        // 4. Send attestation + challenge to your server for verification
+        try await verifyAttestationOnServer(
+            keyId: keyId,
+            attestation: attestation,
+            challenge: challenge
+        )
+
+        return attestation
+    }
+
+    private func fetchChallenge() async throws -&gt; Data {
+        let url = URL(string: &quot;https://api.yourserver.com/attest/challenge&quot;)!
+        let (data, _) = try await URLSession.shared.data(from: url)
+        return data
+    }
+
+    private func verifyAttestationOnServer(
+        keyId: String,
+        attestation: Data,
+        challenge: Data
+    ) async throws {
+        var request = URLRequest(url: URL(string: &quot;https://api.yourserver.com/attest/verify&quot;)!)
+        request.httpMethod = &quot;POST&quot;
+        request.setValue(&quot;application/json&quot;, forHTTPHeaderField: &quot;Content-Type&quot;)
+
+        let body: [String: String] = [
+            &quot;keyId&quot;: keyId,
+            &quot;attestation&quot;: attestation.base64EncodedString(),
+            &quot;challenge&quot;: challenge.base64EncodedString()
+        ]
+        request.httpBody = try JSONEncoder().encode(body)
+
+        let (_, response) = try await URLSession.shared.data(for: request)
+        guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
+            throw IntegrityError.attestationFailed
+        }
+    }
+}
+</code></pre>
+<h3 id="step-3-generate-assertions-for-api-calls">Step 3: Generate Assertions for API Calls</h3>
+<pre><code class="language-swift">import CryptoKit
+
+extension AppAttestManager {
+
+    /// Step 3: Generate an assertion for each sensitive API request
+    func generateAssertion(for requestData: Data) async throws -&gt; Data {
+        guard let keyId = try KeychainHelper.load(forKey: &quot;appAttestKeyId&quot;) else {
+            throw IntegrityError.noKeyFound
+        }
+
+        // Hash the request data (the payload you want to protect)
+        let clientDataHash = Data(SHA256.hash(data: requestData))
+
+        // Generate assertion
+        let assertion = try await attest.generateAssertion(keyId, clientDataHash: clientDataHash)
+        return assertion
+    }
+
+    /// Make an attested API request
+    func makeAttestedRequest(
+        url: URL,
+        method: String = &quot;POST&quot;,
+        body: Data
+    ) async throws -&gt; (Data, HTTPURLResponse) {
+        let assertion = try await generateAssertion(for: body)
+
+        var request = URLRequest(url: url)
+        request.httpMethod = method
+        request.setValue(&quot;application/json&quot;, forHTTPHeaderField: &quot;Content-Type&quot;)
+        request.setValue(assertion.base64EncodedString(), forHTTPHeaderField: &quot;X-App-Assertion&quot;)
+        request.httpBody = body
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let http = response as? HTTPURLResponse else {
+            throw IntegrityError.serverError
+        }
+        return (data, http)
+    }
+}
+</code></pre>
+<h2 id="server-side-verification-reference">Server-Side Verification (Reference)</h2>
+<p>Your server must verify attestations and assertions with Apple.</p>
+<pre><code class="language-swift">/// Server-side pseudocode (Node.js / Python / Swift on server):
+///
+/// Attestation verification:
+/// 1. Decode the CBOR attestation object
+/// 2. Verify the x5c certificate chain leads to Apple's App Attest root CA
+/// 3. Extract the public key from the leaf certificate
+/// 4. Verify nonce = SHA256(SHA256(challenge) + attestation.authData)
+/// 5. Verify the App ID (team ID + bundle ID) in the credential certificate
+/// 6. Store the public key and counter for the keyId
+///
+/// Assertion verification:
+/// 1. Decode the CBOR assertion
+/// 2. Compute authenticatorData + SHA256(clientData)
+/// 3. Verify the signature using the stored public key for this keyId
+/// 4. Verify the counter is greater than the stored counter (replay protection)
+/// 5. Update the stored counter
+///
+/// Apple App Attest root certificate:
+/// https://www.apple.com/certificateauthority/Apple_App_Attestation_Root_CA.pem
+</code></pre>
+<h2 id="fraud-prevention-patterns">Fraud Prevention Patterns</h2>
+<pre><code class="language-swift">/// Comprehensive integrity guard combining DeviceCheck + App Attest
+final class IntegrityGuard {
+    private let appAttest = AppAttestManager()
+    private let deviceCheck = DeviceCheckManager()
+    private var isAttested = false
+
+    /// Call during app launch or first sensitive action
+    func initialize() async {
+        // 1. Generate and attest key (one-time setup)
+        guard appAttest.isSupported else {
+            // Fallback: use DeviceCheck token for basic verification
+            return
+        }
+
+        do {
+            let existingKeyId = try? KeychainHelper.load(forKey: &quot;appAttestKeyId&quot;)
+
+            if existingKeyId == nil {
+                let keyId = try await appAttest.generateKey()
+                try await appAttest.attestKey(keyId)
+            }
+
+            isAttested = true
+        } catch {
+            // Handle attestation failure — device may be compromised
+            // Log and potentially restrict features
+        }
+    }
+
+    /// Protect a sensitive API call
+    func protectedRequest(
+        url: URL,
+        body: Encodable
+    ) async throws -&gt; Data {
+        let bodyData = try JSONEncoder().encode(body)
+
+        if isAttested {
+            let (data, response) = try await appAttest.makeAttestedRequest(
+                url: url,
+                body: bodyData
+            )
+            guard response.statusCode == 200 else {
+                throw IntegrityError.serverError
+            }
+            return data
+        } else {
+            // Fallback: use DeviceCheck token
+            let token = try await deviceCheck.generateToken()
+
+            var request = URLRequest(url: url)
+            request.httpMethod = &quot;POST&quot;
+            request.setValue(&quot;application/json&quot;, forHTTPHeaderField: &quot;Content-Type&quot;)
+            request.setValue(token.base64EncodedString(), forHTTPHeaderField: &quot;X-Device-Token&quot;)
+            request.httpBody = bodyData
+
+            let (data, _) = try await URLSession.shared.data(for: request)
+            return data
+        }
+    }
+}
+
+/// Keychain helper for storing the attest key ID
+enum KeychainHelper {
+    static func save(_ value: String, forKey key: String) throws {
+        let data = Data(value.utf8)
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: key,
+            kSecValueData as String: data,
+            kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
+        ]
+        SecItemDelete(query as CFDictionary)
+        let status = SecItemAdd(query as CFDictionary, nil)
+        guard status == errSecSuccess else {
+            throw IntegrityError.keychainError
+        }
+    }
+
+    static func load(forKey key: String) throws -&gt; String? {
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: key,
+            kSecReturnData as String: true,
+            kSecMatchLimit as String: kSecMatchLimitOne
+        ]
+        var result: AnyObject?
+        let status = SecItemCopyMatching(query as CFDictionary, &amp;result)
+
+        guard status == errSecSuccess, let data = result as? Data else {
+            return nil
+        }
+        return String(data: data, encoding: .utf8)
+    }
+}
+
+enum IntegrityError: LocalizedError {
+    case deviceCheckNotSupported
+    case appAttestNotSupported
+    case attestationFailed
+    case noKeyFound
+    case serverError
+    case keychainError
+
+    var errorDescription: String? {
+        switch self {
+        case .deviceCheckNotSupported: &quot;DeviceCheck is not supported on this device.&quot;
+        case .appAttestNotSupported: &quot;App Attest is not supported on this device.&quot;
+        case .attestationFailed: &quot;Key attestation failed.&quot;
+        case .noKeyFound: &quot;No attestation key found. Re-enrollment required.&quot;
+        case .serverError: &quot;Server verification failed.&quot;
+        case .keychainError: &quot;Keychain operation failed.&quot;
+        }
+    }
+}
+</code></pre></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

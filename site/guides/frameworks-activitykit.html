@@ -1,0 +1,670 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ActivityKit &amp; Live Activities — iOS Agent Skill</title><meta name="description" content="Repository guidance for ActivityKit. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-activitykit.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="ActivityKit &amp; Live Activities"><meta property="og:description" content="Repository guidance for ActivityKit. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-activitykit.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "ActivityKit & Live Activities", "description": "Repository guidance for ActivityKit. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-activitykit.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Core UI and Apps · Reference guide</p><h1>ActivityKit &amp; Live Activities</h1><p class="lead">Repository guidance for ActivityKit. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/frameworks/activitykit.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#activityattributes-and-activitycontent">ActivityAttributes and ActivityContent</a></li>
+<li><a href="#starting-a-live-activity">Starting a Live Activity</a></li>
+<li><a href="#updating-a-live-activity">Updating a Live Activity</a></li>
+<li><a href="#ending-a-live-activity">Ending a Live Activity</a></li>
+<li><a href="#dynamic-island-presentations">Dynamic Island Presentations</a></li>
+<li><a href="#lock-screen-and-supporting-views">Lock Screen and Supporting Views</a></li>
+<li><a href="#push-to-update-with-push-tokens">Push-to-Update with Push Tokens</a></li>
+<li><a href="#activitykit-push-notification-payload">ActivityKit Push Notification Payload</a></li>
+<li><a href="#timer-and-progress-live-activities">Timer and Progress Live Activities</a></li>
+<li><a href="#staledate-and-dismissal-policy">StaleDate and Dismissal Policy</a></li>
+<li><a href="#complete-delivery-tracking-example">Complete Delivery Tracking Example</a></li>
+<li><a href="#widget-bundle-registration">Widget Bundle Registration</a></li>
+<li><a href="#key-considerations">Key Considerations</a></li>
+</ul>
+</div>
+</aside><p>ActivityKit enables Live Activities that display real-time, glanceable content on the Lock Screen and Dynamic Island. Live Activities are ideal for tracking ongoing events like deliveries, sports scores, workouts, and ride-sharing trips.</p>
+<h2 id="activityattributes-and-activitycontent">ActivityAttributes and ActivityContent</h2>
+<p>ActivityAttributes define the static and dynamic data for a Live Activity. The nested <code>ContentState</code> contains data that changes over time.</p>
+<pre><code class="language-swift">import ActivityKit
+import Foundation
+
+// Define the attributes for a delivery tracking Live Activity
+struct DeliveryAttributes: ActivityAttributes {
+    // Static data — set when the activity starts, never changes
+    let orderNumber: String
+    let restaurantName: String
+    let estimatedDeliveryTime: Date
+
+    // Dynamic data — updated throughout the activity lifecycle
+    struct ContentState: Codable, Hashable {
+        let status: DeliveryStatus
+        let driverName: String
+        let currentStep: Int
+        let totalSteps: Int
+        let estimatedMinutesRemaining: Int
+    }
+}
+
+enum DeliveryStatus: String, Codable, Hashable {
+    case preparing
+    case pickedUp
+    case onTheWay
+    case nearbyDropoff
+    case delivered
+
+    var displayText: String {
+        switch self {
+        case .preparing: return &quot;Preparing&quot;
+        case .pickedUp: return &quot;Picked Up&quot;
+        case .onTheWay: return &quot;On the Way&quot;
+        case .nearbyDropoff: return &quot;Almost There&quot;
+        case .delivered: return &quot;Delivered&quot;
+        }
+    }
+
+    var systemImage: String {
+        switch self {
+        case .preparing: return &quot;fork.knife&quot;
+        case .pickedUp: return &quot;bag.fill&quot;
+        case .onTheWay: return &quot;car.fill&quot;
+        case .nearbyDropoff: return &quot;mappin.and.ellipse&quot;
+        case .delivered: return &quot;checkmark.circle.fill&quot;
+        }
+    }
+}
+</code></pre>
+<h2 id="starting-a-live-activity">Starting a Live Activity</h2>
+<p>Request a Live Activity by providing initial content and a stale date. The system enforces a limit of one active Live Activity per app on iPhone.</p>
+<pre><code class="language-swift">import ActivityKit
+
+class DeliveryTracker {
+    var currentActivity: Activity&lt;DeliveryAttributes&gt;?
+
+    func startTracking(orderNumber: String, restaurant: String, eta: Date) throws {
+        // Check if Live Activities are enabled in Settings
+        guard ActivityAuthorizationInfo().areActivitiesEnabled else {
+            throw DeliveryError.activitiesDisabled
+        }
+
+        let attributes = DeliveryAttributes(
+            orderNumber: orderNumber,
+            restaurantName: restaurant,
+            estimatedDeliveryTime: eta
+        )
+
+        let initialState = DeliveryAttributes.ContentState(
+            status: .preparing,
+            driverName: &quot;&quot;,
+            currentStep: 1,
+            totalSteps: 4,
+            estimatedMinutesRemaining: 45
+        )
+
+        let content = ActivityContent(
+            state: initialState,
+            staleDate: Calendar.current.date(byAdding: .minute, value: 15, to: .now),
+            relevanceScore: 75
+        )
+
+        do {
+            currentActivity = try Activity.request(
+                attributes: attributes,
+                content: content,
+                pushType: .token  // Enable push-to-update; use nil for local-only
+            )
+            print(&quot;Live Activity started: \(currentActivity?.id ?? &quot;nil&quot;)&quot;)
+        } catch {
+            throw DeliveryError.failedToStart(error)
+        }
+    }
+}
+</code></pre>
+<h2 id="updating-a-live-activity">Updating a Live Activity</h2>
+<p>Update the dynamic content state at any time while the activity is active.</p>
+<pre><code class="language-swift">extension DeliveryTracker {
+    func updateStatus(to status: DeliveryStatus, driver: String, step: Int, minutes: Int) async {
+        guard let activity = currentActivity else { return }
+
+        let updatedState = DeliveryAttributes.ContentState(
+            status: status,
+            driverName: driver,
+            currentStep: step,
+            totalSteps: 4,
+            estimatedMinutesRemaining: minutes
+        )
+
+        // Set a new stale date with each update
+        let staleDate = Calendar.current.date(byAdding: .minute, value: 10, to: .now)
+
+        let updatedContent = ActivityContent(
+            state: updatedState,
+            staleDate: staleDate,
+            relevanceScore: status == .nearbyDropoff ? 100 : 75
+        )
+
+        await activity.update(updatedContent)
+    }
+}
+</code></pre>
+<h2 id="ending-a-live-activity">Ending a Live Activity</h2>
+<p>End activities with a final content state. The <code>dismissalPolicy</code> controls how long the ended activity remains visible on the Lock Screen.</p>
+<pre><code class="language-swift">extension DeliveryTracker {
+    func markDelivered() async {
+        guard let activity = currentActivity else { return }
+
+        let finalState = DeliveryAttributes.ContentState(
+            status: .delivered,
+            driverName: &quot;Marcus&quot;,
+            currentStep: 4,
+            totalSteps: 4,
+            estimatedMinutesRemaining: 0
+        )
+
+        let finalContent = ActivityContent(
+            state: finalState,
+            staleDate: nil
+        )
+
+        // .default: system decides when to remove (up to 4 hours)
+        // .immediate: remove right away
+        // .after(Date): remove after specified date
+        await activity.end(finalContent, dismissalPolicy: .default)
+
+        currentActivity = nil
+    }
+
+    func cancelActivity() async {
+        guard let activity = currentActivity else { return }
+        await activity.end(nil, dismissalPolicy: .immediate)
+        currentActivity = nil
+    }
+}
+</code></pre>
+<h2 id="dynamic-island-presentations">Dynamic Island Presentations</h2>
+<p>Live Activities appear in three Dynamic Island presentations. All three must be implemented in the widget bundle.</p>
+<pre><code class="language-swift">import WidgetKit
+import SwiftUI
+
+struct DeliveryLiveActivity: Widget {
+    var body: some WidgetConfiguration {
+        ActivityConfiguration(for: DeliveryAttributes.self) { context in
+            // LOCK SCREEN / STANDBY presentation
+            LockScreenView(context: context)
+
+        } dynamicIsland: { context in
+            DynamicIsland {
+                // EXPANDED — shown when user long-presses the Dynamic Island
+                DynamicIslandExpandedRegion(.leading) {
+                    Image(systemName: context.state.status.systemImage)
+                        .font(.title2)
+                        .foregroundStyle(.blue)
+                }
+
+                DynamicIslandExpandedRegion(.trailing) {
+                    Text(&quot;\(context.state.estimatedMinutesRemaining) min&quot;)
+                        .font(.headline)
+                        .foregroundStyle(.secondary)
+                }
+
+                DynamicIslandExpandedRegion(.center) {
+                    VStack(spacing: 4) {
+                        Text(context.state.status.displayText)
+                            .font(.headline)
+                        Text(context.attributes.restaurantName)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+
+                DynamicIslandExpandedRegion(.bottom) {
+                    DeliveryProgressBar(
+                        currentStep: context.state.currentStep,
+                        totalSteps: context.state.totalSteps
+                    )
+                    .padding(.top, 4)
+                }
+
+            } compactLeading: {
+                // COMPACT LEADING — left side of the pill
+                Image(systemName: context.state.status.systemImage)
+                    .foregroundStyle(.blue)
+
+            } compactTrailing: {
+                // COMPACT TRAILING — right side of the pill
+                Text(&quot;\(context.state.estimatedMinutesRemaining)m&quot;)
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+
+            } minimal: {
+                // MINIMAL — shown when multiple Live Activities are active
+                Image(systemName: context.state.status.systemImage)
+                    .foregroundStyle(.blue)
+            }
+            .keylineTint(.blue)
+        }
+    }
+}
+</code></pre>
+<h2 id="lock-screen-and-supporting-views">Lock Screen and Supporting Views</h2>
+<pre><code class="language-swift">struct LockScreenView: View {
+    let context: ActivityViewContext&lt;DeliveryAttributes&gt;
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                VStack(alignment: .leading) {
+                    Text(context.attributes.restaurantName)
+                        .font(.headline)
+                    Text(&quot;Order #\(context.attributes.orderNumber)&quot;)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                Spacer()
+                Text(context.state.status.displayText)
+                    .font(.subheadline.bold())
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 4)
+                    .background(.blue.opacity(0.2))
+                    .clipShape(Capsule())
+            }
+
+            DeliveryProgressBar(
+                currentStep: context.state.currentStep,
+                totalSteps: context.state.totalSteps
+            )
+
+            HStack {
+                if !context.state.driverName.isEmpty {
+                    Label(context.state.driverName, systemImage: &quot;person.fill&quot;)
+                        .font(.caption)
+                }
+                Spacer()
+                if context.state.estimatedMinutesRemaining &gt; 0 {
+                    Text(&quot;~\(context.state.estimatedMinutesRemaining) min remaining&quot;)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+
+            // Show a message when content is stale
+            if context.isStale {
+                Label(&quot;Updating...&quot;, systemImage: &quot;arrow.clockwise&quot;)
+                    .font(.caption2)
+                    .foregroundStyle(.orange)
+            }
+        }
+        .padding()
+        .activityBackgroundTint(.black.opacity(0.7))
+        .activitySystemActionForegroundColor(.white)
+    }
+}
+
+struct DeliveryProgressBar: View {
+    let currentStep: Int
+    let totalSteps: Int
+
+    var body: some View {
+        HStack(spacing: 4) {
+            ForEach(1...totalSteps, id: \.self) { step in
+                Capsule()
+                    .fill(step &lt;= currentStep ? Color.blue : Color.gray.opacity(0.3))
+                    .frame(height: 4)
+            }
+        }
+    }
+}
+</code></pre>
+<h2 id="push-to-update-with-push-tokens">Push-to-Update with Push Tokens</h2>
+<p>Register for push tokens to update Live Activities from your server. The token can change, so observe it continuously.</p>
+<pre><code class="language-swift">extension DeliveryTracker {
+    func observePushToken() {
+        guard let activity = currentActivity else { return }
+
+        Task {
+            for await pushToken in activity.pushTokenUpdates {
+                let tokenString = pushToken.map { String(format: &quot;%02x&quot;, $0) }.joined()
+                print(&quot;Push token: \(tokenString)&quot;)
+
+                // Send token to your server
+                await sendTokenToServer(token: tokenString, activityID: activity.id)
+            }
+        }
+    }
+
+    private func sendTokenToServer(token: String, activityID: String) async {
+        guard let url = URL(string: &quot;https://api.example.com/live-activity/register&quot;) else { return }
+        var request = URLRequest(url: url)
+        request.httpMethod = &quot;POST&quot;
+        request.setValue(&quot;application/json&quot;, forHTTPHeaderField: &quot;Content-Type&quot;)
+
+        let body: [String: String] = [
+            &quot;activityId&quot;: activityID,
+            &quot;pushToken&quot;: token
+        ]
+        request.httpBody = try? JSONEncoder().encode(body)
+
+        _ = try? await URLSession.shared.data(for: request)
+    }
+}
+</code></pre>
+<h2 id="activitykit-push-notification-payload">ActivityKit Push Notification Payload</h2>
+<p>Send this JSON payload from your server via APNs to update or end a Live Activity.</p>
+<pre><code class="language-json">// APNs headers:
+// apns-topic: &lt;BundleID&gt;.push-type.liveactivity
+// apns-push-type: liveactivity
+
+// Update payload
+{
+    &quot;aps&quot;: {
+        &quot;timestamp&quot;: 1699900000,
+        &quot;event&quot;: &quot;update&quot;,
+        &quot;content-state&quot;: {
+            &quot;status&quot;: &quot;onTheWay&quot;,
+            &quot;driverName&quot;: &quot;Marcus&quot;,
+            &quot;currentStep&quot;: 3,
+            &quot;totalSteps&quot;: 4,
+            &quot;estimatedMinutesRemaining&quot;: 12
+        },
+        &quot;stale-date&quot;: 1699900600,
+        &quot;dismissal-date&quot;: 1699904200,
+        &quot;alert&quot;: {
+            &quot;title&quot;: &quot;Delivery Update&quot;,
+            &quot;body&quot;: &quot;Your order is on the way!&quot;
+        },
+        &quot;sound&quot;: &quot;default&quot;,
+        &quot;relevance-score&quot;: 100
+    }
+}
+
+// End payload
+{
+    &quot;aps&quot;: {
+        &quot;timestamp&quot;: 1699901000,
+        &quot;event&quot;: &quot;end&quot;,
+        &quot;dismissal-date&quot;: 1699904600,
+        &quot;content-state&quot;: {
+            &quot;status&quot;: &quot;delivered&quot;,
+            &quot;driverName&quot;: &quot;Marcus&quot;,
+            &quot;currentStep&quot;: 4,
+            &quot;totalSteps&quot;: 4,
+            &quot;estimatedMinutesRemaining&quot;: 0
+        },
+        &quot;alert&quot;: {
+            &quot;title&quot;: &quot;Order Delivered&quot;,
+            &quot;body&quot;: &quot;Your food has arrived. Enjoy!&quot;
+        }
+    }
+}
+</code></pre>
+<h2 id="timer-and-progress-live-activities">Timer and Progress Live Activities</h2>
+<p>Use <code>Text</code> with date-relative formatting for automatic countdown timers that the system updates without push notifications.</p>
+<pre><code class="language-swift">struct TimerLiveActivity: Widget {
+    var body: some WidgetConfiguration {
+        ActivityConfiguration(for: TimerAttributes.self) { context in
+            HStack {
+                VStack(alignment: .leading) {
+                    Text(context.attributes.timerName)
+                        .font(.headline)
+                    // Automatic countdown timer — system updates this every second
+                    Text(context.state.endTime, style: .timer)
+                        .font(.system(.title, design: .monospaced))
+                        .foregroundStyle(.blue)
+                }
+                Spacer()
+                // Relative time display: &quot;in 5 min&quot;
+                Text(context.state.endTime, style: .relative)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            .padding()
+            .activityBackgroundTint(.black)
+        } dynamicIsland: { context in
+            DynamicIsland {
+                DynamicIslandExpandedRegion(.center) {
+                    Text(context.state.endTime, style: .timer)
+                        .font(.system(.title, design: .monospaced))
+                }
+            } compactLeading: {
+                Image(systemName: &quot;timer&quot;)
+            } compactTrailing: {
+                Text(context.state.endTime, style: .timer)
+                    .frame(width: 50)
+                    .font(.caption2.monospacedDigit())
+            } minimal: {
+                // Progress ring for minimal view
+                ProgressView(
+                    timerInterval: context.state.startTime...context.state.endTime,
+                    countsDown: true
+                ) {
+                    EmptyView()
+                }
+                .progressViewStyle(.circular)
+                .tint(.blue)
+            }
+        }
+    }
+}
+
+struct TimerAttributes: ActivityAttributes {
+    let timerName: String
+
+    struct ContentState: Codable, Hashable {
+        let startTime: Date
+        let endTime: Date
+    }
+}
+</code></pre>
+<h2 id="staledate-and-dismissal-policy">StaleDate and Dismissal Policy</h2>
+<p>Control how stale data is displayed and when ended activities are removed.</p>
+<pre><code class="language-swift">// Observe activity state changes across the app lifecycle
+func observeAllActivities() {
+    Task {
+        // Monitor activities for this attribute type
+        for await activity in Activity&lt;DeliveryAttributes&gt;.activityUpdates {
+            print(&quot;New activity: \(activity.id)&quot;)
+
+            Task {
+                for await state in activity.activityStateUpdates {
+                    switch state {
+                    case .active:
+                        print(&quot;Activity is active&quot;)
+                    case .stale:
+                        // Content has passed its staleDate — refresh it
+                        print(&quot;Activity is stale — requesting update&quot;)
+                        await refreshActivityFromServer(activity)
+                    case .dismissed:
+                        print(&quot;Activity was dismissed by user or system&quot;)
+                    case .ended:
+                        print(&quot;Activity has ended&quot;)
+                    @unknown default:
+                        break
+                    }
+                }
+            }
+        }
+    }
+}
+
+func refreshActivityFromServer(_ activity: Activity&lt;DeliveryAttributes&gt;) async {
+    guard let freshState = await fetchLatestState(for: activity.attributes.orderNumber) else {
+        return
+    }
+    let content = ActivityContent(
+        state: freshState,
+        staleDate: Calendar.current.date(byAdding: .minute, value: 10, to: .now)
+    )
+    await activity.update(content)
+}
+
+func fetchLatestState(for orderNumber: String) async -&gt; DeliveryAttributes.ContentState? {
+    // Fetch from your API
+    return nil
+}
+</code></pre>
+<h2 id="complete-delivery-tracking-example">Complete Delivery Tracking Example</h2>
+<p>A full Livewire-style manager that coordinates the entire Live Activity lifecycle.</p>
+<pre><code class="language-swift">import ActivityKit
+import Foundation
+
+@MainActor
+@Observable
+class LiveDeliveryManager {
+    var isTracking = false
+    var currentStatus: DeliveryStatus = .preparing
+    private var activity: Activity&lt;DeliveryAttributes&gt;?
+    private var tokenObservationTask: Task&lt;Void, Never&gt;?
+
+    var areActivitiesEnabled: Bool {
+        ActivityAuthorizationInfo().areActivitiesEnabled
+    }
+
+    func startDelivery(order: String, restaurant: String, eta: Date) async throws {
+        guard areActivitiesEnabled else {
+            throw DeliveryError.activitiesDisabled
+        }
+
+        // End any existing activity first
+        if activity != nil {
+            await endDelivery()
+        }
+
+        let attributes = DeliveryAttributes(
+            orderNumber: order,
+            restaurantName: restaurant,
+            estimatedDeliveryTime: eta
+        )
+
+        let initialState = DeliveryAttributes.ContentState(
+            status: .preparing,
+            driverName: &quot;&quot;,
+            currentStep: 1,
+            totalSteps: 4,
+            estimatedMinutesRemaining: 45
+        )
+
+        let content = ActivityContent(
+            state: initialState,
+            staleDate: Calendar.current.date(byAdding: .minute, value: 15, to: .now),
+            relevanceScore: 50
+        )
+
+        activity = try Activity.request(
+            attributes: attributes,
+            content: content,
+            pushType: .token
+        )
+
+        isTracking = true
+        currentStatus = .preparing
+        startObservingPushToken()
+        startObservingState()
+    }
+
+    func update(status: DeliveryStatus, driver: String, step: Int, minutes: Int) async {
+        guard let activity else { return }
+
+        let state = DeliveryAttributes.ContentState(
+            status: status,
+            driverName: driver,
+            currentStep: step,
+            totalSteps: 4,
+            estimatedMinutesRemaining: minutes
+        )
+
+        let content = ActivityContent(
+            state: state,
+            staleDate: Calendar.current.date(byAdding: .minute, value: 10, to: .now),
+            relevanceScore: status == .nearbyDropoff ? 100 : 75
+        )
+
+        await activity.update(content)
+        currentStatus = status
+    }
+
+    func endDelivery() async {
+        guard let activity else { return }
+
+        let finalState = DeliveryAttributes.ContentState(
+            status: .delivered,
+            driverName: &quot;Driver&quot;,
+            currentStep: 4,
+            totalSteps: 4,
+            estimatedMinutesRemaining: 0
+        )
+
+        let content = ActivityContent(state: finalState, staleDate: nil)
+        await activity.end(content, dismissalPolicy: .after(
+            Calendar.current.date(byAdding: .hour, value: 1, to: .now)!
+        ))
+
+        tokenObservationTask?.cancel()
+        self.activity = nil
+        isTracking = false
+        currentStatus = .delivered
+    }
+
+    private func startObservingPushToken() {
+        guard let activity else { return }
+        tokenObservationTask?.cancel()
+
+        tokenObservationTask = Task {
+            for await token in activity.pushTokenUpdates {
+                let tokenString = token.map { String(format: &quot;%02x&quot;, $0) }.joined()
+                await registerToken(tokenString, activityID: activity.id)
+            }
+        }
+    }
+
+    private func startObservingState() {
+        guard let activity else { return }
+
+        Task {
+            for await state in activity.activityStateUpdates {
+                switch state {
+                case .dismissed, .ended:
+                    self.isTracking = false
+                    self.activity = nil
+                default:
+                    break
+                }
+            }
+        }
+    }
+
+    private func registerToken(_ token: String, activityID: String) async {
+        // Send to your backend
+        print(&quot;Registering token \(token) for activity \(activityID)&quot;)
+    }
+}
+
+enum DeliveryError: LocalizedError {
+    case activitiesDisabled
+    case failedToStart(Error)
+
+    var errorDescription: String? {
+        switch self {
+        case .activitiesDisabled:
+            return &quot;Live Activities are disabled in Settings.&quot;
+        case .failedToStart(let error):
+            return &quot;Failed to start activity: \(error.localizedDescription)&quot;
+        }
+    }
+}
+</code></pre>
+<h2 id="widget-bundle-registration">Widget Bundle Registration</h2>
+<p>Register the Live Activity widget alongside your other widgets.</p>
+<pre><code class="language-swift">import WidgetKit
+import SwiftUI
+
+@main
+struct AppWidgets: WidgetBundle {
+    var body: some Widget {
+        DeliveryLiveActivity()
+        TimerLiveActivity()
+        // Other widgets...
+    }
+}
+</code></pre>
+<h2 id="key-considerations">Key Considerations</h2>
+<ul>
+<li><strong>Size limit</strong>: Live Activity UI is rendered at a fixed size; keep content concise.</li>
+<li><strong>Update frequency</strong>: The system may throttle updates. Budget approximately one update per hour for push updates; local updates have a higher budget.</li>
+<li><strong>Stale date</strong>: Always set a stale date so your UI can show a refresh indicator when data is old.</li>
+<li><strong>Push payload size</strong>: The APNs payload for Live Activities must be under 4 KB.</li>
+<li><strong>Background</strong>: Live Activities use <code>activityBackgroundTint</code> and <code>activitySystemActionForegroundColor</code> — standard SwiftUI background modifiers do not work.</li>
+<li><strong>Availability</strong>: ActivityKit requires iOS 16.1+. Dynamic Island requires iPhone 14 Pro and later.</li>
+<li><strong>Info.plist</strong>: Add <code>NSSupportsLiveActivities</code> set to <code>YES</code> in your app target's Info.plist.</li>
+</ul></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

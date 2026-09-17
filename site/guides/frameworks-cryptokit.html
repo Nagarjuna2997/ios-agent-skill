@@ -1,0 +1,355 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CryptoKit — iOS Agent Skill</title><meta name="description" content="Repository guidance for CryptoKit. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-cryptokit.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="CryptoKit"><meta property="og:description" content="Repository guidance for CryptoKit. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-cryptokit.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "CryptoKit", "description": "Repository guidance for CryptoKit. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-cryptokit.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Authentication, Security, and Privacy · Reference guide</p><h1>CryptoKit</h1><p class="lead">Repository guidance for CryptoKit. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/frameworks/cryptokit.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#hashing-sha-256-sha-384-sha-512">Hashing (SHA-256, SHA-384, SHA-512)</a></li>
+<li><a href="#hmac-authentication">HMAC Authentication</a></li>
+<li><a href="#aes-gcm-symmetric-encryption-decryption">AES-GCM Symmetric Encryption / Decryption</a></li>
+<li><a href="#p256-p384-p521-key-agreement-and-signing">P256 / P384 / P521 Key Agreement and Signing</a></li>
+<li><a href="#curve25519-key-exchange">Curve25519 Key Exchange</a></li>
+<li><a href="#secure-enclave-integration">Secure Enclave Integration</a></li>
+<li><a href="#chachapoly-for-performance">ChaChaPoly for Performance</a></li>
+<li><a href="#complete-secure-messaging-example">Complete Secure Messaging Example</a></li>
+</ul>
+</div>
+</aside><h2 id="hashing-sha-256-sha-384-sha-512">Hashing (SHA-256, SHA-384, SHA-512)</h2>
+<pre><code class="language-swift">import CryptoKit
+import Foundation
+
+// SHA-256
+func sha256Hash(data: Data) -&gt; String {
+    let digest = SHA256.hash(data: data)
+    return digest.compactMap { String(format: &quot;%02x&quot;, $0) }.joined()
+}
+
+// SHA-384
+func sha384Hash(data: Data) -&gt; String {
+    let digest = SHA384.hash(data: data)
+    return digest.compactMap { String(format: &quot;%02x&quot;, $0) }.joined()
+}
+
+// SHA-512
+func sha512Hash(data: Data) -&gt; String {
+    let digest = SHA512.hash(data: data)
+    return digest.compactMap { String(format: &quot;%02x&quot;, $0) }.joined()
+}
+
+// Hash a string
+let message = &quot;Hello, CryptoKit!&quot;
+let messageData = Data(message.utf8)
+let hash = sha256Hash(data: messageData)
+// &quot;a1b2c3...&quot; (64 hex characters)
+
+// Hash a file
+func hashFile(at url: URL) throws -&gt; SHA256Digest {
+    let data = try Data(contentsOf: url)
+    return SHA256.hash(data: data)
+}
+
+// Compare digests securely (constant-time comparison)
+let digest1 = SHA256.hash(data: Data(&quot;abc&quot;.utf8))
+let digest2 = SHA256.hash(data: Data(&quot;abc&quot;.utf8))
+let isEqual = digest1 == digest2 // true — uses constant-time comparison
+</code></pre>
+<h2 id="hmac-authentication">HMAC Authentication</h2>
+<pre><code class="language-swift">func createHMAC(message: Data, key: SymmetricKey) -&gt; Data {
+    let mac = HMAC&lt;SHA256&gt;.authenticationCode(for: message, using: key)
+    return Data(mac)
+}
+
+func verifyHMAC(message: Data, mac: Data, key: SymmetricKey) -&gt; Bool {
+    HMAC&lt;SHA256&gt;.isValidAuthenticationCode(mac, authenticating: message, using: key)
+}
+
+// Usage
+let key = SymmetricKey(size: .bits256)
+let message = Data(&quot;Authenticate this message&quot;.utf8)
+let mac = createHMAC(message: message, key: key)
+let isValid = verifyHMAC(message: message, mac: mac, key: key) // true
+
+// HMAC for API request signing
+func signRequest(_ request: inout URLRequest, body: Data, secretKey: SymmetricKey) {
+    let timestamp = String(Int(Date().timeIntervalSince1970))
+    let payload = timestamp.data(using: .utf8)! + body
+    let signature = HMAC&lt;SHA256&gt;.authenticationCode(for: payload, using: secretKey)
+    request.setValue(Data(signature).base64EncodedString(), forHTTPHeaderField: &quot;X-Signature&quot;)
+    request.setValue(timestamp, forHTTPHeaderField: &quot;X-Timestamp&quot;)
+}
+</code></pre>
+<h2 id="aes-gcm-symmetric-encryption-decryption">AES-GCM Symmetric Encryption / Decryption</h2>
+<pre><code class="language-swift">struct AESEncryptor {
+    /// Encrypt data with AES-GCM
+    static func encrypt(data: Data, key: SymmetricKey) throws -&gt; Data {
+        let sealedBox = try AES.GCM.seal(data, using: key)
+        // combined = nonce + ciphertext + tag
+        guard let combined = sealedBox.combined else {
+            throw CryptoError.encryptionFailed
+        }
+        return combined
+    }
+
+    /// Decrypt AES-GCM sealed data
+    static func decrypt(data: Data, key: SymmetricKey) throws -&gt; Data {
+        let sealedBox = try AES.GCM.SealedBox(combined: data)
+        return try AES.GCM.open(sealedBox, using: key)
+    }
+
+    /// Encrypt a string
+    static func encryptString(_ string: String, key: SymmetricKey) throws -&gt; Data {
+        try encrypt(data: Data(string.utf8), key: key)
+    }
+
+    /// Decrypt to string
+    static func decryptString(data: Data, key: SymmetricKey) throws -&gt; String {
+        let decrypted = try decrypt(data: data, key: key)
+        guard let string = String(data: decrypted, encoding: .utf8) else {
+            throw CryptoError.decodingFailed
+        }
+        return string
+    }
+
+    /// Generate a key from a password using HKDF
+    static func deriveKey(from password: String, salt: Data) -&gt; SymmetricKey {
+        let inputKey = SymmetricKey(data: Data(password.utf8))
+        let derived = HKDF&lt;SHA256&gt;.deriveKey(
+            inputKeyMaterial: inputKey,
+            salt: salt,
+            info: Data(&quot;AES-GCM-Encryption&quot;.utf8),
+            outputByteCount: 32
+        )
+        return derived
+    }
+}
+
+enum CryptoError: LocalizedError {
+    case encryptionFailed, decodingFailed
+
+    var errorDescription: String? {
+        switch self {
+        case .encryptionFailed: &quot;Encryption failed.&quot;
+        case .decodingFailed: &quot;Failed to decode decrypted data.&quot;
+        }
+    }
+}
+</code></pre>
+<h2 id="p256-p384-p521-key-agreement-and-signing">P256 / P384 / P521 Key Agreement and Signing</h2>
+<pre><code class="language-swift">// Digital signatures with P256
+struct ECDSASigner {
+    let privateKey: P256.Signing.PrivateKey
+
+    init() {
+        privateKey = P256.Signing.PrivateKey()
+    }
+
+    var publicKey: P256.Signing.PublicKey {
+        privateKey.publicKey
+    }
+
+    func sign(data: Data) throws -&gt; P256.Signing.ECDSASignature {
+        try privateKey.signature(for: data)
+    }
+
+    static func verify(
+        signature: P256.Signing.ECDSASignature,
+        data: Data,
+        publicKey: P256.Signing.PublicKey
+    ) -&gt; Bool {
+        publicKey.isValidSignature(signature, for: data)
+    }
+}
+
+// Key agreement (Diffie-Hellman) with P256
+struct KeyAgreement {
+    static func sharedSecret(
+        privateKey: P256.KeyAgreement.PrivateKey,
+        publicKey: P256.KeyAgreement.PublicKey
+    ) throws -&gt; SymmetricKey {
+        let sharedSecret = try privateKey.sharedSecretFromKeyAgreement(with: publicKey)
+        // Derive a symmetric key using HKDF
+        return sharedSecret.hkdfDerivedSymmetricKey(
+            using: SHA256.self,
+            salt: Data(),
+            sharedInfo: Data(&quot;P256-Key-Agreement&quot;.utf8),
+            outputByteCount: 32
+        )
+    }
+}
+
+// Usage: Two parties derive the same shared key
+let alicePrivate = P256.KeyAgreement.PrivateKey()
+let bobPrivate = P256.KeyAgreement.PrivateKey()
+
+let aliceSharedKey = try KeyAgreement.sharedSecret(
+    privateKey: alicePrivate, publicKey: bobPrivate.publicKey
+)
+let bobSharedKey = try KeyAgreement.sharedSecret(
+    privateKey: bobPrivate, publicKey: alicePrivate.publicKey
+)
+// aliceSharedKey == bobSharedKey
+</code></pre>
+<h2 id="curve25519-key-exchange">Curve25519 Key Exchange</h2>
+<pre><code class="language-swift">struct Curve25519Exchange {
+    static func deriveSharedKey(
+        privateKey: Curve25519.KeyAgreement.PrivateKey,
+        peerPublicKey: Curve25519.KeyAgreement.PublicKey
+    ) throws -&gt; SymmetricKey {
+        let shared = try privateKey.sharedSecretFromKeyAgreement(with: peerPublicKey)
+        return shared.hkdfDerivedSymmetricKey(
+            using: SHA256.self,
+            salt: Data(),
+            sharedInfo: Data(&quot;Curve25519-Exchange&quot;.utf8),
+            outputByteCount: 32
+        )
+    }
+}
+
+// Curve25519 signing
+let signingKey = Curve25519.Signing.PrivateKey()
+let message = Data(&quot;Sign this message&quot;.utf8)
+let signature = try signingKey.signature(for: message)
+let isValid = signingKey.publicKey.isValidSignature(signature, for: message)
+
+// Export / import keys
+let publicKeyData = signingKey.publicKey.rawRepresentation // 32 bytes
+let restoredPublicKey = try Curve25519.Signing.PublicKey(rawRepresentation: publicKeyData)
+</code></pre>
+<h2 id="secure-enclave-integration">Secure Enclave Integration</h2>
+<pre><code class="language-swift">struct SecureEnclaveManager {
+    /// Create a private key stored in the Secure Enclave
+    static func createKey() throws -&gt; SecureEnclave.P256.Signing.PrivateKey {
+        guard SecureEnclave.isAvailable else {
+            throw SecureEnclaveError.notAvailable
+        }
+
+        // Key with access control
+        let accessControl = SecAccessControlCreateWithFlags(
+            nil,
+            kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
+            [.privateKeyUsage, .biometryCurrentSet],
+            nil
+        )!
+
+        return try SecureEnclave.P256.Signing.PrivateKey(
+            accessControl: accessControl
+        )
+    }
+
+    /// Sign data with Secure Enclave key (requires biometric auth)
+    static func sign(data: Data, key: SecureEnclave.P256.Signing.PrivateKey) throws -&gt; Data {
+        let signature = try key.signature(for: data)
+        return signature.derRepresentation
+    }
+
+    /// Persist and restore Secure Enclave keys
+    static func persistKey(_ key: SecureEnclave.P256.Signing.PrivateKey) throws -&gt; Data {
+        key.dataRepresentation
+    }
+
+    static func restoreKey(from data: Data) throws -&gt; SecureEnclave.P256.Signing.PrivateKey {
+        try SecureEnclave.P256.Signing.PrivateKey(dataRepresentation: data)
+    }
+}
+
+enum SecureEnclaveError: LocalizedError {
+    case notAvailable
+    var errorDescription: String? { &quot;Secure Enclave is not available on this device.&quot; }
+}
+</code></pre>
+<h2 id="chachapoly-for-performance">ChaChaPoly for Performance</h2>
+<p>ChaChaPoly (ChaCha20-Poly1305) is faster than AES-GCM on devices without AES hardware acceleration.</p>
+<pre><code class="language-swift">struct ChaChaEncryptor {
+    static func encrypt(data: Data, key: SymmetricKey) throws -&gt; Data {
+        let sealedBox = try ChaChaPoly.seal(data, using: key)
+        return sealedBox.combined
+    }
+
+    static func decrypt(data: Data, key: SymmetricKey) throws -&gt; Data {
+        let sealedBox = try ChaChaPoly.SealedBox(combined: data)
+        return try ChaChaPoly.open(sealedBox, using: key)
+    }
+}
+</code></pre>
+<h2 id="complete-secure-messaging-example">Complete Secure Messaging Example</h2>
+<pre><code class="language-swift">import CryptoKit
+import Foundation
+
+/// End-to-end encrypted messaging using Curve25519 key exchange + AES-GCM
+final class SecureMessenger {
+    let identityKey: Curve25519.KeyAgreement.PrivateKey
+    var peerPublicKey: Curve25519.KeyAgreement.PublicKey?
+
+    var publicKeyData: Data {
+        identityKey.publicKey.rawRepresentation
+    }
+
+    init() {
+        identityKey = Curve25519.KeyAgreement.PrivateKey()
+    }
+
+    /// Set the peer's public key (received over network)
+    func setPeerPublicKey(_ data: Data) throws {
+        peerPublicKey = try Curve25519.KeyAgreement.PublicKey(rawRepresentation: data)
+    }
+
+    /// Derive the shared encryption key
+    private func sharedKey() throws -&gt; SymmetricKey {
+        guard let peerPublicKey else { throw MessengerError.noPeerKey }
+        let shared = try identityKey.sharedSecretFromKeyAgreement(with: peerPublicKey)
+        return shared.hkdfDerivedSymmetricKey(
+            using: SHA256.self,
+            salt: Data(&quot;SecureMessenger-v1&quot;.utf8),
+            sharedInfo: Data(),
+            outputByteCount: 32
+        )
+    }
+
+    /// Encrypt a message
+    func encrypt(_ plaintext: String) throws -&gt; Data {
+        let key = try sharedKey()
+        let data = Data(plaintext.utf8)
+        let sealed = try AES.GCM.seal(data, using: key)
+        guard let combined = sealed.combined else {
+            throw MessengerError.encryptionFailed
+        }
+        return combined
+    }
+
+    /// Decrypt a message
+    func decrypt(_ ciphertext: Data) throws -&gt; String {
+        let key = try sharedKey()
+        let box = try AES.GCM.SealedBox(combined: ciphertext)
+        let decrypted = try AES.GCM.open(box, using: key)
+        guard let message = String(data: decrypted, encoding: .utf8) else {
+            throw MessengerError.decodingFailed
+        }
+        return message
+    }
+
+    /// Sign a message for authenticity
+    func sign(_ data: Data) throws -&gt; Data {
+        let signingKey = Curve25519.Signing.PrivateKey()
+        let signature = try signingKey.signature(for: data)
+        return signature
+    }
+}
+
+enum MessengerError: LocalizedError {
+    case noPeerKey, encryptionFailed, decodingFailed
+
+    var errorDescription: String? {
+        switch self {
+        case .noPeerKey: &quot;Peer public key not set.&quot;
+        case .encryptionFailed: &quot;Message encryption failed.&quot;
+        case .decodingFailed: &quot;Failed to decode decrypted message.&quot;
+        }
+    }
+}
+
+// Usage
+let alice = SecureMessenger()
+let bob = SecureMessenger()
+
+try alice.setPeerPublicKey(bob.publicKeyData)
+try bob.setPeerPublicKey(alice.publicKeyData)
+
+let encrypted = try alice.encrypt(&quot;Hello, Bob!&quot;)
+let decrypted = try bob.decrypt(encrypted) // &quot;Hello, Bob!&quot;
+</code></pre></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

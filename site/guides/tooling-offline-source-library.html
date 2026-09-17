@@ -1,0 +1,49 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Build from local source and Apple guidance — iOS Agent Skill</title><meta name="description" content="Repository guidance for Build from local source and Apple guidance. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-offline-source-library.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="Build from local source and Apple guidance"><meta property="og:description" content="Repository guidance for Build from local source and Apple guidance. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-offline-source-library.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "Build from local source and Apple guidance", "description": "Repository guidance for Build from local source and Apple guidance. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-offline-source-library.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Tooling · Reference guide</p><h1>Build from local source and Apple guidance</h1><p class="lead">Repository guidance for Build from local source and Apple guidance. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/tooling/offline-source-library.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#context">Context</a></li>
+<li><a href="#pattern">Pattern</a><ul>
+<li><a href="#where-the-complete-code-lives">Where the complete code lives</a></li>
+<li><a href="#apple-guidance-and-ownership">Apple guidance and ownership</a></li>
+</ul>
+</li>
+<li><a href="#anti-patterns">Anti-Patterns</a></li>
+</ul>
+</div>
+</aside><h2 id="context">Context</h2>
+<p>Use this workflow when implementing an Apple app without repeatedly browsing documentation or feeding entire manuals to an AI. The repository contains original implementation guides, editable source files, app templates, and testable Swift packages. Apple links identify the source of API guidance and support checking changed APIs; the local implementations can be read without opening those links.</p>
+<p>This is not Apple's private framework implementation or a mirror of every Apple documentation article. The 405-technology directory includes services, tools and legacy APIs as well as Swift frameworks. A directory entry is not a promise of a complete working example for that technology. Generated discovery guides remain labelled as such.</p>
+<h2 id="pattern">Pattern</h2>
+<p>Use a clone for offline work after installation. Search runs locally with Node and does not call an AI or make network requests:</p>
+<pre><code class="language-bash">node scripts/query-library.mjs search &quot;Persistence&quot; source
+node scripts/query-library.mjs outline docs/frameworks/swiftdata.md
+node scripts/query-library.mjs read samples/SkillPatterns/Sources/SkillPatterns/Persistence.swift 0 6000
+</code></pre>
+<p><code>search</code> returns up to eight file paths, titles and sizes, without file bodies. <code>outline</code> returns headings with character offsets. <code>read</code> returns exact content, a content hash and <code>nextOffset</code>; continue from that offset until it is null when the complete source is needed. Offsets are JavaScript UTF-16 string indexes, not bytes. No excerpt is silently presented as a complete file.</p>
+<p>The same library is bundled inside the knowledge MCP package:</p>
+<ol>
+<li>Call <code>search_local_references</code> with a feature/API query and <code>kind: "source"</code> for reusable code, or <code>kind: "guide"</code> for explanations.</li>
+<li>Use <code>get_reference_outline</code> to select a guide section.</li>
+<li>Call <code>read_local_reference</code> with its exact returned path and offset. The default body budget is 6,000 characters; the maximum is 16,000 per call. Follow <code>nextOffset</code> only if necessary.</li>
+<li>Read sibling package manifests, dependencies and tests before adapting a source file. Preserve error handling, actor isolation and availability requirements.</li>
+<li>Build and test the resulting app with the installed SDK. A source file being indexed does not prove it builds independently.</li>
+</ol>
+<p><code>get_apple_technology</code> now defaults to an overview with local guide/source routes. Request <code>view: "full"</code> only when the entire guide and topic map are needed. The repository's Markdown examples also contain explicitly labelled wrong patterns; retain their surrounding explanation and do not automatically extract every fenced block as production Swift.</p>
+<h3 id="where-the-complete-code-lives">Where the complete code lives</h3>
+<ul>
+<li><code>samples/SkillPatterns/</code>: Swift package containing persistence, streams, routing, observation, composition and signal-processing implementations with tests.</li>
+<li><code>samples/AppleRecipes/</code>: original Apple API implementations with their own manifest, tests and build evidence. See its README for exact platform coverage.</li>
+<li><code>templates/ios-app/</code>: an app's screens, models, repositories and test starting points.</li>
+<li><code>templates/common-patterns/</code>: editable networking, persistence, authentication, design and navigation source; adaptation and app-level testing are required.</li>
+<li><code>cli/src/</code>: complete source of the app scaffolder.</li>
+<li><code>mcp-server/src/</code>: complete source of the analysis and local knowledge servers.</li>
+</ul>
+<p>See <code>docs/apple/local-library.md</code> for the generated file inventory. The index contains metadata only. Content has one canonical source file; the MCP bundle stores identical content once by SHA-256. Plugin archives carry those same canonical files so they work without fetching individual guides.</p>
+<h3 id="apple-guidance-and-ownership">Apple guidance and ownership</h3>
+<p>Original code in this repository is covered by the repository's MIT license, subject to any file-specific notices. Apple documentation links in the guides are attribution and freshness references. Apple SDK binaries, internal source and proprietary manuals are not relicensed as part of this project. Use the installed SDK and the linked official guidance for availability or behavior that changed after the snapshot.</p>
+<h2 id="anti-patterns">Anti-Patterns</h2>
+<ul>
+<li>WRONG: load the whole catalog and all guides for each feature. RIGHT: search first, then fetch the relevant section or source.</li>
+<li>WRONG: label link coverage as implementation coverage. RIGHT: identify actual source paths and show build/test evidence.</li>
+<li>WRONG: concatenate all Swift fences into one target. RIGHT: choose the correct implementation, its dependencies and tests; keep labelled anti-patterns out of production.</li>
+<li>WRONG: promise a fixed token reduction. RIGHT: limit returned characters and measure the selected model's actual usage. Characters are not tokens.</li>
+</ul></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

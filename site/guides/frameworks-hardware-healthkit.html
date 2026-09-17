@@ -1,0 +1,763 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>HealthKit — iOS Agent Skill</title><meta name="description" content="Repository guidance for HealthKit. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-hardware-healthkit.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="HealthKit"><meta property="og:description" content="Repository guidance for HealthKit. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-hardware-healthkit.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "HealthKit", "description": "Repository guidance for HealthKit. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-hardware-healthkit.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Health, Hardware, and Sensors · Reference guide</p><h1>HealthKit</h1><p class="lead">Repository guidance for HealthKit. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/frameworks/hardware/healthkit.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#hkhealthstore-setup-and-authorization">HKHealthStore Setup and Authorization</a></li>
+<li><a href="#hksampletype-hkquantitytype-hkcategorytype">HKSampleType, HKQuantityType, HKCategoryType</a></li>
+<li><a href="#reading-health-data-hksamplequery">Reading Health Data — HKSampleQuery</a></li>
+<li><a href="#hkstatisticsquery-for-aggregated-data">HKStatisticsQuery for Aggregated Data</a></li>
+<li><a href="#writing-health-data">Writing Health Data</a></li>
+<li><a href="#hkstatisticscollectionquery-aggregated-data-over-time">HKStatisticsCollectionQuery — Aggregated Data Over Time</a></li>
+<li><a href="#hkobserverquery-background-delivery">HKObserverQuery — Background Delivery</a></li>
+<li><a href="#hkworkoutsession-and-hkliveworkoutbuilder">HKWorkoutSession and HKLiveWorkoutBuilder</a></li>
+<li><a href="#workout-routes-with-corelocation">Workout Routes with CoreLocation</a></li>
+<li><a href="#complete-step-counter-and-workout-tracker">Complete Step Counter and Workout Tracker</a></li>
+</ul>
+</div>
+</aside><h2 id="hkhealthstore-setup-and-authorization">HKHealthStore Setup and Authorization</h2>
+<p>Add to <code>Info.plist</code>:
+- <code>NSHealthShareUsageDescription</code> — required for reading health data
+- <code>NSHealthUpdateUsageDescription</code> — required for writing health data</p>
+<p>Add the HealthKit capability in Xcode under Signing &amp; Capabilities.</p>
+<pre><code class="language-swift">import HealthKit
+
+@Observable
+class HealthKitManager {
+    static let shared = HealthKitManager()
+
+    let healthStore = HKHealthStore()
+    var isAuthorized = false
+    var authorizationError: Error?
+
+    // Check availability
+    var isHealthDataAvailable: Bool {
+        HKHealthStore.isHealthDataAvailable()
+    }
+
+    func requestAuthorization() async throws {
+        guard isHealthDataAvailable else {
+            throw HealthKitError.notAvailable
+        }
+
+        // Types to read
+        let readTypes: Set&lt;HKObjectType&gt; = [
+            HKQuantityType(.stepCount),
+            HKQuantityType(.heartRate),
+            HKQuantityType(.activeEnergyBurned),
+            HKQuantityType(.distanceWalkingRunning),
+            HKQuantityType(.bodyMass),
+            HKCategoryType(.sleepAnalysis),
+            HKObjectType.workoutType(),
+            HKObjectType.activitySummaryType()
+        ]
+
+        // Types to write
+        let writeTypes: Set&lt;HKSampleType&gt; = [
+            HKQuantityType(.stepCount),
+            HKQuantityType(.bodyMass),
+            HKQuantityType(.activeEnergyBurned),
+            HKObjectType.workoutType()
+        ]
+
+        try await healthStore.requestAuthorization(
+            toShare: writeTypes,
+            read: readTypes
+        )
+        isAuthorized = true
+    }
+}
+
+enum HealthKitError: LocalizedError {
+    case notAvailable
+    case notAuthorized
+    case noData
+    case writeFailed(Error)
+
+    var errorDescription: String? {
+        switch self {
+        case .notAvailable:
+            return &quot;HealthKit is not available on this device.&quot;
+        case .notAuthorized:
+            return &quot;HealthKit authorization was not granted.&quot;
+        case .noData:
+            return &quot;No health data found.&quot;
+        case .writeFailed(let error):
+            return &quot;Failed to write data: \(error.localizedDescription)&quot;
+        }
+    }
+}
+</code></pre>
+<h2 id="hksampletype-hkquantitytype-hkcategorytype">HKSampleType, HKQuantityType, HKCategoryType</h2>
+<pre><code class="language-swift">// Quantity types — numeric values with units
+let stepCount = HKQuantityType(.stepCount)
+let heartRate = HKQuantityType(.heartRate)
+let bodyMass = HKQuantityType(.bodyMass)
+let height = HKQuantityType(.height)
+let activeEnergy = HKQuantityType(.activeEnergyBurned)
+let distance = HKQuantityType(.distanceWalkingRunning)
+
+// Category types — enum-based values
+let sleepAnalysis = HKCategoryType(.sleepAnalysis)
+let mindfulSession = HKCategoryType(.mindfulSession)
+
+// Workout type
+let workoutType = HKObjectType.workoutType()
+
+// Units
+let bpm = HKUnit.count().unitDivided(by: .minute())
+let kg = HKUnit.gramUnit(with: .kilo)
+let miles = HKUnit.mile()
+let kcal = HKUnit.kilocalorie()
+let steps = HKUnit.count()
+</code></pre>
+<h2 id="reading-health-data-hksamplequery">Reading Health Data — HKSampleQuery</h2>
+<pre><code class="language-swift">extension HealthKitManager {
+    /// Query recent heart rate samples
+    func fetchHeartRateSamples(limit: Int = 10) async throws -&gt; [HKQuantitySample] {
+        let heartRateType = HKQuantityType(.heartRate)
+
+        let sortDescriptor = NSSortDescriptor(
+            key: HKSampleSortIdentifierStartDate,
+            ascending: false
+        )
+
+        return try await withCheckedThrowingContinuation { continuation in
+            let query = HKSampleQuery(
+                sampleType: heartRateType,
+                predicate: nil,
+                limit: limit,
+                sortDescriptors: [sortDescriptor]
+            ) { _, samples, error in
+                if let error {
+                    continuation.resume(throwing: error)
+                    return
+                }
+                let quantitySamples = samples as? [HKQuantitySample] ?? []
+                continuation.resume(returning: quantitySamples)
+            }
+            healthStore.execute(query)
+        }
+    }
+
+    /// Query samples within a date range
+    func fetchSamples(
+        type: HKQuantityType,
+        start: Date,
+        end: Date = .now,
+        limit: Int = HKObjectQueryNoLimit
+    ) async throws -&gt; [HKQuantitySample] {
+        let predicate = HKQuery.predicateForSamples(
+            withStart: start,
+            end: end,
+            options: .strictStartDate
+        )
+
+        let sortDescriptor = NSSortDescriptor(
+            key: HKSampleSortIdentifierStartDate,
+            ascending: false
+        )
+
+        return try await withCheckedThrowingContinuation { continuation in
+            let query = HKSampleQuery(
+                sampleType: type,
+                predicate: predicate,
+                limit: limit,
+                sortDescriptors: [sortDescriptor]
+            ) { _, samples, error in
+                if let error {
+                    continuation.resume(throwing: error)
+                    return
+                }
+                let quantitySamples = samples as? [HKQuantitySample] ?? []
+                continuation.resume(returning: quantitySamples)
+            }
+            healthStore.execute(query)
+        }
+    }
+}
+</code></pre>
+<h2 id="hkstatisticsquery-for-aggregated-data">HKStatisticsQuery for Aggregated Data</h2>
+<pre><code class="language-swift">extension HealthKitManager {
+    /// Get today's total step count
+    func fetchTodayStepCount() async throws -&gt; Double {
+        let stepType = HKQuantityType(.stepCount)
+
+        let startOfDay = Calendar.current.startOfDay(for: .now)
+        let predicate = HKQuery.predicateForSamples(
+            withStart: startOfDay,
+            end: .now,
+            options: .strictStartDate
+        )
+
+        return try await withCheckedThrowingContinuation { continuation in
+            let query = HKStatisticsQuery(
+                quantityType: stepType,
+                quantitySamplePredicate: predicate,
+                options: .cumulativeSum
+            ) { _, statistics, error in
+                if let error {
+                    continuation.resume(throwing: error)
+                    return
+                }
+                let count = statistics?.sumQuantity()?.doubleValue(for: .count()) ?? 0
+                continuation.resume(returning: count)
+            }
+            healthStore.execute(query)
+        }
+    }
+
+    /// Get average resting heart rate for a period
+    func fetchAverageHeartRate(start: Date, end: Date = .now) async throws -&gt; Double {
+        let heartRateType = HKQuantityType(.heartRate)
+        let predicate = HKQuery.predicateForSamples(
+            withStart: start,
+            end: end,
+            options: .strictStartDate
+        )
+        let bpmUnit = HKUnit.count().unitDivided(by: .minute())
+
+        return try await withCheckedThrowingContinuation { continuation in
+            let query = HKStatisticsQuery(
+                quantityType: heartRateType,
+                quantitySamplePredicate: predicate,
+                options: .discreteAverage
+            ) { _, statistics, error in
+                if let error {
+                    continuation.resume(throwing: error)
+                    return
+                }
+                let avg = statistics?.averageQuantity()?.doubleValue(for: bpmUnit) ?? 0
+                continuation.resume(returning: avg)
+            }
+            healthStore.execute(query)
+        }
+    }
+}
+</code></pre>
+<h2 id="writing-health-data">Writing Health Data</h2>
+<pre><code class="language-swift">extension HealthKitManager {
+    /// Save a body mass measurement
+    func saveBodyMass(kg value: Double, date: Date = .now) async throws {
+        let bodyMassType = HKQuantityType(.bodyMass)
+        let quantity = HKQuantity(unit: .gramUnit(with: .kilo), doubleValue: value)
+
+        let sample = HKQuantitySample(
+            type: bodyMassType,
+            quantity: quantity,
+            start: date,
+            end: date
+        )
+
+        try await healthStore.save(sample)
+    }
+
+    /// Save a step count entry
+    func saveSteps(count: Double, start: Date, end: Date) async throws {
+        let stepType = HKQuantityType(.stepCount)
+        let quantity = HKQuantity(unit: .count(), doubleValue: count)
+
+        let sample = HKQuantitySample(
+            type: stepType,
+            quantity: quantity,
+            start: start,
+            end: end
+        )
+
+        try await healthStore.save(sample)
+    }
+
+    /// Save a sleep analysis entry
+    func saveSleep(start: Date, end: Date, value: HKCategoryValueSleepAnalysis) async throws {
+        let sleepType = HKCategoryType(.sleepAnalysis)
+
+        let sample = HKCategorySample(
+            type: sleepType,
+            value: value.rawValue,
+            start: start,
+            end: end
+        )
+
+        try await healthStore.save(sample)
+    }
+}
+</code></pre>
+<h2 id="hkstatisticscollectionquery-aggregated-data-over-time">HKStatisticsCollectionQuery — Aggregated Data Over Time</h2>
+<pre><code class="language-swift">extension HealthKitManager {
+    /// Get daily step counts for the last 7 days
+    func fetchDailySteps(days: Int = 7) async throws -&gt; [(date: Date, steps: Double)] {
+        let stepType = HKQuantityType(.stepCount)
+        let calendar = Calendar.current
+
+        let endDate = Date.now
+        guard let startDate = calendar.date(byAdding: .day, value: -days, to: endDate) else {
+            throw HealthKitError.noData
+        }
+
+        let anchorDate = calendar.startOfDay(for: endDate)
+        let daily = DateComponents(day: 1)
+
+        let predicate = HKQuery.predicateForSamples(
+            withStart: startDate,
+            end: endDate,
+            options: .strictStartDate
+        )
+
+        return try await withCheckedThrowingContinuation { continuation in
+            let query = HKStatisticsCollectionQuery(
+                quantityType: stepType,
+                quantitySamplePredicate: predicate,
+                options: .cumulativeSum,
+                anchorDate: anchorDate,
+                intervalComponents: daily
+            )
+
+            query.initialResultsHandler = { _, collection, error in
+                if let error {
+                    continuation.resume(throwing: error)
+                    return
+                }
+
+                var results: [(date: Date, steps: Double)] = []
+
+                collection?.enumerateStatistics(from: startDate, to: endDate) { statistics, _ in
+                    let count = statistics.sumQuantity()?.doubleValue(for: .count()) ?? 0
+                    results.append((date: statistics.startDate, steps: count))
+                }
+
+                continuation.resume(returning: results)
+            }
+
+            healthStore.execute(query)
+        }
+    }
+}
+</code></pre>
+<h2 id="hkobserverquery-background-delivery">HKObserverQuery — Background Delivery</h2>
+<pre><code class="language-swift">extension HealthKitManager {
+    /// Enable background delivery for step count updates
+    func enableBackgroundStepDelivery() async throws {
+        let stepType = HKQuantityType(.stepCount)
+
+        try await healthStore.enableBackgroundDelivery(
+            for: stepType,
+            frequency: .hourly
+        )
+    }
+
+    /// Observe step count changes in real time
+    func observeStepChanges(handler: @escaping (Double) -&gt; Void) {
+        let stepType = HKQuantityType(.stepCount)
+
+        let observerQuery = HKObserverQuery(
+            sampleType: stepType,
+            predicate: nil
+        ) { [weak self] _, completionHandler, error in
+            guard error == nil, let self else {
+                completionHandler()
+                return
+            }
+
+            Task {
+                let steps = try? await self.fetchTodayStepCount()
+                await MainActor.run {
+                    handler(steps ?? 0)
+                }
+                completionHandler()
+            }
+        }
+
+        healthStore.execute(observerQuery)
+    }
+}
+</code></pre>
+<h2 id="hkworkoutsession-and-hkliveworkoutbuilder">HKWorkoutSession and HKLiveWorkoutBuilder</h2>
+<pre><code class="language-swift">import HealthKit
+
+@Observable
+class WorkoutManager: NSObject {
+    let healthStore = HKHealthStore()
+    var workoutSession: HKWorkoutSession?
+    var workoutBuilder: HKLiveWorkoutBuilder?
+
+    var isWorkoutActive = false
+    var heartRate: Double = 0
+    var activeCalories: Double = 0
+    var distance: Double = 0
+    var elapsedTime: TimeInterval = 0
+
+    func startWorkout(type: HKWorkoutActivityType) async throws {
+        let configuration = HKWorkoutConfiguration()
+        configuration.activityType = type
+        configuration.locationType = .outdoor
+
+        workoutSession = try HKWorkoutSession(
+            healthStore: healthStore,
+            configuration: configuration
+        )
+
+        workoutBuilder = workoutSession?.associatedWorkoutBuilder()
+        workoutBuilder?.dataSource = HKLiveWorkoutDataSource(
+            healthStore: healthStore,
+            workoutConfiguration: configuration
+        )
+
+        workoutSession?.delegate = self
+        workoutBuilder?.delegate = self
+
+        let startDate = Date.now
+        workoutSession?.startActivity(with: startDate)
+        try await workoutBuilder?.beginCollection(at: startDate)
+
+        isWorkoutActive = true
+    }
+
+    func pauseWorkout() {
+        workoutSession?.pause()
+    }
+
+    func resumeWorkout() {
+        workoutSession?.resume()
+    }
+
+    func endWorkout() async throws {
+        workoutSession?.end()
+        guard let builder = workoutBuilder else { return }
+        try await builder.endCollection(at: .now)
+        try await builder.finishWorkout()
+
+        isWorkoutActive = false
+        workoutSession = nil
+        workoutBuilder = nil
+    }
+}
+
+extension WorkoutManager: HKWorkoutSessionDelegate {
+    func workoutSession(
+        _ workoutSession: HKWorkoutSession,
+        didChangeTo toState: HKWorkoutSessionState,
+        from fromState: HKWorkoutSessionState,
+        date: Date
+    ) {
+        switch toState {
+        case .running:
+            isWorkoutActive = true
+        case .paused:
+            isWorkoutActive = false
+        case .ended:
+            isWorkoutActive = false
+        default:
+            break
+        }
+    }
+
+    func workoutSession(
+        _ workoutSession: HKWorkoutSession,
+        didFailWithError error: Error
+    ) {
+        isWorkoutActive = false
+    }
+}
+
+extension WorkoutManager: HKLiveWorkoutBuilderDelegate {
+    func workoutBuilderDidCollectEvent(_ workoutBuilder: HKLiveWorkoutBuilder) {}
+
+    func workoutBuilder(
+        _ workoutBuilder: HKLiveWorkoutBuilder,
+        didCollectDataOf collectedTypes: Set&lt;HKSampleType&gt;
+    ) {
+        for type in collectedTypes {
+            guard let quantityType = type as? HKQuantityType else { continue }
+            let statistics = workoutBuilder.statistics(for: quantityType)
+
+            switch quantityType {
+            case HKQuantityType(.heartRate):
+                let bpmUnit = HKUnit.count().unitDivided(by: .minute())
+                heartRate = statistics?.mostRecentQuantity()?.doubleValue(for: bpmUnit) ?? 0
+
+            case HKQuantityType(.activeEnergyBurned):
+                activeCalories = statistics?.sumQuantity()?.doubleValue(for: .kilocalorie()) ?? 0
+
+            case HKQuantityType(.distanceWalkingRunning):
+                distance = statistics?.sumQuantity()?.doubleValue(for: .meter()) ?? 0
+
+            default:
+                break
+            }
+        }
+
+        elapsedTime = workoutBuilder.elapsedTime
+    }
+}
+</code></pre>
+<h2 id="workout-routes-with-corelocation">Workout Routes with CoreLocation</h2>
+<pre><code class="language-swift">import CoreLocation
+
+extension WorkoutManager {
+    /// Add a route to a completed workout
+    func addRoute(locations: [CLLocation], to workout: HKWorkout) async throws {
+        let routeBuilder = HKWorkoutRouteBuilder(
+            healthStore: healthStore,
+            device: nil
+        )
+
+        try await routeBuilder.insertRouteData(locations)
+        try await routeBuilder.finishRoute(with: workout, metadata: nil)
+    }
+}
+</code></pre>
+<h2 id="complete-step-counter-and-workout-tracker">Complete Step Counter and Workout Tracker</h2>
+<pre><code class="language-swift">import SwiftUI
+import HealthKit
+
+@Observable
+class StepCounterViewModel {
+    private let manager = HealthKitManager.shared
+
+    var todaySteps: Double = 0
+    var weeklySteps: [(date: Date, steps: Double)] = []
+    var goalProgress: Double = 0
+    var isLoading = false
+    var error: Error?
+
+    let dailyGoal: Double = 10_000
+
+    func loadData() async {
+        isLoading = true
+        defer { isLoading = false }
+
+        do {
+            try await manager.requestAuthorization()
+            todaySteps = try await manager.fetchTodayStepCount()
+            goalProgress = min(todaySteps / dailyGoal, 1.0)
+            weeklySteps = try await manager.fetchDailySteps(days: 7)
+        } catch {
+            self.error = error
+        }
+    }
+}
+
+struct StepCounterView: View {
+    @State private var viewModel = StepCounterViewModel()
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(spacing: 24) {
+                    // Circular progress
+                    ZStack {
+                        Circle()
+                            .stroke(.gray.opacity(0.2), lineWidth: 16)
+
+                        Circle()
+                            .trim(from: 0, to: viewModel.goalProgress)
+                            .stroke(
+                                .green.gradient,
+                                style: StrokeStyle(lineWidth: 16, lineCap: .round)
+                            )
+                            .rotationEffect(.degrees(-90))
+                            .animation(.spring(duration: 1.0), value: viewModel.goalProgress)
+
+                        VStack(spacing: 4) {
+                            Image(systemName: &quot;figure.walk&quot;)
+                                .font(.title)
+                                .foregroundStyle(.green)
+
+                            Text(&quot;\(Int(viewModel.todaySteps))&quot;)
+                                .font(.system(size: 44, weight: .bold, design: .rounded))
+                                .contentTransition(.numericText())
+
+                            Text(&quot;of \(Int(viewModel.dailyGoal)) steps&quot;)
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .frame(width: 220, height: 220)
+                    .padding(.top)
+
+                    // Weekly chart
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text(&quot;This Week&quot;)
+                            .font(.headline)
+
+                        HStack(alignment: .bottom, spacing: 8) {
+                            ForEach(viewModel.weeklySteps, id: \.date) { entry in
+                                VStack(spacing: 4) {
+                                    RoundedRectangle(cornerRadius: 6)
+                                        .fill(
+                                            entry.steps &gt;= viewModel.dailyGoal
+                                                ? .green.gradient
+                                                : .blue.gradient
+                                        )
+                                        .frame(
+                                            height: max(
+                                                4,
+                                                CGFloat(entry.steps / viewModel.dailyGoal) * 120
+                                            )
+                                        )
+
+                                    Text(entry.date.formatted(.dateTime.weekday(.narrow)))
+                                        .font(.caption2)
+                                        .foregroundStyle(.secondary)
+                                }
+                                .frame(maxWidth: .infinity)
+                            }
+                        }
+                        .frame(height: 140)
+                    }
+                    .padding()
+                    .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
+                    .padding(.horizontal)
+                }
+            }
+            .navigationTitle(&quot;Steps&quot;)
+            .task {
+                await viewModel.loadData()
+            }
+            .refreshable {
+                await viewModel.loadData()
+            }
+        }
+    }
+}
+
+struct WorkoutTrackerView: View {
+    @State private var workoutManager = WorkoutManager()
+
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 24) {
+                if workoutManager.isWorkoutActive {
+                    // Active workout display
+                    VStack(spacing: 20) {
+                        // Timer
+                        Text(
+                            Duration.seconds(workoutManager.elapsedTime)
+                                .formatted(.time(pattern: .hourMinuteSecond))
+                        )
+                        .font(.system(size: 48, weight: .bold, design: .monospaced))
+
+                        // Metrics grid
+                        LazyVGrid(columns: [
+                            GridItem(.flexible()),
+                            GridItem(.flexible())
+                        ], spacing: 16) {
+                            MetricCard(
+                                title: &quot;Heart Rate&quot;,
+                                value: &quot;\(Int(workoutManager.heartRate))&quot;,
+                                unit: &quot;BPM&quot;,
+                                icon: &quot;heart.fill&quot;,
+                                color: .red
+                            )
+
+                            MetricCard(
+                                title: &quot;Calories&quot;,
+                                value: &quot;\(Int(workoutManager.activeCalories))&quot;,
+                                unit: &quot;kcal&quot;,
+                                icon: &quot;flame.fill&quot;,
+                                color: .orange
+                            )
+
+                            MetricCard(
+                                title: &quot;Distance&quot;,
+                                value: String(format: &quot;%.2f&quot;, workoutManager.distance / 1000),
+                                unit: &quot;km&quot;,
+                                icon: &quot;figure.run&quot;,
+                                color: .green
+                            )
+                        }
+                        .padding(.horizontal)
+
+                        // Controls
+                        HStack(spacing: 24) {
+                            Button {
+                                workoutManager.pauseWorkout()
+                            } label: {
+                                Image(systemName: &quot;pause.fill&quot;)
+                                    .font(.title2)
+                                    .frame(width: 60, height: 60)
+                                    .background(.yellow.gradient, in: Circle())
+                                    .foregroundStyle(.black)
+                            }
+
+                            Button {
+                                Task { try? await workoutManager.endWorkout() }
+                            } label: {
+                                Image(systemName: &quot;stop.fill&quot;)
+                                    .font(.title2)
+                                    .frame(width: 60, height: 60)
+                                    .background(.red.gradient, in: Circle())
+                                    .foregroundStyle(.white)
+                            }
+                        }
+                    }
+                } else {
+                    // Workout type selection
+                    VStack(spacing: 16) {
+                        Text(&quot;Start a Workout&quot;)
+                            .font(.title2.bold())
+
+                        ForEach(workoutTypes, id: \.type) { workout in
+                            Button {
+                                Task {
+                                    try? await workoutManager.startWorkout(type: workout.type)
+                                }
+                            } label: {
+                                HStack {
+                                    Image(systemName: workout.icon)
+                                        .font(.title2)
+                                        .frame(width: 44)
+                                    Text(workout.name)
+                                        .font(.headline)
+                                    Spacer()
+                                    Image(systemName: &quot;chevron.right&quot;)
+                                        .foregroundStyle(.tertiary)
+                                }
+                                .padding()
+                                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                    .padding()
+                }
+            }
+            .navigationTitle(&quot;Workout&quot;)
+        }
+    }
+
+    var workoutTypes: [(name: String, type: HKWorkoutActivityType, icon: String)] {
+        [
+            (&quot;Outdoor Run&quot;, .running, &quot;figure.run&quot;),
+            (&quot;Outdoor Walk&quot;, .walking, &quot;figure.walk&quot;),
+            (&quot;Cycling&quot;, .cycling, &quot;figure.outdoor.cycle&quot;),
+            (&quot;Swimming&quot;, .swimming, &quot;figure.pool.swim&quot;),
+            (&quot;Strength Training&quot;, .traditionalStrengthTraining, &quot;dumbbell.fill&quot;)
+        ]
+    }
+}
+
+struct MetricCard: View {
+    let title: String
+    let value: String
+    let unit: String
+    let icon: String
+    let color: Color
+
+    var body: some View {
+        VStack(spacing: 8) {
+            Image(systemName: icon)
+                .foregroundStyle(color)
+                .font(.title3)
+
+            Text(value)
+                .font(.system(.title, design: .rounded, weight: .bold))
+                .contentTransition(.numericText())
+
+            Text(unit)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding()
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
+    }
+}
+</code></pre></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

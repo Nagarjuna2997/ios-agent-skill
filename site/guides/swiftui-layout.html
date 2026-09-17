@@ -1,0 +1,602 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SwiftUI Layout System — iOS Agent Skill</title><meta name="description" content="Repository guidance for SwiftUI Layout System. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/swiftui-layout.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="SwiftUI Layout System"><meta property="og:description" content="Repository guidance for SwiftUI Layout System. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/swiftui-layout.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "SwiftUI Layout System", "description": "Repository guidance for SwiftUI Layout System. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/swiftui-layout.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Swiftui · Reference guide</p><h1>SwiftUI Layout System</h1><p class="lead">Repository guidance for SwiftUI Layout System. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/swiftui/layout.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#vstack-hstack-zstack">VStack, HStack, ZStack</a><ul>
+<li><a href="#vstack-vertical">VStack (Vertical)</a></li>
+<li><a href="#hstack-horizontal">HStack (Horizontal)</a></li>
+<li><a href="#zstack-overlay">ZStack (Overlay)</a></li>
+</ul>
+</li>
+<li><a href="#spacer-and-divider">Spacer and Divider</a></li>
+<li><a href="#grid-and-gridrow-ios-16">Grid and GridRow (iOS 16+)</a></li>
+<li><a href="#viewthatfits-ios-16">ViewThatFits (iOS 16+)</a></li>
+<li><a href="#geometryreader-and-geometryproxy">GeometryReader and GeometryProxy</a><ul>
+<li><a href="#reading-scroll-position">Reading Scroll Position</a></li>
+</ul>
+</li>
+<li><a href="#lazyvgrid-and-lazyhgrid">LazyVGrid and LazyHGrid</a><ul>
+<li><a href="#grid-item-types">Grid Item Types</a></li>
+<li><a href="#lazyvgrid-examples">LazyVGrid Examples</a></li>
+<li><a href="#lazyhgrid">LazyHGrid</a></li>
+</ul>
+</li>
+<li><a href="#frame-padding-offset">Frame, Padding, Offset</a><ul>
+<li><a href="#frame">.frame()</a></li>
+<li><a href="#padding">.padding()</a></li>
+<li><a href="#offset">.offset()</a></li>
+</ul>
+</li>
+<li><a href="#safe-area">Safe Area</a><ul>
+<li><a href="#safeareainset-ios-15">safeAreaInset (iOS 15+)</a></li>
+<li><a href="#safeareapadding-ios-17">safeAreaPadding (iOS 17+)</a></li>
+<li><a href="#ignoring-safe-area">Ignoring Safe Area</a></li>
+</ul>
+</li>
+<li><a href="#custom-layout-protocol-ios-16">Custom Layout Protocol (iOS 16+)</a><ul>
+<li><a href="#animated-layout-transitions">Animated Layout Transitions</a></li>
+</ul>
+</li>
+<li><a href="#scrollview-and-scrollviewreader">ScrollView and ScrollViewReader</a><ul>
+<li><a href="#scrollviewreader">ScrollViewReader</a></li>
+<li><a href="#scrollposition-ios-17">scrollPosition (iOS 17+)</a></li>
+<li><a href="#containerrelativeframe-ios-17">containerRelativeFrame (iOS 17+)</a></li>
+<li><a href="#scrolltransition-ios-17">scrollTransition (iOS 17+)</a></li>
+</ul>
+</li>
+<li><a href="#contentunavailableview-ios-17">ContentUnavailableView (iOS 17+)</a></li>
+<li><a href="#layout-tips-and-patterns">Layout Tips and Patterns</a><ul>
+<li><a href="#proportional-layout">Proportional Layout</a></li>
+<li><a href="#adaptive-layout-based-on-size-class">Adaptive Layout Based on Size Class</a></li>
+<li><a href="#alignment-guides">Alignment Guides</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</aside><p>Complete reference for stacks, grids, geometry, custom layouts, scroll views, and spatial positioning.</p>
+<hr />
+<h2 id="vstack-hstack-zstack">VStack, HStack, ZStack</h2>
+<p>The fundamental building blocks of SwiftUI layout.</p>
+<h3 id="vstack-vertical">VStack (Vertical)</h3>
+<pre><code class="language-swift">VStack(alignment: .leading, spacing: 12) {
+    Text(&quot;Title&quot;).font(.headline)
+    Text(&quot;Subtitle&quot;).font(.subheadline)
+    Text(&quot;Body text goes here&quot;).font(.body)
+}
+</code></pre>
+<p><strong>Alignment options:</strong> <code>.leading</code>, <code>.center</code> (default), <code>.trailing</code>, <code>.listRowSeparatorLeading</code>, <code>.listRowSeparatorTrailing</code></p>
+<h3 id="hstack-horizontal">HStack (Horizontal)</h3>
+<pre><code class="language-swift">HStack(alignment: .firstTextBaseline, spacing: 8) {
+    Image(systemName: &quot;star.fill&quot;)
+    Text(&quot;4.8&quot;)
+        .font(.title)
+    Text(&quot;(128 reviews)&quot;)
+        .font(.caption)
+        .foregroundStyle(.secondary)
+}
+</code></pre>
+<p><strong>Alignment options:</strong> <code>.top</code>, <code>.center</code> (default), <code>.bottom</code>, <code>.firstTextBaseline</code>, <code>.lastTextBaseline</code></p>
+<h3 id="zstack-overlay">ZStack (Overlay)</h3>
+<pre><code class="language-swift">ZStack(alignment: .bottomTrailing) {
+    Image(&quot;photo&quot;)
+        .resizable()
+        .aspectRatio(contentMode: .fill)
+        .frame(width: 200, height: 200)
+
+    Text(&quot;NEW&quot;)
+        .font(.caption)
+        .padding(6)
+        .background(.red)
+        .foregroundStyle(.white)
+        .clipShape(Capsule())
+        .padding(8)
+}
+.clipShape(RoundedRectangle(cornerRadius: 12))
+</code></pre>
+<p><strong>Alignment:</strong> Any combination of horizontal and vertical -- <code>.topLeading</code>, <code>.top</code>, <code>.topTrailing</code>, <code>.leading</code>, <code>.center</code>, <code>.trailing</code>, <code>.bottomLeading</code>, <code>.bottom</code>, <code>.bottomTrailing</code>.</p>
+<hr />
+<h2 id="spacer-and-divider">Spacer and Divider</h2>
+<pre><code class="language-swift">// Spacer pushes content apart
+HStack {
+    Text(&quot;Leading&quot;)
+    Spacer()              // Fills all available space
+    Text(&quot;Trailing&quot;)
+}
+
+HStack {
+    Text(&quot;Item&quot;)
+    Spacer(minLength: 20) // Minimum 20pt gap
+    Text(&quot;Value&quot;)
+}
+
+// Divider -- thin line separator
+VStack {
+    Text(&quot;Section 1&quot;)
+    Divider()
+        .background(.blue)   // Custom color
+    Text(&quot;Section 2&quot;)
+}
+
+// Horizontal divider in HStack
+HStack {
+    Text(&quot;Left&quot;)
+    Divider()
+        .frame(height: 30)
+    Text(&quot;Right&quot;)
+}
+</code></pre>
+<hr />
+<h2 id="grid-and-gridrow-ios-16">Grid and GridRow (iOS 16+)</h2>
+<p>Fixed layout grid with aligned columns -- unlike LazyVGrid, renders all content immediately.</p>
+<pre><code class="language-swift">Grid(alignment: .leading, horizontalSpacing: 16, verticalSpacing: 12) {
+    GridRow {
+        Text(&quot;Name&quot;)
+            .gridColumnAlignment(.trailing)
+        Text(&quot;John Doe&quot;)
+    }
+    GridRow {
+        Text(&quot;Email&quot;)
+        Text(&quot;john@example.com&quot;)
+    }
+    GridRow {
+        Text(&quot;Bio&quot;)
+        Text(&quot;A longer piece of text that spans the available width&quot;)
+    }
+
+    Divider()
+        .gridCellUnsizedAxes(.horizontal) // Span full width
+
+    GridRow {
+        Color.clear
+            .gridCellColumns(2)           // Span multiple columns
+            .frame(height: 1)
+    }
+
+    GridRow {
+        Text(&quot;Actions&quot;)
+        HStack {
+            Button(&quot;Edit&quot;) { }
+            Button(&quot;Delete&quot;, role: .destructive) { }
+        }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="viewthatfits-ios-16">ViewThatFits (iOS 16+)</h2>
+<p>Picks the first child view that fits the available space.</p>
+<pre><code class="language-swift">ViewThatFits(in: .horizontal) {
+    // First choice: full layout
+    HStack {
+        Image(systemName: &quot;star.fill&quot;)
+        Text(&quot;Add to Favorites&quot;)
+        Spacer()
+        Text(&quot;128 people favorited this&quot;)
+    }
+
+    // Second choice: compact layout
+    HStack {
+        Image(systemName: &quot;star.fill&quot;)
+        Text(&quot;Favorite&quot;)
+        Spacer()
+        Text(&quot;128&quot;)
+    }
+
+    // Third choice: icon only
+    Image(systemName: &quot;star.fill&quot;)
+}
+</code></pre>
+<p>Commonly used for adaptive layouts that work across iPhone SE to iPad.</p>
+<hr />
+<h2 id="geometryreader-and-geometryproxy">GeometryReader and GeometryProxy</h2>
+<p>Reads the size and position of the parent container.</p>
+<pre><code class="language-swift">GeometryReader { proxy in
+    let width = proxy.size.width
+    let height = proxy.size.height
+
+    VStack {
+        Rectangle()
+            .fill(.blue)
+            .frame(width: width * 0.8, height: height * 0.3)
+
+        Text(&quot;Width: \(Int(width)), Height: \(Int(height))&quot;)
+    }
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+}
+</code></pre>
+<h3 id="reading-scroll-position">Reading Scroll Position</h3>
+<pre><code class="language-swift">ScrollView {
+    GeometryReader { proxy in
+        Color.clear.preference(
+            key: ScrollOffsetKey.self,
+            value: proxy.frame(in: .named(&quot;scroll&quot;)).minY
+        )
+    }
+    .frame(height: 0)
+
+    LazyVStack { /* content */ }
+}
+.coordinateSpace(name: &quot;scroll&quot;)
+.onPreferenceChange(ScrollOffsetKey.self) { offset in
+    headerOpacity = min(1, max(0, -offset / 100))
+}
+
+struct ScrollOffsetKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -&gt; CGFloat) {
+        value = nextValue()
+    }
+}
+</code></pre>
+<p><strong>Warning:</strong> <code>GeometryReader</code> is greedy -- it takes all proposed space. Wrap it carefully or use it inside <code>.background</code>/<code>.overlay</code> to avoid layout issues.</p>
+<pre><code class="language-swift">// Better pattern: read size without affecting layout
+Text(&quot;Content&quot;)
+    .background {
+        GeometryReader { proxy in
+            Color.clear
+                .onAppear { contentSize = proxy.size }
+                .onChange(of: proxy.size) { _, newSize in
+                    contentSize = newSize
+                }
+        }
+    }
+</code></pre>
+<hr />
+<h2 id="lazyvgrid-and-lazyhgrid">LazyVGrid and LazyHGrid</h2>
+<h3 id="grid-item-types">Grid Item Types</h3>
+<pre><code class="language-swift">// Fixed: exact width
+GridItem(.fixed(100))
+
+// Flexible: fills available space within range
+GridItem(.flexible(minimum: 80, maximum: 200))
+
+// Adaptive: fits as many as possible within range
+GridItem(.adaptive(minimum: 100, maximum: 150))
+</code></pre>
+<h3 id="lazyvgrid-examples">LazyVGrid Examples</h3>
+<pre><code class="language-swift">// Two equal columns
+let twoColumns = [
+    GridItem(.flexible()),
+    GridItem(.flexible())
+]
+
+// Three fixed columns
+let threeFixed = [
+    GridItem(.fixed(100)),
+    GridItem(.fixed(100)),
+    GridItem(.fixed(100))
+]
+
+// Adaptive (responsive)
+let adaptive = [
+    GridItem(.adaptive(minimum: 120))
+]
+
+ScrollView {
+    LazyVGrid(columns: adaptive, spacing: 16) {
+        ForEach(items) { item in
+            VStack {
+                AsyncImage(url: item.imageURL) { image in
+                    image.resizable().aspectRatio(contentMode: .fill)
+                } placeholder: {
+                    Color.gray.opacity(0.3)
+                }
+                .frame(height: 150)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+
+                Text(item.title)
+                    .font(.caption)
+                    .lineLimit(1)
+            }
+        }
+    }
+    .padding()
+}
+</code></pre>
+<h3 id="lazyhgrid">LazyHGrid</h3>
+<pre><code class="language-swift">let rows = [
+    GridItem(.fixed(80)),
+    GridItem(.fixed(80))
+]
+
+ScrollView(.horizontal) {
+    LazyHGrid(rows: rows, spacing: 12) {
+        ForEach(items) { item in
+            ItemCell(item: item)
+        }
+    }
+    .padding()
+}
+</code></pre>
+<hr />
+<h2 id="frame-padding-offset">Frame, Padding, Offset</h2>
+<h3 id="frame">.frame()</h3>
+<pre><code class="language-swift">// Exact size
+Text(&quot;Fixed&quot;).frame(width: 200, height: 50)
+
+// Flexible constraints
+Text(&quot;Flexible&quot;)
+    .frame(minWidth: 100, maxWidth: 300, minHeight: 44)
+
+// Fill available width
+Text(&quot;Full Width&quot;)
+    .frame(maxWidth: .infinity, alignment: .leading)
+
+// Fill available space
+Color.blue
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+// Ideal size (proposed when parent uses .fixedSize)
+Text(&quot;Ideal&quot;).frame(idealWidth: 200, idealHeight: 100)
+
+// fixedSize prevents truncation
+Text(&quot;This long text will not be truncated&quot;)
+    .fixedSize(horizontal: true, vertical: false)
+</code></pre>
+<h3 id="padding">.padding()</h3>
+<pre><code class="language-swift">Text(&quot;Padded&quot;)
+    .padding()                           // Default on all edges (~16pt)
+    .padding(20)                         // Custom amount all edges
+    .padding(.horizontal, 16)           // Specific edge set
+    .padding(.top, 8)                   // Single edge
+    .padding(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+</code></pre>
+<h3 id="offset">.offset()</h3>
+<p>Moves the view visually without changing its layout position.</p>
+<pre><code class="language-swift">Circle()
+    .fill(.blue)
+    .frame(width: 50, height: 50)
+    .offset(x: 20, y: -10)  // Moves right 20, up 10
+
+// Common pattern: notification badge
+ZStack(alignment: .topTrailing) {
+    Image(systemName: &quot;bell&quot;)
+        .font(.title)
+    Text(&quot;3&quot;)
+        .font(.caption2)
+        .padding(4)
+        .background(.red)
+        .foregroundStyle(.white)
+        .clipShape(Circle())
+        .offset(x: 8, y: -8)
+}
+</code></pre>
+<hr />
+<h2 id="safe-area">Safe Area</h2>
+<h3 id="safeareainset-ios-15">safeAreaInset (iOS 15+)</h3>
+<p>Adds content in the safe area without overlapping.</p>
+<pre><code class="language-swift">ScrollView {
+    LazyVStack {
+        ForEach(messages) { message in
+            MessageRow(message: message)
+        }
+    }
+}
+.safeAreaInset(edge: .bottom) {
+    HStack {
+        TextField(&quot;Message&quot;, text: $newMessage)
+            .textFieldStyle(.roundedBorder)
+        Button(&quot;Send&quot;, systemImage: &quot;arrow.up.circle.fill&quot;) {
+            sendMessage()
+        }
+    }
+    .padding()
+    .background(.bar)
+}
+</code></pre>
+<h3 id="safeareapadding-ios-17">safeAreaPadding (iOS 17+)</h3>
+<p>Adds padding within the safe area.</p>
+<pre><code class="language-swift">ScrollView(.horizontal) {
+    LazyHStack {
+        ForEach(items) { item in
+            ItemCard(item: item)
+        }
+    }
+}
+.safeAreaPadding(.horizontal, 16)  // Content scrolls edge-to-edge but starts padded
+</code></pre>
+<h3 id="ignoring-safe-area">Ignoring Safe Area</h3>
+<pre><code class="language-swift">Color.blue
+    .ignoresSafeArea()                    // All edges
+    .ignoresSafeArea(.keyboard)           // Only keyboard
+    .ignoresSafeArea(.container, edges: .bottom) // Only bottom
+</code></pre>
+<hr />
+<h2 id="custom-layout-protocol-ios-16">Custom Layout Protocol (iOS 16+)</h2>
+<p>Create completely custom layout logic.</p>
+<pre><code class="language-swift">struct RadialLayout: Layout {
+    var radius: CGFloat
+    var startAngle: Angle = .zero
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -&gt; CGSize {
+        let maxSize = subviews.reduce(CGSize.zero) { currentMax, subview in
+            let size = subview.sizeThatFits(.unspecified)
+            return CGSize(
+                width: max(currentMax.width, size.width),
+                height: max(currentMax.height, size.height)
+            )
+        }
+        return CGSize(
+            width: (radius + maxSize.width) * 2,
+            height: (radius + maxSize.height) * 2
+        )
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        let angleStep = Angle.degrees(360.0 / Double(subviews.count))
+
+        for (index, subview) in subviews.enumerated() {
+            let angle = startAngle + angleStep * Double(index)
+            let x = bounds.midX + radius * cos(angle.radians)
+            let y = bounds.midY + radius * sin(angle.radians)
+
+            subview.place(
+                at: CGPoint(x: x, y: y),
+                anchor: .center,
+                proposal: .unspecified
+            )
+        }
+    }
+}
+
+// Usage
+RadialLayout(radius: 100) {
+    ForEach(0..&lt;8) { i in
+        Circle()
+            .fill(Color(hue: Double(i) / 8, saturation: 0.8, brightness: 0.9))
+            .frame(width: 40, height: 40)
+    }
+}
+</code></pre>
+<h3 id="animated-layout-transitions">Animated Layout Transitions</h3>
+<pre><code class="language-swift">struct ContentView: View {
+    @State private var useRadial = false
+
+    var body: some View {
+        let layout = useRadial ? AnyLayout(RadialLayout(radius: 120)) : AnyLayout(HStackLayout())
+
+        layout {
+            ForEach(items) { item in
+                ItemView(item: item)
+            }
+        }
+        .animation(.spring, value: useRadial)
+
+        Button(&quot;Toggle Layout&quot;) { useRadial.toggle() }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="scrollview-and-scrollviewreader">ScrollView and ScrollViewReader</h2>
+<h3 id="scrollviewreader">ScrollViewReader</h3>
+<p>Programmatic scrolling to specific views.</p>
+<pre><code class="language-swift">ScrollViewReader { proxy in
+    ScrollView {
+        LazyVStack {
+            ForEach(messages) { message in
+                MessageRow(message: message)
+                    .id(message.id)
+            }
+        }
+    }
+    .onChange(of: messages.count) { _, _ in
+        withAnimation {
+            proxy.scrollTo(messages.last?.id, anchor: .bottom)
+        }
+    }
+}
+</code></pre>
+<h3 id="scrollposition-ios-17">scrollPosition (iOS 17+)</h3>
+<pre><code class="language-swift">@State private var scrollPosition: String?
+
+ScrollView {
+    LazyVStack {
+        ForEach(items) { item in
+            ItemCard(item: item)
+                .id(item.id)
+        }
+    }
+    .scrollTargetLayout()
+}
+.scrollPosition(id: $scrollPosition)
+.onChange(of: scrollPosition) { _, id in
+    print(&quot;Visible item: \(id ?? &quot;none&quot;)&quot;)
+}
+</code></pre>
+<h3 id="containerrelativeframe-ios-17">containerRelativeFrame (iOS 17+)</h3>
+<p>Size views relative to the scroll container.</p>
+<pre><code class="language-swift">ScrollView(.horizontal) {
+    LazyHStack(spacing: 16) {
+        ForEach(items) { item in
+            ItemCard(item: item)
+                .containerRelativeFrame(.horizontal, count: 1, spacing: 16)
+                // Full width card, one at a time
+        }
+    }
+    .scrollTargetLayout()
+}
+.scrollTargetBehavior(.paging) // .paging or .viewAligned
+.scrollIndicators(.hidden)
+</code></pre>
+<h3 id="scrolltransition-ios-17">scrollTransition (iOS 17+)</h3>
+<p>Apply effects as views enter/exit the scroll viewport.</p>
+<pre><code class="language-swift">ScrollView {
+    LazyVStack(spacing: 16) {
+        ForEach(items) { item in
+            ItemCard(item: item)
+                .scrollTransition { content, phase in
+                    content
+                        .opacity(phase.isIdentity ? 1 : 0.3)
+                        .scaleEffect(phase.isIdentity ? 1 : 0.8)
+                        .blur(radius: phase.isIdentity ? 0 : 2)
+                }
+        }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="contentunavailableview-ios-17">ContentUnavailableView (iOS 17+)</h2>
+<p>Standard empty state view.</p>
+<pre><code class="language-swift">// Built-in search empty state
+ContentUnavailableView.search
+
+// Search with query
+ContentUnavailableView.search(text: searchText)
+
+// Custom
+ContentUnavailableView {
+    Label(&quot;No Favorites&quot;, systemImage: &quot;heart.slash&quot;)
+} description: {
+    Text(&quot;Items you favorite will appear here.&quot;)
+} actions: {
+    Button(&quot;Browse Items&quot;) { showBrowse = true }
+        .buttonStyle(.borderedProminent)
+}
+</code></pre>
+<hr />
+<h2 id="layout-tips-and-patterns">Layout Tips and Patterns</h2>
+<h3 id="proportional-layout">Proportional Layout</h3>
+<pre><code class="language-swift">GeometryReader { proxy in
+    HStack(spacing: 0) {
+        LeftPanel()
+            .frame(width: proxy.size.width * 0.3)
+        RightPanel()
+            .frame(width: proxy.size.width * 0.7)
+    }
+}
+</code></pre>
+<h3 id="adaptive-layout-based-on-size-class">Adaptive Layout Based on Size Class</h3>
+<pre><code class="language-swift">struct AdaptiveView: View {
+    @Environment(\.horizontalSizeClass) private var sizeClass
+
+    var body: some View {
+        if sizeClass == .compact {
+            VStack { content }
+        } else {
+            HStack { content }
+        }
+    }
+
+    @ViewBuilder
+    var content: some View {
+        SidebarView()
+        DetailView()
+    }
+}
+</code></pre>
+<h3 id="alignment-guides">Alignment Guides</h3>
+<pre><code class="language-swift">HStack(alignment: .customCenter) {
+    Text(&quot;Label&quot;)
+        .alignmentGuide(.customCenter) { d in d[VerticalAlignment.center] }
+    Circle()
+        .fill(.blue)
+        .frame(width: 10, height: 10)
+        .alignmentGuide(.customCenter) { d in d[VerticalAlignment.center] }
+}
+
+extension VerticalAlignment {
+    struct CustomCenter: AlignmentID {
+        static func defaultValue(in context: ViewDimensions) -&gt; CGFloat {
+            context[VerticalAlignment.center]
+        }
+    }
+    static let customCenter = VerticalAlignment(CustomCenter.self)
+}
+</code></pre></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

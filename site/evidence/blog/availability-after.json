@@ -1,0 +1,26 @@
+{
+  "date": "2026-09-17T01:03:56.616Z",
+  "package": "ios-agent-mcp@2.7.0",
+  "tool": "check_availability_guards",
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "# Availability Guard Check\n\nScanned **4** Swift files.\n\n**No findings.** Every rule in this category passed.\n\n_This is a static check. It cannot verify behavior — run the build and the test suite for that._"
+      }
+    ],
+    "structuredContent": {
+      "summary": "Availability Guard Check: no findings across 4 files.",
+      "score": 100,
+      "counts": {
+        "blocker": 0,
+        "serious": 0,
+        "minor": 0,
+        "total": 0
+      },
+      "files_checked": 4,
+      "issues": [],
+      "suggestions": []
+    }
+  }
+}

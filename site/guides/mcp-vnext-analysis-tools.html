@@ -1,0 +1,162 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>vNext MCP Analysis Tools — iOS Agent Skill</title><meta name="description" content="Repository guidance for vNext MCP Analysis Tools. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/mcp-vnext-analysis-tools.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="vNext MCP Analysis Tools"><meta property="og:description" content="Repository guidance for vNext MCP Analysis Tools. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/mcp-vnext-analysis-tools.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "vNext MCP Analysis Tools", "description": "Repository guidance for vNext MCP Analysis Tools. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/mcp-vnext-analysis-tools.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Mcp · Reference guide</p><h1>vNext MCP Analysis Tools</h1><p class="lead">Repository guidance for vNext MCP Analysis Tools. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/mcp/vnext-analysis-tools.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#context">Context</a></li>
+<li><a href="#implemented-in-the-260-source">Implemented in the 2.6.0 source</a></li>
+<li><a href="#tool-plan">Tool Plan</a></li>
+<li><a href="#output-contract">Output Contract</a></li>
+<li><a href="#rule-design">Rule Design</a></li>
+<li><a href="#static-vs-runtime-boundary">Static vs. Runtime Boundary</a></li>
+<li><a href="#anti-patterns">Anti-Patterns</a></li>
+</ul>
+</div>
+</aside><h2 id="context">Context</h2>
+<p>Use this as the contract for expanding <code>ios-agent-mcp</code> beyond the current Swift engineering analyzers. These tools remain static, read-only project reviewers. Runtime behavior belongs in <code>ios-simulator-mcp</code>.</p>
+<h2 id="implemented-in-the-260-source">Implemented in the 2.6.0 source</h2>
+<p><code>review_app_intents</code>: SiriKit migration advice plus opt-in schema and onscreen entity association checks. See <a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/frameworks/app-intents-intelligence.md#static-integration-review">integration contract</a>. Parameter-summary/localization/identifier analysis remains future work.</p>
+<h2 id="tool-plan">Tool Plan</h2>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Focus</th>
+<th>Typical signals</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>review_ui_ux</code></td>
+<td>Visual structure, native conventions, state coverage</td>
+<td>hardcoded spacing, fixed fonts, missing loading/empty/error states, inconsistent radii, excessive <code>GeometryReader</code></td>
+</tr>
+<tr>
+<td><code>review_motion</code></td>
+<td>SwiftUI animation correctness</td>
+<td>broad <code>.animation</code>, missing value dependency, infinite animation, layout-heavy animation, Reduce Motion gaps</td>
+</tr>
+<tr>
+<td><code>review_accessibility</code></td>
+<td>Semantic and inclusive design</td>
+<td>missing labels, small tap targets, fixed sizes, contrast-risk colors, ignored Dynamic Type</td>
+</tr>
+<tr>
+<td><code>review_haptics</code></td>
+<td>Meaningful feedback</td>
+<td>haptics fired on appear, duplicated feedback, no reduced-sensory fallback, heavy impact for minor state</td>
+</tr>
+<tr>
+<td><code>review_realitykit</code></td>
+<td>3D scene safety and native fit</td>
+<td>unbounded asset loads, missing collision/input components, ARKit without permission copy, no fallback</td>
+</tr>
+<tr>
+<td><code>review_metal</code></td>
+<td>GPU rendering safety</td>
+<td>per-frame allocation, missing drawable guard, unsafe buffer sizing, no pixel-format/depth consistency</td>
+</tr>
+<tr>
+<td><code>review_webkit</code></td>
+<td>Web/native interop safety</td>
+<td>untyped JS bridge, broad navigation, injected secrets, WKWebView used where native controls fit better</td>
+</tr>
+<tr>
+<td><code>review_foundation_models</code></td>
+<td>Foundation Models usage</td>
+<td>missing availability gates, no graceful fallback, unsafe prompt logging, absent evaluation path</td>
+</tr>
+<tr>
+<td><code>review_core_ai</code></td>
+<td>Core AI model integration</td>
+<td>model lifecycle, privacy boundaries, device capability checks, background work isolation</td>
+</tr>
+</tbody>
+</table>
+<p>| <code>review_ai_security</code> | AI privacy and misuse resistance | prompt injection surfaces, secret leakage, unbounded tool calls, unsafe retrieval context |
+| <code>review_ai_evaluations</code> | Evaluation coverage | no datasets, no code-based evaluators, no regression gate, no failure taxonomy |
+| <code>review_networking</code> | Network correctness and resilience | unbounded retries, no cancellation, live API defaults in previews/tests, missing offline state |
+| <code>review_persistence</code> | Data and storage safety | UserDefaults secrets, main-actor I/O, missing migrations, model objects crossing actor boundaries |
+| <code>review_storekit</code> | Purchase readiness | missing restore path, unverified transactions, no pending/refund handling, live StoreKit in tests |
+| <code>review_permissions</code> | Permission and entitlement correctness | missing purpose strings, overbroad entitlements, no denied/restricted state, privacy manifest gaps |</p>
+<h2 id="output-contract">Output Contract</h2>
+<p>Every new review tool should match the existing analyzer shape:</p>
+<pre><code class="language-json">{
+  &quot;summary&quot;: &quot;Motion review found 3 issues.&quot;,
+  &quot;score&quot;: 82,
+  &quot;counts&quot;: {
+    &quot;critical&quot;: 0,
+    &quot;high&quot;: 1,
+    &quot;medium&quot;: 2,
+    &quot;low&quot;: 0
+  },
+  &quot;files_checked&quot;: 18,
+  &quot;issues&quot;: [
+    {
+      &quot;rule&quot;: &quot;animation-without-reduced-motion&quot;,
+      &quot;severity&quot;: &quot;high&quot;,
+      &quot;file&quot;: &quot;Sources/App/HomeView.swift&quot;,
+      &quot;line&quot;: 42,
+      &quot;message&quot;: &quot;Animated transition has no Reduce Motion alternative.&quot;,
+      &quot;why&quot;: &quot;Users who disable motion can still receive large movement.&quot;,
+      &quot;fix&quot;: &quot;Read accessibilityReduceMotion and switch to opacity or no animation.&quot;
+    }
+  ],
+  &quot;suggestions&quot;: [
+    &quot;Centralize animation tokens for spring duration and response.&quot;
+  ]
+}
+</code></pre>
+<h2 id="rule-design">Rule Design</h2>
+<p>Prefer high-signal rules over style opinions:</p>
+<ul>
+<li>Flag literal spacing only when repeated enough to indicate no token system, or when it creates inconsistent layout.</li>
+<li>Flag fixed font sizes when used in user-facing text without a Dynamic Type path.</li>
+<li>Flag animation problems when they can cause incorrect behavior, inaccessible motion, or performance cost.</li>
+<li>Flag AI issues when they expose privacy, availability, evaluation, or tool-call safety risk.</li>
+<li>Do not score "premium design" from static code alone. Leave aesthetic confirmation to the Visual Iteration Loop.</li>
+</ul>
+<h2 id="static-vs-runtime-boundary">Static vs. Runtime Boundary</h2>
+<table>
+<thead>
+<tr>
+<th>Static analyzer can say</th>
+<th>Runtime loop must prove</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A view uses fixed font sizes</td>
+<td>Text actually fits at accessibility sizes</td>
+</tr>
+<tr>
+<td>A button appears to lack a label</td>
+<td>VoiceOver announces the correct label and trait</td>
+</tr>
+<tr>
+<td>A Metal renderer allocates per frame</td>
+<td>GPU frame pacing is stable on the simulator/device</td>
+</tr>
+<tr>
+<td>A splash view ignores Reduce Motion</td>
+<td>The captured intro avoids large motion when Reduce Motion is enabled</td>
+</tr>
+<tr>
+<td>A Foundation Models flow lacks evaluations</td>
+<td>The model meets pass/fail thresholds on a dataset</td>
+</tr>
+</tbody>
+</table>
+<h2 id="anti-patterns">Anti-Patterns</h2>
+<pre><code class="language-text">// WRONG: add a review tool whose finding is only &quot;looks bad&quot;.
+Why: static analyzers need reproducible evidence.
+
+// RIGHT: detect concrete code patterns, then route aesthetic verification to screenshots.
+</code></pre>
+<pre><code class="language-text">// WRONG: call App Intents or model providers during static review.
+Why: ios-agent-mcp is read-only and network-free.
+
+// RIGHT: inspect declarations, availability gates, privacy handling, and test/evaluation files.
+</code></pre>
+<pre><code class="language-text">// WRONG: create separate output shapes per tool.
+Why: clients cannot branch reliably.
+
+// RIGHT: reuse summary, score, counts, files_checked, issues, and suggestions.
+</code></pre></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

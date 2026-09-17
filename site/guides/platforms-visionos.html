@@ -1,0 +1,588 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>visionOS Platform Guide — iOS Agent Skill</title><meta name="description" content="Repository guidance for visionOS. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/platforms-visionos.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="visionOS Platform Guide"><meta property="og:description" content="Repository guidance for visionOS. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/platforms-visionos.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "visionOS Platform Guide", "description": "Repository guidance for visionOS. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/platforms-visionos.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Platforms · Reference guide</p><h1>visionOS Platform Guide</h1><p class="lead">Repository guidance for visionOS. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/platforms/visionos.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#windowgroup-immersivespace-and-volume">WindowGroup, ImmersiveSpace, and Volume</a><ul>
+<li><a href="#scene-types">Scene Types</a></li>
+<li><a href="#opening-and-dismissing-spaces">Opening and Dismissing Spaces</a></li>
+</ul>
+</li>
+<li><a href="#realityview-and-realitykit-entities">RealityView and RealityKit Entities</a><ul>
+<li><a href="#custom-components-and-systems">Custom Components and Systems</a></li>
+</ul>
+</li>
+<li><a href="#model3d-for-3d-model-display">Model3D for 3D Model Display</a></li>
+<li><a href="#hand-tracking-and-gestures">Hand Tracking and Gestures</a><ul>
+<li><a href="#arkit-hand-tracking-advanced">ARKit Hand Tracking (Advanced)</a></li>
+</ul>
+</li>
+<li><a href="#eye-tracking">Eye Tracking</a></li>
+<li><a href="#spatial-audio">Spatial Audio</a></li>
+<li><a href="#shareplay-in-spatial-apps">SharePlay in Spatial Apps</a></li>
+<li><a href="#ornaments-and-attachments">Ornaments and Attachments</a></li>
+<li><a href="#passthrough-and-mixed-reality">Passthrough and Mixed Reality</a></li>
+<li><a href="#visionos-design-guidelines">visionOS Design Guidelines</a></li>
+</ul>
+</div>
+</aside><h2 id="windowgroup-immersivespace-and-volume">WindowGroup, ImmersiveSpace, and Volume</h2>
+<h3 id="scene-types">Scene Types</h3>
+<pre><code class="language-swift">@main
+struct SpatialApp: App {
+    @State private var appModel = AppModel()
+
+    var body: some Scene {
+        // Standard 2D window
+        WindowGroup {
+            ContentView()
+                .environment(appModel)
+        }
+
+        // 3D volumetric window
+        WindowGroup(id: &quot;globe&quot;) {
+            GlobeView()
+                .environment(appModel)
+        }
+        .windowStyle(.volumetric)
+        .defaultSize(width: 0.5, height: 0.5, depth: 0.5, in: .meters)
+
+        // Full immersive space
+        ImmersiveSpace(id: &quot;solarSystem&quot;) {
+            SolarSystemView()
+                .environment(appModel)
+        }
+        .immersionStyle(selection: $appModel.immersionStyle, in: .mixed, .progressive, .full)
+    }
+}
+
+@Observable
+class AppModel {
+    var immersionStyle: ImmersionStyle = .mixed
+    var isImmersiveSpaceOpen = false
+}
+</code></pre>
+<h3 id="opening-and-dismissing-spaces">Opening and Dismissing Spaces</h3>
+<pre><code class="language-swift">struct ContentView: View {
+    @Environment(\.openWindow) private var openWindow
+    @Environment(\.dismissWindow) private var dismissWindow
+    @Environment(\.openImmersiveSpace) private var openImmersiveSpace
+    @Environment(\.dismissImmersiveSpace) private var dismissImmersiveSpace
+    @Environment(AppModel.self) private var appModel
+
+    var body: some View {
+        VStack(spacing: 20) {
+            Button(&quot;Open Globe&quot;) {
+                openWindow(id: &quot;globe&quot;)
+            }
+
+            Button(&quot;Enter Solar System&quot;) {
+                Task {
+                    let result = await openImmersiveSpace(id: &quot;solarSystem&quot;)
+                    switch result {
+                    case .opened:   appModel.isImmersiveSpaceOpen = true
+                    case .error:    print(&quot;Failed to open immersive space&quot;)
+                    case .userCancelled: break
+                    @unknown default: break
+                    }
+                }
+            }
+
+            if appModel.isImmersiveSpaceOpen {
+                Button(&quot;Exit Immersive&quot;) {
+                    Task {
+                        await dismissImmersiveSpace()
+                        appModel.isImmersiveSpaceOpen = false
+                    }
+                }
+            }
+        }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="realityview-and-realitykit-entities">RealityView and RealityKit Entities</h2>
+<pre><code class="language-swift">import RealityKit
+
+struct ImmersiveSceneView: View {
+    @State private var earthEntity: Entity?
+
+    var body: some View {
+        RealityView { content, attachments in
+            // Load USDZ model
+            if let earth = try? await Entity(named: &quot;Earth&quot;, in: realityKitContentBundle) {
+                earth.position = [0, 1.5, -2]
+                earth.scale = [0.5, 0.5, 0.5]
+
+                // Add rotation animation
+                let rotation = FromToByAnimation&lt;Transform&gt;(
+                    from: .init(rotation: simd_quatf(angle: 0, axis: [0, 1, 0])),
+                    to: .init(rotation: simd_quatf(angle: .pi * 2, axis: [0, 1, 0])),
+                    duration: 30,
+                    bindTarget: .transform
+                )
+                let resource = try! AnimationResource.generate(with: rotation)
+                earth.playAnimation(resource, transitionDuration: 0, startsPaused: false)
+
+                content.add(earth)
+                earthEntity = earth
+            }
+
+            // Add lighting
+            let light = PointLight()
+            light.light.intensity = 50000
+            light.position = [2, 3, 0]
+            content.add(light)
+
+            // Add SwiftUI attachment
+            if let panel = attachments.entity(for: &quot;infoPanel&quot;) {
+                panel.position = [0.5, 1.5, -1.5]
+                content.add(panel)
+            }
+        } update: { content, attachments in
+            // Update entities when state changes
+        } attachments: {
+            Attachment(id: &quot;infoPanel&quot;) {
+                InfoPanelView()
+                    .frame(width: 400, height: 300)
+                    .glassBackgroundEffect()
+            }
+        }
+    }
+}
+</code></pre>
+<h3 id="custom-components-and-systems">Custom Components and Systems</h3>
+<pre><code class="language-swift">import RealityKit
+
+// Custom component
+struct SpinComponent: Component {
+    var speed: Float = 1.0
+    var axis: SIMD3&lt;Float&gt; = [0, 1, 0]
+}
+
+// System to process spinning entities
+struct SpinSystem: System {
+    static let query = EntityQuery(where: .has(SpinComponent.self))
+
+    init(scene: RealityKit.Scene) {}
+
+    func update(context: SceneUpdateContext) {
+        for entity in context.entities(matching: Self.query, updatingSystemWhen: .rendering) {
+            guard let spin = entity.components[SpinComponent.self] else { continue }
+            let angle = spin.speed * Float(context.deltaTime)
+            entity.transform.rotation *= simd_quatf(angle: angle, axis: spin.axis)
+        }
+    }
+}
+
+// Register at app launch
+struct SpatialApp: App {
+    init() {
+        SpinComponent.registerComponent()
+        SpinSystem.registerSystem()
+    }
+}
+</code></pre>
+<hr />
+<h2 id="model3d-for-3d-model-display">Model3D for 3D Model Display</h2>
+<pre><code class="language-swift">import RealityKit
+
+struct ModelShowcaseView: View {
+    @State private var selectedModel = &quot;Shoe&quot;
+
+    var body: some View {
+        VStack {
+            // Simple model display
+            Model3D(named: selectedModel, bundle: realityKitContentBundle) { model in
+                model
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(depth: 200)
+            } placeholder: {
+                ProgressView()
+            }
+            .frame(width: 300, height: 300)
+            .dragRotation(pitchLimit: .degrees(45))
+
+            // Model picker
+            Picker(&quot;Model&quot;, selection: $selectedModel) {
+                Text(&quot;Shoe&quot;).tag(&quot;Shoe&quot;)
+                Text(&quot;Chair&quot;).tag(&quot;Chair&quot;)
+                Text(&quot;Globe&quot;).tag(&quot;Globe&quot;)
+            }
+            .pickerStyle(.segmented)
+        }
+    }
+}
+
+// Model from URL
+struct RemoteModelView: View {
+    var body: some View {
+        Model3D(url: URL(string: &quot;https://example.com/model.usdz&quot;)!) { phase in
+            switch phase {
+            case .empty:
+                ProgressView()
+            case .success(let model):
+                model.resizable().aspectRatio(contentMode: .fit)
+            case .failure(let error):
+                Text(&quot;Failed: \(error.localizedDescription)&quot;)
+            @unknown default:
+                EmptyView()
+            }
+        }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="hand-tracking-and-gestures">Hand Tracking and Gestures</h2>
+<pre><code class="language-swift">import RealityKit
+
+// Standard gestures on entities
+struct InteractiveSceneView: View {
+    @State private var selectedEntity: Entity?
+
+    var body: some View {
+        RealityView { content in
+            let sphere = ModelEntity(
+                mesh: .generateSphere(radius: 0.1),
+                materials: [SimpleMaterial(color: .blue, isMetallic: true)]
+            )
+            sphere.position = [0, 1.5, -1]
+            sphere.generateCollisionShapes(recursive: false)
+            sphere.components.set(InputTargetComponent())
+            sphere.components.set(HoverEffectComponent())
+            content.add(sphere)
+        }
+        .gesture(
+            TapGesture()
+                .targetedToAnyEntity()
+                .onEnded { value in
+                    selectedEntity = value.entity
+                }
+        )
+        .gesture(
+            DragGesture()
+                .targetedToAnyEntity()
+                .onChanged { value in
+                    value.entity.position = value.convert(value.location3D, from: .local, to: value.entity.parent!)
+                }
+        )
+        .gesture(
+            MagnifyGesture()
+                .targetedToAnyEntity()
+                .onChanged { value in
+                    let scale = Float(value.magnification)
+                    value.entity.scale = [scale, scale, scale]
+                }
+        )
+        .gesture(
+            RotateGesture3D()
+                .targetedToAnyEntity()
+                .onChanged { value in
+                    let rotation = value.rotation
+                    value.entity.orientation = simd_quatf(rotation)
+                }
+        )
+    }
+}
+</code></pre>
+<h3 id="arkit-hand-tracking-advanced">ARKit Hand Tracking (Advanced)</h3>
+<pre><code class="language-swift">import ARKit
+
+@Observable
+class HandTrackingManager {
+    let session = ARKitSession()
+    let handTracking = HandTrackingProvider()
+
+    var leftHandPosition: SIMD3&lt;Float&gt;?
+    var rightHandPosition: SIMD3&lt;Float&gt;?
+
+    func startTracking() async {
+        guard HandTrackingProvider.isSupported else { return }
+        try? await session.run([handTracking])
+
+        for await update in handTracking.anchorUpdates {
+            let anchor = update.anchor
+            guard anchor.isTracked else { continue }
+
+            let indexTip = anchor.handSkeleton?.joint(.indexFingerTip)
+            guard let tipTransform = indexTip, tipTransform.isTracked else { continue }
+
+            let position = (anchor.originFromAnchorTransform * tipTransform.anchorFromJointTransform).columns.3
+            let pos = SIMD3&lt;Float&gt;(position.x, position.y, position.z)
+
+            switch anchor.chirality {
+            case .left:  leftHandPosition = pos
+            case .right: rightHandPosition = pos
+            }
+        }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="eye-tracking">Eye Tracking</h2>
+<pre><code class="language-swift">// Eye tracking requires user permission and entitlement
+// com.apple.developer.arkit.eye-tracking
+
+struct EyeTrackingView: View {
+    @State private var hoveredItem: String?
+
+    var body: some View {
+        HStack(spacing: 40) {
+            ForEach([&quot;Photos&quot;, &quot;Videos&quot;, &quot;Music&quot;], id: \.self) { item in
+                Text(item)
+                    .font(.title)
+                    .padding(30)
+                    .background(
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(hoveredItem == item ? .blue.opacity(0.3) : .clear)
+                    )
+                    .hoverEffect(.highlight) // System hover effect
+                    .onHover { isHovering in
+                        hoveredItem = isHovering ? item : nil
+                    }
+            }
+        }
+    }
+}
+
+// Custom hover effects
+struct CustomHoverView: View {
+    var body: some View {
+        Text(&quot;Look at me&quot;)
+            .padding()
+            .hoverEffect { effect, isActive, _ in
+                effect
+                    .scaleEffect(isActive ? 1.1 : 1.0)
+                    .animation(.spring(duration: 0.3), value: isActive)
+            }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="spatial-audio">Spatial Audio</h2>
+<pre><code class="language-swift">import RealityKit
+
+struct SpatialAudioScene: View {
+    var body: some View {
+        RealityView { content in
+            // Create audio source entity
+            let audioEntity = Entity()
+            audioEntity.position = [2, 1.5, -3]
+
+            // Load and configure spatial audio
+            let resource = try! AudioFileResource.load(
+                named: &quot;ambience.wav&quot;,
+                configuration: .init(
+                    loadingStrategy: .preload,
+                    shouldLoop: true
+                )
+            )
+
+            let audioController = audioEntity.prepareAudio(resource)
+            audioController.gain = -10 // dB
+            audioController.play()
+
+            // Spatial audio is automatic — position in 3D space determines directionality
+            content.add(audioEntity)
+
+            // Ambient audio (non-spatial, everywhere)
+            let ambientEntity = Entity()
+            ambientEntity.spatialAudio = SpatialAudioComponent(directivity: .beam(focus: 0))
+            content.add(ambientEntity)
+        }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="shareplay-in-spatial-apps">SharePlay in Spatial Apps</h2>
+<pre><code class="language-swift">import GroupActivities
+
+struct WatchTogetherActivity: GroupActivity {
+    static let activityIdentifier = &quot;com.app.watchtogether&quot;
+
+    var metadata: GroupActivityMetadata {
+        var meta = GroupActivityMetadata()
+        meta.title = &quot;Watch Together&quot;
+        meta.type = .watchTogether
+        meta.supportsContinuationOnTV = true
+        return meta
+    }
+}
+
+@Observable
+class SharePlayManager {
+    var session: GroupSession&lt;WatchTogetherActivity&gt;?
+
+    func startSharing() async {
+        let activity = WatchTogetherActivity()
+        let result = await activity.prepareForActivation()
+
+        switch result {
+        case .activationPreferred:
+            _ = try? await activity.activate()
+        case .activationDisabled:
+            break
+        default: break
+        }
+    }
+
+    func configureSession() async {
+        for await session in WatchTogetherActivity.sessions() {
+            self.session = session
+            session.join()
+
+            // Spatial Persona template
+            let template = SpatialTemplate(
+                elements: [
+                    .seat(position: .app.offsetBy(x: -0.5)),
+                    .seat(position: .app.offsetBy(x: 0.5))
+                ]
+            )
+            session.spatialTemplatePreference = .init(template)
+
+            // Receive messages
+            for await message in session.messenger.messages(of: SyncMessage.self) {
+                handleMessage(message)
+            }
+        }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="ornaments-and-attachments">Ornaments and Attachments</h2>
+<pre><code class="language-swift">struct OrnamentedWindow: View {
+    @State private var showControls = true
+
+    var body: some View {
+        VStack {
+            Text(&quot;Main Content&quot;)
+                .font(.largeTitle)
+        }
+        .frame(width: 600, height: 400)
+        .ornament(
+            visibility: showControls ? .visible : .hidden,
+            attachmentAnchor: .scene(.bottom)
+        ) {
+            HStack(spacing: 20) {
+                Button(action: {}) {
+                    Label(&quot;Previous&quot;, systemImage: &quot;backward.fill&quot;)
+                }
+                Button(action: {}) {
+                    Label(&quot;Play&quot;, systemImage: &quot;play.fill&quot;)
+                }
+                Button(action: {}) {
+                    Label(&quot;Next&quot;, systemImage: &quot;forward.fill&quot;)
+                }
+            }
+            .padding()
+            .glassBackgroundEffect()
+        }
+        .ornament(attachmentAnchor: .scene(.trailing)) {
+            VStack {
+                Button(action: {}) { Image(systemName: &quot;heart&quot;) }
+                Button(action: {}) { Image(systemName: &quot;square.and.arrow.up&quot;) }
+                Button(action: {}) { Image(systemName: &quot;info.circle&quot;) }
+            }
+            .padding()
+            .glassBackgroundEffect()
+        }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="passthrough-and-mixed-reality">Passthrough and Mixed Reality</h2>
+<pre><code class="language-swift">struct MixedRealityView: View {
+    @State private var showPassthrough = true
+
+    var body: some View {
+        RealityView { content in
+            // Content appears in the user's real environment
+            let anchor = AnchorEntity(.plane(.horizontal, classification: .table, minimumBounds: [0.3, 0.3]))
+
+            let box = ModelEntity(
+                mesh: .generateBox(size: 0.2, cornerRadius: 0.02),
+                materials: [SimpleMaterial(color: .blue, isMetallic: true)]
+            )
+            box.position.y = 0.1
+            box.generateCollisionShapes(recursive: false)
+            box.components.set(InputTargetComponent())
+            anchor.addChild(box)
+            content.add(anchor)
+
+            // Occlusion — virtual objects hidden behind real objects
+            let occlusionMaterial = OcclusionMaterial()
+            let floor = ModelEntity(mesh: .generatePlane(width: 5, depth: 5), materials: [occlusionMaterial])
+            content.add(floor)
+        }
+        .upperLimbVisibility(showPassthrough ? .automatic : .hidden)
+    }
+}
+
+// World sensing
+struct WorldSensingView: View {
+    var body: some View {
+        RealityView { content in
+            // Requires WorldSensing entitlement
+            let arSession = ARKitSession()
+            let worldTracking = WorldTrackingProvider()
+            let planeDetection = PlaneDetectionProvider()
+
+            try? await arSession.run([worldTracking, planeDetection])
+
+            for await update in planeDetection.anchorUpdates {
+                let plane = update.anchor
+                // Place content on detected surfaces
+            }
+        }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="visionos-design-guidelines">visionOS Design Guidelines</h2>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>Recommendation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Window placement</td>
+<td>Let system place windows; user repositions</td>
+</tr>
+<tr>
+<td>Glass material</td>
+<td>Use .glassBackgroundEffect() for window backgrounds</td>
+</tr>
+<tr>
+<td>Depth</td>
+<td>Use subtle depth; avoid extreme z-positioning</td>
+</tr>
+<tr>
+<td>Ergonomics</td>
+<td>Place content in comfortable viewing range (1-3m)</td>
+</tr>
+<tr>
+<td>Eye comfort</td>
+<td>Avoid rapid movement; use gentle animations</td>
+</tr>
+<tr>
+<td>Hover effects</td>
+<td>Always provide .hoverEffect for interactive elements</td>
+</tr>
+<tr>
+<td>Ornaments</td>
+<td>Use for controls related to window content</td>
+</tr>
+<tr>
+<td>Immersion</td>
+<td>Start with .mixed; let user choose deeper immersion</td>
+</tr>
+<tr>
+<td>Hand gestures</td>
+<td>Support standard tap, drag, magnify, rotate</td>
+</tr>
+<tr>
+<td>Spatial audio</td>
+<td>Position audio sources to match visual positions</td>
+</tr>
+</tbody>
+</table></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

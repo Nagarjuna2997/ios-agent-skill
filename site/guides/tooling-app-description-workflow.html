@@ -1,0 +1,265 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>App Description Workflow — iOS Agent Skill</title><meta name="description" content="Repository guidance for App Description Workflow. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-app-description-workflow.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="App Description Workflow"><meta property="og:description" content="Repository guidance for App Description Workflow. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-app-description-workflow.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "App Description Workflow", "description": "Repository guidance for App Description Workflow. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-app-description-workflow.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Tooling · Reference guide</p><h1>App Description Workflow</h1><p class="lead">Repository guidance for App Description Workflow. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/tooling/app-description-workflow.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#context">Context</a></li>
+<li><a href="#goal">Goal</a></li>
+<li><a href="#input-contract">Input Contract</a></li>
+<li><a href="#output-shape">Output Shape</a></li>
+<li><a href="#color-generation-rules">Color Generation Rules</a></li>
+<li><a href="#prompt-template">Prompt Template</a></li>
+<li><a href="#user-update-loop">User Update Loop</a></li>
+<li><a href="#anti-patterns">Anti-Patterns</a></li>
+</ul>
+</div>
+</aside><h2 id="context">Context</h2>
+<p>Use this when the user describes an app in natural language and expects the AI
+to turn that description into a complete iOS build plan, implementation prompt,
+and visual direction.</p>
+<p>This workflow is for prompts and product direction. It does not replace Xcode
+project creation, static MCP review, simulator screenshots, or user feedback.</p>
+<h2 id="goal">Goal</h2>
+<p>Given one user description, produce:</p>
+<ol>
+<li>A clear app brief.</li>
+<li>A complete implementation prompt the coding agent can execute.</li>
+<li>A design system derived from the description.</li>
+<li>A color palette with accessible foreground choices.</li>
+<li>A first-screen plan and navigation model.</li>
+<li>A feedback loop so the user can update the result by saying what should
+   change.</li>
+</ol>
+<h2 id="input-contract">Input Contract</h2>
+<p>Accept short, messy descriptions. Do not require the user to fill a long form.</p>
+<p>Example:</p>
+<pre><code class="language-text">Create a fitness app for beginners. It should track workouts, show progress,
+feel energetic, and use blue and green.
+</code></pre>
+<p>If details are missing, infer reasonable defaults and label them as assumptions.
+Ask a question only when the missing detail blocks implementation, such as
+whether the app needs authentication, payments, health data, or backend sync.</p>
+<h2 id="output-shape">Output Shape</h2>
+<p>Return the generated prompt in this order:</p>
+<pre><code class="language-text">APP BRIEF
+- Product type:
+- Target users:
+- Primary outcome:
+- Core flows:
+- Assumptions:
+
+BUILD PROMPT
+Build a native iOS app named &lt;Name&gt; using SwiftUI...
+
+FEATURES
+- ...
+
+ARCHITECTURE
+- ...
+
+DESIGN SYSTEM
+- Personality:
+- Typography:
+- Spacing:
+- Components:
+
+COLOR SYSTEM
+- Primary:
+- Secondary:
+- Accent:
+- Background:
+- Surface:
+- Text:
+- Success/warning/error:
+- Foreground decisions:
+
+SCREENS
+- ...
+
+IMPLEMENTATION ORDER
+1. ...
+
+VERIFICATION
+- Static MCP checks:
+- Build/test command:
+- Simulator screenshot path:
+</code></pre>
+<p>The <code>BUILD PROMPT</code> must be ready to paste into an AI coding agent. It should
+name the framework choices, file boundaries, data models, screens, design
+tokens, previews, and verification commands.</p>
+<h2 id="color-generation-rules">Color Generation Rules</h2>
+<p>Derive colors from the app description, not from a generic favorite palette.</p>
+<p>Map product language to color direction:</p>
+<table>
+<thead>
+<tr>
+<th>Description signal</th>
+<th>Likely direction</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>finance, trust, business, security</td>
+<td>blues, deep greens, neutral surfaces</td>
+</tr>
+<tr>
+<td>health, fitness, outdoors, growth</td>
+<td>greens, teals, energetic accents</td>
+</tr>
+<tr>
+<td>food, cooking, hospitality</td>
+<td>warm reds, oranges, tomato, cream surfaces</td>
+</tr>
+<tr>
+<td>education, productivity, notes</td>
+<td>calm blues, indigo, focused neutrals</td>
+</tr>
+<tr>
+<td>kids, creativity, games</td>
+<td>brighter multi-color accents with restraint</td>
+</tr>
+<tr>
+<td>luxury, fashion, portfolio</td>
+<td>black, ivory, metallic accents, high contrast</td>
+</tr>
+<tr>
+<td>meditation, sleep, wellness</td>
+<td>muted lavender, sage, soft blue, low glare</td>
+</tr>
+<tr>
+<td>developer, AI, automation</td>
+<td>electric blue, violet, graphite, cyan accents</td>
+</tr>
+</tbody>
+</table>
+<p>Always produce a tokenized palette:</p>
+<pre><code class="language-swift">enum AppTheme {
+    static let primary = Color(hex: &quot;#0A6EBD&quot;)
+    static let secondary = Color(hex: &quot;#18A058&quot;)
+    static let accent = Color(hex: &quot;#F59E0B&quot;)
+    static let background = Color(.systemBackground)
+    static let surface = Color(.secondarySystemBackground)
+    static let text = Color(.label)
+}
+</code></pre>
+<p>Rules:</p>
+<ul>
+<li>Use semantic system colors for background, surface, and body text wherever
+  possible.</li>
+<li>Never scatter raw hex values at call sites. Put all custom colors in one
+  theme type.</li>
+<li>Pick foreground text for colored surfaces by contrast measurement, not by
+  guessing white.</li>
+<li>If black and white both fail 4.5:1 on a small label, darken or lighten the
+  fill color.</li>
+<li>Provide light and dark mode behavior.</li>
+<li>Keep palettes domain-appropriate. A banking app should not look like a toy;
+  a game should not look like enterprise settings.</li>
+</ul>
+<h2 id="prompt-template">Prompt Template</h2>
+<p>Use this exact template when turning a description into an executable prompt:</p>
+<pre><code class="language-text">You are building a native iOS app from this user description:
+&quot;&lt;USER_DESCRIPTION&gt;&quot;
+
+Create a production-ready SwiftUI implementation with:
+- iOS deployment target: iOS 17+ unless the user asks otherwise
+- Architecture: MVVM with protocol-based dependencies
+- State: @MainActor @Observable view models for UI-rendered state
+- Navigation: typed routes and deep-link-ready structure
+- Design: tokenized colors, spacing, typography, radius, shadows
+- Accessibility: Dynamic Type, VoiceOver labels, 44pt targets, contrast checks
+- Previews: every main state must render without network or disk
+- Testing: unit-testable use cases and injected repositories
+
+Derived product brief:
+- Name:
+- Audience:
+- Problem:
+- Primary user journey:
+- Secondary flows:
+- Data model:
+- Offline behavior:
+
+Derived visual direction:
+- Personality:
+- Color tokens:
+- Typography:
+- Component style:
+- Motion:
+
+Implement:
+1. App entry point
+2. Theme/design tokens
+3. Models
+4. Repository protocols and mock repositories
+5. View models
+6. Screens
+7. Reusable components
+8. Previews
+9. Tests where practical
+
+Do not:
+- Use raw colors, spacing, or font sizes in views
+- Create live dependencies inside view models
+- Use @Observable without @MainActor for UI state
+- Claim the app works without build/test/screenshot evidence
+</code></pre>
+<h2 id="user-update-loop">User Update Loop</h2>
+<p>When the user gives feedback, update only the affected parts.</p>
+<p>Examples:</p>
+<table>
+<thead>
+<tr>
+<th>User says</th>
+<th>Update</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"make it more premium"</td>
+<td>Typography, spacing, surface treatment, color saturation, motion restraint</td>
+</tr>
+<tr>
+<td>"change to red and black"</td>
+<td>Color tokens, gradients, button fills, chart/category colors, contrast notes</td>
+</tr>
+<tr>
+<td>"for kids"</td>
+<td>Tone, iconography, larger touch targets, playful accents, simpler navigation</td>
+</tr>
+<tr>
+<td>"add AI chat"</td>
+<td>Feature list, architecture, privacy rules, Foundation Models availability</td>
+</tr>
+<tr>
+<td>"make it for gym trainers"</td>
+<td>Audience, workflows, data model, dashboard hierarchy</td>
+</tr>
+</tbody>
+</table>
+<p>After updating, return:</p>
+<pre><code class="language-text">UPDATED SECTIONS
+- ...
+
+UNCHANGED SECTIONS
+- ...
+
+NEXT EXECUTION PROMPT
+...
+</code></pre>
+<p>Do not regenerate the whole plan unless the user's feedback changes the product
+category or primary user journey.</p>
+<h2 id="anti-patterns">Anti-Patterns</h2>
+<pre><code class="language-text">// WRONG: ask the user 15 setup questions before doing anything.
+Why: the user gave enough signal to create a first useful prompt.
+
+// RIGHT: infer defaults, label assumptions, and ask only blocking questions.
+</code></pre>
+<pre><code class="language-text">// WRONG: &quot;Use blue because blue looks modern.&quot;
+Why: color must follow the product domain and accessibility contrast.
+
+// RIGHT: derive a palette from the app's audience, emotional tone, and task
+context, then choose foreground colors by measurement.
+</code></pre>
+<pre><code class="language-text">// WRONG: rewrite the full prompt after every small user change.
+Why: it loses continuity and makes user feedback feel ignored.
+
+// RIGHT: update the affected prompt sections and preserve the rest.
+</code></pre></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

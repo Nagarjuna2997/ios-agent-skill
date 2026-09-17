@@ -1,0 +1,370 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Metal -- GPU Rendering, Compute, and Performance-Critical Graphics — iOS Agent Skill</title><meta name="description" content="Repository guidance for Metal. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-metal.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="Metal -- GPU Rendering, Compute, and Performance-Critical Graphics"><meta property="og:description" content="Repository guidance for Metal. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-metal.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "Metal -- GPU Rendering, Compute, and Performance-Critical Graphics", "description": "Repository guidance for Metal. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-metal.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Graphics, 3D, and Games · Reference guide</p><h1>Metal -- GPU Rendering, Compute, and Performance-Critical Graphics</h1><p class="lead">Repository guidance for Metal. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/frameworks/metal.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#1-choosing-metal">1. Choosing Metal</a></li>
+<li><a href="#2-minimal-mtkview-renderer">2. Minimal MTKView Renderer</a></li>
+<li><a href="#3-minimal-shader-file">3. Minimal Shader File</a></li>
+<li><a href="#4-vertex-buffers">4. Vertex Buffers</a></li>
+<li><a href="#5-uniforms-and-in-flight-frames">5. Uniforms and In-Flight Frames</a></li>
+<li><a href="#6-textures-with-metalkit">6. Textures with MetalKit</a></li>
+<li><a href="#7-compute-kernels">7. Compute Kernels</a></li>
+<li><a href="#8-depth-stencil-and-render-state">8. Depth, Stencil, and Render State</a></li>
+<li><a href="#9-arkit-camera-frames-and-metal">9. ARKit Camera Frames and Metal</a></li>
+<li><a href="#10-swift-concurrency-boundaries">10. Swift Concurrency Boundaries</a></li>
+<li><a href="#11-debugging-and-profiling">11. Debugging and Profiling</a></li>
+<li><a href="#12-common-pitfalls">12. Common Pitfalls</a></li>
+<li><a href="#13-review-checklist">13. Review Checklist</a></li>
+</ul>
+</div>
+</aside><h2 id="overview">Overview</h2>
+<p>Metal gives Swift and Objective-C apps direct access to Apple GPUs for rendering, compute, image processing, data-parallel work, and custom frame pipelines. Use Metal when high-level frameworks such as RealityKit, SceneKit, SpriteKit, Core Image, or SwiftUI cannot provide the performance, visual result, or GPU scheduling control the product needs.</p>
+<blockquote>
+<p>Reach for Metal deliberately. It is powerful, but it makes the app responsible for pipeline state, memory lifetime, synchronization, shader compilation, frame pacing, and GPU debugging.</p>
+</blockquote>
+<hr />
+<h2 id="1-choosing-metal">1. Choosing Metal</h2>
+<table>
+<thead>
+<tr>
+<th>Need</th>
+<th>Prefer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Common AR / 3D entities, physics, USDZ</td>
+<td>RealityKit</td>
+</tr>
+<tr>
+<td>Existing scene graph and <code>.scnassets</code></td>
+<td>SceneKit</td>
+</tr>
+<tr>
+<td>Custom post-processing, compute, renderer ownership</td>
+<td>Metal</td>
+</tr>
+<tr>
+<td>Image filters without custom kernels</td>
+<td>Core Image</td>
+</tr>
+<tr>
+<td>Charts and UI drawing</td>
+<td>SwiftUI / Core Graphics</td>
+</tr>
+</tbody>
+</table>
+<p>Use <code>MetalKit</code> for app display setup. Apple documents <code>MTKView</code> as the Metal-aware view that owns the drawable setup, render-pass descriptor creation, optional depth/stencil textures, and delegate callbacks. <code>MTKView</code> is <code>@MainActor</code>, so create and configure it on the main actor.</p>
+<hr />
+<h2 id="2-minimal-mtkview-renderer">2. Minimal <code>MTKView</code> Renderer</h2>
+<pre><code class="language-swift">import Metal
+import MetalKit
+
+@MainActor
+final class Renderer: NSObject, MTKViewDelegate {
+    private let device: any MTLDevice
+    private let commandQueue: any MTLCommandQueue
+    private let pipelineState: any MTLRenderPipelineState
+
+    init(view: MTKView) throws {
+        guard let device = MTLCreateSystemDefaultDevice(),
+              let commandQueue = device.makeCommandQueue() else {
+            throw RendererError.metalUnavailable
+        }
+
+        self.device = device
+        self.commandQueue = commandQueue
+
+        view.device = device
+        view.colorPixelFormat = .bgra8Unorm
+        view.depthStencilPixelFormat = .depth32Float
+        view.framebufferOnly = true
+        view.clearColor = MTLClearColor(red: 0.02, green: 0.03, blue: 0.05, alpha: 1)
+
+        let library = try device.makeDefaultLibrary(bundle: .main)
+        guard let vertexFunction = library.makeFunction(name: &quot;vertex_main&quot;),
+              let fragmentFunction = library.makeFunction(name: &quot;fragment_main&quot;) else {
+            throw RendererError.missingShaderFunction
+        }
+
+        let descriptor = MTLRenderPipelineDescriptor()
+        descriptor.vertexFunction = vertexFunction
+        descriptor.fragmentFunction = fragmentFunction
+        descriptor.colorAttachments[0].pixelFormat = view.colorPixelFormat
+        descriptor.depthAttachmentPixelFormat = view.depthStencilPixelFormat
+        pipelineState = try device.makeRenderPipelineState(descriptor: descriptor)
+
+        super.init()
+        view.delegate = self
+    }
+
+    func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {}
+
+    func draw(in view: MTKView) {
+        guard let descriptor = view.currentRenderPassDescriptor,
+              let drawable = view.currentDrawable,
+              let commandBuffer = commandQueue.makeCommandBuffer(),
+              let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: descriptor) else {
+            return
+        }
+
+        encoder.setRenderPipelineState(pipelineState)
+        encoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: 3)
+        encoder.endEncoding()
+
+        commandBuffer.present(drawable)
+        commandBuffer.commit()
+    }
+}
+
+enum RendererError: Error {
+    case metalUnavailable
+    case missingShaderFunction
+    case bufferAllocationFailed
+}
+</code></pre>
+<p>SwiftUI wrapper:</p>
+<pre><code class="language-swift">import MetalKit
+import SwiftUI
+
+struct MetalView: UIViewRepresentable {
+    func makeUIView(context: Context) -&gt; MTKView {
+        let view = MTKView()
+        context.coordinator.attach(to: view)
+        return view
+    }
+
+    func updateUIView(_ uiView: MTKView, context: Context) {}
+
+    func makeCoordinator() -&gt; Coordinator { Coordinator() }
+
+    @MainActor
+    final class Coordinator {
+        private var renderer: Renderer?
+
+        func attach(to view: MTKView) {
+            renderer = try? Renderer(view: view)
+        }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="3-minimal-shader-file">3. Minimal Shader File</h2>
+<p>Add a <code>.metal</code> file to the app target. Xcode compiles it into <code>default.metallib</code>.</p>
+<pre><code class="language-metal">#include &lt;metal_stdlib&gt;
+using namespace metal;
+
+struct VertexOut {
+    float4 position [[position]];
+    float3 color;
+};
+
+vertex VertexOut vertex_main(uint vertexID [[vertex_id]]) {
+    float2 positions[3] = {
+        float2( 0.0,  0.6),
+        float2(-0.6, -0.6),
+        float2( 0.6, -0.6)
+    };
+
+    float3 colors[3] = {
+        float3(1.0, 0.2, 0.2),
+        float3(0.2, 1.0, 0.4),
+        float3(0.2, 0.4, 1.0)
+    };
+
+    VertexOut out;
+    out.position = float4(positions[vertexID], 0.0, 1.0);
+    out.color = colors[vertexID];
+    return out;
+}
+
+fragment float4 fragment_main(VertexOut in [[stage_in]]) {
+    return float4(in.color, 1.0);
+}
+</code></pre>
+<p>Keep shader names stable and fail fast if a function is missing. A nil shader function usually means the <code>.metal</code> file is not in target membership or the Swift name no longer matches the shader function.</p>
+<hr />
+<h2 id="4-vertex-buffers">4. Vertex Buffers</h2>
+<pre><code class="language-swift">struct Vertex {
+    var position: SIMD3&lt;Float&gt;
+    var color: SIMD3&lt;Float&gt;
+}
+
+let vertices: [Vertex] = [
+    Vertex(position: [-0.5, -0.5, 0], color: [1, 0, 0]),
+    Vertex(position: [ 0.5, -0.5, 0], color: [0, 1, 0]),
+    Vertex(position: [ 0.0,  0.5, 0], color: [0, 0, 1]),
+]
+
+guard let vertexBuffer = device.makeBuffer(
+    bytes: vertices,
+    length: MemoryLayout&lt;Vertex&gt;.stride * vertices.count,
+    options: [.storageModeShared]
+) else {
+    throw RendererError.bufferAllocationFailed
+}
+</code></pre>
+<p>Prefer immutable buffers for static geometry. Use ring buffers or multiple in-flight buffers for per-frame uniforms so the CPU does not overwrite data the GPU is still reading.</p>
+<hr />
+<h2 id="5-uniforms-and-in-flight-frames">5. Uniforms and In-Flight Frames</h2>
+<pre><code class="language-swift">struct Uniforms {
+    var modelViewProjectionMatrix: simd_float4x4
+    var time: Float
+}
+
+private let maxFramesInFlight = 3
+private let frameSemaphore = DispatchSemaphore(value: 3)
+private var frameIndex = 0
+private var uniformBuffers: [MTLBuffer] = []
+
+func beginFrame() {
+    frameSemaphore.wait()
+    frameIndex = (frameIndex + 1) % maxFramesInFlight
+}
+
+func endFrame(commandBuffer: MTLCommandBuffer) {
+    commandBuffer.addCompletedHandler { [frameSemaphore] _ in
+        frameSemaphore.signal()
+    }
+}
+</code></pre>
+<p>Never mutate a shared uniform buffer immediately after encoding it unless you know the GPU has finished using it.</p>
+<hr />
+<h2 id="6-textures-with-metalkit">6. Textures with MetalKit</h2>
+<pre><code class="language-swift">import MetalKit
+
+let loader = MTKTextureLoader(device: device)
+let texture = try loader.newTexture(
+    name: &quot;albedo&quot;,
+    scaleFactor: UIScreen.main.scale,
+    bundle: .main,
+    options: [
+        .textureUsage: MTLTextureUsage.shaderRead.rawValue,
+        .textureStorageMode: MTLStorageMode.private.rawValue,
+        .SRGB: true,
+    ]
+)
+</code></pre>
+<p>Use private storage for GPU-only textures. Use shared storage only when the CPU must read or write the resource.</p>
+<hr />
+<h2 id="7-compute-kernels">7. Compute Kernels</h2>
+<pre><code class="language-metal">#include &lt;metal_stdlib&gt;
+using namespace metal;
+
+kernel void brighten(texture2d&lt;float, access::read&gt; source [[texture(0)]],
+                     texture2d&lt;float, access::write&gt; output [[texture(1)]],
+                     uint2 id [[thread_position_in_grid]]) {
+    if (id.x &gt;= output.get_width() || id.y &gt;= output.get_height()) {
+        return;
+    }
+
+    float4 pixel = source.read(id);
+    output.write(float4(min(pixel.rgb * 1.15, 1.0), pixel.a), id);
+}
+</code></pre>
+<pre><code class="language-swift">let width = pipeline.threadExecutionWidth
+let height = max(1, pipeline.maxTotalThreadsPerThreadgroup / width)
+let threadsPerGroup = MTLSize(width: width, height: height, depth: 1)
+let threadsPerGrid = MTLSize(width: output.width, height: output.height, depth: 1)
+
+encoder.setComputePipelineState(pipeline)
+encoder.setTexture(source, index: 0)
+encoder.setTexture(output, index: 1)
+encoder.dispatchThreads(threadsPerGrid, threadsPerThreadgroup: threadsPerGroup)
+</code></pre>
+<p>Dispatch with bounds checks in the shader. Texture dimensions are rarely exact multiples of the threadgroup size.</p>
+<hr />
+<h2 id="8-depth-stencil-and-render-state">8. Depth, Stencil, and Render State</h2>
+<pre><code class="language-swift">let depthDescriptor = MTLDepthStencilDescriptor()
+depthDescriptor.depthCompareFunction = .less
+depthDescriptor.isDepthWriteEnabled = true
+let depthState = device.makeDepthStencilState(descriptor: depthDescriptor)
+
+encoder.setDepthStencilState(depthState)
+</code></pre>
+<p>Pipeline state is expensive to create. Apple recommends creating shared objects such as command queues, pipelines, buffers, and textures during initialization instead of time-critical paths. Build render and compute pipeline states before <code>draw(in:)</code>.</p>
+<hr />
+<h2 id="9-arkit-camera-frames-and-metal">9. ARKit Camera Frames and Metal</h2>
+<p>ARKit gives each <code>ARFrame</code> a camera image as a <code>CVPixelBuffer</code>. Use <code>CVMetalTextureCache</code> to wrap camera planes as Metal textures without copying.</p>
+<pre><code class="language-swift">import ARKit
+import CoreVideo
+import Metal
+
+var textureCache: CVMetalTextureCache?
+CVMetalTextureCacheCreate(nil, nil, device, nil, &amp;textureCache)
+
+func makeTexture(from pixelBuffer: CVPixelBuffer,
+                 plane: Int,
+                 pixelFormat: MTLPixelFormat) -&gt; MTLTexture? {
+    guard let textureCache else { return nil }
+
+    let width = CVPixelBufferGetWidthOfPlane(pixelBuffer, plane)
+    let height = CVPixelBufferGetHeightOfPlane(pixelBuffer, plane)
+    var cvTexture: CVMetalTexture?
+
+    let status = CVMetalTextureCacheCreateTextureFromImage(
+        nil,
+        textureCache,
+        pixelBuffer,
+        nil,
+        pixelFormat,
+        width,
+        height,
+        plane,
+        &amp;cvTexture
+    )
+
+    guard status == kCVReturnSuccess else { return nil }
+    return cvTexture.flatMap(CVMetalTextureGetTexture)
+}
+</code></pre>
+<p>Use RealityKit unless the product needs custom camera compositing, segmentation, reconstruction rendering, or research-grade visualization.</p>
+<hr />
+<h2 id="10-swift-concurrency-boundaries">10. Swift Concurrency Boundaries</h2>
+<p>Metal objects are reference types that often represent GPU resources. Treat the renderer as owning them on one execution context. Because <code>MTKView</code> is <code>@MainActor</code>, keep view configuration and delegate attachment on the main actor.</p>
+<pre><code class="language-swift">@MainActor
+final class RenderModel {
+    private var renderer: Renderer?
+
+    func attach(view: MTKView) {
+        renderer = try? Renderer(view: view)
+    }
+}
+</code></pre>
+<p>For asset preparation, decode or generate CPU-side data off the main actor, then hand immutable bytes to the renderer for buffer creation. Keep command encoding serialized unless you have a clear multi-queue design.</p>
+<hr />
+<h2 id="11-debugging-and-profiling">11. Debugging and Profiling</h2>
+<ul>
+<li>Enable Metal API Validation in debug schemes.</li>
+<li>Capture GPU frames in Xcode and inspect render passes, attachments, and pipeline state.</li>
+<li>Use Instruments' Metal System Trace for frame pacing and GPU/CPU overlap.</li>
+<li>Give command buffers and resources labels so captures are readable.</li>
+<li>Watch for pixel format mismatches between <code>MTKView</code>, pipeline descriptors, and render pass attachments.</li>
+</ul>
+<pre><code class="language-swift">commandBuffer.label = &quot;Main scene command buffer&quot;
+pipelineDescriptor.label = &quot;Opaque mesh pipeline&quot;
+vertexBuffer.label = &quot;Static mesh vertices&quot;
+</code></pre>
+<hr />
+<h2 id="12-common-pitfalls">12. Common Pitfalls</h2>
+<ol>
+<li><strong>Creating pipeline state during rendering</strong> -- compile it during setup.</li>
+<li><strong>Forgetting target membership for <code>.metal</code> files</strong> -- <code>makeDefaultLibrary()</code> will not contain the shader.</li>
+<li><strong>Writing to buffers still in use by the GPU</strong> -- use in-flight buffers or command-buffer completion handlers.</li>
+<li><strong>Mismatched pixel formats</strong> -- the pipeline descriptor must match the render pass.</li>
+<li><strong>Assuming one threadgroup fits all textures</strong> -- bounds-check compute kernels.</li>
+<li><strong>Skipping labels</strong> -- unlabeled GPU captures are slow to debug.</li>
+</ol>
+<hr />
+<h2 id="13-review-checklist">13. Review Checklist</h2>
+<ul>
+<li>[ ] <code>MTLCreateSystemDefaultDevice()</code> failure has a user-facing fallback</li>
+<li>[ ] <code>MTKView</code> setup and delegate attachment happen on the main actor</li>
+<li>[ ] Pipeline states are created outside the draw loop</li>
+<li>[ ] <code>.metal</code> functions are checked and failures are actionable</li>
+<li>[ ] Per-frame data uses in-flight buffers or synchronization</li>
+<li>[ ] Textures use private storage unless CPU access is required</li>
+<li>[ ] Render pass formats match pipeline descriptors</li>
+<li>[ ] Command buffers/resources are labeled in debug builds</li>
+<li>[ ] GPU work is profiled before lower-level rewrites</li>
+</ul>
+<p>See also: <code>docs/frameworks/realitykit.md</code>, <code>docs/frameworks/scenekit.md</code>, <code>docs/frameworks/arkit.md</code>, <code>docs/frameworks/accelerate.md</code>.</p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

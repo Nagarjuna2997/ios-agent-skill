@@ -1,0 +1,70 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Apple Knowledge MCP — iOS Agent Skill</title><meta name="description" content="Repository guidance for Apple Knowledge MCP. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/mcp-knowledge-server.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="Apple Knowledge MCP"><meta property="og:description" content="Repository guidance for Apple Knowledge MCP. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/mcp-knowledge-server.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "Apple Knowledge MCP", "description": "Repository guidance for Apple Knowledge MCP. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/mcp-knowledge-server.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Mcp · Reference guide</p><h1>Apple Knowledge MCP</h1><p class="lead">Repository guidance for Apple Knowledge MCP. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/mcp/knowledge-server.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#context">Context</a></li>
+<li><a href="#pattern">Pattern</a></li>
+<li><a href="#anti-patterns">Anti-Patterns</a></li>
+</ul>
+</div>
+</aside><h2 id="context">Context</h2>
+<p><code>ios-agent-knowledge</code> is the public-reference companion to <code>ios-agent-mcp</code>. Both binaries ship in <code>ios-agent-mcp@2.4.0</code>. The analyzer keeps its eleven local-project tools; the knowledge server has eight separate tools and never exposes project paths over HTTP.</p>
+<h2 id="pattern">Pattern</h2>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>search_apple_technologies</code></td>
+<td>Ranked matches in the 405-technology snapshot</td>
+</tr>
+<tr>
+<td><code>get_apple_technology</code></td>
+<td>Compact local routes by default; explicit full guide view</td>
+</tr>
+<tr>
+<td><code>search_local_references</code></td>
+<td>Local guides and reusable source matches without bodies</td>
+</tr>
+<tr>
+<td><code>get_reference_outline</code></td>
+<td>Heading offsets for focused section reads</td>
+</tr>
+<tr>
+<td><code>read_local_reference</code></td>
+<td>Exact source/guide content with bounded output and continuation</td>
+</tr>
+<tr>
+<td><code>get_apple_updates</code></td>
+<td>Search of 96 update/release-note landing pages</td>
+</tr>
+<tr>
+<td><code>plan_ios_app</code></td>
+<td>Implementation workflow and CLI executable/argument array</td>
+</tr>
+<tr>
+<td><code>plan_app_icon</code></td>
+<td>Editable foreground-layer specification and Icon Composer workflow</td>
+</tr>
+</tbody>
+</table>
+<p>Start a local MCP connection:</p>
+<pre><code class="language-bash">npx -y --package=ios-agent-mcp@2.4.0 ios-agent-knowledge
+</code></pre>
+<p>For a remotely hosted ChatGPT MCP connection, run the HTTP transport behind your host’s HTTPS ingress:</p>
+<pre><code class="language-bash">npx -y --package=ios-agent-mcp@2.4.0 ios-agent-knowledge --http --host 0.0.0.0 --port 3000
+</code></pre>
+<p>The MCP route is <code>/mcp</code>; readiness is <code>/health</code>. Without <code>--http</code>, the process uses stdio. The default HTTP host is loopback. The Dockerfile at <code>mcp-server/Dockerfile.knowledge</code> builds this public-reference service from the repository root.</p>
+<p>This service accepts only search strings, indexed reference IDs/ranges, catalog IDs and app/icon briefs. It reads a bundled allowlisted knowledge file, never arbitrary caller-supplied filesystem paths. It has no source upload, code execution, build or publishing tools, makes no runtime network requests, and does not store briefs. Configure HTTPS, request limits and operational logging on the deployment host. Account-specific or private-data tools would need a separate authentication design.</p>
+<p>The data has explicit snapshot dates. Refresh source snapshots in the repository and rebuild before release. A successful HTTP handshake proves protocol compatibility, not that an arbitrary host or client account has been configured.</p>
+<p>Read <code>docs/tooling/offline-source-library.md</code> for offline search, source reuse, attribution and verification limits.</p>
+<h2 id="anti-patterns">Anti-Patterns</h2>
+<ul>
+<li>Exposing the local analyzer to the internet with arbitrary filesystem paths.</li>
+<li>Advertising a localhost address as a published ChatGPT endpoint.</li>
+<li>Treating <code>plan_ios_app</code> as an autonomous code generator; the coding agent performs implementation.</li>
+<li>Describing catalog snapshots as live Apple updates.</li>
+</ul>
+<p>Sources: <a href="https://developers.openai.com/plugins/build/mcp-server">OpenAI MCP server guidance</a>, <a href="https://developers.openai.com/plugins/deploy/submission">plugin submission</a>. A public directory submission needs a stable HTTPS endpoint and publisher verification; a skills-only plugin bundle is also supported.</p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

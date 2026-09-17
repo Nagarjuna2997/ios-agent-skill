@@ -1,0 +1,612 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CoreML -- Complete Guide for On-Device Machine Learning — iOS Agent Skill</title><meta name="description" content="Repository guidance for Core ML. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-ml-coreml.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="CoreML -- Complete Guide for On-Device Machine Learning"><meta property="og:description" content="Repository guidance for Core ML. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-ml-coreml.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "CoreML -- Complete Guide for On-Device Machine Learning", "description": "Repository guidance for Core ML. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-ml-coreml.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">AI and Machine Learning · Reference guide</p><h1>CoreML -- Complete Guide for On-Device Machine Learning</h1><p class="lead">Repository guidance for Core ML. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/frameworks/ml/coreml.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#1-loading-an-mlmodel">1. Loading an MLModel</a><ul>
+<li><a href="#from-the-app-bundle-compiled-mlmodelc">From the App Bundle (Compiled .mlmodelc)</a></li>
+<li><a href="#from-a-compiled-model-url">From a Compiled Model URL</a></li>
+<li><a href="#from-a-downloaded-mlmodel-runtime-compilation">From a Downloaded .mlmodel (Runtime Compilation)</a></li>
+</ul>
+</li>
+<li><a href="#2-compute-unit-configuration">2. Compute Unit Configuration</a></li>
+<li><a href="#3-mlmultiarray-for-input-and-output">3. MLMultiArray for Input and Output</a><ul>
+<li><a href="#using-mltensor-ios-18">Using MLTensor (iOS 18+)</a></li>
+</ul>
+</li>
+<li><a href="#4-making-predictions">4. Making Predictions</a><ul>
+<li><a href="#synchronous-prediction">Synchronous Prediction</a></li>
+<li><a href="#async-prediction-ios-17">Async Prediction (iOS 17+)</a></li>
+<li><a href="#batch-prediction">Batch Prediction</a></li>
+</ul>
+</li>
+<li><a href="#5-vncoremlrequest-vision-coreml-pipeline">5. VNCoreMLRequest -- Vision + CoreML Pipeline</a></li>
+<li><a href="#6-complete-image-classification-example">6. Complete Image Classification Example</a></li>
+<li><a href="#7-text-prediction-example">7. Text Prediction Example</a></li>
+<li><a href="#8-model-caching-and-performance-optimization">8. Model Caching and Performance Optimization</a></li>
+<li><a href="#9-converting-models-with-coremltools-overview">9. Converting Models with coremltools (Overview)</a></li>
+<li><a href="#10-performance-tips">10. Performance Tips</a></li>
+<li><a href="#quick-reference">Quick Reference</a></li>
+</ul>
+</div>
+</aside><h2 id="overview">Overview</h2>
+<p>CoreML is Apple's framework for running machine learning models on-device with hardware-accelerated inference across CPU, GPU, and the Neural Engine. It supports vision, natural language, audio, and tabular models with a unified API surface. Every code example below compiles and follows production best practices.</p>
+<hr />
+<h2 id="1-loading-an-mlmodel">1. Loading an MLModel</h2>
+<h3 id="from-the-app-bundle-compiled-mlmodelc">From the App Bundle (Compiled .mlmodelc)</h3>
+<p>When you drag a <code>.mlmodel</code> file into Xcode, it auto-generates a Swift class. You can also load manually.</p>
+<pre><code class="language-swift">import CoreML
+
+// Auto-generated class usage (Xcode compiles the model at build time)
+let imageClassifier = try MobileNetV2(configuration: MLModelConfiguration())
+
+// Manual loading from the bundle
+let bundleURL = Bundle.main.url(forResource: &quot;MobileNetV2&quot;, withExtension: &quot;mlmodelc&quot;)!
+let model = try MLModel(contentsOf: bundleURL)
+</code></pre>
+<h3 id="from-a-compiled-model-url">From a Compiled Model URL</h3>
+<pre><code class="language-swift">import CoreML
+
+func loadModel(from compiledURL: URL) async throws -&gt; MLModel {
+    let configuration = MLModelConfiguration()
+    configuration.computeUnits = .all
+    return try MLModel(contentsOf: compiledURL, configuration: configuration)
+}
+</code></pre>
+<h3 id="from-a-downloaded-mlmodel-runtime-compilation">From a Downloaded .mlmodel (Runtime Compilation)</h3>
+<pre><code class="language-swift">import CoreML
+
+func compileAndLoad(downloadedModelURL: URL) async throws -&gt; MLModel {
+    // Compile the .mlmodel into .mlmodelc at runtime
+    let compiledURL = try await MLModel.compileModel(at: downloadedModelURL)
+
+    // Move to a permanent location (compiled models are placed in a temp directory)
+    let permanentURL = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+        .appendingPathComponent(&quot;Models&quot;)
+        .appendingPathComponent(compiledURL.lastPathComponent)
+
+    try FileManager.default.createDirectory(
+        at: permanentURL.deletingLastPathComponent(),
+        withIntermediateDirectories: true
+    )
+
+    if FileManager.default.fileExists(atPath: permanentURL.path) {
+        try FileManager.default.removeItem(at: permanentURL)
+    }
+    try FileManager.default.moveItem(at: compiledURL, to: permanentURL)
+
+    let configuration = MLModelConfiguration()
+    configuration.computeUnits = .all
+    return try MLModel(contentsOf: permanentURL, configuration: configuration)
+}
+</code></pre>
+<hr />
+<h2 id="2-compute-unit-configuration">2. Compute Unit Configuration</h2>
+<p>Control where inference runs: CPU only, CPU and GPU, CPU and Neural Engine, or all available hardware.</p>
+<pre><code class="language-swift">import CoreML
+
+func configuredModel() throws -&gt; MLModel {
+    let config = MLModelConfiguration()
+
+    // Options:
+    // .cpuOnly        -- safest, always available
+    // .cpuAndGPU      -- good for large matrix operations
+    // .cpuAndNeuralEngine -- best power efficiency for supported models
+    // .all            -- let CoreML decide the optimal hardware (recommended)
+    config.computeUnits = .all
+
+    // Optionally allow low-precision accumulation for speed
+    config.allowLowPrecisionAccumulationOnGPU = true
+
+    return try MLModel(contentsOf: Bundle.main.url(forResource: &quot;MyModel&quot;, withExtension: &quot;mlmodelc&quot;)!,
+                       configuration: config)
+}
+</code></pre>
+<hr />
+<h2 id="3-mlmultiarray-for-input-and-output">3. MLMultiArray for Input and Output</h2>
+<p>MLMultiArray is the primary numeric tensor type for CoreML model inputs and outputs.</p>
+<pre><code class="language-swift">import CoreML
+
+// Create a multi-array with shape [1, 3, 224, 224] (batch, channels, height, width)
+let inputArray = try MLMultiArray(shape: [1, 3, 224, 224], dataType: .float32)
+
+// Fill with data
+for i in 0..&lt;inputArray.count {
+    inputArray[i] = NSNumber(value: Float.random(in: 0...1))
+}
+
+// Access specific elements using a flat index
+let value = inputArray[0].floatValue
+
+// Access with multi-dimensional subscript
+let multiIndex = [0, 1, 112, 112] as [NSNumber]
+let pixel = inputArray[multiIndex].floatValue
+</code></pre>
+<h3 id="using-mltensor-ios-18">Using MLTensor (iOS 18+)</h3>
+<p>MLTensor provides a more ergonomic, Accelerate-backed tensor API.</p>
+<pre><code class="language-swift">import CoreML
+
+@available(iOS 18.0, *)
+func tensorOperations() {
+    // Create from shape and scalar
+    let zeros = MLTensor(zeros: [1, 3, 224, 224], scalarType: Float.self)
+
+    // Create from an array
+    let data = MLTensor([1.0, 2.0, 3.0, 4.0] as [Float])
+
+    // Reshape
+    let reshaped = data.reshaped(to: [2, 2])
+
+    // Arithmetic
+    let scaled = data * 2.0
+    let summed = data + MLTensor([0.5, 0.5, 0.5, 0.5] as [Float])
+
+    // Convert to MLMultiArray for model input
+    let multiArray = zeros.shapedArray(of: Float.self)
+}
+</code></pre>
+<hr />
+<h2 id="4-making-predictions">4. Making Predictions</h2>
+<h3 id="synchronous-prediction">Synchronous Prediction</h3>
+<pre><code class="language-swift">import CoreML
+
+func predict(with model: MLModel, input: MLMultiArray) throws -&gt; MLFeatureProvider {
+    let inputFeature = try MLDictionaryFeatureProvider(
+        dictionary: [&quot;input_tensor&quot;: MLFeatureValue(multiArray: input)]
+    )
+
+    let options = MLPredictionOptions()
+    options.usesCPUOnly = false  // allow GPU and Neural Engine
+
+    let output = try model.prediction(from: inputFeature, options: options)
+    return output
+}
+</code></pre>
+<h3 id="async-prediction-ios-17">Async Prediction (iOS 17+)</h3>
+<pre><code class="language-swift">import CoreML
+
+@available(iOS 17.0, *)
+func asyncPredict(with model: MLModel, input: MLMultiArray) async throws -&gt; MLFeatureProvider {
+    let inputFeature = try MLDictionaryFeatureProvider(
+        dictionary: [&quot;input_tensor&quot;: MLFeatureValue(multiArray: input)]
+    )
+
+    let options = MLPredictionOptions()
+    let output = try await model.prediction(from: inputFeature, options: options)
+    return output
+}
+</code></pre>
+<h3 id="batch-prediction">Batch Prediction</h3>
+<pre><code class="language-swift">import CoreML
+
+func batchPredict(with model: MLModel, inputs: [MLDictionaryFeatureProvider]) throws -&gt; [MLFeatureProvider] {
+    let batchProvider = MLArrayBatchProvider(array: inputs)
+    let options = MLPredictionOptions()
+
+    let batchResults = try model.predictions(from: batchProvider, options: options)
+
+    var results: [MLFeatureProvider] = []
+    for i in 0..&lt;batchResults.count {
+        results.append(batchResults.features(at: i))
+    }
+    return results
+}
+</code></pre>
+<hr />
+<h2 id="5-vncoremlrequest-vision-coreml-pipeline">5. VNCoreMLRequest -- Vision + CoreML Pipeline</h2>
+<p>Combine Vision preprocessing (resize, crop, normalize) with a CoreML model in a single pipeline.</p>
+<pre><code class="language-swift">import CoreML
+import Vision
+import UIKit
+
+func classifyImage(_ image: UIImage) async throws -&gt; [(String, Float)] {
+    guard let cgImage = image.cgImage else {
+        throw NSError(domain: &quot;ImageError&quot;, code: -1, userInfo: [NSLocalizedDescriptionKey: &quot;Invalid image&quot;])
+    }
+
+    let configuration = MLModelConfiguration()
+    configuration.computeUnits = .all
+    let mlModel = try MobileNetV2(configuration: configuration).model
+    let vnModel = try VNCoreMLModel(for: mlModel)
+
+    return try await withCheckedThrowingContinuation { continuation in
+        let request = VNCoreMLRequest(model: vnModel) { request, error in
+            if let error {
+                continuation.resume(throwing: error)
+                return
+            }
+
+            guard let results = request.results as? [VNClassificationObservation] else {
+                continuation.resume(returning: [])
+                return
+            }
+
+            let topResults = results.prefix(5).map { ($0.identifier, $0.confidence) }
+            continuation.resume(returning: topResults)
+        }
+
+        // Configure image preprocessing
+        request.imageCropAndScaleOption = .centerCrop
+
+        let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
+        do {
+            try handler.perform([request])
+        } catch {
+            continuation.resume(throwing: error)
+        }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="6-complete-image-classification-example">6. Complete Image Classification Example</h2>
+<p>A full SwiftUI view that loads an image and classifies it with CoreML.</p>
+<pre><code class="language-swift">import SwiftUI
+import CoreML
+import Vision
+import PhotosUI
+
+@Observable
+final class ImageClassifierViewModel {
+    var classifications: [(label: String, confidence: Float)] = []
+    var selectedImage: UIImage?
+    var isProcessing = false
+    var errorMessage: String?
+
+    @MainActor
+    func classify() async {
+        guard let image = selectedImage, let cgImage = image.cgImage else { return }
+
+        isProcessing = true
+        errorMessage = nil
+
+        do {
+            let config = MLModelConfiguration()
+            config.computeUnits = .all
+            let mlModel = try MobileNetV2(configuration: config).model
+            let vnModel = try VNCoreMLModel(for: mlModel)
+
+            let results: [(String, Float)] = try await withCheckedThrowingContinuation { continuation in
+                let request = VNCoreMLRequest(model: vnModel) { request, error in
+                    if let error {
+                        continuation.resume(throwing: error)
+                        return
+                    }
+                    let observations = (request.results as? [VNClassificationObservation]) ?? []
+                    let top5 = observations.prefix(5).map { ($0.identifier, $0.confidence) }
+                    continuation.resume(returning: top5)
+                }
+                request.imageCropAndScaleOption = .centerCrop
+
+                let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
+                do {
+                    try handler.perform([request])
+                } catch {
+                    continuation.resume(throwing: error)
+                }
+            }
+
+            classifications = results.map { (label: $0.0, confidence: $0.1) }
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+
+        isProcessing = false
+    }
+}
+
+struct ImageClassifierView: View {
+    @State private var viewModel = ImageClassifierViewModel()
+    @State private var photoItem: PhotosPickerItem?
+
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 24) {
+                if let image = viewModel.selectedImage {
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(maxHeight: 300)
+                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                        .shadow(color: .black.opacity(0.2), radius: 12, y: 6)
+                } else {
+                    ContentUnavailableView(&quot;Select a Photo&quot;,
+                                           systemImage: &quot;photo.on.rectangle&quot;,
+                                           description: Text(&quot;Choose an image to classify&quot;))
+                }
+
+                PhotosPicker(selection: $photoItem, matching: .images) {
+                    Label(&quot;Choose Photo&quot;, systemImage: &quot;photo.badge.plus&quot;)
+                        .font(.headline)
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(.tint, in: RoundedRectangle(cornerRadius: 12))
+                        .foregroundStyle(.white)
+                }
+
+                if viewModel.isProcessing {
+                    ProgressView(&quot;Classifying...&quot;)
+                }
+
+                if let error = viewModel.errorMessage {
+                    Text(error)
+                        .foregroundStyle(.red)
+                        .font(.caption)
+                }
+
+                if !viewModel.classifications.isEmpty {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(&quot;Results&quot;)
+                            .font(.headline)
+
+                        ForEach(viewModel.classifications, id: \.label) { item in
+                            HStack {
+                                Text(item.label)
+                                    .font(.body)
+                                Spacer()
+                                Text(&quot;\(item.confidence * 100, specifier: &quot;%.1f&quot;)%&quot;)
+                                    .font(.body.monospacedDigit())
+                                    .foregroundStyle(.secondary)
+                            }
+                            .padding(.vertical, 4)
+                        }
+                    }
+                    .padding()
+                    .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
+                }
+
+                Spacer()
+            }
+            .padding()
+            .navigationTitle(&quot;Image Classifier&quot;)
+            .onChange(of: photoItem) { _, newItem in
+                Task {
+                    if let data = try? await newItem?.loadTransferable(type: Data.self),
+                       let uiImage = UIImage(data: data) {
+                        viewModel.selectedImage = uiImage
+                        await viewModel.classify()
+                    }
+                }
+            }
+        }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="7-text-prediction-example">7. Text Prediction Example</h2>
+<p>Using a CoreML model trained on tabular or text data to make predictions.</p>
+<pre><code class="language-swift">import CoreML
+
+struct SentimentPredictor {
+    private let model: MLModel
+
+    init() throws {
+        let config = MLModelConfiguration()
+        config.computeUnits = .cpuOnly  // text models often run best on CPU
+        self.model = try SentimentClassifier(configuration: config).model
+    }
+
+    func predict(text: String) throws -&gt; (label: String, confidence: Double) {
+        let input = try MLDictionaryFeatureProvider(
+            dictionary: [&quot;text&quot;: MLFeatureValue(string: text)]
+        )
+
+        let output = try model.prediction(from: input)
+
+        let label = output.featureValue(for: &quot;label&quot;)?.stringValue ?? &quot;unknown&quot;
+        let probabilities = output.featureValue(for: &quot;labelProbability&quot;)?.dictionaryValue ?? [:]
+
+        let confidence = (probabilities[label as NSObject] as? NSNumber)?.doubleValue ?? 0.0
+        return (label: label, confidence: confidence)
+    }
+
+    func predictBatch(texts: [String]) throws -&gt; [(label: String, confidence: Double)] {
+        let inputs: [MLDictionaryFeatureProvider] = try texts.map { text in
+            try MLDictionaryFeatureProvider(dictionary: [&quot;text&quot;: MLFeatureValue(string: text)])
+        }
+
+        let batchProvider = MLArrayBatchProvider(array: inputs)
+        let batchResults = try model.predictions(from: batchProvider)
+
+        var results: [(label: String, confidence: Double)] = []
+        for i in 0..&lt;batchResults.count {
+            let output = batchResults.features(at: i)
+            let label = output.featureValue(for: &quot;label&quot;)?.stringValue ?? &quot;unknown&quot;
+            let probs = output.featureValue(for: &quot;labelProbability&quot;)?.dictionaryValue ?? [:]
+            let confidence = (probs[label as NSObject] as? NSNumber)?.doubleValue ?? 0.0
+            results.append((label: label, confidence: confidence))
+        }
+        return results
+    }
+}
+</code></pre>
+<hr />
+<h2 id="8-model-caching-and-performance-optimization">8. Model Caching and Performance Optimization</h2>
+<pre><code class="language-swift">import CoreML
+
+actor ModelCache {
+    static let shared = ModelCache()
+
+    private var cache: [String: MLModel] = [:]
+
+    func model(named name: String, computeUnits: MLComputeUnits = .all) throws -&gt; MLModel {
+        if let cached = cache[name] {
+            return cached
+        }
+
+        guard let url = Bundle.main.url(forResource: name, withExtension: &quot;mlmodelc&quot;) else {
+            throw ModelCacheError.modelNotFound(name)
+        }
+
+        let config = MLModelConfiguration()
+        config.computeUnits = computeUnits
+
+        let model = try MLModel(contentsOf: url, configuration: config)
+        cache[name] = model
+        return model
+    }
+
+    func preload(modelNames: [String]) async throws {
+        for name in modelNames {
+            _ = try model(named: name)
+        }
+    }
+
+    func evict(named name: String) {
+        cache.removeValue(forKey: name)
+    }
+
+    func evictAll() {
+        cache.removeAll()
+    }
+}
+
+enum ModelCacheError: LocalizedError {
+    case modelNotFound(String)
+
+    var errorDescription: String? {
+        switch self {
+        case .modelNotFound(let name):
+            return &quot;Model '\(name)' not found in the app bundle.&quot;
+        }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="9-converting-models-with-coremltools-overview">9. Converting Models with coremltools (Overview)</h2>
+<p>Use Python's <code>coremltools</code> to convert models from PyTorch, TensorFlow, or ONNX into <code>.mlmodel</code> format.</p>
+<pre><code class="language-python"># Install: pip install coremltools torch torchvision
+
+import coremltools as ct
+import torch
+import torchvision
+
+# Load a pretrained PyTorch model
+torch_model = torchvision.models.mobilenet_v2(pretrained=True)
+torch_model.eval()
+
+# Trace the model with example input
+example_input = torch.randn(1, 3, 224, 224)
+traced_model = torch.jit.trace(torch_model, example_input)
+
+# Convert to CoreML
+coreml_model = ct.convert(
+    traced_model,
+    inputs=[ct.ImageType(name=&quot;image&quot;, shape=(1, 3, 224, 224), scale=1/255.0)],
+    classifier_config=ct.ClassifierConfig(&quot;imagenet_classes.txt&quot;),
+    compute_units=ct.ComputeUnit.ALL,
+    minimum_deployment_target=ct.target.iOS17,
+)
+
+# Save
+coreml_model.save(&quot;MobileNetV2.mlpackage&quot;)
+</code></pre>
+<p>Key conversion options:
+- <code>compute_precision</code> -- use <code>ct.precision.FLOAT16</code> for smaller models and faster Neural Engine inference.
+- <code>minimum_deployment_target</code> -- set to the lowest iOS version you support for maximum compatibility.
+- <code>ct.ImageType</code> -- declares the input as an image so Vision can preprocess it automatically.
+- <code>ct.ClassifierConfig</code> -- adds classification metadata so results come as <code>VNClassificationObservation</code>.</p>
+<hr />
+<h2 id="10-performance-tips">10. Performance Tips</h2>
+<table>
+<thead>
+<tr>
+<th>Technique</th>
+<th>Benefit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Use <code>.all</code> compute units</td>
+<td>Let CoreML pick the fastest hardware</td>
+</tr>
+<tr>
+<td>Float16 quantization</td>
+<td>2x smaller model, faster on Neural Engine</td>
+</tr>
+<tr>
+<td>Batch predictions</td>
+<td>Amortize model setup overhead</td>
+</tr>
+<tr>
+<td>Cache loaded models</td>
+<td>Avoid repeated disk I/O and compilation</td>
+</tr>
+<tr>
+<td>Background thread inference</td>
+<td>Keep UI responsive</td>
+</tr>
+<tr>
+<td>Model warmup</td>
+<td>Run a dummy prediction at launch to prime the pipeline</td>
+</tr>
+<tr>
+<td>Use MLPackage over MLModel</td>
+<td>Modern format with better optimization support</td>
+</tr>
+<tr>
+<td>Profile with Instruments</td>
+<td>Use the CoreML Instrument to find bottlenecks</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-swift">import CoreML
+
+// Warmup: run a dummy prediction to prime the model pipeline
+func warmup(model: MLModel, inputName: String, shape: [NSNumber]) throws {
+    let dummyInput = try MLMultiArray(shape: shape, dataType: .float32)
+    let provider = try MLDictionaryFeatureProvider(
+        dictionary: [inputName: MLFeatureValue(multiArray: dummyInput)]
+    )
+    _ = try model.prediction(from: provider)
+}
+</code></pre>
+<hr />
+<h2 id="quick-reference">Quick Reference</h2>
+<table>
+<thead>
+<tr>
+<th>Class / Protocol</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>MLModel</code></td>
+<td>Core class for loading and running models</td>
+</tr>
+<tr>
+<td><code>MLModelConfiguration</code></td>
+<td>Configure compute units, precision</td>
+</tr>
+<tr>
+<td><code>MLMultiArray</code></td>
+<td>N-dimensional numeric array for model I/O</td>
+</tr>
+<tr>
+<td><code>MLTensor</code></td>
+<td>Modern tensor API (iOS 18+)</td>
+</tr>
+<tr>
+<td><code>MLFeatureProvider</code></td>
+<td>Protocol for model input/output</td>
+</tr>
+<tr>
+<td><code>MLDictionaryFeatureProvider</code></td>
+<td>Dictionary-based feature provider</td>
+</tr>
+<tr>
+<td><code>MLArrayBatchProvider</code></td>
+<td>Batch multiple inputs for prediction</td>
+</tr>
+<tr>
+<td><code>MLPredictionOptions</code></td>
+<td>Options for prediction (CPU-only flag)</td>
+</tr>
+<tr>
+<td><code>VNCoreMLModel</code></td>
+<td>Bridge a CoreML model into the Vision pipeline</td>
+</tr>
+<tr>
+<td><code>VNCoreMLRequest</code></td>
+<td>Vision request that uses a CoreML model</td>
+</tr>
+</tbody>
+</table></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

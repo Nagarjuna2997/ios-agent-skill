@@ -1,0 +1,170 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Evaluations -- Testing Intelligence-Powered Features — iOS Agent Skill</title><meta name="description" content="Repository guidance for Evaluations. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/testing-evaluations.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="Evaluations -- Testing Intelligence-Powered Features"><meta property="og:description" content="Repository guidance for Evaluations. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/testing-evaluations.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "Evaluations -- Testing Intelligence-Powered Features", "description": "Repository guidance for Evaluations. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/testing-evaluations.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">AI and Machine Learning · Reference guide</p><h1>Evaluations -- Testing Intelligence-Powered Features</h1><p class="lead">Repository guidance for Evaluations. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/testing/evaluations.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#1-what-an-evaluation-contains">1. What an Evaluation Contains</a></li>
+<li><a href="#2-minimal-evaluation-shape">2. Minimal Evaluation Shape</a></li>
+<li><a href="#3-dataset-design">3. Dataset Design</a></li>
+<li><a href="#4-evaluator-types">4. Evaluator Types</a></li>
+<li><a href="#5-tool-calling-evaluations">5. Tool-Calling Evaluations</a></li>
+<li><a href="#6-swift-testing-integration">6. Swift Testing Integration</a></li>
+<li><a href="#7-ship-criteria">7. Ship Criteria</a></li>
+<li><a href="#8-review-checklist">8. Review Checklist</a></li>
+</ul>
+</div>
+</aside><h2 id="overview">Overview</h2>
+<p>The Evaluations framework measures the quality of AI-powered features with executable Swift definitions. Use it to compare prompt strategies, catch regressions, test tool calls, evaluate model-as-judge criteria, and attach results to Swift Testing.</p>
+<blockquote>
+<p>iOS 27 / Xcode 27 are released. This guide has not yet been compiled with Xcode 27; keep evaluation code close to tests and verify exact signatures in that SDK.</p>
+</blockquote>
+<hr />
+<h2 id="1-what-an-evaluation-contains">1. What an Evaluation Contains</h2>
+<p>Every useful evaluation has four parts:</p>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dataset</td>
+<td>Realistic samples, expected values, edge cases, and adversarial inputs</td>
+</tr>
+<tr>
+<td>Subject</td>
+<td>The feature under test, not just the raw model</td>
+</tr>
+<tr>
+<td>Evaluators</td>
+<td>Code-based checks, model-as-judge checks, or tool-call trajectory checks</td>
+</tr>
+<tr>
+<td>Aggregation</td>
+<td>Summary metrics that decide whether the build can ship</td>
+</tr>
+</tbody>
+</table>
+<p>Avoid vague criteria like "good answer." Convert them into measurable claims: "returns valid JSON," "uses only allowed tags," "calls <code>SearchNotes</code> before <code>CreateSummary</code>," or "scores 4/5 or higher for factual grounding."</p>
+<hr />
+<h2 id="2-minimal-evaluation-shape">2. Minimal Evaluation Shape</h2>
+<pre><code class="language-swift">import Evaluations
+import FoundationModels
+import Testing
+
+@available(iOS 27.0, macOS 27.0, *)
+struct TaggingEvaluation: Evaluation {
+    let dataset = ArrayLoader(samples: [
+        ModelSample(prompt: &quot;A quiet mystery set in a coastal town.&quot;, expected: [&quot;mystery&quot;]),
+        ModelSample(prompt: &quot;A practical guide to sourdough bread.&quot;, expected: [&quot;cooking&quot;]),
+        ModelSample(prompt: &quot;A memoir about training for a marathon.&quot;, expected: [&quot;memoir&quot;]),
+    ])
+
+    let subject = BookTaggingService()
+
+    var evaluators: [Evaluator&lt;[String]&gt;] {
+        [
+            Evaluator(&quot;contains expected tag&quot;) { sample, response in
+                let passed = sample.expected.allSatisfy(response.contains)
+                return Metric(&quot;expected_tag_present&quot;, passed)
+            },
+            Evaluator(&quot;bounded tag count&quot;) { _, response in
+                Metric(&quot;tag_count_valid&quot;, (3...8).contains(response.count))
+            },
+        ]
+    }
+}
+</code></pre>
+<p>The illustrative code below has not been compiled with the released Xcode 27 SDK. Preserve the architecture: samples in, feature response out, metrics aggregated.</p>
+<hr />
+<h2 id="3-dataset-design">3. Dataset Design</h2>
+<p>Build datasets like product specifications:</p>
+<ul>
+<li><strong>Golden paths:</strong> the most common user requests.</li>
+<li><strong>Boundary cases:</strong> empty input, max length, ambiguous language, unsupported locale.</li>
+<li><strong>Safety cases:</strong> sensitive requests, dangerous recommendations, privacy-sensitive data.</li>
+<li><strong>Regression cases:</strong> every fixed production bug becomes a sample.</li>
+<li><strong>Tool cases:</strong> expected tool names, call order, and argument constraints.</li>
+</ul>
+<p>Keep sample data deterministic and reviewable. Generated synthetic samples are useful for scale, but hand-curated samples should define the release gate.</p>
+<hr />
+<h2 id="4-evaluator-types">4. Evaluator Types</h2>
+<table>
+<thead>
+<tr>
+<th>Evaluator</th>
+<th>Use When</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Code-based <code>Evaluator</code></td>
+<td>Correctness has a computable definition: schema, range, exact match, contains, count</td>
+</tr>
+<tr>
+<td><code>ModelJudgeEvaluator</code></td>
+<td>Tone, helpfulness, relevance, or clarity needs rubric scoring</td>
+</tr>
+<tr>
+<td><code>ToolCallEvaluator</code></td>
+<td>The feature is agentic and correctness depends on tool selection/order/arguments</td>
+</tr>
+</tbody>
+</table>
+<p>Start with code-based checks. Add model-as-judge only for qualities that code cannot score reliably, and calibrate judge scores against human review.</p>
+<hr />
+<h2 id="5-tool-calling-evaluations">5. Tool-Calling Evaluations</h2>
+<p>Tool failures are often silent product failures. Evaluate:</p>
+<ul>
+<li>selected tool name</li>
+<li>argument names and values</li>
+<li>call ordering</li>
+<li>whether a tool should not be called</li>
+<li>recovery after tool errors</li>
+<li>final answer grounding in tool output</li>
+</ul>
+<pre><code class="language-swift">let expectation = TrajectoryExpectation([
+    .tool(&quot;search_notes&quot;, arguments: [
+        &quot;query&quot;: .contains(&quot;project deadline&quot;),
+    ]),
+    .tool(&quot;summarize_results&quot;),
+])
+
+let evaluator = ToolCallEvaluator(expectation: expectation)
+</code></pre>
+<p>If a tool has side effects, use test doubles. Evaluation runs must never create real reminders, send messages, spend money, or mutate production data.</p>
+<hr />
+<h2 id="6-swift-testing-integration">6. Swift Testing Integration</h2>
+<p>Run important evaluations in CI:</p>
+<pre><code class="language-swift">@Test(.evaluation(TaggingEvaluation()))
+func bookTaggingQuality(context: EvaluationContext&lt;TaggingEvaluation&gt;) async throws {
+    let result = try await context.result
+    #expect(result.summary.metric(&quot;expected_tag_present&quot;).passRate &gt;= 0.95)
+}
+</code></pre>
+<p>Attach detailed result tables as artifacts so a failing run tells reviewers which samples regressed.</p>
+<hr />
+<h2 id="7-ship-criteria">7. Ship Criteria</h2>
+<p>Define thresholds before prompt tuning:</p>
+<ul>
+<li>required pass rate per metric</li>
+<li>maximum latency or token budget</li>
+<li>minimum tool-call correctness</li>
+<li>allowed fallback rate</li>
+<li>model-as-judge threshold and confidence range</li>
+<li>reviewed dataset size and coverage categories</li>
+</ul>
+<p>When changing prompts, models, tool schemas, or Dynamic Profiles, rerun the full evaluation suite. Do not merge "it looks better" changes without metric movement.</p>
+<hr />
+<h2 id="8-review-checklist">8. Review Checklist</h2>
+<ul>
+<li>[ ] Dataset includes golden, boundary, safety, and regression samples</li>
+<li>[ ] Metrics are measurable and named</li>
+<li>[ ] Tool calls have expected trajectories and argument validation</li>
+<li>[ ] Model-as-judge rubric is calibrated against human examples</li>
+<li>[ ] CI fails on threshold regression</li>
+<li>[ ] Evaluation artifacts are attached for diagnosis</li>
+<li>[ ] Production side effects are replaced with test doubles</li>
+<li>[ ] Prompt/model/tool changes update or rerun evaluations</li>
+</ul>
+<p>See also: <code>docs/frameworks/foundation-models.md</code>, <code>docs/tooling/foundation-models-instruments.md</code>, <code>docs/testing/mocking-strategy.md</code>.</p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

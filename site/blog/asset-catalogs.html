@@ -1,0 +1,57 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>How can design tokens generate light, dark and high-contrast color assets? — iOS Agent Skill</title><meta name="description" content="Generate a real xcassets catalog from explicit color tokens, inspect its four variants, and compile it with actool."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/blog/asset-catalogs.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="How can design tokens generate light, dark and high-contrast color assets?"><meta property="og:description" content="Generate a real xcassets catalog from explicit color tokens, inspect its four variants, and compile it with actool."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/blog/asset-catalogs.html"><meta property="og:type" content="article"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/blog/asset-catalogs.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "How can design tokens generate light, dark and high-contrast color assets?", "description": "Generate a real xcassets catalog from explicit color tokens, inspect its four variants, and compile it with actool.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/blog/asset-catalogs.html", "dateModified": "2026-09-16", "author": {"@type": "Organization", "name": "iOS Agent Skill project"}, "image": "https://nagarjuna2997.github.io/ios-agent-skill/assets/blog/asset-catalogs.jpg"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Design &amp; assets · iOS Agent Skill project</p><h1>How can design tokens generate light, dark and high-contrast color assets?</h1><p class="lead">Generate a real xcassets catalog from explicit color tokens, inspect its four variants, and compile it with actool.</p></header><figure><img src="../assets/blog/asset-catalogs.jpg" alt="Editorial illustration for How can design tokens generate light, dark and high-contrast color assets?" width="1200" height="600"></figure><div class="article-body"><aside class="article-toc" aria-label="Table of contents"><strong>On this page</strong><ol><li><a href="#what-belongs-in-the-token-file">What belongs in the token file?</a></li><li><a href="#how-do-i-generate-the-catalog">How do I generate the catalog?</a></li><li><a href="#what-should-i-inspect-in-contents-json">What should I inspect in Contents.json?</a></li><li><a href="#did-xcode-accept-the-generated-files">Did Xcode accept the generated files?</a></li><li><a href="#do-i-need-figma-or-a-paid-design-tool">Do I need Figma or a paid design tool?</a></li><li><a href="#limits">Limits</a></li><li><a href="#last-verified">Last verified</a></li></ol></aside><section class="workflow" aria-label="Article workflow"><p class="eyebrow">The workflow</p><ol><li><span>01</span>What belongs in the token file?</li><li><span>02</span>How do I generate the catalog?</li><li><span>03</span>What should I inspect in Contents.json?</li><li><span>04</span>Did Xcode accept the generated files?</li></ol></section><p>Define each semantic color with explicit light, dark, high-contrast-light, and high-contrast-dark values, then generate a named color set from that JSON. In this walkthrough, the published CLI created a real asset catalog and Xcode's asset compiler successfully produced an <code>Assets.car</code> file.</p>
+<h2 id="what-belongs-in-the-token-file">What belongs in the token file?</h2>
+<p>A token name should express a role that the application can reuse. <code>AccentColor</code>, <code>Background</code>, and <code>TextPrimary</code> describe intent more clearly than names tied to a particular screen coordinate. This example uses only the required accent to keep the generated output small enough to inspect completely.</p>
+<p>The generator accepts a versioned JSON format, not arbitrary design prose. Every color needs all four appearance values. That requirement avoids silently guessing a dark equivalent from a light color. It also makes omissions visible during generation instead of leaving the coding agent to fill them differently in several Swift files.</p>
+<p>Here is the <a href="../evidence/blog/tokens.json">exact token input</a> used for the run:</p>
+<pre><code class="language-json">{
+  &quot;version&quot;: 1,
+  &quot;colors&quot;: {
+    &quot;AccentColor&quot;: {
+      &quot;light&quot;: &quot;#2457DB&quot;,
+      &quot;dark&quot;: &quot;#90B4FF&quot;,
+      &quot;highContrastLight&quot;: &quot;#12358F&quot;,
+      &quot;highContrastDark&quot;: &quot;#C7DAFF&quot;
+    }
+  }
+}
+</code></pre>
+<p>The repository documents sRGB hexadecimal values, including an optional alpha component. It also requires ASCII identifier names that are unique without regard to case. These are constraints of this generator's input contract, not a claim that every asset pipeline must use the same token format.</p>
+<h2 id="how-do-i-generate-the-catalog">How do I generate the catalog?</h2>
+<p>With the published package, the command is:</p>
+<pre><code class="language-sh">npx -y ios-agent-mcp@2.7.0 assets \
+  --tokens tokens.json \
+  --output App/Assets.xcassets
+</code></pre>
+<p>The parent <code>App</code> directory must already exist. The destination catalog must not exist, because this command refuses to overwrite an existing catalog. Generate a sibling directory when evaluating a token change, inspect the differences, and merge the intended output into the project through its normal review process.</p>
+<p>For the actual run I used an isolated installation of that exact npm version and called its entry point directly. This avoids an ambiguous <code>latest</code> dependency while recording evidence. The command reported two created catalog files: the catalog metadata and <code>AccentColor.colorset/Contents.json</code>.</p>
+<p>The resulting directory structure is small:</p>
+<pre><code class="language-text">Assets.xcassets/
+  Contents.json
+  AccentColor.colorset/
+    Contents.json
+</code></pre>
+<p>Apple's <a href="https://developer.apple.com/library/archive/documentation/Xcode/Reference/xcode_ref-Asset_Catalog_Format/Named_Color.html">named-color format reference</a> documents color-set metadata and color components. The generated <a href="../evidence/blog/Assets.xcassets/AccentColor.colorset/Contents.json">Contents.json</a> is available with this draft, rather than represented only by an illustration.</p>
+<h2 id="what-should-i-inspect-in-contents-json">What should I inspect in Contents.json?</h2>
+<p>Check that the color set has four entries and that each entry corresponds to the intended appearance. The default entry supplies the ordinary light value. The remaining entries distinguish dark appearance, increased contrast, and their combination. Compare the normalized channel values with the input rather than assuming a successfully written file has the intended color.</p>
+<p>Also check the semantic name. A Swift reference to a differently spelled asset will not become correct merely because the catalog itself compiles. Keep the code and token vocabulary aligned. This generator does not audit all <code>Color</code> calls or prove that the application actually uses the newly generated color.</p>
+<p>For broader palettes, review foreground/background pairs together. Four present variants are a structural property. Readable contrast is a separate visual and numerical property that depends on the actual background, transparency, and surrounding interface.</p>
+<h2 id="did-xcode-accept-the-generated-files">Did Xcode accept the generated files?</h2>
+<p>Yes. I compiled the generated catalog with the installed simulator SDK:</p>
+<pre><code class="language-sh">mkdir -p compiled-assets
+xcrun actool Assets.xcassets \
+  --compile compiled-assets \
+  --platform iphonesimulator \
+  --minimum-deployment-target 17.0 \
+  --target-device iphone \
+  --output-format human-readable-text
+</code></pre>
+<p>The command returned exit code 0 and reported <code>compiled-assets/Assets.car</code>. The <a href="../evidence/blog/actool.txt">recorded compiler output</a> is included. This verifies that the asset compiler accepted the catalog under the recorded toolchain; it is stronger evidence than JSON parsing alone.</p>
+<p>It is still not a screenshot test. The run did not launch an app, switch interface appearance, or inspect Dynamic Type. To establish the final user experience, integrate the catalog into the target, build, and inspect the relevant screens in all supported appearance states.</p>
+<h2 id="do-i-need-figma-or-a-paid-design-tool">Do I need Figma or a paid design tool?</h2>
+<p>No. The input is ordinary JSON and can be authored in a text editor. If a designer already uses Figma, map resolved variables to the four explicit fields. Do not add a second tool solely to supply a small token file.</p>
+<p>Icons are a separate concern. The repository can rasterize ordered SVG layers into a PNG, but a flattened PNG is not a native Icon Composer document. This color-only test generated no icon and makes no claim about Liquid Glass, required icon sizes, or App Store submission. Keep those deliverables and their verification records separate.</p>
+<h2 id="limits">Limits</h2>
+<p>Successful generation does not certify accessibility, color contrast, semantic naming quality, or review acceptance. Existing catalogs are deliberately not overwritten. This run used one color and one simulator target; it did not exercise every possible alpha value, device family, or project integration. The cover image is conceptual artwork, not a rendering of these exact four swatches in an app.</p>
+<h2 id="last-verified">Last verified</h2>
+<p>September 16, 2026. Published MCP package 2.7.0 with CLI 0.3.0; Node.js 24.15.0; Xcode 26.6 build 17F113. Asset generation and <code>actool</code> compilation passed. Repository source: <code>docs/design/asset-generation.md</code>.</p>
+<p>Example project: <a href="https://github.com/Nagarjuna2997/ios-agent-skill">ios-agent-skill</a>.</p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

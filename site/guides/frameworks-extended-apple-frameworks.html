@@ -1,0 +1,204 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Extended Apple Frameworks — iOS Agent Skill</title><meta name="description" content="Repository guidance for QuickLook, LinkPresentation, UniformTypeIdentifiers, PDFKit, PencilKit, Core Animation, Core Haptics, MLX, File Provider, SQLite, Multipeer Connectivity, Nearby Interaction, Network Extension, SpriteKit, GameplayKit, Game Controller, RoomPlan, Object Capture, AVKit, Core Media, ReplayKit, MusicKit, ShazamKit, App Store Server API, Wallet Orders, Security Framework, AccessorySetupKit, ExternalAccessory, SensorKit. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-extended-apple-frameworks.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="Extended Apple Frameworks"><meta property="og:description" content="Repository guidance for QuickLook, LinkPresentation, UniformTypeIdentifiers, PDFKit, PencilKit, Core Animation, Core Haptics, MLX, File Provider, SQLite, Multipeer Connectivity, Nearby Interaction, Network Extension, SpriteKit, GameplayKit, Game Controller, RoomPlan, Object Capture, AVKit, Core Media, ReplayKit, MusicKit, ShazamKit, App Store Server API, Wallet Orders, Security Framework, AccessorySetupKit, ExternalAccessory, SensorKit. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-extended-apple-frameworks.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "Extended Apple Frameworks", "description": "Repository guidance for QuickLook, LinkPresentation, UniformTypeIdentifiers, PDFKit, PencilKit, Core Animation, Core Haptics, MLX, File Provider, SQLite, Multipeer Connectivity, Nearby Interaction, Network Extension, SpriteKit, GameplayKit, Game Controller, RoomPlan, Object Capture, AVKit, Core Media, ReplayKit, MusicKit, ShazamKit, App Store Server API, Wallet Orders, Security Framework, AccessorySetupKit, ExternalAccessory, SensorKit. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-extended-apple-frameworks.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Core UI and Apps · Reference guide</p><h1>Extended Apple Frameworks</h1><p class="lead">Repository guidance for QuickLook, LinkPresentation, UniformTypeIdentifiers, PDFKit, PencilKit, Core Animation, Core Haptics, MLX, File Provider, SQLite, Multipeer Connectivity, Nearby Interaction, Network Extension, SpriteKit, GameplayKit, Game Controller, RoomPlan, Object Capture, AVKit, Core Media, ReplayKit, MusicKit, ShazamKit, App Store Server API, Wallet Orders, Security Framework, AccessorySetupKit, ExternalAccessory, SensorKit. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/frameworks/extended-apple-frameworks.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#context">Context</a></li>
+<li><a href="#core-ui-and-document-workflows">Core UI and document workflows</a><ul>
+<li><a href="#quicklook">QuickLook</a></li>
+<li><a href="#linkpresentation">LinkPresentation</a></li>
+<li><a href="#uniformtypeidentifiers">UniformTypeIdentifiers</a></li>
+<li><a href="#pdfkit">PDFKit</a></li>
+<li><a href="#pencilkit">PencilKit</a></li>
+</ul>
+</li>
+<li><a href="#design-motion-and-feedback">Design, motion, and feedback</a><ul>
+<li><a href="#core-animation">Core Animation</a></li>
+<li><a href="#core-haptics">Core Haptics</a></li>
+</ul>
+</li>
+<li><a href="#ai-and-signal-processing">AI and signal processing</a><ul>
+<li><a href="#mlx">MLX</a></li>
+<li><a href="#sound-analysis">Sound Analysis</a></li>
+</ul>
+</li>
+<li><a href="#data-and-file-providers">Data and file providers</a><ul>
+<li><a href="#file-provider">File Provider</a></li>
+<li><a href="#sqlite">SQLite</a></li>
+</ul>
+</li>
+<li><a href="#networking-and-connectivity">Networking and connectivity</a><ul>
+<li><a href="#multipeer-connectivity">Multipeer Connectivity</a></li>
+<li><a href="#nearby-interaction">Nearby Interaction</a></li>
+<li><a href="#network-extension">Network Extension</a></li>
+</ul>
+</li>
+<li><a href="#games-spatial-capture-and-controllers">Games, spatial capture, and controllers</a><ul>
+<li><a href="#spritekit">SpriteKit</a></li>
+<li><a href="#gameplaykit">GameplayKit</a></li>
+<li><a href="#game-controller">Game Controller</a></li>
+<li><a href="#roomplan">RoomPlan</a></li>
+<li><a href="#object-capture">Object Capture</a></li>
+</ul>
+</li>
+<li><a href="#camera-media-and-audio">Camera, media, and audio</a><ul>
+<li><a href="#avkit">AVKit</a></li>
+<li><a href="#core-media">Core Media</a></li>
+<li><a href="#replaykit">ReplayKit</a></li>
+<li><a href="#musickit">MusicKit</a></li>
+<li><a href="#shazamkit">ShazamKit</a></li>
+</ul>
+</li>
+<li><a href="#commerce-and-wallet-server-flows">Commerce and wallet server flows</a><ul>
+<li><a href="#app-store-server-api">App Store Server API</a></li>
+<li><a href="#wallet-orders">Wallet Orders</a></li>
+</ul>
+</li>
+<li><a href="#security-and-hardware-access">Security and hardware access</a><ul>
+<li><a href="#security-framework">Security Framework</a></li>
+<li><a href="#accessorysetupkit">AccessorySetupKit</a></li>
+<li><a href="#externalaccessory">ExternalAccessory</a></li>
+<li><a href="#sensorkit">SensorKit</a></li>
+</ul>
+</li>
+<li><a href="#reporting-standard">Reporting standard</a></li>
+</ul>
+</div>
+</aside><h2 id="context">Context</h2>
+<p>Load this guide when a requested Apple technology is tracked in <code>frameworks.json</code> but does not have a dedicated deep-dive file. It covers the remaining framework routes needed for 100% coverage of this repository's Apple technology catalog.</p>
+<p>This is not a replacement for Apple documentation. Treat the Apple Developer link in <code>frameworks.json</code> as canonical, then use this file for agent routing, first implementation choices, verification, and common failure modes.</p>
+<h2 id="core-ui-and-document-workflows">Core UI and document workflows</h2>
+<h3 id="quicklook">QuickLook</h3>
+<p>Use Quick Look when the app needs system previews for documents, images, PDFs, audio, video, Live Photos, Office/iWork files, text files, or USDZ objects. Prefer <code>QLPreviewController</code> for user-facing previews. For custom file types, provide a Quick Look preview extension and declare supported UTTypes in <code>QLSupportedContentTypes</code>.</p>
+<p>Avoid Quick Look when the app needs advanced playback controls, heavily customized document rendering, or overlays inside the preview. Use AVFoundation, PDFKit, or a custom renderer instead.</p>
+<p>Verification: open representative file types on device and simulator, verify security-scoped resource access for document-picker URLs, and test missing/unsupported file behavior.</p>
+<h3 id="linkpresentation">LinkPresentation</h3>
+<p>Use LinkPresentation to render rich URL previews with title, icon, image, and metadata. Cache <code>LPLinkMetadata</code> results so lists do not repeatedly fetch metadata while scrolling.</p>
+<p>Rules: never block initial UI on metadata fetching, handle URLs with no preview data, and avoid treating metadata as trusted content.</p>
+<p>Verification: test slow networks, private URLs, malformed URLs, and reused cells in scrolling views.</p>
+<h3 id="uniformtypeidentifiers">UniformTypeIdentifiers</h3>
+<p>Use Uniform Type Identifiers for file import/export, document pickers, share sheets, drag and drop, pasteboard, and Quick Look extension declarations. Prefer <code>UTType</code> over stringly typed MIME or extension checks.</p>
+<p>Rules: check conformance with <code>conforms(to:)</code>, define exported/imported types in app metadata when the app owns a custom file format, and keep accepted types narrow.</p>
+<p>Verification: test files with uppercase extensions, missing extensions, ambiguous MIME types, iCloud Drive, Files app, AirDrop, and share-sheet imports.</p>
+<h3 id="pdfkit">PDFKit</h3>
+<p>Use PDFKit for native PDF display, navigation, search, annotations, selections, and document metadata. Use SwiftUI wrappers when a SwiftUI app needs <code>PDFView</code>.</p>
+<p>Rules: do not load very large PDFs on the main actor if parsing or search can be deferred, avoid assuming every PDF has selectable text, and test password-protected or malformed PDFs.</p>
+<p>Verification: test zoom, rotation, memory pressure, search, annotation persistence, dark-mode container contrast, and VoiceOver navigation.</p>
+<h3 id="pencilkit">PencilKit</h3>
+<p>Use PencilKit when the feature needs Apple Pencil drawing, markup, sketches, handwriting surfaces, or low-latency ink. Store <code>PKDrawing</code> data, not screenshots, when strokes need to remain editable.</p>
+<p>Rules: configure tool picker ownership per scene, preserve scale when compositing drawings over images or PDFs, and design finger-vs-pencil behavior intentionally.</p>
+<p>Verification: test Apple Pencil, finger drawing, undo/redo, iPad multitasking, orientation changes, and drawing persistence.</p>
+<h2 id="design-motion-and-feedback">Design, motion, and feedback</h2>
+<h3 id="core-animation">Core Animation</h3>
+<p>Use Core Animation for layer-backed animation, custom transitions, masks, shape layers, gradients, replicators, and performance-sensitive visual effects below SwiftUI or UIKit.</p>
+<p>Rules: prefer transform and opacity animation over layout animation, keep layer tree changes on the main thread, avoid offscreen-rendering surprises, and set final model-layer values to match animations.</p>
+<p>Verification: profile with Core Animation and Instruments, inspect dropped frames, and test Reduce Motion alternatives.</p>
+<h3 id="core-haptics">Core Haptics</h3>
+<p>Use Core Haptics for custom tactile feedback patterns, synchronized audio-haptic experiences, and game-like interactions. Use UIKit feedback generators for simple selection, impact, and notification feedback.</p>
+<p>Rules: check hardware capability, handle audio-session interruptions, start/stop engines around app lifecycle events, and provide a non-haptic fallback.</p>
+<p>Verification: test on physical devices because simulators cannot prove haptic quality.</p>
+<h2 id="ai-and-signal-processing">AI and signal processing</h2>
+<h3 id="mlx">MLX</h3>
+<p>Use MLX for Apple-silicon-focused machine-learning experimentation and local model workflows when the project explicitly targets MLX. For app-integrated Apple-platform ML, prefer Foundation Models, Core ML, Vision, Natural Language, Speech, or Accelerate unless MLX is a stated requirement.</p>
+<p>Rules: isolate MLX experiments from App Store app code until deployment constraints are clear, document hardware assumptions, and keep model artifacts out of source control unless intentionally small.</p>
+<p>Verification: record device/Mac chip, memory footprint, model size, latency, and fallback path.</p>
+<h3 id="sound-analysis">Sound Analysis</h3>
+<p>Use Sound Analysis for classifying audio, detecting sound events, or running Core ML models over audio streams. Route speech transcription to Speech, music recognition to ShazamKit, and low-level capture/playback to AVFoundation.</p>
+<p>Rules: request microphone permission only when live audio is required, process streaming audio off the main actor, and design privacy copy that explains what audio is analyzed.</p>
+<p>Verification: test microphone permission states, background/foreground transitions, noisy rooms, silence, and model confidence thresholds.</p>
+<h2 id="data-and-file-providers">Data and file providers</h2>
+<h3 id="file-provider">File Provider</h3>
+<p>Use File Provider when the app exposes remote or app-managed documents through the system Files experience. It is an extension architecture, not a generic file picker.</p>
+<p>Rules: model stable item identifiers, sync metadata separately from file contents, handle eviction/materialization, and treat extension memory/time limits as hard constraints.</p>
+<p>Verification: test Files app browsing, open-in-place, offline behavior, conflicts, deletion, rename, and large-file download cancellation.</p>
+<h3 id="sqlite">SQLite</h3>
+<p>Use SQLite when the app needs relational storage, portable database files, full control over queries, or compatibility with an existing SQLite schema. Prefer SwiftData/Core Data for object graph persistence when their model fits.</p>
+<p>Rules: put database access behind an actor or serial queue, use prepared statements, run migrations transactionally, and avoid doing database I/O on the main actor.</p>
+<p>Verification: test migrations from real older schemas, corruption recovery, concurrent access, large imports, and backup/restore behavior.</p>
+<h2 id="networking-and-connectivity">Networking and connectivity</h2>
+<h3 id="multipeer-connectivity">Multipeer Connectivity</h3>
+<p>Use Multipeer Connectivity for nearby peer-to-peer discovery and data exchange over infrastructure Wi-Fi, peer-to-peer Wi-Fi, and Bluetooth-backed discovery. It fits local collaboration, nearby sharing, and offline peer sessions.</p>
+<p>Rules: design explicit trust and invitation UX, handle peers appearing/disappearing, bound payload size, and keep session state observable from the main actor.</p>
+<p>Verification: test multiple physical devices, locked screens, app backgrounding, network changes, and duplicate peer names.</p>
+<h3 id="nearby-interaction">Nearby Interaction</h3>
+<p>Use Nearby Interaction for spatially aware nearby-device experiences with supported hardware and compatible peer discovery. Pair it with Multipeer Connectivity or another channel for token exchange.</p>
+<p>Rules: guard hardware support, request permission with clear value, and provide a non-UWB fallback.</p>
+<p>Verification: test supported and unsupported devices, permission denial, interrupted sessions, distance/orientation accuracy, and multi-user environments.</p>
+<h3 id="network-extension">Network Extension</h3>
+<p>Use Network Extension for VPN, content filtering, DNS proxying, packet tunnels, app proxying, and related managed-network capabilities. This area often requires entitlements and App Review justification.</p>
+<p>Rules: verify entitlement availability before designing the feature, isolate extension code, keep privacy claims exact, and avoid using Network Extension for ordinary HTTP requests.</p>
+<p>Verification: test entitlement provisioning, on-device behavior, managed configuration, reconnects, sleep/wake, and App Store policy fit.</p>
+<h2 id="games-spatial-capture-and-controllers">Games, spatial capture, and controllers</h2>
+<h3 id="spritekit">SpriteKit</h3>
+<p>Use SpriteKit for 2D games, particle effects, tile maps, sprite animation, physics-driven 2D scenes, and lightweight interactive visual experiences.</p>
+<p>Rules: keep game state deterministic, separate rendering from game rules, load atlases intentionally, and avoid mixing SwiftUI layout assumptions into the SpriteKit scene.</p>
+<p>Verification: test frame pacing, texture memory, touch/controller input, pause/resume, scene transitions, and different refresh rates.</p>
+<h3 id="gameplaykit">GameplayKit</h3>
+<p>Use GameplayKit for game architecture helpers: state machines, entity-component design, pathfinding, randomization, agents, goals, and rule systems.</p>
+<p>Rules: keep the simulation model independent from SpriteKit/SceneKit/RealityKit rendering, seed randomness for reproducible tests, and keep state transitions explicit.</p>
+<p>Verification: unit-test state machines, pathfinding edge cases, deterministic random sequences, and save/restore behavior.</p>
+<h3 id="game-controller">Game Controller</h3>
+<p>Use Game Controller for physical controllers, keyboard/mouse game input, controller discovery, button/axis state, haptics, and player indexing.</p>
+<p>Rules: support remapping where appropriate, provide touch fallback on iPhone/iPad, handle connect/disconnect live, and avoid assuming a specific controller layout.</p>
+<p>Verification: test Xbox/PlayStation/MFi controllers, keyboard input, tvOS focus, disconnects, and multiple players.</p>
+<h3 id="roomplan">RoomPlan</h3>
+<p>Use RoomPlan for LiDAR-backed room scanning and structured room-capture output. Route general AR placement to ARKit/RealityKit.</p>
+<p>Rules: guard device support, explain scanning privacy, handle incomplete scans, and give users editing/review affordances before export.</p>
+<p>Verification: test small/large rooms, poor lighting, reflective surfaces, interrupted scans, export, and memory use.</p>
+<h3 id="object-capture">Object Capture</h3>
+<p>Use Object Capture for photogrammetry workflows that create 3D assets from image sets. Treat it as a capture pipeline with strict input quality needs, not a one-click magic feature.</p>
+<p>Rules: guide users through coverage, lighting, focus, and overlap; validate image sets before processing; and plan for long-running work and large outputs.</p>
+<p>Verification: test small and reflective objects, incomplete image sets, processing failure, output scale/orientation, and USDZ import into RealityKit.</p>
+<h2 id="camera-media-and-audio">Camera, media, and audio</h2>
+<h3 id="avkit">AVKit</h3>
+<p>Use AVKit for system playback UI, Picture in Picture, player controls, and platform-native media presentation. Use AVFoundation when custom capture, editing, composition, or low-level playback control is required.</p>
+<p>Rules: manage <code>AVPlayer</code> lifetime, observe playback state safely, support interruptions, and avoid rebuilding players on every SwiftUI body update.</p>
+<p>Verification: test streaming, local files, AirPlay, PiP, background audio policy, captions, interruption, and poor networks.</p>
+<h3 id="core-media">Core Media</h3>
+<p>Use Core Media for timestamps, sample buffers, format descriptions, time ranges, and low-level media pipelines. It usually appears with AVFoundation, VideoToolbox, Core Video, or Metal.</p>
+<p>Rules: preserve timebase correctness, avoid copying sample buffers unnecessarily, and keep buffer lifetimes explicit.</p>
+<p>Verification: test frame timing, audio/video sync, dropped frames, format changes, and memory pressure.</p>
+<h3 id="replaykit">ReplayKit</h3>
+<p>Use ReplayKit for screen recording, broadcast upload extensions, and user-controlled capture of app or game sessions.</p>
+<p>Rules: make recording consent obvious, handle unavailable recording states, protect sensitive screens, and separate broadcast extension constraints from main-app assumptions.</p>
+<p>Verification: test start/stop, microphone on/off, interruptions, broadcast extension memory, and App Review privacy expectations.</p>
+<h3 id="musickit">MusicKit</h3>
+<p>Use MusicKit for Apple Music catalog access, playback integration, user library access, and music subscription-aware experiences.</p>
+<p>Rules: request music authorization only when needed, handle subscription and region availability, and avoid assuming catalog identifiers are playable for every user.</p>
+<p>Verification: test authorized/denied states, no subscription, different regions, offline playback expectations, and storefront changes.</p>
+<h3 id="shazamkit">ShazamKit</h3>
+<p>Use ShazamKit for audio matching against Shazam's catalog or a custom signature catalog. Route generic audio classification to Sound Analysis.</p>
+<p>Rules: explain microphone use, handle noisy environments, and keep matching UI resilient to no-match outcomes.</p>
+<p>Verification: test live microphone matching, file matching, low volume, background noise, and custom catalog updates.</p>
+<h2 id="commerce-and-wallet-server-flows">Commerce and wallet server flows</h2>
+<h3 id="app-store-server-api">App Store Server API</h3>
+<p>Use App Store Server API for server-side transaction lookup, subscription status, transaction history, refund/consumption workflows, and App Store Server Notifications integration. Keep StoreKit 2 in the app for on-device purchase flow and transaction listening.</p>
+<p>Rules: never put App Store Server API private keys in the app, validate signed data on the server, and model idempotency for notifications.</p>
+<p>Verification: test sandbox, production environment separation, notification retries, revoked/refunded transactions, subscription grace periods, and key rotation.</p>
+<h3 id="wallet-orders">Wallet Orders</h3>
+<p>Use Wallet Orders for order tracking experiences in Apple Wallet when the product and merchant flow fit Apple's Wallet order model.</p>
+<p>Rules: keep order state accurate, privacy-preserving, and synchronized with backend status; avoid using Wallet Orders as a generic notification system.</p>
+<p>Verification: test order updates, cancellation/refund states, backend signing, user removal from Wallet, and localization.</p>
+<h2 id="security-and-hardware-access">Security and hardware access</h2>
+<h3 id="security-framework">Security Framework</h3>
+<p>Use the Security framework for Keychain, certificates, identities, trust evaluation, secure transport-adjacent trust objects, and lower-level security services. Prefer CryptoKit for modern cryptographic operations when it fits.</p>
+<p>Rules: store secrets in Keychain, use access control intentionally, avoid custom crypto, and keep certificate-pinning rotation plans realistic.</p>
+<p>Verification: test device lock state, biometric changes, keychain migration, iCloud Keychain expectations, certificate expiry, and failure paths.</p>
+<h3 id="accessorysetupkit">AccessorySetupKit</h3>
+<p>Use AccessorySetupKit for guided setup and authorization of compatible accessories. Route ongoing Bluetooth communication to Core Bluetooth or ExternalAccessory as appropriate.</p>
+<p>Rules: design setup around user consent, accessory discovery limits, and clear recovery from failed pairing.</p>
+<p>Verification: test first setup, re-setup, permission denial, nearby multiple accessories, and accessory firmware differences.</p>
+<h3 id="externalaccessory">ExternalAccessory</h3>
+<p>Use ExternalAccessory for Made for iPhone/iPad accessory communication using supported protocols. Do not use it for generic BLE; use Core Bluetooth for that.</p>
+<p>Rules: verify protocol strings, entitlement needs, connection lifecycle, and background behavior before implementation.</p>
+<p>Verification: test physical accessories, cable/Bluetooth transport, disconnects, background/foreground transitions, and unsupported firmware.</p>
+<h3 id="sensorkit">SensorKit</h3>
+<p>Use SensorKit only when the app has the required entitlement and a legitimate sensor-research or approved data-use case. It is not a general sensor API.</p>
+<p>Rules: verify entitlement availability first, keep consent and privacy language precise, minimize retention, and design data export/deletion.</p>
+<p>Verification: test authorization states, entitlement provisioning, data availability, privacy disclosures, and fallback behavior when unavailable.</p>
+<h2 id="reporting-standard">Reporting standard</h2>
+<p>For any technology in this guide, report with:</p>
+<pre><code class="language-text">Status: VERIFIED / INSPECTED / UNVERIFIED
+Apple source: framework URL from frameworks.json
+Local guide: docs/frameworks/extended-apple-frameworks.md
+Implementation route: framework choice and fallback
+Evidence: build, device/simulator run, entitlement check, Instruments, logs, or static review
+Remaining risk: unavailable hardware, entitlement, account, device, or OS coverage
+</code></pre></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

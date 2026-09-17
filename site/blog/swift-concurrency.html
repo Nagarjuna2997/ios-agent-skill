@@ -1,0 +1,68 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>How can I catch Swift concurrency review findings before accepting an agent’s changes? — iOS Agent Skill</title><meta name="description" content="A real before-and-after MCP review with file and line evidence, plus the limits of text-based concurrency checks."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/blog/swift-concurrency.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="How can I catch Swift concurrency review findings before accepting an agent’s changes?"><meta property="og:description" content="A real before-and-after MCP review with file and line evidence, plus the limits of text-based concurrency checks."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/blog/swift-concurrency.html"><meta property="og:type" content="article"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/blog/swift-concurrency.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "How can I catch Swift concurrency review findings before accepting an agent\u2019s changes?", "description": "A real before-and-after MCP review with file and line evidence, plus the limits of text-based concurrency checks.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/blog/swift-concurrency.html", "dateModified": "2026-09-16", "author": {"@type": "Organization", "name": "iOS Agent Skill project"}, "image": "https://nagarjuna2997.github.io/ios-agent-skill/assets/blog/swift-concurrency.jpg"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Swift reviews · iOS Agent Skill project</p><h1>How can I catch Swift concurrency review findings before accepting an agent’s changes?</h1><p class="lead">A real before-and-after MCP review with file and line evidence, plus the limits of text-based concurrency checks.</p></header><figure><img src="../assets/blog/swift-concurrency.jpg" alt="Editorial illustration for How can I catch Swift concurrency review findings before accepting an agent’s changes?" width="1200" height="600"></figure><div class="article-body"><aside class="article-toc" aria-label="Table of contents"><strong>On this page</strong><ol><li><a href="#why-review-before-accepting-a-change">Why review before accepting a change?</a></li><li><a href="#what-source-did-the-reviewer-inspect">What source did the reviewer inspect?</a></li><li><a href="#which-findings-were-returned">Which findings were returned?</a></li><li><a href="#what-change-was-made">What change was made?</a></li><li><a href="#how-should-i-use-the-result-in-an-app">How should I use the result in an app?</a></li><li><a href="#limits">Limits</a></li><li><a href="#last-verified">Last verified</a></li></ol></aside><section class="workflow" aria-label="Article workflow"><p class="eyebrow">The workflow</p><ol><li><span>01</span>Why review before accepting a change?</li><li><span>02</span>What source did the reviewer inspect?</li><li><span>03</span>Which findings were returned?</li><li><span>04</span>What change was made?</li></ol></section><p>Run a focused concurrency review on the proposed changes, inspect each finding in its isolation context, and then use the compiler and behavior tests to verify the repair. A synthetic Swift model produced two real findings in this walkthrough; a narrower, main-actor-isolated version produced none, which is evidence about the review tool rather than proof of race freedom.</p>
+<h2 id="why-review-before-accepting-a-change">Why review before accepting a change?</h2>
+<p>Agent-generated code can combine patterns from different examples. A model might use observation for UI state while also starting detached work that writes the same state. The important review question is who owns the mutable value and which execution context may access it. Counting occurrences of <code>async</code> does not answer that question.</p>
+<p>The repository documents a focused tool called <code>review_swift_concurrency</code>. It returns file locations, rule identifiers, severities, explanations, and suggested changes. That structure makes a finding easier to investigate than a broad request to improve concurrency. The tool is still heuristic: it reads source patterns rather than constructing the compiler's full isolation model.</p>
+<p>Swift's <a href="https://www.swift.org/migration/documentation/swift-6-concurrency-migration-guide/commonproblems/">concurrency migration guide</a> is the primary reference for language-level diagnosis. The experiment below measures this project's reviewer. It is not a survey establishing which mistakes coding agents make most often.</p>
+<h2 id="what-source-did-the-reviewer-inspect">What source did the reviewer inspect?</h2>
+<p>I created an intentionally small, synthetic fixture called <code>FeedModel.swift</code>. It contains no user app code, networking, or persistence:</p>
+<pre><code class="language-swift">import Observation
+
+@Observable
+final class FeedModel {
+    var title = &quot;&quot;
+    func refresh() {
+        Task.detached { self.title = &quot;Updated&quot; }
+    }
+}
+</code></pre>
+<p>The detached operation has no independent computation to perform. It exists only to assign a string. That makes the example suitable for discussing ownership without pretending that moving expensive work onto the main actor is a general performance solution.</p>
+<p>I connected an MCP client to the published 2.7.0 server and called <code>review_swift_concurrency</code> with the fixture directory as its absolute <code>path</code> argument. This was a real tool call, not an illustration of what a response might look like. The complete response is preserved in <a href="../evidence/blog/concurrency-before.json">the before record</a>.</p>
+<h2 id="which-findings-were-returned">Which findings were returned?</h2>
+<p>The response reported one blocker and one serious finding across one Swift file:</p>
+<table>
+<thead>
+<tr>
+<th>Location</th>
+<th>Rule</th>
+<th>Reported severity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>FeedModel.swift:3</code></td>
+<td><code>observable-without-mainactor</code></td>
+<td>blocker</td>
+</tr>
+<tr>
+<td><code>FeedModel.swift:7</code></td>
+<td><code>task-detached</code></td>
+<td>serious</td>
+</tr>
+</tbody>
+</table>
+<p>Those are the reviewer's classifications. Do not confuse them with compiler diagnostic levels. In particular, observation alone does not establish that every observable type must have an explicit main-actor annotation. Actual ownership, callers, and project isolation settings matter. A reviewer that uses text patterns cannot infer every one of those conditions.</p>
+<p>The second finding points to an operation whose detached execution is unnecessary in this fixture. The repair should preserve the program's intended behavior, not merely remove a keyword until the count turns green. In a real application, identify the work that should run independently, the values it returns, and the isolated state that consumes them.</p>
+<h2 id="what-change-was-made">What change was made?</h2>
+<p>For this UI-state example I made ownership explicit and removed the unnecessary task:</p>
+<pre><code class="language-swift">import Observation
+
+@MainActor
+@Observable
+final class FeedModel {
+    var title = &quot;&quot;
+    func refresh() {
+        title = &quot;Updated&quot;
+    }
+}
+</code></pre>
+<p>The change does not introduce another asynchronous wrapper. Callers now have to respect the model's actor isolation. If a real refresh loads data, keep the loading contract explicit and update the model through its isolation boundary; this tiny example does not implement that service.</p>
+<p>I called the same reviewer against the second fixture. The <a href="../evidence/blog/concurrency-after.json">after record</a> reports zero findings across one file. Both source fixtures are included with the draft so the line references and change can be inspected. There is no hidden rewrite, model scoring step, or manually adjusted result.</p>
+<h2 id="how-should-i-use-the-result-in-an-app">How should I use the result in an app?</h2>
+<p>Start with the changed model and its callers. Determine whether isolation is explicit on the type, inherited through context, or selected by build settings. Then decide whether the suggested annotation describes the intended ownership. A correct fix in one model may be unnecessary or misleading in another.</p>
+<p>Next compile using the application's real Swift language mode and deployment settings. The fixture's successful review does not establish that a view initializer, service, or test can call the repaired model correctly. Those dependencies are precisely where a compiler adds information that the text reviewer lacks.</p>
+<p>Finally exercise the behavior that motivated the edit. A feed refresh should show loading, success, failure, and cancellation states as required by the app. A clean review cannot demonstrate any of them. Keep review output beside build and test results so the acceptance report does not flatten several different checks into a single pass.</p>
+<h2 id="limits">Limits</h2>
+<p>This experiment did not run a coding model, compile these fixtures, or measure runtime races. It does not establish an agent error rate or a token-saving advantage. The published reviewer's explanatory wording is stronger than the evidence its pattern matching can prove; interpret findings as investigation leads. A file-level annotation can also conceal a problem in another type in the same file. Zero findings means no matching rule fired, not that all concurrency behavior is correct.</p>
+<h2 id="last-verified">Last verified</h2>
+<p>September 16, 2026, local time. Published <code>ios-agent-mcp</code> 2.7.0, Node.js 24.15.0, actual stdio tool calls. Repository sources: <code>docs/mcp/tools.md</code>, <code>docs/mcp/examples.md</code>, and <code>docs/evidence-and-scope.md</code>.</p>
+<p>Example project: <a href="https://github.com/Nagarjuna2997/ios-agent-skill">ios-agent-skill</a>.</p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

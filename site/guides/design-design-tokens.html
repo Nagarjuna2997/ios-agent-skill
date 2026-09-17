@@ -1,0 +1,724 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Design Tokens, Adaptive Color, and Liquid Glass — iOS Agent Skill</title><meta name="description" content="Repository guidance for Design Tokens, Adaptive Color, and Liquid Glass. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/design-design-tokens.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="Design Tokens, Adaptive Color, and Liquid Glass"><meta property="og:description" content="Repository guidance for Design Tokens, Adaptive Color, and Liquid Glass. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/design-design-tokens.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "Design Tokens, Adaptive Color, and Liquid Glass", "description": "Repository guidance for Design Tokens, Adaptive Color, and Liquid Glass. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/design-design-tokens.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Design · Reference guide</p><h1>Design Tokens, Adaptive Color, and Liquid Glass</h1><p class="lead">Repository guidance for Design Tokens, Adaptive Color, and Liquid Glass. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/design/design-tokens.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#1-the-three-tier-token-architecture">1. The Three-Tier Token Architecture</a><ul>
+<li><a href="#implementation">Implementation</a></li>
+<li><a href="#injecting-the-theme">Injecting the theme</a></li>
+<li><a href="#tier-3-component-tokens-as-viewmodifiers">Tier 3 — component tokens as ViewModifiers</a></li>
+<li><a href="#anti-patterns">Anti-patterns</a></li>
+</ul>
+</li>
+<li><a href="#2-dark-mode-compliance">2. Dark Mode Compliance</a><ul>
+<li><a href="#prefer-semantic-system-colors-for-surfaces-and-text">Prefer semantic system colors for surfaces and text</a></li>
+<li><a href="#custom-brand-colors-need-both-variants">Custom brand colors need both variants</a></li>
+<li><a href="#elevation-reads-differently-in-each-mode">Elevation reads differently in each mode</a></li>
+<li><a href="#verify-dont-assume">Verify, don't assume</a></li>
+</ul>
+</li>
+<li><a href="#3-dynamic-type-compliance">3. Dynamic Type Compliance</a><ul>
+<li><a href="#never-use-a-fixed-point-size">Never use a fixed point size</a></li>
+<li><a href="#layouts-must-reflow-not-clip">Layouts must reflow, not clip</a></li>
+<li><a href="#cap-dynamic-type-only-where-it-is-genuinely-unavoidable">Cap Dynamic Type only where it is genuinely unavoidable</a></li>
+<li><a href="#compliance-checklist">Compliance checklist</a></li>
+<li><a href="#respect-the-other-accessibility-settings-too">Respect the other accessibility settings too</a></li>
+</ul>
+</li>
+<li><a href="#4-materials-and-liquid-glass">4. Materials and Liquid Glass</a><ul>
+<li><a href="#the-one-rule-for-any-blur-effect">The one rule for any blur effect</a></li>
+<li><a href="#liquid-glass-ios-26-refined-in-ios-27">Liquid Glass (iOS 26+, refined in iOS 27)</a></li>
+<li><a href="#availability-fallback">Availability fallback</a></li>
+</ul>
+</li>
+<li><a href="#5-contrast-verification">5. Contrast Verification</a></li>
+<li><a href="#quick-reference">Quick Reference</a></li>
+</ul>
+</div>
+</aside><p>For executable token JSON → asset catalogs and editable SVG → PNG icons, see <a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/design/asset-generation.md">asset generation</a>.
+<strong>Load this when:</strong> building or reviewing an app's design system, adding a theme,
+auditing dark-mode or Dynamic Type compliance, or applying glass/material
+effects.</p>
+<p><code>docs/design/color-system.md</code> gives you <em>palettes</em> (hex values, gradients).
+This document gives you the <em>system</em>: how those values are structured so a single
+change propagates everywhere, and how the result stays legible in dark mode, at
+accessibility text sizes, and under increased-contrast settings.</p>
+<hr />
+<h2 id="1-the-three-tier-token-architecture">1. The Three-Tier Token Architecture</h2>
+<p>Never let a raw color or number appear at a call site. Tokens flow in one
+direction through three tiers:</p>
+<pre><code>Tier 1 — Primitive   Tier 2 — Semantic        Tier 3 — Component
+(raw values)          (intent)                  (usage)
+blue500  #0A84FF  →   accent                →   Button.background
+gray900  #1C1C1E  →   textPrimary           →   Card.titleColor
+space4   16pt     →   spacing.contentInset  →   Card.padding
+</code></pre>
+<p><strong>Rules</strong></p>
+<ul>
+<li>Views reference <strong>Tier 3 or Tier 2 only</strong>. A view that names <code>blue500</code> is a bug.</li>
+<li>Tier 1 is <code>private</code> to the token module. It has no dark-mode variant — it is
+  literally just a number.</li>
+<li>Tier 2 is where light/dark, high-contrast, and theme switching resolve.</li>
+<li>Adding a theme means adding one Tier 2 implementation, not editing views.</li>
+</ul>
+<h3 id="implementation">Implementation</h3>
+<pre><code class="language-swift">// DesignSystem/Tokens/Primitives.swift
+// Tier 1 — raw values. Never referenced from a View.
+enum Primitive {
+    static let blue500  = Color(hex: 0x0A84FF)
+    static let blue600  = Color(hex: 0x0060DF)
+    static let indigo500 = Color(hex: 0x5E5CE6)
+    static let red500   = Color(hex: 0xFF3B30)
+    static let green500 = Color(hex: 0x34C759)
+    static let amber500 = Color(hex: 0xFF9F0A)
+
+    // Spacing scale — a 4pt rhythm. Nothing else is permitted.
+    static let space1: CGFloat = 4
+    static let space2: CGFloat = 8
+    static let space3: CGFloat = 12
+    static let space4: CGFloat = 16
+    static let space5: CGFloat = 24
+    static let space6: CGFloat = 32
+    static let space7: CGFloat = 48
+
+    // Radii
+    static let radiusS: CGFloat = 8
+    static let radiusM: CGFloat = 16
+    static let radiusL: CGFloat = 24
+}
+
+// THE canonical hex initialiser for this skill. Defined here, in the token
+// layer, and nowhere else — `color-system.md` and
+// `templates/common-patterns/design-system.swift` reference this file rather
+// than redeclaring it. Two files declaring `init(hex: String)` with different
+// bodies is not a style disagreement: copy both into one target and the
+// compiler rejects it with `invalid redeclaration of 'init(hex:)'`.
+extension Color {
+    /// Hex as an integer literal: `Color(hex: 0x6C63FF)`.
+    ///
+    /// Preferred over the string form because a typo is a compile error rather
+    /// than a runtime surprise — `0x6C63FZ` does not build, `&quot;6C63FZ&quot;` does.
+    init(hex: UInt32, opacity: Double = 1) {
+        self.init(
+            .sRGB,
+            red:   Double((hex &gt;&gt; 16) &amp; 0xFF) / 255,
+            green: Double((hex &gt;&gt;  8) &amp; 0xFF) / 255,
+            blue:  Double( hex        &amp; 0xFF) / 255,
+            opacity: opacity
+        )
+    }
+
+    /// Hex as a string: `Color(hex: &quot;6C63FF&quot;)`, with or without `#`,
+    /// 6 digits (RGB) or 8 (RRGGBBAA).
+    ///
+    /// Exists because designers hand over strings and remote themes arrive as
+    /// JSON. A malformed value traps in DEBUG and renders **magenta** in
+    /// release — never black. The earlier versions of this initialiser fell
+    /// back to black, which is indistinguishable from a deliberate colour and
+    /// so shipped unnoticed; magenta appears nowhere in any of these palettes
+    /// and is impossible to mistake for intent.
+    init(hex string: String, opacity: Double = 1) {
+        let cleaned = string
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .replacingOccurrences(of: &quot;#&quot;, with: &quot;&quot;)
+
+        var value: UInt64 = 0
+        let scanned = Scanner(string: cleaned).scanHexInt64(&amp;value)
+
+        switch (scanned, cleaned.count) {
+        case (true, 6):
+            self.init(hex: UInt32(truncatingIfNeeded: value), opacity: opacity)
+        case (true, 8):
+            let alpha = Double(value &amp; 0xFF) / 255
+            self.init(hex: UInt32(truncatingIfNeeded: value &gt;&gt; 8), opacity: opacity * alpha)
+        default:
+            assertionFailure(&quot;Malformed hex colour literal: \(string)&quot;)
+            self.init(hex: 0xFF00FF, opacity: opacity)
+        }
+    }
+}
+</code></pre>
+<pre><code class="language-swift">// DesignSystem/Tokens/Theme.swift
+// Tier 2 — semantic intent. This is the swappable layer.
+protocol Theme: Sendable {
+    // Surfaces
+    var background: Color { get }        // the page
+    var surface: Color { get }           // cards, sheets
+    var surfaceElevated: Color { get }   // popovers, menus
+
+    // Content — must meet contrast against the surface it sits on
+    var textPrimary: Color { get }
+    var textSecondary: Color { get }
+    var textOnAccent: Color { get }
+
+    // Intent
+    var accent: Color { get }
+    var accentPressed: Color { get }
+    var destructive: Color { get }
+    var success: Color { get }
+    var warning: Color { get }
+
+    // Separators and elevation
+    var separator: Color { get }
+    var shadow: Color { get }
+}
+
+struct OceanTheme: Theme {
+    // Apple's semantic colors already resolve light/dark AND increased contrast.
+    // Prefer them for surfaces and text; reserve custom hex for brand accents.
+    var background      = Color(.systemBackground)
+    var surface         = Color(.secondarySystemBackground)
+    var surfaceElevated = Color(.tertiarySystemBackground)
+
+    var textPrimary   = Color(.label)
+    var textSecondary = Color(.secondaryLabel)
+    var textOnAccent  = Color.white
+
+    var accent        = Primitive.blue500
+    var accentPressed = Primitive.blue600
+    var destructive   = Color(.systemRed)
+    var success       = Color(.systemGreen)
+    var warning       = Color(.systemOrange)
+
+    var separator = Color(.separator)
+    var shadow    = Color.black.opacity(0.08)
+}
+</code></pre>
+<pre><code class="language-swift">// DesignSystem/Tokens/Spacing.swift — Tier 2 for layout
+enum Space {
+    static let hairline    = Primitive.space1   // icon-to-label
+    static let tight       = Primitive.space2   // within a control
+    static let element     = Primitive.space3   // between related elements
+    static let contentInset = Primitive.space4  // card padding, screen margins
+    static let section     = Primitive.space5   // between sections
+    static let major       = Primitive.space6   // above a page title
+}
+
+enum Radius {
+    static let control = Primitive.radiusS      // buttons, chips
+    static let card    = Primitive.radiusM      // cards, tiles
+    static let sheet   = Primitive.radiusL      // modals
+}
+</code></pre>
+<h3 id="injecting-the-theme">Injecting the theme</h3>
+<pre><code class="language-swift">private struct ThemeKey: EnvironmentKey {
+    static let defaultValue: any Theme = OceanTheme()
+}
+
+extension EnvironmentValues {
+    var theme: any Theme {
+        get { self[ThemeKey.self] }
+        set { self[ThemeKey.self] = newValue }
+    }
+}
+
+@main
+struct MyApp: App {
+    var body: some Scene {
+        WindowGroup {
+            RootView().environment(\.theme, OceanTheme())
+        }
+    }
+}
+</code></pre>
+<h3 id="tier-3-component-tokens-as-viewmodifiers">Tier 3 — component tokens as ViewModifiers</h3>
+<pre><code class="language-swift">struct CardStyle: ViewModifier {
+    @Environment(\.theme) private var theme
+
+    func body(content: Content) -&gt; some View {
+        content
+            .padding(Space.contentInset)
+            .background(theme.surface, in: .rect(cornerRadius: Radius.card))
+            .shadow(color: theme.shadow, radius: 8, y: 4)
+    }
+}
+
+extension View {
+    func cardStyle() -&gt; some View { modifier(CardStyle()) }
+}
+
+// Usage — no raw values anywhere.
+VStack(alignment: .leading, spacing: Space.element) {
+    Text(&quot;Monthly total&quot;).font(.headline).foregroundStyle(theme.textPrimary)
+    Text(&quot;$1,240&quot;).font(.largeTitle.bold()).foregroundStyle(theme.accent)
+}
+.cardStyle()
+</code></pre>
+<h3 id="anti-patterns">Anti-patterns</h3>
+<pre><code class="language-swift">// WRONG — raw values at the call site. Changing the brand means grepping.
+.padding(16)
+.background(Color(red: 0.04, green: 0.52, blue: 1.0))
+.cornerRadius(16)
+
+// WRONG — a Tier 1 primitive leaking into a view.
+.foregroundStyle(Primitive.blue500)
+
+// WRONG — a semantic name that describes appearance, not intent.
+var lightGray: Color { … }        // what happens in dark mode?
+var textSecondary: Color { … }    // correct
+
+// RIGHT
+.padding(Space.contentInset)
+.background(theme.accent, in: .rect(cornerRadius: Radius.card))
+</code></pre>
+<hr />
+<h2 id="2-dark-mode-compliance">2. Dark Mode Compliance</h2>
+<h3 id="prefer-semantic-system-colors-for-surfaces-and-text">Prefer semantic system colors for surfaces and text</h3>
+<p>They adapt to light/dark <strong>and</strong> to Increase Contrast and Reduce Transparency —
+three accessibility settings for the price of one.</p>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Token</th>
+<th>Light</th>
+<th>Dark</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Page</td>
+<td><code>Color(.systemBackground)</code></td>
+<td>white</td>
+<td>black</td>
+</tr>
+<tr>
+<td>Card</td>
+<td><code>Color(.secondarySystemBackground)</code></td>
+<td>light gray</td>
+<td>dark gray</td>
+</tr>
+<tr>
+<td>Elevated</td>
+<td><code>Color(.tertiarySystemBackground)</code></td>
+<td>white</td>
+<td>lighter gray</td>
+</tr>
+<tr>
+<td>Primary text</td>
+<td><code>Color(.label)</code></td>
+<td>near-black</td>
+<td>near-white</td>
+</tr>
+<tr>
+<td>Secondary text</td>
+<td><code>Color(.secondaryLabel)</code></td>
+<td>60%</td>
+<td>60%</td>
+</tr>
+<tr>
+<td>Divider</td>
+<td><code>Color(.separator)</code></td>
+<td>thin gray</td>
+<td>thin gray</td>
+</tr>
+</tbody>
+</table>
+<h3 id="custom-brand-colors-need-both-variants">Custom brand colors need both variants</h3>
+<p>A brand accent tuned for white backgrounds usually fails on black. Define both
+and resolve at render time:</p>
+<pre><code class="language-swift">extension Color {
+    /// Resolves per trait collection — works in both modes without an asset catalog.
+    static func adaptive(light: Color, dark: Color) -&gt; Color {
+        Color(UIColor { traits in
+            traits.userInterfaceStyle == .dark ? UIColor(dark) : UIColor(light)
+        })
+    }
+}
+
+struct MidnightTheme: Theme {
+    var accent = Color.adaptive(
+        light: Primitive.blue500,   // vivid on white
+        dark:  Color(hex: 0x64B5FF) // lightened so it stays visible on black
+    )
+    // …
+}
+</code></pre>
+<p>The asset-catalog equivalent (<code>Color("Accent")</code> with Any/Dark appearances) is
+preferable when designers own the values; the code form is preferable when the
+theme is swappable at runtime.</p>
+<h3 id="elevation-reads-differently-in-each-mode">Elevation reads differently in each mode</h3>
+<ul>
+<li><strong>Light mode:</strong> elevation = shadow. A card is white on light gray with
+  <code>.shadow(color: theme.shadow, radius: 8, y: 4)</code>.</li>
+<li><strong>Dark mode:</strong> shadows are nearly invisible on black. Elevation = a <em>lighter</em>
+  surface. <code>secondarySystemBackground</code> already does this; do not add a heavier
+  shadow to compensate.</li>
+</ul>
+<pre><code class="language-swift">@Environment(\.colorScheme) private var scheme
+
+.shadow(color: theme.shadow, radius: scheme == .dark ? 0 : 8, y: 4)
+.overlay(                                  // a hairline stroke reads better in dark
+    RoundedRectangle(cornerRadius: Radius.card)
+        .strokeBorder(theme.separator, lineWidth: scheme == .dark ? 1 : 0)
+)
+</code></pre>
+<h3 id="verify-dont-assume">Verify, don't assume</h3>
+<pre><code class="language-swift">#Preview(&quot;Light&quot;) { ContentView().preferredColorScheme(.light) }
+#Preview(&quot;Dark&quot;)  { ContentView().preferredColorScheme(.dark) }
+#Preview(&quot;Increased Contrast&quot;) {
+    ContentView().environment(\.colorSchemeContrast, .increased)
+}
+</code></pre>
+<p>Every screen ships with all three previews. A pairing that only exists in one
+mode is not done.</p>
+<hr />
+<h2 id="3-dynamic-type-compliance">3. Dynamic Type Compliance</h2>
+<h3 id="never-use-a-fixed-point-size">Never use a fixed point size</h3>
+<pre><code class="language-swift">// WRONG — ignores the user's text size entirely.
+.font(.system(size: 17))
+.frame(height: 44)                       // clips at accessibility sizes
+
+// RIGHT — semantic styles scale automatically.
+.font(.headline)
+.frame(minHeight: 44)                    // a floor, not a ceiling
+
+// RIGHT — a custom font that still scales.
+.font(.custom(&quot;Inter-SemiBold&quot;, size: 17, relativeTo: .headline))
+</code></pre>
+<h3 id="layouts-must-reflow-not-clip">Layouts must reflow, not clip</h3>
+<p>The accessibility sizes (<code>.accessibility1</code> … <code>.accessibility5</code>) can triple text
+height. Horizontal rows must become vertical stacks.</p>
+<pre><code class="language-swift">struct StatRow: View {
+    @Environment(\.dynamicTypeSize) private var typeSize
+    let label: String
+    let value: String
+
+    var body: some View {
+        // ViewThatFits picks the first layout that fits — no manual breakpoint.
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: Space.element) {
+                Text(label)
+                Spacer()
+                Text(value).fontWeight(.semibold)
+            }
+            VStack(alignment: .leading, spacing: Space.hairline) {
+                Text(label)
+                Text(value).fontWeight(.semibold)
+            }
+        }
+    }
+}
+
+// Or branch explicitly when the two layouts differ structurally.
+if typeSize.isAccessibilitySize {
+    VStack(alignment: .leading) { icon; label }
+} else {
+    HStack { icon; label }
+}
+</code></pre>
+<h3 id="cap-dynamic-type-only-where-it-is-genuinely-unavoidable">Cap Dynamic Type only where it is genuinely unavoidable</h3>
+<pre><code class="language-swift">// Acceptable: a fixed-height chart axis label or a tab bar item.
+.dynamicTypeSize(...DynamicTypeSize.accessibility1)
+
+// NOT acceptable: body copy, form fields, buttons, or list rows.
+.dynamicTypeSize(.large)   // hard-pins every user to one size — never do this
+</code></pre>
+<h3 id="compliance-checklist">Compliance checklist</h3>
+<ul>
+<li>[ ] No <code>.font(.system(size:))</code> without <code>relativeTo:</code>.</li>
+<li>[ ] No fixed <code>.frame(height:)</code> on a container holding text — use <code>minHeight</code>.</li>
+<li>[ ] Every <code>HStack</code> of label+value has a vertical fallback (<code>ViewThatFits</code> or
+      an <code>isAccessibilitySize</code> branch).</li>
+<li>[ ] Icons paired with text use <code>.imageScale(.medium)</code> or a scaled symbol so
+      they grow together.</li>
+<li>[ ] Tap targets stay ≥ 44×44pt at every size.</li>
+<li>[ ] Previewed at <code>.xSmall</code> <strong>and</strong> <code>.accessibility5</code>:</li>
+</ul>
+<pre><code class="language-swift">#Preview(&quot;XS&quot;)  { ContentView().dynamicTypeSize(.xSmall) }
+#Preview(&quot;A11y5&quot;) { ContentView().dynamicTypeSize(.accessibility5) }
+</code></pre>
+<h3 id="respect-the-other-accessibility-settings-too">Respect the other accessibility settings too</h3>
+<pre><code class="language-swift">@Environment(\.accessibilityReduceMotion) private var reduceMotion
+@Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+
+.animation(reduceMotion ? nil : .spring(duration: 0.3), value: isExpanded)
+.background(reduceTransparency ? AnyShapeStyle(theme.surface)
+                               : AnyShapeStyle(.ultraThinMaterial))
+</code></pre>
+<hr />
+<h2 id="4-materials-and-liquid-glass">4. Materials and Liquid Glass</h2>
+<h3 id="the-one-rule-for-any-blur-effect">The one rule for any blur effect</h3>
+<p><strong>A material is only correct when there is content behind it.</strong> Applied to a
+solid background it renders as flat gray mud — the single most common way a
+SwiftUI UI looks unfinished.</p>
+<pre><code class="language-swift">// WRONG — nothing behind it. This is just a muddy gray rectangle.
+VStack { … }
+    .background(.ultraThinMaterial)
+    .background(theme.background)
+
+// RIGHT — content scrolls beneath a floating bar.
+ScrollView { content }
+    .safeAreaInset(edge: .bottom) {
+        HStack { … }
+            .padding(Space.contentInset)
+            .background(.ultraThinMaterial)
+    }
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Material</th>
+<th>Blur</th>
+<th>Use for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.ultraThinMaterial</code></td>
+<td>lightest</td>
+<td>Floating toolbars over content</td>
+</tr>
+<tr>
+<td><code>.thinMaterial</code></td>
+<td>light</td>
+<td>Sheet backgrounds, overlays</td>
+</tr>
+<tr>
+<td><code>.regularMaterial</code></td>
+<td>medium</td>
+<td>Sidebars, popovers</td>
+</tr>
+<tr>
+<td><code>.thickMaterial</code></td>
+<td>heavy</td>
+<td>Modal scrims</td>
+</tr>
+<tr>
+<td><code>.bar</code></td>
+<td>system</td>
+<td>Custom nav/tab bars</td>
+</tr>
+</tbody>
+</table>
+<h3 id="liquid-glass-ios-26-refined-in-ios-27">Liquid Glass (iOS 26+, refined in iOS 27)</h3>
+<blockquote>
+<p><strong>Adopting it in an existing app is a different job.</strong> This section is about
+applying the material to a view you own. For what an SDK rebuild changes on
+its own — custom bar backgrounds that now fight the system, the scroll edge
+effect, title-case section headers, layered app icons, and the
+<code>UIDesignRequiresCompatibility</code> escape hatch — see
+<code>docs/design/liquid-glass-adoption.md</code>.</p>
+</blockquote>
+<p>Liquid Glass is a dynamic material that refracts and reflects what is behind it
+and responds to motion. It supersedes hand-rolled "glassmorphism" (a blur plus a
+white stroke plus a gradient), which you should stop writing.</p>
+<blockquote>
+<p><strong>Availability: guard on iOS 26, not iOS 27.</strong> The Liquid Glass APIs
+(<code>glassEffect</code>, <code>GlassEffectContainer</code>, <code>glassEffectID</code>, <code>.buttonStyle(.glass)</code>)
+were introduced in <strong>iOS 26</strong>. iOS 27 continues and refines the design system,
+but it did not reintroduce the API. Writing <code>if #available(iOS 27, *)</code> around
+<code>glassEffect</code> would drop every iOS 26 device to the fallback path for no reason
+— a silent regression for a large installed base. <strong>Guard on the version where
+the symbol became available, never on the newest version you happen to be
+building with.</strong> That rule holds for every API, not just this one.</p>
+</blockquote>
+<pre><code class="language-swift">if #available(iOS 26.0, *) {
+    Text(&quot;Now Playing&quot;)
+        .padding(Space.contentInset)
+        .glassEffect()                                    // .regular, in a Capsule
+}
+
+// Shape, tint, and interactivity
+.glassEffect(
+    .regular
+        .tint(theme.accent.opacity(0.7))
+        .interactive(),                                   // reacts to touch
+    in: .rect(cornerRadius: Radius.card)
+)
+
+// Buttons
+Button(&quot;Play&quot;) { … }
+    .buttonStyle(.glass)                                  // standard glass
+Button(&quot;Subscribe&quot;) { … }
+    .buttonStyle(.glassProminent)                         // accent-filled glass
+</code></pre>
+<p><strong>Grouping and morphing.</strong> Sibling glass elements must live in a
+<code>GlassEffectContainer</code> so they blend and merge instead of stacking blurs — each
+independent <code>.glassEffect()</code> is a separate expensive render pass.</p>
+<pre><code class="language-swift">@available(iOS 26.0, *)
+struct PlayerControls: View {
+    @Namespace private var namespace
+    @State private var isExpanded = false
+
+    var body: some View {
+        GlassEffectContainer(spacing: Space.tight) {
+            HStack(spacing: Space.tight) {
+                Button { … } label: { Image(systemName: &quot;backward.fill&quot;) }
+                    .glassEffect()
+                    .glassEffectID(&quot;back&quot;, in: namespace)
+
+                Button { isExpanded.toggle() } label: {
+                    Image(systemName: isExpanded ? &quot;pause.fill&quot; : &quot;play.fill&quot;)
+                }
+                .glassEffect()
+                .glassEffectID(&quot;play&quot;, in: namespace)
+
+                if isExpanded {
+                    Button { … } label: { Image(systemName: &quot;forward.fill&quot;) }
+                        .glassEffect()
+                        .glassEffectID(&quot;forward&quot;, in: namespace)
+                }
+            }
+        }
+        .animation(.spring(duration: 0.4), value: isExpanded)
+    }
+}
+</code></pre>
+<p><strong>Guidelines</strong></p>
+<ul>
+<li>Glass goes on the <strong>navigation layer</strong> — floating controls, toolbars, tab bars,
+  overlays. Not on content itself, and never on a whole scrolling list.</li>
+<li>Never place glass on glass. One layer, over content.</li>
+<li>Text on glass uses <code>Color(.label)</code>, never a reduced opacity. The material
+  already lowers effective contrast; do not lower it further.</li>
+<li>Keep the count small. Every glass surface is a render pass; a grid of twenty
+  glass cards will drop frames on older devices.</li>
+</ul>
+<h3 id="availability-fallback">Availability fallback</h3>
+<p>Ship one modifier, branch once:</p>
+<pre><code class="language-swift">extension View {
+    /// Liquid Glass on iOS 26+, an equivalent material treatment below it.
+    func adaptiveGlass(cornerRadius: CGFloat = Radius.card) -&gt; some View {
+        modifier(AdaptiveGlass(cornerRadius: cornerRadius))
+    }
+}
+
+private struct AdaptiveGlass: ViewModifier {
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+    @Environment(\.theme) private var theme
+    let cornerRadius: CGFloat
+
+    func body(content: Content) -&gt; some View {
+        if reduceTransparency {
+            // Accessibility wins over aesthetics — opaque surface, no blur.
+            content.background(theme.surface, in: .rect(cornerRadius: cornerRadius))
+        } else if #available(iOS 26.0, *) {
+            content.glassEffect(.regular, in: .rect(cornerRadius: cornerRadius))
+        } else {
+            content
+                .background(.ultraThinMaterial, in: .rect(cornerRadius: cornerRadius))
+                .overlay(
+                    RoundedRectangle(cornerRadius: cornerRadius)
+                        .strokeBorder(.white.opacity(0.15), lineWidth: 1)
+                )
+        }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="5-contrast-verification">5. Contrast Verification</h2>
+<p>The readability rules in <code>SKILL.md</code> are testable. Compute the ratio rather than
+eyeballing it:</p>
+<pre><code class="language-swift">extension Color {
+    /// WCAG relative luminance.
+    private var relativeLuminance: Double {
+        let components = UIColor(self).cgColor.components ?? [0, 0, 0]
+        func channel(_ value: CGFloat) -&gt; Double {
+            let v = Double(value)
+            return v &lt;= 0.03928 ? v / 12.92 : pow((v + 0.055) / 1.055, 2.4)
+        }
+        return 0.2126 * channel(components[0])
+             + 0.7152 * channel(components[safe: 1] ?? components[0])
+             + 0.0722 * channel(components[safe: 2] ?? components[0])
+    }
+
+    /// WCAG contrast ratio, 1.0 (identical) to 21.0 (black on white).
+    func contrastRatio(against other: Color) -&gt; Double {
+        let a = relativeLuminance, b = other.relativeLuminance
+        let lighter = max(a, b), darker = min(a, b)
+        return (lighter + 0.05) / (darker + 0.05)
+    }
+}
+
+private extension Array {
+    subscript(safe index: Int) -&gt; Element? {
+        indices.contains(index) ? self[index] : nil
+    }
+}
+</code></pre>
+<p>Then assert it in the test target so a palette change cannot regress
+accessibility:</p>
+<pre><code class="language-swift">@Test(&quot;theme meets WCAG AA in both modes&quot;)
+func themeContrast() {
+    let theme = OceanTheme()
+    #expect(theme.textPrimary.contrastRatio(against: theme.surface) &gt;= 4.5)
+    #expect(theme.textOnAccent.contrastRatio(against: theme.accent) &gt;= 4.5)
+    #expect(theme.textSecondary.contrastRatio(against: theme.surface) &gt;= 4.5)
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Content</th>
+<th>Minimum ratio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Body text</td>
+<td>4.5:1</td>
+</tr>
+<tr>
+<td>Large text (18pt+, or 14pt bold)</td>
+<td>3:1</td>
+</tr>
+<tr>
+<td>UI controls, icons, focus rings</td>
+<td>3:1</td>
+</tr>
+<tr>
+<td>Decorative, disabled</td>
+<td>no requirement</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="quick-reference">Quick Reference</h2>
+<table>
+<thead>
+<tr>
+<th>Need</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Page background</td>
+<td><code>theme.background</code> → <code>Color(.systemBackground)</code></td>
+</tr>
+<tr>
+<td>Card background</td>
+<td><code>theme.surface</code> → <code>Color(.secondarySystemBackground)</code></td>
+</tr>
+<tr>
+<td>Any spacing value</td>
+<td><code>Space.*</code> — never a literal</td>
+</tr>
+<tr>
+<td>Any corner radius</td>
+<td><code>Radius.*</code> — never a literal</td>
+</tr>
+<tr>
+<td>Brand accent</td>
+<td><code>Color.adaptive(light:dark:)</code> or an asset-catalog color</td>
+</tr>
+<tr>
+<td>Floating bar over content</td>
+<td><code>.ultraThinMaterial</code>, or <code>.glassEffect()</code> on iOS 26+</td>
+</tr>
+<tr>
+<td>Multiple glass elements</td>
+<td>one <code>GlassEffectContainer</code></td>
+</tr>
+<tr>
+<td>Text size</td>
+<td>semantic styles, or <code>.custom(_:size:relativeTo:)</code></td>
+</tr>
+<tr>
+<td>Row that must reflow</td>
+<td><code>ViewThatFits</code> or <code>typeSize.isAccessibilitySize</code></td>
+</tr>
+<tr>
+<td>Verifying a pairing</td>
+<td><code>contrastRatio(against:)</code> in a test</td>
+</tr>
+</tbody>
+</table></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

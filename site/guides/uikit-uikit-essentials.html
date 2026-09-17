@@ -1,0 +1,364 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>UIKit Essentials — iOS Agent Skill</title><meta name="description" content="Repository guidance for UIKit. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/uikit-uikit-essentials.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="UIKit Essentials"><meta property="og:description" content="Repository guidance for UIKit. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/uikit-uikit-essentials.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "UIKit Essentials", "description": "Repository guidance for UIKit. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/uikit-uikit-essentials.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Core UI and Apps · Reference guide</p><h1>UIKit Essentials</h1><p class="lead">Repository guidance for UIKit. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/uikit/uikit-essentials.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#uiviewcontroller-lifecycle">UIViewController Lifecycle</a></li>
+<li><a href="#uiview-and-auto-layout">UIView and Auto Layout</a><ul>
+<li><a href="#programmatic-constraints-with-anchors">Programmatic Constraints with Anchors</a></li>
+<li><a href="#uistackview">UIStackView</a></li>
+</ul>
+</li>
+<li><a href="#uitableview-with-diffable-data-source">UITableView with Diffable Data Source</a></li>
+<li><a href="#uicollectionview-compositional-layout">UICollectionView Compositional Layout</a></li>
+<li><a href="#uinavigationcontroller-and-uitabbarcontroller">UINavigationController and UITabBarController</a></li>
+<li><a href="#keyboard-handling-and-uiresponder-chain">Keyboard Handling and UIResponder Chain</a></li>
+</ul>
+</div>
+</aside><h2 id="uiviewcontroller-lifecycle">UIViewController Lifecycle</h2>
+<pre><code class="language-swift">class MyViewController: UIViewController {
+
+    // Called once when the view is loaded into memory
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setupUI()
+        fetchInitialData()
+    }
+
+    // Called every time the view is about to appear (animated or not)
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: animated)
+    }
+
+    // Called after the view has fully appeared on screen
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        startAnimations()
+    }
+
+    // Called when the view is about to be removed from the hierarchy
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        stopAnimations()
+    }
+
+    // Called after the view has been removed
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        cancelPendingRequests()
+    }
+
+    // Called when the view controller's view is released from memory
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+}
+</code></pre>
+<h2 id="uiview-and-auto-layout">UIView and Auto Layout</h2>
+<h3 id="programmatic-constraints-with-anchors">Programmatic Constraints with Anchors</h3>
+<pre><code class="language-swift">class ProfileView: UIViewController {
+
+    private let avatarImageView: UIImageView = {
+        let iv = UIImageView()
+        iv.translatesAutoresizingMaskIntoConstraints = false
+        iv.contentMode = .scaleAspectFill
+        iv.clipsToBounds = true
+        iv.layer.cornerRadius = 40
+        return iv
+    }()
+
+    private let nameLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = .preferredFont(forTextStyle: .headline)
+        label.adjustsFontForContentSizeCategory = true
+        return label
+    }()
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.addSubview(avatarImageView)
+        view.addSubview(nameLabel)
+
+        NSLayoutConstraint.activate([
+            avatarImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+            avatarImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            avatarImageView.widthAnchor.constraint(equalToConstant: 80),
+            avatarImageView.heightAnchor.constraint(equalToConstant: 80),
+
+            nameLabel.topAnchor.constraint(equalTo: avatarImageView.bottomAnchor, constant: 12),
+            nameLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+        ])
+    }
+}
+</code></pre>
+<h3 id="uistackview">UIStackView</h3>
+<pre><code class="language-swift">func createFormStack() -&gt; UIStackView {
+    let emailField = UITextField()
+    emailField.placeholder = &quot;Email&quot;
+    emailField.borderStyle = .roundedRect
+
+    let passwordField = UITextField()
+    passwordField.placeholder = &quot;Password&quot;
+    passwordField.borderStyle = .roundedRect
+    passwordField.isSecureTextEntry = true
+
+    let loginButton = UIButton(type: .system)
+    loginButton.setTitle(&quot;Log In&quot;, for: .normal)
+    loginButton.configuration = .filled()
+
+    let stack = UIStackView(arrangedSubviews: [emailField, passwordField, loginButton])
+    stack.axis = .vertical
+    stack.spacing = 16
+    stack.alignment = .fill
+    stack.distribution = .fill
+    stack.translatesAutoresizingMaskIntoConstraints = false
+    return stack
+}
+</code></pre>
+<h2 id="uitableview-with-diffable-data-source">UITableView with Diffable Data Source</h2>
+<pre><code class="language-swift">class ContactsViewController: UIViewController {
+
+    enum Section { case main }
+
+    struct Contact: Hashable {
+        let id: UUID
+        let name: String
+        let email: String
+    }
+
+    private var tableView: UITableView!
+    private var dataSource: UITableViewDiffableDataSource&lt;Section, Contact&gt;!
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        configureTableView()
+        configureDataSource()
+        applyInitialSnapshot()
+    }
+
+    private func configureTableView() {
+        tableView = UITableView(frame: view.bounds, style: .insetGrouped)
+        tableView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: &quot;cell&quot;)
+        view.addSubview(tableView)
+    }
+
+    private func configureDataSource() {
+        dataSource = UITableViewDiffableDataSource&lt;Section, Contact&gt;(
+            tableView: tableView
+        ) { tableView, indexPath, contact in
+            let cell = tableView.dequeueReusableCell(withIdentifier: &quot;cell&quot;, for: indexPath)
+            var content = cell.defaultContentConfiguration()
+            content.text = contact.name
+            content.secondaryText = contact.email
+            cell.contentConfiguration = content
+            return cell
+        }
+    }
+
+    private func applyInitialSnapshot() {
+        var snapshot = NSDiffableDataSourceSnapshot&lt;Section, Contact&gt;()
+        snapshot.appendSections([.main])
+        snapshot.appendItems([
+            Contact(id: UUID(), name: &quot;Alice&quot;, email: &quot;alice@example.com&quot;),
+            Contact(id: UUID(), name: &quot;Bob&quot;, email: &quot;bob@example.com&quot;),
+        ])
+        dataSource.apply(snapshot, animatingDifferences: true)
+    }
+}
+</code></pre>
+<h2 id="uicollectionview-compositional-layout">UICollectionView Compositional Layout</h2>
+<pre><code class="language-swift">class AppStoreViewController: UIViewController {
+
+    enum Section: Int, CaseIterable {
+        case featured, categories, topApps
+    }
+
+    private func createLayout() -&gt; UICollectionViewCompositionalLayout {
+        return UICollectionViewCompositionalLayout { sectionIndex, environment in
+            guard let section = Section(rawValue: sectionIndex) else { return nil }
+            switch section {
+            case .featured:
+                return self.createFeaturedSection()
+            case .categories:
+                return self.createCategoriesSection()
+            case .topApps:
+                return self.createTopAppsSection()
+            }
+        }
+    }
+
+    // Full-width horizontally scrolling section
+    private func createFeaturedSection() -&gt; NSCollectionLayoutSection {
+        let itemSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(1.0),
+            heightDimension: .fractionalHeight(1.0)
+        )
+        let item = NSCollectionLayoutItem(layoutSize: itemSize)
+        item.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 8)
+
+        let groupSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(0.9),
+            heightDimension: .absolute(250)
+        )
+        let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
+
+        let section = NSCollectionLayoutSection(group: group)
+        section.orthogonalScrollingBehavior = .groupPagingCentered
+        section.contentInsets = NSDirectionalEdgeInsets(top: 16, leading: 0, bottom: 16, trailing: 0)
+        return section
+    }
+
+    // Grid of categories
+    private func createCategoriesSection() -&gt; NSCollectionLayoutSection {
+        let itemSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(0.5),
+            heightDimension: .absolute(60)
+        )
+        let item = NSCollectionLayoutItem(layoutSize: itemSize)
+        item.contentInsets = NSDirectionalEdgeInsets(top: 4, leading: 4, bottom: 4, trailing: 4)
+
+        let groupSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(1.0),
+            heightDimension: .absolute(60)
+        )
+        let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
+
+        let section = NSCollectionLayoutSection(group: group)
+        section.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 12, bottom: 8, trailing: 12)
+
+        let header = NSCollectionLayoutBoundarySupplementaryItem(
+            layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .absolute(44)),
+            elementKind: UICollectionView.elementKindSectionHeader,
+            alignment: .top
+        )
+        section.boundarySupplementaryItems = [header]
+        return section
+    }
+
+    // Vertical list section
+    private func createTopAppsSection() -&gt; NSCollectionLayoutSection {
+        let itemSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(1.0),
+            heightDimension: .absolute(70)
+        )
+        let item = NSCollectionLayoutItem(layoutSize: itemSize)
+
+        let groupSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(1.0),
+            heightDimension: .absolute(70)
+        )
+        let group = NSCollectionLayoutGroup.vertical(layoutSize: groupSize, subitems: [item])
+
+        let section = NSCollectionLayoutSection(group: group)
+        section.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16)
+        return section
+    }
+}
+</code></pre>
+<h2 id="uinavigationcontroller-and-uitabbarcontroller">UINavigationController and UITabBarController</h2>
+<pre><code class="language-swift">class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+    var window: UIWindow?
+
+    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options: UIScene.ConnectionOptions) {
+        guard let windowScene = scene as? UIWindowScene else { return }
+        window = UIWindow(windowScene: windowScene)
+
+        // Tab bar with navigation controllers
+        let homeNav = UINavigationController(rootViewController: HomeViewController())
+        homeNav.tabBarItem = UITabBarItem(title: &quot;Home&quot;, image: UIImage(systemName: &quot;house&quot;), tag: 0)
+
+        let searchNav = UINavigationController(rootViewController: SearchViewController())
+        searchNav.tabBarItem = UITabBarItem(title: &quot;Search&quot;, image: UIImage(systemName: &quot;magnifyingglass&quot;), tag: 1)
+
+        let profileNav = UINavigationController(rootViewController: ProfileViewController())
+        profileNav.tabBarItem = UITabBarItem(title: &quot;Profile&quot;, image: UIImage(systemName: &quot;person&quot;), tag: 2)
+
+        let tabBar = UITabBarController()
+        tabBar.viewControllers = [homeNav, searchNav, profileNav]
+        tabBar.tabBar.tintColor = .systemBlue
+
+        window?.rootViewController = tabBar
+        window?.makeKeyAndVisible()
+    }
+}
+
+// Programmatic navigation
+class HomeViewController: UIViewController {
+    func showDetail(for item: Item) {
+        let detailVC = DetailViewController(item: item)
+        navigationController?.pushViewController(detailVC, animated: true)
+    }
+
+    func presentModal() {
+        let modalVC = ModalViewController()
+        modalVC.modalPresentationStyle = .pageSheet
+        if let sheet = modalVC.sheetPresentationController {
+            sheet.detents = [.medium(), .large()]
+            sheet.prefersGrabberVisible = true
+        }
+        present(modalVC, animated: true)
+    }
+}
+</code></pre>
+<h2 id="keyboard-handling-and-uiresponder-chain">Keyboard Handling and UIResponder Chain</h2>
+<pre><code class="language-swift">class FormViewController: UIViewController {
+
+    @IBOutlet weak var scrollView: UIScrollView!
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        // Register for keyboard notifications
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(keyboardWillShow),
+            name: UIResponder.keyboardWillShowNotification, object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(keyboardWillHide),
+            name: UIResponder.keyboardWillHideNotification, object: nil
+        )
+
+        // Dismiss keyboard on tap
+        let tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tap.cancelsTouchesInView = false
+        view.addGestureRecognizer(tap)
+    }
+
+    @objc private func keyboardWillShow(_ notification: Notification) {
+        guard let frame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
+              let duration = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double
+        else { return }
+
+        let insets = UIEdgeInsets(top: 0, left: 0, bottom: frame.height, right: 0)
+        UIView.animate(withDuration: duration) {
+            self.scrollView.contentInset = insets
+            self.scrollView.scrollIndicatorInsets = insets
+        }
+    }
+
+    @objc private func keyboardWillHide(_ notification: Notification) {
+        guard let duration = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double
+        else { return }
+        UIView.animate(withDuration: duration) {
+            self.scrollView.contentInset = .zero
+            self.scrollView.scrollIndicatorInsets = .zero
+        }
+    }
+
+    @objc private func dismissKeyboard() {
+        view.endEditing(true)
+    }
+}
+
+// UITextField delegate for field navigation
+extension FormViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -&gt; Bool {
+        if let nextField = view.viewWithTag(textField.tag + 1) as? UITextField {
+            nextField.becomeFirstResponder()
+        } else {
+            textField.resignFirstResponder()
+        }
+        return true
+    }
+}
+</code></pre></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

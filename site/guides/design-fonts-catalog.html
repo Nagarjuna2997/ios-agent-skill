@@ -1,0 +1,3961 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>iOS Font Catalog — Ultimate Reference — iOS Agent Skill</title><meta name="description" content="Repository guidance for iOS Font Catalog — Ultimate Reference. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/design-fonts-catalog.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="iOS Font Catalog — Ultimate Reference"><meta property="og:description" content="Repository guidance for iOS Font Catalog — Ultimate Reference. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/design-fonts-catalog.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "iOS Font Catalog \u2014 Ultimate Reference", "description": "Repository guidance for iOS Font Catalog \u2014 Ultimate Reference. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/design-fonts-catalog.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Design · Reference guide</p><h1>iOS Font Catalog — Ultimate Reference</h1><p class="lead">Repository guidance for iOS Font Catalog — Ultimate Reference. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/design/fonts-catalog.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#table-of-contents">Table of Contents</a></li>
+<li><a href="#1-apple-system-fonts">1. Apple System Fonts</a><ul>
+<li><a href="#sf-pro-the-default-system-font">SF Pro — The Default System Font</a></li>
+<li><a href="#sf-pro-display-vs-sf-pro-text">SF Pro Display vs SF Pro Text</a></li>
+<li><a href="#sf-pro-rounded">SF Pro Rounded</a></li>
+<li><a href="#sf-mono-monospaced">SF Mono — Monospaced</a></li>
+<li><a href="#sf-compact">SF Compact</a></li>
+<li><a href="#new-york-serif-font">New York — Serif Font</a></li>
+<li><a href="#width-variants-ios-16">Width Variants (iOS 16+)</a></li>
+<li><a href="#complete-system-font-design-matrix">Complete System Font Design Matrix</a></li>
+<li><a href="#all-swiftui-text-styles">All SwiftUI Text Styles</a></li>
+</ul>
+</li>
+<li><a href="#2-built-in-ios-fonts">2. Built-in iOS Fonts</a><ul>
+<li><a href="#sans-serif-fonts">Sans-Serif Fonts</a><ul>
+<li><a href="#helvetica-neue">Helvetica Neue</a></li>
+<li><a href="#avenir">Avenir</a></li>
+<li><a href="#avenir-next">Avenir Next</a></li>
+<li><a href="#avenir-next-condensed">Avenir Next Condensed</a></li>
+<li><a href="#gill-sans">Gill Sans</a></li>
+<li><a href="#futura">Futura</a></li>
+<li><a href="#optima">Optima</a></li>
+<li><a href="#verdana">Verdana</a></li>
+<li><a href="#trebuchet-ms">Trebuchet MS</a></li>
+<li><a href="#arial">Arial</a></li>
+<li><a href="#arial-rounded-mt-bold">Arial Rounded MT Bold</a></li>
+<li><a href="#academy-engraved-let">Academy Engraved LET</a></li>
+<li><a href="#al-nile">Al Nile</a></li>
+<li><a href="#din-alternate-din-condensed">DIN Alternate / DIN Condensed</a></li>
+<li><a href="#helvetica">Helvetica</a></li>
+</ul>
+</li>
+<li><a href="#serif-fonts">Serif Fonts</a><ul>
+<li><a href="#georgia">Georgia</a></li>
+<li><a href="#times-new-roman">Times New Roman</a></li>
+<li><a href="#palatino">Palatino</a></li>
+<li><a href="#baskerville">Baskerville</a></li>
+<li><a href="#didot">Didot</a></li>
+<li><a href="#bodoni-72">Bodoni 72</a></li>
+<li><a href="#charter">Charter</a></li>
+<li><a href="#iowan-old-style">Iowan Old Style</a></li>
+<li><a href="#cochin">Cochin</a></li>
+<li><a href="#superclarendon">Superclarendon</a></li>
+</ul>
+</li>
+<li><a href="#monospaced-fonts">Monospaced Fonts</a><ul>
+<li><a href="#courier-new">Courier New</a></li>
+<li><a href="#courier">Courier</a></li>
+<li><a href="#menlo">Menlo</a></li>
+<li><a href="#american-typewriter">American Typewriter</a></li>
+</ul>
+</li>
+<li><a href="#display-and-decorative-fonts">Display and Decorative Fonts</a><ul>
+<li><a href="#rockwell">Rockwell</a></li>
+<li><a href="#copperplate">Copperplate</a></li>
+<li><a href="#papyrus">Papyrus</a></li>
+<li><a href="#marker-felt">Marker Felt</a></li>
+<li><a href="#chalkboard-se">Chalkboard SE</a></li>
+<li><a href="#chalkduster">Chalkduster</a></li>
+<li><a href="#noteworthy">Noteworthy</a></li>
+<li><a href="#zapfino">Zapfino</a></li>
+<li><a href="#party-let">Party LET</a></li>
+<li><a href="#savoye-let">Savoye LET</a></li>
+</ul>
+</li>
+<li><a href="#script-and-handwriting-fonts">Script and Handwriting Fonts</a><ul>
+<li><a href="#snell-roundhand">Snell Roundhand</a></li>
+<li><a href="#bradley-hand">Bradley Hand</a></li>
+<li><a href="#kefa">Kefa</a></li>
+<li><a href="#kohinoor-telugu">Kohinoor Telugu</a></li>
+</ul>
+</li>
+<li><a href="#additional-built-in-fonts">Additional Built-in Fonts</a><ul>
+<li><a href="#symbol-dingbat-fonts">Symbol / Dingbat Fonts</a></li>
+<li><a href="#additional-sans-serif">Additional Sans-Serif</a></li>
+</ul>
+</li>
+<li><a href="#international-and-multi-script-fonts">International and Multi-script Fonts</a><ul>
+<li><a href="#chinese">Chinese</a></li>
+<li><a href="#japanese">Japanese</a></li>
+<li><a href="#korean">Korean</a></li>
+<li><a href="#arabic">Arabic</a></li>
+<li><a href="#devanagari-hindi">Devanagari (Hindi)</a></li>
+<li><a href="#bangla">Bangla</a></li>
+<li><a href="#gujarati">Gujarati</a></li>
+<li><a href="#telugu">Telugu</a></li>
+<li><a href="#gurmukhi-punjabi">Gurmukhi (Punjabi)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#3-google-fonts-top-100-for-ios">3. Google Fonts -- Top 100 for iOS</a><ul>
+<li><a href="#sans-serif">Sans-Serif</a></li>
+<li><a href="#serif">Serif</a></li>
+<li><a href="#monospaced">Monospaced</a></li>
+<li><a href="#display">Display</a></li>
+<li><a href="#handwriting-and-script">Handwriting and Script</a></li>
+</ul>
+</li>
+<li><a href="#4-how-to-add-custom-fonts-to-ios">4. How to Add Custom Fonts to iOS</a><ul>
+<li><a href="#step-1-obtain-font-files">Step 1: Obtain Font Files</a></li>
+<li><a href="#step-2-add-files-to-xcode-project">Step 2: Add Files to Xcode Project</a></li>
+<li><a href="#step-3-register-fonts-in-infoplist">Step 3: Register Fonts in Info.plist</a></li>
+<li><a href="#step-4-find-the-exact-font-name">Step 4: Find the Exact Font Name</a></li>
+<li><a href="#step-5-use-in-swiftui">Step 5: Use in SwiftUI</a></li>
+<li><a href="#step-6-use-in-uikit">Step 6: Use in UIKit</a></li>
+<li><a href="#dynamic-type-with-scaledmetric">Dynamic Type with @ScaledMetric</a></li>
+<li><a href="#complete-custom-font-integration-example">Complete Custom Font Integration Example</a></li>
+<li><a href="#swift-package-manager-font-loading">Swift Package Manager Font Loading</a></li>
+<li><a href="#troubleshooting-custom-fonts">Troubleshooting Custom Fonts</a></li>
+</ul>
+</li>
+<li><a href="#5-font-pairing-recommendations">5. Font Pairing Recommendations</a><ul>
+<li><a href="#pairing-1-sf-pro-display-sf-pro-text">Pairing 1: SF Pro Display + SF Pro Text</a></li>
+<li><a href="#pairing-2-playfair-display-source-sans-3">Pairing 2: Playfair Display + Source Sans 3</a></li>
+<li><a href="#pairing-3-montserrat-lora">Pairing 3: Montserrat + Lora</a></li>
+<li><a href="#pairing-4-poppins-inter">Pairing 4: Poppins + Inter</a></li>
+<li><a href="#pairing-5-bebas-neue-roboto">Pairing 5: Bebas Neue + Roboto</a></li>
+<li><a href="#pairing-6-dm-serif-display-dm-sans">Pairing 6: DM Serif Display + DM Sans</a></li>
+<li><a href="#pairing-7-space-grotesk-inter">Pairing 7: Space Grotesk + Inter</a></li>
+<li><a href="#pairing-8-plus-jakarta-sans-source-serif-4">Pairing 8: Plus Jakarta Sans + Source Serif 4</a></li>
+<li><a href="#pairing-9-outfit-lato">Pairing 9: Outfit + Lato</a></li>
+<li><a href="#pairing-10-oswald-open-sans">Pairing 10: Oswald + Open Sans</a></li>
+<li><a href="#pairing-11-new-york-sf-pro">Pairing 11: New York + SF Pro</a></li>
+<li><a href="#pairing-12-archivo-black-work-sans">Pairing 12: Archivo Black + Work Sans</a></li>
+<li><a href="#pairing-13-cormorant-garamond-montserrat">Pairing 13: Cormorant Garamond + Montserrat</a></li>
+<li><a href="#pairing-14-fredoka-nunito">Pairing 14: Fredoka + Nunito</a></li>
+<li><a href="#pairing-15-manrope-merriweather">Pairing 15: Manrope + Merriweather</a></li>
+</ul>
+</li>
+<li><a href="#6-font-management-utilities">6. Font Management Utilities</a><ul>
+<li><a href="#fontmanager-register-custom-fonts-programmatically">FontManager: Register Custom Fonts Programmatically</a></li>
+<li><a href="#app-specific-type-scale-extension">App-Specific Type Scale Extension</a></li>
+<li><a href="#font-preview-view">Font Preview View</a></li>
+<li><a href="#dynamic-type-helper">Dynamic Type Helper</a></li>
+<li><a href="#list-all-device-fonts-utility-function">List All Device Fonts (Utility Function)</a></li>
+</ul>
+</li>
+<li><a href="#7-variable-fonts">7. Variable Fonts</a><ul>
+<li><a href="#what-are-variable-fonts">What Are Variable Fonts?</a></li>
+<li><a href="#benefits">Benefits</a></li>
+<li><a href="#common-axes">Common Axes</a></li>
+<li><a href="#using-variable-fonts-in-swiftui">Using Variable Fonts in SwiftUI</a></li>
+<li><a href="#animating-variable-font-axes">Animating Variable Font Axes</a></li>
+<li><a href="#axis-tags-reference">Axis Tags Reference</a></li>
+<li><a href="#inspecting-variable-font-axes">Inspecting Variable Font Axes</a></li>
+<li><a href="#popular-variable-fonts-for-ios">Popular Variable Fonts for iOS</a></li>
+<li><a href="#variable-font-with-dynamic-type">Variable Font with Dynamic Type</a></li>
+</ul>
+</li>
+<li><a href="#quick-reference-font-selection-decision-tree">Quick Reference: Font Selection Decision Tree</a></li>
+<li><a href="#quick-reference-postscript-names-cheat-sheet">Quick Reference: PostScript Names Cheat Sheet</a></li>
+</ul>
+</div>
+</aside><blockquote>
+<p>The definitive font reference for iOS and SwiftUI development.
+Every font name listed here is the exact string to use in <code>Font.custom()</code> or <code>UIFont(name:size:)</code>.</p>
+</blockquote>
+<hr />
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#1-apple-system-fonts">Apple System Fonts</a></li>
+<li><a href="#2-built-in-ios-fonts">Built-in iOS Fonts</a></li>
+<li><a href="#3-google-fonts-top-100-for-ios">Google Fonts — Top 100 for iOS</a></li>
+<li><a href="#4-how-to-add-custom-fonts-to-ios">How to Add Custom Fonts to iOS</a></li>
+<li><a href="#5-font-pairing-recommendations">Font Pairing Recommendations</a></li>
+<li><a href="#6-font-management-utilities">Font Management Utilities</a></li>
+<li><a href="#7-variable-fonts">Variable Fonts</a></li>
+</ol>
+<hr />
+<h2 id="1-apple-system-fonts">1. Apple System Fonts</h2>
+<p>Apple provides a family of proprietary system fonts that are optimized for every Apple platform.
+These fonts are accessed through the SwiftUI <code>.system()</code> modifier and cannot be referenced by
+PostScript name in <code>Font.custom()</code>. They are available on-device without bundling.</p>
+<h3 id="sf-pro-the-default-system-font">SF Pro — The Default System Font</h3>
+<p>SF Pro is the default sans-serif used across iOS, iPadOS, macOS, and tvOS.
+The system automatically selects <strong>SF Pro Text</strong> for sizes below 20pt and
+<strong>SF Pro Display</strong> for sizes at 20pt and above. You never need to handle this manually.</p>
+<p><strong>All Weights:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Weight</th>
+<th>UIFont.Weight</th>
+<th>SwiftUI</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ultra Light</td>
+<td><code>.ultraLight</code></td>
+<td><code>.ultraLight</code></td>
+</tr>
+<tr>
+<td>Thin</td>
+<td><code>.thin</code></td>
+<td><code>.thin</code></td>
+</tr>
+<tr>
+<td>Light</td>
+<td><code>.light</code></td>
+<td><code>.light</code></td>
+</tr>
+<tr>
+<td>Regular</td>
+<td><code>.regular</code></td>
+<td><code>.regular</code></td>
+</tr>
+<tr>
+<td>Medium</td>
+<td><code>.medium</code></td>
+<td><code>.medium</code></td>
+</tr>
+<tr>
+<td>Semibold</td>
+<td><code>.semibold</code></td>
+<td><code>.semibold</code></td>
+</tr>
+<tr>
+<td>Bold</td>
+<td><code>.bold</code></td>
+<td><code>.bold</code></td>
+</tr>
+<tr>
+<td>Heavy</td>
+<td><code>.heavy</code></td>
+<td><code>.heavy</code></td>
+</tr>
+<tr>
+<td>Black</td>
+<td><code>.black</code></td>
+<td><code>.black</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>SwiftUI Examples:</strong></p>
+<pre><code class="language-swift">// Default system font at various text styles
+Text(&quot;Headline&quot;).font(.headline)
+Text(&quot;Body text&quot;).font(.body)
+Text(&quot;Caption&quot;).font(.caption)
+
+// Explicit size and weight
+Text(&quot;Custom&quot;).font(.system(size: 24, weight: .bold))
+Text(&quot;Light text&quot;).font(.system(size: 16, weight: .light))
+Text(&quot;Heavy text&quot;).font(.system(size: 32, weight: .heavy))
+
+// Using text style with weight
+Text(&quot;Title&quot;).font(.system(.title, weight: .semibold))
+Text(&quot;Footnote&quot;).font(.system(.footnote, weight: .medium))
+</code></pre>
+<p><strong>UIKit Examples:</strong></p>
+<pre><code class="language-swift">let headline = UIFont.systemFont(ofSize: 24, weight: .bold)
+let body = UIFont.systemFont(ofSize: 17, weight: .regular)
+let caption = UIFont.systemFont(ofSize: 12, weight: .light)
+let preferredBody = UIFont.preferredFont(forTextStyle: .body)
+</code></pre>
+<h3 id="sf-pro-display-vs-sf-pro-text">SF Pro Display vs SF Pro Text</h3>
+<p>The system handles optical size switching automatically:</p>
+<ul>
+<li><strong>SF Pro Text</strong>: Optimized for sizes below 20pt. Slightly wider letter spacing, more open counters for legibility at small sizes.</li>
+<li><strong>SF Pro Display</strong>: Optimized for sizes 20pt and above. Tighter spacing, refined details that shine at large sizes.</li>
+</ul>
+<p>You do NOT need to select these manually. The system font API handles the switch.</p>
+<pre><code class="language-swift">// The system chooses Text or Display automatically based on size
+Text(&quot;Small&quot;).font(.system(size: 14))   // Uses SF Pro Text
+Text(&quot;Large&quot;).font(.system(size: 28))   // Uses SF Pro Display
+</code></pre>
+<h3 id="sf-pro-rounded">SF Pro Rounded</h3>
+<p>A rounded variant of SF Pro with softer terminals. Great for friendly, approachable UIs,
+settings screens, and apps aimed at younger audiences.</p>
+<pre><code class="language-swift">// SwiftUI — Rounded design
+Text(&quot;Rounded&quot;).font(.system(size: 20, weight: .bold, design: .rounded))
+Text(&quot;Rounded body&quot;).font(.system(.body, design: .rounded))
+Text(&quot;Rounded title&quot;).font(.system(.title, design: .rounded, weight: .semibold))
+Text(&quot;Rounded caption&quot;).font(.system(.caption, design: .rounded, weight: .medium))
+
+// UIKit — Rounded design
+let descriptor = UIFont.systemFont(ofSize: 20, weight: .bold).fontDescriptor
+    .withDesign(.rounded)!
+let roundedFont = UIFont(descriptor: descriptor, size: 20)
+</code></pre>
+<p><strong>When to use:</strong> Health apps, children's apps, casual games, notification badges, friendly onboarding flows, Apple Fitness-style interfaces.</p>
+<h3 id="sf-mono-monospaced">SF Mono — Monospaced</h3>
+<p>The system monospaced font. Every character occupies the same horizontal space.
+Essential for code editors, terminal UIs, data tables with aligned numbers, and
+countdown timers.</p>
+<pre><code class="language-swift">// SwiftUI — Monospaced design
+Text(&quot;0123456789&quot;).font(.system(size: 16, weight: .regular, design: .monospaced))
+Text(&quot;func hello()&quot;).font(.system(.body, design: .monospaced))
+Text(&quot;Code block&quot;).font(.system(.callout, design: .monospaced, weight: .semibold))
+
+// Monospaced digit (only digits are monospaced, letters are proportional)
+Text(&quot;$1,234.56&quot;).monospacedDigit()
+
+// UIKit
+let descriptor = UIFont.systemFont(ofSize: 14, weight: .regular).fontDescriptor
+    .withDesign(.monospaced)!
+let monoFont = UIFont(descriptor: descriptor, size: 14)
+</code></pre>
+<p><strong>When to use:</strong> Code editors, terminal emulators, data tables, timers, counters, version numbers, financial figures, developer tools.</p>
+<h3 id="sf-compact">SF Compact</h3>
+<p>Designed for Apple Watch and compact UI contexts. Narrower than SF Pro to fit more
+content in constrained spaces.</p>
+<pre><code class="language-swift">// watchOS uses SF Compact automatically
+// On iOS, you can access it through font descriptors if needed
+</code></pre>
+<p><strong>When to use:</strong> watchOS apps (used automatically), widgets, compact UI elements.</p>
+<h3 id="new-york-serif-font">New York — Serif Font</h3>
+<p>Apple's serif typeface. Available in four optical sizes that the system selects automatically.
+Gives an editorial, literary, or premium magazine feel.</p>
+<p><strong>Optical Sizes:</strong>
+- <strong>Small</strong>: Optimized for caption and footnote sizes
+- <strong>Medium</strong>: Optimized for body text
+- <strong>Large</strong>: Optimized for titles and headlines
+- <strong>Extra Large</strong>: Optimized for large display text</p>
+<pre><code class="language-swift">// SwiftUI — Serif design
+Text(&quot;Editorial&quot;).font(.system(size: 32, weight: .bold, design: .serif))
+Text(&quot;Article body&quot;).font(.system(.body, design: .serif))
+Text(&quot;Book title&quot;).font(.system(.largeTitle, design: .serif, weight: .black))
+Text(&quot;Byline&quot;).font(.system(.subheadline, design: .serif, weight: .light))
+Text(&quot;Pull quote&quot;).font(.system(.title2, design: .serif, weight: .semibold))
+
+// UIKit
+let descriptor = UIFont.systemFont(ofSize: 24, weight: .bold).fontDescriptor
+    .withDesign(.serif)!
+let serifFont = UIFont(descriptor: descriptor, size: 24)
+</code></pre>
+<p><strong>When to use:</strong> News apps, book readers, editorial content, magazine layouts, Apple News-style interfaces, premium branding, literary apps.</p>
+<h3 id="width-variants-ios-16">Width Variants (iOS 16+)</h3>
+<p>Starting with iOS 16, you can access compressed, condensed, and expanded width variants
+of the system font.</p>
+<pre><code class="language-swift">// SwiftUI — Width variants (iOS 16+)
+Text(&quot;Compressed&quot;).font(.system(size: 20, weight: .bold).width(.compressed))
+Text(&quot;Condensed&quot;).font(.system(size: 20, weight: .bold).width(.condensed))
+Text(&quot;Standard&quot;).font(.system(size: 20, weight: .bold).width(.standard))
+Text(&quot;Expanded&quot;).font(.system(size: 20, weight: .bold).width(.expanded))
+
+// Combine with design
+Text(&quot;Rounded Condensed&quot;)
+    .font(.system(size: 20, weight: .semibold, design: .rounded).width(.condensed))
+
+// UIKit — Width traits
+var traits = UIFontDescriptor.SymbolicTraits()
+let descriptor = UIFont.systemFont(ofSize: 20, weight: .bold).fontDescriptor
+let condensedDescriptor = descriptor.withSymbolicTraits(.traitCondensed)!
+let condensedFont = UIFont(descriptor: condensedDescriptor, size: 20)
+</code></pre>
+<p><strong>Width options:</strong>
+| Width        | Description                              |
+|--------------|------------------------------------------|
+| <code>.compressed</code>| Narrowest, fits maximum content          |
+| <code>.condensed</code> | Narrower than standard                   |
+| <code>.standard</code>  | Default width                            |
+| <code>.expanded</code>  | Wider, more spacious letterforms         |</p>
+<h3 id="complete-system-font-design-matrix">Complete System Font Design Matrix</h3>
+<pre><code class="language-swift">// All four system font designs
+Text(&quot;Default&quot;).font(.system(.title, design: .default))      // SF Pro
+Text(&quot;Rounded&quot;).font(.system(.title, design: .rounded))      // SF Pro Rounded
+Text(&quot;Serif&quot;).font(.system(.title, design: .serif))           // New York
+Text(&quot;Monospaced&quot;).font(.system(.title, design: .monospaced)) // SF Mono
+</code></pre>
+<h3 id="all-swiftui-text-styles">All SwiftUI Text Styles</h3>
+<pre><code class="language-swift">Text(&quot;Large Title&quot;)  .font(.largeTitle)    // 34pt bold
+Text(&quot;Title&quot;)        .font(.title)         // 28pt regular
+Text(&quot;Title 2&quot;)      .font(.title2)        // 22pt regular
+Text(&quot;Title 3&quot;)      .font(.title3)        // 20pt regular
+Text(&quot;Headline&quot;)     .font(.headline)      // 17pt semibold
+Text(&quot;Subheadline&quot;)  .font(.subheadline)   // 15pt regular
+Text(&quot;Body&quot;)         .font(.body)          // 17pt regular
+Text(&quot;Callout&quot;)      .font(.callout)       // 16pt regular
+Text(&quot;Footnote&quot;)     .font(.footnote)      // 13pt regular
+Text(&quot;Caption&quot;)      .font(.caption)       // 12pt regular
+Text(&quot;Caption 2&quot;)    .font(.caption2)      // 11pt regular
+</code></pre>
+<hr />
+<h2 id="2-built-in-ios-fonts">2. Built-in iOS Fonts</h2>
+<p>Every font listed below is preinstalled on iOS. The string shown is the exact PostScript name
+to pass to <code>Font.custom(_:size:)</code> or <code>UIFont(name:size:)</code>.</p>
+<h3 id="sans-serif-fonts">Sans-Serif Fonts</h3>
+<h4 id="helvetica-neue">Helvetica Neue</h4>
+<p>The classic Swiss typeface. Was the iOS system font before SF Pro (iOS 8 and earlier).</p>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ultra Light</td>
+<td><code>HelveticaNeue-UltraLight</code></td>
+</tr>
+<tr>
+<td>Ultra Light Italic</td>
+<td><code>HelveticaNeue-UltraLightItalic</code></td>
+</tr>
+<tr>
+<td>Thin</td>
+<td><code>HelveticaNeue-Thin</code></td>
+</tr>
+<tr>
+<td>Thin Italic</td>
+<td><code>HelveticaNeue-ThinItalic</code></td>
+</tr>
+<tr>
+<td>Light</td>
+<td><code>HelveticaNeue-Light</code></td>
+</tr>
+<tr>
+<td>Light Italic</td>
+<td><code>HelveticaNeue-LightItalic</code></td>
+</tr>
+<tr>
+<td>Regular</td>
+<td><code>HelveticaNeue</code></td>
+</tr>
+<tr>
+<td>Italic</td>
+<td><code>HelveticaNeue-Italic</code></td>
+</tr>
+<tr>
+<td>Medium</td>
+<td><code>HelveticaNeue-Medium</code></td>
+</tr>
+<tr>
+<td>Medium Italic</td>
+<td><code>HelveticaNeue-MediumItalic</code></td>
+</tr>
+<tr>
+<td>Bold</td>
+<td><code>HelveticaNeue-Bold</code></td>
+</tr>
+<tr>
+<td>Bold Italic</td>
+<td><code>HelveticaNeue-BoldItalic</code></td>
+</tr>
+<tr>
+<td>Condensed Bold</td>
+<td><code>HelveticaNeue-CondensedBold</code></td>
+</tr>
+<tr>
+<td>Condensed Black</td>
+<td><code>HelveticaNeue-CondensedBlack</code></td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-swift">Text(&quot;Helvetica Neue&quot;).font(.custom(&quot;HelveticaNeue&quot;, size: 17))
+Text(&quot;Helvetica Bold&quot;).font(.custom(&quot;HelveticaNeue-Bold&quot;, size: 17))
+Text(&quot;Helvetica Light&quot;).font(.custom(&quot;HelveticaNeue-Light&quot;, size: 24))
+</code></pre>
+<p><strong>Best for:</strong> Clean UI text, legacy app compatibility, neutral typography.</p>
+<h4 id="avenir">Avenir</h4>
+<p>A geometric sans-serif with a warm, humanist feel. Excellent readability.</p>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Book</td>
+<td><code>Avenir-Book</code></td>
+</tr>
+<tr>
+<td>Book Oblique</td>
+<td><code>Avenir-BookOblique</code></td>
+</tr>
+<tr>
+<td>Roman</td>
+<td><code>Avenir-Roman</code></td>
+</tr>
+<tr>
+<td>Oblique</td>
+<td><code>Avenir-Oblique</code></td>
+</tr>
+<tr>
+<td>Medium</td>
+<td><code>Avenir-Medium</code></td>
+</tr>
+<tr>
+<td>Medium Oblique</td>
+<td><code>Avenir-MediumOblique</code></td>
+</tr>
+<tr>
+<td>Heavy</td>
+<td><code>Avenir-Heavy</code></td>
+</tr>
+<tr>
+<td>Heavy Oblique</td>
+<td><code>Avenir-HeavyOblique</code></td>
+</tr>
+<tr>
+<td>Black</td>
+<td><code>Avenir-Black</code></td>
+</tr>
+<tr>
+<td>Black Oblique</td>
+<td><code>Avenir-BlackOblique</code></td>
+</tr>
+<tr>
+<td>Light</td>
+<td><code>Avenir-Light</code></td>
+</tr>
+<tr>
+<td>Light Oblique</td>
+<td><code>Avenir-LightOblique</code></td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-swift">Text(&quot;Avenir Body&quot;).font(.custom(&quot;Avenir-Book&quot;, size: 17))
+Text(&quot;Avenir Heading&quot;).font(.custom(&quot;Avenir-Heavy&quot;, size: 28))
+</code></pre>
+<p><strong>Best for:</strong> Modern app UIs, lifestyle apps, friendly body text.</p>
+<h4 id="avenir-next">Avenir Next</h4>
+<p>The successor to Avenir with improved legibility and a wider weight range.</p>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ultra Light</td>
+<td><code>AvenirNext-UltraLight</code></td>
+</tr>
+<tr>
+<td>Ultra Light Italic</td>
+<td><code>AvenirNext-UltraLightItalic</code></td>
+</tr>
+<tr>
+<td>Regular</td>
+<td><code>AvenirNext-Regular</code></td>
+</tr>
+<tr>
+<td>Italic</td>
+<td><code>AvenirNext-Italic</code></td>
+</tr>
+<tr>
+<td>Medium</td>
+<td><code>AvenirNext-Medium</code></td>
+</tr>
+<tr>
+<td>Medium Italic</td>
+<td><code>AvenirNext-MediumItalic</code></td>
+</tr>
+<tr>
+<td>Demi Bold</td>
+<td><code>AvenirNext-DemiBold</code></td>
+</tr>
+<tr>
+<td>Demi Bold Italic</td>
+<td><code>AvenirNext-DemiBoldItalic</code></td>
+</tr>
+<tr>
+<td>Bold</td>
+<td><code>AvenirNext-Bold</code></td>
+</tr>
+<tr>
+<td>Bold Italic</td>
+<td><code>AvenirNext-BoldItalic</code></td>
+</tr>
+<tr>
+<td>Heavy</td>
+<td><code>AvenirNext-Heavy</code></td>
+</tr>
+<tr>
+<td>Heavy Italic</td>
+<td><code>AvenirNext-HeavyItalic</code></td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-swift">Text(&quot;Avenir Next&quot;).font(.custom(&quot;AvenirNext-Regular&quot;, size: 17))
+Text(&quot;Avenir Next Bold&quot;).font(.custom(&quot;AvenirNext-Bold&quot;, size: 24))
+</code></pre>
+<p><strong>Best for:</strong> Professional apps, enterprise UIs, presentations, marketing content.</p>
+<h4 id="avenir-next-condensed">Avenir Next Condensed</h4>
+<p>The condensed variant of Avenir Next. Useful when horizontal space is limited.</p>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ultra Light</td>
+<td><code>AvenirNextCondensed-UltraLight</code></td>
+</tr>
+<tr>
+<td>Ultra Light Italic</td>
+<td><code>AvenirNextCondensed-UltraLightItalic</code></td>
+</tr>
+<tr>
+<td>Regular</td>
+<td><code>AvenirNextCondensed-Regular</code></td>
+</tr>
+<tr>
+<td>Italic</td>
+<td><code>AvenirNextCondensed-Italic</code></td>
+</tr>
+<tr>
+<td>Medium</td>
+<td><code>AvenirNextCondensed-Medium</code></td>
+</tr>
+<tr>
+<td>Medium Italic</td>
+<td><code>AvenirNextCondensed-MediumItalic</code></td>
+</tr>
+<tr>
+<td>Demi Bold</td>
+<td><code>AvenirNextCondensed-DemiBold</code></td>
+</tr>
+<tr>
+<td>Demi Bold Italic</td>
+<td><code>AvenirNextCondensed-DemiBoldItalic</code></td>
+</tr>
+<tr>
+<td>Bold</td>
+<td><code>AvenirNextCondensed-Bold</code></td>
+</tr>
+<tr>
+<td>Bold Italic</td>
+<td><code>AvenirNextCondensed-BoldItalic</code></td>
+</tr>
+<tr>
+<td>Heavy</td>
+<td><code>AvenirNextCondensed-Heavy</code></td>
+</tr>
+<tr>
+<td>Heavy Italic</td>
+<td><code>AvenirNextCondensed-HeavyItalic</code></td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-swift">Text(&quot;Condensed&quot;).font(.custom(&quot;AvenirNextCondensed-Bold&quot;, size: 20))
+</code></pre>
+<p><strong>Best for:</strong> Navigation bars, tab labels, space-constrained UI, tags, badges.</p>
+<h4 id="gill-sans">Gill Sans</h4>
+<p>A classic British humanist sans-serif with distinctive character.</p>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Regular</td>
+<td><code>GillSans</code></td>
+</tr>
+<tr>
+<td>Italic</td>
+<td><code>GillSans-Italic</code></td>
+</tr>
+<tr>
+<td>Light</td>
+<td><code>GillSans-Light</code></td>
+</tr>
+<tr>
+<td>Light Italic</td>
+<td><code>GillSans-LightItalic</code></td>
+</tr>
+<tr>
+<td>Semibold</td>
+<td><code>GillSans-SemiBold</code></td>
+</tr>
+<tr>
+<td>Semibold Italic</td>
+<td><code>GillSans-SemiBoldItalic</code></td>
+</tr>
+<tr>
+<td>Bold</td>
+<td><code>GillSans-Bold</code></td>
+</tr>
+<tr>
+<td>Bold Italic</td>
+<td><code>GillSans-BoldItalic</code></td>
+</tr>
+<tr>
+<td>Ultra Bold</td>
+<td><code>GillSans-UltraBold</code></td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-swift">Text(&quot;Gill Sans&quot;).font(.custom(&quot;GillSans&quot;, size: 17))
+Text(&quot;Gill Sans Bold&quot;).font(.custom(&quot;GillSans-Bold&quot;, size: 24))
+</code></pre>
+<p><strong>Best for:</strong> British branding, classic design, book covers, elegant headings.</p>
+<h4 id="futura">Futura</h4>
+<p>A geometric sans-serif icon. Clean circles and triangles form its letterforms.</p>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Medium</td>
+<td><code>Futura-Medium</code></td>
+</tr>
+<tr>
+<td>Medium Italic</td>
+<td><code>Futura-MediumItalic</code></td>
+</tr>
+<tr>
+<td>Bold</td>
+<td><code>Futura-Bold</code></td>
+</tr>
+<tr>
+<td>Condensed Medium</td>
+<td><code>Futura-CondensedMedium</code></td>
+</tr>
+<tr>
+<td>Condensed Extra Bold</td>
+<td><code>Futura-CondensedExtraBold</code></td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-swift">Text(&quot;FUTURA&quot;).font(.custom(&quot;Futura-Bold&quot;, size: 32))
+Text(&quot;Futura body&quot;).font(.custom(&quot;Futura-Medium&quot;, size: 17))
+</code></pre>
+<p><strong>Best for:</strong> Fashion apps, bold statements, modern branding, geometric design systems.</p>
+<h4 id="optima">Optima</h4>
+<p>A humanist sans-serif with subtle stroke contrast, straddling serif and sans-serif.</p>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Regular</td>
+<td><code>Optima-Regular</code></td>
+</tr>
+<tr>
+<td>Italic</td>
+<td><code>Optima-Italic</code></td>
+</tr>
+<tr>
+<td>Bold</td>
+<td><code>Optima-Bold</code></td>
+</tr>
+<tr>
+<td>Bold Italic</td>
+<td><code>Optima-BoldItalic</code></td>
+</tr>
+<tr>
+<td>Extra Black</td>
+<td><code>Optima-ExtraBlack</code></td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-swift">Text(&quot;Optima&quot;).font(.custom(&quot;Optima-Regular&quot;, size: 17))
+</code></pre>
+<p><strong>Best for:</strong> Wellness apps, spa and beauty branding, elegant body text, high-end retail.</p>
+<h4 id="verdana">Verdana</h4>
+<p>Designed by Matthew Carter for screen legibility. Wide letterforms, generous x-height.</p>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Regular</td>
+<td><code>Verdana</code></td>
+</tr>
+<tr>
+<td>Italic</td>
+<td><code>Verdana-Italic</code></td>
+</tr>
+<tr>
+<td>Bold</td>
+<td><code>Verdana-Bold</code></td>
+</tr>
+<tr>
+<td>Bold Italic</td>
+<td><code>Verdana-BoldItalic</code></td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-swift">Text(&quot;Verdana&quot;).font(.custom(&quot;Verdana&quot;, size: 17))
+</code></pre>
+<p><strong>Best for:</strong> Maximum screen readability, accessible UIs, form labels.</p>
+<h4 id="trebuchet-ms">Trebuchet MS</h4>
+<p>A humanist sans-serif designed for web and screen use.</p>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Regular</td>
+<td><code>TrebuchetMS</code></td>
+</tr>
+<tr>
+<td>Italic</td>
+<td><code>TrebuchetMS-Italic</code></td>
+</tr>
+<tr>
+<td>Bold</td>
+<td><code>TrebuchetMS-Bold</code></td>
+</tr>
+<tr>
+<td>Bold Italic</td>
+<td><code>Trebuchet-BoldItalic</code></td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-swift">Text(&quot;Trebuchet&quot;).font(.custom(&quot;TrebuchetMS&quot;, size: 17))
+</code></pre>
+<p><strong>Best for:</strong> Web-style UIs, cross-platform consistency.</p>
+<h4 id="arial">Arial</h4>
+<p>The ubiquitous sans-serif. Near-identical to Helvetica in metrics.</p>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Regular</td>
+<td><code>ArialMT</code></td>
+</tr>
+<tr>
+<td>Italic</td>
+<td><code>Arial-ItalicMT</code></td>
+</tr>
+<tr>
+<td>Bold</td>
+<td><code>Arial-BoldMT</code></td>
+</tr>
+<tr>
+<td>Bold Italic</td>
+<td><code>Arial-BoldItalicMT</code></td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-swift">Text(&quot;Arial&quot;).font(.custom(&quot;ArialMT&quot;, size: 17))
+</code></pre>
+<p><strong>Best for:</strong> Cross-platform compatibility, documents, web views.</p>
+<h4 id="arial-rounded-mt-bold">Arial Rounded MT Bold</h4>
+<p>A rounded, friendly variant of Arial.</p>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bold</td>
+<td><code>ArialRoundedMTBold</code></td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-swift">Text(&quot;Rounded&quot;).font(.custom(&quot;ArialRoundedMTBold&quot;, size: 20))
+</code></pre>
+<p><strong>Best for:</strong> Friendly UI elements, buttons, badges.</p>
+<h4 id="academy-engraved-let">Academy Engraved LET</h4>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Plain</td>
+<td><code>AcademyEngravedLetPlain</code></td>
+</tr>
+</tbody>
+</table>
+<h4 id="al-nile">Al Nile</h4>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Regular</td>
+<td><code>AlNile</code></td>
+</tr>
+<tr>
+<td>Bold</td>
+<td><code>AlNile-Bold</code></td>
+</tr>
+</tbody>
+</table>
+<h4 id="din-alternate-din-condensed">DIN Alternate / DIN Condensed</h4>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DIN Alternate Bold</td>
+<td><code>DINAlternate-Bold</code></td>
+</tr>
+<tr>
+<td>DIN Condensed Bold</td>
+<td><code>DINCondensed-Bold</code></td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-swift">Text(&quot;DIN&quot;).font(.custom(&quot;DINAlternate-Bold&quot;, size: 20))
+</code></pre>
+<p><strong>Best for:</strong> Road signs style, technical UIs, data displays, dashboards.</p>
+<h4 id="helvetica">Helvetica</h4>
+<p>The original Helvetica (not Neue).</p>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Regular</td>
+<td><code>Helvetica</code></td>
+</tr>
+<tr>
+<td>Italic (Oblique)</td>
+<td><code>Helvetica-Oblique</code></td>
+</tr>
+<tr>
+<td>Light</td>
+<td><code>Helvetica-Light</code></td>
+</tr>
+<tr>
+<td>Light Oblique</td>
+<td><code>Helvetica-LightOblique</code></td>
+</tr>
+<tr>
+<td>Bold</td>
+<td><code>Helvetica-Bold</code></td>
+</tr>
+<tr>
+<td>Bold Oblique</td>
+<td><code>Helvetica-BoldOblique</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="serif-fonts">Serif Fonts</h3>
+<h4 id="georgia">Georgia</h4>
+<p>A screen-optimized serif with generous proportions.</p>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Regular</td>
+<td><code>Georgia</code></td>
+</tr>
+<tr>
+<td>Italic</td>
+<td><code>Georgia-Italic</code></td>
+</tr>
+<tr>
+<td>Bold</td>
+<td><code>Georgia-Bold</code></td>
+</tr>
+<tr>
+<td>Bold Italic</td>
+<td><code>Georgia-BoldItalic</code></td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-swift">Text(&quot;Georgia&quot;).font(.custom(&quot;Georgia&quot;, size: 17))
+Text(&quot;Georgia Bold&quot;).font(.custom(&quot;Georgia-Bold&quot;, size: 24))
+</code></pre>
+<p><strong>Best for:</strong> Long-form reading, news articles, blog content, editorial apps.</p>
+<h4 id="times-new-roman">Times New Roman</h4>
+<p>The classic newspaper serif.</p>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Regular</td>
+<td><code>TimesNewRomanPSMT</code></td>
+</tr>
+<tr>
+<td>Italic</td>
+<td><code>TimesNewRomanPS-ItalicMT</code></td>
+</tr>
+<tr>
+<td>Bold</td>
+<td><code>TimesNewRomanPS-BoldMT</code></td>
+</tr>
+<tr>
+<td>Bold Italic</td>
+<td><code>TimesNewRomanPS-BoldItalicMT</code></td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-swift">Text(&quot;Times&quot;).font(.custom(&quot;TimesNewRomanPSMT&quot;, size: 17))
+</code></pre>
+<p><strong>Best for:</strong> Document viewers, academic apps, traditional editorial.</p>
+<h4 id="palatino">Palatino</h4>
+<p>A Renaissance-inspired serif with wide proportions and excellent readability.</p>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Roman</td>
+<td><code>Palatino-Roman</code></td>
+</tr>
+<tr>
+<td>Italic</td>
+<td><code>Palatino-Italic</code></td>
+</tr>
+<tr>
+<td>Bold</td>
+<td><code>Palatino-Bold</code></td>
+</tr>
+<tr>
+<td>Bold Italic</td>
+<td><code>Palatino-BoldItalic</code></td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-swift">Text(&quot;Palatino&quot;).font(.custom(&quot;Palatino-Roman&quot;, size: 17))
+</code></pre>
+<p><strong>Best for:</strong> Book reading apps, literary content, premium editorial.</p>
+<h4 id="baskerville">Baskerville</h4>
+<p>A transitional serif with sharp contrast and refined details.</p>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Regular</td>
+<td><code>Baskerville</code></td>
+</tr>
+<tr>
+<td>Italic</td>
+<td><code>Baskerville-Italic</code></td>
+</tr>
+<tr>
+<td>Semibold</td>
+<td><code>Baskerville-SemiBold</code></td>
+</tr>
+<tr>
+<td>Semibold Italic</td>
+<td><code>Baskerville-SemiBoldItalic</code></td>
+</tr>
+<tr>
+<td>Bold</td>
+<td><code>Baskerville-Bold</code></td>
+</tr>
+<tr>
+<td>Bold Italic</td>
+<td><code>Baskerville-BoldItalic</code></td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-swift">Text(&quot;Baskerville&quot;).font(.custom(&quot;Baskerville&quot;, size: 17))
+Text(&quot;Baskerville Bold&quot;).font(.custom(&quot;Baskerville-Bold&quot;, size: 28))
+</code></pre>
+<p><strong>Best for:</strong> Premium branding, luxury apps, classic literature, legal documents.</p>
+<h4 id="didot">Didot</h4>
+<p>A high-contrast modern serif with dramatic thick-thin strokes.</p>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Regular</td>
+<td><code>Didot</code></td>
+</tr>
+<tr>
+<td>Italic</td>
+<td><code>Didot-Italic</code></td>
+</tr>
+<tr>
+<td>Bold</td>
+<td><code>Didot-Bold</code></td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-swift">Text(&quot;DIDOT&quot;).font(.custom(&quot;Didot-Bold&quot;, size: 36))
+</code></pre>
+<p><strong>Best for:</strong> Fashion, luxury branding, magazine covers, high-end product displays.</p>
+<h4 id="bodoni-72">Bodoni 72</h4>
+<p>Another high-contrast modern serif. Multiple optical variants available.</p>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Book</td>
+<td><code>BodoniSvtyTwoITCTT-Book</code></td>
+</tr>
+<tr>
+<td>Book Italic</td>
+<td><code>BodoniSvtyTwoITCTT-BookIta</code></td>
+</tr>
+<tr>
+<td>Bold</td>
+<td><code>BodoniSvtyTwoITCTT-Bold</code></td>
+</tr>
+<tr>
+<td>OS Book</td>
+<td><code>BodoniSvtyTwoOSITCTT-Book</code></td>
+</tr>
+<tr>
+<td>OS Book Italic</td>
+<td><code>BodoniSvtyTwoOSITCTT-BookIt</code></td>
+</tr>
+<tr>
+<td>OS Bold</td>
+<td><code>BodoniSvtyTwoOSITCTT-Bold</code></td>
+</tr>
+<tr>
+<td>SC Book</td>
+<td><code>BodoniSvtyTwoSCITCTT-Book</code></td>
+</tr>
+<tr>
+<td>Ornaments</td>
+<td><code>BodoniOrnamentsITCTT</code></td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-swift">Text(&quot;BODONI&quot;).font(.custom(&quot;BodoniSvtyTwoITCTT-Bold&quot;, size: 36))
+Text(&quot;Small Caps&quot;).font(.custom(&quot;BodoniSvtyTwoSCITCTT-Book&quot;, size: 20))
+</code></pre>
+<p><strong>Best for:</strong> Fashion editorial, luxury branding, poster-style headings, high-contrast display.</p>
+<h4 id="charter">Charter</h4>
+<p>A highly legible serif designed for laser printers and screens.</p>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Roman</td>
+<td><code>Charter-Roman</code></td>
+</tr>
+<tr>
+<td>Italic</td>
+<td><code>Charter-Italic</code></td>
+</tr>
+<tr>
+<td>Bold</td>
+<td><code>Charter-Bold</code></td>
+</tr>
+<tr>
+<td>Bold Italic</td>
+<td><code>Charter-BoldItalic</code></td>
+</tr>
+<tr>
+<td>Black</td>
+<td><code>Charter-Black</code></td>
+</tr>
+<tr>
+<td>Black Italic</td>
+<td><code>Charter-BlackItalic</code></td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-swift">Text(&quot;Charter&quot;).font(.custom(&quot;Charter-Roman&quot;, size: 17))
+</code></pre>
+<p><strong>Best for:</strong> Long-form reading, documentation, e-books, RSS readers.</p>
+<h4 id="iowan-old-style">Iowan Old Style</h4>
+<p>A refined old-style serif optimized for extended reading on screens.</p>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Roman</td>
+<td><code>IowanOldStyle-Roman</code></td>
+</tr>
+<tr>
+<td>Italic</td>
+<td><code>IowanOldStyle-Italic</code></td>
+</tr>
+<tr>
+<td>Bold</td>
+<td><code>IowanOldStyle-Bold</code></td>
+</tr>
+<tr>
+<td>Bold Italic</td>
+<td><code>IowanOldStyle-BoldItalic</code></td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-swift">Text(&quot;Iowan Old Style&quot;).font(.custom(&quot;IowanOldStyle-Roman&quot;, size: 17))
+</code></pre>
+<p><strong>Best for:</strong> Apple Books-style reading, literary apps, elegant body text.</p>
+<h4 id="cochin">Cochin</h4>
+<p>An elegant old-style serif.</p>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Regular</td>
+<td><code>Cochin</code></td>
+</tr>
+<tr>
+<td>Italic</td>
+<td><code>Cochin-Italic</code></td>
+</tr>
+<tr>
+<td>Bold</td>
+<td><code>Cochin-Bold</code></td>
+</tr>
+<tr>
+<td>Bold Italic</td>
+<td><code>Cochin-BoldItalic</code></td>
+</tr>
+</tbody>
+</table>
+<h4 id="superclarendon">Superclarendon</h4>
+<p>A bold slab serif with strong visual impact.</p>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Regular</td>
+<td><code>Superclarendon-Regular</code></td>
+</tr>
+<tr>
+<td>Italic</td>
+<td><code>Superclarendon-Italic</code></td>
+</tr>
+<tr>
+<td>Light</td>
+<td><code>Superclarendon-Light</code></td>
+</tr>
+<tr>
+<td>Light Italic</td>
+<td><code>Superclarendon-LightItalic</code></td>
+</tr>
+<tr>
+<td>Bold</td>
+<td><code>Superclarendon-Bold</code></td>
+</tr>
+<tr>
+<td>Bold Italic</td>
+<td><code>Superclarendon-BoldItalic</code></td>
+</tr>
+<tr>
+<td>Black</td>
+<td><code>Superclarendon-Black</code></td>
+</tr>
+<tr>
+<td>Black Italic</td>
+<td><code>Superclarendon-BlackItalic</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="monospaced-fonts">Monospaced Fonts</h3>
+<h4 id="courier-new">Courier New</h4>
+<p>The classic typewriter monospaced font.</p>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Regular</td>
+<td><code>CourierNewPSMT</code></td>
+</tr>
+<tr>
+<td>Italic</td>
+<td><code>CourierNewPS-ItalicMT</code></td>
+</tr>
+<tr>
+<td>Bold</td>
+<td><code>CourierNewPS-BoldMT</code></td>
+</tr>
+<tr>
+<td>Bold Italic</td>
+<td><code>CourierNewPS-BoldItalicMT</code></td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-swift">Text(&quot;Courier&quot;).font(.custom(&quot;CourierNewPSMT&quot;, size: 14))
+</code></pre>
+<p><strong>Best for:</strong> Retro terminal UIs, typewriter aesthetic, screenplay formatters.</p>
+<h4 id="courier">Courier</h4>
+<p>The original Courier (slightly different from Courier New).</p>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Regular</td>
+<td><code>Courier</code></td>
+</tr>
+<tr>
+<td>Oblique</td>
+<td><code>Courier-Oblique</code></td>
+</tr>
+<tr>
+<td>Bold</td>
+<td><code>Courier-Bold</code></td>
+</tr>
+<tr>
+<td>Bold Oblique</td>
+<td><code>Courier-BoldOblique</code></td>
+</tr>
+</tbody>
+</table>
+<h4 id="menlo">Menlo</h4>
+<p>A monospaced font based on Bitstream Vera Sans Mono. The default Xcode font before SF Mono.</p>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Regular</td>
+<td><code>Menlo-Regular</code></td>
+</tr>
+<tr>
+<td>Italic</td>
+<td><code>Menlo-Italic</code></td>
+</tr>
+<tr>
+<td>Bold</td>
+<td><code>Menlo-Bold</code></td>
+</tr>
+<tr>
+<td>Bold Italic</td>
+<td><code>Menlo-BoldItalic</code></td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-swift">Text(&quot;func main()&quot;).font(.custom(&quot;Menlo-Regular&quot;, size: 14))
+Text(&quot;// Bold comment&quot;).font(.custom(&quot;Menlo-Bold&quot;, size: 14))
+</code></pre>
+<p><strong>Best for:</strong> Code display, terminal emulators, developer tools, log viewers.</p>
+<h4 id="american-typewriter">American Typewriter</h4>
+<p>A monospaced font with typewriter charm and serifs.</p>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Regular</td>
+<td><code>AmericanTypewriter</code></td>
+</tr>
+<tr>
+<td>Light</td>
+<td><code>AmericanTypewriter-Light</code></td>
+</tr>
+<tr>
+<td>Semibold</td>
+<td><code>AmericanTypewriter-Semibold</code></td>
+</tr>
+<tr>
+<td>Bold</td>
+<td><code>AmericanTypewriter-Bold</code></td>
+</tr>
+<tr>
+<td>Condensed</td>
+<td><code>AmericanTypewriter-Condensed</code></td>
+</tr>
+<tr>
+<td>Condensed Light</td>
+<td><code>AmericanTypewriter-CondensedLight</code></td>
+</tr>
+<tr>
+<td>Condensed Bold</td>
+<td><code>AmericanTypewriter-CondensedBold</code></td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-swift">Text(&quot;Typewriter&quot;).font(.custom(&quot;AmericanTypewriter&quot;, size: 17))
+</code></pre>
+<p><strong>Best for:</strong> Note-taking apps, journal/diary UIs, retro aesthetics, creative writing tools.</p>
+<h3 id="display-and-decorative-fonts">Display and Decorative Fonts</h3>
+<h4 id="rockwell">Rockwell</h4>
+<p>A geometric slab serif with strong presence.</p>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Regular</td>
+<td><code>Rockwell-Regular</code></td>
+</tr>
+<tr>
+<td>Italic</td>
+<td><code>Rockwell-Italic</code></td>
+</tr>
+<tr>
+<td>Bold</td>
+<td><code>Rockwell-Bold</code></td>
+</tr>
+<tr>
+<td>Bold Italic</td>
+<td><code>Rockwell-BoldItalic</code></td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-swift">Text(&quot;ROCKWELL&quot;).font(.custom(&quot;Rockwell-Bold&quot;, size: 32))
+</code></pre>
+<p><strong>Best for:</strong> Bold headings, poster-style layouts, strong brand statements.</p>
+<h4 id="copperplate">Copperplate</h4>
+<p>An all-caps engraved style font with small-cap lowercase.</p>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Regular</td>
+<td><code>Copperplate</code></td>
+</tr>
+<tr>
+<td>Light</td>
+<td><code>Copperplate-Light</code></td>
+</tr>
+<tr>
+<td>Bold</td>
+<td><code>Copperplate-Bold</code></td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-swift">Text(&quot;COPPERPLATE&quot;).font(.custom(&quot;Copperplate-Bold&quot;, size: 24))
+</code></pre>
+<p><strong>Best for:</strong> Formal invitations, certificates, luxury branding, restaurant menus.</p>
+<h4 id="papyrus">Papyrus</h4>
+<p>A distressed, hand-drawn style font.</p>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Regular</td>
+<td><code>Papyrus</code></td>
+</tr>
+<tr>
+<td>Condensed</td>
+<td><code>Papyrus-Condensed</code></td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-swift">Text(&quot;Papyrus&quot;).font(.custom(&quot;Papyrus&quot;, size: 20))
+</code></pre>
+<p><strong>Best for:</strong> Themed apps (ancient, natural), generally avoid for professional UIs.</p>
+<h4 id="marker-felt">Marker Felt</h4>
+<p>A felt-tip marker style font.</p>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Thin</td>
+<td><code>MarkerFelt-Thin</code></td>
+</tr>
+<tr>
+<td>Wide</td>
+<td><code>MarkerFelt-Wide</code></td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-swift">Text(&quot;Marker Felt&quot;).font(.custom(&quot;MarkerFelt-Thin&quot;, size: 20))
+</code></pre>
+<p><strong>Best for:</strong> Whiteboard UIs, sketching apps, children's content.</p>
+<h4 id="chalkboard-se">Chalkboard SE</h4>
+<p>A clean chalkboard-style handwriting font.</p>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Regular</td>
+<td><code>ChalkboardSE-Regular</code></td>
+</tr>
+<tr>
+<td>Light</td>
+<td><code>ChalkboardSE-Light</code></td>
+</tr>
+<tr>
+<td>Bold</td>
+<td><code>ChalkboardSE-Bold</code></td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-swift">Text(&quot;Chalkboard&quot;).font(.custom(&quot;ChalkboardSE-Regular&quot;, size: 17))
+</code></pre>
+<p><strong>Best for:</strong> Education apps, children's apps, informal notes.</p>
+<h4 id="chalkduster">Chalkduster</h4>
+<p>A rougher chalkboard-style font.</p>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Regular</td>
+<td><code>Chalkduster</code></td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-swift">Text(&quot;Chalkduster&quot;).font(.custom(&quot;Chalkduster&quot;, size: 20))
+</code></pre>
+<h4 id="noteworthy">Noteworthy</h4>
+<p>A casual handwriting font.</p>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Light</td>
+<td><code>Noteworthy-Light</code></td>
+</tr>
+<tr>
+<td>Bold</td>
+<td><code>Noteworthy-Bold</code></td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-swift">Text(&quot;Noteworthy&quot;).font(.custom(&quot;Noteworthy-Light&quot;, size: 17))
+</code></pre>
+<p><strong>Best for:</strong> Personal notes, diary entries, sticky note UIs.</p>
+<h4 id="zapfino">Zapfino</h4>
+<p>An elaborate calligraphic script with extreme flourishes.</p>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Regular</td>
+<td><code>Zapfino</code></td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-swift">Text(&quot;Zapfino&quot;).font(.custom(&quot;Zapfino&quot;, size: 24))
+</code></pre>
+<p><strong>Best for:</strong> Decorative headers only, wedding apps, formal invitations (use sparingly).</p>
+<h4 id="party-let">Party LET</h4>
+<p>A festive, playful display font.</p>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Plain</td>
+<td><code>PartyLetPlain</code></td>
+</tr>
+</tbody>
+</table>
+<h4 id="savoye-let">Savoye LET</h4>
+<p>An elegant script font.</p>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Plain</td>
+<td><code>SavoyeLetPlain</code></td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-swift">Text(&quot;Savoye LET&quot;).font(.custom(&quot;SavoyeLetPlain&quot;, size: 28))
+</code></pre>
+<p><strong>Best for:</strong> Elegant signatures, wedding invitations, formal flourishes.</p>
+<h3 id="script-and-handwriting-fonts">Script and Handwriting Fonts</h3>
+<h4 id="snell-roundhand">Snell Roundhand</h4>
+<p>A flowing copperplate script with graceful strokes.</p>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Regular</td>
+<td><code>SnellRoundhand</code></td>
+</tr>
+<tr>
+<td>Bold</td>
+<td><code>SnellRoundhand-Bold</code></td>
+</tr>
+<tr>
+<td>Black</td>
+<td><code>SnellRoundhand-Black</code></td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-swift">Text(&quot;Elegant Script&quot;).font(.custom(&quot;SnellRoundhand&quot;, size: 24))
+</code></pre>
+<p><strong>Best for:</strong> Formal invitations, signatures, elegant accents.</p>
+<h4 id="bradley-hand">Bradley Hand</h4>
+<p>A casual handwriting style.</p>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bold</td>
+<td><code>BradleyHandITCTT-Bold</code></td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-swift">Text(&quot;Handwritten&quot;).font(.custom(&quot;BradleyHandITCTT-Bold&quot;, size: 17))
+</code></pre>
+<p><strong>Best for:</strong> Personal touches, note-style UIs, casual annotations.</p>
+<h4 id="kefa">Kefa</h4>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Regular</td>
+<td><code>Kefa-Regular</code></td>
+</tr>
+</tbody>
+</table>
+<h4 id="kohinoor-telugu">Kohinoor Telugu</h4>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Regular</td>
+<td><code>KohinoorTelugu-Regular</code></td>
+</tr>
+<tr>
+<td>Medium</td>
+<td><code>KohinoorTelugu-Medium</code></td>
+</tr>
+<tr>
+<td>Light</td>
+<td><code>KohinoorTelugu-Light</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="additional-built-in-fonts">Additional Built-in Fonts</h3>
+<h4 id="symbol-dingbat-fonts">Symbol / Dingbat Fonts</h4>
+<table>
+<thead>
+<tr>
+<th>Font Family</th>
+<th>Font Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Symbol</td>
+<td><code>Symbol</code></td>
+<td>Greek and math symbols</td>
+</tr>
+<tr>
+<td>Zapf Dingbats</td>
+<td><code>ZapfDingbatsITC</code></td>
+<td>Decorative symbols</td>
+</tr>
+</tbody>
+</table>
+<h4 id="additional-sans-serif">Additional Sans-Serif</h4>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Euphemia UCAS</td>
+<td><code>EuphemiaUCAS</code></td>
+</tr>
+<tr>
+<td>Euphemia UCAS Bold</td>
+<td><code>EuphemiaUCAS-Bold</code></td>
+</tr>
+<tr>
+<td>Euphemia UCAS Italic</td>
+<td><code>EuphemiaUCAS-Italic</code></td>
+</tr>
+<tr>
+<td>Galvji</td>
+<td><code>Galvji</code></td>
+</tr>
+<tr>
+<td>Galvji Bold</td>
+<td><code>Galvji-Bold</code></td>
+</tr>
+<tr>
+<td>Galvji Bold Oblique</td>
+<td><code>Galvji-BoldOblique</code></td>
+</tr>
+<tr>
+<td>Galvji Oblique</td>
+<td><code>Galvji-Oblique</code></td>
+</tr>
+<tr>
+<td>Grantha Sangam MN</td>
+<td><code>GranthaSangamMN-Regular</code></td>
+</tr>
+<tr>
+<td>Grantha Sangam MN Bold</td>
+<td><code>GranthaSangamMN-Bold</code></td>
+</tr>
+<tr>
+<td>Hoefler Text</td>
+<td><code>HoeflerText-Regular</code></td>
+</tr>
+<tr>
+<td>Hoefler Text Italic</td>
+<td><code>HoeflerText-Italic</code></td>
+</tr>
+<tr>
+<td>Hoefler Text Bold</td>
+<td><code>HoeflerText-Black</code></td>
+</tr>
+<tr>
+<td>Hoefler Text Bold Italic</td>
+<td><code>HoeflerText-BlackItalic</code></td>
+</tr>
+<tr>
+<td>Kailasa</td>
+<td><code>Kailasa</code></td>
+</tr>
+<tr>
+<td>Kailasa Bold</td>
+<td><code>Kailasa-Bold</code></td>
+</tr>
+<tr>
+<td>Khmer Sangam MN</td>
+<td><code>KhmerSangamMN</code></td>
+</tr>
+<tr>
+<td>Lao Sangam MN</td>
+<td><code>LaoSangamMN</code></td>
+</tr>
+<tr>
+<td>Malayalam Sangam MN</td>
+<td><code>MalayalamSangamMN</code></td>
+</tr>
+<tr>
+<td>Malayalam Sangam MN Bold</td>
+<td><code>MalayalamSangamMN-Bold</code></td>
+</tr>
+<tr>
+<td>Myanmar Sangam MN</td>
+<td><code>MyanmarSangamMN</code></td>
+</tr>
+<tr>
+<td>Myanmar Sangam MN Bold</td>
+<td><code>MyanmarSangamMN-Bold</code></td>
+</tr>
+<tr>
+<td>Noto Nastaliq Urdu</td>
+<td><code>NotoNastaliqUrdu</code></td>
+</tr>
+<tr>
+<td>Noto Nastaliq Urdu Bold</td>
+<td><code>NotoNastaliqUrdu-Bold</code></td>
+</tr>
+<tr>
+<td>Noto Sans Kannada</td>
+<td><code>NotoSansKannada-Regular</code></td>
+</tr>
+<tr>
+<td>Noto Sans Kannada Bold</td>
+<td><code>NotoSansKannada-Bold</code></td>
+</tr>
+<tr>
+<td>Noto Sans Kannada Light</td>
+<td><code>NotoSansKannada-Light</code></td>
+</tr>
+<tr>
+<td>Noto Sans Myanmar</td>
+<td><code>NotoSansMyanmar-Regular</code></td>
+</tr>
+<tr>
+<td>Noto Sans Myanmar Bold</td>
+<td><code>NotoSansMyanmar-Bold</code></td>
+</tr>
+<tr>
+<td>Noto Sans Myanmar Light</td>
+<td><code>NotoSansMyanmar-Light</code></td>
+</tr>
+<tr>
+<td>Noto Sans Oriya</td>
+<td><code>NotoSansOriya</code></td>
+</tr>
+<tr>
+<td>Noto Sans Oriya Bold</td>
+<td><code>NotoSansOriya-Bold</code></td>
+</tr>
+<tr>
+<td>Sinhala Sangam MN</td>
+<td><code>SinhalaSangamMN</code></td>
+</tr>
+<tr>
+<td>Sinhala Sangam MN Bold</td>
+<td><code>SinhalaSangamMN-Bold</code></td>
+</tr>
+<tr>
+<td>Tamil Sangam MN</td>
+<td><code>TamilSangamMN</code></td>
+</tr>
+<tr>
+<td>Tamil Sangam MN Bold</td>
+<td><code>TamilSangamMN-Bold</code></td>
+</tr>
+<tr>
+<td>Thonburi</td>
+<td><code>Thonburi</code></td>
+</tr>
+<tr>
+<td>Thonburi Light</td>
+<td><code>Thonburi-Light</code></td>
+</tr>
+<tr>
+<td>Thonburi Bold</td>
+<td><code>Thonburi-Bold</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="international-and-multi-script-fonts">International and Multi-script Fonts</h3>
+<h4 id="chinese">Chinese</h4>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+<th>Script</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PingFang SC Regular</td>
+<td><code>PingFangSC-Regular</code></td>
+<td>Simplified Chinese</td>
+</tr>
+<tr>
+<td>PingFang SC Medium</td>
+<td><code>PingFangSC-Medium</code></td>
+<td>Simplified Chinese</td>
+</tr>
+<tr>
+<td>PingFang SC Semibold</td>
+<td><code>PingFangSC-Semibold</code></td>
+<td>Simplified Chinese</td>
+</tr>
+<tr>
+<td>PingFang SC Light</td>
+<td><code>PingFangSC-Light</code></td>
+<td>Simplified Chinese</td>
+</tr>
+<tr>
+<td>PingFang SC Thin</td>
+<td><code>PingFangSC-Thin</code></td>
+<td>Simplified Chinese</td>
+</tr>
+<tr>
+<td>PingFang SC Ultralight</td>
+<td><code>PingFangSC-Ultralight</code></td>
+<td>Simplified Chinese</td>
+</tr>
+<tr>
+<td>PingFang TC Regular</td>
+<td><code>PingFangTC-Regular</code></td>
+<td>Traditional Chinese</td>
+</tr>
+<tr>
+<td>PingFang TC Medium</td>
+<td><code>PingFangTC-Medium</code></td>
+<td>Traditional Chinese</td>
+</tr>
+<tr>
+<td>PingFang TC Semibold</td>
+<td><code>PingFangTC-Semibold</code></td>
+<td>Traditional Chinese</td>
+</tr>
+<tr>
+<td>PingFang TC Light</td>
+<td><code>PingFangTC-Light</code></td>
+<td>Traditional Chinese</td>
+</tr>
+<tr>
+<td>PingFang TC Thin</td>
+<td><code>PingFangTC-Thin</code></td>
+<td>Traditional Chinese</td>
+</tr>
+<tr>
+<td>PingFang TC Ultralight</td>
+<td><code>PingFangTC-Ultralight</code></td>
+<td>Traditional Chinese</td>
+</tr>
+<tr>
+<td>PingFang HK Regular</td>
+<td><code>PingFangHK-Regular</code></td>
+<td>Hong Kong Chinese</td>
+</tr>
+<tr>
+<td>PingFang HK Medium</td>
+<td><code>PingFangHK-Medium</code></td>
+<td>Hong Kong Chinese</td>
+</tr>
+<tr>
+<td>PingFang HK Semibold</td>
+<td><code>PingFangHK-Semibold</code></td>
+<td>Hong Kong Chinese</td>
+</tr>
+<tr>
+<td>PingFang HK Light</td>
+<td><code>PingFangHK-Light</code></td>
+<td>Hong Kong Chinese</td>
+</tr>
+<tr>
+<td>PingFang HK Thin</td>
+<td><code>PingFangHK-Thin</code></td>
+<td>Hong Kong Chinese</td>
+</tr>
+<tr>
+<td>PingFang HK Ultralight</td>
+<td><code>PingFangHK-Ultralight</code></td>
+<td>Hong Kong Chinese</td>
+</tr>
+</tbody>
+</table>
+<h4 id="japanese">Japanese</h4>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hiragino Sans W3</td>
+<td><code>HiraginoSans-W3</code></td>
+</tr>
+<tr>
+<td>Hiragino Sans W6</td>
+<td><code>HiraginoSans-W6</code></td>
+</tr>
+<tr>
+<td>Hiragino Sans W7</td>
+<td><code>HiraginoSans-W7</code></td>
+</tr>
+<tr>
+<td>Hiragino Mincho ProN W3</td>
+<td><code>HiraMinProN-W3</code></td>
+</tr>
+<tr>
+<td>Hiragino Mincho ProN W6</td>
+<td><code>HiraMinProN-W6</code></td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-swift">Text(&quot;Japanese text&quot;).font(.custom(&quot;HiraginoSans-W3&quot;, size: 17))
+</code></pre>
+<h4 id="korean">Korean</h4>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Apple SD Gothic Neo Regular</td>
+<td><code>AppleSDGothicNeo-Regular</code></td>
+</tr>
+<tr>
+<td>Apple SD Gothic Neo Thin</td>
+<td><code>AppleSDGothicNeo-Thin</code></td>
+</tr>
+<tr>
+<td>Apple SD Gothic Neo UltraLight</td>
+<td><code>AppleSDGothicNeo-UltraLight</code></td>
+</tr>
+<tr>
+<td>Apple SD Gothic Neo Light</td>
+<td><code>AppleSDGothicNeo-Light</code></td>
+</tr>
+<tr>
+<td>Apple SD Gothic Neo Medium</td>
+<td><code>AppleSDGothicNeo-Medium</code></td>
+</tr>
+<tr>
+<td>Apple SD Gothic Neo Semibold</td>
+<td><code>AppleSDGothicNeo-SemiBold</code></td>
+</tr>
+<tr>
+<td>Apple SD Gothic Neo Bold</td>
+<td><code>AppleSDGothicNeo-Bold</code></td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-swift">Text(&quot;Korean text&quot;).font(.custom(&quot;AppleSDGothicNeo-Regular&quot;, size: 17))
+</code></pre>
+<h4 id="arabic">Arabic</h4>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Geeza Pro Regular</td>
+<td><code>GeezaPro</code></td>
+</tr>
+<tr>
+<td>Geeza Pro Bold</td>
+<td><code>GeezaPro-Bold</code></td>
+</tr>
+<tr>
+<td>Mishafi Regular</td>
+<td><code>DiwanMishafi</code></td>
+</tr>
+<tr>
+<td>Baghdad Regular</td>
+<td><code>Baghdad</code></td>
+</tr>
+<tr>
+<td>Farah</td>
+<td><code>Farah</code></td>
+</tr>
+<tr>
+<td>Damascus</td>
+<td><code>Damascus</code></td>
+</tr>
+<tr>
+<td>Damascus Light</td>
+<td><code>DamascusLight</code></td>
+</tr>
+<tr>
+<td>Damascus Medium</td>
+<td><code>DamascusMedium</code></td>
+</tr>
+<tr>
+<td>Damascus Semibold</td>
+<td><code>DamascusSemiBold</code></td>
+</tr>
+<tr>
+<td>Damascus Bold</td>
+<td><code>DamascusBold</code></td>
+</tr>
+</tbody>
+</table>
+<h4 id="devanagari-hindi">Devanagari (Hindi)</h4>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Kohinoor Devanagari Regular</td>
+<td><code>KohinoorDevanagari-Regular</code></td>
+</tr>
+<tr>
+<td>Kohinoor Devanagari Light</td>
+<td><code>KohinoorDevanagari-Light</code></td>
+</tr>
+<tr>
+<td>Kohinoor Devanagari Semibold</td>
+<td><code>KohinoorDevanagari-Semibold</code></td>
+</tr>
+<tr>
+<td>Devanagari Sangam MN</td>
+<td><code>DevanagariSangamMN</code></td>
+</tr>
+<tr>
+<td>Devanagari Sangam MN Bold</td>
+<td><code>DevanagariSangamMN-Bold</code></td>
+</tr>
+</tbody>
+</table>
+<h4 id="bangla">Bangla</h4>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Kohinoor Bangla Regular</td>
+<td><code>KohinoorBangla-Regular</code></td>
+</tr>
+<tr>
+<td>Kohinoor Bangla Light</td>
+<td><code>KohinoorBangla-Light</code></td>
+</tr>
+<tr>
+<td>Kohinoor Bangla Semibold</td>
+<td><code>KohinoorBangla-Semibold</code></td>
+</tr>
+</tbody>
+</table>
+<h4 id="gujarati">Gujarati</h4>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Kohinoor Gujarati Regular</td>
+<td><code>KohinoorGujarati-Regular</code></td>
+</tr>
+<tr>
+<td>Kohinoor Gujarati Light</td>
+<td><code>KohinoorGujarati-Light</code></td>
+</tr>
+<tr>
+<td>Kohinoor Gujarati Bold</td>
+<td><code>KohinoorGujarati-Bold</code></td>
+</tr>
+<tr>
+<td>Gujarati Sangam MN</td>
+<td><code>GujaratiSangamMN</code></td>
+</tr>
+<tr>
+<td>Gujarati Sangam MN Bold</td>
+<td><code>GujaratiSangamMN-Bold</code></td>
+</tr>
+</tbody>
+</table>
+<h4 id="telugu">Telugu</h4>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Kohinoor Telugu Regular</td>
+<td><code>KohinoorTelugu-Regular</code></td>
+</tr>
+<tr>
+<td>Kohinoor Telugu Medium</td>
+<td><code>KohinoorTelugu-Medium</code></td>
+</tr>
+<tr>
+<td>Kohinoor Telugu Light</td>
+<td><code>KohinoorTelugu-Light</code></td>
+</tr>
+</tbody>
+</table>
+<h4 id="gurmukhi-punjabi">Gurmukhi (Punjabi)</h4>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Font Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mukta Mahee Regular</td>
+<td><code>MuktaMahee-Regular</code></td>
+</tr>
+<tr>
+<td>Mukta Mahee Light</td>
+<td><code>MuktaMahee-Light</code></td>
+</tr>
+<tr>
+<td>Mukta Mahee Bold</td>
+<td><code>MuktaMahee-Bold</code></td>
+</tr>
+<tr>
+<td>Gurmukhi MN</td>
+<td><code>GurmukhiMN</code></td>
+</tr>
+<tr>
+<td>Gurmukhi MN Bold</td>
+<td><code>GurmukhiMN-Bold</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-google-fonts-top-100-for-ios">3. Google Fonts -- Top 100 for iOS</h2>
+<p>These are the most popular Google Fonts used in iOS apps. To use any of these, you must
+download the font files and add them to your Xcode project (see Section 4).</p>
+<h3 id="sans-serif">Sans-Serif</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Font Name</th>
+<th>Weights Available</th>
+<th>Best Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Inter</td>
+<td>100-900</td>
+<td>UI text, dashboards, SaaS</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Roboto</td>
+<td>100, 300, 400, 500, 700, 900</td>
+<td>Material Design, Android parity</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Open Sans</td>
+<td>300-800</td>
+<td>Universal body text</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Lato</td>
+<td>100, 300, 400, 700, 900</td>
+<td>Friendly body text, corporate</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Montserrat</td>
+<td>100-900</td>
+<td>Modern headings, marketing</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Poppins</td>
+<td>100-900</td>
+<td>SaaS, startup, geometric UI</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Nunito</td>
+<td>200-900</td>
+<td>Rounded, friendly, children's apps</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Raleway</td>
+<td>100-900</td>
+<td>Elegant headings, fashion</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Source Sans 3</td>
+<td>200-900</td>
+<td>Technical docs, code-adjacent text</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Work Sans</td>
+<td>100-900</td>
+<td>Clean UI, editorial</td>
+</tr>
+<tr>
+<td>11</td>
+<td>DM Sans</td>
+<td>100-900</td>
+<td>Minimal UI, dashboard</td>
+</tr>
+<tr>
+<td>12</td>
+<td>Manrope</td>
+<td>200-800</td>
+<td>Tech products, developer tools</td>
+</tr>
+<tr>
+<td>13</td>
+<td>Plus Jakarta Sans</td>
+<td>200-800</td>
+<td>Fintech, professional</td>
+</tr>
+<tr>
+<td>14</td>
+<td>Space Grotesk</td>
+<td>300-700</td>
+<td>Tech, developer, coding apps</td>
+</tr>
+<tr>
+<td>15</td>
+<td>Outfit</td>
+<td>100-900</td>
+<td>Modern branding, startup</td>
+</tr>
+<tr>
+<td>16</td>
+<td>Sora</td>
+<td>100-800</td>
+<td>Futuristic, crypto, web3</td>
+</tr>
+<tr>
+<td>17</td>
+<td>Urbanist</td>
+<td>100-900</td>
+<td>Modern geometric, luxury tech</td>
+</tr>
+<tr>
+<td>18</td>
+<td>Lexend</td>
+<td>100-900</td>
+<td>Accessibility, dyslexia-friendly</td>
+</tr>
+<tr>
+<td>19</td>
+<td>Albert Sans</td>
+<td>100-900</td>
+<td>Geometric, versatile UI</td>
+</tr>
+<tr>
+<td>20</td>
+<td>Figtree</td>
+<td>300-900</td>
+<td>Friendly, approachable UI</td>
+</tr>
+<tr>
+<td>21</td>
+<td>Geist</td>
+<td>100-900</td>
+<td>Vercel-style, developer UI</td>
+</tr>
+<tr>
+<td>22</td>
+<td>Satoshi</td>
+<td>300-900</td>
+<td>Minimal, modern branding</td>
+</tr>
+<tr>
+<td>23</td>
+<td>Nunito Sans</td>
+<td>200-900</td>
+<td>UI text, clean dashboards</td>
+</tr>
+<tr>
+<td>24</td>
+<td>Karla</td>
+<td>200-800</td>
+<td>Grotesque, editorial</td>
+</tr>
+<tr>
+<td>25</td>
+<td>Rubik</td>
+<td>300-900</td>
+<td>Rounded, playful</td>
+</tr>
+<tr>
+<td>26</td>
+<td>Barlow</td>
+<td>100-900</td>
+<td>Industrial, technical</td>
+</tr>
+<tr>
+<td>27</td>
+<td>Mulish</td>
+<td>200-900</td>
+<td>Clean, minimal</td>
+</tr>
+<tr>
+<td>28</td>
+<td>Quicksand</td>
+<td>300-700</td>
+<td>Rounded, friendly</td>
+</tr>
+<tr>
+<td>29</td>
+<td>Cabin</td>
+<td>400-700</td>
+<td>Humanist, warm</td>
+</tr>
+<tr>
+<td>30</td>
+<td>Josefin Sans</td>
+<td>100-700</td>
+<td>Elegant, geometric</td>
+</tr>
+<tr>
+<td>31</td>
+<td>PT Sans</td>
+<td>400, 700</td>
+<td>Universal text, multilingual</td>
+</tr>
+<tr>
+<td>32</td>
+<td>Noto Sans</td>
+<td>100-900</td>
+<td>Global multilingual support</td>
+</tr>
+<tr>
+<td>33</td>
+<td>Overpass</td>
+<td>100-900</td>
+<td>Highway signage inspired, clean</td>
+</tr>
+<tr>
+<td>34</td>
+<td>IBM Plex Sans</td>
+<td>100-700</td>
+<td>Enterprise, corporate, IBM design</td>
+</tr>
+<tr>
+<td>35</td>
+<td>Red Hat Display</td>
+<td>300-900</td>
+<td>Open source branding</td>
+</tr>
+<tr>
+<td>36</td>
+<td>Exo 2</td>
+<td>100-900</td>
+<td>Futuristic, geometric</td>
+</tr>
+<tr>
+<td>37</td>
+<td>Archivo</td>
+<td>100-900</td>
+<td>Bold headings, editorial</td>
+</tr>
+<tr>
+<td>38</td>
+<td>Hind</td>
+<td>300-700</td>
+<td>Devanagari + Latin body text</td>
+</tr>
+<tr>
+<td>39</td>
+<td>Public Sans</td>
+<td>100-900</td>
+<td>Government, accessible</td>
+</tr>
+<tr>
+<td>40</td>
+<td>General Sans</td>
+<td>200-700</td>
+<td>Modern grotesque, branding</td>
+</tr>
+</tbody>
+</table>
+<h3 id="serif">Serif</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Font Name</th>
+<th>Weights Available</th>
+<th>Best Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>41</td>
+<td>Playfair Display</td>
+<td>400-900</td>
+<td>Editorial headings, magazine</td>
+</tr>
+<tr>
+<td>42</td>
+<td>Merriweather</td>
+<td>300, 400, 700, 900</td>
+<td>Long-form reading, blogs</td>
+</tr>
+<tr>
+<td>43</td>
+<td>Lora</td>
+<td>400-700</td>
+<td>Book text, literary</td>
+</tr>
+<tr>
+<td>44</td>
+<td>Source Serif 4</td>
+<td>200-900</td>
+<td>Technical docs, paired with Source Sans</td>
+</tr>
+<tr>
+<td>45</td>
+<td>Crimson Text</td>
+<td>400, 600, 700</td>
+<td>Book text, classic reading</td>
+</tr>
+<tr>
+<td>46</td>
+<td>Libre Baskerville</td>
+<td>400, 700</td>
+<td>Elegant body text, traditional</td>
+</tr>
+<tr>
+<td>47</td>
+<td>EB Garamond</td>
+<td>400-800</td>
+<td>Book typography, literary</td>
+</tr>
+<tr>
+<td>48</td>
+<td>Cormorant Garamond</td>
+<td>300-700</td>
+<td>High fashion, luxury headings</td>
+</tr>
+<tr>
+<td>49</td>
+<td>DM Serif Display</td>
+<td>400</td>
+<td>Bold editorial headings</td>
+</tr>
+<tr>
+<td>50</td>
+<td>Bitter</td>
+<td>100-900</td>
+<td>Screen reading, warm serif</td>
+</tr>
+<tr>
+<td>51</td>
+<td>Noto Serif</td>
+<td>100-900</td>
+<td>Global multilingual serif</td>
+</tr>
+<tr>
+<td>52</td>
+<td>PT Serif</td>
+<td>400, 700</td>
+<td>Multilingual reading</td>
+</tr>
+<tr>
+<td>53</td>
+<td>Spectral</td>
+<td>200-800</td>
+<td>Long-form, screen-optimized</td>
+</tr>
+<tr>
+<td>54</td>
+<td>Vollkorn</td>
+<td>400-900</td>
+<td>Warm, organic reading</td>
+</tr>
+<tr>
+<td>55</td>
+<td>Fraunces</td>
+<td>100-900</td>
+<td>Playful serif, retro</td>
+</tr>
+<tr>
+<td>56</td>
+<td>Instrument Serif</td>
+<td>400</td>
+<td>Minimal editorial</td>
+</tr>
+<tr>
+<td>57</td>
+<td>Newsreader</td>
+<td>200-800</td>
+<td>News, journalism</td>
+</tr>
+</tbody>
+</table>
+<h3 id="monospaced">Monospaced</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Font Name</th>
+<th>Weights Available</th>
+<th>Best Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>58</td>
+<td>Fira Code</td>
+<td>300-700</td>
+<td>Code editor with ligatures</td>
+</tr>
+<tr>
+<td>59</td>
+<td>JetBrains Mono</td>
+<td>100-800</td>
+<td>IDE, code editor, terminal</td>
+</tr>
+<tr>
+<td>60</td>
+<td>Source Code Pro</td>
+<td>200-900</td>
+<td>Code display, terminal</td>
+</tr>
+<tr>
+<td>61</td>
+<td>IBM Plex Mono</td>
+<td>100-700</td>
+<td>Enterprise code, terminal</td>
+</tr>
+<tr>
+<td>62</td>
+<td>Space Mono</td>
+<td>400, 700</td>
+<td>Futuristic, retro-tech</td>
+</tr>
+<tr>
+<td>63</td>
+<td>Roboto Mono</td>
+<td>100-700</td>
+<td>Data tables, code blocks</td>
+</tr>
+<tr>
+<td>64</td>
+<td>Inconsolata</td>
+<td>200-900</td>
+<td>Code display, clean mono</td>
+</tr>
+<tr>
+<td>65</td>
+<td>Ubuntu Mono</td>
+<td>400, 700</td>
+<td>Linux-style terminal</td>
+</tr>
+<tr>
+<td>66</td>
+<td>Cascadia Code</td>
+<td>200-700</td>
+<td>Windows Terminal-style</td>
+</tr>
+<tr>
+<td>67</td>
+<td>Geist Mono</td>
+<td>100-900</td>
+<td>Vercel developer tools</td>
+</tr>
+<tr>
+<td>68</td>
+<td>Anonymous Pro</td>
+<td>400, 700</td>
+<td>Coding, terminal</td>
+</tr>
+<tr>
+<td>69</td>
+<td>Overpass Mono</td>
+<td>300-700</td>
+<td>Data, tables</td>
+</tr>
+<tr>
+<td>70</td>
+<td>Red Hat Mono</td>
+<td>300-700</td>
+<td>Enterprise code</td>
+</tr>
+</tbody>
+</table>
+<h3 id="display">Display</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Font Name</th>
+<th>Weights Available</th>
+<th>Best Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>71</td>
+<td>Bebas Neue</td>
+<td>400</td>
+<td>Bold headings, posters</td>
+</tr>
+<tr>
+<td>72</td>
+<td>Oswald</td>
+<td>200-700</td>
+<td>Condensed headings, news</td>
+</tr>
+<tr>
+<td>73</td>
+<td>Anton</td>
+<td>400</td>
+<td>Impact headings, bold statements</td>
+</tr>
+<tr>
+<td>74</td>
+<td>Archivo Black</td>
+<td>400</td>
+<td>Ultra bold display</td>
+</tr>
+<tr>
+<td>75</td>
+<td>Righteous</td>
+<td>400</td>
+<td>Retro, rounded display</td>
+</tr>
+<tr>
+<td>76</td>
+<td>Fredoka</td>
+<td>300-700</td>
+<td>Playful, children's content</td>
+</tr>
+<tr>
+<td>77</td>
+<td>Lilita One</td>
+<td>400</td>
+<td>Fun, casual headings</td>
+</tr>
+<tr>
+<td>78</td>
+<td>Passion One</td>
+<td>400, 700, 900</td>
+<td>Sports, energetic</td>
+</tr>
+<tr>
+<td>79</td>
+<td>Bungee</td>
+<td>400</td>
+<td>Signage, athletic</td>
+</tr>
+<tr>
+<td>80</td>
+<td>Abril Fatface</td>
+<td>400</td>
+<td>High-contrast display</td>
+</tr>
+<tr>
+<td>81</td>
+<td>Alfa Slab One</td>
+<td>400</td>
+<td>Slab serif display</td>
+</tr>
+<tr>
+<td>82</td>
+<td>Lobster</td>
+<td>400</td>
+<td>Retro script display</td>
+</tr>
+<tr>
+<td>83</td>
+<td>Permanent Marker</td>
+<td>400</td>
+<td>Hand-drawn, casual</td>
+</tr>
+<tr>
+<td>84</td>
+<td>Bangers</td>
+<td>400</td>
+<td>Comic book, energetic</td>
+</tr>
+<tr>
+<td>85</td>
+<td>Staatliches</td>
+<td>400</td>
+<td>Display, condensed sans</td>
+</tr>
+<tr>
+<td>86</td>
+<td>Comfortaa</td>
+<td>300-700</td>
+<td>Rounded, futuristic</td>
+</tr>
+<tr>
+<td>87</td>
+<td>Russo One</td>
+<td>400</td>
+<td>Tech, gaming</td>
+</tr>
+<tr>
+<td>88</td>
+<td>Press Start 2P</td>
+<td>400</td>
+<td>Pixel art, retro gaming</td>
+</tr>
+<tr>
+<td>89</td>
+<td>Orbitron</td>
+<td>400-900</td>
+<td>Sci-fi, space, futuristic</td>
+</tr>
+<tr>
+<td>90</td>
+<td>Teko</td>
+<td>300-700</td>
+<td>Sports, condensed display</td>
+</tr>
+</tbody>
+</table>
+<h3 id="handwriting-and-script">Handwriting and Script</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Font Name</th>
+<th>Weights Available</th>
+<th>Best Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>91</td>
+<td>Dancing Script</td>
+<td>400-700</td>
+<td>Casual elegance, invitations</td>
+</tr>
+<tr>
+<td>92</td>
+<td>Pacifico</td>
+<td>400</td>
+<td>Retro surf, casual branding</td>
+</tr>
+<tr>
+<td>93</td>
+<td>Caveat</td>
+<td>400-700</td>
+<td>Handwritten notes, annotations</td>
+</tr>
+<tr>
+<td>94</td>
+<td>Sacramento</td>
+<td>400</td>
+<td>Elegant script, signatures</td>
+</tr>
+<tr>
+<td>95</td>
+<td>Great Vibes</td>
+<td>400</td>
+<td>Formal calligraphy</td>
+</tr>
+<tr>
+<td>96</td>
+<td>Satisfy</td>
+<td>400</td>
+<td>Retro script</td>
+</tr>
+<tr>
+<td>97</td>
+<td>Kalam</td>
+<td>300, 400, 700</td>
+<td>Informal handwriting, notes</td>
+</tr>
+<tr>
+<td>98</td>
+<td>Patrick Hand</td>
+<td>400</td>
+<td>Casual handwriting</td>
+</tr>
+<tr>
+<td>99</td>
+<td>Indie Flower</td>
+<td>400</td>
+<td>Playful handwriting, fun</td>
+</tr>
+<tr>
+<td>100</td>
+<td>Amatic SC</td>
+<td>400, 700</td>
+<td>Tall, narrow handwriting</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4-how-to-add-custom-fonts-to-ios">4. How to Add Custom Fonts to iOS</h2>
+<h3 id="step-1-obtain-font-files">Step 1: Obtain Font Files</h3>
+<p>Download <code>.ttf</code> (TrueType) or <code>.otf</code> (OpenType) font files. For Google Fonts,
+download from https://fonts.google.com or use a package manager.</p>
+<h3 id="step-2-add-files-to-xcode-project">Step 2: Add Files to Xcode Project</h3>
+<ol>
+<li>Drag the font files into your Xcode project navigator.</li>
+<li>In the dialog that appears, check <strong>"Copy items if needed"</strong>.</li>
+<li>Ensure <strong>"Add to targets"</strong> has your app target checked.</li>
+<li>Verify the files appear under <strong>Build Phases &gt; Copy Bundle Resources</strong>.</li>
+</ol>
+<h3 id="step-3-register-fonts-in-infoplist">Step 3: Register Fonts in Info.plist</h3>
+<p>Add the font file names to your <code>Info.plist</code>:</p>
+<pre><code class="language-xml">&lt;key&gt;UIAppFonts&lt;/key&gt;
+&lt;array&gt;
+    &lt;string&gt;Inter-Regular.ttf&lt;/string&gt;
+    &lt;string&gt;Inter-Medium.ttf&lt;/string&gt;
+    &lt;string&gt;Inter-Bold.ttf&lt;/string&gt;
+    &lt;string&gt;PlayfairDisplay-Bold.ttf&lt;/string&gt;
+    &lt;string&gt;PlayfairDisplay-Regular.ttf&lt;/string&gt;
+&lt;/array&gt;
+</code></pre>
+<p>Or in the Xcode Info tab, add a row:
+- Key: <strong>Fonts provided by application</strong>
+- Type: Array
+- Items: each font filename (including extension)</p>
+<h3 id="step-4-find-the-exact-font-name">Step 4: Find the Exact Font Name</h3>
+<p>The filename is NOT always the font name. Use this code to discover exact PostScript names:</p>
+<pre><code class="language-swift">// Run this once at app launch to print all available fonts
+for family in UIFont.familyNames.sorted() {
+    print(&quot;Family: \(family)&quot;)
+    for name in UIFont.fontNames(forFamilyName: family) {
+        print(&quot;  -- \(name)&quot;)
+    }
+}
+</code></pre>
+<p>Or find a specific family:</p>
+<pre><code class="language-swift">// Check a specific font family
+let names = UIFont.fontNames(forFamilyName: &quot;Inter&quot;)
+print(names) // [&quot;Inter-Regular&quot;, &quot;Inter-Medium&quot;, &quot;Inter-Bold&quot;, ...]
+</code></pre>
+<h3 id="step-5-use-in-swiftui">Step 5: Use in SwiftUI</h3>
+<pre><code class="language-swift">// Basic usage
+Text(&quot;Custom Font&quot;).font(.custom(&quot;Inter-Regular&quot;, size: 17))
+Text(&quot;Bold Custom&quot;).font(.custom(&quot;Inter-Bold&quot;, size: 24))
+
+// With Dynamic Type support (RECOMMENDED)
+Text(&quot;Dynamic Type&quot;).font(.custom(&quot;Inter-Regular&quot;, size: 17, relativeTo: .body))
+Text(&quot;Dynamic Title&quot;).font(.custom(&quot;Inter-Bold&quot;, size: 28, relativeTo: .title))
+Text(&quot;Dynamic Caption&quot;).font(.custom(&quot;Inter-Regular&quot;, size: 12, relativeTo: .caption))
+
+// Fixed size (does not scale with Dynamic Type)
+Text(&quot;Fixed Size&quot;).font(.custom(&quot;Inter-Regular&quot;, fixedSize: 14))
+</code></pre>
+<h3 id="step-6-use-in-uikit">Step 6: Use in UIKit</h3>
+<pre><code class="language-swift">// Basic usage
+let font = UIFont(name: &quot;Inter-Regular&quot;, size: 17)
+
+// With Dynamic Type metrics
+let customFont = UIFont(name: &quot;Inter-Regular&quot;, size: 17)!
+let scaledFont = UIFontMetrics(forTextStyle: .body).scaledFont(for: customFont)
+label.font = scaledFont
+label.adjustsFontForContentSizeCategory = true
+</code></pre>
+<h3 id="dynamic-type-with-scaledmetric">Dynamic Type with @ScaledMetric</h3>
+<p>Use <code>@ScaledMetric</code> for custom font sizes that scale with Dynamic Type settings:</p>
+<pre><code class="language-swift">struct ContentView: View {
+    @ScaledMetric(relativeTo: .body) var bodySize: CGFloat = 17
+    @ScaledMetric(relativeTo: .title) var titleSize: CGFloat = 28
+    @ScaledMetric(relativeTo: .caption) var captionSize: CGFloat = 12
+    @ScaledMetric var iconSize: CGFloat = 24
+
+    var body: some View {
+        VStack {
+            Text(&quot;Title&quot;)
+                .font(.custom(&quot;PlayfairDisplay-Bold&quot;, size: titleSize))
+            Text(&quot;Body text here&quot;)
+                .font(.custom(&quot;Inter-Regular&quot;, size: bodySize))
+            Text(&quot;Caption&quot;)
+                .font(.custom(&quot;Inter-Regular&quot;, size: captionSize))
+            Image(systemName: &quot;star.fill&quot;)
+                .font(.system(size: iconSize))
+        }
+    }
+}
+</code></pre>
+<h3 id="complete-custom-font-integration-example">Complete Custom Font Integration Example</h3>
+<pre><code class="language-swift">// App entry point - register fonts
+@main
+struct MyApp: App {
+    init() {
+        // Fonts are auto-registered via Info.plist
+        // But you can verify they loaded:
+        #if DEBUG
+        if UIFont(name: &quot;Inter-Regular&quot;, size: 17) == nil {
+            print(&quot;WARNING: Inter-Regular font not found. Check Info.plist and bundle.&quot;)
+        }
+        #endif
+    }
+
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+        }
+    }
+}
+</code></pre>
+<h3 id="swift-package-manager-font-loading">Swift Package Manager Font Loading</h3>
+<p>If your fonts come from a Swift Package:</p>
+<pre><code class="language-swift">import SwiftUI
+
+extension Font {
+    static func registerFontsFromBundle(bundle: Bundle) {
+        let fontURLs = bundle.urls(forResourcesWithExtension: &quot;ttf&quot;, subdirectory: nil) ?? []
+        let otfURLs = bundle.urls(forResourcesWithExtension: &quot;otf&quot;, subdirectory: nil) ?? []
+
+        for url in fontURLs + otfURLs {
+            CTFontManagerRegisterFontsForURL(url as CFURL, .process, nil)
+        }
+    }
+}
+</code></pre>
+<h3 id="troubleshooting-custom-fonts">Troubleshooting Custom Fonts</h3>
+<table>
+<thead>
+<tr>
+<th>Problem</th>
+<th>Solution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Font not appearing</td>
+<td>Check Info.plist entry matches exact filename</td>
+</tr>
+<tr>
+<td>Wrong weight showing</td>
+<td>Use PostScript name, not display name</td>
+</tr>
+<tr>
+<td>Font not in bundle</td>
+<td>Verify target membership in File Inspector</td>
+</tr>
+<tr>
+<td>Dynamic Type not working</td>
+<td>Use <code>relativeTo:</code> parameter in <code>Font.custom()</code></td>
+</tr>
+<tr>
+<td>Font looks different on device</td>
+<td>Simulator and device may render differently; always test both</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-font-pairing-recommendations">5. Font Pairing Recommendations</h2>
+<p>Fifteen proven font pairings for iOS apps. Each pairing includes a heading font,
+a body font, the design context, and ready-to-use SwiftUI code.</p>
+<h3 id="pairing-1-sf-pro-display-sf-pro-text">Pairing 1: SF Pro Display + SF Pro Text</h3>
+<p><strong>Style:</strong> System default, clean, Apple-native
+<strong>Use case:</strong> Any iOS app that wants to feel native and polished</p>
+<pre><code class="language-swift">VStack(alignment: .leading, spacing: 8) {
+    Text(&quot;Welcome Back&quot;)
+        .font(.system(size: 34, weight: .bold))
+    Text(&quot;Here is what happened while you were away. Your projects have new updates and your team left comments.&quot;)
+        .font(.system(size: 17, weight: .regular))
+        .foregroundStyle(.secondary)
+}
+</code></pre>
+<h3 id="pairing-2-playfair-display-source-sans-3">Pairing 2: Playfair Display + Source Sans 3</h3>
+<p><strong>Style:</strong> Editorial, magazine
+<strong>Use case:</strong> News apps, editorial content, blog readers</p>
+<pre><code class="language-swift">VStack(alignment: .leading, spacing: 8) {
+    Text(&quot;The Art of Typography&quot;)
+        .font(.custom(&quot;PlayfairDisplay-Bold&quot;, size: 32, relativeTo: .largeTitle))
+    Text(&quot;Typography is the art and technique of arranging type to make written language legible, readable, and appealing when displayed.&quot;)
+        .font(.custom(&quot;SourceSans3-Regular&quot;, size: 17, relativeTo: .body))
+        .foregroundStyle(.secondary)
+}
+</code></pre>
+<h3 id="pairing-3-montserrat-lora">Pairing 3: Montserrat + Lora</h3>
+<p><strong>Style:</strong> Modern heading with classic body
+<strong>Use case:</strong> Portfolio apps, creative agencies, lifestyle brands</p>
+<pre><code class="language-swift">VStack(alignment: .leading, spacing: 8) {
+    Text(&quot;CREATIVE STUDIO&quot;)
+        .font(.custom(&quot;Montserrat-Bold&quot;, size: 28, relativeTo: .title))
+        .tracking(2)
+    Text(&quot;We craft digital experiences that blend innovation with timeless design principles.&quot;)
+        .font(.custom(&quot;Lora-Regular&quot;, size: 17, relativeTo: .body))
+}
+</code></pre>
+<h3 id="pairing-4-poppins-inter">Pairing 4: Poppins + Inter</h3>
+<p><strong>Style:</strong> SaaS, modern dashboard
+<strong>Use case:</strong> Productivity apps, dashboards, admin panels, B2B tools</p>
+<pre><code class="language-swift">VStack(alignment: .leading, spacing: 8) {
+    Text(&quot;Dashboard Overview&quot;)
+        .font(.custom(&quot;Poppins-SemiBold&quot;, size: 24, relativeTo: .title2))
+    Text(&quot;Your key metrics are performing above average this quarter with a 23% increase in engagement.&quot;)
+        .font(.custom(&quot;Inter-Regular&quot;, size: 15, relativeTo: .body))
+        .foregroundStyle(.secondary)
+}
+</code></pre>
+<h3 id="pairing-5-bebas-neue-roboto">Pairing 5: Bebas Neue + Roboto</h3>
+<p><strong>Style:</strong> Bold impact with clean body
+<strong>Use case:</strong> Sports apps, fitness trackers, event apps, bold branding</p>
+<pre><code class="language-swift">VStack(alignment: .leading, spacing: 4) {
+    Text(&quot;GAME DAY&quot;)
+        .font(.custom(&quot;BebasNeue-Regular&quot;, size: 48, relativeTo: .largeTitle))
+    Text(&quot;Get ready for tonight's matchup. Here are the stats, lineups, and predictions you need.&quot;)
+        .font(.custom(&quot;Roboto-Regular&quot;, size: 16, relativeTo: .body))
+        .foregroundStyle(.secondary)
+}
+</code></pre>
+<h3 id="pairing-6-dm-serif-display-dm-sans">Pairing 6: DM Serif Display + DM Sans</h3>
+<p><strong>Style:</strong> Luxury, minimal elegance
+<strong>Use case:</strong> Premium products, luxury e-commerce, high-end hospitality</p>
+<pre><code class="language-swift">VStack(alignment: .leading, spacing: 8) {
+    Text(&quot;Curated Collection&quot;)
+        .font(.custom(&quot;DMSerifDisplay-Regular&quot;, size: 32, relativeTo: .largeTitle))
+    Text(&quot;Each piece in our collection has been carefully selected for its craftsmanship and timeless appeal.&quot;)
+        .font(.custom(&quot;DMSans-Regular&quot;, size: 16, relativeTo: .body))
+        .foregroundStyle(.secondary)
+}
+</code></pre>
+<h3 id="pairing-7-space-grotesk-inter">Pairing 7: Space Grotesk + Inter</h3>
+<p><strong>Style:</strong> Tech, developer-focused
+<strong>Use case:</strong> Developer tools, coding apps, API documentation</p>
+<pre><code class="language-swift">VStack(alignment: .leading, spacing: 8) {
+    Text(&quot;API Reference&quot;)
+        .font(.custom(&quot;SpaceGrotesk-Bold&quot;, size: 28, relativeTo: .title))
+    Text(&quot;Explore our comprehensive API documentation with interactive examples and detailed guides.&quot;)
+        .font(.custom(&quot;Inter-Regular&quot;, size: 15, relativeTo: .body))
+        .foregroundStyle(.secondary)
+}
+</code></pre>
+<h3 id="pairing-8-plus-jakarta-sans-source-serif-4">Pairing 8: Plus Jakarta Sans + Source Serif 4</h3>
+<p><strong>Style:</strong> Professional, trustworthy
+<strong>Use case:</strong> Fintech, banking, insurance, professional services</p>
+<pre><code class="language-swift">VStack(alignment: .leading, spacing: 8) {
+    Text(&quot;Financial Summary&quot;)
+        .font(.custom(&quot;PlusJakartaSans-Bold&quot;, size: 24, relativeTo: .title2))
+    Text(&quot;Your portfolio has grown 12.4% this quarter, outperforming the market benchmark by 3.2 percentage points.&quot;)
+        .font(.custom(&quot;SourceSerif4-Regular&quot;, size: 16, relativeTo: .body))
+        .foregroundStyle(.secondary)
+}
+</code></pre>
+<h3 id="pairing-9-outfit-lato">Pairing 9: Outfit + Lato</h3>
+<p><strong>Style:</strong> Startup, approachable
+<strong>Use case:</strong> Startup landing pages, onboarding flows, consumer apps</p>
+<pre><code class="language-swift">VStack(alignment: .leading, spacing: 8) {
+    Text(&quot;Get Started&quot;)
+        .font(.custom(&quot;Outfit-SemiBold&quot;, size: 28, relativeTo: .title))
+    Text(&quot;Set up your profile in just a few steps and start connecting with people who share your interests.&quot;)
+        .font(.custom(&quot;Lato-Regular&quot;, size: 16, relativeTo: .body))
+        .foregroundStyle(.secondary)
+}
+</code></pre>
+<h3 id="pairing-10-oswald-open-sans">Pairing 10: Oswald + Open Sans</h3>
+<p><strong>Style:</strong> News, content-heavy
+<strong>Use case:</strong> News readers, content aggregators, media apps</p>
+<pre><code class="language-swift">VStack(alignment: .leading, spacing: 8) {
+    Text(&quot;BREAKING NEWS&quot;)
+        .font(.custom(&quot;Oswald-Bold&quot;, size: 28, relativeTo: .title))
+    Text(&quot;Markets rally as economic indicators show stronger-than-expected growth in the third quarter.&quot;)
+        .font(.custom(&quot;OpenSans-Regular&quot;, size: 16, relativeTo: .body))
+        .foregroundStyle(.secondary)
+}
+</code></pre>
+<h3 id="pairing-11-new-york-sf-pro">Pairing 11: New York + SF Pro</h3>
+<p><strong>Style:</strong> Apple editorial
+<strong>Use case:</strong> Apple News-style apps, premium editorial, literary content</p>
+<pre><code class="language-swift">VStack(alignment: .leading, spacing: 8) {
+    Text(&quot;The Future of Design&quot;)
+        .font(.system(size: 32, weight: .bold, design: .serif))
+    Text(&quot;As technology evolves, so does the language of design. New tools and paradigms are reshaping how we create.&quot;)
+        .font(.system(size: 17, weight: .regular))
+        .foregroundStyle(.secondary)
+}
+</code></pre>
+<h3 id="pairing-12-archivo-black-work-sans">Pairing 12: Archivo Black + Work Sans</h3>
+<p><strong>Style:</strong> Bold, sporty
+<strong>Use case:</strong> Sports brands, fitness apps, bold product pages</p>
+<pre><code class="language-swift">VStack(alignment: .leading, spacing: 4) {
+    Text(&quot;PUSH LIMITS&quot;)
+        .font(.custom(&quot;ArchivoBlack-Regular&quot;, size: 36, relativeTo: .largeTitle))
+    Text(&quot;Track your workouts, set new records, and compete with friends in weekly challenges.&quot;)
+        .font(.custom(&quot;WorkSans-Regular&quot;, size: 16, relativeTo: .body))
+        .foregroundStyle(.secondary)
+}
+</code></pre>
+<h3 id="pairing-13-cormorant-garamond-montserrat">Pairing 13: Cormorant Garamond + Montserrat</h3>
+<p><strong>Style:</strong> High fashion, luxury
+<strong>Use case:</strong> Fashion apps, luxury brands, art galleries, premium retail</p>
+<pre><code class="language-swift">VStack(alignment: .leading, spacing: 12) {
+    Text(&quot;Autumn Collection&quot;)
+        .font(.custom(&quot;CormorantGaramond-SemiBold&quot;, size: 36, relativeTo: .largeTitle))
+    Text(&quot;EXPLORE THE LATEST ARRIVALS&quot;)
+        .font(.custom(&quot;Montserrat-Medium&quot;, size: 12, relativeTo: .caption))
+        .tracking(3)
+        .foregroundStyle(.secondary)
+}
+</code></pre>
+<h3 id="pairing-14-fredoka-nunito">Pairing 14: Fredoka + Nunito</h3>
+<p><strong>Style:</strong> Kids, playful
+<strong>Use case:</strong> Children's apps, educational games, family content</p>
+<pre><code class="language-swift">VStack(alignment: .leading, spacing: 8) {
+    Text(&quot;Let's Learn!&quot;)
+        .font(.custom(&quot;Fredoka-SemiBold&quot;, size: 32, relativeTo: .largeTitle))
+    Text(&quot;Choose a fun activity below and start your learning adventure today.&quot;)
+        .font(.custom(&quot;Nunito-Regular&quot;, size: 17, relativeTo: .body))
+        .foregroundStyle(.secondary)
+}
+</code></pre>
+<h3 id="pairing-15-manrope-merriweather">Pairing 15: Manrope + Merriweather</h3>
+<p><strong>Style:</strong> Blog, long-form reading
+<strong>Use case:</strong> Blog readers, RSS apps, knowledge bases, documentation</p>
+<pre><code class="language-swift">VStack(alignment: .leading, spacing: 8) {
+    Text(&quot;Understanding Swift Concurrency&quot;)
+        .font(.custom(&quot;Manrope-Bold&quot;, size: 24, relativeTo: .title2))
+    Text(&quot;Swift concurrency introduces structured approaches to writing asynchronous code, making it safer and more readable than traditional callback patterns.&quot;)
+        .font(.custom(&quot;Merriweather-Regular&quot;, size: 16, relativeTo: .body))
+        .foregroundStyle(.secondary)
+}
+</code></pre>
+<hr />
+<h2 id="6-font-management-utilities">6. Font Management Utilities</h2>
+<h3 id="fontmanager-register-custom-fonts-programmatically">FontManager: Register Custom Fonts Programmatically</h3>
+<pre><code class="language-swift">import SwiftUI
+import CoreText
+
+final class FontManager {
+    static let shared = FontManager()
+
+    private var registeredFonts: Set&lt;String&gt; = []
+
+    private init() {}
+
+    /// Register all custom fonts from the main bundle.
+    /// Call this in your App init or AppDelegate.
+    func registerAllFonts() {
+        registerFonts(from: .main, extensions: [&quot;ttf&quot;, &quot;otf&quot;])
+    }
+
+    /// Register fonts from a specific bundle (useful for SPM packages).
+    func registerFonts(from bundle: Bundle, extensions: [String] = [&quot;ttf&quot;, &quot;otf&quot;]) {
+        for ext in extensions {
+            guard let urls = bundle.urls(forResourcesWithExtension: ext, subdirectory: nil) else {
+                continue
+            }
+            for url in urls {
+                registerFont(at: url)
+            }
+        }
+    }
+
+    /// Register a single font file by URL.
+    func registerFont(at url: URL) {
+        let fontName = url.lastPathComponent
+        guard !registeredFonts.contains(fontName) else { return }
+
+        var error: Unmanaged&lt;CFError&gt;?
+        let success = CTFontManagerRegisterFontsForURL(url as CFURL, .process, &amp;error)
+
+        if success {
+            registeredFonts.insert(fontName)
+        } else if let error = error?.takeRetainedValue() {
+            print(&quot;Failed to register font \(fontName): \(error)&quot;)
+        }
+    }
+
+    /// Print all available font families and their font names (debug utility).
+    func printAllFonts() {
+        for family in UIFont.familyNames.sorted() {
+            print(&quot;Family: \(family)&quot;)
+            for name in UIFont.fontNames(forFamilyName: family).sorted() {
+                print(&quot;  \(name)&quot;)
+            }
+        }
+    }
+
+    /// Check if a specific font is available.
+    func isFontAvailable(_ fontName: String) -&gt; Bool {
+        return UIFont(name: fontName, size: 12) != nil
+    }
+}
+</code></pre>
+<h3 id="app-specific-type-scale-extension">App-Specific Type Scale Extension</h3>
+<p>Define a consistent type scale for your entire app:</p>
+<pre><code class="language-swift">import SwiftUI
+
+extension Font {
+    // MARK: - Display
+    static let appDisplayLarge = Font.custom(&quot;Inter-Bold&quot;, size: 40, relativeTo: .largeTitle)
+    static let appDisplayMedium = Font.custom(&quot;Inter-Bold&quot;, size: 34, relativeTo: .largeTitle)
+    static let appDisplaySmall = Font.custom(&quot;Inter-SemiBold&quot;, size: 28, relativeTo: .title)
+
+    // MARK: - Headings
+    static let appHeading1 = Font.custom(&quot;Inter-Bold&quot;, size: 24, relativeTo: .title2)
+    static let appHeading2 = Font.custom(&quot;Inter-SemiBold&quot;, size: 20, relativeTo: .title3)
+    static let appHeading3 = Font.custom(&quot;Inter-SemiBold&quot;, size: 17, relativeTo: .headline)
+
+    // MARK: - Body
+    static let appBodyLarge = Font.custom(&quot;Inter-Regular&quot;, size: 17, relativeTo: .body)
+    static let appBody = Font.custom(&quot;Inter-Regular&quot;, size: 15, relativeTo: .subheadline)
+    static let appBodySmall = Font.custom(&quot;Inter-Regular&quot;, size: 13, relativeTo: .footnote)
+
+    // MARK: - Labels
+    static let appLabel = Font.custom(&quot;Inter-Medium&quot;, size: 14, relativeTo: .subheadline)
+    static let appLabelSmall = Font.custom(&quot;Inter-Medium&quot;, size: 12, relativeTo: .caption)
+
+    // MARK: - Caption
+    static let appCaption = Font.custom(&quot;Inter-Regular&quot;, size: 12, relativeTo: .caption)
+    static let appCaptionSmall = Font.custom(&quot;Inter-Regular&quot;, size: 11, relativeTo: .caption2)
+
+    // MARK: - Monospaced
+    static let appCode = Font.custom(&quot;JetBrainsMono-Regular&quot;, size: 14, relativeTo: .body)
+    static let appCodeSmall = Font.custom(&quot;JetBrainsMono-Regular&quot;, size: 12, relativeTo: .caption)
+
+    // MARK: - Special
+    static let appButton = Font.custom(&quot;Inter-SemiBold&quot;, size: 16, relativeTo: .body)
+    static let appTabBar = Font.custom(&quot;Inter-Medium&quot;, size: 10, relativeTo: .caption2)
+    static let appBadge = Font.custom(&quot;Inter-Bold&quot;, size: 11, relativeTo: .caption2)
+}
+</code></pre>
+<p>Usage:</p>
+<pre><code class="language-swift">VStack(alignment: .leading, spacing: 8) {
+    Text(&quot;Page Title&quot;).font(.appHeading1)
+    Text(&quot;Body content goes here.&quot;).font(.appBody)
+    Text(&quot;12:34 PM&quot;).font(.appCaption)
+    Text(&quot;let x = 42&quot;).font(.appCode)
+}
+</code></pre>
+<h3 id="font-preview-view">Font Preview View</h3>
+<p>A debug view that displays all registered fonts:</p>
+<pre><code class="language-swift">import SwiftUI
+
+struct FontPreviewView: View {
+    @State private var families: [String] = []
+    @State private var searchText = &quot;&quot;
+    @State private var previewText = &quot;The quick brown fox jumps over the lazy dog&quot;
+    @State private var previewSize: CGFloat = 17
+
+    var filteredFamilies: [String] {
+        if searchText.isEmpty {
+            return families
+        }
+        return families.filter { $0.localizedCaseInsensitiveContains(searchText) }
+    }
+
+    var body: some View {
+        NavigationStack {
+            List {
+                Section {
+                    TextField(&quot;Preview text&quot;, text: $previewText)
+                    Stepper(&quot;Size: \(Int(previewSize))pt&quot;, value: $previewSize, in: 8...72)
+                }
+
+                ForEach(filteredFamilies, id: \.self) { family in
+                    Section(header: Text(family)) {
+                        ForEach(UIFont.fontNames(forFamilyName: family).sorted(), id: \.self) { name in
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(previewText)
+                                    .font(.custom(name, size: previewSize))
+                                Text(name)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                            .padding(.vertical, 2)
+                        }
+                    }
+                }
+            }
+            .navigationTitle(&quot;Font Preview&quot;)
+            .searchable(text: $searchText, prompt: &quot;Search fonts...&quot;)
+            .onAppear {
+                families = UIFont.familyNames.sorted()
+            }
+        }
+    }
+}
+
+#Preview {
+    FontPreviewView()
+}
+</code></pre>
+<h3 id="dynamic-type-helper">Dynamic Type Helper</h3>
+<p>Ensure custom fonts respect the user's Dynamic Type preferences:</p>
+<pre><code class="language-swift">import SwiftUI
+
+struct DynamicTypeFont: ViewModifier {
+    let fontName: String
+    let baseSize: CGFloat
+    let textStyle: Font.TextStyle
+
+    @ScaledMetric private var scaledSize: CGFloat
+
+    init(fontName: String, baseSize: CGFloat, textStyle: Font.TextStyle = .body) {
+        self.fontName = fontName
+        self.baseSize = baseSize
+        self.textStyle = textStyle
+        self._scaledSize = ScaledMetric(wrappedValue: baseSize, relativeTo: textStyle)
+    }
+
+    func body(content: Content) -&gt; some View {
+        content.font(.custom(fontName, size: scaledSize))
+    }
+}
+
+extension View {
+    func dynamicFont(_ name: String, size: CGFloat, relativeTo style: Font.TextStyle = .body) -&gt; some View {
+        modifier(DynamicTypeFont(fontName: name, baseSize: size, textStyle: style))
+    }
+}
+
+// Usage:
+// Text(&quot;Hello&quot;).dynamicFont(&quot;Inter-Regular&quot;, size: 17, relativeTo: .body)
+</code></pre>
+<h3 id="list-all-device-fonts-utility-function">List All Device Fonts (Utility Function)</h3>
+<pre><code class="language-swift">import UIKit
+
+func getAllFonts() -&gt; [(family: String, fonts: [String])] {
+    UIFont.familyNames.sorted().map { family in
+        (family: family, fonts: UIFont.fontNames(forFamilyName: family).sorted())
+    }
+}
+
+func findFont(containing query: String) -&gt; [String] {
+    var results: [String] = []
+    for family in UIFont.familyNames {
+        for name in UIFont.fontNames(forFamilyName: family) {
+            if name.localizedCaseInsensitiveContains(query) {
+                results.append(name)
+            }
+        }
+    }
+    return results.sorted()
+}
+
+// Usage:
+// let allFonts = getAllFonts()
+// let interFonts = findFont(containing: &quot;Inter&quot;)
+</code></pre>
+<hr />
+<h2 id="7-variable-fonts">7. Variable Fonts</h2>
+<h3 id="what-are-variable-fonts">What Are Variable Fonts?</h3>
+<p>A variable font is a single font file that contains an entire family of variations along
+one or more design axes (weight, width, slant, optical size). Instead of shipping separate
+files for Regular, Medium, Bold, and so on, a single variable font file can interpolate
+smoothly between any values on its defined axes.</p>
+<h3 id="benefits">Benefits</h3>
+<ul>
+<li><strong>Single file</strong>: One <code>.ttf</code> replaces 10-20 individual weight files</li>
+<li><strong>Smooth interpolation</strong>: Animate between weights or widths fluidly</li>
+<li><strong>Smaller bundle size</strong>: Typically smaller than the equivalent collection of static fonts</li>
+<li><strong>Fine-grained control</strong>: Access any weight (e.g., 450, 550) not just named stops</li>
+<li><strong>Animation</strong>: Smoothly transition font weight, width, or slant</li>
+</ul>
+<h3 id="common-axes">Common Axes</h3>
+<table>
+<thead>
+<tr>
+<th>Axis Code</th>
+<th>Name</th>
+<th>Typical Range</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>wght</code></td>
+<td>Weight</td>
+<td>100-900</td>
+<td>Thin to Black</td>
+</tr>
+<tr>
+<td><code>wdth</code></td>
+<td>Width</td>
+<td>75-125</td>
+<td>Condensed to Expanded</td>
+</tr>
+<tr>
+<td><code>slnt</code></td>
+<td>Slant</td>
+<td>-12 to 0</td>
+<td>Upright to slanted</td>
+</tr>
+<tr>
+<td><code>ital</code></td>
+<td>Italic</td>
+<td>0 or 1</td>
+<td>Roman or Italic</td>
+</tr>
+<tr>
+<td><code>opsz</code></td>
+<td>Optical Size</td>
+<td>8-144</td>
+<td>Small text to display</td>
+</tr>
+</tbody>
+</table>
+<h3 id="using-variable-fonts-in-swiftui">Using Variable Fonts in SwiftUI</h3>
+<p>SwiftUI does not natively support setting arbitrary axis values. You need to drop down
+to <code>UIFont</code> with font descriptors and bridge back to SwiftUI.</p>
+<pre><code class="language-swift">import SwiftUI
+import UIKit
+
+extension Font {
+    /// Create a font from a variable font with a specific weight value.
+    /// - Parameters:
+    ///   - name: The PostScript name of the variable font
+    ///   - size: Point size
+    ///   - weight: Weight value (100-900, where 400 = regular, 700 = bold)
+    static func variable(_ name: String, size: CGFloat, weight: CGFloat = 400) -&gt; Font {
+        let descriptor = UIFontDescriptor(fontAttributes: [
+            .name: name,
+            kCTFontVariationAttribute as UIFontDescriptor.AttributeName: [
+                // Weight axis tag: 2003265652 = 'wght'
+                2003265652: weight
+            ]
+        ])
+        let uiFont = UIFont(descriptor: descriptor, size: size)
+        return Font(uiFont)
+    }
+
+    /// Create a font from a variable font with weight and width axes.
+    static func variable(
+        _ name: String,
+        size: CGFloat,
+        weight: CGFloat = 400,
+        width: CGFloat = 100
+    ) -&gt; Font {
+        let descriptor = UIFontDescriptor(fontAttributes: [
+            .name: name,
+            kCTFontVariationAttribute as UIFontDescriptor.AttributeName: [
+                2003265652: weight,  // wght
+                2003072104: width    // wdth
+            ]
+        ])
+        let uiFont = UIFont(descriptor: descriptor, size: size)
+        return Font(uiFont)
+    }
+}
+</code></pre>
+<p>Usage:</p>
+<pre><code class="language-swift">VStack(spacing: 8) {
+    Text(&quot;Weight 300&quot;).font(.variable(&quot;Inter&quot;, size: 17, weight: 300))
+    Text(&quot;Weight 400&quot;).font(.variable(&quot;Inter&quot;, size: 17, weight: 400))
+    Text(&quot;Weight 500&quot;).font(.variable(&quot;Inter&quot;, size: 17, weight: 500))
+    Text(&quot;Weight 600&quot;).font(.variable(&quot;Inter&quot;, size: 17, weight: 600))
+    Text(&quot;Weight 700&quot;).font(.variable(&quot;Inter&quot;, size: 17, weight: 700))
+}
+</code></pre>
+<h3 id="animating-variable-font-axes">Animating Variable Font Axes</h3>
+<p>You can animate weight or width changes for smooth transitions:</p>
+<pre><code class="language-swift">import SwiftUI
+
+struct AnimatedWeightText: View {
+    @State private var weight: CGFloat = 400
+    let fontName: String
+    let text: String
+
+    var body: some View {
+        VStack(spacing: 20) {
+            Text(text)
+                .font(.variable(fontName, size: 32, weight: weight))
+                .animation(.easeInOut(duration: 0.3), value: weight)
+
+            Slider(value: $weight, in: 100...900, step: 1)
+                .padding(.horizontal)
+
+            Text(&quot;Weight: \(Int(weight))&quot;)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+    }
+}
+</code></pre>
+<h3 id="axis-tags-reference">Axis Tags Reference</h3>
+<p>When working with variable fonts programmatically, you need numeric axis tags.
+These are computed from the 4-character axis tag string:</p>
+<pre><code class="language-swift">func axisTag(from string: String) -&gt; Int {
+    let chars = Array(string.utf8)
+    guard chars.count == 4 else { return 0 }
+    return Int(chars[0]) &lt;&lt; 24 | Int(chars[1]) &lt;&lt; 16 | Int(chars[2]) &lt;&lt; 8 | Int(chars[3])
+}
+
+// Common axis tags:
+// axisTag(from: &quot;wght&quot;) = 2003265652
+// axisTag(from: &quot;wdth&quot;) = 2003072104
+// axisTag(from: &quot;slnt&quot;) = 1936486004
+// axisTag(from: &quot;ital&quot;) = 1769234796
+// axisTag(from: &quot;opsz&quot;) = 1869640570
+</code></pre>
+<h3 id="inspecting-variable-font-axes">Inspecting Variable Font Axes</h3>
+<p>Discover which axes and ranges a variable font supports:</p>
+<pre><code class="language-swift">import CoreText
+
+func inspectVariableFont(named fontName: String, size: CGFloat = 17) {
+    guard let uiFont = UIFont(name: fontName, size: size) else {
+        print(&quot;Font not found: \(fontName)&quot;)
+        return
+    }
+
+    let ctFont = uiFont as CTFont
+    guard let axes = CTFontCopyVariationAxes(ctFont) as? [[String: Any]] else {
+        print(&quot;\(fontName) is not a variable font (no variation axes).&quot;)
+        return
+    }
+
+    print(&quot;Variable font: \(fontName)&quot;)
+    print(&quot;Axes:&quot;)
+    for axis in axes {
+        let name = axis[kCTFontVariationAxisNameKey as String] ?? &quot;Unknown&quot;
+        let tag = axis[kCTFontVariationAxisIdentifierKey as String] ?? 0
+        let min = axis[kCTFontVariationAxisMinimumValueKey as String] ?? 0
+        let max = axis[kCTFontVariationAxisMaximumValueKey as String] ?? 0
+        let def = axis[kCTFontVariationAxisDefaultValueKey as String] ?? 0
+        print(&quot;  \(name): tag=\(tag), range=\(min)...\(max), default=\(def)&quot;)
+    }
+}
+</code></pre>
+<h3 id="popular-variable-fonts-for-ios">Popular Variable Fonts for iOS</h3>
+<table>
+<thead>
+<tr>
+<th>Font Name</th>
+<th>Axes Available</th>
+<th>Weight Range</th>
+<th>Width Range</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Inter</td>
+<td>wght</td>
+<td>100-900</td>
+<td>--</td>
+<td>Best all-around UI variable font</td>
+</tr>
+<tr>
+<td>Roboto Flex</td>
+<td>wght, wdth, slnt, opsz</td>
+<td>100-1000</td>
+<td>75-151</td>
+<td>Most versatile variable font</td>
+</tr>
+<tr>
+<td>Source Sans 3</td>
+<td>wght, ital</td>
+<td>200-900</td>
+<td>--</td>
+<td>Excellent for technical content</td>
+</tr>
+<tr>
+<td>Outfit</td>
+<td>wght</td>
+<td>100-900</td>
+<td>--</td>
+<td>Modern, geometric</td>
+</tr>
+<tr>
+<td>Work Sans</td>
+<td>wght, ital</td>
+<td>100-900</td>
+<td>--</td>
+<td>Clean, editorial</td>
+</tr>
+<tr>
+<td>DM Sans</td>
+<td>wght, ital, opsz</td>
+<td>100-1000</td>
+<td>--</td>
+<td>Minimal, versatile</td>
+</tr>
+<tr>
+<td>Manrope</td>
+<td>wght</td>
+<td>200-800</td>
+<td>--</td>
+<td>Tech-focused</td>
+</tr>
+<tr>
+<td>Plus Jakarta Sans</td>
+<td>wght, ital</td>
+<td>200-800</td>
+<td>--</td>
+<td>Professional, fintech</td>
+</tr>
+<tr>
+<td>Space Grotesk</td>
+<td>wght</td>
+<td>300-700</td>
+<td>--</td>
+<td>Developer tools</td>
+</tr>
+<tr>
+<td>Sora</td>
+<td>wght</td>
+<td>100-800</td>
+<td>--</td>
+<td>Futuristic, web3</td>
+</tr>
+<tr>
+<td>Montserrat</td>
+<td>wght, ital</td>
+<td>100-900</td>
+<td>--</td>
+<td>Popular geometric sans</td>
+</tr>
+<tr>
+<td>Nunito</td>
+<td>wght, ital</td>
+<td>200-900</td>
+<td>--</td>
+<td>Rounded, friendly</td>
+</tr>
+<tr>
+<td>Raleway</td>
+<td>wght, ital</td>
+<td>100-900</td>
+<td>--</td>
+<td>Elegant sans-serif</td>
+</tr>
+<tr>
+<td>Playfair Display</td>
+<td>wght, ital</td>
+<td>400-900</td>
+<td>--</td>
+<td>Editorial serif</td>
+</tr>
+<tr>
+<td>Lora</td>
+<td>wght, ital</td>
+<td>400-700</td>
+<td>--</td>
+<td>Literary serif</td>
+</tr>
+<tr>
+<td>Fraunces</td>
+<td>wght, opsz, SOFT, WONK</td>
+<td>100-900</td>
+<td>--</td>
+<td>Playful serif with custom axes</td>
+</tr>
+</tbody>
+</table>
+<h3 id="variable-font-with-dynamic-type">Variable Font with Dynamic Type</h3>
+<p>Combine variable font control with Dynamic Type support:</p>
+<pre><code class="language-swift">import SwiftUI
+
+struct VariableDynamicTypeFont: ViewModifier {
+    let fontName: String
+    let baseSize: CGFloat
+    let weight: CGFloat
+    let textStyle: Font.TextStyle
+
+    @ScaledMetric private var scaledSize: CGFloat
+
+    init(fontName: String, baseSize: CGFloat, weight: CGFloat, textStyle: Font.TextStyle) {
+        self.fontName = fontName
+        self.baseSize = baseSize
+        self.weight = weight
+        self.textStyle = textStyle
+        self._scaledSize = ScaledMetric(wrappedValue: baseSize, relativeTo: textStyle)
+    }
+
+    func body(content: Content) -&gt; some View {
+        content.font(.variable(fontName, size: scaledSize, weight: weight))
+    }
+}
+
+extension View {
+    func variableFont(
+        _ name: String,
+        size: CGFloat,
+        weight: CGFloat = 400,
+        relativeTo style: Font.TextStyle = .body
+    ) -&gt; some View {
+        modifier(VariableDynamicTypeFont(
+            fontName: name,
+            baseSize: size,
+            weight: weight,
+            textStyle: style
+        ))
+    }
+}
+
+// Usage:
+// Text(&quot;Dynamic Variable&quot;).variableFont(&quot;Inter&quot;, size: 17, weight: 500, relativeTo: .body)
+</code></pre>
+<hr />
+<h2 id="quick-reference-font-selection-decision-tree">Quick Reference: Font Selection Decision Tree</h2>
+<pre><code>What kind of content?
+|
++-- System / Native feel
+|   +-- Default        -&gt; .system()
+|   +-- Friendly       -&gt; .system(design: .rounded)
+|   +-- Editorial      -&gt; .system(design: .serif)       (New York)
+|   +-- Code/Data      -&gt; .system(design: .monospaced)  (SF Mono)
+|
++-- Custom branding
+|   +-- Need variable weight control?
+|   |   +-- Yes -&gt; Inter, Roboto Flex, Outfit (variable fonts)
+|   |   +-- No  -&gt; Static font files
+|   |
+|   +-- What style?
+|       +-- Clean modern        -&gt; Inter, DM Sans, Plus Jakarta Sans
+|       +-- Geometric           -&gt; Poppins, Montserrat, Urbanist
+|       +-- Humanist            -&gt; Lato, Open Sans, Source Sans 3
+|       +-- Tech / Developer    -&gt; Space Grotesk, Manrope, Geist
+|       +-- Rounded / Friendly  -&gt; Nunito, Quicksand, Fredoka
+|       +-- Editorial serif     -&gt; Playfair Display, DM Serif Display
+|       +-- Reading serif       -&gt; Merriweather, Lora, EB Garamond
+|       +-- Monospaced code     -&gt; JetBrains Mono, Fira Code
+|       +-- Bold display        -&gt; Bebas Neue, Oswald, Anton
+|
++-- Built-in (no bundling needed)
+    +-- Sans-serif body     -&gt; Avenir Next, Helvetica Neue, Gill Sans
+    +-- Serif body          -&gt; Georgia, Palatino, Charter, Iowan Old Style
+    +-- Luxury display      -&gt; Didot, Bodoni
+    +-- Monospaced          -&gt; Menlo, Courier New
+    +-- Decorative          -&gt; Copperplate, Rockwell, Zapfino
+</code></pre>
+<hr />
+<h2 id="quick-reference-postscript-names-cheat-sheet">Quick Reference: PostScript Names Cheat Sheet</h2>
+<p>The most commonly needed PostScript names for <code>Font.custom()</code>:</p>
+<pre><code class="language-swift">// Sans-Serif (built-in)
+&quot;HelveticaNeue&quot;                   &quot;HelveticaNeue-Bold&quot;
+&quot;AvenirNext-Regular&quot;              &quot;AvenirNext-Bold&quot;
+&quot;AvenirNext-DemiBold&quot;             &quot;AvenirNext-Medium&quot;
+&quot;GillSans&quot;                        &quot;GillSans-Bold&quot;
+&quot;Futura-Medium&quot;                   &quot;Futura-Bold&quot;
+&quot;Optima-Regular&quot;                  &quot;Optima-Bold&quot;
+
+// Serif (built-in)
+&quot;Georgia&quot;                         &quot;Georgia-Bold&quot;
+&quot;TimesNewRomanPSMT&quot;               &quot;TimesNewRomanPS-BoldMT&quot;
+&quot;Palatino-Roman&quot;                  &quot;Palatino-Bold&quot;
+&quot;Baskerville&quot;                     &quot;Baskerville-Bold&quot;
+&quot;Didot&quot;                           &quot;Didot-Bold&quot;
+&quot;BodoniSvtyTwoITCTT-Bold&quot;        &quot;BodoniSvtyTwoSCITCTT-Book&quot;
+&quot;Charter-Roman&quot;                   &quot;Charter-Bold&quot;
+&quot;IowanOldStyle-Roman&quot;             &quot;IowanOldStyle-Bold&quot;
+
+// Monospaced (built-in)
+&quot;Menlo-Regular&quot;                   &quot;Menlo-Bold&quot;
+&quot;CourierNewPSMT&quot;                  &quot;CourierNewPS-BoldMT&quot;
+&quot;AmericanTypewriter&quot;              &quot;AmericanTypewriter-Bold&quot;
+
+// Display (built-in)
+&quot;Copperplate&quot;                     &quot;Copperplate-Bold&quot;
+&quot;Rockwell-Regular&quot;                &quot;Rockwell-Bold&quot;
+&quot;DINAlternate-Bold&quot;               &quot;DINCondensed-Bold&quot;
+
+// Script (built-in)
+&quot;SnellRoundhand&quot;                  &quot;SnellRoundhand-Bold&quot;
+&quot;BradleyHandITCTT-Bold&quot;           &quot;Zapfino&quot;
+&quot;SavoyeLetPlain&quot;                  &quot;ChalkboardSE-Regular&quot;
+
+// International (built-in)
+&quot;PingFangSC-Regular&quot;              &quot;PingFangSC-Semibold&quot;
+&quot;HiraginoSans-W3&quot;                 &quot;HiraginoSans-W6&quot;
+&quot;AppleSDGothicNeo-Regular&quot;        &quot;AppleSDGothicNeo-Bold&quot;
+&quot;KohinoorDevanagari-Regular&quot;      &quot;KohinoorBangla-Regular&quot;
+</code></pre>
+<hr />
+<p><em>This catalog covers the Apple system fonts, all major built-in iOS fonts with exact PostScript names, the top 100 Google Fonts for mobile development, custom font integration guides, proven font pairings, management utilities, and variable font techniques. Every font name string is ready to use directly in Font.custom() or UIFont(name:size:).</em></p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

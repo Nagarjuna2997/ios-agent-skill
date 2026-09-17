@@ -1,0 +1,113 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Native vs. Web Animation and 3D — iOS Agent Skill</title><meta name="description" content="Repository guidance for Native vs Web Animation, WebKit. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/web-native-vs-web-animation.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="Native vs. Web Animation and 3D"><meta property="og:description" content="Repository guidance for Native vs Web Animation, WebKit. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/web-native-vs-web-animation.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "Native vs. Web Animation and 3D", "description": "Repository guidance for Native vs Web Animation, WebKit. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/web-native-vs-web-animation.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Design and Motion · Reference guide</p><h1>Native vs. Web Animation and 3D</h1><p class="lead">Repository guidance for Native vs Web Animation, WebKit. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/web/native-vs-web-animation.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#context">Context</a></li>
+<li><a href="#decision-tree">Decision Tree</a></li>
+<li><a href="#translation-table">Translation Table</a></li>
+<li><a href="#wkwebview-is-appropriate-when">WKWebView Is Appropriate When</a></li>
+<li><a href="#native-is-preferred-when">Native Is Preferred When</a></li>
+<li><a href="#anti-patterns">Anti-Patterns</a></li>
+</ul>
+</div>
+</aside><h2 id="context">Context</h2>
+<p>Use this when the user asks for Anime.js, GSAP, Framer Motion, Three.js, PixiJS, p5.js, Matter.js, WebGL, WebGPU, CSS animation, or a JavaScript-style visual effect inside an Apple-platform app.</p>
+<p>The default answer is not to add web dependencies to a native iOS app. First translate the intent into native Apple frameworks. Use <code>WKWebView</code> only when the actual web runtime is the requirement.</p>
+<h2 id="decision-tree">Decision Tree</h2>
+<pre><code class="language-text">User asks for a web animation or 3D library
+        |
+        v
+Is the app already a web app or must it render existing web content?
+        | yes
+        v
+Use WKWebView with a narrow bridge and content-security rules.
+        |
+        no
+        v
+Translate the visual intent to native SwiftUI, UIKit, RealityKit, SpriteKit, or Metal.
+</code></pre>
+<h2 id="translation-table">Translation Table</h2>
+<table>
+<thead>
+<tr>
+<th>Web vocabulary</th>
+<th>Native Apple route</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Anime.js timelines, stagger, keyframes</td>
+<td>SwiftUI <code>KeyframeAnimator</code>, <code>PhaseAnimator</code>, explicit phase state</td>
+</tr>
+<tr>
+<td>GSAP timelines and scroll triggers</td>
+<td>SwiftUI animation state, scroll phase/offset, Core Animation when UIKit layers are involved</td>
+</tr>
+<tr>
+<td>Framer Motion transitions</td>
+<td>SwiftUI transitions, matched geometry, navigation transitions</td>
+</tr>
+<tr>
+<td>Three.js product scenes</td>
+<td>RealityKit, <code>Model3D</code>, <code>RealityView</code>, Metal only for custom rendering</td>
+</tr>
+<tr>
+<td>PixiJS sprites and particles</td>
+<td>SpriteKit, SwiftUI <code>Canvas</code>, or Metal particles</td>
+</tr>
+<tr>
+<td>Matter.js physics</td>
+<td>SpriteKit physics, RealityKit physics</td>
+</tr>
+<tr>
+<td>p5.js generative visuals</td>
+<td>SwiftUI <code>Canvas</code>, Core Graphics, Metal for GPU-heavy work</td>
+</tr>
+<tr>
+<td>CSS transforms and filters</td>
+<td>SwiftUI transforms, materials, <code>visualEffect</code>, layer effects</td>
+</tr>
+<tr>
+<td>WebGL/WebGPU shaders</td>
+<td>Metal shaders and compute</td>
+</tr>
+</tbody>
+</table>
+<h2 id="wkwebview-is-appropriate-when">WKWebView Is Appropriate When</h2>
+<ul>
+<li>the product already ships a web surface and the app is a native shell</li>
+<li>the user has a real existing Three.js/GSAP asset that must run unchanged</li>
+<li>the same visual must be shared with a web product</li>
+<li>the interaction depends on browser APIs or DOM layout</li>
+<li>a remote web team owns the experience</li>
+</ul>
+<p>If you choose <code>WKWebView</code>, isolate it:</p>
+<ul>
+<li>disable arbitrary navigation unless explicitly needed</li>
+<li>use typed message handlers instead of stringly bridge calls</li>
+<li>validate every message from JavaScript</li>
+<li>avoid injecting secrets into the page context</li>
+<li>document offline behavior and loading/error states</li>
+</ul>
+<h2 id="native-is-preferred-when">Native Is Preferred When</h2>
+<ul>
+<li>the effect is decorative or UI-level</li>
+<li>the screen must feel like a platform-native iOS view</li>
+<li>accessibility, Dynamic Type, Reduce Motion, or VoiceOver are central</li>
+<li>the effect needs camera, AR, haptics, widgets, App Intents, or SwiftData</li>
+<li>App Store review risk is higher with remote executable behavior</li>
+</ul>
+<h2 id="anti-patterns">Anti-Patterns</h2>
+<pre><code class="language-text">// WRONG: install Three.js because the user said &quot;3D card&quot;.
+Why: a simple tilt belongs in SwiftUI transforms.
+
+// RIGHT: use SwiftUI for perspective-only effects; use RealityKit for real 3D assets.
+</code></pre>
+<pre><code class="language-text">// WRONG: put a checkout, login, or settings screen in WKWebView for animation.
+Why: native controls, accessibility, autofill, and platform trust matter more than animation syntax.
+
+// RIGHT: build the screen natively and translate the animation vocabulary.
+</code></pre>
+<pre><code class="language-text">// WRONG: bridge JavaScript by accepting arbitrary command strings.
+Why: it creates injection and authorization bugs.
+
+// RIGHT: expose a small typed message schema and reject unknown actions.
+</code></pre></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

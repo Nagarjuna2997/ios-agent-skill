@@ -1,0 +1,796 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>iOS Typography System -- Complete Guide for Stunning SwiftUI Text — iOS Agent Skill</title><meta name="description" content="Repository guidance for iOS Typography System -- Complete Guide for Stunning SwiftUI Text. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/design-typography-system.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="iOS Typography System -- Complete Guide for Stunning SwiftUI Text"><meta property="og:description" content="Repository guidance for iOS Typography System -- Complete Guide for Stunning SwiftUI Text. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/design-typography-system.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "iOS Typography System -- Complete Guide for Stunning SwiftUI Text", "description": "Repository guidance for iOS Typography System -- Complete Guide for Stunning SwiftUI Text. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/design-typography-system.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Design · Reference guide</p><h1>iOS Typography System -- Complete Guide for Stunning SwiftUI Text</h1><p class="lead">Repository guidance for iOS Typography System -- Complete Guide for Stunning SwiftUI Text. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/design/typography-system.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#1-apples-built-in-text-styles">1. Apple's Built-In Text Styles</a><ul>
+<li><a href="#combining-style-with-weight">Combining Style with Weight</a></li>
+</ul>
+</li>
+<li><a href="#2-font-designs">2. Font Designs</a></li>
+<li><a href="#3-custom-fonts">3. Custom Fonts</a><ul>
+<li><a href="#registering-custom-fonts">Registering Custom Fonts</a></li>
+<li><a href="#using-custom-fonts-in-swiftui">Using Custom Fonts in SwiftUI</a></li>
+<li><a href="#font-extension-for-clean-usage">Font Extension for Clean Usage</a></li>
+</ul>
+</li>
+<li><a href="#4-sf-symbols-integration">4. SF Symbols Integration</a><ul>
+<li><a href="#basic-usage">Basic Usage</a></li>
+<li><a href="#symbol-rendering-modes">Symbol Rendering Modes</a></li>
+<li><a href="#variable-value-symbols">Variable Value Symbols</a></li>
+<li><a href="#symbol-effects-ios-17">Symbol Effects (iOS 17+)</a></li>
+</ul>
+</li>
+<li><a href="#5-dynamic-type-support">5. Dynamic Type Support</a><ul>
+<li><a href="#scaledmetric">@ScaledMetric</a></li>
+<li><a href="#minimumscalefactor">minimumScaleFactor</a></li>
+</ul>
+</li>
+<li><a href="#6-typography-hierarchy-best-practices">6. Typography Hierarchy Best Practices</a></li>
+<li><a href="#7-text-effects">7. Text Effects</a><ul>
+<li><a href="#gradient-text">Gradient Text</a></li>
+<li><a href="#shadow-text">Shadow Text</a></li>
+<li><a href="#outlined-text-stroke">Outlined Text (Stroke)</a></li>
+<li><a href="#animated-text">Animated Text</a></li>
+</ul>
+</li>
+<li><a href="#8-markdown-support-in-text">8. Markdown Support in Text</a></li>
+<li><a href="#9-attributedstring">9. AttributedString</a><ul>
+<li><a href="#attributedstring-with-links-and-dates">AttributedString with Links and Dates</a></li>
+</ul>
+</li>
+<li><a href="#10-stunning-text-treatment-compositions">10. Stunning Text Treatment Compositions</a><ul>
+<li><a href="#hero-header-with-gradient-and-blur">Hero Header with Gradient and Blur</a></li>
+<li><a href="#pill-tag-with-custom-typography">Pill Tag with Custom Typography</a></li>
+<li><a href="#statistic-display-with-mixed-typography">Statistic Display with Mixed Typography</a></li>
+</ul>
+</li>
+<li><a href="#quick-reference">Quick Reference</a></li>
+</ul>
+</div>
+</aside><h2 id="overview">Overview</h2>
+<p>Typography accounts for roughly 80% of a UI's visual surface. Getting it right is the single most impactful design decision. This guide covers Apple's built-in type system, custom fonts, SF Symbols, Dynamic Type, and advanced text effects -- all with compilable SwiftUI code.</p>
+<hr />
+<h2 id="1-apples-built-in-text-styles">1. Apple's Built-In Text Styles</h2>
+<p>These styles scale automatically with Dynamic Type and ensure consistency across the system.</p>
+<pre><code class="language-swift">import SwiftUI
+
+struct TextStyleCatalog: View {
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 12) {
+                Text(&quot;Large Title&quot;).font(.largeTitle)    // 34pt, used for top-level headers
+                Text(&quot;Title&quot;).font(.title)               // 28pt, screen titles
+                Text(&quot;Title 2&quot;).font(.title2)            // 22pt, section headers
+                Text(&quot;Title 3&quot;).font(.title3)            // 20pt, sub-section headers
+                Text(&quot;Headline&quot;).font(.headline)         // 17pt semibold, row labels
+                Text(&quot;Subheadline&quot;).font(.subheadline)   // 15pt, secondary row labels
+                Text(&quot;Body&quot;).font(.body)                 // 17pt, primary content
+                Text(&quot;Callout&quot;).font(.callout)           // 16pt, annotation text
+                Text(&quot;Footnote&quot;).font(.footnote)         // 13pt, timestamps, captions
+                Text(&quot;Caption&quot;).font(.caption)           // 12pt, legal text
+                Text(&quot;Caption 2&quot;).font(.caption2)        // 11pt, smallest readable
+            }
+            .padding(24)
+        }
+    }
+}
+</code></pre>
+<h3 id="combining-style-with-weight">Combining Style with Weight</h3>
+<pre><code class="language-swift">struct WeightedTextExamples: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text(&quot;Ultralight Title&quot;).font(.largeTitle.weight(.ultraLight))
+            Text(&quot;Thin Title&quot;).font(.largeTitle.weight(.thin))
+            Text(&quot;Light Title&quot;).font(.largeTitle.weight(.light))
+            Text(&quot;Regular Title&quot;).font(.largeTitle.weight(.regular))
+            Text(&quot;Medium Title&quot;).font(.largeTitle.weight(.medium))
+            Text(&quot;Semibold Title&quot;).font(.largeTitle.weight(.semibold))
+            Text(&quot;Bold Title&quot;).font(.largeTitle.weight(.bold))
+            Text(&quot;Heavy Title&quot;).font(.largeTitle.weight(.heavy))
+            Text(&quot;Black Title&quot;).font(.largeTitle.weight(.black))
+        }
+        .padding(24)
+    }
+}
+</code></pre>
+<hr />
+<h2 id="2-font-designs">2. Font Designs</h2>
+<p>Apple provides four design variants of San Francisco.</p>
+<pre><code class="language-swift">struct FontDesignShowcase: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 20) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(&quot;Default (SF Pro)&quot;)
+                    .font(.system(.title2, design: .default, weight: .bold))
+                Text(&quot;Clean and neutral -- ideal for most apps&quot;)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(&quot;Rounded (SF Rounded)&quot;)
+                    .font(.system(.title2, design: .rounded, weight: .bold))
+                Text(&quot;Friendly and approachable -- great for wellness, kids, casual&quot;)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(&quot;Serif (New York)&quot;)
+                    .font(.system(.title2, design: .serif, weight: .bold))
+                Text(&quot;Editorial and elegant -- perfect for news, reading, luxury&quot;)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(&quot;Monospaced (SF Mono)&quot;)
+                    .font(.system(.title2, design: .monospaced, weight: .bold))
+                Text(&quot;Technical and precise -- code editors, data, developer tools&quot;)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .padding(24)
+    }
+}
+</code></pre>
+<hr />
+<h2 id="3-custom-fonts">3. Custom Fonts</h2>
+<h3 id="registering-custom-fonts">Registering Custom Fonts</h3>
+<ol>
+<li>Add <code>.ttf</code> or <code>.otf</code> files to your Xcode project.</li>
+<li>Ensure they are added to the target's "Copy Bundle Resources" build phase.</li>
+<li>Add each font filename to <code>Info.plist</code> under the key <code>UIAppFonts</code> (also called "Fonts provided by application").</li>
+</ol>
+<pre><code class="language-xml">&lt;!-- Info.plist entry --&gt;
+&lt;key&gt;UIAppFonts&lt;/key&gt;
+&lt;array&gt;
+    &lt;string&gt;Satoshi-Regular.otf&lt;/string&gt;
+    &lt;string&gt;Satoshi-Bold.otf&lt;/string&gt;
+    &lt;string&gt;Satoshi-Medium.otf&lt;/string&gt;
+&lt;/array&gt;
+</code></pre>
+<h3 id="using-custom-fonts-in-swiftui">Using Custom Fonts in SwiftUI</h3>
+<pre><code class="language-swift">struct CustomFontDemo: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text(&quot;Custom Regular&quot;)
+                .font(.custom(&quot;Satoshi-Regular&quot;, size: 17))
+
+            Text(&quot;Custom Bold&quot;)
+                .font(.custom(&quot;Satoshi-Bold&quot;, size: 28))
+
+            // Relative to a text style (scales with Dynamic Type)
+            Text(&quot;Custom with Dynamic Type&quot;)
+                .font(.custom(&quot;Satoshi-Medium&quot;, size: 17, relativeTo: .body))
+        }
+        .padding(24)
+    }
+}
+</code></pre>
+<h3 id="font-extension-for-clean-usage">Font Extension for Clean Usage</h3>
+<pre><code class="language-swift">extension Font {
+    static func satoshi(_ weight: SatoshiWeight, size: CGFloat) -&gt; Font {
+        .custom(weight.rawValue, size: size)
+    }
+
+    static func satoshiRelative(_ weight: SatoshiWeight, size: CGFloat, relativeTo style: TextStyle) -&gt; Font {
+        .custom(weight.rawValue, size: size, relativeTo: style)
+    }
+
+    enum SatoshiWeight: String {
+        case regular = &quot;Satoshi-Regular&quot;
+        case medium = &quot;Satoshi-Medium&quot;
+        case bold = &quot;Satoshi-Bold&quot;
+    }
+}
+
+// Usage:
+// Text(&quot;Hello&quot;).font(.satoshi(.bold, size: 24))
+</code></pre>
+<hr />
+<h2 id="4-sf-symbols-integration">4. SF Symbols Integration</h2>
+<p>SF Symbols 5+ includes over 5,000 symbols that integrate seamlessly with text.</p>
+<h3 id="basic-usage">Basic Usage</h3>
+<pre><code class="language-swift">struct SFSymbolsBasic: View {
+    var body: some View {
+        VStack(spacing: 16) {
+            // Inline with text (symbols match font metrics automatically)
+            Label(&quot;Favorites&quot;, systemImage: &quot;heart.fill&quot;)
+                .font(.title2)
+
+            // Standalone image with font size
+            Image(systemName: &quot;arrow.up.right.circle.fill&quot;)
+                .font(.system(size: 48))
+                .foregroundStyle(.blue)
+
+            // Symbol alongside text baseline
+            HStack(alignment: .firstTextBaseline) {
+                Image(systemName: &quot;clock.fill&quot;)
+                Text(&quot;5 minutes ago&quot;)
+            }
+            .font(.subheadline)
+            .foregroundStyle(.secondary)
+        }
+    }
+}
+</code></pre>
+<h3 id="symbol-rendering-modes">Symbol Rendering Modes</h3>
+<pre><code class="language-swift">struct SymbolRenderingModes: View {
+    var body: some View {
+        VStack(spacing: 24) {
+            // Monochrome -- single color
+            Image(systemName: &quot;cloud.sun.rain.fill&quot;)
+                .symbolRenderingMode(.monochrome)
+                .font(.system(size: 48))
+                .foregroundStyle(.blue)
+
+            // Hierarchical -- primary color with automatic opacity layers
+            Image(systemName: &quot;cloud.sun.rain.fill&quot;)
+                .symbolRenderingMode(.hierarchical)
+                .font(.system(size: 48))
+                .foregroundStyle(.blue)
+
+            // Palette -- explicit colors for each layer
+            Image(systemName: &quot;cloud.sun.rain.fill&quot;)
+                .symbolRenderingMode(.palette)
+                .font(.system(size: 48))
+                .foregroundStyle(.gray, .yellow, .blue)
+
+            // Multicolor -- system-defined colors
+            Image(systemName: &quot;cloud.sun.rain.fill&quot;)
+                .symbolRenderingMode(.multicolor)
+                .font(.system(size: 48))
+        }
+    }
+}
+</code></pre>
+<h3 id="variable-value-symbols">Variable Value Symbols</h3>
+<pre><code class="language-swift">struct VariableSymbolDemo: View {
+    @State private var progress: Double = 0.7
+
+    var body: some View {
+        VStack(spacing: 20) {
+            Image(systemName: &quot;speaker.wave.3.fill&quot;, variableValue: progress)
+                .font(.system(size: 48))
+                .foregroundStyle(.blue)
+                .contentTransition(.symbolEffect(.automatic))
+
+            Slider(value: $progress, in: 0...1)
+                .padding(.horizontal, 40)
+
+            Image(systemName: &quot;wifi&quot;, variableValue: progress)
+                .font(.system(size: 48))
+                .foregroundStyle(.green)
+        }
+        .padding()
+    }
+}
+</code></pre>
+<h3 id="symbol-effects-ios-17">Symbol Effects (iOS 17+)</h3>
+<pre><code class="language-swift">struct SymbolEffectsDemo: View {
+    @State private var isFavorite = false
+    @State private var bounceCount = 0
+
+    var body: some View {
+        VStack(spacing: 32) {
+            // Bounce effect
+            Image(systemName: &quot;bell.fill&quot;)
+                .font(.system(size: 44))
+                .foregroundStyle(.orange)
+                .symbolEffect(.bounce, value: bounceCount)
+                .onTapGesture { bounceCount += 1 }
+
+            // Pulse effect (continuous)
+            Image(systemName: &quot;heart.fill&quot;)
+                .font(.system(size: 44))
+                .foregroundStyle(.red)
+                .symbolEffect(.pulse)
+
+            // Replace transition
+            Button {
+                isFavorite.toggle()
+            } label: {
+                Image(systemName: isFavorite ? &quot;heart.fill&quot; : &quot;heart&quot;)
+                    .font(.system(size: 44))
+                    .foregroundStyle(isFavorite ? .red : .gray)
+                    .contentTransition(.symbolEffect(.replace))
+            }
+
+            // Breathe effect (continuous)
+            Image(systemName: &quot;lungs.fill&quot;)
+                .font(.system(size: 44))
+                .foregroundStyle(.teal)
+                .symbolEffect(.breathe)
+
+            // Scale effect
+            Image(systemName: &quot;star.fill&quot;)
+                .font(.system(size: 44))
+                .foregroundStyle(.yellow)
+                .symbolEffect(.scale.up, isActive: isFavorite)
+        }
+        .padding()
+    }
+}
+</code></pre>
+<hr />
+<h2 id="5-dynamic-type-support">5. Dynamic Type Support</h2>
+<h3 id="scaledmetric">@ScaledMetric</h3>
+<p>Scale arbitrary numeric values proportionally to the user's Dynamic Type setting.</p>
+<pre><code class="language-swift">struct ScaledMetricDemo: View {
+    @ScaledMetric(relativeTo: .title) var iconSize: CGFloat = 28
+    @ScaledMetric(relativeTo: .body) var spacing: CGFloat = 12
+    @ScaledMetric(relativeTo: .body) var cardPadding: CGFloat = 16
+
+    var body: some View {
+        HStack(spacing: spacing) {
+            Image(systemName: &quot;person.circle.fill&quot;)
+                .font(.system(size: iconSize))
+                .foregroundStyle(.blue)
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(&quot;John Appleseed&quot;)
+                    .font(.headline)
+                Text(&quot;iOS Developer&quot;)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .padding(cardPadding)
+        .background(Color(.secondarySystemBackground))
+        .cornerRadius(16)
+    }
+}
+</code></pre>
+<h3 id="minimumscalefactor">minimumScaleFactor</h3>
+<p>Prevent text from being clipped while still supporting Dynamic Type.</p>
+<pre><code class="language-swift">struct ScaleFactorDemo: View {
+    var body: some View {
+        Text(&quot;This very long title will shrink instead of truncating&quot;)
+            .font(.title)
+            .minimumScaleFactor(0.5)
+            .lineLimit(1)
+            .padding()
+    }
+}
+</code></pre>
+<hr />
+<h2 id="6-typography-hierarchy-best-practices">6. Typography Hierarchy Best Practices</h2>
+<p>A clear hierarchy uses no more than 3-4 sizes with weight variation.</p>
+<pre><code class="language-swift">struct TypographyHierarchyCard: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            // Overline -- smallest, uppercase, colored
+            Text(&quot;FEATURED&quot;)
+                .font(.caption.weight(.bold))
+                .foregroundStyle(Color(hex: &quot;6C63FF&quot;))
+                .kerning(1.5)
+                .padding(.bottom, 8)
+
+            // Title -- largest element on card
+            Text(&quot;The Art of Typography&quot;)
+                .font(.title2.weight(.bold))
+                .foregroundStyle(.primary)
+                .padding(.bottom, 4)
+
+            // Subtitle -- contextual info
+            Text(&quot;Design Systems -- March 2026&quot;)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .padding(.bottom, 16)
+
+            // Body -- main content
+            Text(&quot;Great typography establishes visual hierarchy, guides the reader, and creates emotional resonance. In iOS, the San Francisco font family provides all the tools needed for world-class type.&quot;)
+                .font(.body)
+                .foregroundStyle(.primary)
+                .lineSpacing(4)
+                .padding(.bottom, 16)
+
+            // Action -- button text
+            Text(&quot;Read More&quot;)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(Color(hex: &quot;6C63FF&quot;))
+        }
+        .padding(24)
+        .background(Color(.secondarySystemGroupedBackground))
+        .cornerRadius(20)
+        .padding(.horizontal, 16)
+    }
+}
+</code></pre>
+<hr />
+<h2 id="7-text-effects">7. Text Effects</h2>
+<h3 id="gradient-text">Gradient Text</h3>
+<pre><code class="language-swift">struct GradientTextView: View {
+    var body: some View {
+        Text(&quot;Gradient Text&quot;)
+            .font(.system(size: 48, weight: .black, design: .rounded))
+            .foregroundStyle(
+                LinearGradient(
+                    colors: [Color(hex: &quot;8B5CF6&quot;), Color(hex: &quot;EC4899&quot;), Color(hex: &quot;06B6D4&quot;)],
+                    startPoint: .leading,
+                    endPoint: .trailing
+                )
+            )
+    }
+}
+</code></pre>
+<h3 id="shadow-text">Shadow Text</h3>
+<pre><code class="language-swift">struct ShadowTextView: View {
+    var body: some View {
+        VStack(spacing: 32) {
+            // Subtle shadow
+            Text(&quot;Soft Shadow&quot;)
+                .font(.largeTitle.weight(.bold))
+                .foregroundStyle(.white)
+                .shadow(color: .black.opacity(0.3), radius: 8, y: 4)
+
+            // Glow effect
+            Text(&quot;Neon Glow&quot;)
+                .font(.largeTitle.weight(.black))
+                .foregroundStyle(Color(hex: &quot;06B6D4&quot;))
+                .shadow(color: Color(hex: &quot;06B6D4&quot;).opacity(0.6), radius: 12)
+                .shadow(color: Color(hex: &quot;06B6D4&quot;).opacity(0.3), radius: 24)
+        }
+        .padding(40)
+        .background(.black)
+    }
+}
+</code></pre>
+<h3 id="outlined-text-stroke">Outlined Text (Stroke)</h3>
+<pre><code class="language-swift">struct OutlinedTextView: View {
+    var body: some View {
+        ZStack {
+            // Stroke layer
+            Text(&quot;BOLD&quot;)
+                .font(.system(size: 72, weight: .black))
+                .foregroundStyle(.clear)
+                .overlay(
+                    Text(&quot;BOLD&quot;)
+                        .font(.system(size: 72, weight: .black))
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [Color(hex: &quot;6C63FF&quot;), Color(hex: &quot;EC4899&quot;)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .mask(
+                            Text(&quot;BOLD&quot;)
+                                .font(.system(size: 72, weight: .black))
+                        )
+                )
+        }
+    }
+}
+
+// Alternative approach using strokeBorder on custom shape
+struct StrokedText: View {
+    var body: some View {
+        Text(&quot;OUTLINE&quot;)
+            .font(.system(size: 64, weight: .black))
+            .foregroundStyle(.clear)
+            .overlay(
+                Text(&quot;OUTLINE&quot;)
+                    .font(.system(size: 64, weight: .black))
+                    .foregroundStyle(
+                        .linearGradient(
+                            colors: [Color(hex: &quot;FF6B35&quot;), Color(hex: &quot;F7C948&quot;)],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
+            )
+    }
+}
+</code></pre>
+<h3 id="animated-text">Animated Text</h3>
+<pre><code class="language-swift">struct AnimatedCounterText: View {
+    @State private var value: Double = 0
+
+    var body: some View {
+        VStack(spacing: 16) {
+            Text(&quot;\(value, specifier: &quot;%.0f&quot;)&quot;)
+                .font(.system(size: 72, weight: .black, design: .rounded))
+                .foregroundStyle(
+                    LinearGradient(
+                        colors: [Color(hex: &quot;2D9F6F&quot;), Color(hex: &quot;22D3EE&quot;)],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                )
+                .contentTransition(.numericText())
+
+            Button(&quot;Animate&quot;) {
+                withAnimation(.spring(duration: 0.8, bounce: 0.2)) {
+                    value = Double.random(in: 0...9999)
+                }
+            }
+            .buttonStyle(.borderedProminent)
+        }
+    }
+}
+
+struct TypewriterText: View {
+    let fullText: String
+    @State private var displayedText = &quot;&quot;
+    @State private var charIndex = 0
+
+    var body: some View {
+        Text(displayedText)
+            .font(.title2.weight(.medium))
+            .onAppear {
+                Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true) { timer in
+                    if charIndex &lt; fullText.count {
+                        let index = fullText.index(fullText.startIndex, offsetBy: charIndex)
+                        displayedText += String(fullText[index])
+                        charIndex += 1
+                    } else {
+                        timer.invalidate()
+                    }
+                }
+            }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="8-markdown-support-in-text">8. Markdown Support in Text</h2>
+<p>SwiftUI Text views parse Markdown automatically starting in iOS 15.</p>
+<pre><code class="language-swift">struct MarkdownTextDemo: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text(&quot;This is **bold** and this is *italic*.&quot;)
+
+            Text(&quot;Visit [Apple](https://apple.com) for more.&quot;)
+
+            Text(&quot;Use `code` in your text.&quot;)
+
+            Text(&quot;~~Strikethrough~~ is supported too.&quot;)
+
+            // Combine Markdown with font styling
+            Text(&quot;**Premium Plan** -- $9.99/month&quot;)
+                .font(.headline)
+
+            // Multiline Markdown
+            Text(&quot;&quot;&quot;
+            # Features
+            - **Fast** performance
+            - *Beautiful* design
+            - `Clean` code
+            &quot;&quot;&quot;)
+        }
+        .padding(24)
+    }
+}
+</code></pre>
+<hr />
+<h2 id="9-attributedstring">9. AttributedString</h2>
+<p>For rich text that goes beyond Markdown, use <code>AttributedString</code>.</p>
+<pre><code class="language-swift">struct AttributedStringDemo: View {
+    var attributedGreeting: AttributedString {
+        var hello = AttributedString(&quot;Hello &quot;)
+        hello.font = .title.weight(.light)
+        hello.foregroundColor = .secondary
+
+        var name = AttributedString(&quot;World&quot;)
+        name.font = .title.weight(.bold)
+        name.foregroundColor = .primary
+
+        var emoji = AttributedString(&quot; !&quot;)
+        emoji.font = .title
+
+        return hello + name + emoji
+    }
+
+    var highlightedText: AttributedString {
+        var full = AttributedString(&quot;SwiftUI makes building beautiful apps incredibly fast and enjoyable.&quot;)
+        full.font = .body
+
+        if let range = full.range(of: &quot;beautiful&quot;) {
+            full[range].foregroundColor = Color(hex: &quot;8B5CF6&quot;)
+            full[range].font = .body.weight(.bold)
+        }
+
+        if let range = full.range(of: &quot;fast&quot;) {
+            full[range].foregroundColor = Color(hex: &quot;2D9F6F&quot;)
+            full[range].font = .body.weight(.bold)
+        }
+
+        return full
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 20) {
+            Text(attributedGreeting)
+            Text(highlightedText)
+                .lineSpacing(4)
+        }
+        .padding(24)
+    }
+}
+</code></pre>
+<h3 id="attributedstring-with-links-and-dates">AttributedString with Links and Dates</h3>
+<pre><code class="language-swift">struct RichAttributedText: View {
+    var formattedText: AttributedString {
+        var text = AttributedString(&quot;Updated &quot;)
+        text.font = .footnote
+        text.foregroundColor = .secondary
+
+        var date = AttributedString(Date.now, format: .dateTime.month().day().year())
+        date.font = .footnote.weight(.semibold)
+        date.foregroundColor = .primary
+
+        var separator = AttributedString(&quot; -- &quot;)
+        separator.font = .footnote
+
+        var link = AttributedString(&quot;View Source&quot;)
+        link.font = .footnote.weight(.medium)
+        link.foregroundColor = Color(hex: &quot;0A6EBD&quot;)
+        link.link = URL(string: &quot;https://developer.apple.com&quot;)
+
+        return text + date + separator + link
+    }
+
+    var body: some View {
+        Text(formattedText)
+            .padding()
+    }
+}
+</code></pre>
+<hr />
+<h2 id="10-stunning-text-treatment-compositions">10. Stunning Text Treatment Compositions</h2>
+<h3 id="hero-header-with-gradient-and-blur">Hero Header with Gradient and Blur</h3>
+<pre><code class="language-swift">struct HeroTextHeader: View {
+    var body: some View {
+        ZStack {
+            LinearGradient(
+                colors: [Color(hex: &quot;0B0B1A&quot;), Color(hex: &quot;1A1A2E&quot;)],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .ignoresSafeArea()
+
+            VStack(spacing: 12) {
+                Text(&quot;Introducing&quot;)
+                    .font(.title3.weight(.medium))
+                    .foregroundStyle(.white.opacity(0.6))
+                    .kerning(3)
+                    .textCase(.uppercase)
+
+                Text(&quot;Premium&quot;)
+                    .font(.system(size: 64, weight: .black, design: .serif))
+                    .foregroundStyle(
+                        LinearGradient(
+                            colors: [Color(hex: &quot;F472B6&quot;), Color(hex: &quot;A78BFA&quot;), Color(hex: &quot;6C63FF&quot;)],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+
+                Text(&quot;Crafted with care for those who\nappreciate the finer details.&quot;)
+                    .font(.body)
+                    .foregroundStyle(.white.opacity(0.5))
+                    .multilineTextAlignment(.center)
+                    .lineSpacing(4)
+            }
+        }
+        .frame(height: 350)
+    }
+}
+</code></pre>
+<h3 id="pill-tag-with-custom-typography">Pill Tag with Custom Typography</h3>
+<pre><code class="language-swift">struct StyledTag: View {
+    let text: String
+    let color: Color
+
+    var body: some View {
+        Text(text.uppercased())
+            .font(.caption2.weight(.bold))
+            .kerning(1.2)
+            .foregroundStyle(.white)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .background(color, in: Capsule())
+    }
+}
+
+struct TagRow: View {
+    var body: some View {
+        HStack(spacing: 8) {
+            StyledTag(text: &quot;SwiftUI&quot;, color: Color(hex: &quot;6C63FF&quot;))
+            StyledTag(text: &quot;iOS 18&quot;, color: Color(hex: &quot;EC4899&quot;))
+            StyledTag(text: &quot;New&quot;, color: Color(hex: &quot;2D9F6F&quot;))
+        }
+    }
+}
+</code></pre>
+<h3 id="statistic-display-with-mixed-typography">Statistic Display with Mixed Typography</h3>
+<pre><code class="language-swift">struct StatDisplay: View {
+    let value: String
+    let unit: String
+    let label: String
+
+    var body: some View {
+        VStack(spacing: 4) {
+            HStack(alignment: .firstTextBaseline, spacing: 2) {
+                Text(value)
+                    .font(.system(size: 40, weight: .bold, design: .rounded))
+                    .foregroundStyle(.primary)
+                Text(unit)
+                    .font(.title3.weight(.medium))
+                    .foregroundStyle(.secondary)
+            }
+            Text(label)
+                .font(.caption.weight(.medium))
+                .foregroundStyle(.tertiary)
+                .textCase(.uppercase)
+                .kerning(1)
+        }
+    }
+}
+
+struct StatsRow: View {
+    var body: some View {
+        HStack(spacing: 32) {
+            StatDisplay(value: &quot;2.4&quot;, unit: &quot;M&quot;, label: &quot;Downloads&quot;)
+            StatDisplay(value: &quot;4.9&quot;, unit: &quot;&quot;, label: &quot;Rating&quot;)
+            StatDisplay(value: &quot;128&quot;, unit: &quot;K&quot;, label: &quot;Reviews&quot;)
+        }
+        .padding(24)
+        .background(Color(.secondarySystemGroupedBackground))
+        .cornerRadius(20)
+    }
+}
+</code></pre>
+<hr />
+<h2 id="quick-reference">Quick Reference</h2>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Key APIs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Text Styles</td>
+<td><code>.largeTitle</code>, <code>.title</code>, <code>.title2</code>, <code>.title3</code>, <code>.headline</code>, <code>.subheadline</code>, <code>.body</code>, <code>.callout</code>, <code>.footnote</code>, <code>.caption</code>, <code>.caption2</code></td>
+</tr>
+<tr>
+<td>Font Designs</td>
+<td><code>.default</code>, <code>.rounded</code>, <code>.serif</code>, <code>.monospaced</code></td>
+</tr>
+<tr>
+<td>Weights</td>
+<td><code>.ultraLight</code> through <code>.black</code> (9 levels)</td>
+</tr>
+<tr>
+<td>Custom Fonts</td>
+<td><code>.custom("Name", size:)</code>, <code>.custom("Name", size:, relativeTo:)</code></td>
+</tr>
+<tr>
+<td>SF Symbols</td>
+<td><code>.symbolRenderingMode()</code>, <code>.symbolEffect()</code>, <code>variableValue:</code></td>
+</tr>
+<tr>
+<td>Dynamic Type</td>
+<td><code>@ScaledMetric</code>, <code>.minimumScaleFactor()</code>, <code>relativeTo:</code></td>
+</tr>
+<tr>
+<td>Text Effects</td>
+<td><code>.foregroundStyle()</code> with gradients, <code>.shadow()</code>, <code>.contentTransition()</code></td>
+</tr>
+<tr>
+<td>Rich Text</td>
+<td>Markdown in <code>Text()</code>, <code>AttributedString</code></td>
+</tr>
+<tr>
+<td>Kerning/Tracking</td>
+<td><code>.kerning()</code>, <code>.tracking()</code></td>
+</tr>
+<tr>
+<td>Line Spacing</td>
+<td><code>.lineSpacing()</code>, <code>.lineLimit()</code></td>
+</tr>
+</tbody>
+</table></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

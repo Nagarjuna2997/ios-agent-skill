@@ -1,0 +1,406 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SwiftData and Core Data Concurrency — iOS Agent Skill</title><meta name="description" content="Repository guidance for Data Concurrency. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-data-concurrency.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="SwiftData and Core Data Concurrency"><meta property="og:description" content="Repository guidance for Data Concurrency. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-data-concurrency.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "SwiftData and Core Data Concurrency", "description": "Repository guidance for Data Concurrency. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-data-concurrency.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Data Management · Reference guide</p><h1>SwiftData and Core Data Concurrency</h1><p class="lead">Repository guidance for Data Concurrency. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/frameworks/data-concurrency.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#the-one-rule">The One Rule</a></li>
+<li><a href="#swiftdata">SwiftData</a><ul>
+<li><a href="#the-main-actor-context">The main-actor context</a></li>
+<li><a href="#modelactor-for-background-work">@ModelActor for background work</a></li>
+<li><a href="#re-fetching-by-identifier">Re-fetching by identifier</a></li>
+<li><a href="#getting-changes-back-to-the-ui">Getting changes back to the UI</a></li>
+<li><a href="#autosave">Autosave</a></li>
+<li><a href="#swiftdata-anti-patterns">SwiftData anti-patterns</a></li>
+</ul>
+</li>
+<li><a href="#core-data">Core Data</a><ul>
+<li><a href="#context-topology">Context topology</a></li>
+<li><a href="#background-work">Background work</a></li>
+<li><a href="#crossing-the-boundary-with-nsmanagedobjectid">Crossing the boundary with NSManagedObjectID</a></li>
+<li><a href="#batch-operations-skip-the-object-graph-entirely">Batch operations skip the object graph entirely</a></li>
+<li><a href="#core-data-anti-patterns">Core Data anti-patterns</a></li>
+</ul>
+</li>
+<li><a href="#choosing-a-strategy">Choosing a Strategy</a></li>
+<li><a href="#testing">Testing</a></li>
+<li><a href="#checklist">Checklist</a></li>
+</ul>
+</div>
+</aside><p><strong>Load this when:</strong> importing or syncing data in the background, seeing
+"context is not thread safe" or <code>Sendable</code> errors around a model type, writing
+more than a few dozen objects at once, or a list stutters during a save.</p>
+<p><code>docs/frameworks/swiftdata.md</code> and <code>docs/frameworks/core-data.md</code> cover the APIs.
+This document covers the single rule that both frameworks enforce and the
+patterns that follow from it.</p>
+<hr />
+<h2 id="the-one-rule">The One Rule</h2>
+<p><strong>A managed object belongs to the context that fetched it, and that context
+belongs to one actor. Never pass the object across a boundary — pass its ID.</strong></p>
+<table>
+<thead>
+<tr>
+<th>Framework</th>
+<th>Object</th>
+<th>Context</th>
+<th>Cross-boundary token</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SwiftData</td>
+<td><code>@Model</code> class</td>
+<td><code>ModelContext</code></td>
+<td><code>PersistentIdentifier</code></td>
+</tr>
+<tr>
+<td>Core Data</td>
+<td><code>NSManagedObject</code></td>
+<td><code>NSManagedObjectContext</code></td>
+<td><code>NSManagedObjectID</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>@Model</code> classes are <strong>not</strong> <code>Sendable</code>, and neither is <code>ModelContext</code>. Any code
+that appears to move one between actors is either failing to compile under Swift 6
+or silently corrupting the store under Swift 5.</p>
+<pre><code class="language-swift">// WRONG — hands a model object to another actor.
+let trip = try context.fetch(descriptor).first!
+await backgroundWorker.process(trip)          // Sendable error / crash
+
+// RIGHT — hand over the identifier and re-fetch on the far side.
+let id = trip.persistentModelID
+await backgroundWorker.process(id)
+</code></pre>
+<hr />
+<h2 id="swiftdata">SwiftData</h2>
+<h3 id="the-main-actor-context">The main-actor context</h3>
+<p><code>@Environment(\.modelContext)</code> is main-actor-bound and backed by the container's
+<code>mainContext</code>. Use it for everything the user directly touches: a tap that
+toggles a flag, a form that inserts one record, a <code>@Query</code>-driven list.</p>
+<pre><code class="language-swift">struct TripList: View {
+    @Query(sort: \Trip.startDate) private var trips: [Trip]
+    @Environment(\.modelContext) private var context
+
+    var body: some View {
+        List(trips) { trip in
+            TripRow(trip: trip)
+                .swipeActions {
+                    Button(role: .destructive) {
+                        context.delete(trip)     // main actor, immediate, correct
+                    } label: { Label(&quot;Delete&quot;, systemImage: &quot;trash&quot;) }
+                }
+        }
+    }
+}
+</code></pre>
+<p>Do not move this work off the main actor. A single insert is microseconds; the
+actor hop costs more than the save.</p>
+<h3 id="modelactor-for-background-work"><code>@ModelActor</code> for background work</h3>
+<p>Import a thousand records, run a migration, reconcile a sync — that belongs on
+its own actor with its own context.</p>
+<pre><code class="language-swift">@ModelActor
+actor DataImporter {
+    /// The macro synthesizes `init(modelContainer:)` plus an isolated
+    /// `modelContext` created for THIS actor. Never construct a context yourself.
+    func importTrips(from payloads: [TripPayload]) throws {
+        for (index, payload) in payloads.enumerated() {
+            modelContext.insert(Trip(payload: payload))
+
+            // Batch saves. Saving per-record is orders of magnitude slower;
+            // never saving at all balloons memory until the loop ends.
+            if index % 500 == 499 {
+                try modelContext.save()
+            }
+        }
+        try modelContext.save()
+    }
+
+    /// Returns IDs, not objects. The caller re-fetches on its own context.
+    func staleTripIDs(before date: Date) throws -&gt; [PersistentIdentifier] {
+        let descriptor = FetchDescriptor&lt;Trip&gt;(
+            predicate: #Predicate { $0.updatedAt &lt; date }
+        )
+        return try modelContext.fetch(descriptor).map(\.persistentModelID)
+    }
+}
+</code></pre>
+<pre><code class="language-swift">// Calling it — the container is Sendable, so it crosses freely.
+@MainActor
+@Observable
+final class TripListModel {
+    private let container: ModelContainer
+    private(set) var isImporting = false
+
+    init(container: ModelContainer) { self.container = container }
+
+    func runImport(_ payloads: [TripPayload]) async {
+        isImporting = true
+        defer { isImporting = false }
+
+        let importer = DataImporter(modelContainer: container)
+        do {
+            try await importer.importTrips(from: payloads)
+            // @Query on the main context picks up the change automatically.
+        } catch {
+            // surface it
+        }
+    }
+}
+</code></pre>
+<h3 id="re-fetching-by-identifier">Re-fetching by identifier</h3>
+<pre><code class="language-swift">@ModelActor
+actor TripEditor {
+    func markComplete(_ id: PersistentIdentifier) throws {
+        // `model(for:)` resolves an identifier against THIS actor's context.
+        guard let trip = modelContext.model(for: id) as? Trip else { return }
+        trip.isComplete = true
+        try modelContext.save()
+    }
+}
+</code></pre>
+<p><code>PersistentIdentifier</code> is <code>Sendable</code> and stable, which is exactly why it — and
+not the object — is what crosses.</p>
+<h3 id="getting-changes-back-to-the-ui">Getting changes back to the UI</h3>
+<p>Two mechanisms, in order of preference:</p>
+<ol>
+<li><strong><code>@Query</code>.</strong> A background save on a context from the same container
+   propagates automatically. Nothing to write.</li>
+<li><strong>Explicit re-fetch.</strong> When you are not using <code>@Query</code>, re-fetch on the main
+   context after the background actor finishes.</li>
+</ol>
+<pre><code class="language-swift">func refresh() {
+    trips = (try? context.fetch(FetchDescriptor&lt;Trip&gt;(sort: [.init(\.startDate)]))) ?? []
+}
+</code></pre>
+<p>Do <strong>not</strong> try to observe a background context's objects from the UI. They belong
+to the other actor.</p>
+<h3 id="autosave">Autosave</h3>
+<p><code>ModelContainer</code> autosaves by default on the main context. For a background
+importer, turn it off so your batching is the only thing writing:</p>
+<pre><code class="language-swift">let container = try ModelContainer(
+    for: Trip.self,
+    configurations: ModelConfiguration(isStoredInMemoryOnly: false)
+)
+container.mainContext.autosaveEnabled = true    // default; fine for UI edits
+</code></pre>
+<h3 id="swiftdata-anti-patterns">SwiftData anti-patterns</h3>
+<pre><code class="language-swift">// 1. Constructing a context by hand for background work.
+let context = ModelContext(container)           // not actor-isolated — unsafe
+Task.detached { context.insert(…) }
+// Use @ModelActor.
+
+// 2. Returning model objects from an actor.
+func fetchTrips() -&gt; [Trip] { … }               // Sendable violation
+func fetchTripIDs() -&gt; [PersistentIdentifier] { … }   // correct
+
+// 3. Saving inside a tight loop.
+for payload in payloads {
+    context.insert(Trip(payload: payload))
+    try context.save()                          // one transaction per record
+}
+
+// 4. Never saving.
+for payload in tenThousandPayloads { context.insert(…) }
+try context.save()                              // peak memory holds all 10k
+
+// 5. Doing a large import on the main actor.
+@MainActor func importAll() { … }               // freezes the UI
+
+// 6. Storing a @Model object on an @Observable view model as source of truth.
+@Observable final class VM { var trip: Trip }    // lifetime tied to a context
+// Store the ID, or a Sendable value-type snapshot, and re-fetch.
+</code></pre>
+<hr />
+<h2 id="core-data">Core Data</h2>
+<h3 id="context-topology">Context topology</h3>
+<pre><code>NSPersistentContainer
+├── viewContext          (main queue)   — UI reads, @FetchRequest
+└── newBackgroundContext (private queue) — imports, batch work
+</code></pre>
+<pre><code class="language-swift">final class PersistenceController {
+    static let shared = PersistenceController()
+    let container: NSPersistentContainer
+
+    init(inMemory: Bool = false) {
+        container = NSPersistentContainer(name: &quot;Model&quot;)
+        if inMemory {
+            container.persistentStoreDescriptions.first?.url = URL(fileURLWithPath: &quot;/dev/null&quot;)
+        }
+        container.loadPersistentStores { _, error in
+            if let error { fatalError(&quot;Store failed to load: \(error)&quot;) }
+        }
+
+        // Background saves merge into the UI context automatically.
+        container.viewContext.automaticallyMergesChangesFromParent = true
+
+        // Last write wins on a property-by-property basis. Choose deliberately:
+        // this is correct for server-authoritative sync, wrong for local edits
+        // the user expects to keep.
+        container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+        container.viewContext.undoManager = nil          // perf: UI contexts rarely need it
+    }
+}
+</code></pre>
+<h3 id="background-work">Background work</h3>
+<pre><code class="language-swift">extension PersistenceController {
+    /// `performBackgroundTask` gives you a context on its own private queue.
+    /// The closure body is the ONLY place that context may be touched.
+    func importTrips(_ payloads: [TripPayload]) async throws {
+        try await container.performBackgroundTask { context in
+            context.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+
+            for (index, payload) in payloads.enumerated() {
+                let trip = Trip(context: context)
+                trip.id = payload.id
+                trip.name = payload.name
+
+                if index % 500 == 499 {
+                    try context.save()
+                    context.reset()          // release the object graph
+                }
+            }
+            if context.hasChanges { try context.save() }
+        }
+    }
+}
+</code></pre>
+<p><code>context.reset()</code> after each batch is what keeps memory flat on a large import.
+Without it the context retains every object it has ever materialised.</p>
+<h3 id="crossing-the-boundary-with-nsmanagedobjectid">Crossing the boundary with <code>NSManagedObjectID</code></h3>
+<pre><code class="language-swift">// Background -&gt; main
+let objectIDs: [NSManagedObjectID] = try await container.performBackgroundTask { context in
+    try context.fetch(request).map(\.objectID)
+}
+
+await MainActor.run {
+    let viewContext = container.viewContext
+    let trips = objectIDs.compactMap { viewContext.object(with: $0) as? Trip }
+    // safe: these belong to viewContext
+}
+</code></pre>
+<p>Note <code>object(with:)</code> returns a fault and will throw if the row is gone; use
+<code>existingObject(with:)</code> when the object may have been deleted.</p>
+<h3 id="batch-operations-skip-the-object-graph-entirely">Batch operations skip the object graph entirely</h3>
+<p>For deletes and updates of many rows, <code>NSBatchDeleteRequest</code> /
+<code>NSBatchUpdateRequest</code> execute in SQL and never materialise objects — orders of
+magnitude faster. The cost is that in-memory contexts do not know, so you must
+merge the changes yourself.</p>
+<pre><code class="language-swift">func deleteTrips(olderThan date: Date) async throws {
+    try await container.performBackgroundTask { context in
+        let fetch = NSFetchRequest&lt;NSFetchRequestResult&gt;(entityName: &quot;Trip&quot;)
+        fetch.predicate = NSPredicate(format: &quot;updatedAt &lt; %@&quot;, date as NSDate)
+
+        let request = NSBatchDeleteRequest(fetchRequest: fetch)
+        request.resultType = .resultTypeObjectIDs
+
+        let result = try context.execute(request) as? NSBatchDeleteResult
+        guard let ids = result?.result as? [NSManagedObjectID] else { return }
+
+        // Without this the UI keeps showing deleted rows until relaunch.
+        NSManagedObjectContext.mergeChanges(
+            fromRemoteContextSave: [NSDeletedObjectsKey: ids],
+            into: [self.container.viewContext]
+        )
+    }
+}
+</code></pre>
+<h3 id="core-data-anti-patterns">Core Data anti-patterns</h3>
+<pre><code class="language-swift">// 1. Touching a context outside its queue.
+let context = container.newBackgroundContext()
+context.insert(obj)                              // wrong queue
+context.perform { context.insert(obj) }           // correct
+
+// 2. Passing NSManagedObject between queues.
+DispatchQueue.main.async { label.text = trip.name }   // trip is not thread-safe
+// Read the value inside perform, pass the String.
+
+// 3. Saving viewContext for a large import — blocks the UI.
+// 4. Deleting thousands of rows one at a time instead of NSBatchDeleteRequest.
+// 5. Forgetting to merge batch-operation results into viewContext.
+// 6. automaticallyMergesChangesFromParent left false, then wondering why the
+//    UI does not update after a background save.
+</code></pre>
+<hr />
+<h2 id="choosing-a-strategy">Choosing a Strategy</h2>
+<table>
+<thead>
+<tr>
+<th>Situation</th>
+<th>SwiftData</th>
+<th>Core Data</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>One-off user edit</td>
+<td><code>@Environment(\.modelContext)</code></td>
+<td><code>viewContext</code></td>
+</tr>
+<tr>
+<td>List display</td>
+<td><code>@Query</code></td>
+<td><code>@FetchRequest</code> / <code>NSFetchedResultsController</code></td>
+</tr>
+<tr>
+<td>Import of 100+ records</td>
+<td><code>@ModelActor</code></td>
+<td><code>performBackgroundTask</code></td>
+</tr>
+<tr>
+<td>Delete many rows</td>
+<td>fetch IDs, delete on a <code>@ModelActor</code></td>
+<td><code>NSBatchDeleteRequest</code> + merge</td>
+</tr>
+<tr>
+<td>Cross-boundary reference</td>
+<td><code>PersistentIdentifier</code></td>
+<td><code>NSManagedObjectID</code></td>
+</tr>
+<tr>
+<td>Conflict resolution</td>
+<td><code>ModelConfiguration</code></td>
+<td><code>mergePolicy</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="testing">Testing</h2>
+<p>Use an in-memory store so tests are isolated and fast.</p>
+<pre><code class="language-swift">// SwiftData
+@MainActor
+@Suite(&quot;TripStore&quot;)
+struct TripStoreTests {
+    private func makeContainer() throws -&gt; ModelContainer {
+        try ModelContainer(
+            for: Trip.self,
+            configurations: ModelConfiguration(isStoredInMemoryOnly: true)
+        )
+    }
+
+    @Test(&quot;import writes every record&quot;)
+    func importAll() async throws {
+        let container = try makeContainer()
+        let importer = DataImporter(modelContainer: container)
+
+        try await importer.importTrips(from: TripPayload.samples)
+
+        let count = try container.mainContext.fetchCount(FetchDescriptor&lt;Trip&gt;())
+        #expect(count == TripPayload.samples.count)
+    }
+}
+
+// Core Data
+let controller = PersistenceController(inMemory: true)
+</code></pre>
+<p>Previews get the same treatment — see the SwiftData preview container in
+<code>docs/design/interaction-standards.md</code>.</p>
+<hr />
+<h2 id="checklist">Checklist</h2>
+<ul>
+<li>[ ] No <code>@Model</code> object or <code>NSManagedObject</code> crosses an actor or queue boundary.</li>
+<li>[ ] Background work uses <code>@ModelActor</code> (SwiftData) or <code>performBackgroundTask</code>
+      (Core Data) — never a hand-rolled context on a detached task.</li>
+<li>[ ] Bulk writes save in batches (~500) rather than per-record or once at the end.</li>
+<li>[ ] Core Data: <code>automaticallyMergesChangesFromParent = true</code> on <code>viewContext</code>.</li>
+<li>[ ] Core Data: a deliberate <code>mergePolicy</code>, not the default error-on-conflict.</li>
+<li>[ ] Batch delete/update results are merged into <code>viewContext</code>.</li>
+<li>[ ] Actors return identifiers, never model objects.</li>
+<li>[ ] Tests and previews use an in-memory store.</li>
+</ul></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

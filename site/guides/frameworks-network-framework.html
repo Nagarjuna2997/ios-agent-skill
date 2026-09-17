@@ -1,0 +1,531 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Network.framework — iOS Agent Skill</title><meta name="description" content="Repository guidance for Network Framework. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-network-framework.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="Network.framework"><meta property="og:description" content="Repository guidance for Network Framework. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-network-framework.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "Network.framework", "description": "Repository guidance for Network Framework. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-network-framework.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Networking and Connectivity · Reference guide</p><h1>Network.framework</h1><p class="lead">Repository guidance for Network Framework. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/frameworks/network-framework.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#1-the-three-facts-that-shape-every-design-here">1. The three facts that shape every design here</a></li>
+<li><a href="#2-path-monitoring">2. Path monitoring</a></li>
+<li><a href="#3-a-framed-tcp-connection">3. A framed TCP connection</a></li>
+<li><a href="#4-tls">4. TLS</a></li>
+<li><a href="#5-listening-local-peer-to-peer">5. Listening (local peer-to-peer)</a></li>
+<li><a href="#anti-patterns">Anti-Patterns</a></li>
+<li><a href="#checklist">Checklist</a></li>
+</ul>
+</div>
+</aside><p><strong>Load this when:</strong> you need a socket rather than an HTTP request — a custom
+protocol, a persistent TCP or UDP connection, a local peer-to-peer listener, TLS
+you must configure yourself — or when you need to observe connectivity changes
+with <code>NWPathMonitor</code>.</p>
+<p><strong>Do not load this for HTTP.</strong> <code>URLSession</code> already sits on Network.framework
+and gives you caching, cookies, redirects, retries, background transfers, and
+ATS compliance for free. Reimplementing HTTP over <code>NWConnection</code> is a large
+amount of work to arrive somewhere worse. See <code>docs/frameworks/networking.md</code>.</p>
+<p><strong>Availability:</strong> Network.framework iOS 12+; <code>NWBrowser</code> iOS 13+; the types are
+<strong>not</strong> <code>Sendable</code>, and their callbacks arrive on a queue you supply.</p>
+<hr />
+<h2 id="1-the-three-facts-that-shape-every-design-here">1. The three facts that shape every design here</h2>
+<p><strong>1. <code>NWConnection</code> is not <code>Sendable</code> and its handlers run on your queue.</strong>
+Every state and receive callback lands on the <code>DispatchQueue</code> passed to
+<code>start(queue:)</code>. Touching <code>@MainActor</code> state from inside one is a data race and
+a Swift 6 error. The fix is not to hop with <code>DispatchQueue.main.async</code> — it is to
+own the connection inside an <strong>actor</strong> and expose an <code>AsyncStream</code> outward.</p>
+<p><strong>2. TCP is a byte stream, not a message stream.</strong> <code>receive</code> gives you whatever
+bytes have arrived. One <code>send</code> of 100 bytes may arrive as four callbacks; three
+sends may arrive as one. Any code that treats one receive as one message works
+perfectly on localhost and fails on a real network. You must frame — length
+prefix, delimiter, or <code>NWProtocolFramer</code>.</p>
+<p><strong>3. <code>.ready</code> is not "connected forever".</strong> Connections go <code>.waiting</code> when the
+path is unsatisfied and can return to <code>.ready</code> on their own. Tearing down on
+<code>.waiting</code> throws away the recovery the framework is doing for you; treating
+<code>.failed</code> as recoverable leaks a dead connection. They are different states and
+need different handling.</p>
+<hr />
+<h2 id="2-path-monitoring">2. Path monitoring</h2>
+<p>The simplest correct thing in the framework, and the most commonly misused.</p>
+<pre><code class="language-swift">import Network
+
+public enum Connectivity: Equatable, Sendable {
+    case satisfied(isExpensive: Bool, isConstrained: Bool)
+    case unsatisfied
+}
+
+/// An actor, because NWPathMonitor's handler fires on a background queue and
+/// the value it produces is read from the main actor.
+public actor NetworkMonitor {
+    private let monitor = NWPathMonitor()
+    private let queue = DispatchQueue(label: &quot;NetworkMonitor&quot;)
+    private var continuations: [UUID: AsyncStream&lt;Connectivity&gt;.Continuation] = [:]
+    private var current: Connectivity = .unsatisfied
+    private var isStarted = false
+
+    public init() {}
+
+    /// A fresh stream per caller. One shared stream means the second observer
+    /// steals elements from the first.
+    public func updates() -&gt; AsyncStream&lt;Connectivity&gt; {
+        let id = UUID()
+        return AsyncStream { continuation in
+            continuations[id] = continuation
+            continuation.yield(current)          // current value, not just changes
+            continuation.onTermination = { [weak self] _ in
+                Task { await self?.remove(id) }
+            }
+            start()
+        }
+    }
+
+    private func remove(_ id: UUID) {
+        continuations[id] = nil
+    }
+
+    private func start() {
+        guard !isStarted else { return }
+        isStarted = true
+
+        monitor.pathUpdateHandler = { [weak self] path in
+            // Fires on `queue`. Hop back onto the actor rather than touching
+            // state from here.
+            let value: Connectivity = path.status == .satisfied
+                ? .satisfied(isExpensive: path.isExpensive, isConstrained: path.isConstrained)
+                : .unsatisfied
+            Task { await self?.publish(value) }
+        }
+        monitor.start(queue: queue)
+    }
+
+    private func publish(_ value: Connectivity) {
+        current = value
+        for continuation in continuations.values {
+            continuation.yield(value)
+        }
+    }
+
+    deinit {
+        monitor.cancel()
+    }
+}
+</code></pre>
+<p><strong><code>isExpensive</code> and <code>isConstrained</code> are not decoration.</strong> <code>isExpensive</code> means
+cellular or a personal hotspot; <code>isConstrained</code> means the user turned on Low
+Data Mode and explicitly asked you to use less. Ignoring the second is ignoring a
+direct instruction from the user, and App Review does notice.</p>
+<p><strong>Never use path status as a precondition.</strong> <code>.satisfied</code> means a route exists,
+not that your server is reachable. Code that refuses to try because the monitor
+says unsatisfied fails on captive portals and VPN transitions where the request
+would have worked. Make the request; handle the failure.</p>
+<hr />
+<h2 id="3-a-framed-tcp-connection">3. A framed TCP connection</h2>
+<pre><code class="language-swift">import Foundation
+import Network
+
+public enum ConnectionError: LocalizedError {
+    case failed(NWError)
+    case closedByPeer
+    case messageTooLarge(Int)
+    case malformedFrame
+
+    public var errorDescription: String? {
+        switch self {
+        case .failed: String(localized: &quot;Lost the connection. Trying again.&quot;)
+        case .closedByPeer: String(localized: &quot;The other side disconnected.&quot;)
+        case .messageTooLarge, .malformedFrame:
+            String(localized: &quot;Received unreadable data.&quot;)
+        }
+    }
+}
+
+/// Owns the connection. Nothing outside this actor touches NWConnection, which
+/// is what makes the non-Sendable type safe to use.
+public actor MessageConnection {
+    private let connection: NWConnection
+    private let queue = DispatchQueue(label: &quot;MessageConnection&quot;)
+
+    /// Bytes received but not yet forming a complete frame.
+    private var buffer = Data()
+
+    private var messages: AsyncStream&lt;Data&gt;.Continuation?
+    private var readyContinuation: CheckedContinuation&lt;Void, any Error&gt;?
+    private var hasResumedReady = false
+
+    /// A ceiling on any single frame. Without it, a hostile or buggy peer
+    /// sending a 4 GB length prefix makes the app allocate until it is killed.
+    private let maximumFrameSize: Int
+
+    public init(host: String, port: UInt16, useTLS: Bool = true, maximumFrameSize: Int = 4 &lt;&lt; 20) {
+        let parameters: NWParameters = useTLS ? .tls : .tcp
+
+        // Disable Nagle for latency-sensitive small messages. Leave it on for
+        // throughput-oriented traffic — turning it off there costs bandwidth.
+        if let tcp = parameters.defaultProtocolStack.internetProtocol as? NWProtocolTCP.Options {
+            tcp.noDelay = true
+            tcp.connectionTimeout = 10
+        }
+
+        self.connection = NWConnection(
+            host: NWEndpoint.Host(host),
+            port: NWEndpoint.Port(rawValue: port)!,
+            using: parameters
+        )
+        self.maximumFrameSize = maximumFrameSize
+    }
+
+    // MARK: Lifecycle
+
+    public func connect() async throws {
+        connection.stateUpdateHandler = { [weak self] state in
+            Task { await self?.handle(state) }
+        }
+        connection.start(queue: queue)
+
+        try await withCheckedThrowingContinuation { continuation in
+            readyContinuation = continuation
+        }
+
+        receiveLoop()
+    }
+
+    private func handle(_ state: NWConnection.State) {
+        switch state {
+        case .ready:
+            resumeReady(with: .success(()))
+
+        case .waiting(let error):
+            // NOT a failure. The path is temporarily unsatisfied and the
+            // framework is already retrying. Tearing down here throws away the
+            // recovery it is doing for you.
+            log(&quot;waiting: \(error)&quot;)
+
+        case .failed(let error):
+            // Terminal. This one does need a new connection.
+            resumeReady(with: .failure(ConnectionError.failed(error)))
+            messages?.finish()
+
+        case .cancelled:
+            messages?.finish()
+
+        case .setup, .preparing:
+            break
+
+        @unknown default:
+            break
+        }
+    }
+
+    /// A continuation must be resumed exactly once. `.waiting` -&gt; `.ready` -&gt;
+    /// `.failed` is a normal sequence, so without this guard a flaky network
+    /// crashes the app with &quot;resumed more than once&quot;.
+    private func resumeReady(with result: Result&lt;Void, any Error&gt;) {
+        guard !hasResumedReady, let continuation = readyContinuation else { return }
+        hasResumedReady = true
+        readyContinuation = nil
+        continuation.resume(with: result)
+    }
+
+    public func cancel() {
+        connection.cancel()
+        messages?.finish()
+    }
+
+    // MARK: Sending
+
+    /// Length-prefixed framing: 4-byte big-endian count, then the payload.
+    public func send(_ payload: Data) async throws {
+        guard payload.count &lt;= maximumFrameSize else {
+            throw ConnectionError.messageTooLarge(payload.count)
+        }
+
+        var frame = Data()
+        withUnsafeBytes(of: UInt32(payload.count).bigEndian) { frame.append(contentsOf: $0) }
+        frame.append(payload)
+
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation&lt;Void, any Error&gt;) in
+            connection.send(content: frame, completion: .contentProcessed { error in
+                if let error {
+                    continuation.resume(throwing: ConnectionError.failed(error))
+                } else {
+                    continuation.resume()
+                }
+            })
+        }
+    }
+
+    // MARK: Receiving
+
+    public func incomingMessages() -&gt; AsyncStream&lt;Data&gt; {
+        AsyncStream { continuation in
+            messages = continuation
+        }
+    }
+
+    private func receiveLoop() {
+        connection.receive(minimumIncompleteLength: 1, maximumLength: 65_536) {
+            [weak self] content, _, isComplete, error in
+            Task { await self?.handleReceive(content, isComplete: isComplete, error: error) }
+        }
+    }
+
+    private func handleReceive(_ content: Data?, isComplete: Bool, error: NWError?) {
+        if let error {
+            log(&quot;receive failed: \(error)&quot;)
+            messages?.finish()
+            return
+        }
+
+        if let content, !content.isEmpty {
+            buffer.append(content)
+            drainFrames()
+        }
+
+        if isComplete {
+            messages?.finish()
+            return
+        }
+
+        receiveLoop()   // re-arm; `receive` delivers once per call
+    }
+
+    /// TCP is a byte stream. One receive is not one message — this is where
+    /// code that assumes otherwise breaks the moment it leaves localhost.
+    private func drainFrames() {
+        while buffer.count &gt;= 4 {
+            let length = buffer.prefix(4).withUnsafeBytes {
+                Int($0.load(as: UInt32.self).bigEndian)
+            }
+
+            guard length &lt;= maximumFrameSize else {
+                log(&quot;frame of \(length) exceeds the ceiling; closing&quot;)
+                connection.cancel()
+                messages?.finish()
+                return
+            }
+
+            guard buffer.count &gt;= 4 + length else { return }   // partial frame; wait
+
+            let payload = buffer.subdata(in: 4..&lt;(4 + length))
+            buffer.removeSubrange(0..&lt;(4 + length))
+            messages?.yield(payload)
+        }
+    }
+
+    private func log(_ message: String) {
+        // OSLog in production — see docs/frameworks/oslog.md.
+    }
+}
+</code></pre>
+<hr />
+<h2 id="4-tls">4. TLS</h2>
+<p><code>NWParameters.tls</code> gives you the system defaults, which are correct. Only reach
+for <code>sec_protocol_options</code> when you have a specific requirement — a pinned
+certificate, or a private CA.</p>
+<pre><code class="language-swift">import CryptoKit
+import Network
+
+func pinnedParameters(expectedSPKISHA256: Data) -&gt; NWParameters {
+    let options = NWProtocolTLS.Options()
+
+    sec_protocol_options_set_verify_block(
+        options.securityProtocolOptions,
+        { _, trustRef, complete in
+            let trust = sec_trust_copy_ref(trustRef).takeRetainedValue()
+
+            // Evaluate the chain normally FIRST. Pinning replaces nothing —
+            // it is an additional constraint on top of a valid chain.
+            var error: CFError?
+            guard SecTrustEvaluateWithError(trust, &amp;error) else {
+                return complete(false)
+            }
+
+            guard let chain = SecTrustCopyCertificateChain(trust) as? [SecCertificate],
+                  let leaf = chain.first,
+                  let publicKey = SecCertificateCopyKey(leaf),
+                  let spki = SecKeyCopyExternalRepresentation(publicKey, nil) as Data?
+            else {
+                return complete(false)
+            }
+
+            // Pin the public key, not the certificate: the key survives
+            // certificate renewal, so routine rotation does not brick the app.
+            let digest = Data(SHA256.hash(data: spki))
+            complete(digest == expectedSPKISHA256)
+        },
+        DispatchQueue(label: &quot;TLSVerify&quot;)
+    )
+
+    return NWParameters(tls: options)
+}
+</code></pre>
+<p><strong>Pin at least two keys — the current one and a backup you control.</strong> A single
+pin turns a lost private key into an app that cannot reach its own server until
+every user installs an update. Ship an expiry date for the pin set, after which
+the app falls back to standard validation rather than becoming a brick.</p>
+<hr />
+<h2 id="5-listening-local-peer-to-peer">5. Listening (local peer-to-peer)</h2>
+<pre><code class="language-swift">public actor MessageListener {
+    private let listener: NWListener
+    private let queue = DispatchQueue(label: &quot;MessageListener&quot;)
+    private var connections: [ObjectIdentifier: NWConnection] = [:]
+
+    public init(port: UInt16, service: String) throws {
+        let parameters = NWParameters.tls
+        parameters.includePeerToPeer = true          // AWDL, for local discovery
+
+        listener = try NWListener(
+            using: parameters,
+            on: NWEndpoint.Port(rawValue: port) ?? .any
+        )
+        // Bonjour advertisement. The type must also appear in
+        // NSBonjourServices in Info.plist or discovery silently fails.
+        listener.service = NWListener.Service(type: service)
+    }
+
+    public func start() {
+        listener.newConnectionHandler = { [weak self] connection in
+            Task { await self?.accept(connection) }
+        }
+        listener.stateUpdateHandler = { state in
+            // .failed here is usually a port already in use.
+        }
+        listener.start(queue: queue)
+    }
+
+    private func accept(_ connection: NWConnection) {
+        // Retain it. A connection that goes out of scope is cancelled
+        // immediately, and the symptom is peers that connect then vanish.
+        connections[ObjectIdentifier(connection)] = connection
+
+        connection.stateUpdateHandler = { [weak self] state in
+            switch state {
+            case .cancelled, .failed:
+                Task { await self?.drop(connection) }
+            default:
+                break
+            }
+        }
+        connection.start(queue: queue)
+    }
+
+    private func drop(_ connection: NWConnection) {
+        connections[ObjectIdentifier(connection)] = nil
+    }
+}
+</code></pre>
+<p>Local networking needs <strong>both</strong> Info.plist keys since iOS 14, or the first
+connection attempt fails with no useful diagnostic:</p>
+<pre><code class="language-xml">&lt;key&gt;NSLocalNetworkUsageDescription&lt;/key&gt;
+&lt;string&gt;Find and connect to nearby devices running this app.&lt;/string&gt;
+&lt;key&gt;NSBonjourServices&lt;/key&gt;
+&lt;array&gt;
+    &lt;string&gt;_myapp._tcp&lt;/string&gt;
+&lt;/array&gt;
+</code></pre>
+<hr />
+<h2 id="anti-patterns">Anti-Patterns</h2>
+<pre><code class="language-swift">// WRONG — one receive treated as one message.
+// Works on localhost, fails on a real network: TCP is a byte stream, so a
+// 100-byte send may arrive as four callbacks and three sends as one.
+connection.receive(minimumIncompleteLength: 1, maximumLength: 65536) { data, _, _, _ in
+    let message = try? JSONDecoder().decode(Message.self, from: data!)
+}
+
+// RIGHT — buffer, then extract complete frames.
+buffer.append(data); drainFrames()
+</code></pre>
+<pre><code class="language-swift">// WRONG — an unbounded length prefix.
+// A peer sending 0xFFFFFFFF makes the app allocate 4 GB and get killed.
+guard buffer.count &gt;= 4 + length else { return }
+
+// RIGHT — a ceiling, checked before trusting the length.
+guard length &lt;= maximumFrameSize else { connection.cancel(); return }
+</code></pre>
+<pre><code class="language-swift">// WRONG — .waiting treated as a failure.
+// The path is temporarily unsatisfied and the framework is already retrying.
+// Tearing down discards that recovery and usually starts a reconnect storm.
+case .waiting: reconnect()
+
+// RIGHT — log it and let the framework recover; act on .failed.
+case .waiting(let error): log(error)
+case .failed(let error): reconnect()
+</code></pre>
+<pre><code class="language-swift">// WRONG — a continuation resumed from a state handler with no guard.
+// .waiting -&gt; .ready -&gt; .failed is a normal sequence on a flaky network, and
+// resuming twice is a hard crash.
+case .ready: continuation.resume()
+case .failed(let e): continuation.resume(throwing: e)
+
+// RIGHT — resume exactly once.
+private func resumeReady(with result: Result&lt;Void, any Error&gt;) { guard !hasResumedReady … }
+</code></pre>
+<pre><code class="language-swift">// WRONG — receive called once.
+// `receive` delivers a single callback. Without re-arming, exactly one chunk
+// ever arrives and the connection appears to hang.
+connection.receive(…) { data, _, _, _ in self.handle(data) }
+
+// RIGHT — call receive again at the end of every callback.
+</code></pre>
+<pre><code class="language-swift">// WRONG — NWConnection state mutated from its own handler on a @MainActor type.
+// The handler runs on the connection's queue. This is a data race and a Swift 6
+// error, and DispatchQueue.main.async is not the fix.
+@MainActor final class Client { var isConnected = false
+    func start() { c.stateUpdateHandler = { s in self.isConnected = (s == .ready) } } }
+
+// RIGHT — the connection lives in an actor; the outside world gets an AsyncStream.
+</code></pre>
+<pre><code class="language-swift">// WRONG — an accepted connection not retained.
+// It deallocates at the end of the handler and is cancelled immediately. The
+// symptom is peers that connect and instantly vanish.
+listener.newConnectionHandler = { connection in connection.start(queue: q) }
+
+// RIGHT — hold it until it is cancelled or fails.
+connections[ObjectIdentifier(connection)] = connection
+</code></pre>
+<pre><code class="language-swift">// WRONG — path status as a precondition.
+// .satisfied means a route exists, not that your server is reachable. This
+// refuses to try on captive portals and VPN transitions where it would work.
+guard monitor.currentPath.status == .satisfied else { throw .offline }
+
+// RIGHT — attempt the request; handle the failure.
+</code></pre>
+<pre><code class="language-swift">// WRONG — ignoring isConstrained.
+// Low Data Mode is the user explicitly asking you to use less. Prefetching
+// through it ignores a direct instruction.
+await prefetchEverything()
+
+// RIGHT
+if case .satisfied(_, let isConstrained) = connectivity, !isConstrained { await prefetch() }
+</code></pre>
+<pre><code class="language-swift">// WRONG — TLS verification disabled to &quot;make it work in dev&quot;.
+// This ships. It always ships.
+sec_protocol_options_set_verify_block(opts, { _, _, complete in complete(true) }, q)
+
+// RIGHT — a real certificate in dev, or a pin scoped to a DEBUG build with a
+// release branch that ignores the flag entirely.
+</code></pre>
+<pre><code class="language-swift">// WRONG — a single pinned certificate.
+// Routine certificate renewal bricks every installed copy of the app.
+let pinned = [productionCertificateHash]
+
+// RIGHT — pin public keys (which survive renewal), at least two, with an expiry.
+let pinned = [currentSPKIHash, backupSPKIHash]
+</code></pre>
+<pre><code class="language-swift">// WRONG — Network.framework for HTTP.
+// Reimplements caching, redirects, cookies, retries, and ATS, worse.
+let connection = NWConnection(host: &quot;api.example.com&quot;, port: 443, using: .tls)
+
+// RIGHT
+let (data, response) = try await URLSession.shared.data(for: request)
+</code></pre>
+<hr />
+<h2 id="checklist">Checklist</h2>
+<ul>
+<li>[ ] <code>URLSession</code> ruled out for a stated reason before reaching for this</li>
+<li>[ ] <code>NWConnection</code> owned by an actor; nothing outside it touches the connection</li>
+<li>[ ] Messages framed; a receive is never assumed to be one message</li>
+<li>[ ] A maximum frame size, checked before allocating</li>
+<li>[ ] <code>receive</code> re-armed at the end of every callback</li>
+<li>[ ] <code>.waiting</code> and <code>.failed</code> handled differently</li>
+<li>[ ] Every continuation resumed exactly once, guarded</li>
+<li>[ ] Accepted connections retained until cancelled</li>
+<li>[ ] Path status used as a hint, never as a precondition</li>
+<li>[ ] <code>isConstrained</code> respected — Low Data Mode is an instruction</li>
+<li>[ ] TLS verification never disabled, in any build that can ship</li>
+<li>[ ] Pins on public keys, at least two, with an expiry fallback</li>
+<li>[ ] <code>NSLocalNetworkUsageDescription</code> and <code>NSBonjourServices</code> present for local discovery</li>
+<li>[ ] Connections cancelled on <code>scenePhase</code> background — a live socket drains battery</li>
+</ul></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

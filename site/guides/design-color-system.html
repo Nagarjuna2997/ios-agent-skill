@@ -1,0 +1,1141 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>iOS Color System -- Complete Guide for Stunning SwiftUI UIs — iOS Agent Skill</title><meta name="description" content="Repository guidance for iOS Color System -- Complete Guide for Stunning SwiftUI UIs. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/design-color-system.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="iOS Color System -- Complete Guide for Stunning SwiftUI UIs"><meta property="og:description" content="Repository guidance for iOS Color System -- Complete Guide for Stunning SwiftUI UIs. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/design-color-system.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "iOS Color System -- Complete Guide for Stunning SwiftUI UIs", "description": "Repository guidance for iOS Color System -- Complete Guide for Stunning SwiftUI UIs. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/design-color-system.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Design · Reference guide</p><h1>iOS Color System -- Complete Guide for Stunning SwiftUI UIs</h1><p class="lead">Repository guidance for iOS Color System -- Complete Guide for Stunning SwiftUI UIs. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/design/color-system.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#1-apples-semantic-colors">1. Apple's Semantic Colors</a><ul>
+<li><a href="#system-grouped-colors">System Grouped Colors</a></li>
+<li><a href="#flat-background-hierarchy">Flat Background Hierarchy</a></li>
+<li><a href="#fill-colors">Fill Colors</a></li>
+</ul>
+</li>
+<li><a href="#2-material-effects">2. Material Effects</a><ul>
+<li><a href="#combining-materials-with-borders">Combining Materials with Borders</a></li>
+</ul>
+</li>
+<li><a href="#3-dark-mode-support">3. Dark Mode Support</a><ul>
+<li><a href="#automatic-adaptation">Automatic Adaptation</a></li>
+<li><a href="#manual-color-scheme-override">Manual Color Scheme Override</a></li>
+</ul>
+</li>
+<li><a href="#4-color-extension-hex-initializer">4. Color Extension -- Hex Initializer</a></li>
+<li><a href="#5-five-stunning-pre-built-color-palettes">5. Five Stunning Pre-Built Color Palettes</a><ul>
+<li><a href="#palette-1-ocean-blue-fintech-productivity">Palette 1 -- Ocean Blue (Fintech / Productivity)</a></li>
+<li><a href="#palette-2-sunset-warm-social-lifestyle">Palette 2 -- Sunset Warm (Social / Lifestyle)</a></li>
+<li><a href="#palette-3-midnight-dark-premium-luxury">Palette 3 -- Midnight Dark (Premium / Luxury)</a></li>
+<li><a href="#palette-4-nature-green-health-wellness">Palette 4 -- Nature Green (Health / Wellness)</a></li>
+<li><a href="#palette-5-violet-dream-creative-entertainment">Palette 5 -- Violet Dream (Creative / Entertainment)</a></li>
+<li><a href="#using-palettes-with-environment-aware-adaptive-colors">Using Palettes with Environment-Aware Adaptive Colors</a></li>
+</ul>
+</li>
+<li><a href="#6-custom-colors-via-asset-catalog">6. Custom Colors via Asset Catalog</a></li>
+<li><a href="#7-gradient-recipes">7. Gradient Recipes</a><ul>
+<li><a href="#linear-gradient">Linear Gradient</a></li>
+<li><a href="#radial-gradient">Radial Gradient</a></li>
+<li><a href="#angular-conic-gradient">Angular (Conic) Gradient</a></li>
+<li><a href="#mesh-gradient-ios-18">Mesh Gradient (iOS 18+)</a></li>
+</ul>
+</li>
+<li><a href="#8-ten-stunning-gradient-combinations">8. Ten Stunning Gradient Combinations</a></li>
+<li><a href="#9-vibrancy-and-blur-effects">9. Vibrancy and Blur Effects</a></li>
+<li><a href="#10-color-accessibility">10. Color Accessibility</a><ul>
+<li><a href="#contrast-ratios">Contrast Ratios</a></li>
+<li><a href="#color-blind-friendly-design-tips">Color Blind Friendly Design Tips</a></li>
+</ul>
+</li>
+<li><a href="#quick-reference">Quick Reference</a></li>
+</ul>
+</div>
+</aside><h2 id="overview">Overview</h2>
+<p>Color is the single most powerful tool for creating emotional impact in iOS applications. This guide covers every aspect of the SwiftUI color system, from Apple's semantic tokens to custom brand palettes, gradients, materials, and accessibility. Every code example compiles and produces production-quality results.</p>
+<hr />
+<h2 id="1-apples-semantic-colors">1. Apple's Semantic Colors</h2>
+<p>Semantic colors adapt automatically to light mode, dark mode, and increased contrast settings. Always prefer these over hardcoded values.</p>
+<pre><code class="language-swift">import SwiftUI
+
+struct SemanticColorsShowcase: View {
+    var body: some View {
+        VStack(spacing: 16) {
+            // Label colors -- automatically adapt to appearance
+            Text(&quot;Primary Label&quot;)
+                .foregroundStyle(.primary)
+            Text(&quot;Secondary Label&quot;)
+                .foregroundStyle(.secondary)
+            Text(&quot;Tertiary Label&quot;)
+                .foregroundStyle(.tertiary)
+            Text(&quot;Quaternary Label&quot;)
+                .foregroundStyle(.quaternary)
+
+            Divider()
+
+            // Tint / accent color
+            Button(&quot;Accent Color Button&quot;) {}
+                .tint(.accentColor)
+
+            // Semantic intent colors
+            HStack(spacing: 12) {
+                Circle().fill(.red).frame(width: 32, height: 32)    // Destructive
+                Circle().fill(.orange).frame(width: 32, height: 32) // Warning
+                Circle().fill(.green).frame(width: 32, height: 32)  // Success
+                Circle().fill(.blue).frame(width: 32, height: 32)   // Informational
+                Circle().fill(.yellow).frame(width: 32, height: 32) // Caution
+            }
+        }
+        .padding(24)
+    }
+}
+</code></pre>
+<h3 id="system-grouped-colors">System Grouped Colors</h3>
+<p>These create the layered card-on-background look native to iOS Settings and many Apple apps.</p>
+<pre><code class="language-swift">struct SystemBackgroundsDemo: View {
+    var body: some View {
+        ZStack {
+            Color(.systemGroupedBackground)
+                .ignoresSafeArea()
+
+            VStack(spacing: 20) {
+                // Primary surface card
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(Color(.secondarySystemGroupedBackground))
+                    .frame(height: 120)
+                    .overlay(
+                        Text(&quot;Secondary Grouped Background&quot;)
+                            .foregroundStyle(.primary)
+                    )
+
+                // Nested surface
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(Color(.tertiarySystemGroupedBackground))
+                    .frame(height: 120)
+                    .overlay(
+                        Text(&quot;Tertiary Grouped Background&quot;)
+                            .foregroundStyle(.secondary)
+                    )
+            }
+            .padding(20)
+        }
+    }
+}
+</code></pre>
+<h3 id="flat-background-hierarchy">Flat Background Hierarchy</h3>
+<p>For non-grouped layouts (full-bleed content rather than inset cards).</p>
+<pre><code class="language-swift">struct FlatBackgroundsDemo: View {
+    var body: some View {
+        ZStack {
+            Color(.systemBackground)
+                .ignoresSafeArea()
+
+            VStack(spacing: 0) {
+                Rectangle()
+                    .fill(Color(.secondarySystemBackground))
+                    .frame(height: 80)
+                    .overlay(Text(&quot;Secondary&quot;).foregroundStyle(.primary))
+
+                Rectangle()
+                    .fill(Color(.tertiarySystemBackground))
+                    .frame(height: 80)
+                    .overlay(Text(&quot;Tertiary&quot;).foregroundStyle(.primary))
+            }
+        }
+    }
+}
+</code></pre>
+<h3 id="fill-colors">Fill Colors</h3>
+<p>Use fills for shapes and backgrounds within cells.</p>
+<pre><code class="language-swift">struct FillColorsDemo: View {
+    var body: some View {
+        VStack(spacing: 12) {
+            RoundedRectangle(cornerRadius: 10)
+                .fill(Color(.systemFill))
+                .frame(height: 50)
+                .overlay(Text(&quot;System Fill&quot;))
+
+            RoundedRectangle(cornerRadius: 10)
+                .fill(Color(.secondarySystemFill))
+                .frame(height: 50)
+                .overlay(Text(&quot;Secondary Fill&quot;))
+
+            RoundedRectangle(cornerRadius: 10)
+                .fill(Color(.tertiarySystemFill))
+                .frame(height: 50)
+                .overlay(Text(&quot;Tertiary Fill&quot;))
+
+            RoundedRectangle(cornerRadius: 10)
+                .fill(Color(.quaternarySystemFill))
+                .frame(height: 50)
+                .overlay(Text(&quot;Quaternary Fill&quot;))
+        }
+        .padding()
+    }
+}
+</code></pre>
+<hr />
+<h2 id="2-material-effects">2. Material Effects</h2>
+<p>Materials create frosted-glass blur over underlying content. They are essential for modern iOS design.</p>
+<pre><code class="language-swift">struct MaterialShowcase: View {
+    var body: some View {
+        ZStack {
+            // Rich background to show blur effect
+            LinearGradient(
+                colors: [.purple, .blue, .cyan, .mint],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .ignoresSafeArea()
+
+            ScrollView {
+                VStack(spacing: 16) {
+                    materialCard(&quot;Ultra Thin Material&quot;, material: .ultraThinMaterial)
+                    materialCard(&quot;Thin Material&quot;, material: .thinMaterial)
+                    materialCard(&quot;Regular Material&quot;, material: .regularMaterial)
+                    materialCard(&quot;Thick Material&quot;, material: .thickMaterial)
+                    materialCard(&quot;Ultra Thick Material&quot;, material: .ultraThickMaterial)
+                }
+                .padding(20)
+            }
+        }
+    }
+
+    func materialCard(_ title: String, material: Material) -&gt; some View {
+        RoundedRectangle(cornerRadius: 20)
+            .fill(material)
+            .frame(height: 100)
+            .overlay(
+                Text(title)
+                    .font(.headline)
+                    .foregroundStyle(.primary)
+            )
+            .shadow(color: .black.opacity(0.1), radius: 10, y: 5)
+    }
+}
+</code></pre>
+<h3 id="combining-materials-with-borders">Combining Materials with Borders</h3>
+<pre><code class="language-swift">struct GlassCard: View {
+    var body: some View {
+        ZStack {
+            Image(systemName: &quot;photo.artframe&quot;)
+                .resizable()
+                .scaledToFill()
+                .frame(width: 400, height: 600)
+                .clipped()
+
+            VStack(alignment: .leading, spacing: 8) {
+                Text(&quot;Glass Card&quot;)
+                    .font(.title2.weight(.bold))
+                Text(&quot;Beautiful frosted glass with a subtle border that catches light.&quot;)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+            .padding(24)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 24))
+            .overlay(
+                RoundedRectangle(cornerRadius: 24)
+                    .stroke(
+                        LinearGradient(
+                            colors: [.white.opacity(0.5), .white.opacity(0.1)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ),
+                        lineWidth: 1
+                    )
+            )
+            .padding(20)
+        }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="3-dark-mode-support">3. Dark Mode Support</h2>
+<h3 id="automatic-adaptation">Automatic Adaptation</h3>
+<p>SwiftUI semantic colors adapt automatically. For custom colors, use Asset Catalog entries with "Any" and "Dark" appearances.</p>
+<h3 id="manual-color-scheme-override">Manual Color Scheme Override</h3>
+<pre><code class="language-swift">struct DarkModeDemo: View {
+    @Environment(\.colorScheme) var colorScheme
+
+    var body: some View {
+        VStack(spacing: 20) {
+            Text(&quot;Current: \(colorScheme == .dark ? &quot;Dark&quot; : &quot;Light&quot;)&quot;)
+                .font(.headline)
+
+            // Adaptive custom color
+            RoundedRectangle(cornerRadius: 16)
+                .fill(colorScheme == .dark
+                    ? Color(hex: &quot;1A1A2E&quot;)
+                    : Color(hex: &quot;F8F9FA&quot;))
+                .frame(height: 100)
+                .overlay(
+                    Text(&quot;Adaptive Card&quot;)
+                        .foregroundStyle(colorScheme == .dark ? .white : .black)
+                )
+        }
+        .padding()
+    }
+}
+
+// Force a specific color scheme on any view subtree
+struct ForcedSchemeExample: View {
+    var body: some View {
+        HStack(spacing: 20) {
+            CardView(label: &quot;Always Light&quot;)
+                .environment(\.colorScheme, .light)
+
+            CardView(label: &quot;Always Dark&quot;)
+                .environment(\.colorScheme, .dark)
+        }
+        .padding()
+    }
+}
+
+struct CardView: View {
+    let label: String
+    var body: some View {
+        Text(label)
+            .padding()
+            .background(Color(.secondarySystemBackground))
+            .cornerRadius(12)
+    }
+}
+</code></pre>
+<hr />
+<h2 id="4-color-extension-hex-initializer">4. Color Extension -- Hex Initializer</h2>
+<p>This extension is used throughout this guide and is essential for any custom palette work.</p>
+<pre><code class="language-swift">import SwiftUI
+
+// The hex initialiser is NOT redefined here.
+//
+// It lives in `docs/design/design-tokens.md`, and this file used to declare a
+// second `init(hex: String)` with a different body. Copy both into one target
+// and the compiler stops you: `invalid redeclaration of 'init(hex:)'`. Worse,
+// the old body fell back to **black** on a malformed string, which looks like
+// a deliberate colour and ships unnoticed.
+//
+// Copy the canonical one from design-tokens.md. It accepts both
+// `Color(hex: 0x6C63FF)` and `Color(hex: &quot;6C63FF&quot;)`, and a malformed literal
+// traps in DEBUG and renders magenta in release.
+</code></pre>
+<hr />
+<h2 id="5-five-stunning-pre-built-color-palettes">5. Five Stunning Pre-Built Color Palettes</h2>
+<h3 id="palette-1-ocean-blue-fintech-productivity">Palette 1 -- Ocean Blue (Fintech / Productivity)</h3>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Light Hex</th>
+<th>Dark Hex</th>
+<th>Text on it (light / dark)</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Primary</td>
+<td><code>#0A6EBD</code></td>
+<td><code>#3DA5F4</code></td>
+<td>white 5.28:1 / black 7.89:1</td>
+<td>Trust-inspiring blue</td>
+</tr>
+<tr>
+<td>Secondary</td>
+<td><code>#1E88E5</code></td>
+<td><code>#64B5F6</code></td>
+<td>black 5.71:1 / black 9.48:1</td>
+<td>Lighter accent blue</td>
+</tr>
+<tr>
+<td>Accent</td>
+<td><code>#00BCD4</code></td>
+<td><code>#4DD0E1</code></td>
+<td>black 9.14:1 / black 11.43:1</td>
+<td>Teal action highlight</td>
+</tr>
+<tr>
+<td>Background</td>
+<td><code>#F4F7FA</code></td>
+<td><code>#0D1117</code></td>
+<td>—</td>
+<td>Clean paper / deep night</td>
+</tr>
+<tr>
+<td>Surface</td>
+<td><code>#FFFFFF</code></td>
+<td><code>#161B22</code></td>
+<td>—</td>
+<td>Card surface</td>
+</tr>
+<tr>
+<td>Text</td>
+<td><code>#1A2233</code></td>
+<td><code>#E6EDF3</code></td>
+<td>—</td>
+<td>High-contrast readable text</td>
+</tr>
+<tr>
+<td>Error</td>
+<td><code>#D32F2F</code></td>
+<td><code>#EF5350</code></td>
+<td>white 4.98:1 / black 6.02:1</td>
+<td>Clear danger signal</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-swift">struct OceanBluePalette {
+    static let primary     = Color(hex: &quot;0A6EBD&quot;)
+    static let secondary   = Color(hex: &quot;1E88E5&quot;)
+    static let accent      = Color(hex: &quot;00BCD4&quot;)
+    static let background  = Color(hex: &quot;F4F7FA&quot;)
+    static let surface     = Color(hex: &quot;FFFFFF&quot;)
+    static let text        = Color(hex: &quot;1A2233&quot;)
+    static let error       = Color(hex: &quot;D32F2F&quot;)
+
+    static let primaryDark     = Color(hex: &quot;3DA5F4&quot;)
+    static let secondaryDark   = Color(hex: &quot;64B5F6&quot;)
+    static let accentDark      = Color(hex: &quot;4DD0E1&quot;)
+    static let backgroundDark  = Color(hex: &quot;0D1117&quot;)
+    static let surfaceDark     = Color(hex: &quot;161B22&quot;)
+    static let textDark        = Color(hex: &quot;E6EDF3&quot;)
+    static let errorDark       = Color(hex: &quot;EF5350&quot;)
+}
+</code></pre>
+<p><strong>Body-text pairs</strong> — Text on Background <code>14.79:1</code> light, <code>16.02:1</code> dark · Text on Surface <code>15.90:1</code> light, <code>14.64:1</code> dark. All four clear the 4.5:1 body-text bar.</p>
+<h3 id="palette-2-sunset-warm-social-lifestyle">Palette 2 -- Sunset Warm (Social / Lifestyle)</h3>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Light Hex</th>
+<th>Dark Hex</th>
+<th>Text on it (light / dark)</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Primary</td>
+<td><code>#FF6B35</code></td>
+<td><code>#FF8A5C</code></td>
+<td>black 7.41:1 / black 9.04:1</td>
+<td>Warm energetic orange</td>
+</tr>
+<tr>
+<td>Secondary</td>
+<td><code>#F7C948</code></td>
+<td><code>#FFD966</code></td>
+<td>black 13.4:1 / black 15.37:1</td>
+<td>Sunny golden yellow</td>
+</tr>
+<tr>
+<td>Accent</td>
+<td><code>#E84393</code></td>
+<td><code>#FD79A8</code></td>
+<td>black 5.66:1 / black 8.48:1</td>
+<td>Playful magenta</td>
+</tr>
+<tr>
+<td>Background</td>
+<td><code>#FFF8F0</code></td>
+<td><code>#1A1215</code></td>
+<td>—</td>
+<td>Warm cream / warm dark</td>
+</tr>
+<tr>
+<td>Surface</td>
+<td><code>#FFFFFF</code></td>
+<td><code>#2D1F23</code></td>
+<td>—</td>
+<td>Card surface</td>
+</tr>
+<tr>
+<td>Text</td>
+<td><code>#2D1810</code></td>
+<td><code>#F5E6D8</code></td>
+<td>—</td>
+<td>Dark warm brown / cream</td>
+</tr>
+<tr>
+<td>Error</td>
+<td><code>#C0392B</code></td>
+<td><code>#E74C3C</code></td>
+<td>white 5.44:1 / black 5.5:1</td>
+<td>Red alert</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-swift">struct SunsetWarmPalette {
+    static let primary     = Color(hex: &quot;FF6B35&quot;)
+    static let secondary   = Color(hex: &quot;F7C948&quot;)
+    static let accent      = Color(hex: &quot;E84393&quot;)
+    static let background  = Color(hex: &quot;FFF8F0&quot;)
+    static let surface     = Color(hex: &quot;FFFFFF&quot;)
+    static let text        = Color(hex: &quot;2D1810&quot;)
+    static let error       = Color(hex: &quot;C0392B&quot;)
+
+    static let primaryDark     = Color(hex: &quot;FF8A5C&quot;)
+    static let secondaryDark   = Color(hex: &quot;FFD966&quot;)
+    static let accentDark      = Color(hex: &quot;FD79A8&quot;)
+    static let backgroundDark  = Color(hex: &quot;1A1215&quot;)
+    static let surfaceDark     = Color(hex: &quot;2D1F23&quot;)
+    static let textDark        = Color(hex: &quot;F5E6D8&quot;)
+    static let errorDark       = Color(hex: &quot;E74C3C&quot;)
+}
+</code></pre>
+<p><strong>Body-text pairs</strong> — Text on Background <code>15.95:1</code> light, <code>15.06:1</code> dark · Text on Surface <code>16.80:1</code> light, <code>12.91:1</code> dark. All four clear the 4.5:1 body-text bar.</p>
+<h3 id="palette-3-midnight-dark-premium-luxury">Palette 3 -- Midnight Dark (Premium / Luxury)</h3>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Light Hex</th>
+<th>Dark Hex</th>
+<th>Text on it (light / dark)</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Primary</td>
+<td><code>#6C63FF</code></td>
+<td><code>#8B83FF</code></td>
+<td>black 4.87:1 / black 6.79:1</td>
+<td>Electric indigo</td>
+</tr>
+<tr>
+<td>Secondary</td>
+<td><code>#A78BFA</code></td>
+<td><code>#C4B5FD</code></td>
+<td>black 7.72:1 / black 11.38:1</td>
+<td>Soft lavender</td>
+</tr>
+<tr>
+<td>Accent</td>
+<td><code>#F472B6</code></td>
+<td><code>#F9A8D4</code></td>
+<td>black 7.93:1 / black 11.58:1</td>
+<td>Rose gold accent</td>
+</tr>
+<tr>
+<td>Background</td>
+<td><code>#F5F3FF</code></td>
+<td><code>#0B0B1A</code></td>
+<td>—</td>
+<td>Faint violet / pure dark</td>
+</tr>
+<tr>
+<td>Surface</td>
+<td><code>#FFFFFF</code></td>
+<td><code>#13132B</code></td>
+<td>—</td>
+<td>Card surface</td>
+</tr>
+<tr>
+<td>Text</td>
+<td><code>#1E1B4B</code></td>
+<td><code>#E2E0F0</code></td>
+<td>—</td>
+<td>Deep indigo / soft light</td>
+</tr>
+<tr>
+<td>Error</td>
+<td><code>#DC2626</code></td>
+<td><code>#F87171</code></td>
+<td>white 4.83:1 / black 7.59:1</td>
+<td>Bright red</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-swift">struct MidnightDarkPalette {
+    static let primary     = Color(hex: &quot;6C63FF&quot;)
+    static let secondary   = Color(hex: &quot;A78BFA&quot;)
+    static let accent      = Color(hex: &quot;F472B6&quot;)
+    static let background  = Color(hex: &quot;F5F3FF&quot;)
+    static let surface     = Color(hex: &quot;FFFFFF&quot;)
+    static let text        = Color(hex: &quot;1E1B4B&quot;)
+    static let error       = Color(hex: &quot;DC2626&quot;)
+
+    static let primaryDark     = Color(hex: &quot;8B83FF&quot;)
+    static let secondaryDark   = Color(hex: &quot;C4B5FD&quot;)
+    static let accentDark      = Color(hex: &quot;F9A8D4&quot;)
+    static let backgroundDark  = Color(hex: &quot;0B0B1A&quot;)
+    static let surfaceDark     = Color(hex: &quot;13132B&quot;)
+    static let textDark        = Color(hex: &quot;E2E0F0&quot;)
+    static let errorDark       = Color(hex: &quot;F87171&quot;)
+}
+</code></pre>
+<p><strong>Body-text pairs</strong> — Text on Background <code>14.58:1</code> light, <code>15.00:1</code> dark · Text on Surface <code>15.99:1</code> light, <code>13.98:1</code> dark. All four clear the 4.5:1 body-text bar.</p>
+<h3 id="palette-4-nature-green-health-wellness">Palette 4 -- Nature Green (Health / Wellness)</h3>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Light Hex</th>
+<th>Dark Hex</th>
+<th>Text on it (light / dark)</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Primary</td>
+<td><code>#2D9F6F</code></td>
+<td><code>#4ADE80</code></td>
+<td>black 6.3:1 / black 12.05:1</td>
+<td>Fresh healing green</td>
+</tr>
+<tr>
+<td>Secondary</td>
+<td><code>#22D3EE</code></td>
+<td><code>#67E8F9</code></td>
+<td>black 11.62:1 / black 14.49:1</td>
+<td>Cool sky cyan</td>
+</tr>
+<tr>
+<td>Accent</td>
+<td><code>#F59E0B</code></td>
+<td><code>#FBBF24</code></td>
+<td>black 9.78:1 / black 12.58:1</td>
+<td>Warm honey gold</td>
+</tr>
+<tr>
+<td>Background</td>
+<td><code>#F0FDF4</code></td>
+<td><code>#0A1A12</code></td>
+<td>—</td>
+<td>Faint mint / forest dark</td>
+</tr>
+<tr>
+<td>Surface</td>
+<td><code>#FFFFFF</code></td>
+<td><code>#112118</code></td>
+<td>—</td>
+<td>Card surface</td>
+</tr>
+<tr>
+<td>Text</td>
+<td><code>#14352A</code></td>
+<td><code>#D1FAE5</code></td>
+<td>—</td>
+<td>Deep forest / soft mint</td>
+</tr>
+<tr>
+<td>Error</td>
+<td><code>#DC2626</code></td>
+<td><code>#FB7185</code></td>
+<td>white 4.83:1 / black 7.8:1</td>
+<td>Alert red</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-swift">struct NatureGreenPalette {
+    static let primary     = Color(hex: &quot;2D9F6F&quot;)
+    static let secondary   = Color(hex: &quot;22D3EE&quot;)
+    static let accent      = Color(hex: &quot;F59E0B&quot;)
+    static let background  = Color(hex: &quot;F0FDF4&quot;)
+    static let surface     = Color(hex: &quot;FFFFFF&quot;)
+    static let text        = Color(hex: &quot;14352A&quot;)
+    static let error       = Color(hex: &quot;DC2626&quot;)
+
+    static let primaryDark     = Color(hex: &quot;4ADE80&quot;)
+    static let secondaryDark   = Color(hex: &quot;67E8F9&quot;)
+    static let accentDark      = Color(hex: &quot;FBBF24&quot;)
+    static let backgroundDark  = Color(hex: &quot;0A1A12&quot;)
+    static let surfaceDark     = Color(hex: &quot;112118&quot;)
+    static let textDark        = Color(hex: &quot;D1FAE5&quot;)
+    static let errorDark       = Color(hex: &quot;FB7185&quot;)
+}
+</code></pre>
+<p><strong>Body-text pairs</strong> — Text on Background <code>12.76:1</code> light, <code>15.83:1</code> dark · Text on Surface <code>13.36:1</code> light, <code>14.76:1</code> dark. All four clear the 4.5:1 body-text bar.</p>
+<h3 id="palette-5-violet-dream-creative-entertainment">Palette 5 -- Violet Dream (Creative / Entertainment)</h3>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Light Hex</th>
+<th>Dark Hex</th>
+<th>Text on it (light / dark)</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Primary</td>
+<td><code>#8B5CF6</code></td>
+<td><code>#A78BFA</code></td>
+<td>black 4.96:1 / black 7.72:1</td>
+<td>Vibrant violet</td>
+</tr>
+<tr>
+<td>Secondary</td>
+<td><code>#EC4899</code></td>
+<td><code>#F472B6</code></td>
+<td>black 5.95:1 / black 7.93:1</td>
+<td>Hot pink</td>
+</tr>
+<tr>
+<td>Accent</td>
+<td><code>#06B6D4</code></td>
+<td><code>#22D3EE</code></td>
+<td>black 8.65:1 / black 11.62:1</td>
+<td>Electric cyan</td>
+</tr>
+<tr>
+<td>Background</td>
+<td><code>#FAF5FF</code></td>
+<td><code>#0F0720</code></td>
+<td>—</td>
+<td>Lavender mist / deep purple</td>
+</tr>
+<tr>
+<td>Surface</td>
+<td><code>#FFFFFF</code></td>
+<td><code>#1A0F2E</code></td>
+<td>—</td>
+<td>Card surface</td>
+</tr>
+<tr>
+<td>Text</td>
+<td><code>#2E1065</code></td>
+<td><code>#EDE9FE</code></td>
+<td>—</td>
+<td>Deep purple / pale lavender</td>
+</tr>
+<tr>
+<td>Error</td>
+<td><code>#E11D48</code></td>
+<td><code>#FB7185</code></td>
+<td>white 4.7:1 / black 7.8:1</td>
+<td>Rose red</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-swift">struct VioletDreamPalette {
+    static let primary     = Color(hex: &quot;8B5CF6&quot;)
+    static let secondary   = Color(hex: &quot;EC4899&quot;)
+    static let accent      = Color(hex: &quot;06B6D4&quot;)
+    static let background  = Color(hex: &quot;FAF5FF&quot;)
+    static let surface     = Color(hex: &quot;FFFFFF&quot;)
+    static let text        = Color(hex: &quot;2E1065&quot;)
+    static let error       = Color(hex: &quot;E11D48&quot;)
+
+    static let primaryDark     = Color(hex: &quot;A78BFA&quot;)
+    static let secondaryDark   = Color(hex: &quot;F472B6&quot;)
+    static let accentDark      = Color(hex: &quot;22D3EE&quot;)
+    static let backgroundDark  = Color(hex: &quot;0F0720&quot;)
+    static let surfaceDark     = Color(hex: &quot;1A0F2E&quot;)
+    static let textDark        = Color(hex: &quot;EDE9FE&quot;)
+    static let errorDark       = Color(hex: &quot;FB7185&quot;)
+}
+</code></pre>
+<h3 id="using-palettes-with-environment-aware-adaptive-colors">Using Palettes with Environment-Aware Adaptive Colors</h3>
+<pre><code class="language-swift">struct AdaptiveColor {
+    let light: Color
+    let dark: Color
+
+    func resolve(for scheme: ColorScheme) -&gt; Color {
+        scheme == .dark ? dark : light
+    }
+}
+
+struct AdaptiveCardExample: View {
+    @Environment(\.colorScheme) var scheme
+
+    var primary: Color {
+        AdaptiveColor(
+            light: OceanBluePalette.primary,
+            dark: OceanBluePalette.primaryDark
+        ).resolve(for: scheme)
+    }
+
+    var body: some View {
+        Text(&quot;Adaptive Palette Card&quot;)
+            .font(.headline)
+            .foregroundStyle(.white)
+            .padding(24)
+            .background(primary, in: RoundedRectangle(cornerRadius: 16))
+    }
+}
+</code></pre>
+<hr />
+<h2 id="6-custom-colors-via-asset-catalog">6. Custom Colors via Asset Catalog</h2>
+<p>Step-by-step for Xcode:</p>
+<ol>
+<li>Open <code>Assets.xcassets</code>.</li>
+<li>Click the <code>+</code> button, choose "Color Set".</li>
+<li>Name it (e.g., <code>BrandPrimary</code>).</li>
+<li>In the Attributes Inspector, set "Appearances" to "Any, Dark".</li>
+<li>Set hex values for each appearance.</li>
+<li>Use in SwiftUI:</li>
+</ol>
+<pre><code class="language-swift">// After defining &quot;BrandPrimary&quot; in the Asset Catalog:
+Text(&quot;Brand Styled&quot;)
+    .foregroundStyle(Color(&quot;BrandPrimary&quot;))
+
+// Type-safe alternative using an extension:
+extension Color {
+    static let brandPrimary = Color(&quot;BrandPrimary&quot;)
+    static let brandSecondary = Color(&quot;BrandSecondary&quot;)
+    static let brandAccent = Color(&quot;BrandAccent&quot;)
+}
+
+Text(&quot;Type Safe&quot;)
+    .foregroundStyle(.brandPrimary)
+</code></pre>
+<hr />
+<h2 id="7-gradient-recipes">7. Gradient Recipes</h2>
+<h3 id="linear-gradient">Linear Gradient</h3>
+<pre><code class="language-swift">struct LinearGradientExamples: View {
+    var body: some View {
+        VStack(spacing: 16) {
+            // Horizontal gradient
+            RoundedRectangle(cornerRadius: 20)
+                .fill(
+                    LinearGradient(
+                        colors: [Color(hex: &quot;6C63FF&quot;), Color(hex: &quot;E84393&quot;)],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                )
+                .frame(height: 100)
+
+            // Diagonal gradient with multiple stops
+            RoundedRectangle(cornerRadius: 20)
+                .fill(
+                    LinearGradient(
+                        stops: [
+                            .init(color: Color(hex: &quot;667EEA&quot;), location: 0),
+                            .init(color: Color(hex: &quot;764BA2&quot;), location: 0.5),
+                            .init(color: Color(hex: &quot;F093FB&quot;), location: 1),
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .frame(height: 100)
+        }
+        .padding()
+    }
+}
+</code></pre>
+<h3 id="radial-gradient">Radial Gradient</h3>
+<pre><code class="language-swift">struct RadialGradientExample: View {
+    var body: some View {
+        Circle()
+            .fill(
+                RadialGradient(
+                    colors: [
+                        Color(hex: &quot;FF6B35&quot;),
+                        Color(hex: &quot;F7C948&quot;),
+                        Color(hex: &quot;FF6B35&quot;).opacity(0.3),
+                    ],
+                    center: .center,
+                    startRadius: 20,
+                    endRadius: 150
+                )
+            )
+            .frame(width: 300, height: 300)
+            .shadow(color: Color(hex: &quot;FF6B35&quot;).opacity(0.4), radius: 30, y: 10)
+    }
+}
+</code></pre>
+<h3 id="angular-conic-gradient">Angular (Conic) Gradient</h3>
+<pre><code class="language-swift">struct AngularGradientExample: View {
+    var body: some View {
+        Circle()
+            .fill(
+                AngularGradient(
+                    colors: [
+                        Color(hex: &quot;8B5CF6&quot;),
+                        Color(hex: &quot;EC4899&quot;),
+                        Color(hex: &quot;06B6D4&quot;),
+                        Color(hex: &quot;8B5CF6&quot;),
+                    ],
+                    center: .center
+                )
+            )
+            .frame(width: 200, height: 200)
+    }
+}
+</code></pre>
+<h3 id="mesh-gradient-ios-18">Mesh Gradient (iOS 18+)</h3>
+<pre><code class="language-swift">@available(iOS 18.0, *)
+struct MeshGradientExample: View {
+    var body: some View {
+        MeshGradient(
+            width: 3,
+            height: 3,
+            points: [
+                [0.0, 0.0], [0.5, 0.0], [1.0, 0.0],
+                [0.0, 0.5], [0.5, 0.5], [1.0, 0.5],
+                [0.0, 1.0], [0.5, 1.0], [1.0, 1.0],
+            ],
+            colors: [
+                Color(hex: &quot;6C63FF&quot;), Color(hex: &quot;8B5CF6&quot;), Color(hex: &quot;EC4899&quot;),
+                Color(hex: &quot;3DA5F4&quot;), Color(hex: &quot;A78BFA&quot;), Color(hex: &quot;F472B6&quot;),
+                Color(hex: &quot;06B6D4&quot;), Color(hex: &quot;22D3EE&quot;), Color(hex: &quot;F9A8D4&quot;),
+            ]
+        )
+        .frame(height: 400)
+        .clipShape(RoundedRectangle(cornerRadius: 24))
+        .ignoresSafeArea()
+    }
+}
+</code></pre>
+<hr />
+<h2 id="8-ten-stunning-gradient-combinations">8. Ten Stunning Gradient Combinations</h2>
+<p>Each gradient is named and ready to drop into any project.</p>
+<pre><code class="language-swift">enum StunningGradients {
+    /// 1. Oceanic Depths -- deep sea to sky
+    static let oceanicDepths = LinearGradient(
+        colors: [Color(hex: &quot;0A2463&quot;), Color(hex: &quot;1E88E5&quot;), Color(hex: &quot;00BCD4&quot;)],
+        startPoint: .topLeading, endPoint: .bottomTrailing
+    )
+
+    /// 2. Sunset Boulevard -- golden hour warmth
+    static let sunsetBoulevard = LinearGradient(
+        colors: [Color(hex: &quot;FF6B35&quot;), Color(hex: &quot;F7C948&quot;), Color(hex: &quot;FF8A5C&quot;)],
+        startPoint: .leading, endPoint: .trailing
+    )
+
+    /// 3. Northern Lights -- aurora borealis
+    static let northernLights = LinearGradient(
+        colors: [Color(hex: &quot;0F2027&quot;), Color(hex: &quot;203A43&quot;), Color(hex: &quot;2C5364&quot;), Color(hex: &quot;4ADE80&quot;)],
+        startPoint: .top, endPoint: .bottom
+    )
+
+    /// 4. Rose Gold -- luxury feminine
+    static let roseGold = LinearGradient(
+        colors: [Color(hex: &quot;F472B6&quot;), Color(hex: &quot;FBBF24&quot;), Color(hex: &quot;F9A8D4&quot;)],
+        startPoint: .topLeading, endPoint: .bottomTrailing
+    )
+
+    /// 5. Electric Violet -- creative energy
+    static let electricViolet = LinearGradient(
+        colors: [Color(hex: &quot;8B5CF6&quot;), Color(hex: &quot;6C63FF&quot;), Color(hex: &quot;EC4899&quot;)],
+        startPoint: .topLeading, endPoint: .bottomTrailing
+    )
+
+    /// 6. Midnight City -- dark premium
+    static let midnightCity = LinearGradient(
+        colors: [Color(hex: &quot;0B0B1A&quot;), Color(hex: &quot;1A1A2E&quot;), Color(hex: &quot;16213E&quot;)],
+        startPoint: .top, endPoint: .bottom
+    )
+
+    /// 7. Fresh Mint -- health and clarity
+    static let freshMint = LinearGradient(
+        colors: [Color(hex: &quot;2D9F6F&quot;), Color(hex: &quot;22D3EE&quot;), Color(hex: &quot;67E8F9&quot;)],
+        startPoint: .leading, endPoint: .trailing
+    )
+
+    /// 8. Cyber Punk -- bold neon
+    static let cyberPunk = LinearGradient(
+        colors: [Color(hex: &quot;F72585&quot;), Color(hex: &quot;7209B7&quot;), Color(hex: &quot;3A0CA3&quot;), Color(hex: &quot;4CC9F0&quot;)],
+        startPoint: .topLeading, endPoint: .bottomTrailing
+    )
+
+    /// 9. Warm Ember -- cozy and inviting
+    static let warmEmber = LinearGradient(
+        colors: [Color(hex: &quot;D32F2F&quot;), Color(hex: &quot;FF6B35&quot;), Color(hex: &quot;F7C948&quot;)],
+        startPoint: .bottomLeading, endPoint: .topTrailing
+    )
+
+    /// 10. Iridescent Pearl -- subtle luxury shimmer
+    static let iridescentPearl = LinearGradient(
+        colors: [
+            Color(hex: &quot;E8D5F5&quot;), Color(hex: &quot;C4E0F9&quot;),
+            Color(hex: &quot;D1FAE5&quot;), Color(hex: &quot;FEF3C7&quot;), Color(hex: &quot;E8D5F5&quot;),
+        ],
+        startPoint: .topLeading, endPoint: .bottomTrailing
+    )
+}
+
+// Usage in a view
+struct GradientShowcase: View {
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 16) {
+                gradientCard(&quot;Oceanic Depths&quot;, gradient: StunningGradients.oceanicDepths)
+                gradientCard(&quot;Sunset Boulevard&quot;, gradient: StunningGradients.sunsetBoulevard)
+                gradientCard(&quot;Northern Lights&quot;, gradient: StunningGradients.northernLights)
+                gradientCard(&quot;Rose Gold&quot;, gradient: StunningGradients.roseGold)
+                gradientCard(&quot;Electric Violet&quot;, gradient: StunningGradients.electricViolet)
+                gradientCard(&quot;Midnight City&quot;, gradient: StunningGradients.midnightCity)
+                gradientCard(&quot;Fresh Mint&quot;, gradient: StunningGradients.freshMint)
+                gradientCard(&quot;Cyber Punk&quot;, gradient: StunningGradients.cyberPunk)
+                gradientCard(&quot;Warm Ember&quot;, gradient: StunningGradients.warmEmber)
+                gradientCard(&quot;Iridescent Pearl&quot;, gradient: StunningGradients.iridescentPearl)
+            }
+            .padding()
+        }
+    }
+
+    func gradientCard(_ name: String, gradient: LinearGradient) -&gt; some View {
+        RoundedRectangle(cornerRadius: 20)
+            .fill(gradient)
+            .frame(height: 100)
+            .overlay(
+                Text(name)
+                    .font(.title3.weight(.bold))
+                    .foregroundStyle(.white)
+                    .shadow(color: .black.opacity(0.3), radius: 4, y: 2)
+            )
+    }
+}
+</code></pre>
+<hr />
+<h2 id="9-vibrancy-and-blur-effects">9. Vibrancy and Blur Effects</h2>
+<pre><code class="language-swift">struct VibrancyEffectDemo: View {
+    var body: some View {
+        ZStack {
+            // Background image or gradient
+            LinearGradient(
+                colors: [Color(hex: &quot;6C63FF&quot;), Color(hex: &quot;EC4899&quot;)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .ignoresSafeArea()
+
+            VStack(spacing: 20) {
+                // Vibrant label on material
+                Text(&quot;Vibrant Title&quot;)
+                    .font(.largeTitle.weight(.bold))
+                    .foregroundStyle(.primary)
+                    .padding(20)
+                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
+
+                // Hierarchical vibrancy
+                VStack(alignment: .leading, spacing: 8) {
+                    Label(&quot;Primary&quot;, systemImage: &quot;star.fill&quot;)
+                        .foregroundStyle(.primary)
+                    Label(&quot;Secondary&quot;, systemImage: &quot;star.leadinghalf.filled&quot;)
+                        .foregroundStyle(.secondary)
+                    Label(&quot;Tertiary&quot;, systemImage: &quot;star&quot;)
+                        .foregroundStyle(.tertiary)
+                }
+                .font(.headline)
+                .padding(20)
+                .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 16))
+            }
+        }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="10-color-accessibility">10. Color Accessibility</h2>
+<h3 id="contrast-ratios">Contrast Ratios</h3>
+<p>WCAG 2.1 requires at least 4.5:1 contrast for normal text and 3:1 for large text. Use these helper utilities.</p>
+<pre><code class="language-swift">extension Color {
+    /// Calculate relative luminance of a color.
+    /// Returns a value between 0 (black) and 1 (white).
+    func relativeLuminance() -&gt; Double {
+        // Approximate; for exact values resolve the UIColor components.
+        // This is a conceptual guide -- use UIColor for runtime calculation:
+        var r: CGFloat = 0; var g: CGFloat = 0; var b: CGFloat = 0; var a: CGFloat = 0
+        UIColor(self).getRed(&amp;r, green: &amp;g, blue: &amp;b, alpha: &amp;a)
+
+        func linearize(_ c: CGFloat) -&gt; Double {
+            let v = Double(c)
+            return v &lt;= 0.03928 ? v / 12.92 : pow((v + 0.055) / 1.055, 2.4)
+        }
+
+        return 0.2126 * linearize(r) + 0.7152 * linearize(g) + 0.0722 * linearize(b)
+    }
+
+    /// Calculate WCAG contrast ratio between two colors.
+    func contrastRatio(with other: Color) -&gt; Double {
+        let l1 = self.relativeLuminance()
+        let l2 = other.relativeLuminance()
+        let lighter = max(l1, l2)
+        let darker = min(l1, l2)
+        return (lighter + 0.05) / (darker + 0.05)
+    }
+}
+
+struct ContrastChecker: View {
+    let foreground = Color(hex: &quot;1A2233&quot;)
+    let background = Color(hex: &quot;F4F7FA&quot;)
+
+    var body: some View {
+        let ratio = foreground.contrastRatio(with: background)
+        VStack(spacing: 12) {
+            Text(&quot;Contrast Ratio: \(ratio, specifier: &quot;%.1f&quot;):1&quot;)
+                .font(.headline)
+            Text(ratio &gt;= 4.5 ? &quot;WCAG AA Pass&quot; : &quot;WCAG AA Fail&quot;)
+                .font(.subheadline)
+                .foregroundStyle(ratio &gt;= 4.5 ? .green : .red)
+
+            Text(&quot;Sample Text on Background&quot;)
+                .foregroundStyle(foreground)
+                .padding()
+                .background(background, in: RoundedRectangle(cornerRadius: 12))
+        }
+        .padding()
+    }
+}
+</code></pre>
+<h3 id="color-blind-friendly-design-tips">Color Blind Friendly Design Tips</h3>
+<ol>
+<li>Never rely on color alone to convey meaning -- combine with icons, labels, or patterns.</li>
+<li>Use high-contrast pairings that remain distinguishable under protanopia, deuteranopia, and tritanopia.</li>
+<li>Test with Xcode Accessibility Inspector or Simulator color filters.</li>
+<li>Prefer blue/orange pairings (distinguishable under all common types) over red/green.</li>
+</ol>
+<pre><code class="language-swift">struct ColorBlindFriendlyStatus: View {
+    var body: some View {
+        HStack(spacing: 16) {
+            Label(&quot;Success&quot;, systemImage: &quot;checkmark.circle.fill&quot;)
+                .foregroundStyle(Color(hex: &quot;2D9F6F&quot;))
+            Label(&quot;Warning&quot;, systemImage: &quot;exclamationmark.triangle.fill&quot;)
+                .foregroundStyle(Color(hex: &quot;F59E0B&quot;))
+            Label(&quot;Error&quot;, systemImage: &quot;xmark.circle.fill&quot;)
+                .foregroundStyle(Color(hex: &quot;DC2626&quot;))
+        }
+        .font(.headline)
+    }
+}
+</code></pre>
+<hr />
+<h2 id="quick-reference">Quick Reference</h2>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Key Types</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Semantic Labels</td>
+<td><code>.primary</code>, <code>.secondary</code>, <code>.tertiary</code>, <code>.quaternary</code></td>
+</tr>
+<tr>
+<td>System Backgrounds</td>
+<td><code>Color(.systemBackground)</code>, <code>.secondarySystemBackground</code>, <code>.tertiarySystemBackground</code></td>
+</tr>
+<tr>
+<td>Grouped Backgrounds</td>
+<td><code>Color(.systemGroupedBackground)</code>, <code>.secondarySystemGroupedBackground</code>, <code>.tertiarySystemGroupedBackground</code></td>
+</tr>
+<tr>
+<td>Fills</td>
+<td><code>Color(.systemFill)</code> through <code>Color(.quaternarySystemFill)</code></td>
+</tr>
+<tr>
+<td>Materials</td>
+<td><code>.ultraThinMaterial</code> through <code>.ultraThickMaterial</code></td>
+</tr>
+<tr>
+<td>Gradients</td>
+<td><code>LinearGradient</code>, <code>RadialGradient</code>, <code>AngularGradient</code>, <code>MeshGradient</code></td>
+</tr>
+<tr>
+<td>Scheme Override</td>
+<td><code>.environment(\.colorScheme, .dark)</code></td>
+</tr>
+<tr>
+<td>Asset Catalog</td>
+<td><code>Color("AssetName")</code></td>
+</tr>
+<tr>
+<td>Hex Init</td>
+<td><code>Color(hex: "FF5733")</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Body-text pairs</strong> — Text on Background <code>14.20:1</code> light, <code>16.51:1</code> dark · Text on Surface <code>15.24:1</code> light, <code>15.36:1</code> dark. All four clear the 4.5:1 body-text bar.</p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

@@ -1,0 +1,397 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>EventKit — iOS Agent Skill</title><meta name="description" content="Repository guidance for EventKit. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-services-eventkit.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="EventKit"><meta property="og:description" content="Repository guidance for EventKit. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-services-eventkit.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "EventKit", "description": "Repository guidance for EventKit. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/frameworks-services-eventkit.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">System Integration · Reference guide</p><h1>EventKit</h1><p class="lead">Repository guidance for EventKit. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/frameworks/services/eventkit.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#ekeventstore-setup-and-authorization">EKEventStore Setup and Authorization</a></li>
+<li><a href="#reading-calendars-and-events">Reading Calendars and Events</a></li>
+<li><a href="#creating-editing-and-deleting-events">Creating, Editing, and Deleting Events</a></li>
+<li><a href="#recurrence-rules">Recurrence Rules</a></li>
+<li><a href="#reminders-ekreminder">Reminders (EKReminder)</a></li>
+<li><a href="#ekeventeditviewcontroller-uikit-swiftui-bridge">EKEventEditViewController (UIKit / SwiftUI Bridge)</a></li>
+<li><a href="#complete-calendar-integration-example">Complete Calendar Integration Example</a></li>
+</ul>
+</div>
+</aside><h2 id="ekeventstore-setup-and-authorization">EKEventStore Setup and Authorization</h2>
+<p>Add to <code>Info.plist</code>:
+- <code>NSCalendarsUsageDescription</code> — required for calendar access
+- <code>NSCalendarsFullAccessUsageDescription</code> — iOS 17+ full access
+- <code>NSCalendarsWriteOnlyAccessUsageDescription</code> — iOS 17+ write-only access
+- <code>NSRemindersUsageDescription</code> — required for reminders access
+- <code>NSRemindersFullAccessUsageDescription</code> — iOS 17+ reminders</p>
+<pre><code class="language-swift">import EventKit
+
+@Observable
+final class CalendarManager {
+    var calendars: [EKCalendar] = []
+    var events: [EKEvent] = []
+    var authorizationStatus: EKAuthorizationStatus = .notDetermined
+    var error: Error?
+
+    private let store = EKEventStore()
+
+    /// Request calendar access (iOS 17+)
+    func requestAccess() async {
+        do {
+            if #available(iOS 17, *) {
+                let granted = try await store.requestFullAccessToEvents()
+                authorizationStatus = granted ? .fullAccess : .denied
+            } else {
+                let granted = try await store.requestAccess(to: .event)
+                authorizationStatus = granted ? .authorized : .denied
+            }
+        } catch {
+            self.error = error
+            authorizationStatus = .denied
+        }
+    }
+
+    /// Request reminders access (iOS 17+)
+    func requestRemindersAccess() async throws -&gt; Bool {
+        if #available(iOS 17, *) {
+            return try await store.requestFullAccessToReminders()
+        } else {
+            return try await store.requestAccess(to: .reminder)
+        }
+    }
+}
+</code></pre>
+<h2 id="reading-calendars-and-events">Reading Calendars and Events</h2>
+<pre><code class="language-swift">extension CalendarManager {
+
+    func loadCalendars() {
+        calendars = store.calendars(for: .event)
+    }
+
+    /// Fetch events within a date range
+    func fetchEvents(from startDate: Date, to endDate: Date, calendars: [EKCalendar]? = nil) {
+        let predicate = store.predicateForEvents(
+            withStart: startDate,
+            end: endDate,
+            calendars: calendars  // nil = all calendars
+        )
+        events = store.events(matching: predicate)
+            .sorted { $0.startDate &lt; $1.startDate }
+    }
+
+    /// Fetch events for today
+    func fetchTodayEvents() {
+        let now = Date()
+        let startOfDay = Calendar.current.startOfDay(for: now)
+        let endOfDay = Calendar.current.date(byAdding: .day, value: 1, to: startOfDay)!
+        fetchEvents(from: startOfDay, to: endOfDay)
+    }
+
+    /// Fetch events for the next N days
+    func fetchUpcomingEvents(days: Int = 7) {
+        let now = Date()
+        let future = Calendar.current.date(byAdding: .day, value: days, to: now)!
+        fetchEvents(from: now, to: future)
+    }
+
+    /// Get a single event by identifier
+    func event(withIdentifier id: String) -&gt; EKEvent? {
+        store.event(withIdentifier: id)
+    }
+}
+</code></pre>
+<h2 id="creating-editing-and-deleting-events">Creating, Editing, and Deleting Events</h2>
+<pre><code class="language-swift">extension CalendarManager {
+
+    /// Create a new event
+    func createEvent(
+        title: String,
+        startDate: Date,
+        endDate: Date,
+        calendar: EKCalendar? = nil,
+        location: String? = nil,
+        notes: String? = nil,
+        url: URL? = nil,
+        alarms: [TimeInterval] = [-600] // 10 minutes before
+    ) throws -&gt; EKEvent {
+        let event = EKEvent(eventStore: store)
+        event.title = title
+        event.startDate = startDate
+        event.endDate = endDate
+        event.calendar = calendar ?? store.defaultCalendarForNewEvents
+        event.location = location
+        event.notes = notes
+        event.url = url
+
+        // Add alarms
+        for offset in alarms {
+            event.addAlarm(EKAlarm(relativeOffset: offset))
+        }
+
+        try store.save(event, span: .thisEvent)
+        return event
+    }
+
+    /// Edit an existing event
+    func updateEvent(_ event: EKEvent, span: EKSpan = .thisEvent) throws {
+        try store.save(event, span: span)
+    }
+
+    /// Delete an event
+    func deleteEvent(_ event: EKEvent, span: EKSpan = .thisEvent) throws {
+        try store.remove(event, span: span)
+    }
+}
+</code></pre>
+<h2 id="recurrence-rules">Recurrence Rules</h2>
+<pre><code class="language-swift">extension CalendarManager {
+
+    /// Create a daily recurring event
+    func createDailyEvent(title: String, startDate: Date, endDate: Date) throws -&gt; EKEvent {
+        let rule = EKRecurrenceRule(
+            recurrenceWith: .daily,
+            interval: 1,             // Every 1 day
+            end: EKRecurrenceEnd(occurrenceCount: 30) // 30 occurrences
+        )
+        return try createRecurringEvent(title: title, start: startDate, end: endDate, rule: rule)
+    }
+
+    /// Create a weekly recurring event (e.g., every Monday and Wednesday)
+    func createWeeklyEvent(title: String, startDate: Date, endDate: Date) throws -&gt; EKEvent {
+        let daysOfWeek = [
+            EKRecurrenceDayOfWeek(.monday),
+            EKRecurrenceDayOfWeek(.wednesday)
+        ]
+        let rule = EKRecurrenceRule(
+            recurrenceWith: .weekly,
+            interval: 1,
+            daysOfTheWeek: daysOfWeek,
+            daysOfTheMonth: nil,
+            monthsOfTheYear: nil,
+            weeksOfTheYear: nil,
+            daysOfTheYear: nil,
+            setPositions: nil,
+            end: EKRecurrenceEnd(end: Calendar.current.date(byAdding: .month, value: 6, to: startDate)!)
+        )
+        return try createRecurringEvent(title: title, start: startDate, end: endDate, rule: rule)
+    }
+
+    /// Create a monthly recurring event (e.g., 15th of each month)
+    func createMonthlyEvent(title: String, startDate: Date, endDate: Date) throws -&gt; EKEvent {
+        let rule = EKRecurrenceRule(
+            recurrenceWith: .monthly,
+            interval: 1,
+            daysOfTheWeek: nil,
+            daysOfTheMonth: [15 as NSNumber],
+            monthsOfTheYear: nil,
+            weeksOfTheYear: nil,
+            daysOfTheYear: nil,
+            setPositions: nil,
+            end: nil // Repeats forever
+        )
+        return try createRecurringEvent(title: title, start: startDate, end: endDate, rule: rule)
+    }
+
+    private func createRecurringEvent(
+        title: String, start: Date, end: Date, rule: EKRecurrenceRule
+    ) throws -&gt; EKEvent {
+        let event = EKEvent(eventStore: store)
+        event.title = title
+        event.startDate = start
+        event.endDate = end
+        event.calendar = store.defaultCalendarForNewEvents
+        event.addRecurrenceRule(rule)
+        try store.save(event, span: .futureEvents)
+        return event
+    }
+}
+</code></pre>
+<h2 id="reminders-ekreminder">Reminders (EKReminder)</h2>
+<pre><code class="language-swift">extension CalendarManager {
+
+    func fetchReminders(in calendars: [EKCalendar]? = nil) async -&gt; [EKReminder] {
+        let predicate = store.predicateForReminders(in: calendars)
+        return await withCheckedContinuation { continuation in
+            store.fetchReminders(matching: predicate) { reminders in
+                continuation.resume(returning: reminders ?? [])
+            }
+        }
+    }
+
+    func fetchIncompleteReminders(
+        from start: Date? = nil,
+        to end: Date? = nil
+    ) async -&gt; [EKReminder] {
+        let predicate = store.predicateForIncompleteReminders(
+            withDueDateStarting: start,
+            ending: end,
+            calendars: nil
+        )
+        return await withCheckedContinuation { continuation in
+            store.fetchReminders(matching: predicate) { reminders in
+                continuation.resume(returning: reminders ?? [])
+            }
+        }
+    }
+
+    func createReminder(
+        title: String,
+        dueDate: DateComponents? = nil,
+        priority: Int = 0,
+        notes: String? = nil,
+        list: EKCalendar? = nil
+    ) throws -&gt; EKReminder {
+        let reminder = EKReminder(eventStore: store)
+        reminder.title = title
+        reminder.dueDateComponents = dueDate
+        reminder.priority = priority  // 0 = none, 1 = high, 5 = medium, 9 = low
+        reminder.notes = notes
+        reminder.calendar = list ?? store.defaultCalendarForNewReminders()
+
+        try store.save(reminder, commit: true)
+        return reminder
+    }
+
+    func completeReminder(_ reminder: EKReminder) throws {
+        reminder.isCompleted = true
+        reminder.completionDate = Date()
+        try store.save(reminder, commit: true)
+    }
+}
+</code></pre>
+<h2 id="ekeventeditviewcontroller-uikit-swiftui-bridge">EKEventEditViewController (UIKit / SwiftUI Bridge)</h2>
+<pre><code class="language-swift">import SwiftUI
+import EventKitUI
+
+struct EventEditView: UIViewControllerRepresentable {
+    @Environment(\.dismiss) private var dismiss
+    let store: EKEventStore
+    var event: EKEvent?
+
+    func makeUIViewController(context: Context) -&gt; EKEventEditViewController {
+        let controller = EKEventEditViewController()
+        controller.eventStore = store
+        controller.event = event ?? EKEvent(eventStore: store)
+        controller.editViewDelegate = context.coordinator
+        return controller
+    }
+
+    func updateUIViewController(_ uiViewController: EKEventEditViewController, context: Context) {}
+
+    func makeCoordinator() -&gt; Coordinator {
+        Coordinator(dismiss: dismiss)
+    }
+
+    final class Coordinator: NSObject, EKEventEditViewDelegate {
+        let dismiss: DismissAction
+
+        init(dismiss: DismissAction) {
+            self.dismiss = dismiss
+        }
+
+        func eventEditViewController(
+            _ controller: EKEventEditViewController,
+            didCompleteWith action: EKEventEditViewAction
+        ) {
+            dismiss()
+        }
+    }
+}
+</code></pre>
+<h2 id="complete-calendar-integration-example">Complete Calendar Integration Example</h2>
+<pre><code class="language-swift">import SwiftUI
+import EventKit
+
+struct CalendarIntegrationView: View {
+    @State private var manager = CalendarManager()
+    @State private var showingAddEvent = false
+    @State private var newTitle = &quot;&quot;
+    @State private var newStartDate = Date()
+    @State private var newEndDate = Date().addingTimeInterval(3600)
+
+    var body: some View {
+        NavigationStack {
+            Group {
+                if manager.authorizationStatus == .notDetermined {
+                    ContentUnavailableView(
+                        &quot;Calendar Access Required&quot;,
+                        systemImage: &quot;calendar&quot;,
+                        description: Text(&quot;Grant access to view and manage events.&quot;)
+                    )
+                } else if manager.events.isEmpty {
+                    ContentUnavailableView(&quot;No Events&quot;, systemImage: &quot;calendar.badge.exclamationmark&quot;)
+                } else {
+                    eventList
+                }
+            }
+            .navigationTitle(&quot;Calendar&quot;)
+            .toolbar {
+                ToolbarItem(placement: .primaryAction) {
+                    Button(&quot;Add&quot;, systemImage: &quot;plus&quot;) {
+                        showingAddEvent = true
+                    }
+                }
+            }
+            .sheet(isPresented: $showingAddEvent) {
+                addEventSheet
+            }
+            .task {
+                await manager.requestAccess()
+                manager.loadCalendars()
+                manager.fetchUpcomingEvents(days: 14)
+            }
+        }
+    }
+
+    private var eventList: some View {
+        List {
+            ForEach(manager.events, id: \.eventIdentifier) { event in
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack {
+                        Circle()
+                            .fill(Color(cgColor: event.calendar.cgColor))
+                            .frame(width: 10, height: 10)
+                        Text(event.title)
+                            .font(.headline)
+                    }
+                    Text(event.startDate, format: .dateTime)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                    if let location = event.location, !location.isEmpty {
+                        Label(location, systemImage: &quot;mappin&quot;)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
+            .onDelete { indexSet in
+                for index in indexSet {
+                    try? manager.deleteEvent(manager.events[index])
+                }
+                manager.fetchUpcomingEvents(days: 14)
+            }
+        }
+    }
+
+    private var addEventSheet: some View {
+        NavigationStack {
+            Form {
+                TextField(&quot;Event Title&quot;, text: $newTitle)
+                DatePicker(&quot;Start&quot;, selection: $newStartDate)
+                DatePicker(&quot;End&quot;, selection: $newEndDate)
+            }
+            .navigationTitle(&quot;New Event&quot;)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button(&quot;Cancel&quot;) { showingAddEvent = false }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button(&quot;Save&quot;) {
+                        try? manager.createEvent(
+                            title: newTitle,
+                            startDate: newStartDate,
+                            endDate: newEndDate
+                        )
+                        manager.fetchUpcomingEvents(days: 14)
+                        showingAddEvent = false
+                    }
+                    .disabled(newTitle.isEmpty)
+                }
+            }
+        }
+    }
+}
+</code></pre></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

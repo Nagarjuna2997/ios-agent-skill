@@ -1,0 +1,540 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Routing, Deep Links, and State Restoration — iOS Agent Skill</title><meta name="description" content="Repository guidance for Routing, Deep Links, and State Restoration. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/swiftui-deep-linking-and-routing.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="Routing, Deep Links, and State Restoration"><meta property="og:description" content="Repository guidance for Routing, Deep Links, and State Restoration. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/swiftui-deep-linking-and-routing.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "Routing, Deep Links, and State Restoration", "description": "Repository guidance for Routing, Deep Links, and State Restoration. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/swiftui-deep-linking-and-routing.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Swiftui · Reference guide</p><h1>Routing, Deep Links, and State Restoration</h1><p class="lead">Repository guidance for Routing, Deep Links, and State Restoration. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/swiftui/deep-linking-and-routing.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#1-typed-routes">1. Typed Routes</a></li>
+<li><a href="#2-the-router">2. The Router</a><ul>
+<li><a href="#wiring-it-once-at-the-root">Wiring it once, at the root</a></li>
+<li><a href="#views-send-intent">Views send intent</a></li>
+<li><a href="#anti-patterns">Anti-patterns</a></li>
+</ul>
+</li>
+<li><a href="#3-deep-links">3. Deep Links</a><ul>
+<li><a href="#parse-into-routes-then-apply">Parse into routes, then apply</a></li>
+<li><a href="#applying">Applying</a></li>
+<li><a href="#links-that-arrive-before-the-app-is-ready">Links that arrive before the app is ready</a></li>
+<li><a href="#configuration">Configuration</a></li>
+<li><a href="#testing-the-parser">Testing the parser</a></li>
+</ul>
+</li>
+<li><a href="#4-state-restoration">4. State Restoration</a><ul>
+<li><a href="#persisting-per-scene">Persisting per scene</a></li>
+</ul>
+</li>
+<li><a href="#5-multiple-stacks-tabs">5. Multiple Stacks (Tabs)</a></li>
+<li><a href="#6-router-vs-coordinator">6. Router vs Coordinator</a></li>
+<li><a href="#checklist">Checklist</a></li>
+</ul>
+</div>
+</aside><p><strong>Load this when:</strong> adding navigation to more than two screens, handling a URL
+scheme or universal link, restoring navigation state across launches, or
+reviewing anything that mutates a <code>NavigationPath</code>.</p>
+<p><code>docs/swiftui/navigation.md</code> covers the navigation <em>APIs</em>.
+<code>patterns/coordinator.md</code> covers the coordinator <em>pattern</em>.
+This document covers the piece that breaks in production: making a single typed
+route model the only way navigation state changes, so a deep link, a button tap,
+and a restored session all go through the same code.</p>
+<hr />
+<h2 id="1-typed-routes">1. Typed Routes</h2>
+<p>Model every destination as a value. Strings and <code>Any</code> in a <code>NavigationPath</code> are
+how you get silent no-op links.</p>
+<pre><code class="language-swift">// Navigation/Route.swift
+enum Route: Hashable, Codable, Sendable {
+    case productDetail(id: Product.ID)
+    case category(Product.Category)
+    case orderHistory
+    case orderDetail(id: Order.ID)
+    case settings
+    case profile(userID: User.ID)
+}
+
+// Modal presentation is a different axis — model it separately.
+enum Sheet: Identifiable, Hashable {
+    case checkout(cart: [CartItem])
+    case editProfile
+    case filter
+
+    var id: Self { self }
+}
+
+enum FullScreenRoute: Identifiable, Hashable {
+    case onboarding
+    case paywall(trigger: String)
+
+    var id: Self { self }
+}
+</code></pre>
+<p><code>Codable</code> conformance is what makes state restoration possible (§4). Add it now
+even if you do not restore yet — retrofitting it later means touching every case.</p>
+<hr />
+<h2 id="2-the-router">2. The Router</h2>
+<p>One <code>@MainActor @Observable</code> object owns navigation state. Views send it intent;
+they never mutate a path directly.</p>
+<pre><code class="language-swift">// Navigation/Router.swift
+@MainActor
+@Observable
+final class Router {
+    var path = NavigationPath()
+    var sheet: Sheet?
+    var fullScreen: FullScreenRoute?
+
+    // MARK: Stack
+
+    func push(_ route: Route) {
+        path.append(route)
+    }
+
+    func pop() {
+        guard !path.isEmpty else { return }
+        path.removeLast()
+    }
+
+    func popToRoot() {
+        path.removeLast(path.count)
+    }
+
+    /// Replaces the entire stack — used by deep links so a link never
+    /// accumulates screens on top of wherever the user happened to be.
+    func replaceStack(with routes: [Route]) {
+        var newPath = NavigationPath()
+        for route in routes { newPath.append(route) }
+        path = newPath
+    }
+
+    // MARK: Modals
+
+    func present(_ sheet: Sheet) { self.sheet = sheet }
+    func present(_ route: FullScreenRoute) { fullScreen = route }
+    func dismissModal() { sheet = nil; fullScreen = nil }
+}
+</code></pre>
+<h3 id="wiring-it-once-at-the-root">Wiring it once, at the root</h3>
+<pre><code class="language-swift">struct RootView: View {
+    @State private var router = Router()
+
+    var body: some View {
+        NavigationStack(path: $router.path) {
+            ProductListView()
+                .navigationDestination(for: Route.self) { route in
+                    destination(for: route)
+                }
+        }
+        .environment(router)
+        .sheet(item: $router.sheet) { sheet in
+            switch sheet {
+            case .checkout(let cart): CheckoutView(cart: cart)
+            case .editProfile:        EditProfileView()
+            case .filter:             FilterView()
+            }
+        }
+        .fullScreenCover(item: $router.fullScreen) { route in
+            switch route {
+            case .onboarding:            OnboardingView()
+            case .paywall(let trigger):  PaywallView(trigger: trigger)
+            }
+        }
+    }
+
+    // One exhaustive switch. The compiler catches every route you forget to handle.
+    @ViewBuilder
+    private func destination(for route: Route) -&gt; some View {
+        switch route {
+        case .productDetail(let id):  ProductDetailView(id: id)
+        case .category(let category): CategoryView(category: category)
+        case .orderHistory:           OrderHistoryView()
+        case .orderDetail(let id):    OrderDetailView(id: id)
+        case .settings:               SettingsView()
+        case .profile(let userID):    ProfileView(userID: userID)
+        }
+    }
+}
+</code></pre>
+<h3 id="views-send-intent">Views send intent</h3>
+<pre><code class="language-swift">struct ProductRow: View {
+    @Environment(Router.self) private var router
+    let product: Product
+
+    var body: some View {
+        Button {
+            router.push(.productDetail(id: product.id))
+        } label: {
+            ProductRowContent(product: product)
+        }
+    }
+}
+</code></pre>
+<p><code>NavigationLink(value:)</code> is equally fine for a plain push and keeps the row
+accessible for free. Use the router when the destination depends on logic
+(auth checks, A/B branching, analytics side effects).</p>
+<h3 id="anti-patterns">Anti-patterns</h3>
+<pre><code class="language-swift">// WRONG — a screen that owns its own NavigationStack cannot be pushed
+// onto another one. You get a nested stack and a doubled navigation bar.
+struct ProductDetailView: View {
+    var body: some View { NavigationStack { … } }   // only the ROOT has a stack
+}
+
+// WRONG — deprecated, and it silently breaks programmatic navigation.
+NavigationView { … }
+NavigationLink(destination: DetailView(), isActive: $isActive) { … }
+
+// WRONG — untyped path. A mismatched type is a silent no-op, not an error.
+path.append(&quot;product-\(id)&quot;)
+
+// WRONG — every view reaching into the path directly. Now nothing can
+// enforce an invariant like &quot;checkout requires a signed-in user&quot;.
+@Environment(Router.self) var router
+router.path.append(Route.checkout)     // use router.push(_:)
+
+// WRONG — navigation state on a screen's view model. Two screens now
+// disagree about what is on the stack.
+@Observable final class ProductListViewModel { var path = NavigationPath() }
+</code></pre>
+<hr />
+<h2 id="3-deep-links">3. Deep Links</h2>
+<h3 id="parse-into-routes-then-apply">Parse into routes, then apply</h3>
+<p>Separate <strong>parsing</strong> (pure, testable, no UI) from <strong>applying</strong> (mutates the
+router). This is what makes deep links unit-testable without launching the app.</p>
+<pre><code class="language-swift">// Navigation/DeepLink.swift
+struct DeepLink: Equatable {
+    var tab: AppTab
+    var routes: [Route]
+    var sheet: Sheet?
+}
+
+enum DeepLinkParser {
+    /// Pure function: URL in, intent out. No side effects, no router.
+    static func parse(_ url: URL) -&gt; DeepLink? {
+        guard let components = URLComponents(url: url, resolvingAgainstBaseURL: true) else {
+            return nil
+        }
+
+        switch (components.scheme, components.host) {
+        // Custom scheme: myshop://product/1234
+        case (&quot;myshop&quot;, let host?):
+            return parsePath(host: host, segments: pathSegments(components), query: components)
+
+        // Universal link: https://shop.example.com/product/1234
+        case (&quot;https&quot;, &quot;shop.example.com&quot;):
+            var segments = pathSegments(components)
+            guard !segments.isEmpty else { return DeepLink(tab: .home, routes: []) }
+            let host = segments.removeFirst()
+            return parsePath(host: host, segments: segments, query: components)
+
+        default:
+            return nil
+        }
+    }
+
+    private static func pathSegments(_ components: URLComponents) -&gt; [String] {
+        components.path.split(separator: &quot;/&quot;).map(String.init)
+    }
+
+    private static func parsePath(
+        host: String,
+        segments: [String],
+        query components: URLComponents
+    ) -&gt; DeepLink? {
+        switch host {
+        case &quot;product&quot;:
+            guard let raw = segments.first, let id = Product.ID(uuidString: raw) else { return nil }
+            return DeepLink(tab: .home, routes: [.productDetail(id: id)])
+
+        case &quot;category&quot;:
+            guard let raw = segments.first,
+                  let category = Product.Category(rawValue: raw) else { return nil }
+            return DeepLink(tab: .home, routes: [.category(category)])
+
+        case &quot;orders&quot;:
+            // /orders            -&gt; the list
+            // /orders/&lt;uuid&gt;     -&gt; the list, then the detail pushed on top,
+            //                       so Back goes somewhere sensible.
+            guard let raw = segments.first else {
+                return DeepLink(tab: .orders, routes: [.orderHistory])
+            }
+            guard let id = Order.ID(uuidString: raw) else { return nil }
+            return DeepLink(tab: .orders, routes: [.orderHistory, .orderDetail(id: id)])
+
+        case &quot;checkout&quot;:
+            return DeepLink(tab: .home, routes: [], sheet: .checkout(cart: []))
+
+        default:
+            return nil                                   // unknown -&gt; ignore, never crash
+        }
+    }
+}
+</code></pre>
+<p>Two details that matter:</p>
+<ul>
+<li><strong>A deep link builds the whole stack, not just the leaf.</strong> Landing on an order
+  detail with an empty back stack strands the user.</li>
+<li><strong>An unrecognised URL returns <code>nil</code>.</strong> It must never crash and never navigate
+  somewhere arbitrary. Log it and stay put.</li>
+</ul>
+<h3 id="applying">Applying</h3>
+<pre><code class="language-swift">extension Router {
+    func handle(_ url: URL) {
+        guard let link = DeepLinkParser.parse(url) else {
+            Logger.navigation.warning(&quot;Unhandled deep link: \(url, privacy: .public)&quot;)
+            return
+        }
+        apply(link)
+    }
+
+    func apply(_ link: DeepLink) {
+        dismissModal()                       // never open a link behind a sheet
+        selectedTab = link.tab
+        replaceStack(with: link.routes)
+        if let sheet = link.sheet { present(sheet) }
+    }
+}
+
+@main
+struct ShopApp: App {
+    @State private var router = Router()
+
+    var body: some Scene {
+        WindowGroup {
+            RootView()
+                .environment(router)
+                .onOpenURL { router.handle($0) }
+                // Universal links arrive as a user activity, not onOpenURL.
+                .onContinueUserActivity(NSUserActivityTypeBrowsingWeb) { activity in
+                    guard let url = activity.webpageURL else { return }
+                    router.handle(url)
+                }
+        }
+    }
+}
+</code></pre>
+<h3 id="links-that-arrive-before-the-app-is-ready">Links that arrive before the app is ready</h3>
+<p>A link can land during launch, before sign-in resolves. Queue it rather than
+dropping it:</p>
+<pre><code class="language-swift">@MainActor
+@Observable
+final class Router {
+    private var pendingLink: DeepLink?
+    var isReady = false {
+        didSet { if isReady { flushPendingLink() } }
+    }
+
+    func apply(_ link: DeepLink) {
+        guard isReady else { pendingLink = link; return }
+        // … as above
+    }
+
+    private func flushPendingLink() {
+        guard let link = pendingLink else { return }
+        pendingLink = nil
+        apply(link)
+    }
+}
+</code></pre>
+<p>Set <code>isReady = true</code> once the session is loaded and the root UI is on screen.
+The same queue handles links that require authentication: present the login
+sheet, keep <code>pendingLink</code>, flush it after a successful sign-in.</p>
+<h3 id="configuration">Configuration</h3>
+<pre><code class="language-xml">&lt;!-- Info.plist — custom scheme --&gt;
+&lt;key&gt;CFBundleURLTypes&lt;/key&gt;
+&lt;array&gt;
+    &lt;dict&gt;
+        &lt;key&gt;CFBundleURLName&lt;/key&gt;
+        &lt;string&gt;com.example.myshop&lt;/string&gt;
+        &lt;key&gt;CFBundleURLSchemes&lt;/key&gt;
+        &lt;array&gt;&lt;string&gt;myshop&lt;/string&gt;&lt;/array&gt;
+    &lt;/dict&gt;
+&lt;/array&gt;
+</code></pre>
+<p>Universal links additionally need the <strong>Associated Domains</strong> capability
+(<code>applinks:shop.example.com</code>) and an <code>apple-app-site-association</code> file served
+from <code>https://shop.example.com/.well-known/</code> over HTTPS with no redirects.
+Prefer universal links: they work when the app is not installed, and they cannot
+be hijacked by another app registering the same scheme.</p>
+<h3 id="testing-the-parser">Testing the parser</h3>
+<p>Because parsing is pure, this needs no simulator:</p>
+<pre><code class="language-swift">@Suite(&quot;DeepLinkParser&quot;)
+struct DeepLinkParserTests {
+    private func url(_ string: String) -&gt; URL { URL(string: string)! }
+
+    @Test(&quot;product link builds a single-screen stack&quot;)
+    func productLink() throws {
+        let id = UUID()
+        let link = try #require(DeepLinkParser.parse(url(&quot;myshop://product/\(id)&quot;)))
+        #expect(link.tab == .home)
+        #expect(link.routes == [.productDetail(id: id)])
+    }
+
+    @Test(&quot;order detail keeps the list underneath it&quot;)
+    func orderDetailStack() throws {
+        let id = UUID()
+        let link = try #require(DeepLinkParser.parse(url(&quot;myshop://orders/\(id)&quot;)))
+        #expect(link.routes == [.orderHistory, .orderDetail(id: id)])
+    }
+
+    @Test(&quot;universal link parses the same as the custom scheme&quot;)
+    func universalLink() throws {
+        let id = UUID()
+        let custom = DeepLinkParser.parse(url(&quot;myshop://product/\(id)&quot;))
+        let web = DeepLinkParser.parse(url(&quot;https://shop.example.com/product/\(id)&quot;))
+        #expect(custom == web)
+    }
+
+    @Test(&quot;malformed links are ignored, not fatal&quot;, arguments: [
+        &quot;myshop://product/not-a-uuid&quot;,
+        &quot;myshop://nonsense&quot;,
+        &quot;https://evil.example.com/product/123&quot;,
+        &quot;myshop://&quot;
+    ])
+    func malformed(_ string: String) {
+        #expect(DeepLinkParser.parse(url(string)) == nil)
+    }
+}
+</code></pre>
+<hr />
+<h2 id="4-state-restoration">4. State Restoration</h2>
+<p><code>NavigationPath</code> has a <code>CodableRepresentation</code> that works when <strong>every</strong> route
+in it is <code>Codable</code> and <code>Hashable</code>. That is the payoff for §1.</p>
+<pre><code class="language-swift">extension Router {
+    /// nil when the path holds a non-Codable value — fail quietly, never crash.
+    var encodedPath: Data? {
+        guard let representation = path.codable else { return nil }
+        return try? JSONEncoder().encode(representation)
+    }
+
+    func restorePath(from data: Data) {
+        guard let representation = try? JSONDecoder()
+            .decode(NavigationPath.CodableRepresentation.self, from: data)
+        else { return }
+        path = NavigationPath(representation)
+    }
+}
+</code></pre>
+<h3 id="persisting-per-scene">Persisting per scene</h3>
+<pre><code class="language-swift">struct RootView: View {
+    @Environment(Router.self) private var router
+    @SceneStorage(&quot;navigation.path&quot;) private var storedPath: Data?
+
+    var body: some View {
+        NavigationStack(path: Bindable(router).path) {
+            ProductListView()
+                .navigationDestination(for: Route.self) { destination(for: $0) }
+        }
+        .task {
+            if let storedPath { router.restorePath(from: storedPath) }
+        }
+        .onChange(of: router.path) {
+            storedPath = router.encodedPath
+        }
+    }
+}
+</code></pre>
+<p><code>@SceneStorage</code> is the right tool: it is per-window (correct on iPad and
+visionOS, where two windows have different stacks) and the system clears it when
+the user explicitly closes the scene.</p>
+<p><strong>Restore defensively.</strong> A restored route may point at a product that has since
+been deleted or a screen behind a subscription that has lapsed. Destination
+views must handle a missing entity with a <code>ContentUnavailableView</code>, not a force
+unwrap. Validate before restoring anything sensitive:</p>
+<pre><code class="language-swift">func restorePath(from data: Data, isSignedIn: Bool) {
+    guard isSignedIn else { return }        // never restore into a gated screen
+    // … decode as above
+}
+</code></pre>
+<hr />
+<h2 id="5-multiple-stacks-tabs">5. Multiple Stacks (Tabs)</h2>
+<p>Each tab owns its own path. A single shared <code>NavigationPath</code> across tabs will
+push the wrong screen into the wrong tab.</p>
+<pre><code class="language-swift">enum AppTab: String, Hashable, CaseIterable, Codable {
+    case home, search, orders, profile
+}
+
+@MainActor
+@Observable
+final class Router {
+    var selectedTab: AppTab = .home
+    private var paths: [AppTab: NavigationPath] = [:]
+
+    subscript(tab: AppTab) -&gt; NavigationPath {
+        get { paths[tab] ?? NavigationPath() }
+        set { paths[tab] = newValue }
+    }
+
+    func push(_ route: Route, in tab: AppTab? = nil) {
+        let target = tab ?? selectedTab
+        paths[target, default: NavigationPath()].append(route)
+    }
+
+    /// Tapping the active tab again pops it to root — expected iOS behaviour.
+    func select(_ tab: AppTab) {
+        if selectedTab == tab {
+            paths[tab] = NavigationPath()
+        } else {
+            selectedTab = tab
+        }
+    }
+}
+
+struct AppTabView: View {
+    @Environment(Router.self) private var router
+
+    var body: some View {
+        @Bindable var router = router
+
+        TabView(selection: Binding(
+            get: { router.selectedTab },
+            set: { router.select($0) }        // routes through the pop-to-root rule
+        )) {
+            ForEach(AppTab.allCases, id: \.self) { tab in
+                NavigationStack(path: Binding(
+                    get: { router[tab] },
+                    set: { router[tab] = $0 }
+                )) {
+                    rootView(for: tab)
+                        .navigationDestination(for: Route.self) { destination(for: $0) }
+                }
+                .tabItem { Label(tab.title, systemImage: tab.systemImage) }
+                .tag(tab)
+            }
+        }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="6-router-vs-coordinator">6. Router vs Coordinator</h2>
+<table>
+<thead>
+<tr>
+<th>Use</th>
+<th>When</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>NavigationLink(value:)</code> alone</td>
+<td>1–3 screens, no deep links, no conditional destinations</td>
+</tr>
+<tr>
+<td>A single <code>Router</code> (this document)</td>
+<td>Most apps: typed routes, deep links, restoration</td>
+</tr>
+<tr>
+<td>Coordinators (<code>patterns/coordinator.md</code>)</td>
+<td>Independent flows with their own lifecycle — onboarding, auth, checkout — especially when a team owns each flow as a module</td>
+</tr>
+</tbody>
+</table>
+<p>Do not start with coordinators. Start with a <code>Router</code>, and split a flow out only
+when its navigation rules stop fitting in one exhaustive switch.</p>
+<hr />
+<h2 id="checklist">Checklist</h2>
+<ul>
+<li>[ ] Exactly one <code>NavigationStack</code> per tab, owned by the root — never inside a
+      pushed screen.</li>
+<li>[ ] Routes are a <code>Hashable, Codable, Sendable</code> enum; nothing is appended as a
+      <code>String</code>.</li>
+<li>[ ] Views call <code>router.push(_:)</code>; nothing mutates <code>path</code> directly.</li>
+<li>[ ] <code>DeepLinkParser.parse</code> is pure and unit-tested, including malformed input.</li>
+<li>[ ] Deep links build a full back stack and dismiss any open modal first.</li>
+<li>[ ] An unknown URL logs and no-ops. It never crashes and never navigates blind.</li>
+<li>[ ] Universal links handled via <code>onContinueUserActivity</code>, not just <code>onOpenURL</code>.</li>
+<li>[ ] Links arriving before the app is ready are queued, not dropped.</li>
+<li>[ ] Restored destinations tolerate deleted entities and revoked access.</li>
+<li>[ ] <code>Router</code> is <code>@MainActor @Observable final class</code>.</li>
+</ul></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

@@ -1,0 +1,1833 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Stunning UI Patterns -- Complete SwiftUI Pattern Library — iOS Agent Skill</title><meta name="description" content="Repository guidance for Human Interface Guidelines. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/design-stunning-ui-patterns.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="Stunning UI Patterns -- Complete SwiftUI Pattern Library"><meta property="og:description" content="Repository guidance for Human Interface Guidelines. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/design-stunning-ui-patterns.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "Stunning UI Patterns -- Complete SwiftUI Pattern Library", "description": "Repository guidance for Human Interface Guidelines. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/design-stunning-ui-patterns.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Design and Motion · Reference guide</p><h1>Stunning UI Patterns -- Complete SwiftUI Pattern Library</h1><p class="lead">Repository guidance for Human Interface Guidelines. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/design/stunning-ui-patterns.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#1-glass-morphism-card">1. Glass Morphism Card</a></li>
+<li><a href="#2-neumorphic-card">2. Neumorphic Card</a></li>
+<li><a href="#3-gradient-card-with-floating-shadow">3. Gradient Card with Floating Shadow</a></li>
+<li><a href="#4-animated-onboarding-screen">4. Animated Onboarding Screen</a></li>
+<li><a href="#5-hero-image-header-with-parallax-scroll">5. Hero Image Header with Parallax Scroll</a></li>
+<li><a href="#6-bottom-sheet-with-snap-points">6. Bottom Sheet with Snap Points</a></li>
+<li><a href="#7-animated-tab-bar">7. Animated Tab Bar</a></li>
+<li><a href="#8-profile-card">8. Profile Card</a></li>
+<li><a href="#9-dashboard-cards-with-charts">9. Dashboard Cards with Charts</a></li>
+<li><a href="#10-floating-action-button">10. Floating Action Button</a></li>
+<li><a href="#11-custom-toggle-with-animation">11. Custom Toggle with Animation</a></li>
+<li><a href="#12-swipeable-card-stack">12. Swipeable Card Stack</a></li>
+<li><a href="#13-pull-to-refresh-with-custom-animation">13. Pull-to-Refresh with Custom Animation</a></li>
+<li><a href="#14-skeleton-loading-shimmer-effect">14. Skeleton Loading / Shimmer Effect</a></li>
+<li><a href="#15-toast-snackbar-notification">15. Toast / Snackbar Notification</a></li>
+<li><a href="#16-expandable-card-with-matchedgeometryeffect">16. Expandable Card with matchedGeometryEffect</a></li>
+<li><a href="#17-animated-gradient-background">17. Animated Gradient Background</a></li>
+<li><a href="#18-blurred-header-that-changes-on-scroll">18. Blurred Header that Changes on Scroll</a></li>
+<li><a href="#19-chip-tag-flow-layout">19. Chip / Tag Flow Layout</a></li>
+<li><a href="#20-rating-stars-component">20. Rating Stars Component</a></li>
+<li><a href="#bonus-combining-patterns-premium-app-screen">Bonus: Combining Patterns -- Premium App Screen</a></li>
+<li><a href="#quick-reference">Quick Reference</a></li>
+</ul>
+</div>
+</aside><h2 id="overview">Overview</h2>
+<p>This file is a production-ready pattern library of 20 stunning UI components. Every example compiles, uses beautiful colors from the color palettes defined in <code>color-system.md</code>, and produces results worthy of a premium App Store feature. Copy, adapt, and compose these into world-class iOS applications.</p>
+<p>All examples assume the <code>Color(hex:)</code> extension from <code>color-system.md</code> is available.</p>
+<hr />
+<h2 id="1-glass-morphism-card">1. Glass Morphism Card</h2>
+<p>Frosted glass with a luminous border. Use over images or gradients for maximum effect.</p>
+<pre><code class="language-swift">import SwiftUI
+
+struct GlassMorphismCard: View {
+    var body: some View {
+        ZStack {
+            // Rich background
+            LinearGradient(
+                colors: [Color(hex: &quot;6C63FF&quot;), Color(hex: &quot;EC4899&quot;), Color(hex: &quot;06B6D4&quot;)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .ignoresSafeArea()
+
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    Image(systemName: &quot;sparkles&quot;)
+                        .font(.title2)
+                        .foregroundStyle(.white)
+                    Spacer()
+                    Text(&quot;PRO&quot;)
+                        .font(.caption.weight(.bold))
+                        .kerning(1.5)
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 4)
+                        .background(.white.opacity(0.2), in: Capsule())
+                }
+
+                Text(&quot;Premium Plan&quot;)
+                    .font(.title2.weight(.bold))
+                    .foregroundStyle(.white)
+
+                Text(&quot;Unlock all features and get early access to new content every week.&quot;)
+                    .font(.subheadline)
+                    .foregroundStyle(.white.opacity(0.8))
+                    .lineSpacing(4)
+
+                HStack {
+                    Text(&quot;$9.99/mo&quot;)
+                        .font(.title3.weight(.bold))
+                        .foregroundStyle(.white)
+                    Spacer()
+                    Text(&quot;Subscribe&quot;)
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(Color(hex: &quot;6C63FF&quot;))
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 10)
+                        .background(.white, in: Capsule())
+                }
+                .padding(.top, 8)
+            }
+            .padding(24)
+            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 24))
+            .overlay(
+                RoundedRectangle(cornerRadius: 24)
+                    .stroke(
+                        LinearGradient(
+                            colors: [.white.opacity(0.5), .white.opacity(0.05)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ),
+                        lineWidth: 1
+                    )
+            )
+            .shadow(color: .black.opacity(0.15), radius: 20, y: 10)
+            .padding(24)
+        }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="2-neumorphic-card">2. Neumorphic Card</h2>
+<p>Soft shadows creating the illusion of raised or inset elements on a flat surface.</p>
+<pre><code class="language-swift">struct NeumorphicCard: View {
+    @State private var isPressed = false
+
+    var body: some View {
+        let bgColor = Color(hex: &quot;E8EDF2&quot;)
+
+        ZStack {
+            bgColor.ignoresSafeArea()
+
+            VStack(spacing: 32) {
+                // Raised card
+                VStack(alignment: .leading, spacing: 8) {
+                    Image(systemName: &quot;wifi&quot;)
+                        .font(.title)
+                        .foregroundStyle(Color(hex: &quot;6C63FF&quot;))
+                    Text(&quot;Network Status&quot;)
+                        .font(.headline)
+                    Text(&quot;Connected -- 120 Mbps&quot;)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(24)
+                .background(bgColor)
+                .cornerRadius(20)
+                .shadow(color: .white.opacity(0.7), radius: 10, x: -5, y: -5)
+                .shadow(color: .black.opacity(0.15), radius: 10, x: 5, y: 5)
+
+                // Inset / pressed style
+                VStack(alignment: .leading, spacing: 8) {
+                    Image(systemName: &quot;bolt.fill&quot;)
+                        .font(.title)
+                        .foregroundStyle(Color(hex: &quot;F59E0B&quot;))
+                    Text(&quot;Quick Actions&quot;)
+                        .font(.headline)
+                    Text(&quot;Tap to toggle&quot;)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(24)
+                .background(
+                    RoundedRectangle(cornerRadius: 20)
+                        .fill(bgColor)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 20)
+                                .stroke(Color.black.opacity(0.05), lineWidth: 1)
+                        )
+                        .innerShadow(bgColor)
+                )
+
+                // Neumorphic button
+                Button {
+                    withAnimation(.spring(response: 0.3)) {
+                        isPressed.toggle()
+                    }
+                } label: {
+                    Image(systemName: &quot;power&quot;)
+                        .font(.title)
+                        .foregroundStyle(isPressed ? Color(hex: &quot;2D9F6F&quot;) : .gray)
+                        .frame(width: 80, height: 80)
+                        .background(bgColor)
+                        .cornerRadius(40)
+                        .shadow(
+                            color: isPressed ? .clear : .white.opacity(0.7),
+                            radius: isPressed ? 0 : 8, x: -4, y: -4
+                        )
+                        .shadow(
+                            color: isPressed ? .clear : .black.opacity(0.15),
+                            radius: isPressed ? 0 : 8, x: 4, y: 4
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 40)
+                                .stroke(Color.black.opacity(isPressed ? 0.08 : 0), lineWidth: 1)
+                        )
+                }
+            }
+            .padding(24)
+        }
+    }
+}
+
+// Helper modifier for inner shadow
+extension View {
+    func innerShadow(_ bgColor: Color) -&gt; some View {
+        self.overlay(
+            RoundedRectangle(cornerRadius: 20)
+                .stroke(Color.black.opacity(0.08), lineWidth: 1)
+                .shadow(color: .black.opacity(0.1), radius: 3, x: 2, y: 2)
+                .clipShape(RoundedRectangle(cornerRadius: 20))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 20)
+                .stroke(Color.white.opacity(0.5), lineWidth: 1)
+                .shadow(color: .white.opacity(0.5), radius: 3, x: -2, y: -2)
+                .clipShape(RoundedRectangle(cornerRadius: 20))
+        )
+    }
+}
+</code></pre>
+<hr />
+<h2 id="3-gradient-card-with-floating-shadow">3. Gradient Card with Floating Shadow</h2>
+<p>The shadow color matches the card gradient, creating a luminous glow beneath.</p>
+<pre><code class="language-swift">struct GradientShadowCard: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: &quot;chart.line.uptrend.xyaxis&quot;)
+                    .font(.title2)
+                Text(&quot;Revenue&quot;)
+                    .font(.headline)
+                Spacer()
+                Text(&quot;+24.5%&quot;)
+                    .font(.subheadline.weight(.bold))
+            }
+            .foregroundStyle(.white)
+
+            Text(&quot;$48,290&quot;)
+                .font(.system(size: 36, weight: .bold, design: .rounded))
+                .foregroundStyle(.white)
+
+            Text(&quot;Compared to $38,800 last month&quot;)
+                .font(.caption)
+                .foregroundStyle(.white.opacity(0.7))
+        }
+        .padding(24)
+        .background(
+            LinearGradient(
+                colors: [Color(hex: &quot;6C63FF&quot;), Color(hex: &quot;8B5CF6&quot;)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            ),
+            in: RoundedRectangle(cornerRadius: 20)
+        )
+        // Floating colored shadow
+        .shadow(color: Color(hex: &quot;6C63FF&quot;).opacity(0.4), radius: 20, y: 12)
+        .padding(24)
+    }
+}
+</code></pre>
+<hr />
+<h2 id="4-animated-onboarding-screen">4. Animated Onboarding Screen</h2>
+<p>TabView with custom animated page indicators and fluid transitions.</p>
+<pre><code class="language-swift">struct OnboardingScreen: View {
+    @State private var currentPage = 0
+
+    let pages: [(icon: String, title: String, subtitle: String, colors: [Color])] = [
+        (&quot;sparkles&quot;, &quot;Welcome&quot;, &quot;Discover a new way to organize your life.&quot;, [Color(hex: &quot;6C63FF&quot;), Color(hex: &quot;A78BFA&quot;)]),
+        (&quot;bolt.fill&quot;, &quot;Lightning Fast&quot;, &quot;Everything you need, instantly at your fingertips.&quot;, [Color(hex: &quot;EC4899&quot;), Color(hex: &quot;F472B6&quot;)]),
+        (&quot;heart.fill&quot;, &quot;Made with Love&quot;, &quot;Crafted by a team that cares about every detail.&quot;, [Color(hex: &quot;2D9F6F&quot;), Color(hex: &quot;22D3EE&quot;)]),
+    ]
+
+    var body: some View {
+        ZStack {
+            // Animated background gradient
+            LinearGradient(
+                colors: pages[currentPage].colors,
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .ignoresSafeArea()
+            .animation(.easeInOut(duration: 0.6), value: currentPage)
+
+            VStack(spacing: 0) {
+                TabView(selection: $currentPage) {
+                    ForEach(0..&lt;pages.count, id: \.self) { index in
+                        VStack(spacing: 24) {
+                            Image(systemName: pages[index].icon)
+                                .font(.system(size: 80))
+                                .foregroundStyle(.white)
+                                .shadow(color: .white.opacity(0.3), radius: 20)
+
+                            Text(pages[index].title)
+                                .font(.largeTitle.weight(.bold))
+                                .foregroundStyle(.white)
+
+                            Text(pages[index].subtitle)
+                                .font(.body)
+                                .foregroundStyle(.white.opacity(0.8))
+                                .multilineTextAlignment(.center)
+                                .padding(.horizontal, 40)
+                        }
+                        .tag(index)
+                    }
+                }
+                .tabViewStyle(.page(indexDisplayMode: .never))
+
+                // Custom page indicator
+                HStack(spacing: 10) {
+                    ForEach(0..&lt;pages.count, id: \.self) { index in
+                        Capsule()
+                            .fill(.white.opacity(currentPage == index ? 1 : 0.4))
+                            .frame(
+                                width: currentPage == index ? 28 : 8,
+                                height: 8
+                            )
+                            .animation(.spring(response: 0.4, dampingFraction: 0.7), value: currentPage)
+                    }
+                }
+                .padding(.bottom, 32)
+
+                // CTA button
+                Button {
+                    if currentPage &lt; pages.count - 1 {
+                        withAnimation { currentPage += 1 }
+                    }
+                } label: {
+                    Text(currentPage == pages.count - 1 ? &quot;Get Started&quot; : &quot;Continue&quot;)
+                        .font(.headline)
+                        .foregroundStyle(pages[currentPage].colors[0])
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 16)
+                        .background(.white, in: RoundedRectangle(cornerRadius: 16))
+                }
+                .padding(.horizontal, 24)
+                .padding(.bottom, 40)
+            }
+        }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="5-hero-image-header-with-parallax-scroll">5. Hero Image Header with Parallax Scroll</h2>
+<pre><code class="language-swift">struct ParallaxHeroHeader: View {
+    @State private var scrollOffset: CGFloat = 0
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 0) {
+                GeometryReader { geo in
+                    let minY = geo.frame(in: .global).minY
+                    ZStack(alignment: .bottomLeading) {
+                        // Parallax image
+                        Rectangle()
+                            .fill(
+                                LinearGradient(
+                                    colors: [Color(hex: &quot;0A2463&quot;), Color(hex: &quot;1E88E5&quot;)],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                            .overlay(
+                                Image(systemName: &quot;mountain.2.fill&quot;)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .foregroundStyle(.white.opacity(0.15))
+                                    .padding(40)
+                            )
+                            .offset(y: minY &gt; 0 ? -minY * 0.5 : 0)
+
+                        // Gradient overlay for text legibility
+                        LinearGradient(
+                            colors: [.clear, .black.opacity(0.6)],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+
+                        // Title content
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text(&quot;EXPLORE&quot;)
+                                .font(.caption.weight(.bold))
+                                .kerning(2)
+                                .foregroundStyle(.white.opacity(0.7))
+
+                            Text(&quot;Mountains of\nSwiftUI&quot;)
+                                .font(.largeTitle.weight(.bold))
+                                .foregroundStyle(.white)
+                        }
+                        .padding(24)
+                    }
+                    .frame(height: max(350 + (minY &gt; 0 ? minY : 0), 350))
+                    .clipped()
+                }
+                .frame(height: 350)
+
+                // Content below hero
+                VStack(spacing: 16) {
+                    ForEach(0..&lt;10, id: \.self) { i in
+                        HStack(spacing: 16) {
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color(hex: &quot;1E88E5&quot;).opacity(0.1))
+                                .frame(width: 60, height: 60)
+                                .overlay(
+                                    Image(systemName: &quot;photo&quot;)
+                                        .foregroundStyle(Color(hex: &quot;1E88E5&quot;))
+                                )
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(&quot;Article \(i + 1)&quot;)
+                                    .font(.headline)
+                                Text(&quot;A beautiful description of this content piece.&quot;)
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                            }
+                            Spacer()
+                        }
+                        .padding(16)
+                        .background(Color(.secondarySystemGroupedBackground))
+                        .cornerRadius(16)
+                    }
+                }
+                .padding(16)
+            }
+        }
+        .ignoresSafeArea(edges: .top)
+    }
+}
+</code></pre>
+<hr />
+<h2 id="6-bottom-sheet-with-snap-points">6. Bottom Sheet with Snap Points</h2>
+<pre><code class="language-swift">struct BottomSheetDemo: View {
+    @State private var sheetOffset: CGFloat = 500
+    @GestureState private var dragOffset: CGFloat = 0
+
+    private let snapPoints: [CGFloat] = [100, 350, 600]
+
+    var body: some View {
+        ZStack {
+            Color(hex: &quot;0B0B1A&quot;).ignoresSafeArea()
+
+            VStack {
+                Text(&quot;Drag the sheet up&quot;)
+                    .foregroundStyle(.white)
+                    .font(.headline)
+            }
+
+            // Sheet
+            VStack(spacing: 0) {
+                // Handle
+                Capsule()
+                    .fill(Color(.systemGray3))
+                    .frame(width: 40, height: 5)
+                    .padding(.top, 10)
+                    .padding(.bottom, 16)
+
+                // Sheet content
+                VStack(alignment: .leading, spacing: 16) {
+                    Text(&quot;Discover Nearby&quot;)
+                        .font(.title2.weight(.bold))
+
+                    ForEach(0..&lt;5, id: \.self) { i in
+                        HStack(spacing: 12) {
+                            Circle()
+                                .fill(
+                                    LinearGradient(
+                                        colors: [Color(hex: &quot;8B5CF6&quot;), Color(hex: &quot;EC4899&quot;)],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    )
+                                )
+                                .frame(width: 44, height: 44)
+                                .overlay(
+                                    Image(systemName: &quot;mappin&quot;)
+                                        .foregroundStyle(.white)
+                                )
+                            VStack(alignment: .leading) {
+                                Text(&quot;Location \(i + 1)&quot;)
+                                    .font(.subheadline.weight(.semibold))
+                                Text(&quot;\(Double.random(in: 0.1...5.0), specifier: &quot;%.1f&quot;) km away&quot;)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                            Spacer()
+                            Image(systemName: &quot;chevron.right&quot;)
+                                .foregroundStyle(.tertiary)
+                        }
+                    }
+                }
+                .padding(.horizontal, 24)
+
+                Spacer()
+            }
+            .frame(maxWidth: .infinity)
+            .background(Color(.systemBackground))
+            .cornerRadius(24)
+            .shadow(color: .black.opacity(0.2), radius: 20, y: -5)
+            .offset(y: sheetOffset + dragOffset)
+            .gesture(
+                DragGesture()
+                    .updating($dragOffset) { value, state, _ in
+                        state = value.translation.height
+                    }
+                    .onEnded { value in
+                        let projected = sheetOffset + value.translation.height
+                        let nearest = snapPoints.min(by: {
+                            abs($0 - projected) &lt; abs($1 - projected)
+                        }) ?? snapPoints[1]
+                        withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                            sheetOffset = nearest
+                        }
+                    }
+            )
+        }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="7-animated-tab-bar">7. Animated Tab Bar</h2>
+<pre><code class="language-swift">struct AnimatedTabBar: View {
+    @State private var selectedTab = 0
+    @Namespace private var tabAnimation
+
+    let tabs: [(icon: String, label: String)] = [
+        (&quot;house.fill&quot;, &quot;Home&quot;),
+        (&quot;magnifyingglass&quot;, &quot;Search&quot;),
+        (&quot;plus.circle.fill&quot;, &quot;Add&quot;),
+        (&quot;heart.fill&quot;, &quot;Saved&quot;),
+        (&quot;person.fill&quot;, &quot;Profile&quot;),
+    ]
+
+    var body: some View {
+        VStack {
+            Spacer()
+            Text(&quot;Tab \(selectedTab)&quot;)
+                .font(.largeTitle.weight(.bold))
+                .foregroundStyle(.primary)
+            Spacer()
+
+            // Tab bar
+            HStack {
+                ForEach(0..&lt;tabs.count, id: \.self) { index in
+                    Button {
+                        withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) {
+                            selectedTab = index
+                        }
+                    } label: {
+                        VStack(spacing: 4) {
+                            ZStack {
+                                if selectedTab == index {
+                                    Capsule()
+                                        .fill(Color(hex: &quot;6C63FF&quot;).opacity(0.15))
+                                        .frame(width: 56, height: 32)
+                                        .matchedGeometryEffect(id: &quot;tabBG&quot;, in: tabAnimation)
+                                }
+
+                                Image(systemName: tabs[index].icon)
+                                    .font(.system(size: index == 2 ? 28 : 20))
+                                    .foregroundStyle(
+                                        selectedTab == index
+                                            ? Color(hex: &quot;6C63FF&quot;)
+                                            : .gray
+                                    )
+                                    .scaleEffect(selectedTab == index ? 1.15 : 1.0)
+                            }
+                            .frame(height: 32)
+
+                            Text(tabs[index].label)
+                                .font(.system(size: 10, weight: .medium))
+                                .foregroundStyle(
+                                    selectedTab == index
+                                        ? Color(hex: &quot;6C63FF&quot;)
+                                        : .gray
+                                )
+                        }
+                        .frame(maxWidth: .infinity)
+                    }
+                }
+            }
+            .padding(.top, 8)
+            .padding(.bottom, 4)
+            .background(
+                Rectangle()
+                    .fill(.ultraThinMaterial)
+                    .ignoresSafeArea(edges: .bottom)
+            )
+        }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="8-profile-card">8. Profile Card</h2>
+<pre><code class="language-swift">struct ProfileCard: View {
+    var body: some View {
+        VStack(spacing: 0) {
+            // Gradient header
+            ZStack(alignment: .bottom) {
+                LinearGradient(
+                    colors: [Color(hex: &quot;8B5CF6&quot;), Color(hex: &quot;EC4899&quot;)],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .frame(height: 140)
+
+                // Avatar
+                Circle()
+                    .fill(Color(.systemBackground))
+                    .frame(width: 88, height: 88)
+                    .overlay(
+                        Circle()
+                            .fill(
+                                LinearGradient(
+                                    colors: [Color(hex: &quot;6C63FF&quot;), Color(hex: &quot;A78BFA&quot;)],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                            .frame(width: 80, height: 80)
+                            .overlay(
+                                Text(&quot;JA&quot;)
+                                    .font(.title.weight(.bold))
+                                    .foregroundStyle(.white)
+                            )
+                    )
+                    .offset(y: 44)
+            }
+
+            VStack(spacing: 12) {
+                Text(&quot;Jane Appleseed&quot;)
+                    .font(.title3.weight(.bold))
+                    .padding(.top, 48)
+
+                Text(&quot;Senior iOS Engineer&quot;)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+
+                HStack(spacing: 32) {
+                    statItem(value: &quot;234&quot;, label: &quot;Posts&quot;)
+                    statItem(value: &quot;12.4K&quot;, label: &quot;Followers&quot;)
+                    statItem(value: &quot;891&quot;, label: &quot;Following&quot;)
+                }
+                .padding(.top, 8)
+
+                HStack(spacing: 12) {
+                    Button {} label: {
+                        Text(&quot;Follow&quot;)
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 10)
+                            .background(Color(hex: &quot;6C63FF&quot;), in: RoundedRectangle(cornerRadius: 12))
+                    }
+
+                    Button {} label: {
+                        Text(&quot;Message&quot;)
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(Color(hex: &quot;6C63FF&quot;))
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 10)
+                            .background(Color(hex: &quot;6C63FF&quot;).opacity(0.1), in: RoundedRectangle(cornerRadius: 12))
+                    }
+                }
+                .padding(.top, 8)
+            }
+            .padding(24)
+        }
+        .background(Color(.systemBackground))
+        .cornerRadius(24)
+        .shadow(color: .black.opacity(0.1), radius: 16, y: 8)
+        .padding(20)
+    }
+
+    func statItem(value: String, label: String) -&gt; some View {
+        VStack(spacing: 2) {
+            Text(value)
+                .font(.headline)
+            Text(label)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="9-dashboard-cards-with-charts">9. Dashboard Cards with Charts</h2>
+<pre><code class="language-swift">struct CircularProgressCard: View {
+    let progress: Double
+    let title: String
+    let subtitle: String
+    let color: Color
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(title)
+                        .font(.subheadline.weight(.semibold))
+                    Text(subtitle)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                Spacer()
+
+                ZStack {
+                    Circle()
+                        .stroke(color.opacity(0.15), lineWidth: 6)
+                    Circle()
+                        .trim(from: 0, to: progress)
+                        .stroke(color, style: StrokeStyle(lineWidth: 6, lineCap: .round))
+                        .rotationEffect(.degrees(-90))
+                    Text(&quot;\(Int(progress * 100))%&quot;)
+                        .font(.caption2.weight(.bold))
+                        .foregroundStyle(color)
+                }
+                .frame(width: 48, height: 48)
+            }
+
+            // Mini bar chart
+            HStack(alignment: .bottom, spacing: 4) {
+                ForEach(0..&lt;7, id: \.self) { _ in
+                    let height = CGFloat.random(in: 12...40)
+                    RoundedRectangle(cornerRadius: 3)
+                        .fill(color.opacity(Double.random(in: 0.3...1.0)))
+                        .frame(height: height)
+                }
+            }
+            .frame(height: 40)
+        }
+        .padding(20)
+        .background(Color(.secondarySystemGroupedBackground))
+        .cornerRadius(20)
+    }
+}
+
+struct DashboardView: View {
+    var body: some View {
+        ScrollView {
+            LazyVGrid(columns: [
+                GridItem(.flexible(), spacing: 12),
+                GridItem(.flexible(), spacing: 12),
+            ], spacing: 12) {
+                CircularProgressCard(
+                    progress: 0.78,
+                    title: &quot;Steps&quot;,
+                    subtitle: &quot;7,800 / 10,000&quot;,
+                    color: Color(hex: &quot;2D9F6F&quot;)
+                )
+                CircularProgressCard(
+                    progress: 0.45,
+                    title: &quot;Calories&quot;,
+                    subtitle: &quot;1,350 / 3,000&quot;,
+                    color: Color(hex: &quot;FF6B35&quot;)
+                )
+                CircularProgressCard(
+                    progress: 0.92,
+                    title: &quot;Sleep&quot;,
+                    subtitle: &quot;7.4 / 8.0 hrs&quot;,
+                    color: Color(hex: &quot;8B5CF6&quot;)
+                )
+                CircularProgressCard(
+                    progress: 0.60,
+                    title: &quot;Water&quot;,
+                    subtitle: &quot;1.8 / 3.0 L&quot;,
+                    color: Color(hex: &quot;0A6EBD&quot;)
+                )
+            }
+            .padding(16)
+        }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="10-floating-action-button">10. Floating Action Button</h2>
+<pre><code class="language-swift">struct FloatingActionButton: View {
+    @State private var isExpanded = false
+
+    let actions: [(icon: String, color: Color, label: String)] = [
+        (&quot;camera.fill&quot;, Color(hex: &quot;EC4899&quot;), &quot;Photo&quot;),
+        (&quot;doc.fill&quot;, Color(hex: &quot;F59E0B&quot;), &quot;Document&quot;),
+        (&quot;link&quot;, Color(hex: &quot;0A6EBD&quot;), &quot;Link&quot;),
+    ]
+
+    var body: some View {
+        ZStack(alignment: .bottomTrailing) {
+            Color.clear // Takes full space
+
+            VStack(spacing: 12) {
+                if isExpanded {
+                    ForEach(Array(actions.enumerated()), id: \.offset) { index, action in
+                        HStack(spacing: 12) {
+                            Text(action.label)
+                                .font(.subheadline.weight(.medium))
+                                .foregroundStyle(.primary)
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 6)
+                                .background(.ultraThinMaterial, in: Capsule())
+
+                            Button {} label: {
+                                Image(systemName: action.icon)
+                                    .font(.system(size: 18))
+                                    .foregroundStyle(.white)
+                                    .frame(width: 48, height: 48)
+                                    .background(action.color, in: Circle())
+                                    .shadow(color: action.color.opacity(0.3), radius: 8, y: 4)
+                            }
+                        }
+                        .transition(.asymmetric(
+                            insertion: .scale.combined(with: .opacity).combined(with: .offset(y: 20)),
+                            removal: .scale.combined(with: .opacity)
+                        ))
+                    }
+                }
+
+                Button {
+                    withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) {
+                        isExpanded.toggle()
+                    }
+                } label: {
+                    Image(systemName: &quot;plus&quot;)
+                        .font(.title2.weight(.semibold))
+                        .foregroundStyle(.white)
+                        .frame(width: 60, height: 60)
+                        .background(
+                            LinearGradient(
+                                colors: [Color(hex: &quot;6C63FF&quot;), Color(hex: &quot;8B5CF6&quot;)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ),
+                            in: Circle()
+                        )
+                        .shadow(color: Color(hex: &quot;6C63FF&quot;).opacity(0.4), radius: 12, y: 6)
+                        .rotationEffect(.degrees(isExpanded ? 45 : 0))
+                }
+            }
+            .padding(24)
+        }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="11-custom-toggle-with-animation">11. Custom Toggle with Animation</h2>
+<pre><code class="language-swift">struct PremiumToggle: View {
+    @Binding var isOn: Bool
+
+    var body: some View {
+        Button {
+            withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+                isOn.toggle()
+            }
+        } label: {
+            ZStack(alignment: isOn ? .trailing : .leading) {
+                Capsule()
+                    .fill(
+                        isOn
+                            ? LinearGradient(
+                                colors: [Color(hex: &quot;6C63FF&quot;), Color(hex: &quot;8B5CF6&quot;)],
+                                startPoint: .leading, endPoint: .trailing
+                              )
+                            : LinearGradient(
+                                colors: [Color(hex: &quot;E2E8F0&quot;), Color(hex: &quot;CBD5E1&quot;)],
+                                startPoint: .leading, endPoint: .trailing
+                              )
+                    )
+                    .frame(width: 56, height: 32)
+
+                Circle()
+                    .fill(.white)
+                    .frame(width: 26, height: 26)
+                    .shadow(color: .black.opacity(0.15), radius: 4, y: 2)
+                    .padding(3)
+            }
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+struct ToggleShowcase: View {
+    @State private var darkMode = false
+    @State private var notifications = true
+
+    var body: some View {
+        VStack(spacing: 16) {
+            HStack {
+                Label(&quot;Dark Mode&quot;, systemImage: &quot;moon.fill&quot;)
+                Spacer()
+                PremiumToggle(isOn: $darkMode)
+            }
+            Divider()
+            HStack {
+                Label(&quot;Notifications&quot;, systemImage: &quot;bell.fill&quot;)
+                Spacer()
+                PremiumToggle(isOn: $notifications)
+            }
+        }
+        .padding(20)
+        .background(Color(.secondarySystemGroupedBackground))
+        .cornerRadius(16)
+        .padding(20)
+    }
+}
+</code></pre>
+<hr />
+<h2 id="12-swipeable-card-stack">12. Swipeable Card Stack</h2>
+<pre><code class="language-swift">struct SwipeableCardStack: View {
+    @State private var cards: [CardData] = [
+        CardData(title: &quot;Explore Tokyo&quot;, color: Color(hex: &quot;6C63FF&quot;), icon: &quot;airplane&quot;),
+        CardData(title: &quot;Visit Paris&quot;, color: Color(hex: &quot;EC4899&quot;), icon: &quot;building.columns.fill&quot;),
+        CardData(title: &quot;Surf Bali&quot;, color: Color(hex: &quot;06B6D4&quot;), icon: &quot;water.waves&quot;),
+        CardData(title: &quot;Hike Patagonia&quot;, color: Color(hex: &quot;2D9F6F&quot;), icon: &quot;mountain.2.fill&quot;),
+        CardData(title: &quot;Safari Kenya&quot;, color: Color(hex: &quot;F59E0B&quot;), icon: &quot;leaf.fill&quot;),
+    ]
+
+    struct CardData: Identifiable {
+        let id = UUID()
+        let title: String
+        let color: Color
+        let icon: String
+    }
+
+    var body: some View {
+        ZStack {
+            ForEach(Array(cards.enumerated().reversed()), id: \.element.id) { index, card in
+                SwipeCard(card: card) {
+                    withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                        cards.removeAll { $0.id == card.id }
+                    }
+                }
+                .scaleEffect(1.0 - CGFloat(index) * 0.04)
+                .offset(y: CGFloat(index) * 8)
+                .allowsHitTesting(index == 0)
+            }
+        }
+        .padding(32)
+    }
+}
+
+struct SwipeCard: View {
+    let card: SwipeableCardStack.CardData
+    let onRemove: () -&gt; Void
+
+    @State private var offset: CGSize = .zero
+    @State private var rotation: Double = 0
+
+    var body: some View {
+        VStack(spacing: 20) {
+            Image(systemName: card.icon)
+                .font(.system(size: 60))
+                .foregroundStyle(.white)
+
+            Text(card.title)
+                .font(.title.weight(.bold))
+                .foregroundStyle(.white)
+
+            HStack(spacing: 40) {
+                Image(systemName: &quot;xmark&quot;)
+                    .font(.title2.weight(.bold))
+                    .foregroundStyle(.white.opacity(offset.width &lt; -20 ? 1 : 0.3))
+                Image(systemName: &quot;heart.fill&quot;)
+                    .font(.title2.weight(.bold))
+                    .foregroundStyle(.white.opacity(offset.width &gt; 20 ? 1 : 0.3))
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .frame(height: 400)
+        .background(
+            LinearGradient(
+                colors: [card.color, card.color.opacity(0.7)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            ),
+            in: RoundedRectangle(cornerRadius: 24)
+        )
+        .shadow(color: card.color.opacity(0.3), radius: 16, y: 8)
+        .offset(offset)
+        .rotationEffect(.degrees(rotation))
+        .gesture(
+            DragGesture()
+                .onChanged { value in
+                    offset = value.translation
+                    rotation = Double(value.translation.width / 20)
+                }
+                .onEnded { value in
+                    if abs(value.translation.width) &gt; 120 {
+                        withAnimation(.easeOut(duration: 0.3)) {
+                            offset = CGSize(
+                                width: value.translation.width &gt; 0 ? 500 : -500,
+                                height: 0
+                            )
+                        }
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                            onRemove()
+                        }
+                    } else {
+                        withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) {
+                            offset = .zero
+                            rotation = 0
+                        }
+                    }
+                }
+        )
+    }
+}
+</code></pre>
+<hr />
+<h2 id="13-pull-to-refresh-with-custom-animation">13. Pull-to-Refresh with Custom Animation</h2>
+<pre><code class="language-swift">struct CustomRefreshView: View {
+    @State private var items = (1...20).map { &quot;Item \($0)&quot; }
+    @State private var isRefreshing = false
+
+    var body: some View {
+        NavigationStack {
+            List {
+                ForEach(items, id: \.self) { item in
+                    HStack(spacing: 12) {
+                        Circle()
+                            .fill(
+                                LinearGradient(
+                                    colors: [Color(hex: &quot;6C63FF&quot;), Color(hex: &quot;A78BFA&quot;)],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                            .frame(width: 40, height: 40)
+                            .overlay(
+                                Image(systemName: &quot;star.fill&quot;)
+                                    .foregroundStyle(.white)
+                                    .font(.caption)
+                            )
+                        Text(item)
+                            .font(.body)
+                    }
+                    .padding(.vertical, 4)
+                }
+            }
+            .refreshable {
+                isRefreshing = true
+                try? await Task.sleep(for: .seconds(2))
+                items.shuffle()
+                isRefreshing = false
+            }
+            .navigationTitle(&quot;Feed&quot;)
+        }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="14-skeleton-loading-shimmer-effect">14. Skeleton Loading / Shimmer Effect</h2>
+<pre><code class="language-swift">struct ShimmerEffect: ViewModifier {
+    @State private var phase: CGFloat = 0
+
+    func body(content: Content) -&gt; some View {
+        content
+            .overlay(
+                LinearGradient(
+                    stops: [
+                        .init(color: .clear, location: phase - 0.2),
+                        .init(color: .white.opacity(0.5), location: phase),
+                        .init(color: .clear, location: phase + 0.2),
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .mask(content)
+            )
+            .onAppear {
+                withAnimation(.linear(duration: 1.5).repeatForever(autoreverses: false)) {
+                    phase = 1.2
+                }
+            }
+    }
+}
+
+extension View {
+    func shimmer() -&gt; some View {
+        modifier(ShimmerEffect())
+    }
+}
+
+struct SkeletonLoadingCard: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            // Avatar + name skeleton
+            HStack(spacing: 12) {
+                Circle()
+                    .fill(Color(.systemGray5))
+                    .frame(width: 44, height: 44)
+
+                VStack(alignment: .leading, spacing: 6) {
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(Color(.systemGray5))
+                        .frame(width: 120, height: 14)
+
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(Color(.systemGray5))
+                        .frame(width: 80, height: 10)
+                }
+            }
+
+            // Image placeholder
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color(.systemGray5))
+                .frame(height: 180)
+
+            // Text lines
+            RoundedRectangle(cornerRadius: 4)
+                .fill(Color(.systemGray5))
+                .frame(height: 14)
+
+            RoundedRectangle(cornerRadius: 4)
+                .fill(Color(.systemGray5))
+                .frame(width: 250, height: 14)
+
+            RoundedRectangle(cornerRadius: 4)
+                .fill(Color(.systemGray5))
+                .frame(width: 180, height: 14)
+        }
+        .padding(16)
+        .shimmer()
+    }
+}
+
+struct SkeletonDemo: View {
+    @State private var isLoading = true
+
+    var body: some View {
+        VStack {
+            if isLoading {
+                SkeletonLoadingCard()
+                SkeletonLoadingCard()
+            } else {
+                Text(&quot;Content loaded!&quot;)
+                    .font(.title)
+            }
+        }
+        .onAppear {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                withAnimation { isLoading = false }
+            }
+        }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="15-toast-snackbar-notification">15. Toast / Snackbar Notification</h2>
+<pre><code class="language-swift">struct ToastModifier: ViewModifier {
+    @Binding var isShowing: Bool
+    let message: String
+    let icon: String
+    let color: Color
+
+    func body(content: Content) -&gt; some View {
+        ZStack(alignment: .top) {
+            content
+
+            if isShowing {
+                HStack(spacing: 12) {
+                    Image(systemName: icon)
+                        .font(.body.weight(.semibold))
+                        .foregroundStyle(.white)
+
+                    Text(message)
+                        .font(.subheadline.weight(.medium))
+                        .foregroundStyle(.white)
+
+                    Spacer()
+
+                    Button {
+                        withAnimation(.spring(response: 0.3)) { isShowing = false }
+                    } label: {
+                        Image(systemName: &quot;xmark&quot;)
+                            .font(.caption.weight(.bold))
+                            .foregroundStyle(.white.opacity(0.7))
+                    }
+                }
+                .padding(16)
+                .background(color, in: RoundedRectangle(cornerRadius: 14))
+                .shadow(color: color.opacity(0.3), radius: 12, y: 6)
+                .padding(.horizontal, 16)
+                .padding(.top, 8)
+                .transition(.move(edge: .top).combined(with: .opacity))
+                .onAppear {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                        withAnimation(.spring(response: 0.3)) { isShowing = false }
+                    }
+                }
+            }
+        }
+        .animation(.spring(response: 0.4, dampingFraction: 0.8), value: isShowing)
+    }
+}
+
+extension View {
+    func toast(isShowing: Binding&lt;Bool&gt;, message: String, icon: String = &quot;checkmark.circle.fill&quot;, color: Color = Color(hex: &quot;2D9F6F&quot;)) -&gt; some View {
+        modifier(ToastModifier(isShowing: isShowing, message: message, icon: icon, color: color))
+    }
+}
+
+struct ToastDemo: View {
+    @State private var showSuccess = false
+    @State private var showError = false
+
+    var body: some View {
+        VStack(spacing: 16) {
+            Button(&quot;Show Success&quot;) {
+                showSuccess = true
+            }
+            .buttonStyle(.borderedProminent)
+
+            Button(&quot;Show Error&quot;) {
+                showError = true
+            }
+            .buttonStyle(.bordered)
+        }
+        .toast(isShowing: $showSuccess, message: &quot;Saved successfully!&quot;)
+        .toast(isShowing: $showError, message: &quot;Something went wrong.&quot;, icon: &quot;exclamationmark.circle.fill&quot;, color: Color(hex: &quot;DC2626&quot;))
+    }
+}
+</code></pre>
+<hr />
+<h2 id="16-expandable-card-with-matchedgeometryeffect">16. Expandable Card with matchedGeometryEffect</h2>
+<pre><code class="language-swift">struct ExpandableCardDemo: View {
+    @Namespace private var animation
+    @State private var selectedCard: Int? = nil
+
+    let cards = [
+        (title: &quot;Design&quot;, icon: &quot;paintbrush.fill&quot;, color: Color(hex: &quot;8B5CF6&quot;)),
+        (title: &quot;Develop&quot;, icon: &quot;chevron.left.forwardslash.chevron.right&quot;, color: Color(hex: &quot;0A6EBD&quot;)),
+        (title: &quot;Deploy&quot;, icon: &quot;rocket.fill&quot;, color: Color(hex: &quot;2D9F6F&quot;)),
+    ]
+
+    var body: some View {
+        ZStack {
+            // Grid of collapsed cards
+            if selectedCard == nil {
+                VStack(spacing: 12) {
+                    ForEach(0..&lt;cards.count, id: \.self) { index in
+                        let card = cards[index]
+                        HStack(spacing: 16) {
+                            Image(systemName: card.icon)
+                                .font(.title2)
+                                .foregroundStyle(.white)
+                                .frame(width: 48, height: 48)
+                                .background(card.color, in: RoundedRectangle(cornerRadius: 12))
+                                .matchedGeometryEffect(id: &quot;icon\(index)&quot;, in: animation)
+
+                            Text(card.title)
+                                .font(.headline)
+                                .matchedGeometryEffect(id: &quot;title\(index)&quot;, in: animation)
+
+                            Spacer()
+
+                            Image(systemName: &quot;chevron.right&quot;)
+                                .foregroundStyle(.tertiary)
+                        }
+                        .padding(16)
+                        .background(
+                            RoundedRectangle(cornerRadius: 16)
+                                .fill(Color(.secondarySystemGroupedBackground))
+                                .matchedGeometryEffect(id: &quot;bg\(index)&quot;, in: animation)
+                        )
+                        .onTapGesture {
+                            withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
+                                selectedCard = index
+                            }
+                        }
+                    }
+                }
+                .padding(16)
+            }
+
+            // Expanded card
+            if let selected = selectedCard {
+                let card = cards[selected]
+                VStack(spacing: 20) {
+                    HStack {
+                        Button {
+                            withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
+                                selectedCard = nil
+                            }
+                        } label: {
+                            Image(systemName: &quot;xmark&quot;)
+                                .font(.headline)
+                                .foregroundStyle(.secondary)
+                                .frame(width: 36, height: 36)
+                                .background(.ultraThinMaterial, in: Circle())
+                        }
+                        Spacer()
+                    }
+
+                    Image(systemName: card.icon)
+                        .font(.system(size: 48))
+                        .foregroundStyle(.white)
+                        .frame(width: 96, height: 96)
+                        .background(card.color, in: RoundedRectangle(cornerRadius: 24))
+                        .matchedGeometryEffect(id: &quot;icon\(selected)&quot;, in: animation)
+
+                    Text(card.title)
+                        .font(.largeTitle.weight(.bold))
+                        .matchedGeometryEffect(id: &quot;title\(selected)&quot;, in: animation)
+
+                    Text(&quot;This is the expanded view for the \(card.title) card. Here you can place detailed content, forms, or any additional UI elements.&quot;)
+                        .font(.body)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 20)
+
+                    Spacer()
+                }
+                .padding(24)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(
+                    RoundedRectangle(cornerRadius: 24)
+                        .fill(Color(.secondarySystemGroupedBackground))
+                        .matchedGeometryEffect(id: &quot;bg\(selected)&quot;, in: animation)
+                        .ignoresSafeArea()
+                )
+            }
+        }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="17-animated-gradient-background">17. Animated Gradient Background</h2>
+<pre><code class="language-swift">struct AnimatedGradientBackground: View {
+    @State private var animateGradient = false
+
+    var body: some View {
+        LinearGradient(
+            colors: [
+                Color(hex: &quot;6C63FF&quot;),
+                Color(hex: &quot;EC4899&quot;),
+                Color(hex: &quot;06B6D4&quot;),
+                Color(hex: &quot;8B5CF6&quot;),
+            ],
+            startPoint: animateGradient ? .topLeading : .bottomLeading,
+            endPoint: animateGradient ? .bottomTrailing : .topTrailing
+        )
+        .ignoresSafeArea()
+        .onAppear {
+            withAnimation(.easeInOut(duration: 5).repeatForever(autoreverses: true)) {
+                animateGradient.toggle()
+            }
+        }
+        .overlay(
+            VStack(spacing: 16) {
+                Text(&quot;Welcome Back&quot;)
+                    .font(.largeTitle.weight(.bold))
+                    .foregroundStyle(.white)
+                Text(&quot;Your animated gradient background&quot;)
+                    .font(.subheadline)
+                    .foregroundStyle(.white.opacity(0.8))
+            }
+        )
+    }
+}
+</code></pre>
+<hr />
+<h2 id="18-blurred-header-that-changes-on-scroll">18. Blurred Header that Changes on Scroll</h2>
+<pre><code class="language-swift">struct BlurredScrollHeader: View {
+    @State private var scrollOffset: CGFloat = 0
+    private let headerTitle = &quot;Discover&quot;
+
+    var body: some View {
+        ZStack(alignment: .top) {
+            ScrollView {
+                VStack(spacing: 0) {
+                    // Spacer for the header
+                    Color.clear.frame(height: 100)
+
+                    // Content
+                    LazyVStack(spacing: 12) {
+                        ForEach(0..&lt;25, id: \.self) { i in
+                            HStack(spacing: 12) {
+                                RoundedRectangle(cornerRadius: 10)
+                                    .fill(
+                                        LinearGradient(
+                                            colors: [
+                                                Color(hex: &quot;6C63FF&quot;).opacity(Double(i % 5 + 1) / 5.0),
+                                                Color(hex: &quot;EC4899&quot;).opacity(Double(i % 5 + 1) / 5.0),
+                                            ],
+                                            startPoint: .topLeading,
+                                            endPoint: .bottomTrailing
+                                        )
+                                    )
+                                    .frame(width: 56, height: 56)
+                                    .overlay(
+                                        Image(systemName: &quot;music.note&quot;)
+                                            .foregroundStyle(.white)
+                                    )
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(&quot;Track \(i + 1)&quot;)
+                                        .font(.headline)
+                                    Text(&quot;Artist Name&quot;)
+                                        .font(.subheadline)
+                                        .foregroundStyle(.secondary)
+                                }
+                                Spacer()
+                                Text(&quot;3:4\(i % 10)&quot;)
+                                    .font(.caption)
+                                    .foregroundStyle(.tertiary)
+                            }
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 8)
+                        }
+                    }
+                }
+                .background(
+                    GeometryReader { geo in
+                        Color.clear.preference(
+                            key: ScrollOffsetKey.self,
+                            value: geo.frame(in: .named(&quot;scroll&quot;)).minY
+                        )
+                    }
+                )
+            }
+            .coordinateSpace(name: &quot;scroll&quot;)
+            .onPreferenceChange(ScrollOffsetKey.self) { value in
+                scrollOffset = value
+            }
+
+            // Floating header
+            VStack(spacing: 0) {
+                HStack {
+                    Text(headerTitle)
+                        .font(scrollOffset &lt; -20 ? .headline : .largeTitle.weight(.bold))
+                        .animation(.easeInOut(duration: 0.2), value: scrollOffset &lt; -20)
+                    Spacer()
+                    Image(systemName: &quot;magnifyingglass&quot;)
+                        .font(.title3)
+                        .foregroundStyle(.primary)
+                }
+                .padding(.horizontal, 16)
+                .padding(.top, 56)
+                .padding(.bottom, 12)
+                .background(
+                    Rectangle()
+                        .fill(.ultraThinMaterial)
+                        .opacity(scrollOffset &lt; -10 ? 1 : 0)
+                        .ignoresSafeArea(edges: .top)
+                )
+            }
+        }
+    }
+}
+
+struct ScrollOffsetKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -&gt; CGFloat) {
+        value = nextValue()
+    }
+}
+</code></pre>
+<hr />
+<h2 id="19-chip-tag-flow-layout">19. Chip / Tag Flow Layout</h2>
+<pre><code class="language-swift">struct FlowLayout: Layout {
+    var spacing: CGFloat = 8
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -&gt; CGSize {
+        let result = layout(proposal: proposal, subviews: subviews)
+        return result.size
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        let result = layout(proposal: proposal, subviews: subviews)
+        for (index, position) in result.positions.enumerated() {
+            subviews[index].place(
+                at: CGPoint(x: bounds.minX + position.x, y: bounds.minY + position.y),
+                proposal: ProposedViewSize(result.sizes[index])
+            )
+        }
+    }
+
+    private func layout(proposal: ProposedViewSize, subviews: Subviews) -&gt; LayoutResult {
+        let maxWidth = proposal.width ?? .infinity
+        var positions: [CGPoint] = []
+        var sizes: [CGSize] = []
+        var x: CGFloat = 0
+        var y: CGFloat = 0
+        var rowHeight: CGFloat = 0
+
+        for subview in subviews {
+            let size = subview.sizeThatFits(.unspecified)
+            sizes.append(size)
+            if x + size.width &gt; maxWidth &amp;&amp; x &gt; 0 {
+                x = 0
+                y += rowHeight + spacing
+                rowHeight = 0
+            }
+            positions.append(CGPoint(x: x, y: y))
+            rowHeight = max(rowHeight, size.height)
+            x += size.width + spacing
+        }
+
+        return LayoutResult(
+            size: CGSize(width: maxWidth, height: y + rowHeight),
+            positions: positions,
+            sizes: sizes
+        )
+    }
+
+    struct LayoutResult {
+        var size: CGSize
+        var positions: [CGPoint]
+        var sizes: [CGSize]
+    }
+}
+
+struct ChipView: View {
+    let label: String
+    let color: Color
+    @State private var isSelected = false
+
+    var body: some View {
+        Button {
+            withAnimation(.spring(response: 0.3)) {
+                isSelected.toggle()
+            }
+        } label: {
+            Text(label)
+                .font(.subheadline.weight(.medium))
+                .foregroundStyle(isSelected ? .white : color)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 8)
+                .background(
+                    isSelected ? AnyShapeStyle(color) : AnyShapeStyle(color.opacity(0.1)),
+                    in: Capsule()
+                )
+                .overlay(
+                    Capsule()
+                        .stroke(color.opacity(isSelected ? 0 : 0.3), lineWidth: 1)
+                )
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+struct ChipFlowDemo: View {
+    let tags = [
+        (&quot;SwiftUI&quot;, Color(hex: &quot;6C63FF&quot;)),
+        (&quot;iOS 18&quot;, Color(hex: &quot;EC4899&quot;)),
+        (&quot;Design&quot;, Color(hex: &quot;2D9F6F&quot;)),
+        (&quot;Animation&quot;, Color(hex: &quot;FF6B35&quot;)),
+        (&quot;Accessibility&quot;, Color(hex: &quot;0A6EBD&quot;)),
+        (&quot;Performance&quot;, Color(hex: &quot;8B5CF6&quot;)),
+        (&quot;Dark Mode&quot;, Color(hex: &quot;1E1B4B&quot;)),
+        (&quot;Typography&quot;, Color(hex: &quot;F59E0B&quot;)),
+        (&quot;Color System&quot;, Color(hex: &quot;06B6D4&quot;)),
+        (&quot;Layout&quot;, Color(hex: &quot;DC2626&quot;)),
+    ]
+
+    var body: some View {
+        FlowLayout(spacing: 8) {
+            ForEach(tags, id: \.0) { tag in
+                ChipView(label: tag.0, color: tag.1)
+            }
+        }
+        .padding(20)
+    }
+}
+</code></pre>
+<hr />
+<h2 id="20-rating-stars-component">20. Rating Stars Component</h2>
+<pre><code class="language-swift">struct RatingStars: View {
+    @Binding var rating: Int
+    let maxRating: Int
+    let starSize: CGFloat
+    let activeColor: Color
+    let inactiveColor: Color
+
+    init(
+        rating: Binding&lt;Int&gt;,
+        maxRating: Int = 5,
+        starSize: CGFloat = 28,
+        activeColor: Color = Color(hex: &quot;F59E0B&quot;),
+        inactiveColor: Color = Color(hex: &quot;E2E8F0&quot;)
+    ) {
+        self._rating = rating
+        self.maxRating = maxRating
+        self.starSize = starSize
+        self.activeColor = activeColor
+        self.inactiveColor = inactiveColor
+    }
+
+    var body: some View {
+        HStack(spacing: 6) {
+            ForEach(1...maxRating, id: \.self) { index in
+                Image(systemName: index &lt;= rating ? &quot;star.fill&quot; : &quot;star&quot;)
+                    .font(.system(size: starSize))
+                    .foregroundStyle(index &lt;= rating ? activeColor : inactiveColor)
+                    .symbolEffect(.bounce, value: rating)
+                    .onTapGesture {
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.5)) {
+                            rating = index
+                        }
+                    }
+            }
+        }
+    }
+}
+
+struct RatingDemo: View {
+    @State private var rating1 = 3
+    @State private var rating2 = 4
+
+    var body: some View {
+        VStack(spacing: 32) {
+            VStack(spacing: 8) {
+                Text(&quot;Rate your experience&quot;)
+                    .font(.headline)
+                RatingStars(rating: $rating1)
+                Text(&quot;\(rating1) out of 5&quot;)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            VStack(spacing: 8) {
+                Text(&quot;Custom style&quot;)
+                    .font(.headline)
+                RatingStars(
+                    rating: $rating2,
+                    starSize: 36,
+                    activeColor: Color(hex: &quot;EC4899&quot;),
+                    inactiveColor: Color(hex: &quot;FCE7F3&quot;)
+                )
+            }
+        }
+        .padding(24)
+    }
+}
+</code></pre>
+<hr />
+<h2 id="bonus-combining-patterns-premium-app-screen">Bonus: Combining Patterns -- Premium App Screen</h2>
+<p>A full composition showing how multiple patterns work together.</p>
+<pre><code class="language-swift">struct PremiumHomeScreen: View {
+    @State private var selectedTab = 0
+    @State private var showToast = false
+
+    var body: some View {
+        ZStack {
+            Color(.systemGroupedBackground)
+                .ignoresSafeArea()
+
+            ScrollView {
+                VStack(spacing: 20) {
+                    // Hero gradient header
+                    ZStack(alignment: .bottomLeading) {
+                        LinearGradient(
+                            colors: [Color(hex: &quot;6C63FF&quot;), Color(hex: &quot;8B5CF6&quot;), Color(hex: &quot;EC4899&quot;)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                        .frame(height: 220)
+                        .cornerRadius(24)
+
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text(&quot;Good Morning&quot;)
+                                .font(.subheadline)
+                                .foregroundStyle(.white.opacity(0.8))
+                            Text(&quot;Jane&quot;)
+                                .font(.largeTitle.weight(.bold))
+                                .foregroundStyle(.white)
+                        }
+                        .padding(24)
+                    }
+                    .padding(.horizontal, 16)
+
+                    // Chip tags
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            ForEach([&quot;All&quot;, &quot;Design&quot;, &quot;Code&quot;, &quot;Health&quot;, &quot;Finance&quot;], id: \.self) { tag in
+                                Text(tag)
+                                    .font(.subheadline.weight(.medium))
+                                    .foregroundStyle(tag == &quot;All&quot; ? .white : .primary)
+                                    .padding(.horizontal, 16)
+                                    .padding(.vertical, 8)
+                                    .background(
+                                        tag == &quot;All&quot;
+                                            ? AnyShapeStyle(Color(hex: &quot;6C63FF&quot;))
+                                            : AnyShapeStyle(Color(.secondarySystemGroupedBackground)),
+                                        in: Capsule()
+                                    )
+                            }
+                        }
+                        .padding(.horizontal, 16)
+                    }
+
+                    // Dashboard grid
+                    LazyVGrid(columns: [
+                        GridItem(.flexible(), spacing: 12),
+                        GridItem(.flexible(), spacing: 12),
+                    ], spacing: 12) {
+                        CircularProgressCard(
+                            progress: 0.72,
+                            title: &quot;Tasks&quot;,
+                            subtitle: &quot;18 / 25&quot;,
+                            color: Color(hex: &quot;6C63FF&quot;)
+                        )
+                        CircularProgressCard(
+                            progress: 0.45,
+                            title: &quot;Goals&quot;,
+                            subtitle: &quot;3 / 7&quot;,
+                            color: Color(hex: &quot;2D9F6F&quot;)
+                        )
+                    }
+                    .padding(.horizontal, 16)
+
+                    // Glass card
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack {
+                            Image(systemName: &quot;sparkles&quot;)
+                                .foregroundStyle(Color(hex: &quot;F59E0B&quot;))
+                            Text(&quot;Featured&quot;)
+                                .font(.headline)
+                            Spacer()
+                            Text(&quot;NEW&quot;)
+                                .font(.caption2.weight(.bold))
+                                .foregroundStyle(.white)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 3)
+                                .background(Color(hex: &quot;EC4899&quot;), in: Capsule())
+                        }
+                        Text(&quot;Unlock premium features and take your productivity to the next level.&quot;)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+
+                        Button {
+                            showToast = true
+                        } label: {
+                            Text(&quot;Upgrade Now&quot;)
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(.white)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 12)
+                                .background(
+                                    LinearGradient(
+                                        colors: [Color(hex: &quot;6C63FF&quot;), Color(hex: &quot;8B5CF6&quot;)],
+                                        startPoint: .leading,
+                                        endPoint: .trailing
+                                    ),
+                                    in: RoundedRectangle(cornerRadius: 12)
+                                )
+                        }
+                    }
+                    .padding(20)
+                    .background(Color(.secondarySystemGroupedBackground))
+                    .cornerRadius(20)
+                    .padding(.horizontal, 16)
+
+                    // Bottom spacing for tab bar
+                    Color.clear.frame(height: 80)
+                }
+            }
+        }
+        .toast(isShowing: $showToast, message: &quot;Welcome to Premium!&quot;)
+    }
+}
+</code></pre>
+<hr />
+<h2 id="quick-reference">Quick Reference</h2>
+<table>
+<thead>
+<tr>
+<th>Pattern</th>
+<th>Key Techniques</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Glass Morphism</td>
+<td><code>.ultraThinMaterial</code>, gradient border stroke</td>
+</tr>
+<tr>
+<td>Neumorphism</td>
+<td>Dual shadows (light + dark), same-as-background fill</td>
+</tr>
+<tr>
+<td>Gradient Shadow</td>
+<td>Shadow color matching card gradient</td>
+</tr>
+<tr>
+<td>Onboarding</td>
+<td><code>TabView(.page)</code>, custom indicators, <code>matchedGeometryEffect</code></td>
+</tr>
+<tr>
+<td>Parallax Hero</td>
+<td><code>GeometryReader</code>, offset based on <code>minY</code></td>
+</tr>
+<tr>
+<td>Bottom Sheet</td>
+<td><code>DragGesture</code>, snap points, spring animation</td>
+</tr>
+<tr>
+<td>Animated Tab Bar</td>
+<td><code>matchedGeometryEffect</code>, <code>@Namespace</code></td>
+</tr>
+<tr>
+<td>Profile Card</td>
+<td>Gradient header, overlapping avatar, stat row</td>
+</tr>
+<tr>
+<td>Dashboard Cards</td>
+<td><code>Circle().trim()</code>, mini bar charts</td>
+</tr>
+<tr>
+<td>FAB</td>
+<td>Expand/collapse with spring, rotation</td>
+</tr>
+<tr>
+<td>Custom Toggle</td>
+<td><code>ZStack</code> alignment toggle, spring animation</td>
+</tr>
+<tr>
+<td>Swipe Cards</td>
+<td><code>DragGesture</code>, rotation, threshold-based removal</td>
+</tr>
+<tr>
+<td>Pull-to-Refresh</td>
+<td><code>.refreshable</code> async modifier</td>
+</tr>
+<tr>
+<td>Skeleton/Shimmer</td>
+<td><code>ViewModifier</code>, animated <code>LinearGradient</code> overlay</td>
+</tr>
+<tr>
+<td>Toast</td>
+<td><code>ViewModifier</code>, auto-dismiss, slide transition</td>
+</tr>
+<tr>
+<td>Expandable Card</td>
+<td><code>matchedGeometryEffect</code>, <code>@Namespace</code></td>
+</tr>
+<tr>
+<td>Animated Gradient</td>
+<td><code>repeatForever</code> animation on gradient points</td>
+</tr>
+<tr>
+<td>Blurred Scroll Header</td>
+<td><code>PreferenceKey</code>, <code>.ultraThinMaterial</code> opacity</td>
+</tr>
+<tr>
+<td>Chip Flow Layout</td>
+<td>Custom <code>Layout</code> protocol, <code>Capsule</code> backgrounds</td>
+</tr>
+<tr>
+<td>Rating Stars</td>
+<td><code>symbolEffect(.bounce)</code>, tap gesture</td>
+</tr>
+</tbody>
+</table></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

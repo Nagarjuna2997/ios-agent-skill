@@ -1,0 +1,514 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Third-Party Animation Integration — iOS Agent Skill</title><meta name="description" content="Repository guidance for Third-Party Animation Integration. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/design-third-party-animations.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="Third-Party Animation Integration"><meta property="og:description" content="Repository guidance for Third-Party Animation Integration. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/design-third-party-animations.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "Third-Party Animation Integration", "description": "Repository guidance for Third-Party Animation Integration. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/design-third-party-animations.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Design · Reference guide</p><h1>Third-Party Animation Integration</h1><p class="lead">Repository guidance for Third-Party Animation Integration. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/design/third-party-animations.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#lottie-integration">Lottie Integration</a><ul>
+<li><a href="#adding-lottie-via-spm">Adding Lottie via SPM</a></li>
+<li><a href="#uikit-lottieanimationview-basics">UIKit: LottieAnimationView Basics</a></li>
+<li><a href="#swiftui-uiviewrepresentable-wrapper">SwiftUI: UIViewRepresentable Wrapper</a></li>
+<li><a href="#complete-swiftui-lottieview-wrapper-with-binding-controls">Complete SwiftUI LottieView Wrapper with Binding Controls</a></li>
+<li><a href="#playing-specific-frame-ranges">Playing Specific Frame Ranges</a></li>
+<li><a href="#color-value-providers-for-dynamic-theming">Color Value Providers for Dynamic Theming</a></li>
+</ul>
+</li>
+<li><a href="#rive-integration">Rive Integration</a><ul>
+<li><a href="#adding-rive-via-spm">Adding Rive via SPM</a></li>
+<li><a href="#riveviewmodel-basics">RiveViewModel Basics</a></li>
+<li><a href="#swiftui-integration">SwiftUI Integration</a></li>
+<li><a href="#state-machines-inputs-triggers-booleans-numbers">State Machines: Inputs, Triggers, Booleans, Numbers</a></li>
+<li><a href="#artboard-and-animation-selection">Artboard and Animation Selection</a></li>
+<li><a href="#complete-interactive-rive-toggle-example">Complete Interactive Rive Toggle Example</a></li>
+</ul>
+</li>
+<li><a href="#when-to-use-what">When to Use What</a><ul>
+<li><a href="#decision-table">Decision Table</a></li>
+<li><a href="#summary-guidelines">Summary Guidelines</a></li>
+<li><a href="#file-size-comparison">File Size Comparison</a></li>
+<li><a href="#performance-characteristics">Performance Characteristics</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</aside><p>Guide for integrating Lottie and Rive animation libraries into iOS projects, with SwiftUI wrappers and usage patterns.</p>
+<hr />
+<h2 id="lottie-integration">Lottie Integration</h2>
+<p><a href="https://github.com/airbnb/lottie-ios">Lottie</a> renders Adobe After Effects animations exported as JSON via the Bodymovin plugin. It is the industry standard for complex vector animations on iOS.</p>
+<h3 id="adding-lottie-via-spm">Adding Lottie via SPM</h3>
+<p>In Xcode: File &gt; Add Package Dependencies, then enter:</p>
+<pre><code>https://github.com/airbnb/lottie-ios.git
+</code></pre>
+<p>Select the <code>Lottie</code> library and add it to your target. Use the latest stable version (4.x+).</p>
+<h3 id="uikit-lottieanimationview-basics">UIKit: LottieAnimationView Basics</h3>
+<pre><code class="language-swift">import Lottie
+
+let animationView = LottieAnimationView(name: &quot;loading&quot;) // Loads loading.json from bundle
+animationView.contentMode = .scaleAspectFit
+animationView.loopMode = .loop
+animationView.animationSpeed = 1.0
+animationView.frame = CGRect(x: 0, y: 0, width: 200, height: 200)
+view.addSubview(animationView)
+animationView.play()
+</code></pre>
+<h3 id="swiftui-uiviewrepresentable-wrapper">SwiftUI: UIViewRepresentable Wrapper</h3>
+<p>Lottie 4.x ships with a built-in <code>LottieView</code> for SwiftUI. If you need more control, build a custom wrapper:</p>
+<pre><code class="language-swift">import SwiftUI
+import Lottie
+
+struct LottieAnimationUIView: UIViewRepresentable {
+    let animationName: String
+    var loopMode: LottieLoopMode = .loop
+    var animationSpeed: CGFloat = 1.0
+    @Binding var isPlaying: Bool
+
+    func makeUIView(context: Context) -&gt; LottieAnimationView {
+        let view = LottieAnimationView(name: animationName)
+        view.contentMode = .scaleAspectFit
+        view.loopMode = loopMode
+        view.animationSpeed = animationSpeed
+        return view
+    }
+
+    func updateUIView(_ uiView: LottieAnimationView, context: Context) {
+        uiView.loopMode = loopMode
+        uiView.animationSpeed = animationSpeed
+
+        if isPlaying {
+            if !uiView.isAnimationPlaying {
+                uiView.play()
+            }
+        } else {
+            uiView.pause()
+        }
+    }
+}
+</code></pre>
+<h3 id="complete-swiftui-lottieview-wrapper-with-binding-controls">Complete SwiftUI LottieView Wrapper with Binding Controls</h3>
+<pre><code class="language-swift">import SwiftUI
+import Lottie
+
+struct LottiePlayerView: UIViewRepresentable {
+    let animationName: String
+    var loopMode: LottieLoopMode = .loop
+    var animationSpeed: CGFloat = 1.0
+    @Binding var playbackState: PlaybackState
+
+    enum PlaybackState {
+        case playing
+        case paused
+        case stopped
+    }
+
+    func makeCoordinator() -&gt; Coordinator {
+        Coordinator()
+    }
+
+    func makeUIView(context: Context) -&gt; LottieAnimationView {
+        let animationView = LottieAnimationView(name: animationName)
+        animationView.contentMode = .scaleAspectFit
+        animationView.loopMode = loopMode
+        animationView.animationSpeed = animationSpeed
+        context.coordinator.animationView = animationView
+        return animationView
+    }
+
+    func updateUIView(_ uiView: LottieAnimationView, context: Context) {
+        uiView.loopMode = loopMode
+        uiView.animationSpeed = animationSpeed
+
+        switch playbackState {
+        case .playing:
+            if !uiView.isAnimationPlaying {
+                uiView.play()
+            }
+        case .paused:
+            uiView.pause()
+        case .stopped:
+            uiView.stop()
+        }
+    }
+
+    class Coordinator {
+        weak var animationView: LottieAnimationView?
+    }
+}
+
+// Usage
+struct LottieDemo: View {
+    @State private var playbackState: LottiePlayerView.PlaybackState = .playing
+    @State private var speed: CGFloat = 1.0
+
+    var body: some View {
+        VStack(spacing: 24) {
+            LottiePlayerView(
+                animationName: &quot;confetti&quot;,
+                loopMode: .loop,
+                animationSpeed: speed,
+                playbackState: $playbackState
+            )
+            .frame(width: 300, height: 300)
+
+            HStack(spacing: 16) {
+                Button(&quot;Play&quot;) { playbackState = .playing }
+                    .buttonStyle(.borderedProminent)
+
+                Button(&quot;Pause&quot;) { playbackState = .paused }
+                    .buttonStyle(.bordered)
+
+                Button(&quot;Stop&quot;) { playbackState = .stopped }
+                    .buttonStyle(.bordered)
+            }
+
+            VStack {
+                Text(&quot;Speed: \(speed, specifier: &quot;%.1f&quot;)x&quot;)
+                    .font(.subheadline)
+                Slider(value: $speed, in: 0.1...3.0, step: 0.1)
+            }
+            .padding(.horizontal)
+        }
+        .padding()
+    }
+}
+</code></pre>
+<h3 id="playing-specific-frame-ranges">Playing Specific Frame Ranges</h3>
+<pre><code class="language-swift">import Lottie
+
+// Play frames 0 through 60
+let animationView = LottieAnimationView(name: &quot;multiSection&quot;)
+animationView.play(fromFrame: 0, toFrame: 60, loopMode: .playOnce)
+
+// Play a named marker range (markers set in After Effects)
+animationView.play(fromMarker: &quot;start&quot;, toMarker: &quot;end&quot;, loopMode: .loop)
+
+// Jump to a specific progress (0.0 to 1.0)
+animationView.currentProgress = 0.5
+</code></pre>
+<h3 id="color-value-providers-for-dynamic-theming">Color Value Providers for Dynamic Theming</h3>
+<pre><code class="language-swift">import Lottie
+
+let animationView = LottieAnimationView(name: &quot;icon&quot;)
+
+// Override a specific color in the animation
+let colorProvider = ColorValueProvider(UIColor.systemBlue.lottieColorValue)
+animationView.setValueProvider(
+    colorProvider,
+    keypath: AnimationKeypath(keypath: &quot;**.Fill 1.Color&quot;)
+)
+
+// Use a dynamic color block
+let dynamicProvider = ColorValueProvider { _ in
+    return UIColor.tintColor.lottieColorValue
+}
+animationView.setValueProvider(
+    dynamicProvider,
+    keypath: AnimationKeypath(keypath: &quot;**.Stroke 1.Color&quot;)
+)
+</code></pre>
+<hr />
+<h2 id="rive-integration">Rive Integration</h2>
+<p><a href="https://rive.app">Rive</a> is a real-time animation platform that supports state machines, making animations interactive and responsive to user input. Rive files are typically smaller than Lottie JSON.</p>
+<h3 id="adding-rive-via-spm">Adding Rive via SPM</h3>
+<p>In Xcode: File &gt; Add Package Dependencies, then enter:</p>
+<pre><code>https://github.com/rive-app/rive-ios.git
+</code></pre>
+<p>Select the <code>RiveRuntime</code> library and add it to your target.</p>
+<h3 id="riveviewmodel-basics">RiveViewModel Basics</h3>
+<pre><code class="language-swift">import RiveRuntime
+
+// Load a .riv file from the bundle
+let riveViewModel = RiveViewModel(fileName: &quot;animated_icon&quot;)
+
+// In UIKit
+let riveView = riveViewModel.createRiveView()
+view.addSubview(riveView)
+</code></pre>
+<h3 id="swiftui-integration">SwiftUI Integration</h3>
+<p>Rive provides a built-in SwiftUI view through <code>RiveViewModel</code>:</p>
+<pre><code class="language-swift">import SwiftUI
+import RiveRuntime
+
+struct RiveAnimationView: View {
+    var viewModel = RiveViewModel(fileName: &quot;loading_spinner&quot;)
+
+    var body: some View {
+        viewModel.view()
+            .frame(width: 200, height: 200)
+    }
+}
+</code></pre>
+<h3 id="state-machines-inputs-triggers-booleans-numbers">State Machines: Inputs, Triggers, Booleans, Numbers</h3>
+<p>Rive state machines let you control animation states through inputs defined in the Rive editor.</p>
+<pre><code class="language-swift">import SwiftUI
+import RiveRuntime
+
+struct RiveStateMachineDemo: View {
+    var viewModel = RiveViewModel(fileName: &quot;interactive_button&quot;, stateMachineName: &quot;State Machine 1&quot;)
+
+    var body: some View {
+        VStack(spacing: 20) {
+            viewModel.view()
+                .frame(width: 300, height: 200)
+
+            // Trigger a one-shot input
+            Button(&quot;Fire Trigger&quot;) {
+                viewModel.triggerInput(&quot;pressed&quot;)
+            }
+
+            // Toggle a boolean input
+            Button(&quot;Toggle Hover&quot;) {
+                viewModel.setInput(&quot;isHovered&quot;, value: true)
+            }
+
+            // Set a numeric input
+            Button(&quot;Set Progress&quot;) {
+                viewModel.setInput(&quot;progress&quot;, value: 0.75)
+            }
+        }
+    }
+}
+</code></pre>
+<h3 id="artboard-and-animation-selection">Artboard and Animation Selection</h3>
+<pre><code class="language-swift">import RiveRuntime
+
+// Select a specific artboard and animation
+let viewModel = RiveViewModel(
+    fileName: &quot;multi_artboard&quot;,
+    artboardName: &quot;IconArtboard&quot;,
+    animationName: &quot;idle&quot;
+)
+
+// Switch animation at runtime
+viewModel.play(animationName: &quot;active&quot;)
+viewModel.pause()
+viewModel.stop()
+</code></pre>
+<h3 id="complete-interactive-rive-toggle-example">Complete Interactive Rive Toggle Example</h3>
+<pre><code class="language-swift">import SwiftUI
+import RiveRuntime
+
+struct RiveToggle: View {
+    @State private var isOn = false
+    var viewModel = RiveViewModel(fileName: &quot;toggle_switch&quot;, stateMachineName: &quot;Toggle Machine&quot;)
+
+    var body: some View {
+        VStack(spacing: 24) {
+            viewModel.view()
+                .frame(width: 120, height: 60)
+                .onTapGesture {
+                    isOn.toggle()
+                    viewModel.setInput(&quot;isOn&quot;, value: isOn)
+                }
+
+            Text(isOn ? &quot;Enabled&quot; : &quot;Disabled&quot;)
+                .font(.headline)
+                .foregroundStyle(isOn ? .green : .secondary)
+        }
+    }
+}
+
+// A more complete settings screen with Rive toggles
+struct RiveSettingsView: View {
+    @State private var notificationsOn = true
+    @State private var darkModeOn = false
+
+    var notificationsVM = RiveViewModel(fileName: &quot;toggle_switch&quot;, stateMachineName: &quot;Toggle Machine&quot;)
+    var darkModeVM = RiveViewModel(fileName: &quot;toggle_switch&quot;, stateMachineName: &quot;Toggle Machine&quot;)
+
+    var body: some View {
+        NavigationStack {
+            List {
+                HStack {
+                    Label(&quot;Notifications&quot;, systemImage: &quot;bell.fill&quot;)
+                    Spacer()
+                    notificationsVM.view()
+                        .frame(width: 60, height: 30)
+                        .onTapGesture {
+                            notificationsOn.toggle()
+                            notificationsVM.setInput(&quot;isOn&quot;, value: notificationsOn)
+                        }
+                }
+
+                HStack {
+                    Label(&quot;Dark Mode&quot;, systemImage: &quot;moon.fill&quot;)
+                    Spacer()
+                    darkModeVM.view()
+                        .frame(width: 60, height: 30)
+                        .onTapGesture {
+                            darkModeOn.toggle()
+                            darkModeVM.setInput(&quot;isOn&quot;, value: darkModeOn)
+                        }
+                }
+            }
+            .navigationTitle(&quot;Settings&quot;)
+        }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="when-to-use-what">When to Use What</h2>
+<h3 id="decision-table">Decision Table</h3>
+<table>
+<thead>
+<tr>
+<th>Use Case</th>
+<th>Recommended</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Complex vector animations from After Effects</td>
+<td><strong>Lottie</strong></td>
+<td>Direct Bodymovin export, massive community library</td>
+</tr>
+<tr>
+<td>One-shot success/error/loading animations</td>
+<td><strong>Lottie</strong></td>
+<td>Easy to drop in, many free animations on LottieFiles</td>
+</tr>
+<tr>
+<td>Splash screen or onboarding animations</td>
+<td><strong>Lottie</strong></td>
+<td>Smooth, high-fidelity playback</td>
+</tr>
+<tr>
+<td>Interactive toggles, buttons, switches</td>
+<td><strong>Rive</strong></td>
+<td>State machines handle input-driven transitions</td>
+</tr>
+<tr>
+<td>Animations that respond to data (progress, score)</td>
+<td><strong>Rive</strong></td>
+<td>Number inputs drive animations smoothly</td>
+</tr>
+<tr>
+<td>Character animations with multiple states</td>
+<td><strong>Rive</strong></td>
+<td>State machine graph handles complex state logic</td>
+</tr>
+<tr>
+<td>Simple fade, scale, slide transitions</td>
+<td><strong>Native SwiftUI</strong></td>
+<td>No dependency needed, GPU-accelerated</td>
+</tr>
+<tr>
+<td>Layout-driven animations (list reorder, insert/remove)</td>
+<td><strong>Native SwiftUI</strong></td>
+<td>Built-in transition and matchedGeometryEffect</td>
+</tr>
+<tr>
+<td>Spring physics and gesture-driven animations</td>
+<td><strong>Native SwiftUI</strong></td>
+<td>UIViewPropertyAnimator or SwiftUI springs</td>
+</tr>
+<tr>
+<td>Animated app icons or dynamic backgrounds</td>
+<td><strong>Rive</strong></td>
+<td>Tiny file size, runtime compositing</td>
+</tr>
+<tr>
+<td>Accessibility-sensitive animations</td>
+<td><strong>Native SwiftUI</strong></td>
+<td>Respects Reduce Motion automatically</td>
+</tr>
+</tbody>
+</table>
+<h3 id="summary-guidelines">Summary Guidelines</h3>
+<p><strong>Choose Lottie when:</strong>
+- You have a designer using After Effects who exports via Bodymovin
+- You need to drop in pre-made animations from LottieFiles.com
+- The animation is purely visual (no user interaction controls it)
+- You need frame-accurate playback of complex vector art
+- File size is not a primary concern (Lottie JSON can be large)</p>
+<p><strong>Choose Rive when:</strong>
+- Animations need to react to user input (taps, drags, state changes)
+- You want a single file with multiple animation states and transitions
+- File size matters (Rive binary format is typically 5-10x smaller than Lottie JSON)
+- Your designer uses the Rive editor (not After Effects)
+- You need runtime color/property changes without value providers</p>
+<p><strong>Choose native SwiftUI/UIKit when:</strong>
+- Animations are tied to state changes (show/hide, expand/collapse)
+- You need gesture-driven interactive animations
+- The animation is simple (fade, scale, slide, spring)
+- You want zero third-party dependencies
+- You need full accessibility support (Reduce Motion, VoiceOver)
+- Performance is critical (native animations use Core Animation directly)</p>
+<h3 id="file-size-comparison">File Size Comparison</h3>
+<table>
+<thead>
+<tr>
+<th>Format</th>
+<th>Typical Size</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lottie JSON</td>
+<td>10-500 KB</td>
+<td>Can be compressed with dotLottie (.lottie)</td>
+</tr>
+<tr>
+<td>Lottie dotLottie</td>
+<td>2-100 KB</td>
+<td>Compressed format, supported in lottie-ios 4.x</td>
+</tr>
+<tr>
+<td>Rive (.riv)</td>
+<td>2-50 KB</td>
+<td>Binary format, very compact</td>
+</tr>
+<tr>
+<td>Native code</td>
+<td>0 KB</td>
+<td>No additional assets needed</td>
+</tr>
+</tbody>
+</table>
+<h3 id="performance-characteristics">Performance Characteristics</h3>
+<table>
+<thead>
+<tr>
+<th>Library</th>
+<th>CPU Usage</th>
+<th>GPU Usage</th>
+<th>Memory</th>
+<th>Best For</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lottie (Main Thread)</td>
+<td>Medium-High</td>
+<td>Low</td>
+<td>Medium</td>
+<td>Simple animations</td>
+</tr>
+<tr>
+<td>Lottie (Core Animation)</td>
+<td>Low</td>
+<td>Medium</td>
+<td>Low</td>
+<td>Complex looping animations</td>
+</tr>
+<tr>
+<td>Rive</td>
+<td>Low</td>
+<td>Medium</td>
+<td>Low</td>
+<td>Interactive animations</td>
+</tr>
+<tr>
+<td>Native SwiftUI</td>
+<td>Very Low</td>
+<td>Low</td>
+<td>Very Low</td>
+<td>UI transitions</td>
+</tr>
+<tr>
+<td>Core Animation</td>
+<td>Very Low</td>
+<td>Medium</td>
+<td>Low</td>
+<td>Custom layer animations</td>
+</tr>
+</tbody>
+</table>
+<p>Lottie supports two rendering engines: the default Main Thread renderer and the Core Animation renderer. For looping animations, use Core Animation rendering (<code>LottieAnimationView.configuration = .init(renderingEngine: .coreAnimation)</code>) for better performance.</p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

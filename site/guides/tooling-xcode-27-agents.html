@@ -1,0 +1,269 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Xcode 27 Coding Agents — iOS Agent Skill</title><meta name="description" content="Repository guidance for Xcode Agents. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-xcode-27-agents.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="Xcode 27 Coding Agents"><meta property="og:description" content="Repository guidance for Xcode Agents. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-xcode-27-agents.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "Xcode 27 Coding Agents", "description": "Repository guidance for Xcode Agents. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-xcode-27-agents.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Developer Tools · Reference guide</p><h1>Xcode 27 Coding Agents</h1><p class="lead">Repository guidance for Xcode Agents. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/tooling/xcode-27-agents.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#1-what-they-are">1. What they are</a></li>
+<li><a href="#2-xcode-agent-vs-claude-code">2. Xcode agent vs. Claude Code</a></li>
+<li><a href="#3-the-same-verification-contract-applies">3. The same verification contract applies</a></li>
+<li><a href="#4-agent-assisted-localization">4. Agent-assisted localization</a></li>
+<li><a href="#5-agent-assisted-testing">5. Agent-assisted testing</a></li>
+<li><a href="#6-instruments">6. Instruments</a></li>
+<li><a href="#7-keeping-agents-on-this-skills-rules">7. Keeping agents on this skill's rules</a></li>
+<li><a href="#anti-patterns">Anti-Patterns</a></li>
+<li><a href="#checklist">Checklist</a></li>
+<li><a href="#connect-this-server-inside-xcode-27">Connect this server inside Xcode 27</a></li>
+</ul>
+</div>
+</aside><p><strong>Load this when:</strong> working inside Xcode's agent features, deciding what to
+delegate to an in-Xcode agent versus a CLI agent, or setting up agent-assisted
+localization or testing.</p>
+<p>Xcode 27 has coding agents built in, powered by a model of your choice. This
+document covers what they are good at, what they are not, and how the discipline
+in <code>docs/orchestration/</code> applies inside Xcode.</p>
+<blockquote>
+<p><strong>Verification status (2026-09-16):</strong> Xcode 27 is released. The local verification host has Xcode 26.6, so in-editor agent connection, menu paths and delegated reviewer behavior remain untested. CLI MCP tests do not establish Xcode integration.</p>
+</blockquote>
+<hr />
+<h2 id="1-what-they-are">1. What they are</h2>
+<p>Agents in Xcode work across the development cycle — prototyping, filling in
+implementation, and polishing — and work the same whether you are solo or on a
+team. Xcode supplies the agent with <strong>project context</strong>: your targets, your
+schemes, your code style, and your string catalogs.</p>
+<p>That project context is the real difference from a general-purpose agent in a
+terminal. An in-Xcode agent knows the build graph. An external agent has to
+rediscover it.</p>
+<table>
+<thead>
+<tr>
+<th>Strength</th>
+<th>Because</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Localization and string catalogs</td>
+<td>It sees the catalogs and Apple's language-specific style guidance</td>
+</tr>
+<tr>
+<td>Scaffolding UI and boilerplate</td>
+<td>It knows the project's targets and conventions</td>
+</tr>
+<tr>
+<td>Test authoring</td>
+<td>It can run the tests it writes</td>
+</tr>
+<tr>
+<td>Diagnosing a build failure</td>
+<td>It has the actual compiler output</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Weakness</th>
+<th>Because</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cross-repo work</td>
+<td>Scoped to the Xcode project</td>
+</tr>
+<tr>
+<td>Long-running orchestration</td>
+<td>No worktrees, no batch fan-out</td>
+</tr>
+<tr>
+<td>Non-Swift toolchain work</td>
+<td>Not what it is built for</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="2-xcode-agent-vs-claude-code">2. Xcode agent vs. Claude Code</h2>
+<p>These are complements, not competitors. Route by the shape of the work.</p>
+<table>
+<thead>
+<tr>
+<th>Work</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Add German and update the string catalog"</td>
+<td><strong>Xcode agent</strong> — it owns catalogs</td>
+</tr>
+<tr>
+<td>"Why does this fail on iPad only?"</td>
+<td><strong>Xcode agent</strong> — Device Hub is right there</td>
+</tr>
+<tr>
+<td>"Write tests for this view model"</td>
+<td><strong>Xcode agent</strong> — can run them immediately</td>
+</tr>
+<tr>
+<td>"Apply this rule across 30 modules"</td>
+<td><strong>Claude Code</strong> — <code>/batch</code>, worktrees, PRs</td>
+</tr>
+<tr>
+<td>"Restructure our architecture layers"</td>
+<td><strong>Claude Code</strong> — plan/review subagents</td>
+</tr>
+<tr>
+<td>"Audit the repo against our skill rules"</td>
+<td><strong>Claude Code</strong> — hooks and CI</td>
+</tr>
+</tbody>
+</table>
+<p>Rule of thumb: <strong>inside one project and one build graph → Xcode. Across files,
+repos, or PRs → Claude Code.</strong></p>
+<hr />
+<h2 id="3-the-same-verification-contract-applies">3. The same verification contract applies</h2>
+<p>An agent in Xcode is still an agent. Everything in
+<code>docs/orchestration/verification.md</code> holds:</p>
+<ul>
+<li><strong>Never accept "done" without evidence.</strong> In Xcode the evidence is right
+  there — the build result and the test navigator. Look at it.</li>
+<li><strong>The author does not grade the work.</strong> If the agent wrote the code <em>and</em> the
+  test, both encode the same misunderstanding. Read the test yourself and ask
+  whether it would fail against the old behavior.</li>
+<li><strong>A green build is not a passing feature.</strong> It compiles. That is one claim.</li>
+</ul>
+<pre><code>Agent says                          What you check
+&quot;Added tests, they pass.&quot;      →    Run them. Read them. Would they fail before?
+&quot;Fixed the layout issue.&quot;      →    Run it on the device size that broke.
+&quot;Localized to 8 languages.&quot;    →    Check pluralization and RTL, not just presence.
+&quot;Build succeeds.&quot;              →    True and insufficient.
+</code></pre>
+<hr />
+<h2 id="4-agent-assisted-localization">4. Agent-assisted localization</h2>
+<p>The strongest first use, because it is high-volume, low-ambiguity, and verifiable.</p>
+<p>Agents can add languages, update string catalogs, and translate strings, using
+Apple-provided language-specific style guidance and your app's context.</p>
+<p>What still needs you:</p>
+<ul>
+<li><strong>Plural variants.</strong> Agents handle language-specific plural forms, but the
+  <em>rule</em> per string is a product decision. Check the catalog's variants.</li>
+<li><strong>Context strings.</strong> A key named <code>title</code> translates badly without a comment.
+  Add comments before running the agent, not after.</li>
+<li><strong>RTL layout.</strong> Translation is not layout. Verify Arabic and Hebrew visually.</li>
+<li><strong>Truncation.</strong> German and Finnish run long. Check at accessibility text sizes.</li>
+</ul>
+<pre><code class="language-swift">// Give the agent something to work with — the comment IS the context.
+Text(&quot;cart.checkout.button&quot;, comment: &quot;Button that starts checkout. Keep under 15 characters.&quot;)
+</code></pre>
+<p>See <code>docs/design/interaction-standards.md</code> §6 for the localization standards the
+output must meet.</p>
+<hr />
+<h2 id="5-agent-assisted-testing">5. Agent-assisted testing</h2>
+<p>Agents write tests and can run them. Two failure modes to watch:</p>
+<p><strong>Tests that assert the implementation, not the behavior.</strong> A test that mirrors
+the code line for line passes forever and catches nothing.</p>
+<pre><code class="language-swift">// WEAK — restates the implementation.
+#expect(viewModel.items.count == viewModel.repository.items.count)
+
+// STRONG — asserts the behavior the user depends on.
+#expect(viewModel.errorMessage != nil)     // a failed load must surface
+</code></pre>
+<p><strong>Tests written to pass rather than to catch.</strong> Ask of any generated test: <em>would
+this have failed before the fix?</em> If not, delete it.</p>
+<p>Use <code>docs/testing/mocking-strategy.md</code> for what to substitute, and
+<code>checklists/testing.md</code> for coverage shape.</p>
+<hr />
+<h2 id="6-instruments">6. Instruments</h2>
+<p>Xcode 27's profiling improvements matter for the concurrency rules this skill
+enforces:</p>
+<table>
+<thead>
+<tr>
+<th>Instrument</th>
+<th>Shows</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Swift Concurrency</strong></td>
+<td>Async task scheduling, <strong>actor contention</strong>, thread usage</td>
+</tr>
+<tr>
+<td><strong>Time Profiler</strong></td>
+<td>CPU bottlenecks, with a "top functions" view</td>
+</tr>
+<tr>
+<td><strong>System Trace</strong></td>
+<td>System-level view of threads and hardware</td>
+</tr>
+<tr>
+<td>Run comparisons</td>
+<td>The measured impact of a change</td>
+</tr>
+</tbody>
+</table>
+<p>The Swift Concurrency instrument is the tool for the failure this skill warns
+about most: main-actor contention from CPU work that should have been
+<code>nonisolated</code> or on an actor. Do not guess at isolation performance — measure it.
+See <code>docs/swift/swift-concurrency.md</code>.</p>
+<hr />
+<h2 id="7-keeping-agents-on-this-skills-rules">7. Keeping agents on this skill's rules</h2>
+<p>The rules in <code>SKILL.md</code> apply to code an Xcode agent writes too, but Xcode does
+not read <code>CLAUDE.md</code>. Two ways to keep them enforced:</p>
+<ol>
+<li><strong>A pre-commit hook or CI</strong>, so the rules bind regardless of which agent wrote
+   the code. <code>templates/hooks/forbid-antipatterns.sh</code> runs standalone:</li>
+</ol>
+<p><code>bash
+   # .git/hooks/pre-commit
+   for file in $(git diff --cached --name-only --diff-filter=ACM | grep '\.swift$'); do
+     echo "{\"tool_input\":{\"file_path\":\"$PWD/$file\"}}" \
+       | .claude/hooks/forbid-antipatterns.sh || exit 1
+   done</code></p>
+<ol>
+<li><strong>Review with <code>swift-reviewer</code></strong> before the PR, which checks the same rules
+   with model judgment where a grep cannot reach.</li>
+</ol>
+<p>Deterministic enforcement is what makes multi-agent work safe: it does not matter
+which agent wrote the line if the rule is checked mechanically. See
+<code>docs/orchestration/hooks.md</code>.</p>
+<hr />
+<h2 id="anti-patterns">Anti-Patterns</h2>
+<pre><code># 1. Accepting a diff you have not read because the build went green.
+   Compiling is one claim, not a review.
+
+# 2. Letting the agent write both the code and its only test.
+   Same misunderstanding, encoded twice.
+
+# 3. Shipping generated translations without checking plurals, RTL, or truncation.
+
+# 4. Using an in-Xcode agent for a 30-module migration.
+   No worktrees, no isolation. Use /batch.
+
+# 5. Using Claude Code for string-catalog work.
+   Xcode owns the catalogs and the style guidance.
+
+# 6. Assuming Xcode agents follow SKILL.md.
+   They do not read it. Enforce with hooks or CI.
+
+# 7. Guessing at concurrency performance.
+   The Swift Concurrency instrument measures actor contention directly.
+</code></pre>
+<hr />
+<h2 id="checklist">Checklist</h2>
+<ul>
+<li>[ ] The work is scoped to one project — otherwise route it to <code>/batch</code>.</li>
+<li>[ ] Generated diffs are read, not just built.</li>
+<li>[ ] Generated tests would have failed before the change.</li>
+<li>[ ] Localization output checked for plurals, RTL, and truncation.</li>
+<li>[ ] String keys have comments before the agent runs.</li>
+<li>[ ] This skill's rules are enforced by a hook or CI, not by hoping.</li>
+<li>[ ] Isolation performance is measured, not assumed.</li>
+</ul>
+<h2 id="connect-this-server-inside-xcode-27">Connect this server inside Xcode 27</h2>
+<p>Apple documents separate <a href="https://developer.apple.com/documentation/xcode/extending-and-customizing-agents/">in-Xcode agent environments</a>. A terminal agent’s working MCP setup does not automatically configure the IDE agent.</p>
+<ol>
+<li>Select the agent in Xcode’s Intelligence settings. Its configuration lives under <code>~/Library/Developer/Xcode/CodingAssistant</code>: <code>ClaudeAgentConfig</code> for Claude, <code>codex</code> for Codex, and <code>gemini</code> for Gemini.</li>
+<li>Merge one <code>ios-agent</code> stdio entry into that agent’s configuration; retain existing settings. Use an absolute executable path if Xcode cannot find Node on its GUI PATH. The server command is <code>npx</code> with args <code>["-y", "ios-agent-mcp@latest", "--project", "/absolute/path/to/App"]</code>. An installed <code>ios-agent-mcp</code> executable avoids a package fetch during the session.</li>
+<li>Reload the agent, list its available tools, then call <code>analyze_swift_project</code> and <code>review_app_intents</code> on that absolute project path. Verify returned filenames and file counts.</li>
+<li>Ask the IDE agent to read the project’s <code>AGENTS.md</code>/<code>CLAUDE.md</code>, make a small change, build and run a relevant test. Record the selected agent, Xcode build, tool results and test output. Check that a reviewer can inspect the actual diff; do not assume Claude-specific subagent definitions automatically load in every IDE agent.</li>
+</ol>
+<p>Apple also supports agent plug-ins through Intelligence settings → Plug-ins. This repository does not claim its existing client ZIPs have passed Xcode’s plug-in import. No Xcode-only artifact is published without that check.</p>
+<p><strong>Current result:</strong> local stdio MCP tests pass. The above <strong>Xcode 27 session remains untested</strong> because the verification host has Xcode 26.6. No global agent configuration was changed during this documentation pass. Apple’s own external-tools server (<code>mcpbridge</code>/<code>mcp-server</code>) is a separate integration; do not confuse it with this project’s <code>ios-agent</code> server.</p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

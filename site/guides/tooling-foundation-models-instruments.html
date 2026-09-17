@@ -1,0 +1,142 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Foundation Models Instruments — iOS Agent Skill</title><meta name="description" content="Repository guidance for Foundation Models Instruments. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-foundation-models-instruments.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="Foundation Models Instruments"><meta property="og:description" content="Repository guidance for Foundation Models Instruments. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-foundation-models-instruments.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "Foundation Models Instruments", "description": "Repository guidance for Foundation Models Instruments. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-foundation-models-instruments.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Developer Tools · Reference guide</p><h1>Foundation Models Instruments</h1><p class="lead">Repository guidance for Foundation Models Instruments. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/tooling/foundation-models-instruments.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#1-when-to-profile">1. When to Profile</a></li>
+<li><a href="#2-recording-workflow">2. Recording Workflow</a></li>
+<li><a href="#3-what-to-inspect">3. What to Inspect</a></li>
+<li><a href="#4-optimization-playbook">4. Optimization Playbook</a></li>
+<li><a href="#5-pr-evidence-template">5. PR Evidence Template</a></li>
+<li><a href="#6-review-checklist">6. Review Checklist</a></li>
+</ul>
+</div>
+</aside><h2 id="overview">Overview</h2>
+<p>The Foundation Models instrument in Instruments shows how an app uses language models at runtime: prompts, responses, token use, tool calls, tool latency, session timelines, and bottlenecks. Use it before optimizing prompts, Dynamic Profiles, tools, context windows, or Private Cloud Compute usage.</p>
+<hr />
+<h2 id="1-when-to-profile">1. When to Profile</h2>
+<p>Profile whenever:</p>
+<ul>
+<li>a Foundation Models feature feels slow</li>
+<li>token usage grows unexpectedly</li>
+<li>a <code>LanguageModelSession</code> hits context limits</li>
+<li>tool calls take too long or return too much data</li>
+<li>Dynamic Profiles swap models/instructions unexpectedly</li>
+<li>PCC/server-model routing changes product cost or latency</li>
+<li>evaluation failures need runtime traces</li>
+</ul>
+<p>Do not optimize prompts from intuition. Record the runtime behavior first.</p>
+<hr />
+<h2 id="2-recording-workflow">2. Recording Workflow</h2>
+<ol>
+<li>Open the Xcode project.</li>
+<li>Choose Product &gt; Profile.</li>
+<li>Select the Foundation Models template in Instruments.</li>
+<li>Record while exercising the exact AI feature path.</li>
+<li>Capture screenshots or export the trace for PR evidence.</li>
+</ol>
+<p>Before recording, make sure the device is not thermally constrained and no background workload is skewing latency.</p>
+<hr />
+<h2 id="3-what-to-inspect">3. What to Inspect</h2>
+<table>
+<thead>
+<tr>
+<th>Signal</th>
+<th>Why It Matters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Input tokens</td>
+<td>Long instructions, schemas, and tool descriptions can dominate context</td>
+</tr>
+<tr>
+<td>Output tokens</td>
+<td>Long answers can increase latency and power use</td>
+</tr>
+<tr>
+<td>Cached tokens</td>
+<td>Reused prefixes can reduce repeated work</td>
+</tr>
+<tr>
+<td>Tool calls</td>
+<td>Slow tools or verbose outputs often cause model delays</td>
+</tr>
+<tr>
+<td>Session timeline</td>
+<td>Reveals repeated calls, retries, or unexpected profile changes</td>
+</tr>
+<tr>
+<td>Model/provider</td>
+<td>Confirms on-device vs PCC/server routing</td>
+</tr>
+<tr>
+<td>Errors</td>
+<td>Shows context overflow, model unavailability, or tool failure</td>
+</tr>
+</tbody>
+</table>
+<p>Pair this with <code>tokenCount(for:)</code> and <code>contextSize</code> checks in code when available.</p>
+<hr />
+<h2 id="4-optimization-playbook">4. Optimization Playbook</h2>
+<table>
+<thead>
+<tr>
+<th>Finding</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Huge instructions</td>
+<td>Split feature roles, shorten policies, use Dynamic Profiles</td>
+</tr>
+<tr>
+<td>Huge tool schemas</td>
+<td>Reduce tool count, tighten argument types, avoid redundant descriptions</td>
+</tr>
+<tr>
+<td>Huge tool output</td>
+<td>Return compact structured summaries, page results, cap search count</td>
+</tr>
+<tr>
+<td>Repeated cold latency</td>
+<td>Use <code>prewarm(promptPrefix:)</code> where appropriate</td>
+</tr>
+<tr>
+<td>Context overflow</td>
+<td>Summarize transcript, start a new session, or split work</td>
+</tr>
+<tr>
+<td>Wrong model route</td>
+<td>Inspect profile/model selection and availability branches</td>
+</tr>
+<tr>
+<td>PCC cost/latency too high</td>
+<td>Route smaller tasks to <code>SystemLanguageModel</code></td>
+</tr>
+</tbody>
+</table>
+<p>Always rerun evaluations after prompt or tool-schema changes. Lower token count is not a win if quality regresses.</p>
+<hr />
+<h2 id="5-pr-evidence-template">5. PR Evidence Template</h2>
+<pre><code class="language-text">Foundation Models profiling:
+- Device / OS:
+- Feature path:
+- Input token range:
+- Output token range:
+- Tool calls:
+- Slowest tool:
+- On-device/PCC/server route:
+- Optimization made:
+- Evaluation result after optimization:
+</code></pre>
+<hr />
+<h2 id="6-review-checklist">6. Review Checklist</h2>
+<ul>
+<li>[ ] A trace exists for slow or complex AI flows</li>
+<li>[ ] Token use is measured before and after prompt/tool changes</li>
+<li>[ ] Tool outputs are bounded and summarized</li>
+<li>[ ] Dynamic Profile routing is visible in evidence</li>
+<li>[ ] Context overflow has an explicit mitigation</li>
+<li>[ ] Performance changes are paired with Evaluations results</li>
+</ul>
+<p>See also: <code>docs/frameworks/foundation-models.md</code>, <code>docs/testing/evaluations.md</code>, <code>docs/frameworks/core-spotlight-rag.md</code>.</p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

@@ -1,0 +1,683 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SwiftUI Gestures — iOS Agent Skill</title><meta name="description" content="Repository guidance for SwiftUI Gestures. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/swiftui-gestures.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="SwiftUI Gestures"><meta property="og:description" content="Repository guidance for SwiftUI Gestures. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/swiftui-gestures.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "SwiftUI Gestures", "description": "Repository guidance for SwiftUI Gestures. Examples, decisions, and verification limits from the maintained source guide.", "url": "https://nagarjuna2997.github.io/ios-agent-skill/guides/swiftui-gestures.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div></nav><main id="main"><article class="blog-article"><header class="page-intro"><p class="eyebrow">Swiftui · Reference guide</p><h1>SwiftUI Gestures</h1><p class="lead">Repository guidance for SwiftUI Gestures. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/swiftui/gestures.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#tapgesture">TapGesture</a><ul>
+<li><a href="#shortcut-modifier">Shortcut Modifier</a></li>
+<li><a href="#explicit-tapgesture">Explicit TapGesture</a></li>
+<li><a href="#spatialtapgesture-ios-16">SpatialTapGesture (iOS 16+)</a></li>
+</ul>
+</li>
+<li><a href="#longpressgesture">LongPressGesture</a><ul>
+<li><a href="#shortcut-modifier_1">Shortcut Modifier</a></li>
+<li><a href="#explicit-longpressgesture">Explicit LongPressGesture</a></li>
+</ul>
+</li>
+<li><a href="#draggesture">DragGesture</a><ul>
+<li><a href="#draggesture-value-properties">DragGesture Value Properties</a></li>
+<li><a href="#swipe-to-dismiss-card">Swipe-to-Dismiss Card</a></li>
+<li><a href="#drag-with-velocity-ios-17">Drag with Velocity (iOS 17+)</a></li>
+</ul>
+</li>
+<li><a href="#magnifygesture-pinch-to-zoom">MagnifyGesture (Pinch to Zoom)</a></li>
+<li><a href="#rotategesture">RotateGesture</a></li>
+<li><a href="#gesture-composition">Gesture Composition</a><ul>
+<li><a href="#simultaneously">.simultaneously</a></li>
+<li><a href="#sequenced">.sequenced</a></li>
+<li><a href="#exclusively">.exclusively</a></li>
+</ul>
+</li>
+<li><a href="#gesturestate">@GestureState</a><ul>
+<li><a href="#complex-gesturestate">Complex GestureState</a></li>
+</ul>
+</li>
+<li><a href="#gesture-modifiers-and-priority">Gesture Modifiers and Priority</a><ul>
+<li><a href="#highprioritygesture">.highPriorityGesture</a></li>
+<li><a href="#simultaneousgesture">.simultaneousGesture</a></li>
+<li><a href="#gesture-mask">Gesture mask</a></li>
+</ul>
+</li>
+<li><a href="#custom-gesture-modifiers">Custom Gesture Modifiers</a></li>
+<li><a href="#gesture-with-animation-integration">Gesture with Animation Integration</a><ul>
+<li><a href="#interactive-spring-back">Interactive Spring-Back</a></li>
+<li><a href="#pull-to-refresh-with-custom-gesture">Pull-to-Refresh with Custom Gesture</a></li>
+</ul>
+</li>
+<li><a href="#practical-patterns">Practical Patterns</a><ul>
+<li><a href="#dismiss-gesture-for-modal">Dismiss Gesture for Modal</a></li>
+<li><a href="#coordinate-multiple-gestures">Coordinate Multiple Gestures</a></li>
+</ul>
+</li>
+<li><a href="#tips-and-best-practices">Tips and Best Practices</a></li>
+</ul>
+</div>
+</aside><p>Complete reference for tap, long press, drag, magnify, rotate gestures, composition, gesture state, and integration with animations.</p>
+<hr />
+<h2 id="tapgesture">TapGesture</h2>
+<h3 id="shortcut-modifier">Shortcut Modifier</h3>
+<pre><code class="language-swift">// Single tap
+Text(&quot;Tap me&quot;)
+    .onTapGesture {
+        print(&quot;Tapped&quot;)
+    }
+
+// Double tap
+Image(&quot;photo&quot;)
+    .onTapGesture(count: 2) {
+        isZoomed.toggle()
+    }
+
+// Triple tap
+Text(&quot;Secret&quot;)
+    .onTapGesture(count: 3) {
+        showDebugMenu = true
+    }
+</code></pre>
+<h3 id="explicit-tapgesture">Explicit TapGesture</h3>
+<pre><code class="language-swift">let doubleTap = TapGesture(count: 2)
+    .onEnded {
+        withAnimation(.spring(duration: 0.3, bounce: 0.4)) {
+            isFavorited.toggle()
+        }
+    }
+
+Image(systemName: isFavorited ? &quot;heart.fill&quot; : &quot;heart&quot;)
+    .font(.largeTitle)
+    .foregroundStyle(isFavorited ? .red : .gray)
+    .gesture(doubleTap)
+</code></pre>
+<h3 id="spatialtapgesture-ios-16">SpatialTapGesture (iOS 16+)</h3>
+<p>Provides the location of the tap.</p>
+<pre><code class="language-swift">let spatialTap = SpatialTapGesture()
+    .onEnded { value in
+        let location = value.location  // CGPoint
+        addAnnotation(at: location)
+    }
+
+Canvas { context, size in
+    for annotation in annotations {
+        context.fill(
+            Circle().path(in: CGRect(origin: annotation.point, size: CGSize(width: 20, height: 20))),
+            with: .color(.blue)
+        )
+    }
+}
+.gesture(spatialTap)
+</code></pre>
+<hr />
+<h2 id="longpressgesture">LongPressGesture</h2>
+<h3 id="shortcut-modifier_1">Shortcut Modifier</h3>
+<pre><code class="language-swift">Text(&quot;Long press me&quot;)
+    .onLongPressGesture(minimumDuration: 0.5) {
+        showContextActions = true
+    }
+
+// With pressing state
+Text(&quot;Hold&quot;)
+    .onLongPressGesture(minimumDuration: 1.0) {
+        // Completed
+        performAction()
+    } onPressingChanged: { isPressing in
+        // Fires immediately when press starts/stops
+        withAnimation {
+            isHighlighted = isPressing
+        }
+    }
+</code></pre>
+<h3 id="explicit-longpressgesture">Explicit LongPressGesture</h3>
+<pre><code class="language-swift">struct LongPressButton: View {
+    @GestureState private var isDetectingLongPress = false
+    @State private var completedLongPress = false
+
+    var longPress: some Gesture {
+        LongPressGesture(minimumDuration: 1.0)
+            .updating($isDetectingLongPress) { currentState, gestureState, transaction in
+                gestureState = currentState
+                transaction.animation = .easeIn(duration: 0.2)
+            }
+            .onEnded { finished in
+                completedLongPress = finished
+            }
+    }
+
+    var body: some View {
+        Circle()
+            .fill(isDetectingLongPress ? .red : .blue)
+            .frame(width: 80, height: 80)
+            .scaleEffect(isDetectingLongPress ? 1.2 : 1.0)
+            .gesture(longPress)
+    }
+}
+</code></pre>
+<hr />
+<h2 id="draggesture">DragGesture</h2>
+<p>The most versatile gesture for building interactive UIs.</p>
+<pre><code class="language-swift">struct DraggableCard: View {
+    @State private var offset = CGSize.zero
+
+    var body: some View {
+        RoundedRectangle(cornerRadius: 16)
+            .fill(.blue)
+            .frame(width: 200, height: 120)
+            .offset(offset)
+            .gesture(
+                DragGesture()
+                    .onChanged { value in
+                        offset = value.translation
+                    }
+                    .onEnded { value in
+                        withAnimation(.spring) {
+                            offset = .zero
+                        }
+                    }
+            )
+    }
+}
+</code></pre>
+<h3 id="draggesture-value-properties">DragGesture Value Properties</h3>
+<pre><code class="language-swift">DragGesture(minimumDistance: 10, coordinateSpace: .local)
+    .onChanged { value in
+        // Current drag state
+        let translation = value.translation      // CGSize (total offset from start)
+        let location = value.location            // CGPoint (current finger position)
+        let startLocation = value.startLocation  // CGPoint (where drag began)
+        let predictedEndLocation = value.predictedEndLocation    // CGPoint
+        let predictedEndTranslation = value.predictedEndTranslation  // CGSize
+        let velocity = value.velocity            // CGSize (iOS 17+, points per second)
+    }
+</code></pre>
+<h3 id="swipe-to-dismiss-card">Swipe-to-Dismiss Card</h3>
+<pre><code class="language-swift">struct SwipeCard: View {
+    @State private var offset = CGSize.zero
+    @State private var opacity: Double = 1
+    let onDismiss: () -&gt; Void
+
+    var body: some View {
+        CardContent()
+            .offset(x: offset.width)
+            .rotationEffect(.degrees(Double(offset.width / 20)))
+            .opacity(opacity)
+            .gesture(
+                DragGesture()
+                    .onChanged { value in
+                        offset = value.translation
+                        opacity = 1 - abs(Double(value.translation.width / 300))
+                    }
+                    .onEnded { value in
+                        if abs(value.translation.width) &gt; 150 {
+                            // Dismiss
+                            withAnimation(.easeOut(duration: 0.3)) {
+                                offset.width = value.translation.width &gt; 0 ? 500 : -500
+                                opacity = 0
+                            }
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                onDismiss()
+                            }
+                        } else {
+                            // Spring back
+                            withAnimation(.spring(duration: 0.4, bounce: 0.3)) {
+                                offset = .zero
+                                opacity = 1
+                            }
+                        }
+                    }
+            )
+    }
+}
+</code></pre>
+<h3 id="drag-with-velocity-ios-17">Drag with Velocity (iOS 17+)</h3>
+<pre><code class="language-swift">DragGesture()
+    .onEnded { value in
+        let velocity = value.velocity
+        let speed = sqrt(velocity.width * velocity.width + velocity.height * velocity.height)
+
+        if speed &gt; 500 {
+            // Fast swipe -- project final position
+            withAnimation(.spring(duration: 0.4)) {
+                position = value.predictedEndTranslation
+            }
+        } else {
+            // Slow drag -- snap back
+            withAnimation(.spring) {
+                position = .zero
+            }
+        }
+    }
+</code></pre>
+<hr />
+<h2 id="magnifygesture-pinch-to-zoom">MagnifyGesture (Pinch to Zoom)</h2>
+<p>Renamed from <code>MagnificationGesture</code> in iOS 17.</p>
+<pre><code class="language-swift">struct ZoomableImage: View {
+    @State private var currentScale: CGFloat = 1.0
+    @GestureState private var gestureScale: CGFloat = 1.0
+
+    var magnification: some Gesture {
+        MagnifyGesture()
+            .updating($gestureScale) { value, gestureState, _ in
+                gestureState = value.magnification
+            }
+            .onEnded { value in
+                currentScale *= value.magnification
+                currentScale = min(max(currentScale, 0.5), 5.0) // Clamp
+            }
+    }
+
+    var body: some View {
+        Image(&quot;landscape&quot;)
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .scaleEffect(currentScale * gestureScale)
+            .gesture(magnification)
+            .onTapGesture(count: 2) {
+                withAnimation(.spring) {
+                    currentScale = 1.0
+                }
+            }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="rotategesture">RotateGesture</h2>
+<p>Renamed from <code>RotationGesture</code> in iOS 17.</p>
+<pre><code class="language-swift">struct RotatableView: View {
+    @State private var currentAngle: Angle = .zero
+    @GestureState private var gestureAngle: Angle = .zero
+
+    var rotation: some Gesture {
+        RotateGesture()
+            .updating($gestureAngle) { value, gestureState, _ in
+                gestureState = value.rotation
+            }
+            .onEnded { value in
+                currentAngle += value.rotation
+            }
+    }
+
+    var body: some View {
+        Image(systemName: &quot;arrow.up&quot;)
+            .font(.system(size: 60))
+            .rotationEffect(currentAngle + gestureAngle)
+            .gesture(rotation)
+    }
+}
+</code></pre>
+<hr />
+<h2 id="gesture-composition">Gesture Composition</h2>
+<h3 id="simultaneously">.simultaneously</h3>
+<p>Both gestures are recognized at the same time.</p>
+<pre><code class="language-swift">struct ZoomAndRotate: View {
+    @State private var scale: CGFloat = 1.0
+    @State private var angle: Angle = .zero
+    @GestureState private var gestureScale: CGFloat = 1.0
+    @GestureState private var gestureAngle: Angle = .zero
+
+    var body: some View {
+        let magnify = MagnifyGesture()
+            .updating($gestureScale) { value, state, _ in
+                state = value.magnification
+            }
+            .onEnded { value in
+                scale *= value.magnification
+            }
+
+        let rotate = RotateGesture()
+            .updating($gestureAngle) { value, state, _ in
+                state = value.rotation
+            }
+            .onEnded { value in
+                angle += value.rotation
+            }
+
+        Image(&quot;photo&quot;)
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .scaleEffect(scale * gestureScale)
+            .rotationEffect(angle + gestureAngle)
+            .gesture(magnify.simultaneously(with: rotate))
+    }
+}
+</code></pre>
+<h3 id="sequenced">.sequenced</h3>
+<p>Second gesture only activates after the first succeeds.</p>
+<pre><code class="language-swift">// Long press then drag
+struct LongPressDrag: View {
+    @State private var offset = CGSize.zero
+    @GestureState private var isLongPressing = false
+
+    var body: some View {
+        let longPressThenDrag = LongPressGesture(minimumDuration: 0.5)
+            .sequenced(before: DragGesture())
+            .updating($isLongPressing) { value, state, _ in
+                switch value {
+                case .first(true):
+                    state = true   // Long press active
+                case .second(true, let drag):
+                    state = true   // Dragging
+                    if let drag {
+                        // Can't use @GestureState for offset here
+                        // but we can use it for visual feedback
+                    }
+                default:
+                    state = false
+                }
+            }
+            .onEnded { value in
+                guard case .second(true, let drag?) = value else { return }
+                offset = drag.translation
+            }
+
+        Circle()
+            .fill(isLongPressing ? .red : .blue)
+            .frame(width: 80, height: 80)
+            .offset(offset)
+            .scaleEffect(isLongPressing ? 1.2 : 1.0)
+            .animation(.spring, value: isLongPressing)
+            .gesture(longPressThenDrag)
+    }
+}
+</code></pre>
+<h3 id="exclusively">.exclusively</h3>
+<p>Only one gesture is recognized; the first to start wins.</p>
+<pre><code class="language-swift">let tap = TapGesture()
+    .onEnded { handleTap() }
+
+let longPress = LongPressGesture(minimumDuration: 0.5)
+    .onEnded { _ in handleLongPress() }
+
+// Long press takes priority; tap recognized only if long press fails
+view.gesture(longPress.exclusively(before: tap))
+</code></pre>
+<hr />
+<h2 id="gesturestate">@GestureState</h2>
+<p>A property wrapper that automatically resets to its initial value when the gesture ends. Ideal for transient visual feedback during a gesture.</p>
+<pre><code class="language-swift">struct PressableButton: View {
+    @GestureState private var isPressed = false
+
+    var body: some View {
+        Text(&quot;Press Me&quot;)
+            .padding()
+            .background(isPressed ? .blue.opacity(0.8) : .blue)
+            .foregroundStyle(.white)
+            .clipShape(Capsule())
+            .scaleEffect(isPressed ? 0.95 : 1.0)
+            .animation(.spring(duration: 0.2), value: isPressed)
+            .gesture(
+                LongPressGesture(minimumDuration: .infinity)
+                    .updating($isPressed) { currentState, gestureState, _ in
+                        gestureState = true
+                    }
+            )
+    }
+}
+</code></pre>
+<p><strong>Key difference from @State:</strong> <code>@GestureState</code> resets automatically when the gesture ends. With <code>@State</code> you must manually reset in <code>.onEnded</code>.</p>
+<h3 id="complex-gesturestate">Complex GestureState</h3>
+<pre><code class="language-swift">struct DragState {
+    var translation: CGSize = .zero
+    var isDragging: Bool = false
+}
+
+@GestureState private var dragState = DragState()
+
+DragGesture()
+    .updating($dragState) { value, state, _ in
+        state = DragState(
+            translation: value.translation,
+            isDragging: true
+        )
+    }
+</code></pre>
+<hr />
+<h2 id="gesture-modifiers-and-priority">Gesture Modifiers and Priority</h2>
+<h3 id="highprioritygesture">.highPriorityGesture</h3>
+<p>Takes priority over child view gestures.</p>
+<pre><code class="language-swift">VStack {
+    Button(&quot;Child Button&quot;) { childAction() }
+}
+.highPriorityGesture(
+    TapGesture().onEnded { parentAction() }
+)
+// Parent tap overrides the child button
+</code></pre>
+<h3 id="simultaneousgesture">.simultaneousGesture</h3>
+<p>Recognized alongside child view gestures.</p>
+<pre><code class="language-swift">ScrollView {
+    Content()
+}
+.simultaneousGesture(
+    DragGesture().onChanged { value in
+        // Track drag without blocking ScrollView scrolling
+        trackDragPosition(value.location)
+    }
+)
+</code></pre>
+<h3 id="gesture-mask">Gesture mask</h3>
+<pre><code class="language-swift">// Only apply gesture to specific subviews
+.gesture(dragGesture, including: .subviews)  // .all, .gesture, .subviews, .none
+</code></pre>
+<hr />
+<h2 id="custom-gesture-modifiers">Custom Gesture Modifiers</h2>
+<p>Encapsulate reusable gesture logic.</p>
+<pre><code class="language-swift">struct DraggableModifier: ViewModifier {
+    @State private var offset = CGSize.zero
+    let axis: Axis?
+    let onDragEnd: ((CGSize) -&gt; Void)?
+
+    func body(content: Content) -&gt; some View {
+        content
+            .offset(constrainedOffset)
+            .gesture(
+                DragGesture()
+                    .onChanged { value in
+                        offset = value.translation
+                    }
+                    .onEnded { value in
+                        onDragEnd?(value.translation)
+                        withAnimation(.spring) {
+                            offset = .zero
+                        }
+                    }
+            )
+    }
+
+    var constrainedOffset: CGSize {
+        switch axis {
+        case .horizontal:
+            CGSize(width: offset.width, height: 0)
+        case .vertical:
+            CGSize(width: 0, height: offset.height)
+        case nil:
+            offset
+        }
+    }
+}
+
+extension View {
+    func draggable(axis: Axis? = nil, onDragEnd: ((CGSize) -&gt; Void)? = nil) -&gt; some View {
+        modifier(DraggableModifier(axis: axis, onDragEnd: onDragEnd))
+    }
+}
+
+// Usage
+Card().draggable(axis: .horizontal) { translation in
+    if translation.width &gt; 100 { markAsRead() }
+}
+</code></pre>
+<hr />
+<h2 id="gesture-with-animation-integration">Gesture with Animation Integration</h2>
+<h3 id="interactive-spring-back">Interactive Spring-Back</h3>
+<pre><code class="language-swift">struct InteractiveCard: View {
+    @State private var offset = CGSize.zero
+    @State private var isDragging = false
+
+    var body: some View {
+        RoundedRectangle(cornerRadius: 20)
+            .fill(.blue.gradient)
+            .frame(width: 280, height: 180)
+            .shadow(
+                color: .black.opacity(isDragging ? 0.3 : 0.1),
+                radius: isDragging ? 20 : 8,
+                y: isDragging ? 10 : 4
+            )
+            .offset(offset)
+            .scaleEffect(isDragging ? 1.05 : 1.0)
+            .rotationEffect(.degrees(Double(offset.width / 20)))
+            .gesture(
+                DragGesture()
+                    .onChanged { value in
+                        withAnimation(.interactiveSpring) {
+                            offset = value.translation
+                            isDragging = true
+                        }
+                    }
+                    .onEnded { value in
+                        withAnimation(.spring(duration: 0.5, bounce: 0.4)) {
+                            offset = .zero
+                            isDragging = false
+                        }
+                    }
+            )
+    }
+}
+</code></pre>
+<h3 id="pull-to-refresh-with-custom-gesture">Pull-to-Refresh with Custom Gesture</h3>
+<pre><code class="language-swift">struct PullToRefresh: View {
+    @State private var pullOffset: CGFloat = 0
+    @State private var isRefreshing = false
+    let threshold: CGFloat = 80
+
+    var body: some View {
+        VStack(spacing: 0) {
+            // Pull indicator
+            ZStack {
+                if isRefreshing {
+                    ProgressView()
+                } else {
+                    Image(systemName: &quot;arrow.down&quot;)
+                        .rotationEffect(.degrees(pullOffset &gt; threshold ? 180 : 0))
+                        .animation(.spring, value: pullOffset &gt; threshold)
+                }
+            }
+            .frame(height: max(0, pullOffset))
+            .opacity(min(1, pullOffset / threshold))
+
+            // Content
+            ScrollView {
+                LazyVStack {
+                    ForEach(items) { item in
+                        ItemRow(item: item)
+                    }
+                }
+            }
+        }
+        .gesture(
+            DragGesture()
+                .onChanged { value in
+                    if value.translation.height &gt; 0 &amp;&amp; !isRefreshing {
+                        pullOffset = value.translation.height * 0.5 // Resistance
+                    }
+                }
+                .onEnded { value in
+                    if pullOffset &gt; threshold {
+                        withAnimation(.spring) { pullOffset = threshold }
+                        isRefreshing = true
+                        Task {
+                            await refresh()
+                            withAnimation(.spring) {
+                                isRefreshing = false
+                                pullOffset = 0
+                            }
+                        }
+                    } else {
+                        withAnimation(.spring) { pullOffset = 0 }
+                    }
+                }
+        )
+    }
+}
+</code></pre>
+<hr />
+<h2 id="practical-patterns">Practical Patterns</h2>
+<h3 id="dismiss-gesture-for-modal">Dismiss Gesture for Modal</h3>
+<pre><code class="language-swift">struct DismissableSheet: View {
+    @State private var dragOffset: CGFloat = 0
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        VStack {
+            Capsule()
+                .fill(.secondary)
+                .frame(width: 40, height: 5)
+                .padding(.top, 8)
+
+            SheetContent()
+        }
+        .offset(y: max(0, dragOffset))
+        .gesture(
+            DragGesture()
+                .onChanged { value in
+                    dragOffset = value.translation.height
+                }
+                .onEnded { value in
+                    if value.translation.height &gt; 150 || value.velocity.height &gt; 500 {
+                        dismiss()
+                    } else {
+                        withAnimation(.spring(duration: 0.3)) {
+                            dragOffset = 0
+                        }
+                    }
+                }
+        )
+    }
+}
+</code></pre>
+<h3 id="coordinate-multiple-gestures">Coordinate Multiple Gestures</h3>
+<pre><code class="language-swift">struct PhotoViewer: View {
+    @State private var scale: CGFloat = 1
+    @State private var offset = CGSize.zero
+    @State private var angle: Angle = .zero
+
+    var body: some View {
+        Image(&quot;photo&quot;)
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .scaleEffect(scale)
+            .offset(offset)
+            .rotationEffect(angle)
+            .gesture(
+                MagnifyGesture()
+                    .onChanged { value in
+                        scale = value.magnification
+                    }
+                    .simultaneously(with:
+                        RotateGesture()
+                            .onChanged { value in
+                                angle = value.rotation
+                            }
+                    )
+                    .simultaneously(with:
+                        DragGesture()
+                            .onChanged { value in
+                                offset = value.translation
+                            }
+                    )
+            )
+            .onTapGesture(count: 2) {
+                withAnimation(.spring) {
+                    scale = 1
+                    offset = .zero
+                    angle = .zero
+                }
+            }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="tips-and-best-practices">Tips and Best Practices</h2>
+<ol>
+<li>Use <code>@GestureState</code> for transient gesture feedback -- it resets automatically and is more efficient than <code>@State</code>.</li>
+<li>Always add <code>withAnimation</code> in <code>.onEnded</code> for smooth spring-back effects.</li>
+<li>Use <code>.simultaneousGesture</code> when you need to observe gestures without blocking child interactions (e.g., tracking scroll position).</li>
+<li>Set <code>minimumDistance</code> on <code>DragGesture</code> to avoid conflicting with scroll gestures (default is 10pt).</li>
+<li>Combine <code>.sensoryFeedback()</code> with gestures for polished interactions.</li>
+<li>Test gestures on real devices -- simulators do not support multi-touch or haptics.</li>
+<li>For complex gesture interactions, profile with Instruments to ensure the main thread stays responsive.</li>
+</ol></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>
