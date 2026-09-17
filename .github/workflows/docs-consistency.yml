@@ -347,6 +347,8 @@ jobs:
           allowed.update(glob.glob("./.claude/agents/*.md"))
           allowed.update(glob.glob("./.github/ISSUE_TEMPLATE/*.md"))
           allowed.update(glob.glob("./.github/*.md"))
+          # Website Markdown uses front matter validated by site discovery CI.
+          allowed.update(glob.glob("./site/**/*.md", recursive=True))
 
           import os
           problems = []

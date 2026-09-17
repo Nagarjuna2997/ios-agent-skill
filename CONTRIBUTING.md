@@ -122,3 +122,9 @@ and someone able to verify the integration. Votes do not guarantee delivery.
 When adding a shipped feature, update the product feature table in README.md and
 run `python3 scripts/render-site.py`. GitHub Pages regenerates that section and
 deploys on every push to main, keeping the public feature summary in sync.
+
+## Website discovery
+Every new HTML page needs a title and description entry in `site/pages.json`.
+Every new Markdown page under `site/` needs YAML front matter with `title` and `description`.
+Run `node scripts/site-meta.mjs` after rendering; use `--update-map` to seed new HTML entries for review.
+CI enforces metadata, discovery files and two-click reachability before deployment.

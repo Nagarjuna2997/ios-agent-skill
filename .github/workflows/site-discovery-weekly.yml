@@ -1,0 +1,22 @@
+name: Live website discovery audit
+on:
+  schedule:
+    - cron: "41 9 * * 1"
+  workflow_dispatch:
+permissions:
+  contents: read
+defaults:
+  run:
+    shell: bash
+jobs:
+  live-site:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: npm ci --prefix scripts/site-discovery --ignore-scripts
+      - name: Check every live sitemap URL
+        run: node scripts/check-live-site.mjs

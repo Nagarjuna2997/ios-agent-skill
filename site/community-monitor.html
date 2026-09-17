@@ -1,0 +1,275 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Daily community monitor</title><link rel="stylesheet" href="./playground.css"><link rel="stylesheet" href="./ios-polish.css"><link rel="stylesheet" href="./navigation.css"><script src="./appearance.js" defer=""></script><meta name="description" content="Operational reference for verifying community mentions and maintaining the project website."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/community-monitor.html"><meta property="og:title" content="Daily community monitor"><meta property="og:description" content="Operational reference for verifying community mentions and maintaining the project website."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/community-monitor.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta property="og:site_name" content="iOS Agent Skill"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Daily community monitor"><meta name="twitter:description" content="Operational reference for verifying community mentions and maintaining the project website."><meta name="twitter:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:url" content="https://nagarjuna2997.github.io/ios-agent-skill/community-monitor.html"><meta name="robots" content="index,follow"><link rel="alternate" type="application/atom+xml" href="/ios-agent-skill/feed.xml" title="iOS Agent Skill"><script id="site-discovery-schema" type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"Daily community monitor","url":"https://nagarjuna2997.github.io/ios-agent-skill/community-monitor.html"}</script></head><body class="subpage"><div class="wrap"><nav aria-label="Main navigation"><a href="./index.html">iOS Agent Skill</a><button class="appearance-toggle" type="button" aria-label="Use dark appearance" aria-pressed="false"><span aria-hidden="true">☾</span><span class="appearance-label">Dark mode</span></button></nav><main id="main"><h1>Daily community monitor</h1><h1>Daily community monitor</h1>
+<p>Operational instructions for the scheduled Codex task. Scheduling is in Codex, not the Pages workflow. The daily Pages job refreshes download counts; it does not search the web.</p>
+<h2>Repository workflow</h2>
+<ul>
+<li>Read <code>site/community-mentions.json</code> and the live <code>community.html</code> page first.</li>
+<li>Verified mentions are stored in that JSON. Generate the isolated HTML section in <code>site/community.html</code> with <code>python3 scripts/render-community.py</code>.</li>
+<li>Run <code>python3 scripts/render-community.py --check</code>, <code>python3 scripts/render-site.py --check</code>, <code>python3 -m unittest discover -s scripts/tests -p test_community.py</code> and <code>bash scripts/hooks/verify-repo.sh</code>.</li>
+<li>Keep verification dates stable on no-change days. Do not commit daily reports, timestamp-only updates or inaccessible-candidate churn. Record the run report in the scheduled task.</li>
+<li>Work from a clean current checkout; preserve unrelated work, never reset it. Commit only intended files. Push main to publish through GitHub Pages. Never publish npm or change package versions.</li>
+<li>Initial deferred baseline links: LibHunt, PickMCP, Product Hunt and npm web page could not be opened successfully. Retry later; inaccessible does not mean removed. Agentmods has a verified alternative canonical card; do not add its hooks/tag pages as duplicate coverage.</li>
+<li>Deduplicate language variants, mirrors on the same site and alternate canonical URLs using editorial judgment plus the renderer’s URL checks. Each standalone republication must be explicitly labelled a mirror.</li>
+<li>This initial run found skills.rest and Web Pulse beyond the supplied baseline. Reddit is maintainer-started with independent comments, not an independent endorsement.</li>
+</ul>
+<h2>User-supplied monitoring specification</h2>
+<p>You are responsible for maintaining the public “Community &amp; Mentions” section for this project:</p>
+<p>GitHub:
+<a href="https://github.com/Nagarjuna2997/ios-agent-skill">https://github.com/Nagarjuna2997/ios-agent-skill</a></p>
+<p>npm:
+<a href="https://www.npmjs.com/package/ios-agent-mcp">https://www.npmjs.com/package/ios-agent-mcp</a></p>
+<p>Project names to monitor:</p>
+<p>ios-agent-skill
+ios-agent-mcp
+iOS Agent Skill
+iOS Agent MCP
+Nagarjuna2997/ios-agent-skill</p>
+<p>Run this workflow every day.</p>
+<p>Your job is to search the public internet for new mentions of the project, verify them, compare them against the mentions already shown on the website, and update the website only when a genuinely new and useful mention is found.</p>
+<p>Do not add duplicate links.</p>
+<p>Do not rewrite the section every day if nothing has changed.</p>
+<p>Do not manufacture work.</p>
+<p>If everything already looks correct, leave the website unchanged.</p>
+<p>SEARCH FOR MENTIONS ACROSS:</p>
+<p>Google-indexed web pages</p>
+<p>developer blogs</p>
+<p>personal blogs</p>
+<p>newsletters</p>
+<p>Reddit</p>
+<p>Hacker News</p>
+<p>X/Twitter pages that are publicly indexed</p>
+<p>LinkedIn pages that are publicly indexed</p>
+<p>YouTube videos and descriptions</p>
+<p>GitHub repositories</p>
+<p>GitHub issues and discussions</p>
+<p>MCP directories</p>
+<p>Agent Skill directories</p>
+<p>Claude Code directories</p>
+<p>Codex directories</p>
+<p>Swift/iOS developer communities</p>
+<p>Product Hunt</p>
+<p>DEV Community</p>
+<p>Medium</p>
+<p>Hashnode</p>
+<p>npm-related pages</p>
+<p>Apple/Swift ecosystem websites</p>
+<p>AI coding-agent resource pages</p>
+<p>comparison websites</p>
+<p>curated developer-tool lists</p>
+<p>software discovery websites</p>
+<p>international or translated pages</p>
+<p>Search both exact names and URLs.</p>
+<p>Use queries based on:</p>
+<p>&quot;ios-agent-skill&quot;</p>
+<p>&quot;ios-agent-mcp&quot;</p>
+<p>&quot;Nagarjuna2997/ios-agent-skill&quot;</p>
+<p>&quot;github.com/Nagarjuna2997/ios-agent-skill&quot;</p>
+<p>&quot;npm ios-agent-mcp&quot;</p>
+<p>&quot;iOS Agent MCP&quot;</p>
+<p>&quot;iOS Agent Skill&quot;</p>
+<p>Also search combinations with:</p>
+<p>Swift
+SwiftUI
+Xcode
+Xcode 27
+iOS
+MCP
+Claude Code
+Codex
+Cursor
+Gemini CLI
+coding agents
+Apple development
+AI coding</p>
+<p>CLASSIFY EVERY RESULT</p>
+<p>For each result determine whether it is:</p>
+<p>INDEPENDENT COMMUNITY MENTION</p>
+<p>Someone else discussed, recommended, reviewed, compared, commented on, linked to, or used the project.</p>
+<p>This is the highest-value category.</p>
+<p>DIRECTORY / INDEX</p>
+<p>A third-party directory automatically or manually indexed the project.</p>
+<p>This is useful for discovery but should not be described as an endorsement.</p>
+<p>COMMUNITY DISCUSSION</p>
+<p>A Reddit, Hacker News, GitHub, forum, or other discussion containing real comments about the project.</p>
+<p>ARTICLE / BLOG</p>
+<p>An independent article that discusses the project.</p>
+<p>MY OWN CONTENT</p>
+<p>Posts originally created by Nagarjuna Reddy / Nagarjuna2997.</p>
+<p>These can be listed as project coverage but must not be presented as independent press.</p>
+<p>MIRROR / REPUBLICATION</p>
+<p>A site copying, syndicating, translating, or mirroring one of my own articles.</p>
+<p>Do not describe this as independent praise.</p>
+<p>OFFICIAL PROJECT PAGE</p>
+<p>GitHub, npm, project website, Product Hunt listing, etc.</p>
+<p>VERIFY BEFORE ADDING</p>
+<p>Before adding a result:</p>
+<p>Open the page.</p>
+<p>Confirm that it genuinely mentions this exact project.</p>
+<p>Confirm the URL still works.</p>
+<p>Check whether it is already on the website.</p>
+<p>Do not add search-result pages that only coincidentally contain similar words.</p>
+<p>Do not confuse similarly named iOS MCP projects with this repository.</p>
+<p>Do not add spam or scraped garbage pages unless they provide meaningful discovery value.</p>
+<p>Do not claim:</p>
+<p>“endorsed by”
+“recommended by”
+“partnered with”
+“officially supported by”
+“featured by”</p>
+<p>unless the source explicitly supports that statement.</p>
+<p>Use safer wording such as:</p>
+<p>“Mentioned on”</p>
+<p>“Discussed on”</p>
+<p>“Indexed on”</p>
+<p>“Discovered on”</p>
+<p>“Listed on”</p>
+<p>“Community discussion”</p>
+<p>“Featured, discussed, indexed, or discovered across”</p>
+<p>WEBSITE SECTION</p>
+<p>Maintain a section titled:</p>
+<p>Community &amp; Mentions</p>
+<p>Keep this introduction:</p>
+<p>“Seeing ios-agent-skill shared, indexed, discussed, and discovered across the developer community means a lot to me. Thank you to everyone who has checked out the project, shared feedback, starred the repository, or helped others discover it. I’m still improving it, and every bit of support genuinely motivates me to keep building.”</p>
+<p>Then show the verified mentions as clean cards.</p>
+<p>Each card should contain:</p>
+<p>Site/platform name</p>
+<p>Short category such as:</p>
+<p>Community
+Article
+Directory
+Developer Resource
+Discussion
+Launch
+Package</p>
+<p>One short factual description</p>
+<p>Direct external link</p>
+<p>Do not show exaggerated marketing language.</p>
+<p>Prefer the strongest mentions first.</p>
+<p>Suggested ordering:</p>
+<ol>
+<li>Independent human/community mentions</li>
+<li>Independent articles/blogs</li>
+<li>Developer resource collections</li>
+<li>Discussions</li>
+<li>Curated directories</li>
+<li>Automated directories</li>
+<li>My own posts</li>
+<li>Mirrors</li>
+</ol>
+<p>CURRENT KNOWN LINKS</p>
+<p>Use these as the starting baseline and do not duplicate them:</p>
+<p>Kimi
+<a href="https://www.kimi.ai/resources/software-skills-for-agents">https://www.kimi.ai/resources/software-skills-for-agents</a></p>
+<p>LibHunt
+<a href="https://www.libhunt.com/compare-appstore-doctor-vs-ios-agent-skill">https://www.libhunt.com/compare-appstore-doctor-vs-ios-agent-skill</a></p>
+<p>SkillsMP
+<a href="https://skillsmp.com/creators/nagarjuna2997/ios-agent-skill/skill">https://skillsmp.com/creators/nagarjuna2997/ios-agent-skill/skill</a></p>
+<p>Awesome Skills
+<a href="https://www.awesomeskills.dev/en/skill/nagarjuna2997-ios-agent-skill">https://www.awesomeskills.dev/en/skill/nagarjuna2997-ios-agent-skill</a></p>
+<p>Awesome MCP Servers
+<a href="https://mcpservers.org/servers/nagarjuna2997/ios-agent-skill">https://mcpservers.org/servers/nagarjuna2997/ios-agent-skill</a></p>
+<p>PickMCP
+<a href="https://pickmcp.com/servers/Nagarjuna2997/ios-agent-skill">https://pickmcp.com/servers/Nagarjuna2997/ios-agent-skill</a></p>
+<p>Agentmods
+<a href="https://agentmods.dev/hooks/nagarjuna2997/ios-agent-skill">https://agentmods.dev/hooks/nagarjuna2997/ios-agent-skill</a></p>
+<p>SkillWorks
+<a href="https://skillworks.thecompound.tech/claude-md-examples">https://skillworks.thecompound.tech/claude-md-examples</a></p>
+<p>Reddit / r/Xcode
+<a href="https://www.reddit.com/r/Xcode/comments/1v8j94w/i_got_tired_of_ai_agents_writing_2019era_swiftui/">https://www.reddit.com/r/Xcode/comments/1v8j94w/i_got_tired_of_ai_agents_writing_2019era_swiftui/</a></p>
+<p>DEV Community
+<a href="https://dev.to/nagarjuna_reddy_7ca85e003/im-building-an-mcp-toolbox-for-swift-xcode-and-ios-simulator-kp9">https://dev.to/nagarjuna_reddy_7ca85e003/im-building-an-mcp-toolbox-for-swift-xcode-and-ios-simulator-kp9</a></p>
+<p>Product Hunt
+<a href="https://www.producthunt.com/products/ios-agent-mcp">https://www.producthunt.com/products/ios-agent-mcp</a></p>
+<p>npm
+<a href="https://www.npmjs.com/package/ios-agent-mcp">https://www.npmjs.com/package/ios-agent-mcp</a></p>
+<p>GitHub
+<a href="https://github.com/Nagarjuna2997/ios-agent-skill">https://github.com/Nagarjuna2997/ios-agent-skill</a></p>
+<p>Do not assume this list is complete.</p>
+<p>Search for new mentions every day.</p>
+<p>THANK-YOU AREA</p>
+<p>Keep this message near the bottom:</p>
+<p>“Thank you for supporting ios-agent-skill.”</p>
+<p>“This started as a side project because I wanted AI coding agents to work better with real iOS development workflows. Seeing developers discover it, read the documentation, give feedback, and share it keeps me motivated to make it better.”</p>
+<p>Then add:</p>
+<p>“Using ios-agent-skill in a real project? I’d love to hear about it.”</p>
+<p>Keep buttons for:</p>
+<p>View on GitHub</p>
+<p>Share Feedback</p>
+<p>Star the Project</p>
+<p>DAILY BEHAVIOR</p>
+<p>Every daily run should follow this process:</p>
+<ol>
+<li><p>Read the existing website section first.</p>
+</li>
+<li><p>Extract all URLs already displayed.</p>
+</li>
+<li><p>Search broadly for new mentions.</p>
+</li>
+<li><p>Verify every candidate.</p>
+</li>
+<li><p>Deduplicate against existing links.</p>
+</li>
+<li><p>Add only genuinely new mentions.</p>
+</li>
+<li><p>Preserve all good existing links.</p>
+</li>
+<li><p>Fix broken links if necessary.</p>
+</li>
+<li><p>Do not remove a mention simply because it did not appear in today&#39;s search.</p>
+</li>
+<li><p>Do not modify unrelated parts of the website.</p>
+</li>
+<li><p>Do not redesign the page unless there is an actual layout problem.</p>
+</li>
+<li><p>Keep the section fast, responsive, accessible, and mobile friendly.</p>
+</li>
+<li><p>External links should open safely in a new tab where appropriate.</p>
+</li>
+<li><p>If the website repository has tests or linting, run them after changes.</p>
+</li>
+<li><p>If the build can be run, verify it before committing.</p>
+</li>
+</ol>
+<p>GIT WORKFLOW</p>
+<p>If new verified mentions are found:</p>
+<p>Update only the necessary website files.</p>
+<p>Run available checks.</p>
+<p>Commit with a clear message such as:</p>
+<p>docs: add new community mentions</p>
+<p>or</p>
+<p>site: update ios-agent-skill mentions</p>
+<p>Do not create meaningless daily commits when there are no changes.</p>
+<p>If no new mention exists:</p>
+<p>Do not change files.</p>
+<p>Do not create a commit.</p>
+<p>Report:</p>
+<p>“No new verified mentions today. Website unchanged.”</p>
+<p>DAILY REPORT</p>
+<p>At the end of every run report:</p>
+<p>New mentions found:
+[number]</p>
+<p>Added to website:
+[number]</p>
+<p>Independent human/community mentions:
+[number]</p>
+<p>Directory/index mentions:
+[number]</p>
+<p>Duplicates ignored:
+[number]</p>
+<p>Questionable/unverified results ignored:
+[number]</p>
+<p>Website changed:
+YES / NO</p>
+<p>Build/check status:
+PASS / FAIL / NOT REQUIRED</p>
+<p>For each new mention show:</p>
+<p>Platform:
+URL:
+Type:
+Why it matters:
+Added to website: YES / NO</p>
+<p>Most important rule:</p>
+<p>The goal is not to make the project appear more popular than it is.</p>
+<p>The goal is to honestly document the growing public footprint of ios-agent-skill and thank the people and communities helping others discover it.</p>
+<p>If a link is already present and correct, leave it alone.</p>
+<p>If nothing new happened, do nothing.</p>
+</main><footer><!-- discovery-nav:start --><div role="navigation" aria-label="Site discovery"><a href="./">Home</a> · <a href="./install.html">Install</a> · <a href="./community.html">Community</a> · <a href="./blog.html">Blog</a> · <a href="./docs-index.html">Docs index</a> · <a href="./pages.html">Site map</a> · <a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a> · <a href="https://www.npmjs.com/package/ios-agent-mcp">npm</a></div><!-- discovery-nav:end --></footer></div></body></html>

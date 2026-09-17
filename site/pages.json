@@ -1,0 +1,838 @@
+{
+  "blog.html": {
+    "title": "Practical Swift & AI development guides",
+    "description": "Tips for reviewing Swift, verifying a SwiftUI app in Simulator and connecting an AI coding client."
+  },
+  "blog/asset-catalogs.html": {
+    "title": "How can design tokens generate light, dark and…",
+    "description": "Generate a real xcassets catalog from explicit color tokens, inspect its four variants, and compile it with actool."
+  },
+  "blog/availability-guards.html": {
+    "title": "How should I review availability guards when moving a…",
+    "description": "A measured guard-review example that separates SDK availability, runtime readiness, and static-analysis limits."
+  },
+  "blog/chatgpt-codex-ios.html": {
+    "title": "ChatGPT and Codex: plan the app, then verify it locally",
+    "description": "Separate a browser planning session from a connected development environment."
+  },
+  "blog/choose-ai-client.html": {
+    "title": "Choose an AI client for your iOS workflow",
+    "description": "Understand the difference between a skill, a local MCP connection and ChatGPT web setup."
+  },
+  "blog/claude-hooks.html": {
+    "title": "How can Claude Code hooks protect generated files and…",
+    "description": "A tested generated-file guard and Stop check, with configuration, reproducible exit codes, and enforcement limits."
+  },
+  "blog/claude-swift-review.html": {
+    "title": "Claude Code: turn a Swift finding into a tested patch",
+    "description": "A small review-to-test loop for an existing iOS project."
+  },
+  "blog/gemini-cli-ios.html": {
+    "title": "Gemini CLI: connect once and review one iOS feature",
+    "description": "Avoid duplicate connections and keep setup evidence separate from app evidence."
+  },
+  "blog/generate-asset-catalog.html": {
+    "title": "Generate light and dark asset catalogs without a paid…",
+    "description": "Turn explicit color tokens into Assets.xcassets, then inspect the result in your app."
+  },
+  "blog/muse-connection.html": {
+    "title": "Which Muse Code MCP settings actually work with a local…",
+    "description": "A reproducible Muse 1.3.0 connection check, with the exact configuration and clear limits on what discovery proves."
+  },
+  "blog/muse-verification.html": {
+    "title": "Muse Code: what our integration actually verifies",
+    "description": "Discovery and hooks are useful milestones, but they are not a finished app."
+  },
+  "blog/review-swift-with-ai.html": {
+    "title": "Review AI-generated Swift before you trust it",
+    "description": "A focused review, a small patch and a real test beat a confident completion message."
+  },
+  "blog/swift-concurrency.html": {
+    "title": "How can I catch Swift concurrency review findings before…",
+    "description": "A real before-and-after MCP review with file and line evidence, plus the limits of text-based concurrency checks."
+  },
+  "blog/swiftui-state-review.html": {
+    "title": "SwiftUI: review state transitions before polishing the…",
+    "description": "Make loading, empty, success and error states part of the implementation brief."
+  },
+  "blog/verify-swiftui-simulator.html": {
+    "title": "Five checks for an AI-built SwiftUI app",
+    "description": "Use persistence, search and accessible states to make “it works” a testable claim."
+  },
+  "community.html": {
+    "title": "Community & Mentions",
+    "description": "Verified community discussions, directory listings and project coverage."
+  },
+  "docs-index.html": {
+    "title": "Documentation index",
+    "description": "Browse the repository’s documentation indexes and their linked source guides on GitHub."
+  },
+  "guides/checklists-app-store-submission.html": {
+    "title": "App Store Submission Checklist",
+    "description": "Repository guidance for Privacy Manifest. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/design-README.html": {
+    "title": "Professional UI/UX System",
+    "description": "Repository guidance for Professional UI/UX System. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/design-asset-generation.html": {
+    "title": "Generate real asset catalogs",
+    "description": "Repository guidance for Generate real asset catalogs. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/design-color-system.html": {
+    "title": "iOS Color System -- Complete Guide for Stunning SwiftUI UIs",
+    "description": "Repository guidance for iOS Color System -- Complete Guide for Stunning SwiftUI UIs. Examples, decisions, and verification limits from the maintained source…"
+  },
+  "guides/design-design-tokens.html": {
+    "title": "Design Tokens, Adaptive Color, and Liquid Glass",
+    "description": "Repository guidance for Design Tokens, Adaptive Color, and Liquid Glass. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/design-fonts-catalog.html": {
+    "title": "iOS Font Catalog — Ultimate Reference",
+    "description": "Repository guidance for iOS Font Catalog — Ultimate Reference. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/design-icon-composer.html": {
+    "title": "Layer-by-Layer Icons with Icon Composer",
+    "description": "Repository guidance for Layer-by-Layer Icons with Icon Composer. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/design-interaction-standards.html": {
+    "title": "Interaction Standards",
+    "description": "Repository guidance for Interaction Standards. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/design-liquid-glass-adoption.html": {
+    "title": "Adopting Liquid Glass",
+    "description": "Repository guidance for Liquid Glass. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/design-stunning-ui-patterns.html": {
+    "title": "Stunning UI Patterns -- Complete SwiftUI Pattern Library",
+    "description": "Repository guidance for Human Interface Guidelines. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/design-third-party-animations.html": {
+    "title": "Third-Party Animation Integration",
+    "description": "Repository guidance for Third-Party Animation Integration. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/design-typography-system.html": {
+    "title": "iOS Typography System -- Complete Guide for Stunning…",
+    "description": "Repository guidance for iOS Typography System -- Complete Guide for Stunning SwiftUI Text. Examples, decisions, and verification limits from the maintained…"
+  },
+  "guides/frameworks-activitykit.html": {
+    "title": "ActivityKit & Live Activities",
+    "description": "Repository guidance for ActivityKit. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/frameworks-app-clips.html": {
+    "title": "App Clips",
+    "description": "Repository guidance for App Clips. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/frameworks-app-intents.html": {
+    "title": "App Intents",
+    "description": "Repository guidance for App Intents. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/frameworks-apple-intelligence.html": {
+    "title": "Apple Intelligence",
+    "description": "Repository guidance for Apple Intelligence. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/frameworks-arkit.html": {
+    "title": "ARKit -- Complete Guide for Augmented Reality on iOS and…",
+    "description": "Repository guidance for ARKit. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/frameworks-authentication-services.html": {
+    "title": "AuthenticationServices",
+    "description": "Repository guidance for AuthenticationServices. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/frameworks-avfoundation.html": {
+    "title": "AVFoundation",
+    "description": "Repository guidance for AVFoundation. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/frameworks-background-tasks.html": {
+    "title": "BackgroundTasks",
+    "description": "Repository guidance for BackgroundTasks. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/frameworks-cloudkit.html": {
+    "title": "CloudKit",
+    "description": "Repository guidance for CloudKit. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/frameworks-core-ai.html": {
+    "title": "Core AI -- Custom On-Device AI Models on Apple Silicon",
+    "description": "Repository guidance for Core AI. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/frameworks-core-data.html": {
+    "title": "Core Data",
+    "description": "Repository guidance for Core Data. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/frameworks-core-location.html": {
+    "title": "CoreLocation",
+    "description": "Repository guidance for Core Location. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/frameworks-core-spotlight-rag.html": {
+    "title": "Core Spotlight RAG -- Private App-Local Retrieval for…",
+    "description": "Repository guidance for Core Spotlight RAG, Core Spotlight. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/frameworks-cryptokit.html": {
+    "title": "CryptoKit",
+    "description": "Repository guidance for CryptoKit. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/frameworks-data-concurrency.html": {
+    "title": "SwiftData and Core Data Concurrency",
+    "description": "Repository guidance for Data Concurrency. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/frameworks-device-integrity.html": {
+    "title": "Device Integrity (DeviceCheck & App Attest)",
+    "description": "Repository guidance for Device Integrity. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/frameworks-extended-apple-frameworks.html": {
+    "title": "Extended Apple Frameworks",
+    "description": "Repository guidance for QuickLook, LinkPresentation, UniformTypeIdentifiers, PDFKit, PencilKit, Core Animation, Core Haptics, MLX, File Provider, SQLite,…"
+  },
+  "guides/frameworks-foundation-models.html": {
+    "title": "Foundation Models",
+    "description": "Repository guidance for Foundation Models. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/frameworks-foundation.html": {
+    "title": "Foundation Framework",
+    "description": "Repository guidance for Foundation. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/frameworks-hardware-core-bluetooth.html": {
+    "title": "CoreBluetooth",
+    "description": "Repository guidance for Core Bluetooth. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/frameworks-hardware-core-motion.html": {
+    "title": "CoreMotion",
+    "description": "Repository guidance for Core Motion. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/frameworks-hardware-core-nfc.html": {
+    "title": "CoreNFC",
+    "description": "Repository guidance for Core NFC. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/frameworks-hardware-healthkit.html": {
+    "title": "HealthKit",
+    "description": "Repository guidance for HealthKit. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/frameworks-hardware-homekit.html": {
+    "title": "HomeKit and Matter",
+    "description": "Repository guidance for HomeKit. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/frameworks-local-authentication.html": {
+    "title": "LocalAuthentication",
+    "description": "Repository guidance for LocalAuthentication. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/frameworks-mapkit.html": {
+    "title": "MapKit",
+    "description": "Repository guidance for MapKit. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/frameworks-metal.html": {
+    "title": "Metal -- GPU Rendering, Compute, and Performance-Critical…",
+    "description": "Repository guidance for Metal. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/frameworks-ml-coreml.html": {
+    "title": "CoreML -- Complete Guide for On-Device Machine Learning",
+    "description": "Repository guidance for Core ML. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/frameworks-ml-natural-language.html": {
+    "title": "NaturalLanguage Framework -- Complete Guide for Text…",
+    "description": "Repository guidance for Natural Language. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/frameworks-ml-sound-analysis.html": {
+    "title": "Sound Analysis",
+    "description": "Repository guidance for Sound Analysis. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/frameworks-ml-speech.html": {
+    "title": "Speech Framework -- Complete Guide for Speech Recognition…",
+    "description": "Repository guidance for Speech. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/frameworks-ml-translation.html": {
+    "title": "Translation",
+    "description": "Repository guidance for Translation. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/frameworks-ml-vision.html": {
+    "title": "Vision Framework -- Complete Guide for Image Analysis and…",
+    "description": "Repository guidance for Vision. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/frameworks-network-framework.html": {
+    "title": "Network.framework",
+    "description": "Repository guidance for Network Framework. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/frameworks-networking.html": {
+    "title": "Networking",
+    "description": "Repository guidance for Networking. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/frameworks-oslog.html": {
+    "title": "OSLog & MetricKit",
+    "description": "Repository guidance for OSLog. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/frameworks-photosui.html": {
+    "title": "PhotosUI & AVKit",
+    "description": "Repository guidance for PhotosUI, Photos. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/frameworks-realitykit.html": {
+    "title": "RealityKit -- Complete Guide for 3D Rendering, AR, and…",
+    "description": "Repository guidance for RealityKit. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/frameworks-scenekit.html": {
+    "title": "SceneKit -- Legacy 3D Scenes, Animation, and AR Rendering",
+    "description": "Repository guidance for SceneKit. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/frameworks-services-contacts.html": {
+    "title": "Contacts Framework",
+    "description": "Repository guidance for Contacts. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/frameworks-services-eventkit.html": {
+    "title": "EventKit",
+    "description": "Repository guidance for EventKit. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/frameworks-services-passkit.html": {
+    "title": "PassKit & FinanceKit",
+    "description": "Repository guidance for PassKit. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/frameworks-services-weatherkit.html": {
+    "title": "WeatherKit",
+    "description": "Repository guidance for WeatherKit. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/frameworks-storekit.html": {
+    "title": "StoreKit 2",
+    "description": "Repository guidance for StoreKit. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/frameworks-swift-charts.html": {
+    "title": "Swift Charts",
+    "description": "Repository guidance for Swift Charts. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/frameworks-swiftdata.html": {
+    "title": "SwiftData",
+    "description": "Repository guidance for SwiftData. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/frameworks-tipkit.html": {
+    "title": "TipKit",
+    "description": "Repository guidance for TipKit. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/frameworks-usernotifications.html": {
+    "title": "UserNotifications",
+    "description": "Repository guidance for UserNotifications. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/frameworks-visionkit.html": {
+    "title": "VisionKit",
+    "description": "Repository guidance for VisionKit. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/frameworks-widgetkit.html": {
+    "title": "WidgetKit",
+    "description": "Repository guidance for WidgetKit. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/mcp-examples.html": {
+    "title": "MCP Usage Examples",
+    "description": "Repository guidance for MCP Usage Examples. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/mcp-installation.html": {
+    "title": "Installing the iOS Agent MCP Server",
+    "description": "Repository guidance for Installing the iOS Agent MCP Server. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/mcp-knowledge-server.html": {
+    "title": "Apple Knowledge MCP",
+    "description": "Repository guidance for Apple Knowledge MCP. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/mcp-registry.html": {
+    "title": "Official MCP Registry publication",
+    "description": "Repository guidance for Official MCP Registry publication. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/mcp-tools.html": {
+    "title": "MCP Tool Reference",
+    "description": "Repository guidance for MCP Tool Reference. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/mcp-vnext-analysis-tools.html": {
+    "title": "vNext MCP Analysis Tools",
+    "description": "Repository guidance for vNext MCP Analysis Tools. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/orchestration-dynamic-workflows.html": {
+    "title": "Dynamic Workflows and Large-Scale Jobs",
+    "description": "Repository guidance for Dynamic Workflows and Large-Scale Jobs. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/orchestration-hooks.html": {
+    "title": "Hooks — Deterministic Enforcement",
+    "description": "Repository guidance for Hooks — Deterministic Enforcement. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/orchestration-looping.html": {
+    "title": "Loops",
+    "description": "Repository guidance for Loops. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/orchestration-router.html": {
+    "title": "Main Agent Router",
+    "description": "Repository guidance for Main Agent Router. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/orchestration-subagents.html": {
+    "title": "Subagents",
+    "description": "Repository guidance for Subagents. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/orchestration-verification.html": {
+    "title": "Verification and the Evidence Contract",
+    "description": "Repository guidance for Verification and the Evidence Contract. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/platforms-ios.html": {
+    "title": "iOS Platform Guide",
+    "description": "Repository guidance for iOS. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/platforms-macos.html": {
+    "title": "macOS Platform Guide",
+    "description": "Repository guidance for macOS. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/platforms-tvos.html": {
+    "title": "tvOS Platform Guide",
+    "description": "Repository guidance for tvOS. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/platforms-visionos.html": {
+    "title": "visionOS Platform Guide",
+    "description": "Repository guidance for visionOS. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/platforms-watchos.html": {
+    "title": "watchOS Platform Guide",
+    "description": "Repository guidance for watchOS. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/swiftui-animations.html": {
+    "title": "SwiftUI Animations",
+    "description": "Repository guidance for SwiftUI Animation. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/swiftui-deep-linking-and-routing.html": {
+    "title": "Routing, Deep Links, and State Restoration",
+    "description": "Repository guidance for Routing, Deep Links, and State Restoration. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/swiftui-gestures.html": {
+    "title": "SwiftUI Gestures",
+    "description": "Repository guidance for SwiftUI Gestures. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/swiftui-ios-27-interactions.html": {
+    "title": "SwiftUI iOS 27 Interactions",
+    "description": "Repository guidance for SwiftUI iOS 27 Interactions. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/swiftui-layout.html": {
+    "title": "SwiftUI Layout System",
+    "description": "Repository guidance for SwiftUI Layout System. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/swiftui-navigation.html": {
+    "title": "SwiftUI Navigation",
+    "description": "Repository guidance for SwiftUI Navigation. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/swiftui-state-and-data-flow.html": {
+    "title": "SwiftUI State and Data Flow",
+    "description": "Repository guidance for SwiftUI State and Data Flow. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/swiftui-views-and-controls.html": {
+    "title": "SwiftUI Views and Controls",
+    "description": "Repository guidance for SwiftUI. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/testing-evaluations.html": {
+    "title": "Evaluations -- Testing Intelligence-Powered Features",
+    "description": "Repository guidance for Evaluations. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/tooling-app-building-loop.html": {
+    "title": "App-building loop (preview)",
+    "description": "Repository guidance for App-building loop (preview). Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/tooling-app-description-workflow.html": {
+    "title": "App Description Workflow",
+    "description": "Repository guidance for App Description Workflow. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/tooling-device-hub.html": {
+    "title": "Device Hub",
+    "description": "Repository guidance for Device Hub. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/tooling-fm-cli.html": {
+    "title": "Foundation Models `fm` CLI",
+    "description": "Repository guidance for fm CLI. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/tooling-foundation-models-instruments.html": {
+    "title": "Foundation Models Instruments",
+    "description": "Repository guidance for Foundation Models Instruments. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/tooling-idea-to-app.html": {
+    "title": "From an Idea to a Running Apple App",
+    "description": "Repository guidance for From an Idea to a Running Apple App. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/tooling-ios-simulator-mcp.html": {
+    "title": "iOS Simulator MCP",
+    "description": "Repository guidance for iOS Simulator MCP. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/tooling-issue-reporting.html": {
+    "title": "AI-assisted issue previews",
+    "description": "Repository guidance for AI-assisted issue previews. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/tooling-offline-source-library.html": {
+    "title": "Build from local source and Apple guidance",
+    "description": "Repository guidance for Build from local source and Apple guidance. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/tooling-project-scaffolding.html": {
+    "title": "Project Scaffolding and Layout",
+    "description": "Repository guidance for Project Scaffolding and Layout. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/tooling-visual-iteration-loop.html": {
+    "title": "Visual Iteration Loop",
+    "description": "Repository guidance for Visual Iteration Loop. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/tooling-xcode-27-agents.html": {
+    "title": "Xcode 27 Coding Agents",
+    "description": "Repository guidance for Xcode Agents. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/tooling-xcode-memory-debugging.html": {
+    "title": "Xcode Memory Debugging",
+    "description": "Repository guidance for Xcode Memory Debugging. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/uikit-uikit-essentials.html": {
+    "title": "UIKit Essentials",
+    "description": "Repository guidance for UIKit. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/web-native-vs-web-animation.html": {
+    "title": "Native vs. Web Animation and 3D",
+    "description": "Repository guidance for Native vs Web Animation, WebKit. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "index.html": {
+    "title": "iOS Agent Skill — Swift Reviews & Xcode Simulator MCP",
+    "description": "Local Swift source, Apple guides, Swift review tools, asset generation and Xcode simulator workflows for Claude, ChatGPT/Codex, Gemini CLI and Muse."
+  },
+  "install.html": {
+    "title": "Install iOS Agent MCP — Claude, Codex, Gemini CLI & Muse",
+    "description": "Install and use iOS Agent Skill with Claude, Codex, ChatGPT, Gemini CLI and Muse Code."
+  },
+  "library.html": {
+    "title": "Apple development guide library",
+    "description": "Search repository guidance for Apple frameworks, SwiftUI, design assets, MCP tools and agent workflows."
+  },
+  "pages.html": {
+    "title": "Site map",
+    "description": "Every public page on this website."
+  },
+  "series.html": {
+    "title": "From first prompt to shipped app: guided Swift series",
+    "description": "A nine-level reading roadmap for learning AI-assisted Swift app development, with related tutorials available now."
+  },
+  "series/0.1.html": {
+    "title": "What \"vibe coding\" a Swift app actually means, and what…",
+    "description": "An illustrated guide to AI-assisted Swift development: What \"vibe coding\" a Swift app actually means, and what it doesn't"
+  },
+  "series/0.2.html": {
+    "title": "What you need before an AI can build you an iOS app: Mac,…",
+    "description": "An illustrated guide to AI-assisted Swift development: What you need before an AI can build you an iOS app: Mac, Xcode, Apple ID, simulator"
+  },
+  "series/0.3.html": {
+    "title": "Choosing a coding agent for iOS in 2026: Claude Code,…",
+    "description": "An illustrated guide to AI-assisted Swift development: Choosing a coding agent for iOS in 2026: Claude Code, Codex, Antigravity, Muse Code, Xcode's own"
+  },
+  "series/0.4.html": {
+    "title": "Your first hour: install Xcode, run the simulator, build…",
+    "description": "An illustrated guide to AI-assisted Swift development: Your first hour: install Xcode, run the simulator, build the template app without AI"
+  },
+  "series/0.5.html": {
+    "title": "How coding agents read a project: AGENTS.md, CLAUDE.md,…",
+    "description": "An illustrated guide to AI-assisted Swift development: How coding agents read a project: AGENTS.md, CLAUDE.md, GEMINI.md, and what to put in them"
+  },
+  "series/0.6.html": {
+    "title": "Skills, plugins, MCP servers, hooks: the four words…",
+    "description": "An illustrated guide to AI-assisted Swift development: Skills, plugins, MCP servers, hooks: the four words you'll see everywhere, explained once"
+  },
+  "series/1.1.html": {
+    "title": "Build a SwiftUI to-do app with Claude Code: the brief,…",
+    "description": "An illustrated guide to AI-assisted Swift development: Build a SwiftUI to-do app with Claude Code: the brief, checks and repair workflow"
+  },
+  "series/1.2.html": {
+    "title": "Compare the same to-do app task in Codex without changing…",
+    "description": "An illustrated guide to AI-assisted Swift development: Compare the same to-do app task in Codex without changing the acceptance criteria"
+  },
+  "series/1.3.html": {
+    "title": "Prepare an Antigravity app-building trial and identify…",
+    "description": "An illustrated guide to AI-assisted Swift development: Prepare an Antigravity app-building trial and identify missing setup"
+  },
+  "series/1.4.html": {
+    "title": "Prepare a Muse app-building trial beyond tool discovery",
+    "description": "An illustrated guide to AI-assisted Swift development: Prepare a Muse app-building trial beyond tool discovery"
+  },
+  "series/1.5.html": {
+    "title": "Writing an app brief an agent can build from: ten…",
+    "description": "An illustrated guide to AI-assisted Swift development: Writing an app brief an agent can build from: ten practice briefs"
+  },
+  "series/1.6.html": {
+    "title": "Generating an Xcode project the agent can edit: XcodeGen…",
+    "description": "An illustrated guide to AI-assisted Swift development: Generating an Xcode project the agent can edit: XcodeGen vs opening .xcodeproj by hand"
+  },
+  "series/1.7.html": {
+    "title": "Running and seeing your app: simulator boot, install,…",
+    "description": "An illustrated guide to AI-assisted Swift development: Running and seeing your app: simulator boot, install, launch, screenshot from the agent"
+  },
+  "series/1.8.html": {
+    "title": "What to do when the build fails: reading Xcode errors…",
+    "description": "An illustrated guide to AI-assisted Swift development: What to do when the build fails: reading Xcode errors with an agent"
+  },
+  "series/2.1.html": {
+    "title": "Review Swift 6 settings and actor isolation before…",
+    "description": "An illustrated guide to AI-assisted Swift development: Review Swift 6 settings and actor isolation before changing agent-generated code"
+  },
+  "series/2.2.html": {
+    "title": "Getting an agent to run checks: hooks, Stop conditions…",
+    "description": "An illustrated guide to AI-assisted Swift development: Getting an agent to run checks: hooks, Stop conditions and verification limits"
+  },
+  "series/2.3.html": {
+    "title": "Making the agent prove it: screenshots as evidence, not…",
+    "description": "An illustrated guide to AI-assisted Swift development: Making the agent prove it: screenshots as evidence, not \"done\""
+  },
+  "series/2.4.html": {
+    "title": "Reviewing agent output before you commit: a focused…",
+    "description": "An illustrated guide to AI-assisted Swift development: Reviewing agent output before you commit: a focused checklist"
+  },
+  "series/2.5.html": {
+    "title": "Git for vibe coders: branches per prompt, checkpoints,…",
+    "description": "An illustrated guide to AI-assisted Swift development: Git for vibe coders: branches per prompt, checkpoints, and undoing an agent's mess"
+  },
+  "series/2.6.html": {
+    "title": "Keeping the agent inside your design: tokens, no…",
+    "description": "An illustrated guide to AI-assisted Swift development: Keeping the agent inside your design: tokens, no hardcoded colors, no fixed fonts"
+  },
+  "series/2.7.html": {
+    "title": "SwiftUI prompt practice: 25 scoped exercises and…",
+    "description": "An illustrated guide to AI-assisted Swift development: SwiftUI prompt practice: 25 scoped exercises and acceptance checks"
+  },
+  "series/2.8.html": {
+    "title": "When a SwiftUI agent task fails: ten failure categories…",
+    "description": "An illustrated guide to AI-assisted Swift development: When a SwiftUI agent task fails: ten failure categories to distinguish"
+  },
+  "series/3.1.html": {
+    "title": "Local persistence contracts: Reading List JSON storage…",
+    "description": "An illustrated guide to AI-assisted Swift development: Local persistence contracts: Reading List JSON storage and a SwiftData alternative"
+  },
+  "series/3.10.html": {
+    "title": "Localization with an agent: what to check before it…",
+    "description": "An illustrated guide to AI-assisted Swift development: Localization with an agent: what to check before it \"translates\" everything"
+  },
+  "series/3.2.html": {
+    "title": "Search, filtering and empty states that pass…",
+    "description": "An illustrated guide to AI-assisted Swift development: Search, filtering and empty states that pass accessibility review"
+  },
+  "series/3.3.html": {
+    "title": "Networking and Codable with an agent: the concurrency…",
+    "description": "An illustrated guide to AI-assisted Swift development: Networking and Codable with an agent: the concurrency mistakes to catch"
+  },
+  "series/3.4.html": {
+    "title": "Navigation in SwiftUI: what agents get wrong with…",
+    "description": "An illustrated guide to AI-assisted Swift development: Navigation in SwiftUI: what agents get wrong with NavigationStack"
+  },
+  "series/3.5.html": {
+    "title": "Adding widgets with App Intents: a timeline and…",
+    "description": "An illustrated guide to AI-assisted Swift development: Adding widgets with App Intents: a timeline and verification plan"
+  },
+  "series/3.6.html": {
+    "title": "Designing Siri actions with App Intents and testable…",
+    "description": "An illustrated guide to AI-assisted Swift development: Designing Siri actions with App Intents and testable domain operations"
+  },
+  "series/3.7.html": {
+    "title": "On-device AI: Foundation Models readiness and fallback…",
+    "description": "An illustrated guide to AI-assisted Swift development: On-device AI: Foundation Models readiness and fallback design"
+  },
+  "series/3.8.html": {
+    "title": "Notifications, background tasks and the permissions…",
+    "description": "An illustrated guide to AI-assisted Swift development: Notifications, background tasks and the permissions agents forget"
+  },
+  "series/3.9.html": {
+    "title": "Deep links and universal links, and using them for…",
+    "description": "An illustrated guide to AI-assisted Swift development: Deep links and universal links, and using them for automated screenshots"
+  },
+  "series/4.1.html": {
+    "title": "App icons in 2026: Liquid Glass, Icon Composer, and…",
+    "description": "An illustrated guide to AI-assisted Swift development: App icons in 2026: Liquid Glass, Icon Composer, and generating them from SVG layers"
+  },
+  "series/4.2.html": {
+    "title": "Color systems that survive dark mode and high contrast,…",
+    "description": "An illustrated guide to AI-assisted Swift development: Color systems that survive dark mode and high contrast, generated from tokens"
+  },
+  "series/4.3.html": {
+    "title": "Typography in SwiftUI that respects Dynamic Type: rules…",
+    "description": "An illustrated guide to AI-assisted Swift development: Typography in SwiftUI that respects Dynamic Type: rules an agent can follow"
+  },
+  "series/4.4.html": {
+    "title": "Motion and haptics: what to ask an agent for, and what…",
+    "description": "An illustrated guide to AI-assisted Swift development: Motion and haptics: what to ask an agent for, and what reduced-motion users need"
+  },
+  "series/4.5.html": {
+    "title": "Making an agent-built app look intentional, not templated",
+    "description": "An illustrated guide to AI-assisted Swift development: Making an agent-built app look intentional, not templated"
+  },
+  "series/4.6.html": {
+    "title": "Preparing repeatable simulator captures for App Store…",
+    "description": "An illustrated guide to AI-assisted Swift development: Preparing repeatable simulator captures for App Store screenshots"
+  },
+  "series/4.7.html": {
+    "title": "From Figma to SwiftUI with an agent: variables to tokens…",
+    "description": "An illustrated guide to AI-assisted Swift development: From Figma to SwiftUI with an agent: variables to tokens to code"
+  },
+  "series/5.1.html": {
+    "title": "Swift Testing vs XCTest: what to have the agent generate…",
+    "description": "An illustrated guide to AI-assisted Swift development: Swift Testing vs XCTest: what to have the agent generate in 2026"
+  },
+  "series/5.2.html": {
+    "title": "UI tests an agent can write and maintain",
+    "description": "An illustrated guide to AI-assisted Swift development: UI tests an agent can write and maintain"
+  },
+  "series/5.3.html": {
+    "title": "Accessibility review of an agent-built app: the checks…",
+    "description": "An illustrated guide to AI-assisted Swift development: Accessibility review of an agent-built app: the checks that matter"
+  },
+  "series/5.4.html": {
+    "title": "Performance: hangs, launch time and the patterns agents…",
+    "description": "An illustrated guide to AI-assisted Swift development: Performance: hangs, launch time and the patterns agents introduce"
+  },
+  "series/5.5.html": {
+    "title": "Memory: retain cycles agents create in closures and Combine",
+    "description": "An illustrated guide to AI-assisted Swift development: Memory: retain cycles agents create in closures and Combine"
+  },
+  "series/5.6.html": {
+    "title": "Security review of an agent-built app: keychain, ATS,…",
+    "description": "An illustrated guide to AI-assisted Swift development: Security review of an agent-built app: keychain, ATS, secrets in source"
+  },
+  "series/5.7.html": {
+    "title": "Static review vs the compiler: what heuristics catch and…",
+    "description": "An illustrated guide to AI-assisted Swift development: Static review vs the compiler: what heuristics catch and what they miss"
+  },
+  "series/6.1.html": {
+    "title": "App Store readiness: the checks before you upload an…",
+    "description": "An illustrated guide to AI-assisted Swift development: App Store readiness: the checks before you upload an agent-built app"
+  },
+  "series/6.2.html": {
+    "title": "Privacy manifests, permissions strings and the things…",
+    "description": "An illustrated guide to AI-assisted Swift development: Privacy manifests, permissions strings and the things agents leave blank"
+  },
+  "series/6.3.html": {
+    "title": "Preparing for TestFlight: signing, builds and account…",
+    "description": "An illustrated guide to AI-assisted Swift development: Preparing for TestFlight: signing, builds and account boundaries"
+  },
+  "series/6.4.html": {
+    "title": "Investigating App Review feedback without guessing the…",
+    "description": "An illustrated guide to AI-assisted Swift development: Investigating App Review feedback without guessing the cause"
+  },
+  "series/6.5.html": {
+    "title": "Versioning, changelogs and release notes the agent can…",
+    "description": "An illustrated guide to AI-assisted Swift development: Versioning, changelogs and release notes the agent can draft"
+  },
+  "series/6.6.html": {
+    "title": "CI for an iOS repo with agent-written code: what to run…",
+    "description": "An illustrated guide to AI-assisted Swift development: CI for an iOS repo with agent-written code: what to run on every PR"
+  },
+  "series/7.1.html": {
+    "title": "Subagents for iOS: splitting review, build and design…",
+    "description": "An illustrated guide to AI-assisted Swift development: Subagents for iOS: splitting review, build and design across agents"
+  },
+  "series/7.10.html": {
+    "title": "Preparing to verify Xcode 27 agents with external skills",
+    "description": "An illustrated guide to AI-assisted Swift development: Preparing to verify Xcode 27 agents with external skills"
+  },
+  "series/7.11.html": {
+    "title": "Keeping up with Apple: refreshing references after each…",
+    "description": "An illustrated guide to AI-assisted Swift development: Keeping up with Apple: refreshing references after each beta without breaking rules"
+  },
+  "series/7.12.html": {
+    "title": "Planning a safe Swift 6 and iOS 27 migration",
+    "description": "An illustrated guide to AI-assisted Swift development: Planning a safe Swift 6 and iOS 27 migration"
+  },
+  "series/7.2.html": {
+    "title": "Coordinating parallel coding work with isolated checkouts",
+    "description": "An illustrated guide to AI-assisted Swift development: Coordinating parallel coding work with isolated checkouts"
+  },
+  "series/7.3.html": {
+    "title": "Writing your own review rule for a Swift codebase",
+    "description": "An illustrated guide to AI-assisted Swift development: Writing your own review rule for a Swift codebase"
+  },
+  "series/7.4.html": {
+    "title": "Writing your own skill for a Swift project: SKILL.md…",
+    "description": "An illustrated guide to AI-assisted Swift development: Writing your own skill for a Swift project: SKILL.md structure that agents follow"
+  },
+  "series/7.5.html": {
+    "title": "Building a Claude Code plugin from a skill",
+    "description": "An illustrated guide to AI-assisted Swift development: Building a Claude Code plugin from a skill"
+  },
+  "series/7.6.html": {
+    "title": "Building a Codex plugin from the same skill",
+    "description": "An illustrated guide to AI-assisted Swift development: Building a Codex plugin from the same skill"
+  },
+  "series/7.7.html": {
+    "title": "Cross-client packaging: verified Muse scope and an…",
+    "description": "An illustrated guide to AI-assisted Swift development: Cross-client packaging: verified Muse scope and an Antigravity test boundary"
+  },
+  "series/7.8.html": {
+    "title": "Verifying a skill across clients: the client verification…",
+    "description": "An illustrated guide to AI-assisted Swift development: Verifying a skill across clients: the client verification record method"
+  },
+  "series/7.9.html": {
+    "title": "Measuring whether a skill helps: a paired benchmark…",
+    "description": "An illustrated guide to AI-assisted Swift development: Measuring whether a skill helps: a paired benchmark protocol"
+  },
+  "series/8.1.html": {
+    "title": "Ask for the finding, not the fix: why review-first…",
+    "description": "An illustrated guide to AI-assisted Swift development: Ask for the finding, not the fix: why review-first prompts produce better Swift"
+  },
+  "series/8.10.html": {
+    "title": "When the agent says \"done\", run the tests yourself once",
+    "description": "An illustrated guide to AI-assisted Swift development: When the agent says \"done\", run the tests yourself once"
+  },
+  "series/8.11.html": {
+    "title": "Small prompts, one screen at a time, commit between each",
+    "description": "An illustrated guide to AI-assisted Swift development: Small prompts, one screen at a time, commit between each"
+  },
+  "series/8.12.html": {
+    "title": "Keep signing and account changes separate from code repairs",
+    "description": "An illustrated guide to AI-assisted Swift development: Keep signing and account changes separate from code repairs"
+  },
+  "series/8.13.html": {
+    "title": "Reading agent transcripts: the three phrases that mean it…",
+    "description": "An illustrated guide to AI-assisted Swift development: Reading agent transcripts: the three phrases that mean it guessed"
+  },
+  "series/8.14.html": {
+    "title": "Turn every failure into a rule: how findings become reviews",
+    "description": "An illustrated guide to AI-assisted Swift development: Turn every failure into a rule: how findings become reviews"
+  },
+  "series/8.15.html": {
+    "title": "Verify Muse observer behavior before recommending it",
+    "description": "An illustrated guide to AI-assisted Swift development: Verify Muse observer behavior before recommending it"
+  },
+  "series/8.16.html": {
+    "title": "Codex worktrees for parallel screens",
+    "description": "An illustrated guide to AI-assisted Swift development: Codex worktrees for parallel screens"
+  },
+  "series/8.17.html": {
+    "title": "Treat background builds as running work, not completed…",
+    "description": "An illustrated guide to AI-assisted Swift development: Treat background builds as running work, not completed tasks"
+  },
+  "series/8.18.html": {
+    "title": "Claude Code plan mode before any multi-file Swift change",
+    "description": "An illustrated guide to AI-assisted Swift development: Claude Code plan mode before any multi-file Swift change"
+  },
+  "series/8.19.html": {
+    "title": "Ask the agent to search local Apple references before the…",
+    "description": "An illustrated guide to AI-assisted Swift development: Ask the agent to search local Apple references before the web"
+  },
+  "series/8.2.html": {
+    "title": "Ask about actor ownership before adding MainActor",
+    "description": "An illustrated guide to AI-assisted Swift development: Ask about actor ownership before adding MainActor"
+  },
+  "series/8.20.html": {
+    "title": "What to put in .gitignore for agent-built Xcode projects",
+    "description": "An illustrated guide to AI-assisted Swift development: What to put in .gitignore for agent-built Xcode projects"
+  },
+  "series/8.3.html": {
+    "title": "\"Show me the screenshot\" as a standing instruction",
+    "description": "An illustrated guide to AI-assisted Swift development: \"Show me the screenshot\" as a standing instruction"
+  },
+  "series/8.4.html": {
+    "title": "Pin your Xcode version in AGENTS.md and stop the agent…",
+    "description": "An illustrated guide to AI-assisted Swift development: Pin your Xcode version in AGENTS.md and stop the agent guessing APIs"
+  },
+  "series/8.5.html": {
+    "title": "One deep link per screen makes every screenshot automatable",
+    "description": "An illustrated guide to AI-assisted Swift development: One deep link per screen makes every screenshot automatable"
+  },
+  "series/8.6.html": {
+    "title": "Keep design tokens in one file and tell the agent it's…",
+    "description": "An illustrated guide to AI-assisted Swift development: Keep design tokens in one file and tell the agent it's the only source of color"
+  },
+  "series/8.7.html": {
+    "title": "Review the XcodeGen spec before regenerating the project",
+    "description": "An illustrated guide to AI-assisted Swift development: Review the XcodeGen spec before regenerating the project"
+  },
+  "series/8.8.html": {
+    "title": "Use `#available` audits before every beta upgrade",
+    "description": "An illustrated guide to AI-assisted Swift development: Use `#available` audits before every beta upgrade"
+  },
+  "series/8.9.html": {
+    "title": "Hooks beat reminders: enforce, don't request",
+    "description": "An illustrated guide to AI-assisted Swift development: Hooks beat reminders: enforce, don't request"
+  }
+}

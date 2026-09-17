@@ -1,3 +1,8 @@
+---
+title: Daily community monitor
+description: Operational reference for verifying community mentions and maintaining the project website.
+---
+
 # Daily community monitor
 
 Operational instructions for the scheduled Codex task. Scheduling is in Codex, not the Pages workflow. The daily Pages job refreshes download counts; it does not search the web.

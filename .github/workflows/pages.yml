@@ -23,6 +23,13 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install discovery dependencies
+        run: npm ci --prefix scripts/site-discovery --ignore-scripts
       - name: Install website renderer
         run: python3 -m pip install -r scripts/requirements-site.txt
       - name: Render illustrated blog and sitemap
@@ -34,6 +41,12 @@ jobs:
         run: python3 scripts/render-community.py --check
       - name: Refresh total npm downloads
         run: python3 scripts/npm-downloads.py
+      - name: Generate discovery files and page metadata
+        env:
+          INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
+        run: node scripts/site-meta.mjs
+      - name: Enforce site discovery
+        run: node scripts/check-site-discovery.mjs
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
@@ -41,3 +54,8 @@ jobs:
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
+      - name: Notify IndexNow after successful deployment
+        env:
+          INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
+          BEFORE_SHA: ${{ github.event.before }}
+        run: node scripts/site-indexnow.mjs

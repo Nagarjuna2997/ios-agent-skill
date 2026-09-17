@@ -22,6 +22,29 @@ defaults:
     shell: bash
 
 jobs:
+  site-discovery:
+    name: Website discovery and metadata
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install site tools
+        run: |
+          npm ci --prefix scripts/site-discovery --ignore-scripts
+          python3 -m pip install -r scripts/requirements-site.txt
+      - name: Test discovery enforcement
+        run: node --test scripts/site-discovery/discovery.test.mjs
+      - name: Build site and enforce discovery
+        run: |
+          python3 scripts/render-library.py
+          python3 scripts/render-site.py
+          node scripts/site-meta.mjs
+          node scripts/check-site-discovery.mjs
+
   mcp-server:
     name: MCP server builds and tests
     runs-on: ubuntu-latest
