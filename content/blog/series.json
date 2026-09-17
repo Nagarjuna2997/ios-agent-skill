@@ -1,0 +1,476 @@
+[
+  {
+    "number": 0,
+    "title": "Orientation (for people who have never opened Xcode)",
+    "lessons": [
+      {
+        "number": "0.1",
+        "title": "What \"vibe coding\" a Swift app actually means, and what it doesn't",
+        "status": "planned"
+      },
+      {
+        "number": "0.2",
+        "title": "What you need before an AI can build you an iOS app: Mac, Xcode, Apple ID, simulator",
+        "status": "planned"
+      },
+      {
+        "number": "0.3",
+        "title": "Choosing a coding agent for iOS in 2026: Claude Code, Codex, Antigravity, Muse Code, Xcode's own",
+        "status": "planned"
+      },
+      {
+        "number": "0.4",
+        "title": "Your first hour: install Xcode, run the simulator, build the template app without AI",
+        "status": "planned"
+      },
+      {
+        "number": "0.5",
+        "title": "How coding agents read a project: AGENTS.md, CLAUDE.md, GEMINI.md, and what to put in them",
+        "status": "planned"
+      },
+      {
+        "number": "0.6",
+        "title": "Skills, plugins, MCP servers, hooks: the four words you'll see everywhere, explained once",
+        "status": "planned"
+      }
+    ]
+  },
+  {
+    "number": 1,
+    "title": "First app with an agent (day one)",
+    "lessons": [
+      {
+        "number": "1.1",
+        "title": "Build a SwiftUI to-do app with Claude Code in 30 minutes, with tests and a screenshot",
+        "status": "planned"
+      },
+      {
+        "number": "1.2",
+        "title": "The same to-do app with Codex: what changed",
+        "status": "planned"
+      },
+      {
+        "number": "1.3",
+        "title": "The same app with Antigravity CLI",
+        "status": "planned"
+      },
+      {
+        "number": "1.4",
+        "title": "The same app with Muse Code",
+        "status": "planned"
+      },
+      {
+        "number": "1.5",
+        "title": "Writing an app brief an agent can actually build from (with 10 real briefs)",
+        "status": "planned"
+      },
+      {
+        "number": "1.6",
+        "title": "Generating an Xcode project the agent can edit: XcodeGen vs opening .xcodeproj by hand",
+        "status": "planned"
+      },
+      {
+        "number": "1.7",
+        "title": "Running and seeing your app: simulator boot, install, launch, screenshot from the agent",
+        "status": "planned"
+      },
+      {
+        "number": "1.8",
+        "title": "What to do when the build fails: reading Xcode errors with an agent",
+        "status": "planned"
+      }
+    ]
+  },
+  {
+    "number": 2,
+    "title": "Making the agent reliable (week one)",
+    "lessons": [
+      {
+        "number": "2.1",
+        "title": "Why agents write pre-Swift-6 code, and the one setting that changes it",
+        "status": "planned"
+      },
+      {
+        "number": "2.2",
+        "title": "Getting the agent to run the tests every time: hooks and Stop conditions",
+        "status": "planned"
+      },
+      {
+        "number": "2.3",
+        "title": "Making the agent prove it: screenshots as evidence, not \"done\"",
+        "status": "planned"
+      },
+      {
+        "number": "2.4",
+        "title": "Reviewing agent output before you commit: a five-minute checklist",
+        "status": "planned"
+      },
+      {
+        "number": "2.5",
+        "title": "Git for vibe coders: branches per prompt, checkpoints, and undoing an agent's mess",
+        "status": "planned"
+      },
+      {
+        "number": "2.6",
+        "title": "Keeping the agent inside your design: tokens, no hardcoded colors, no fixed fonts",
+        "status": "planned"
+      },
+      {
+        "number": "2.7",
+        "title": "Prompts that work for SwiftUI: 25 tested prompts and the output they produced",
+        "status": "planned"
+      },
+      {
+        "number": "2.8",
+        "title": "Prompts that fail: 10 things agents cannot do in SwiftUI yet",
+        "status": "planned"
+      }
+    ]
+  },
+  {
+    "number": 3,
+    "title": "Real features (weeks two to four)",
+    "lessons": [
+      {
+        "number": "3.1",
+        "title": "Local persistence with SwiftData, built by an agent, reviewed by rules",
+        "status": "planned"
+      },
+      {
+        "number": "3.2",
+        "title": "Search, filtering and empty states that pass accessibility review",
+        "status": "planned"
+      },
+      {
+        "number": "3.3",
+        "title": "Networking and Codable with an agent: the concurrency mistakes to catch",
+        "status": "planned"
+      },
+      {
+        "number": "3.4",
+        "title": "Navigation in SwiftUI: what agents get wrong with NavigationStack",
+        "status": "planned"
+      },
+      {
+        "number": "3.5",
+        "title": "Adding widgets with App Intents (iOS 27 styling)",
+        "status": "planned"
+      },
+      {
+        "number": "3.6",
+        "title": "Adding Siri support with App Intents (not SiriKit)",
+        "status": "planned"
+      },
+      {
+        "number": "3.7",
+        "title": "On-device AI in your app: Foundation Models with a fallback, built by an agent",
+        "status": "planned"
+      },
+      {
+        "number": "3.8",
+        "title": "Notifications, background tasks and the permissions agents forget",
+        "status": "planned"
+      },
+      {
+        "number": "3.9",
+        "title": "Deep links and universal links, and using them for automated screenshots",
+        "status": "planned"
+      },
+      {
+        "number": "3.10",
+        "title": "Localization with an agent: what to check before it \"translates\" everything",
+        "status": "planned"
+      }
+    ]
+  },
+  {
+    "number": 4,
+    "title": "Design and assets",
+    "lessons": [
+      {
+        "number": "4.1",
+        "title": "App icons in 2026: Liquid Glass, Icon Composer, and generating them from SVG layers",
+        "status": "planned"
+      },
+      {
+        "number": "4.2",
+        "title": "Color systems that survive dark mode and high contrast, generated from tokens",
+        "status": "planned"
+      },
+      {
+        "number": "4.3",
+        "title": "Typography in SwiftUI that respects Dynamic Type: rules an agent can follow",
+        "status": "planned"
+      },
+      {
+        "number": "4.4",
+        "title": "Motion and haptics: what to ask an agent for, and what reduced-motion users need",
+        "status": "planned"
+      },
+      {
+        "number": "4.5",
+        "title": "Making an agent-built app look intentional, not templated",
+        "status": "planned"
+      },
+      {
+        "number": "4.6",
+        "title": "App Store screenshots from the simulator, automated",
+        "status": "planned"
+      },
+      {
+        "number": "4.7",
+        "title": "From Figma to SwiftUI with an agent: variables to tokens to code",
+        "status": "planned"
+      }
+    ]
+  },
+  {
+    "number": 5,
+    "title": "Quality and testing",
+    "lessons": [
+      {
+        "number": "5.1",
+        "title": "Swift Testing vs XCTest: what to have the agent generate in 2026",
+        "status": "planned"
+      },
+      {
+        "number": "5.2",
+        "title": "UI tests an agent can write and maintain",
+        "status": "planned"
+      },
+      {
+        "number": "5.3",
+        "title": "Accessibility review of an agent-built app: the checks that matter",
+        "status": "planned"
+      },
+      {
+        "number": "5.4",
+        "title": "Performance: hangs, launch time and the patterns agents introduce",
+        "status": "planned"
+      },
+      {
+        "number": "5.5",
+        "title": "Memory: retain cycles agents create in closures and Combine",
+        "status": "planned"
+      },
+      {
+        "number": "5.6",
+        "title": "Security review of an agent-built app: keychain, ATS, secrets in source",
+        "status": "planned"
+      },
+      {
+        "number": "5.7",
+        "title": "Static review vs the compiler: what heuristics catch and what they miss",
+        "status": "planned"
+      }
+    ]
+  },
+  {
+    "number": 6,
+    "title": "Shipping",
+    "lessons": [
+      {
+        "number": "6.1",
+        "title": "App Store readiness: the checks before you upload an agent-built app",
+        "status": "planned"
+      },
+      {
+        "number": "6.2",
+        "title": "Privacy manifests, permissions strings and the things agents leave blank",
+        "status": "planned"
+      },
+      {
+        "number": "6.3",
+        "title": "TestFlight in an afternoon: signing, builds and what the agent can't do for you",
+        "status": "planned"
+      },
+      {
+        "number": "6.4",
+        "title": "App Review rejections agent-built apps get, and how to avoid them",
+        "status": "planned"
+      },
+      {
+        "number": "6.5",
+        "title": "Versioning, changelogs and release notes the agent can draft",
+        "status": "planned"
+      },
+      {
+        "number": "6.6",
+        "title": "CI for an iOS repo with agent-written code: what to run on every PR",
+        "status": "planned"
+      }
+    ]
+  },
+  {
+    "number": 7,
+    "title": "Pro workflows",
+    "lessons": [
+      {
+        "number": "7.1",
+        "title": "Subagents for iOS: splitting review, build and design across agents",
+        "status": "planned"
+      },
+      {
+        "number": "7.2",
+        "title": "Running four coding agents on one Swift repo without them fighting",
+        "status": "planned"
+      },
+      {
+        "number": "7.3",
+        "title": "Writing your own review rule for a Swift codebase",
+        "status": "planned"
+      },
+      {
+        "number": "7.4",
+        "title": "Writing your own skill for a Swift project: SKILL.md structure that agents follow",
+        "status": "planned"
+      },
+      {
+        "number": "7.5",
+        "title": "Building a Claude Code plugin from a skill",
+        "status": "planned"
+      },
+      {
+        "number": "7.6",
+        "title": "Building a Codex plugin from the same skill",
+        "status": "planned"
+      },
+      {
+        "number": "7.7",
+        "title": "Building an Antigravity plugin and a Muse-compatible layout from the same skill",
+        "status": "planned"
+      },
+      {
+        "number": "7.8",
+        "title": "Verifying a skill across clients: the client verification record method",
+        "status": "planned"
+      },
+      {
+        "number": "7.9",
+        "title": "Measuring whether a skill helps: a paired benchmark you can run yourself",
+        "status": "planned"
+      },
+      {
+        "number": "7.10",
+        "title": "Xcode 27's built-in agent plus external skills: the combined workflow",
+        "status": "planned"
+      },
+      {
+        "number": "7.11",
+        "title": "Keeping up with Apple: refreshing references after each beta without breaking rules",
+        "status": "planned"
+      },
+      {
+        "number": "7.12",
+        "title": "Migrating an old Swift project to Swift 6 and iOS 27 with an agent, safely",
+        "status": "planned"
+      }
+    ]
+  },
+  {
+    "number": 8,
+    "title": "Tips and tricks (short posts, one idea each)",
+    "lessons": [
+      {
+        "number": "8.1",
+        "title": "Ask for the finding, not the fix: why review-first prompts produce better Swift",
+        "status": "planned"
+      },
+      {
+        "number": "8.2",
+        "title": "The @MainActor prompt that fixes half of all agent concurrency errors",
+        "status": "planned"
+      },
+      {
+        "number": "8.3",
+        "title": "\"Show me the screenshot\" as a standing instruction",
+        "status": "planned"
+      },
+      {
+        "number": "8.4",
+        "title": "Pin your Xcode version in AGENTS.md and stop the agent guessing APIs",
+        "status": "planned"
+      },
+      {
+        "number": "8.5",
+        "title": "One deep link per screen makes every screenshot automatable",
+        "status": "planned"
+      },
+      {
+        "number": "8.6",
+        "title": "Keep design tokens in one file and tell the agent it's the only source of color",
+        "status": "planned"
+      },
+      {
+        "number": "8.7",
+        "title": "Let the agent write the XcodeGen spec, never the .pbxproj",
+        "status": "planned"
+      },
+      {
+        "number": "8.8",
+        "title": "Use `#available` audits before every beta upgrade",
+        "status": "planned"
+      },
+      {
+        "number": "8.9",
+        "title": "Hooks beat reminders: enforce, don't request",
+        "status": "planned"
+      },
+      {
+        "number": "8.10",
+        "title": "When the agent says \"done\", run the tests yourself once",
+        "status": "planned"
+      },
+      {
+        "number": "8.11",
+        "title": "Small prompts, one screen at a time, commit between each",
+        "status": "planned"
+      },
+      {
+        "number": "8.12",
+        "title": "Never let an agent touch signing, provisioning or your Apple ID",
+        "status": "planned"
+      },
+      {
+        "number": "8.13",
+        "title": "Reading agent transcripts: the three phrases that mean it guessed",
+        "status": "planned"
+      },
+      {
+        "number": "8.14",
+        "title": "Turn every failure into a rule: how findings become reviews",
+        "status": "planned"
+      },
+      {
+        "number": "8.15",
+        "title": "Muse Code's verification observer: turn it on for iOS work",
+        "status": "planned"
+      },
+      {
+        "number": "8.16",
+        "title": "Codex worktrees for parallel screens",
+        "status": "planned"
+      },
+      {
+        "number": "8.17",
+        "title": "Antigravity background subagents for long builds",
+        "status": "planned"
+      },
+      {
+        "number": "8.18",
+        "title": "Claude Code plan mode before any multi-file Swift change",
+        "status": "planned"
+      },
+      {
+        "number": "8.19",
+        "title": "Ask the agent to search local Apple references before the web",
+        "status": "planned"
+      },
+      {
+        "number": "8.20",
+        "title": "What to put in .gitignore for agent-built Xcode projects",
+        "status": "planned"
+      }
+    ]
+  }
+]
