@@ -16,7 +16,7 @@ Operational instructions for the scheduled Codex task. Scheduling is in Codex, n
 - Work from a clean current checkout; preserve unrelated work, never reset it. Commit only intended files. Push main to publish through GitHub Pages. Never publish npm or change package versions.
 - Initial deferred baseline links: LibHunt, PickMCP, Product Hunt and npm web page could not be opened successfully. Retry later; inaccessible does not mean removed. Agentmods has a verified alternative canonical card; do not add its hooks/tag pages as duplicate coverage.
 - Deduplicate language variants, mirrors on the same site and alternate canonical URLs using editorial judgment plus the renderer’s URL checks. Each standalone republication must be explicitly labelled a mirror.
-- This initial run found skills.rest and Web Pulse beyond the supplied baseline. Reddit is maintainer-started with independent comments, not an independent endorsement.
+- This initial run found skills.rest beyond the supplied baseline. Exclude scraper republications from the directory list. Reddit is maintainer-started with independent comments, not an independent endorsement.
 
 ## User-supplied monitoring specification
 

@@ -6,32 +6,38 @@
       {
         "number": "0.1",
         "title": "What \"vibe coding\" a Swift app actually means, and what it doesn't",
-        "status": "available"
+        "status": "available",
+        "description": "Turn an app idea into observable behavior, small code changes and evidence you can check before accepting an agent’s work."
       },
       {
         "number": "0.2",
         "title": "What you need before an AI can build you an iOS app: Mac, Xcode, Apple ID, simulator",
-        "status": "available"
+        "status": "available",
+        "description": "Prepare a Mac, Xcode, simulator runtime and signing account, and understand which tasks work without paid distribution access."
       },
       {
         "number": "0.3",
         "title": "Choosing a coding agent for iOS in 2026: Claude Code, Codex, Antigravity, Muse Code, Xcode's own",
-        "status": "available"
+        "status": "available",
+        "description": "Choose an iOS coding client by its local execution access, verified integrations and ability to produce inspectable build evidence."
       },
       {
         "number": "0.4",
         "title": "Your first hour: install Xcode, run the simulator, build the template app without AI",
-        "status": "available"
+        "status": "available",
+        "description": "Establish a working Xcode and simulator baseline before introducing an agent, so later build failures have a known starting point."
       },
       {
         "number": "0.5",
         "title": "How coding agents read a project: AGENTS.md, CLAUDE.md, GEMINI.md, and what to put in them",
-        "status": "available"
+        "status": "available",
+        "description": "Separate stable project instructions from task briefs and evidence, and understand how different coding clients discover those files."
       },
       {
         "number": "0.6",
         "title": "Skills, plugins, MCP servers, hooks: the four words you'll see everywhere, explained once",
-        "status": "available"
+        "status": "available",
+        "description": "Distinguish skills, plugins, MCP tools and hooks so each part of your agent setup has a clear responsibility."
       }
     ]
   },
@@ -43,49 +49,57 @@
         "number": "1.1",
         "title": "Build a SwiftUI to-do app with Claude Code: the brief, checks and repair workflow",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Scope a SwiftUI to-do app for Claude Code with explicit states, acceptance checks and a bounded repair workflow."
       },
       {
         "number": "1.2",
         "title": "Compare the same to-do app task in Codex without changing the acceptance criteria",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Compare Codex on the same to-do brief using unchanged acceptance criteria instead of judging polished screenshots alone."
       },
       {
         "number": "1.3",
         "title": "Prepare an Antigravity app-building trial and identify missing setup",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Prepare an Antigravity evaluation with a fixed app brief and evidence requirements while keeping unverified setup steps explicit."
       },
       {
         "number": "1.4",
         "title": "Prepare a Muse app-building trial beyond tool discovery",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Plan a Muse app-building trial that tests implementation and repair beyond the recorded MCP tool-discovery check."
       },
       {
         "number": "1.5",
         "title": "Writing an app brief an agent can build from: ten practice briefs",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Practice ten app briefs that specify screens, data ownership, constraints and acceptance criteria an agent can follow."
       },
       {
         "number": "1.6",
         "title": "Generating an Xcode project the agent can edit: XcodeGen vs opening .xcodeproj by hand",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Choose between a generated Xcode project and direct project editing, then inspect configuration before accepting regenerated files."
       },
       {
         "number": "1.7",
         "title": "Running and seeing your app: simulator boot, install, launch, screenshot from the agent",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Follow the simulator build, install, launch and capture sequence, and distinguish screenshots from verified app behavior."
       },
       {
         "number": "1.8",
         "title": "What to do when the build fails: reading Xcode errors with an agent",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Read the first actionable Xcode diagnostic, make a focused correction and rerun the same build before accepting a repair."
       }
     ]
   },
@@ -97,49 +111,57 @@
         "number": "2.1",
         "title": "Review Swift 6 settings and actor isolation before changing agent-generated code",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Review Swift 6 language settings and actor ownership before changing concurrency annotations in generated code."
       },
       {
         "number": "2.2",
         "title": "Getting an agent to run checks: hooks, Stop conditions and verification limits",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Use lifecycle hooks and explicit stop conditions to require checks, while understanding what a hook cannot prove."
       },
       {
         "number": "2.3",
         "title": "Making the agent prove it: screenshots as evidence, not \"done\"",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Collect screenshots tied to acceptance criteria and execution records instead of relying on an agent’s completion message."
       },
       {
         "number": "2.4",
         "title": "Reviewing agent output before you commit: a focused checklist",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Inspect an agent’s diff for correctness, ownership and verification gaps before committing a focused change."
       },
       {
         "number": "2.5",
         "title": "Git for vibe coders: branches per prompt, checkpoints, and undoing an agent's mess",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Use branches, small commits and checkpoints to isolate agent work and recover without discarding unrelated changes."
       },
       {
         "number": "2.6",
         "title": "Keeping the agent inside your design: tokens, no hardcoded colors, no fixed fonts",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Keep generated SwiftUI styling aligned with semantic colors, shared typography and one source of design tokens."
       },
       {
         "number": "2.7",
         "title": "SwiftUI prompt practice: 25 scoped exercises and acceptance checks",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Practice 25 scoped SwiftUI prompts with explicit states and acceptance checks instead of asking for an entire app at once."
       },
       {
         "number": "2.8",
         "title": "When a SwiftUI agent task fails: ten failure categories to distinguish",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Distinguish ten common failure categories so a broken agent task leads to a targeted check rather than an unrelated rewrite."
       }
     ]
   },
@@ -151,61 +173,71 @@
         "number": "3.1",
         "title": "Local persistence contracts: Reading List JSON storage and a SwiftData alternative",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Understand the Reading List JSON persistence contract and compare it with a SwiftData design without confusing their guarantees."
       },
       {
         "number": "3.2",
         "title": "Search, filtering and empty states that pass accessibility review",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Design search, filtering and empty states with clear accessibility labels and behavior you can exercise in the simulator."
       },
       {
         "number": "3.3",
         "title": "Networking and Codable with an agent: the concurrency mistakes to catch",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Separate URLSession requests, decoding and UI updates, and review cancellation and isolation across asynchronous boundaries."
       },
       {
         "number": "3.4",
         "title": "Navigation in SwiftUI: what agents get wrong with NavigationStack",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Represent navigation as typed state, resolve destinations deliberately and inspect restoration and dismissal behavior."
       },
       {
         "number": "3.5",
         "title": "Adding widgets with App Intents: a timeline and verification plan",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Plan widget timeline data and App Intent configuration, then verify supported families and availability on the target SDK."
       },
       {
         "number": "3.6",
         "title": "Designing Siri actions with App Intents and testable domain operations",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Expose domain operations through App Intents with typed parameters, meaningful results and separately testable business logic."
       },
       {
         "number": "3.7",
         "title": "On-device AI: Foundation Models readiness and fallback design",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Check Foundation Models readiness and design a useful fallback before relying on on-device generation in an app feature."
       },
       {
         "number": "3.8",
         "title": "Notifications, background tasks and the permissions agents forget",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Plan permissions and bounded background work alongside notification behavior, including denial and task-expiration paths."
       },
       {
         "number": "3.9",
         "title": "Deep links and universal links, and using them for automated screenshots",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Map validated deep links to predictable screens so navigation and screenshot scenarios share a repeatable entry point."
       },
       {
         "number": "3.10",
         "title": "Localization with an agent: what to check before it \"translates\" everything",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Review localized strings in context, including long text, formatting and layout, rather than accepting translated words alone."
       }
     ]
   },
@@ -217,43 +249,50 @@
         "number": "4.1",
         "title": "App icons in 2026: Liquid Glass, Icon Composer, and generating them from SVG layers",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Keep app-icon layers editable, assemble supported assets with Icon Composer and verify the resulting icon in the native tool."
       },
       {
         "number": "4.2",
         "title": "Color systems that survive dark mode and high contrast, generated from tokens",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Generate semantic asset colors from explicit light, dark and high-contrast tokens, then inspect contrast in actual screens."
       },
       {
         "number": "4.3",
         "title": "Typography in SwiftUI that respects Dynamic Type: rules an agent can follow",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Apply semantic text styles and test the largest Dynamic Type sizes without clipping content or losing navigation controls."
       },
       {
         "number": "4.4",
         "title": "Motion and haptics: what to ask an agent for, and what reduced-motion users need",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Connect motion and haptics to meaningful state changes while providing comfortable behavior with Reduce Motion enabled."
       },
       {
         "number": "4.5",
         "title": "Making an agent-built app look intentional, not templated",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Give an agent a consistent hierarchy, spacing system and state design so the interface feels intentional across screens."
       },
       {
         "number": "4.6",
         "title": "Preparing repeatable simulator captures for App Store screenshots",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Prepare repeatable simulator screenshot scenarios with device selection, stable content and reviewable capture evidence."
       },
       {
         "number": "4.7",
         "title": "From Figma to SwiftUI with an agent: variables to tokens to code",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Translate Figma variables into shared design tokens and asset catalogs while keeping the SwiftUI implementation inspectable."
       }
     ]
   },
@@ -265,43 +304,50 @@
         "number": "5.1",
         "title": "Swift Testing vs XCTest: what to have the agent generate in 2026",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Choose Swift Testing or XCTest for the behavior under test, and require focused assertions rather than implementation-mirroring tests."
       },
       {
         "number": "5.2",
         "title": "UI tests an agent can write and maintain",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Write UI scenarios around stable accessibility identifiers and observable behavior, then investigate failures before changing waits."
       },
       {
         "number": "5.3",
         "title": "Accessibility review of an agent-built app: the checks that matter",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Review labels, focus, text scaling and empty states with explicit checks, separating simulator evidence from a full accessibility audit."
       },
       {
         "number": "5.4",
         "title": "Performance: hangs, launch time and the patterns agents introduce",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Investigate launch time and hangs with reproducible workloads and runtime measurements instead of static guesses alone."
       },
       {
         "number": "5.5",
         "title": "Memory: retain cycles agents create in closures and Combine",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Inspect closure captures and subscription lifetimes for ownership cycles, then confirm memory behavior after a focused fix."
       },
       {
         "number": "5.6",
         "title": "Security review of an agent-built app: keychain, ATS, secrets in source",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Check credential storage, transport settings and accidental secrets in generated code before accepting a security-sensitive change."
       },
       {
         "number": "5.7",
         "title": "Static review vs the compiler: what heuristics catch and what they miss",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Understand what heuristic Swift reviews can flag, what the compiler proves and which behaviors still require runtime tests."
       }
     ]
   },
@@ -313,37 +359,43 @@
         "number": "6.1",
         "title": "App Store readiness: the checks before you upload an agent-built app",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Prepare a release candidate with reviewed permissions, tested behavior and documented evidence before an App Store upload."
       },
       {
         "number": "6.2",
         "title": "Privacy manifests, permissions strings and the things agents leave blank",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Audit privacy manifests and permission descriptions against actual app capabilities instead of shipping generic placeholders."
       },
       {
         "number": "6.3",
         "title": "Preparing for TestFlight: signing, builds and account boundaries",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Prepare signing, archive and account requirements for TestFlight while keeping unperformed uploads clearly separate from local tests."
       },
       {
         "number": "6.4",
         "title": "Investigating App Review feedback without guessing the cause",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Turn App Review feedback into a reproducible investigation with relevant evidence instead of guessing why an app was rejected."
       },
       {
         "number": "6.5",
         "title": "Versioning, changelogs and release notes the agent can draft",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Draft release notes from verified changes and keep version numbers, changelog entries and published artifacts consistent."
       },
       {
         "number": "6.6",
         "title": "CI for an iOS repo with agent-written code: what to run on every PR",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Choose CI checks that catch meaningful failures in agent-written Swift code, including builds, tests and focused static review."
       }
     ]
   },
@@ -355,73 +407,85 @@
         "number": "7.1",
         "title": "Subagents for iOS: splitting review, build and design across agents",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Split implementation and specialist reviews into bounded tasks while keeping integration and final evidence with the coordinating agent."
       },
       {
         "number": "7.2",
         "title": "Coordinating parallel coding work with isolated checkouts",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Isolate parallel coding tasks in separate checkouts and review their combined result before merging overlapping changes."
       },
       {
         "number": "7.3",
         "title": "Writing your own review rule for a Swift codebase",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Define a Swift review rule with a clear finding contract, realistic fixtures and explicit false-positive boundaries."
       },
       {
         "number": "7.4",
         "title": "Writing your own skill for a Swift project: SKILL.md structure that agents follow",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Write a project skill with narrow triggers, reusable procedures and verification requirements that complement repository instructions."
       },
       {
         "number": "7.5",
         "title": "Building a Claude Code plugin from a skill",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Package a Claude Code skill with a manifest and scoped configuration, then validate the artifact before claiming installation works."
       },
       {
         "number": "7.6",
         "title": "Building a Codex plugin from the same skill",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Assemble a Codex plugin’s manifest, skill and MCP configuration, inspect the archive and verify installation through the client."
       },
       {
         "number": "7.7",
         "title": "Cross-client packaging: verified Muse scope and an Antigravity test boundary",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Separate verified Muse integration from planned Antigravity packaging so cross-client support claims match the available evidence."
       },
       {
         "number": "7.8",
         "title": "Verifying a skill across clients: the client verification record method",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Record client version, configuration, connection results and untested behavior in a reproducible integration-verification record."
       },
       {
         "number": "7.9",
         "title": "Measuring whether a skill helps: a paired benchmark protocol",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Design a paired skill benchmark with fixed tasks and scoring, and keep the protocol separate from results that have not been run."
       },
       {
         "number": "7.10",
         "title": "Preparing to verify Xcode 27 agents with external skills",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Prepare an Xcode 27 agent integration test and identify the installed-toolchain gap before claiming the editor workflow is verified."
       },
       {
         "number": "7.11",
         "title": "Keeping up with Apple: refreshing references after each beta without breaking rules",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Refresh Apple references against release sources and preserve availability checks when SDK changes affect existing guidance."
       },
       {
         "number": "7.12",
         "title": "Planning a safe Swift 6 and iOS 27 migration",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Plan a Swift 6 and iOS 27 migration in small steps, with isolation reviews, availability checks and repeatable builds."
       }
     ]
   },
@@ -433,121 +497,141 @@
         "number": "8.1",
         "title": "Ask for the finding, not the fix: why review-first prompts produce better Swift",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Ask an agent to explain the finding and supporting evidence before requesting a fix, so review scope stays clear."
       },
       {
         "number": "8.2",
         "title": "Ask about actor ownership before adding MainActor",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Identify who owns mutable state before adding MainActor, and distinguish a justified isolation boundary from a blanket annotation."
       },
       {
         "number": "8.3",
         "title": "\"Show me the screenshot\" as a standing instruction",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Make a screenshot request name the screen, state and expected behavior so visual evidence answers a concrete question."
       },
       {
         "number": "8.4",
         "title": "Pin your Xcode version in AGENTS.md and stop the agent guessing APIs",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Record the selected Xcode version and deployment target in project instructions to reduce unsupported API assumptions."
       },
       {
         "number": "8.5",
         "title": "One deep link per screen makes every screenshot automatable",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Give each important screen a validated deep link to make navigation checks and simulator captures repeatable."
       },
       {
         "number": "8.6",
         "title": "Keep design tokens in one file and tell the agent it's the only source of color",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Make one token file the source of semantic colors and reject literal values that bypass appearance variants."
       },
       {
         "number": "8.7",
         "title": "Review the XcodeGen spec before regenerating the project",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Review project-generator configuration changes before regeneration so an agent cannot hide settings changes in a large project diff."
       },
       {
         "number": "8.8",
         "title": "Use `#available` audits before every beta upgrade",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Audit availability at the call site before an SDK upgrade and preserve a tested fallback for older deployment targets."
       },
       {
         "number": "8.9",
         "title": "Hooks beat reminders: enforce, don't request",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Move repeatable checks into hooks when reminders are insufficient, and verify the hook’s actual exit-code behavior."
       },
       {
         "number": "8.10",
         "title": "When the agent says \"done\", run the tests yourself once",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Run the claimed test command yourself once and compare its result with the agent’s completion statement."
       },
       {
         "number": "8.11",
         "title": "Small prompts, one screen at a time, commit between each",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Keep prompts focused on one screen or behavior, then verify and commit before starting the next change."
       },
       {
         "number": "8.12",
         "title": "Keep signing and account changes separate from code repairs",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Keep signing identities and account actions outside routine code repairs so a build fix does not silently change distribution settings."
       },
       {
         "number": "8.13",
         "title": "Reading agent transcripts: the three phrases that mean it guessed",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Recognize unsupported completion language in agent transcripts and ask for the command, result or screenshot behind the claim."
       },
       {
         "number": "8.14",
         "title": "Turn every failure into a rule: how findings become reviews",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Convert a reproducible failure into a narrow review rule with a fixture, rather than adding a broad instruction after every mistake."
       },
       {
         "number": "8.15",
         "title": "Verify Muse observer behavior before recommending it",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Verify Muse observer behavior with a real client record before recommending a setting or claiming it enforces completion."
       },
       {
         "number": "8.16",
         "title": "Codex worktrees for parallel screens",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Use separate Codex worktrees for parallel screen tasks and review integration conflicts before accepting the combined app."
       },
       {
         "number": "8.17",
         "title": "Treat background builds as running work, not completed tasks",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Track a background build as running work until its exit status and relevant results are available."
       },
       {
         "number": "8.18",
         "title": "Claude Code plan mode before any multi-file Swift change",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Ask Claude Code for a scoped plan before a multi-file Swift change, including affected files and acceptance checks."
       },
       {
         "number": "8.19",
         "title": "Ask the agent to search local Apple references before the web",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Search the repository’s local Apple references first, and clearly identify any external research needed to fill a knowledge gap."
       },
       {
         "number": "8.20",
         "title": "What to put in .gitignore for agent-built Xcode projects",
         "status": "guide",
-        "verification": "See lesson evidence and limits"
+        "verification": "See lesson evidence and limits",
+        "description": "Keep generated build artifacts, local credentials and machine-specific files out of commits without hiding required project sources."
       }
     ]
   }

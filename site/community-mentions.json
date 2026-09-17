@@ -92,16 +92,6 @@
       "evidence": "Author is Nagarjuna Reddy; article links the repository and npm package."
     },
     {
-      "id": "web-pulse",
-      "platform": "Web Pulse",
-      "kind": "mirror",
-      "category": "Mirror · maintainer article",
-      "description": "Republishes the maintainer’s DEV article and links back to the original.",
-      "url": "https://wpnews.pro/news/im-building-an-mcp-toolbox-for-swift-xcode-and-ios-simulator",
-      "verifiedOn": "2026-09-16",
-      "evidence": "Page credits the original DEV article; not independent praise."
-    },
-    {
       "id": "github",
       "platform": "GitHub",
       "kind": "official",

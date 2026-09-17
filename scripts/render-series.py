@@ -3,10 +3,12 @@ from pathlib import Path
 import html,json,re
 import markdown
 
-def render(root,page,base):
+def render(root,page,base,posts):
  site=root/'site';(site/'series').mkdir(exist_ok=True)
  levels=json.loads((root/'content/blog/series.json').read_text())
  lessons=[lesson for level in levels for lesson in level['lessons']]
+ assert all(0 < len(x['description']) < 160 for x in lessons)
+ assert len({x['description'].casefold() for x in lessons}) == len(lessons)
  diagrams={
  '0.1':('The evidence loop',['Describe behavior','Inspect proposed change','Build and exercise','Accept or return failure']),
  '0.2':('Local development prerequisites',['Mac + selected Xcode','Available iOS runtime','Known project + scheme','Baseline before agent']),
@@ -16,6 +18,12 @@ def render(root,page,base):
  '0.6':('How extension layers cooperate',['Plugin packages capabilities','Skill supplies procedure','MCP exposes operations','Hook invokes event checks'])}
  extra=json.loads((root/'content/series/diagrams.json').read_text())
  diagrams.update({k:(v['label'],v['nodes']) for k,v in extra.items()})
+ related=json.loads((root/'content/series/related-reading.json').read_text())
+ post_map={p[0]:{'title':p[1],'description':p[2]} for p in posts}
+ assert set(related)=={x['number'] for x in lessons}, 'Every lesson needs curated related reading'
+ for number,slugs in related.items():
+  assert slugs and len(slugs)==len(set(slugs)), f'{number}: missing or duplicate related reading'
+  assert all(slug in post_map for slug in slugs), f'{number}: unknown related article'
  urls=[]
  for i,lesson in enumerate(lessons):
   number=lesson['number'];source=root/'content/series'/f'{number}.md'
@@ -26,10 +34,11 @@ def render(root,page,base):
   md=markdown.Markdown(extensions=['fenced_code','tables','toc'])
   # Authored paths are relative to the site root; these pages are one folder down.
   body=md.convert(text.replace('{{diagram}}',diagram))
+  reading='<section aria-labelledby="related-reading"><h2 id="related-reading">Related reading</h2><ul>'+''.join('<li><a href="../blog/'+slug+'.html">'+html.escape(post_map[slug]['title'])+'</a><p>'+html.escape(post_map[slug]['description'])+'</p></li>' for slug in related[number])+'</ul></section>'
   next_lesson=lessons[i+1] if i+1<len(lessons) else None
   next_path=(next_lesson['number']+'.html' if (root/'content/series'/f"{next_lesson['number']}.md").exists() else '../series.html#level-'+next_lesson['number'].split('.')[0]) if next_lesson else '../series.html'
   next_title=next_lesson['title'] if next_lesson else 'All levels'
-  content='<article class="blog-article"><p class="article-back"><a href="../series.html#level-'+number.split('.')[0]+'">← Guided series</a> · <a href="../blog.html">All articles</a></p><header class="page-intro"><p class="eyebrow">Lesson '+number+' · Guided learning</p><h1>'+html.escape(title)+'</h1></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong>'+md.toc+'</aside>'+body+'<h2>What to do next</h2><p><a href="'+next_path+'">Next: '+html.escape(next_title)+'</a></p></div></article>'
+  content='<article class="blog-article"><p class="article-back"><a href="../series.html#level-'+number.split('.')[0]+'">← Guided series</a> · <a href="../blog.html">All articles</a></p><header class="page-intro"><p class="eyebrow">Lesson '+number+' · Guided learning</p><h1>'+html.escape(title)+'</h1></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong>'+md.toc+'<p><a href="#related-reading">Related reading</a></p></aside>'+body+reading+'<h2>What to do next</h2><p><a href="'+next_path+'">Next: '+html.escape(next_title)+'</a></p></div></article>'
   path='series/'+number+'.html';urls.append(path)
-  (site/path).write_text(page(title,'An illustrated guide to AI-assisted Swift development: '+title,content,path,1))
+  (site/path).write_text(page(title,lesson['description'],content,path,1,image='assets/series/level-'+number.split('.')[0]+'.png',article=True))
  return urls

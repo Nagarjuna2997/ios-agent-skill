@@ -26,12 +26,19 @@ for(const p of pages){
  if(attr(select(d,'html')[0],'lang')!=='en')fail(p.file,'missing lang="en"');
  for(const k of ['og:title','og:description','og:url','og:type','og:image','og:site_name','twitter:card','twitter:title','twitter:description','twitter:image','twitter:url'])if(meta(d,k).length!==1||!meta(d,k)[0])fail(p.file,`missing or duplicate ${k}`);
  for(const [k,v]of Object.entries({'og:title':title,'og:description':description,'og:url':p.url,'og:site_name':NAME,'twitter:card':'summary_large_image','twitter:title':title,'twitter:description':description,'twitter:url':p.url,'twitter:image':meta(d,'og:image')[0]}))if(meta(d,k)[0]!==v)fail(p.file,`incorrect ${k}`);
+ if(/^(blog|series|guides|docs)\//.test(p.file)&&meta(d,'og:type')[0]!=='article')fail(p.file,'og:type must be article');
+ if(p.file.startsWith('series/')){
+  const expected='assets/series/level-'+path.basename(p.file).split('.')[0]+'.png';
+  if(meta(d,'og:image')[0]!==new URL(expected,BASE).href||!fs.existsSync(path.join(SITE,expected)))fail(p.file,'missing or incorrect level share image');
+  if(description?.startsWith('An illustrated guide to'))fail(p.file,'generic lesson description');
+ }
  if(!/^https:\/\//.test(meta(d,'og:image')[0]||''))fail(p.file,'og:image must be absolute HTTPS');
  if(meta(d,'robots').length!==1||meta(d,'robots')[0]!== (p.draft?'noindex,follow':'index,follow'))fail(p.file,'incorrect robots directive');
  const feed=select(d,'link').filter(n=>attr(n,'rel')==='alternate'&&attr(n,'type')==='application/atom+xml');if(feed.length!==1||new URL(attr(feed[0],'href'),p.url).href!==BASE+'feed.xml')fail(p.file,'missing or incorrect Atom alternate');
  const schemas=select(d,'script').filter(n=>attr(n,'type')==='application/ld+json');if(!schemas.length)fail(p.file,'missing JSON-LD');let own;
  for(const s of schemas){try{const v=JSON.parse((s.childNodes||[]).map(x=>x.value||'').join(''));if(attr(s,'id')==='site-discovery-schema')own=v;}catch{fail(p.file,'invalid JSON-LD JSON');}}
  if(!own||!validate(own))fail(p.file,'JSON-LD schema invalid: '+ajv.errorsText(validate.errors));
+ if(p.file.startsWith('series/')&&(!own||own['@type']!=='TechArticle'||!own.datePublished))fail(p.file,'lesson requires TechArticle and datePublished');
  if(own&&own.url!==p.url)fail(p.file,'JSON-LD url differs from canonical');
  if(!p.draft){if(!locs.includes(p.url))fail(p.file,'missing from sitemap.xml');if(!llms.includes(']('+p.url+')'))fail(p.file,'missing from llms.txt');if(urls.find(x=>x.loc===p.url)?.lastmod!==p.modified)fail(p.file,'sitemap lastmod differs from last git commit');}
  else if(locs.includes(p.url)||llms.includes(']('+p.url+')'))fail(p.file,'draft must not appear in public discovery');

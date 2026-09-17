@@ -1,1 +1,1 @@
-{"name":"ios-agent-site-discovery","private":true,"type":"module","dependencies":{"parse5":"^7.3.0","yaml":"^2.8.1","marked":"^15.0.12","fast-xml-parser":"^5.3.0","ajv":"^8.17.1"}}
+{"name":"ios-agent-site-discovery","private":true,"type":"module","dependencies":{"@resvg/resvg-js":"^2.6.2","ajv":"^8.17.1","fast-xml-parser":"^5.3.0","marked":"^15.0.12","parse5":"^7.3.0","yaml":"^2.8.1"}}

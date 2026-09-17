@@ -37,7 +37,7 @@ export function sourcesFor(file){
   if(source)sources.push(source);
   sources.push('content/guides/visuals.json','scripts/guide-visuals.py','scripts/render-library.py');
  }
- if(file.startsWith('series/'))sources.push('content/'+file.replace(/\.html$/,'.md'),'content/blog/series.json','content/series/diagrams.json','scripts/render-series.py');
+ if(file.startsWith('series/'))sources.push('content/'+file.replace(/\.html$/,'.md'),'content/blog/series.json','content/series/diagrams.json','content/series/related-reading.json','scripts/render-series.py');
  if(file.startsWith('blog/'))sources.push('content/blog/articles.json','scripts/render-blog.py');
  if(['docs-index.html','pages.html'].includes(file))sources.push('scripts/site-meta.mjs');
  return sources.filter(p=>fs.existsSync(path.join(ROOT,p)));

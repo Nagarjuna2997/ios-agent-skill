@@ -501,338 +501,422 @@
   },
   "series/0.1.html": {
     "title": "What \"vibe coding\" a Swift app actually means, and what…",
-    "description": "An illustrated guide to AI-assisted Swift development: What \"vibe coding\" a Swift app actually means, and what it doesn't"
+    "description": "Turn an app idea into observable behavior, small code changes and evidence you can check before accepting an agent’s work.",
+    "image": "assets/series/level-0.png"
   },
   "series/0.2.html": {
     "title": "What you need before an AI can build you an iOS app: Mac,…",
-    "description": "An illustrated guide to AI-assisted Swift development: What you need before an AI can build you an iOS app: Mac, Xcode, Apple ID, simulator"
+    "description": "Prepare a Mac, Xcode, simulator runtime and signing account, and understand which tasks work without paid distribution access.",
+    "image": "assets/series/level-0.png"
   },
   "series/0.3.html": {
     "title": "Choosing a coding agent for iOS in 2026: Claude Code,…",
-    "description": "An illustrated guide to AI-assisted Swift development: Choosing a coding agent for iOS in 2026: Claude Code, Codex, Antigravity, Muse Code, Xcode's own"
+    "description": "Choose an iOS coding client by its local execution access, verified integrations and ability to produce inspectable build evidence.",
+    "image": "assets/series/level-0.png"
   },
   "series/0.4.html": {
     "title": "Your first hour: install Xcode, run the simulator, build…",
-    "description": "An illustrated guide to AI-assisted Swift development: Your first hour: install Xcode, run the simulator, build the template app without AI"
+    "description": "Establish a working Xcode and simulator baseline before introducing an agent, so later build failures have a known starting point.",
+    "image": "assets/series/level-0.png"
   },
   "series/0.5.html": {
     "title": "How coding agents read a project: AGENTS.md, CLAUDE.md,…",
-    "description": "An illustrated guide to AI-assisted Swift development: How coding agents read a project: AGENTS.md, CLAUDE.md, GEMINI.md, and what to put in them"
+    "description": "Separate stable project instructions from task briefs and evidence, and understand how different coding clients discover those files.",
+    "image": "assets/series/level-0.png"
   },
   "series/0.6.html": {
     "title": "Skills, plugins, MCP servers, hooks: the four words…",
-    "description": "An illustrated guide to AI-assisted Swift development: Skills, plugins, MCP servers, hooks: the four words you'll see everywhere, explained once"
+    "description": "Distinguish skills, plugins, MCP tools and hooks so each part of your agent setup has a clear responsibility.",
+    "image": "assets/series/level-0.png"
   },
   "series/1.1.html": {
     "title": "Build a SwiftUI to-do app with Claude Code: the brief,…",
-    "description": "An illustrated guide to AI-assisted Swift development: Build a SwiftUI to-do app with Claude Code: the brief, checks and repair workflow"
+    "description": "Scope a SwiftUI to-do app for Claude Code with explicit states, acceptance checks and a bounded repair workflow.",
+    "image": "assets/series/level-1.png"
   },
   "series/1.2.html": {
     "title": "Compare the same to-do app task in Codex without changing…",
-    "description": "An illustrated guide to AI-assisted Swift development: Compare the same to-do app task in Codex without changing the acceptance criteria"
+    "description": "Compare Codex on the same to-do brief using unchanged acceptance criteria instead of judging polished screenshots alone.",
+    "image": "assets/series/level-1.png"
   },
   "series/1.3.html": {
     "title": "Prepare an Antigravity app-building trial and identify…",
-    "description": "An illustrated guide to AI-assisted Swift development: Prepare an Antigravity app-building trial and identify missing setup"
+    "description": "Prepare an Antigravity evaluation with a fixed app brief and evidence requirements while keeping unverified setup steps explicit.",
+    "image": "assets/series/level-1.png"
   },
   "series/1.4.html": {
     "title": "Prepare a Muse app-building trial beyond tool discovery",
-    "description": "An illustrated guide to AI-assisted Swift development: Prepare a Muse app-building trial beyond tool discovery"
+    "description": "Plan a Muse app-building trial that tests implementation and repair beyond the recorded MCP tool-discovery check.",
+    "image": "assets/series/level-1.png"
   },
   "series/1.5.html": {
     "title": "Writing an app brief an agent can build from: ten…",
-    "description": "An illustrated guide to AI-assisted Swift development: Writing an app brief an agent can build from: ten practice briefs"
+    "description": "Practice ten app briefs that specify screens, data ownership, constraints and acceptance criteria an agent can follow.",
+    "image": "assets/series/level-1.png"
   },
   "series/1.6.html": {
     "title": "Generating an Xcode project the agent can edit: XcodeGen…",
-    "description": "An illustrated guide to AI-assisted Swift development: Generating an Xcode project the agent can edit: XcodeGen vs opening .xcodeproj by hand"
+    "description": "Choose between a generated Xcode project and direct project editing, then inspect configuration before accepting regenerated files.",
+    "image": "assets/series/level-1.png"
   },
   "series/1.7.html": {
     "title": "Running and seeing your app: simulator boot, install,…",
-    "description": "An illustrated guide to AI-assisted Swift development: Running and seeing your app: simulator boot, install, launch, screenshot from the agent"
+    "description": "Follow the simulator build, install, launch and capture sequence, and distinguish screenshots from verified app behavior.",
+    "image": "assets/series/level-1.png"
   },
   "series/1.8.html": {
     "title": "What to do when the build fails: reading Xcode errors…",
-    "description": "An illustrated guide to AI-assisted Swift development: What to do when the build fails: reading Xcode errors with an agent"
+    "description": "Read the first actionable Xcode diagnostic, make a focused correction and rerun the same build before accepting a repair.",
+    "image": "assets/series/level-1.png"
   },
   "series/2.1.html": {
     "title": "Review Swift 6 settings and actor isolation before…",
-    "description": "An illustrated guide to AI-assisted Swift development: Review Swift 6 settings and actor isolation before changing agent-generated code"
+    "description": "Review Swift 6 language settings and actor ownership before changing concurrency annotations in generated code.",
+    "image": "assets/series/level-2.png"
   },
   "series/2.2.html": {
     "title": "Getting an agent to run checks: hooks, Stop conditions…",
-    "description": "An illustrated guide to AI-assisted Swift development: Getting an agent to run checks: hooks, Stop conditions and verification limits"
+    "description": "Use lifecycle hooks and explicit stop conditions to require checks, while understanding what a hook cannot prove.",
+    "image": "assets/series/level-2.png"
   },
   "series/2.3.html": {
     "title": "Making the agent prove it: screenshots as evidence, not…",
-    "description": "An illustrated guide to AI-assisted Swift development: Making the agent prove it: screenshots as evidence, not \"done\""
+    "description": "Collect screenshots tied to acceptance criteria and execution records instead of relying on an agent’s completion message.",
+    "image": "assets/series/level-2.png"
   },
   "series/2.4.html": {
     "title": "Reviewing agent output before you commit: a focused…",
-    "description": "An illustrated guide to AI-assisted Swift development: Reviewing agent output before you commit: a focused checklist"
+    "description": "Inspect an agent’s diff for correctness, ownership and verification gaps before committing a focused change.",
+    "image": "assets/series/level-2.png"
   },
   "series/2.5.html": {
     "title": "Git for vibe coders: branches per prompt, checkpoints,…",
-    "description": "An illustrated guide to AI-assisted Swift development: Git for vibe coders: branches per prompt, checkpoints, and undoing an agent's mess"
+    "description": "Use branches, small commits and checkpoints to isolate agent work and recover without discarding unrelated changes.",
+    "image": "assets/series/level-2.png"
   },
   "series/2.6.html": {
     "title": "Keeping the agent inside your design: tokens, no…",
-    "description": "An illustrated guide to AI-assisted Swift development: Keeping the agent inside your design: tokens, no hardcoded colors, no fixed fonts"
+    "description": "Keep generated SwiftUI styling aligned with semantic colors, shared typography and one source of design tokens.",
+    "image": "assets/series/level-2.png"
   },
   "series/2.7.html": {
     "title": "SwiftUI prompt practice: 25 scoped exercises and…",
-    "description": "An illustrated guide to AI-assisted Swift development: SwiftUI prompt practice: 25 scoped exercises and acceptance checks"
+    "description": "Practice 25 scoped SwiftUI prompts with explicit states and acceptance checks instead of asking for an entire app at once.",
+    "image": "assets/series/level-2.png"
   },
   "series/2.8.html": {
     "title": "When a SwiftUI agent task fails: ten failure categories…",
-    "description": "An illustrated guide to AI-assisted Swift development: When a SwiftUI agent task fails: ten failure categories to distinguish"
+    "description": "Distinguish ten common failure categories so a broken agent task leads to a targeted check rather than an unrelated rewrite.",
+    "image": "assets/series/level-2.png"
   },
   "series/3.1.html": {
     "title": "Local persistence contracts: Reading List JSON storage…",
-    "description": "An illustrated guide to AI-assisted Swift development: Local persistence contracts: Reading List JSON storage and a SwiftData alternative"
+    "description": "Understand the Reading List JSON persistence contract and compare it with a SwiftData design without confusing their guarantees.",
+    "image": "assets/series/level-3.png"
   },
   "series/3.10.html": {
     "title": "Localization with an agent: what to check before it…",
-    "description": "An illustrated guide to AI-assisted Swift development: Localization with an agent: what to check before it \"translates\" everything"
+    "description": "Review localized strings in context, including long text, formatting and layout, rather than accepting translated words alone.",
+    "image": "assets/series/level-3.png"
   },
   "series/3.2.html": {
     "title": "Search, filtering and empty states that pass…",
-    "description": "An illustrated guide to AI-assisted Swift development: Search, filtering and empty states that pass accessibility review"
+    "description": "Design search, filtering and empty states with clear accessibility labels and behavior you can exercise in the simulator.",
+    "image": "assets/series/level-3.png"
   },
   "series/3.3.html": {
     "title": "Networking and Codable with an agent: the concurrency…",
-    "description": "An illustrated guide to AI-assisted Swift development: Networking and Codable with an agent: the concurrency mistakes to catch"
+    "description": "Separate URLSession requests, decoding and UI updates, and review cancellation and isolation across asynchronous boundaries.",
+    "image": "assets/series/level-3.png"
   },
   "series/3.4.html": {
     "title": "Navigation in SwiftUI: what agents get wrong with…",
-    "description": "An illustrated guide to AI-assisted Swift development: Navigation in SwiftUI: what agents get wrong with NavigationStack"
+    "description": "Represent navigation as typed state, resolve destinations deliberately and inspect restoration and dismissal behavior.",
+    "image": "assets/series/level-3.png"
   },
   "series/3.5.html": {
     "title": "Adding widgets with App Intents: a timeline and…",
-    "description": "An illustrated guide to AI-assisted Swift development: Adding widgets with App Intents: a timeline and verification plan"
+    "description": "Plan widget timeline data and App Intent configuration, then verify supported families and availability on the target SDK.",
+    "image": "assets/series/level-3.png"
   },
   "series/3.6.html": {
     "title": "Designing Siri actions with App Intents and testable…",
-    "description": "An illustrated guide to AI-assisted Swift development: Designing Siri actions with App Intents and testable domain operations"
+    "description": "Expose domain operations through App Intents with typed parameters, meaningful results and separately testable business logic.",
+    "image": "assets/series/level-3.png"
   },
   "series/3.7.html": {
     "title": "On-device AI: Foundation Models readiness and fallback…",
-    "description": "An illustrated guide to AI-assisted Swift development: On-device AI: Foundation Models readiness and fallback design"
+    "description": "Check Foundation Models readiness and design a useful fallback before relying on on-device generation in an app feature.",
+    "image": "assets/series/level-3.png"
   },
   "series/3.8.html": {
     "title": "Notifications, background tasks and the permissions…",
-    "description": "An illustrated guide to AI-assisted Swift development: Notifications, background tasks and the permissions agents forget"
+    "description": "Plan permissions and bounded background work alongside notification behavior, including denial and task-expiration paths.",
+    "image": "assets/series/level-3.png"
   },
   "series/3.9.html": {
     "title": "Deep links and universal links, and using them for…",
-    "description": "An illustrated guide to AI-assisted Swift development: Deep links and universal links, and using them for automated screenshots"
+    "description": "Map validated deep links to predictable screens so navigation and screenshot scenarios share a repeatable entry point.",
+    "image": "assets/series/level-3.png"
   },
   "series/4.1.html": {
     "title": "App icons in 2026: Liquid Glass, Icon Composer, and…",
-    "description": "An illustrated guide to AI-assisted Swift development: App icons in 2026: Liquid Glass, Icon Composer, and generating them from SVG layers"
+    "description": "Keep app-icon layers editable, assemble supported assets with Icon Composer and verify the resulting icon in the native tool.",
+    "image": "assets/series/level-4.png"
   },
   "series/4.2.html": {
     "title": "Color systems that survive dark mode and high contrast,…",
-    "description": "An illustrated guide to AI-assisted Swift development: Color systems that survive dark mode and high contrast, generated from tokens"
+    "description": "Generate semantic asset colors from explicit light, dark and high-contrast tokens, then inspect contrast in actual screens.",
+    "image": "assets/series/level-4.png"
   },
   "series/4.3.html": {
     "title": "Typography in SwiftUI that respects Dynamic Type: rules…",
-    "description": "An illustrated guide to AI-assisted Swift development: Typography in SwiftUI that respects Dynamic Type: rules an agent can follow"
+    "description": "Apply semantic text styles and test the largest Dynamic Type sizes without clipping content or losing navigation controls.",
+    "image": "assets/series/level-4.png"
   },
   "series/4.4.html": {
     "title": "Motion and haptics: what to ask an agent for, and what…",
-    "description": "An illustrated guide to AI-assisted Swift development: Motion and haptics: what to ask an agent for, and what reduced-motion users need"
+    "description": "Connect motion and haptics to meaningful state changes while providing comfortable behavior with Reduce Motion enabled.",
+    "image": "assets/series/level-4.png"
   },
   "series/4.5.html": {
     "title": "Making an agent-built app look intentional, not templated",
-    "description": "An illustrated guide to AI-assisted Swift development: Making an agent-built app look intentional, not templated"
+    "description": "Give an agent a consistent hierarchy, spacing system and state design so the interface feels intentional across screens.",
+    "image": "assets/series/level-4.png"
   },
   "series/4.6.html": {
     "title": "Preparing repeatable simulator captures for App Store…",
-    "description": "An illustrated guide to AI-assisted Swift development: Preparing repeatable simulator captures for App Store screenshots"
+    "description": "Prepare repeatable simulator screenshot scenarios with device selection, stable content and reviewable capture evidence.",
+    "image": "assets/series/level-4.png"
   },
   "series/4.7.html": {
     "title": "From Figma to SwiftUI with an agent: variables to tokens…",
-    "description": "An illustrated guide to AI-assisted Swift development: From Figma to SwiftUI with an agent: variables to tokens to code"
+    "description": "Translate Figma variables into shared design tokens and asset catalogs while keeping the SwiftUI implementation inspectable.",
+    "image": "assets/series/level-4.png"
   },
   "series/5.1.html": {
     "title": "Swift Testing vs XCTest: what to have the agent generate…",
-    "description": "An illustrated guide to AI-assisted Swift development: Swift Testing vs XCTest: what to have the agent generate in 2026"
+    "description": "Choose Swift Testing or XCTest for the behavior under test, and require focused assertions rather than implementation-mirroring tests.",
+    "image": "assets/series/level-5.png"
   },
   "series/5.2.html": {
     "title": "UI tests an agent can write and maintain",
-    "description": "An illustrated guide to AI-assisted Swift development: UI tests an agent can write and maintain"
+    "description": "Write UI scenarios around stable accessibility identifiers and observable behavior, then investigate failures before changing waits.",
+    "image": "assets/series/level-5.png"
   },
   "series/5.3.html": {
     "title": "Accessibility review of an agent-built app: the checks…",
-    "description": "An illustrated guide to AI-assisted Swift development: Accessibility review of an agent-built app: the checks that matter"
+    "description": "Review labels, focus, text scaling and empty states with explicit checks, separating simulator evidence from a full accessibility audit.",
+    "image": "assets/series/level-5.png"
   },
   "series/5.4.html": {
     "title": "Performance: hangs, launch time and the patterns agents…",
-    "description": "An illustrated guide to AI-assisted Swift development: Performance: hangs, launch time and the patterns agents introduce"
+    "description": "Investigate launch time and hangs with reproducible workloads and runtime measurements instead of static guesses alone.",
+    "image": "assets/series/level-5.png"
   },
   "series/5.5.html": {
     "title": "Memory: retain cycles agents create in closures and Combine",
-    "description": "An illustrated guide to AI-assisted Swift development: Memory: retain cycles agents create in closures and Combine"
+    "description": "Inspect closure captures and subscription lifetimes for ownership cycles, then confirm memory behavior after a focused fix.",
+    "image": "assets/series/level-5.png"
   },
   "series/5.6.html": {
     "title": "Security review of an agent-built app: keychain, ATS,…",
-    "description": "An illustrated guide to AI-assisted Swift development: Security review of an agent-built app: keychain, ATS, secrets in source"
+    "description": "Check credential storage, transport settings and accidental secrets in generated code before accepting a security-sensitive change.",
+    "image": "assets/series/level-5.png"
   },
   "series/5.7.html": {
     "title": "Static review vs the compiler: what heuristics catch and…",
-    "description": "An illustrated guide to AI-assisted Swift development: Static review vs the compiler: what heuristics catch and what they miss"
+    "description": "Understand what heuristic Swift reviews can flag, what the compiler proves and which behaviors still require runtime tests.",
+    "image": "assets/series/level-5.png"
   },
   "series/6.1.html": {
     "title": "App Store readiness: the checks before you upload an…",
-    "description": "An illustrated guide to AI-assisted Swift development: App Store readiness: the checks before you upload an agent-built app"
+    "description": "Prepare a release candidate with reviewed permissions, tested behavior and documented evidence before an App Store upload.",
+    "image": "assets/series/level-6.png"
   },
   "series/6.2.html": {
     "title": "Privacy manifests, permissions strings and the things…",
-    "description": "An illustrated guide to AI-assisted Swift development: Privacy manifests, permissions strings and the things agents leave blank"
+    "description": "Audit privacy manifests and permission descriptions against actual app capabilities instead of shipping generic placeholders.",
+    "image": "assets/series/level-6.png"
   },
   "series/6.3.html": {
     "title": "Preparing for TestFlight: signing, builds and account…",
-    "description": "An illustrated guide to AI-assisted Swift development: Preparing for TestFlight: signing, builds and account boundaries"
+    "description": "Prepare signing, archive and account requirements for TestFlight while keeping unperformed uploads clearly separate from local tests.",
+    "image": "assets/series/level-6.png"
   },
   "series/6.4.html": {
     "title": "Investigating App Review feedback without guessing the…",
-    "description": "An illustrated guide to AI-assisted Swift development: Investigating App Review feedback without guessing the cause"
+    "description": "Turn App Review feedback into a reproducible investigation with relevant evidence instead of guessing why an app was rejected.",
+    "image": "assets/series/level-6.png"
   },
   "series/6.5.html": {
     "title": "Versioning, changelogs and release notes the agent can…",
-    "description": "An illustrated guide to AI-assisted Swift development: Versioning, changelogs and release notes the agent can draft"
+    "description": "Draft release notes from verified changes and keep version numbers, changelog entries and published artifacts consistent.",
+    "image": "assets/series/level-6.png"
   },
   "series/6.6.html": {
     "title": "CI for an iOS repo with agent-written code: what to run…",
-    "description": "An illustrated guide to AI-assisted Swift development: CI for an iOS repo with agent-written code: what to run on every PR"
+    "description": "Choose CI checks that catch meaningful failures in agent-written Swift code, including builds, tests and focused static review.",
+    "image": "assets/series/level-6.png"
   },
   "series/7.1.html": {
     "title": "Subagents for iOS: splitting review, build and design…",
-    "description": "An illustrated guide to AI-assisted Swift development: Subagents for iOS: splitting review, build and design across agents"
+    "description": "Split implementation and specialist reviews into bounded tasks while keeping integration and final evidence with the coordinating agent.",
+    "image": "assets/series/level-7.png"
   },
   "series/7.10.html": {
     "title": "Preparing to verify Xcode 27 agents with external skills",
-    "description": "An illustrated guide to AI-assisted Swift development: Preparing to verify Xcode 27 agents with external skills"
+    "description": "Prepare an Xcode 27 agent integration test and identify the installed-toolchain gap before claiming the editor workflow is verified.",
+    "image": "assets/series/level-7.png"
   },
   "series/7.11.html": {
     "title": "Keeping up with Apple: refreshing references after each…",
-    "description": "An illustrated guide to AI-assisted Swift development: Keeping up with Apple: refreshing references after each beta without breaking rules"
+    "description": "Refresh Apple references against release sources and preserve availability checks when SDK changes affect existing guidance.",
+    "image": "assets/series/level-7.png"
   },
   "series/7.12.html": {
     "title": "Planning a safe Swift 6 and iOS 27 migration",
-    "description": "An illustrated guide to AI-assisted Swift development: Planning a safe Swift 6 and iOS 27 migration"
+    "description": "Plan a Swift 6 and iOS 27 migration in small steps, with isolation reviews, availability checks and repeatable builds.",
+    "image": "assets/series/level-7.png"
   },
   "series/7.2.html": {
     "title": "Coordinating parallel coding work with isolated checkouts",
-    "description": "An illustrated guide to AI-assisted Swift development: Coordinating parallel coding work with isolated checkouts"
+    "description": "Isolate parallel coding tasks in separate checkouts and review their combined result before merging overlapping changes.",
+    "image": "assets/series/level-7.png"
   },
   "series/7.3.html": {
     "title": "Writing your own review rule for a Swift codebase",
-    "description": "An illustrated guide to AI-assisted Swift development: Writing your own review rule for a Swift codebase"
+    "description": "Define a Swift review rule with a clear finding contract, realistic fixtures and explicit false-positive boundaries.",
+    "image": "assets/series/level-7.png"
   },
   "series/7.4.html": {
     "title": "Writing your own skill for a Swift project: SKILL.md…",
-    "description": "An illustrated guide to AI-assisted Swift development: Writing your own skill for a Swift project: SKILL.md structure that agents follow"
+    "description": "Write a project skill with narrow triggers, reusable procedures and verification requirements that complement repository instructions.",
+    "image": "assets/series/level-7.png"
   },
   "series/7.5.html": {
     "title": "Building a Claude Code plugin from a skill",
-    "description": "An illustrated guide to AI-assisted Swift development: Building a Claude Code plugin from a skill"
+    "description": "Package a Claude Code skill with a manifest and scoped configuration, then validate the artifact before claiming installation works.",
+    "image": "assets/series/level-7.png"
   },
   "series/7.6.html": {
     "title": "Building a Codex plugin from the same skill",
-    "description": "An illustrated guide to AI-assisted Swift development: Building a Codex plugin from the same skill"
+    "description": "Assemble a Codex plugin’s manifest, skill and MCP configuration, inspect the archive and verify installation through the client.",
+    "image": "assets/series/level-7.png"
   },
   "series/7.7.html": {
     "title": "Cross-client packaging: verified Muse scope and an…",
-    "description": "An illustrated guide to AI-assisted Swift development: Cross-client packaging: verified Muse scope and an Antigravity test boundary"
+    "description": "Separate verified Muse integration from planned Antigravity packaging so cross-client support claims match the available evidence.",
+    "image": "assets/series/level-7.png"
   },
   "series/7.8.html": {
     "title": "Verifying a skill across clients: the client verification…",
-    "description": "An illustrated guide to AI-assisted Swift development: Verifying a skill across clients: the client verification record method"
+    "description": "Record client version, configuration, connection results and untested behavior in a reproducible integration-verification record.",
+    "image": "assets/series/level-7.png"
   },
   "series/7.9.html": {
     "title": "Measuring whether a skill helps: a paired benchmark…",
-    "description": "An illustrated guide to AI-assisted Swift development: Measuring whether a skill helps: a paired benchmark protocol"
+    "description": "Design a paired skill benchmark with fixed tasks and scoring, and keep the protocol separate from results that have not been run.",
+    "image": "assets/series/level-7.png"
   },
   "series/8.1.html": {
     "title": "Ask for the finding, not the fix: why review-first…",
-    "description": "An illustrated guide to AI-assisted Swift development: Ask for the finding, not the fix: why review-first prompts produce better Swift"
+    "description": "Ask an agent to explain the finding and supporting evidence before requesting a fix, so review scope stays clear.",
+    "image": "assets/series/level-8.png"
   },
   "series/8.10.html": {
     "title": "When the agent says \"done\", run the tests yourself once",
-    "description": "An illustrated guide to AI-assisted Swift development: When the agent says \"done\", run the tests yourself once"
+    "description": "Run the claimed test command yourself once and compare its result with the agent’s completion statement.",
+    "image": "assets/series/level-8.png"
   },
   "series/8.11.html": {
     "title": "Small prompts, one screen at a time, commit between each",
-    "description": "An illustrated guide to AI-assisted Swift development: Small prompts, one screen at a time, commit between each"
+    "description": "Keep prompts focused on one screen or behavior, then verify and commit before starting the next change.",
+    "image": "assets/series/level-8.png"
   },
   "series/8.12.html": {
     "title": "Keep signing and account changes separate from code repairs",
-    "description": "An illustrated guide to AI-assisted Swift development: Keep signing and account changes separate from code repairs"
+    "description": "Keep signing identities and account actions outside routine code repairs so a build fix does not silently change distribution settings.",
+    "image": "assets/series/level-8.png"
   },
   "series/8.13.html": {
     "title": "Reading agent transcripts: the three phrases that mean it…",
-    "description": "An illustrated guide to AI-assisted Swift development: Reading agent transcripts: the three phrases that mean it guessed"
+    "description": "Recognize unsupported completion language in agent transcripts and ask for the command, result or screenshot behind the claim.",
+    "image": "assets/series/level-8.png"
   },
   "series/8.14.html": {
     "title": "Turn every failure into a rule: how findings become reviews",
-    "description": "An illustrated guide to AI-assisted Swift development: Turn every failure into a rule: how findings become reviews"
+    "description": "Convert a reproducible failure into a narrow review rule with a fixture, rather than adding a broad instruction after every mistake.",
+    "image": "assets/series/level-8.png"
   },
   "series/8.15.html": {
     "title": "Verify Muse observer behavior before recommending it",
-    "description": "An illustrated guide to AI-assisted Swift development: Verify Muse observer behavior before recommending it"
+    "description": "Verify Muse observer behavior with a real client record before recommending a setting or claiming it enforces completion.",
+    "image": "assets/series/level-8.png"
   },
   "series/8.16.html": {
     "title": "Codex worktrees for parallel screens",
-    "description": "An illustrated guide to AI-assisted Swift development: Codex worktrees for parallel screens"
+    "description": "Use separate Codex worktrees for parallel screen tasks and review integration conflicts before accepting the combined app.",
+    "image": "assets/series/level-8.png"
   },
   "series/8.17.html": {
     "title": "Treat background builds as running work, not completed…",
-    "description": "An illustrated guide to AI-assisted Swift development: Treat background builds as running work, not completed tasks"
+    "description": "Track a background build as running work until its exit status and relevant results are available.",
+    "image": "assets/series/level-8.png"
   },
   "series/8.18.html": {
     "title": "Claude Code plan mode before any multi-file Swift change",
-    "description": "An illustrated guide to AI-assisted Swift development: Claude Code plan mode before any multi-file Swift change"
+    "description": "Ask Claude Code for a scoped plan before a multi-file Swift change, including affected files and acceptance checks.",
+    "image": "assets/series/level-8.png"
   },
   "series/8.19.html": {
     "title": "Ask the agent to search local Apple references before the…",
-    "description": "An illustrated guide to AI-assisted Swift development: Ask the agent to search local Apple references before the web"
+    "description": "Search the repository’s local Apple references first, and clearly identify any external research needed to fill a knowledge gap.",
+    "image": "assets/series/level-8.png"
   },
   "series/8.2.html": {
     "title": "Ask about actor ownership before adding MainActor",
-    "description": "An illustrated guide to AI-assisted Swift development: Ask about actor ownership before adding MainActor"
+    "description": "Identify who owns mutable state before adding MainActor, and distinguish a justified isolation boundary from a blanket annotation.",
+    "image": "assets/series/level-8.png"
   },
   "series/8.20.html": {
     "title": "What to put in .gitignore for agent-built Xcode projects",
-    "description": "An illustrated guide to AI-assisted Swift development: What to put in .gitignore for agent-built Xcode projects"
+    "description": "Keep generated build artifacts, local credentials and machine-specific files out of commits without hiding required project sources.",
+    "image": "assets/series/level-8.png"
   },
   "series/8.3.html": {
     "title": "\"Show me the screenshot\" as a standing instruction",
-    "description": "An illustrated guide to AI-assisted Swift development: \"Show me the screenshot\" as a standing instruction"
+    "description": "Make a screenshot request name the screen, state and expected behavior so visual evidence answers a concrete question.",
+    "image": "assets/series/level-8.png"
   },
   "series/8.4.html": {
     "title": "Pin your Xcode version in AGENTS.md and stop the agent…",
-    "description": "An illustrated guide to AI-assisted Swift development: Pin your Xcode version in AGENTS.md and stop the agent guessing APIs"
+    "description": "Record the selected Xcode version and deployment target in project instructions to reduce unsupported API assumptions.",
+    "image": "assets/series/level-8.png"
   },
   "series/8.5.html": {
     "title": "One deep link per screen makes every screenshot automatable",
-    "description": "An illustrated guide to AI-assisted Swift development: One deep link per screen makes every screenshot automatable"
+    "description": "Give each important screen a validated deep link to make navigation checks and simulator captures repeatable.",
+    "image": "assets/series/level-8.png"
   },
   "series/8.6.html": {
     "title": "Keep design tokens in one file and tell the agent it's…",
-    "description": "An illustrated guide to AI-assisted Swift development: Keep design tokens in one file and tell the agent it's the only source of color"
+    "description": "Make one token file the source of semantic colors and reject literal values that bypass appearance variants.",
+    "image": "assets/series/level-8.png"
   },
   "series/8.7.html": {
     "title": "Review the XcodeGen spec before regenerating the project",
-    "description": "An illustrated guide to AI-assisted Swift development: Review the XcodeGen spec before regenerating the project"
+    "description": "Review project-generator configuration changes before regeneration so an agent cannot hide settings changes in a large project diff.",
+    "image": "assets/series/level-8.png"
   },
   "series/8.8.html": {
     "title": "Use `#available` audits before every beta upgrade",
-    "description": "An illustrated guide to AI-assisted Swift development: Use `#available` audits before every beta upgrade"
+    "description": "Audit availability at the call site before an SDK upgrade and preserve a tested fallback for older deployment targets.",
+    "image": "assets/series/level-8.png"
   },
   "series/8.9.html": {
     "title": "Hooks beat reminders: enforce, don't request",
-    "description": "An illustrated guide to AI-assisted Swift development: Hooks beat reminders: enforce, don't request"
+    "description": "Move repeatable checks into hooks when reminders are insufficient, and verify the hook’s actual exit-code behavior.",
+    "image": "assets/series/level-8.png"
   }
 }
