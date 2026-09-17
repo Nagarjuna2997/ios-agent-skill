@@ -3239,8 +3239,8 @@
       "path": "docs/tooling/issue-reporting.md",
       "title": "AI-assisted issue previews",
       "kind": "guide",
-      "characters": 4887,
-      "hash": "c78c54c6c7236bc920c7eb262b89785101c201f6a63e6891acb5dd7256e117a4"
+      "characters": 5437,
+      "hash": "76faf1da04ba336cdf67c24088722b5cb3c4814f6dd96c7ab2fbe30ed8d930e8"
     },
     {
       "path": "docs/tooling/offline-source-library.md",
@@ -3311,6 +3311,13 @@
       "kind": "guide",
       "characters": 1541,
       "hash": "768851d5f19f05fba9f6b7d21654e9495f573e4038a8c14b3b425a4071d19a10"
+    },
+    {
+      "path": "docs/website-discovery.md",
+      "title": "Website discovery and release updates",
+      "kind": "guide",
+      "characters": 3776,
+      "hash": "22a4d76c24026e049f82e14bcea7c34dcb9a1e57e88a79ce84501c719ee9bca9"
     },
     {
       "path": "patterns/3d/README.md",
