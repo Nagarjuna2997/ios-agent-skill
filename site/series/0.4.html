@@ -1,0 +1,66 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Your first hour: install Xcode, run the simulator, build the template app without AI — iOS Agent Skill</title><meta name="description" content="An illustrated orientation lesson for AI-assisted Swift development: Your first hour: install Xcode, run the simulator, build the template app without AI"><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/series/0.4.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="Your first hour: install Xcode, run the simulator, build the template app without AI"><meta property="og:description" content="An illustrated orientation lesson for AI-assisted Swift development: Your first hour: install Xcode, run the simulator, build the template app without AI"><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/series/0.4.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script src="../appearance.js" defer></script><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "Your first hour: install Xcode, run the simulator, build the template app without AI", "description": "An illustrated orientation lesson for AI-assisted Swift development: Your first hour: install Xcode, run the simulator, build the template app without AI", "url": "https://nagarjuna2997.github.io/ios-agent-skill/series/0.4.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div><button class="appearance-toggle" type="button" aria-label="Use dark appearance" aria-pressed="false" hidden><span aria-hidden="true">☾</span></button></nav><main id="main"><article class="blog-article"><p><a href="../series.html#level-0">← Guided series</a> · <a href="../blog.html">All articles</a></p><header class="page-intro"><p class="eyebrow">Lesson 0.4 · Orientation</p><h1>Your first hour: install Xcode, run the simulator, build the template app without AI</h1></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#create-a-small-baseline">Create a small baseline</a></li>
+<li><a href="#keep-a-command-line-baseline-too">Keep a command-line baseline too</a></li>
+<li><a href="#diagnose-the-first-meaningful-failure">Diagnose the first meaningful failure</a></li>
+<li><a href="#change-one-visible-thing">Change one visible thing</a></li>
+<li><a href="#verification-boundary">Verification boundary</a><ul>
+<li><a href="#recorded-baseline-result">Recorded baseline result</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</aside><p>Before asking an agent to fix Swift, establish that your Mac can build and run an app without an agent. This gives you a baseline for separating installation, project and implementation problems.</p>
+<h2 id="create-a-small-baseline">Create a small baseline</h2>
+<p>In Xcode, start a new iOS app project using the SwiftUI interface option available in your installed version. Choose a local folder and a neutral project name such as FirstRun. Select an available iPhone simulator as the destination, then use Product → Run. Exact template controls can change between Xcode versions; follow the options shown by your installed toolchain.</p>
+<p>Apple's <a href="https://help.apple.com/xcode/mac/current/en.lproj/devfd9e28378.html">simulator instructions</a> describe selecting a simulated run destination. The important result is an app window that responds, not merely a successful project-creation dialog.</p>
+<figure class="lesson-diagram" aria-label="A baseline you can diagnose"><figcaption>A baseline you can diagnose</figcaption><ol><li><span class="diagram-step">1</span><span>Create or open project</span><span class="diagram-arrow" aria-hidden="true">↓</span></li><li><span class="diagram-step">2</span><span>Select simulator</span><span class="diagram-arrow" aria-hidden="true">↓</span></li><li><span class="diagram-step">3</span><span>Build → install → launch</span><span class="diagram-arrow" aria-hidden="true">↓</span></li><li><span class="diagram-step">4</span><span>Change text and repeat</span></li></ol></figure>
+
+<h2 id="keep-a-command-line-baseline-too">Keep a command-line baseline too</h2>
+<p>For an existing checkout, list the schemes before choosing a build command:</p>
+<pre><code class="language-sh">xcodebuild -list -project YourApp.xcodeproj
+</code></pre>
+<p>Replace the project name with the actual file. Do not run a copied command against a guessed scheme. Once you know the scheme, a simulator build can separate compilation from device signing:</p>
+<pre><code class="language-sh">xcodebuild -project YourApp.xcodeproj \
+  -scheme YourScheme -sdk iphonesimulator \
+  -derivedDataPath /tmp/first-run-build \
+  CODE_SIGNING_ALLOWED=NO build
+</code></pre>
+<p>This command builds; it does not install or launch. A successful build therefore does not complete the entire exercise. Return to Xcode to run on your selected simulator and inspect the screen.</p>
+<h2 id="diagnose-the-first-meaningful-failure">Diagnose the first meaningful failure</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Check first</th>
+<th>Avoid</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Developer tools cannot be found</td>
+<td>Selected Xcode and first-launch setup</td>
+<td>Asking the agent to rewrite Swift</td>
+</tr>
+<tr>
+<td>Requested destination is unavailable</td>
+<td>Installed runtime and available devices</td>
+<td>Repeatedly using an obsolete device identifier</td>
+</tr>
+<tr>
+<td>Scheme cannot be found</td>
+<td>Project/workspace and scheme list</td>
+<td>Guessing the scheme from the folder name</td>
+</tr>
+</tbody>
+</table>
+<p>A long build log may contain many consequences of one error. Read the first relevant failure in its target context. Keep the command, selected SDK and a short redacted diagnostic together when asking for help.</p>
+<h2 id="change-one-visible-thing">Change one visible thing</h2>
+<p>After the baseline runs, change the initial text, rebuild and confirm the visible change. This establishes that you are editing the project you launched. Save a version-control checkpoint before introducing an agent. If later changes fail, you now have a known starting point to compare against.</p>
+<h2 id="verification-boundary">Verification boundary</h2>
+<p>The command-line preparation for this lesson used the repository's existing Reading List project with Xcode 26.6, rather than a newly created Xcode GUI template. Its build result is recorded separately in the series evidence. The new-project GUI walkthrough above is instructional guidance, not a claim that a fresh installation and template flow were recorded end to end. Do not treat it as the completed Level 1 agent tutorial.</p>
+<h3 id="recorded-baseline-result">Recorded baseline result</h3>
+<p>The existing Reading List sample built successfully, installed and launched on an iOS 26.5 simulator. The first screenshot was captured before the app appeared and showed the home screen; a second capture showed the app's empty state. This is why a successful launch command alone is not visual verification.</p>
+<figure><img src="../evidence/series/reading-list-baseline.png" alt="Reading List running in the simulator, showing its empty library and search field" style="max-width:300px;display:block;margin:auto"><figcaption>Existing Reading List sample on iOS 26.5; not a newly generated template.</figcaption></figure>
+
+<p><a href="../evidence/series/baseline.json">Read the baseline evidence record</a>. Persistence, search behavior and accessibility were not retested in this baseline run.</p><h2>What to do next</h2><p><a href="0.5.html">Next: How coding agents read a project: AGENTS.md, CLAUDE.md, GEMINI.md, and what to put in them</a></p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

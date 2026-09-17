@@ -1,0 +1,63 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>What &quot;vibe coding&quot; a Swift app actually means, and what it doesn&#x27;t — iOS Agent Skill</title><meta name="description" content="An illustrated orientation lesson for AI-assisted Swift development: What &quot;vibe coding&quot; a Swift app actually means, and what it doesn&#x27;t"><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/series/0.1.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="What &quot;vibe coding&quot; a Swift app actually means, and what it doesn&#x27;t"><meta property="og:description" content="An illustrated orientation lesson for AI-assisted Swift development: What &quot;vibe coding&quot; a Swift app actually means, and what it doesn&#x27;t"><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/series/0.1.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script src="../appearance.js" defer></script><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "What \"vibe coding\" a Swift app actually means, and what it doesn't", "description": "An illustrated orientation lesson for AI-assisted Swift development: What \"vibe coding\" a Swift app actually means, and what it doesn't", "url": "https://nagarjuna2997.github.io/ios-agent-skill/series/0.1.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div><button class="appearance-toggle" type="button" aria-label="Use dark appearance" aria-pressed="false" hidden><span aria-hidden="true">☾</span></button></nav><main id="main"><article class="blog-article"><p><a href="../series.html#level-0">← Guided series</a> · <a href="../blog.html">All articles</a></p><header class="page-intro"><p class="eyebrow">Lesson 0.1 · Orientation</p><h1>What &quot;vibe coding&quot; a Swift app actually means, and what it doesn&#x27;t</h1></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#start-with-an-observable-promise">Start with an observable promise</a></li>
+<li><a href="#the-development-loop">The development loop</a></li>
+<li><a href="#divide-responsibility-deliberately">Divide responsibility deliberately</a></li>
+<li><a href="#exercise-turn-an-adjective-into-a-check">Exercise: turn an adjective into a check</a></li>
+<li><a href="#what-this-lesson-establishes">What this lesson establishes</a></li>
+</ul>
+</div>
+</aside><p>“Vibe coding” usually describes asking an AI to turn an idea into software and steering the result through conversation. For a Swift app, the useful version still includes reading changes, compiling, testing behavior and checking the interface. A fluent completion message is not an acceptance test.</p>
+<h2 id="start-with-an-observable-promise">Start with an observable promise</h2>
+<p>“Make a beautiful to-do app” leaves important decisions unstated. Does a task survive a restart? Can the user undo deletion? Does an empty search explain what happened? The agent can fill these gaps, but its choices may not be yours.</p>
+<p>Try this smaller brief:</p>
+<pre><code class="language-text">Create a local task list with a title and completion state.
+An empty title cannot be saved.
+Tasks survive terminating and reopening the app.
+Searching never deletes stored tasks.
+Support larger text and meaningful accessibility labels.
+Before editing, identify the existing scheme and storage design.
+</code></pre>
+<p>Each sentence gives you something to inspect. The purpose is not to find magic wording; it is to make disagreement visible before a large implementation exists.</p>
+<h2 id="the-development-loop">The development loop</h2>
+<figure class="lesson-diagram" aria-label="The evidence loop"><figcaption>The evidence loop</figcaption><ol><li><span class="diagram-step">1</span><span>Describe behavior</span><span class="diagram-arrow" aria-hidden="true">↓</span></li><li><span class="diagram-step">2</span><span>Inspect proposed change</span><span class="diagram-arrow" aria-hidden="true">↓</span></li><li><span class="diagram-step">3</span><span>Build and exercise</span><span class="diagram-arrow" aria-hidden="true">↓</span></li><li><span class="diagram-step">4</span><span>Accept or return failure</span></li></ol></figure>
+
+<p>The decision in this diagram is based on evidence. When a test fails, return the actual failure to the agent with the acceptance criterion it violated. When a build cannot run, stop at “implementation written, build unverified.” Do not silently turn that into “finished.”</p>
+<h2 id="divide-responsibility-deliberately">Divide responsibility deliberately</h2>
+<table>
+<thead>
+<tr>
+<th>Participant</th>
+<th>Useful work</th>
+<th>What it cannot establish alone</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Developer</td>
+<td>Choose behavior, inspect tradeoffs, accept changes</td>
+<td>That a plausible implementation actually runs</td>
+</tr>
+<tr>
+<td>Coding agent</td>
+<td>Inspect source, propose edits, invoke available tools</td>
+<td>That an unexecuted check passed</td>
+</tr>
+<tr>
+<td>Swift compiler</td>
+<td>Check the program against a selected toolchain</td>
+<td>That search or persistence matches the brief</td>
+</tr>
+<tr>
+<td>Tests and simulator</td>
+<td>Exercise selected behavior and presentation</td>
+<td>That every device and every input works</td>
+</tr>
+</tbody>
+</table>
+<p>For your first feature, retain a checkpoint before the edit. Ask for one change, review the diff, and run the relevant check. If the agent also rewrites navigation or adds a networking dependency, ask how those changes relate to the requested feature. A small diff makes both review and rollback easier.</p>
+<h2 id="exercise-turn-an-adjective-into-a-check">Exercise: turn an adjective into a check</h2>
+<p>Take “fast, accessible search” and split it into independent questions. What data set will you test? What does no match look like? Can VoiceOver identify the search field? Does clearing the query restore the list? Avoid inventing a performance number until you have a measurement method and a representative device.</p>
+<p>Write those answers in your brief. Ask the agent to identify missing decisions without editing any files. Then pick one transition to implement. You now have a useful collaboration boundary instead of an unlimited “build everything” instruction.</p>
+<h2 id="what-this-lesson-establishes">What this lesson establishes</h2>
+<p>This is an orientation lesson, not an app-generation benchmark. It makes no claim about reduced cost, universal correctness or a client finishing an app unattended. The project's <a href="../guides/orchestration-verification.html">verification contract</a> explains how to distinguish inspected code from executed results.</p><h2>What to do next</h2><p><a href="0.2.html">Next: What you need before an AI can build you an iOS app: Mac, Xcode, Apple ID, simulator</a></p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

@@ -1,0 +1,17 @@
+{
+  "xcode": "26.6",
+  "build": "17F113",
+  "runtime": "iOS 26.5",
+  "project": "samples/ReadingList/ReadingList.xcodeproj",
+  "scheme": "ReadingList",
+  "buildResult": "BUILD SUCCEEDED",
+  "installExitCode": 0,
+  "launchExitCode": 0,
+  "screenshot": "reading-list-baseline.png",
+  "limitations": [
+    "Existing sample, not a fresh GUI template",
+    "No model-generated implementation",
+    "No behavioral or accessibility retest"
+  ],
+  "observation": "First screenshot showed home screen; subsequent capture showed Reading List empty state."
+}

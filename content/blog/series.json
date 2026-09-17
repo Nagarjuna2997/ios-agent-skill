@@ -6,32 +6,32 @@
       {
         "number": "0.1",
         "title": "What \"vibe coding\" a Swift app actually means, and what it doesn't",
-        "status": "planned"
+        "status": "available"
       },
       {
         "number": "0.2",
         "title": "What you need before an AI can build you an iOS app: Mac, Xcode, Apple ID, simulator",
-        "status": "planned"
+        "status": "available"
       },
       {
         "number": "0.3",
         "title": "Choosing a coding agent for iOS in 2026: Claude Code, Codex, Antigravity, Muse Code, Xcode's own",
-        "status": "planned"
+        "status": "available"
       },
       {
         "number": "0.4",
         "title": "Your first hour: install Xcode, run the simulator, build the template app without AI",
-        "status": "planned"
+        "status": "available"
       },
       {
         "number": "0.5",
         "title": "How coding agents read a project: AGENTS.md, CLAUDE.md, GEMINI.md, and what to put in them",
-        "status": "planned"
+        "status": "available"
       },
       {
         "number": "0.6",
         "title": "Skills, plugins, MCP servers, hooks: the four words you'll see everywhere, explained once",
-        "status": "planned"
+        "status": "available"
       }
     ]
   },

@@ -1,0 +1,66 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>What you need before an AI can build you an iOS app: Mac, Xcode, Apple ID, simulator — iOS Agent Skill</title><meta name="description" content="An illustrated orientation lesson for AI-assisted Swift development: What you need before an AI can build you an iOS app: Mac, Xcode, Apple ID, simulator"><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/series/0.2.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="What you need before an AI can build you an iOS app: Mac, Xcode, Apple ID, simulator"><meta property="og:description" content="An illustrated orientation lesson for AI-assisted Swift development: What you need before an AI can build you an iOS app: Mac, Xcode, Apple ID, simulator"><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/series/0.2.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css"><script src="../appearance.js" defer></script><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "What you need before an AI can build you an iOS app: Mac, Xcode, Apple ID, simulator", "description": "An illustrated orientation lesson for AI-assisted Swift development: What you need before an AI can build you an iOS app: Mac, Xcode, Apple ID, simulator", "url": "https://nagarjuna2997.github.io/ios-agent-skill/series/0.2.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div><button class="appearance-toggle" type="button" aria-label="Use dark appearance" aria-pressed="false" hidden><span aria-hidden="true">☾</span></button></nav><main id="main"><article class="blog-article"><p><a href="../series.html#level-0">← Guided series</a> · <a href="../blog.html">All articles</a></p><header class="page-intro"><p class="eyebrow">Lesson 0.2 · Orientation</p><h1>What you need before an AI can build you an iOS app: Mac, Xcode, Apple ID, simulator</h1></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#separate-three-kinds-of-access">Separate three kinds of access</a></li>
+<li><a href="#inspect-the-installed-toolchain">Inspect the installed toolchain</a></li>
+<li><a href="#readiness-checklist">Readiness checklist</a></li>
+<li><a href="#add-the-agent-last">Add the agent last</a></li>
+<li><a href="#completion-checkpoint">Completion checkpoint</a></li>
+</ul>
+</div>
+</aside><p>For the local workflow in this series, start with a Mac that can run your selected Xcode, a compatible simulator runtime and enough storage for build products. Add a coding client only after a normal app build works. This separates environment failures from generated-code failures.</p>
+<h2 id="separate-three-kinds-of-access">Separate three kinds of access</h2>
+<p>Apple tools, an Apple developer account and an AI subscription are different things. Buying access to one does not configure the others. Running a simulator build is also different from signing an app for a physical phone or distributing it through TestFlight.</p>
+<p>Apple explains the distinction between a free developer account and program membership in its <a href="https://developer.apple.com/help/account/basics/about-your-developer-account">account overview</a>. Check the current membership requirements when you reach distribution; this lesson does not ask you to purchase anything.</p>
+<figure class="lesson-diagram" aria-label="Local development prerequisites"><figcaption>Local development prerequisites</figcaption><ol><li><span class="diagram-step">1</span><span>Mac + selected Xcode</span><span class="diagram-arrow" aria-hidden="true">↓</span></li><li><span class="diagram-step">2</span><span>Available iOS runtime</span><span class="diagram-arrow" aria-hidden="true">↓</span></li><li><span class="diagram-step">3</span><span>Known project + scheme</span><span class="diagram-arrow" aria-hidden="true">↓</span></li><li><span class="diagram-step">4</span><span>Baseline before agent</span></li></ol></figure>
+
+<h2 id="inspect-the-installed-toolchain">Inspect the installed toolchain</h2>
+<p>Open Terminal and run these read-only checks:</p>
+<pre><code class="language-sh">xcodebuild -version
+xcode-select -p
+xcrun simctl list devices available
+</code></pre>
+<p>The first identifies Xcode, the second identifies the selected developer directory, and the third lists usable simulator devices. Keep their meanings separate. An installed Xcode application does not necessarily mean a command-line session has selected it; a simulator application does not necessarily mean the runtime you need is installed.</p>
+<p>For this series preparation, the local check reported Xcode 26.6, build 17F113. Available devices used an iOS 26.5 runtime, and none was initially booted. These are facts about the test Mac, not minimum system requirements for your machine.</p>
+<h2 id="readiness-checklist">Readiness checklist</h2>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Passing evidence</th>
+<th>If it fails</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Xcode selection</td>
+<td>Version and developer directory are available</td>
+<td>Open Xcode and finish its setup; inspect the selected tools</td>
+</tr>
+<tr>
+<td>Simulator runtime</td>
+<td>An available device is listed</td>
+<td>Install a compatible runtime through Xcode settings</td>
+</tr>
+<tr>
+<td>Project</td>
+<td>A project/workspace and scheme are known</td>
+<td>Open the project and inspect its schemes</td>
+</tr>
+<tr>
+<td>Build</td>
+<td>The selected scheme compiles</td>
+<td>Diagnose the first meaningful build error</td>
+</tr>
+<tr>
+<td>Agent connection</td>
+<td>Expected tools are discoverable</td>
+<td>Check the client configuration and executable path</td>
+</tr>
+</tbody>
+</table>
+<p>Do not paste account passwords, signing credentials or authentication tokens into a debugging conversation. Most environment diagnosis needs a version, a command and a redacted error, not account access.</p>
+<h2 id="add-the-agent-last">Add the agent last</h2>
+<p>The repository's local npm tools require Node.js 20 or later. That dependency belongs to the MCP server, not to Swift itself. You can learn Xcode and run a Swift project before installing it. When you add the server, use the <a href="../install.html">setup instructions</a> for your actual client rather than copying another client's configuration.</p>
+<p>Keep a short environment record in the project: Xcode version, deployment target, simulator runtime, scheme and the build command you used. This gives later failures a baseline. If the baseline changes after an update, investigate that change before rewriting the app.</p>
+<h2 id="completion-checkpoint">Completion checkpoint</h2>
+<p>You are ready for the next lesson when you can name the selected Xcode version and find an available simulator. A successful account login is not the completion criterion here. Apple's <a href="https://developer.apple.com/documentation/Xcode/running-your-app-on-simulated-or-physical-devices">run-destination guide</a> explains the next step from available device to running app.</p><h2>What to do next</h2><p><a href="0.3.html">Next: Choosing a coding agent for iOS in 2026: Claude Code, Codex, Antigravity, Muse Code, Xcode&#x27;s own</a></p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>
