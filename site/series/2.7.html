@@ -1,0 +1,243 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SwiftUI prompt practice: 25 scoped exercises and acceptance checks — iOS Agent Skill</title><meta name="description" content="An illustrated guide to AI-assisted Swift development: SwiftUI prompt practice: 25 scoped exercises and acceptance checks"><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/series/2.7.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="SwiftUI prompt practice: 25 scoped exercises and acceptance checks"><meta property="og:description" content="An illustrated guide to AI-assisted Swift development: SwiftUI prompt practice: 25 scoped exercises and acceptance checks"><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/series/2.7.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css?v=fluid-series-2"><link rel="stylesheet" href="../navigation.css?v=2"><script src="../appearance.js?v=2" defer></script><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "SwiftUI prompt practice: 25 scoped exercises and acceptance checks", "description": "An illustrated guide to AI-assisted Swift development: SwiftUI prompt practice: 25 scoped exercises and acceptance checks", "url": "https://nagarjuna2997.github.io/ios-agent-skill/series/2.7.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../series.html">Guided series</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div><button class="appearance-toggle" type="button" aria-label="Use dark appearance" aria-pressed="false"><span aria-hidden="true">☾</span><span class="appearance-label">Dark mode</span></button></nav><main id="main"><article class="blog-article"><p class="article-back"><a href="../series.html#level-2">← Guided series</a> · <a href="../blog.html">All articles</a></p><header class="page-intro"><p class="eyebrow">Lesson 2.7 · Guided learning</p><h1>SwiftUI prompt practice: 25 scoped exercises and acceptance checks</h1></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#work-through-the-example">Work through the example</a></li>
+<li><a href="#implementation-reference">Implementation reference</a><ul>
+<li><a href="#prompt-template">Prompt Template</a></li>
+</ul>
+</li>
+<li><a href="#acceptance-and-failure-review">Acceptance and failure review</a></li>
+<li><a href="#twenty-five-practice-prompts">Twenty-five practice prompts</a></li>
+<li><a href="#evidence-and-limits">Evidence and limits</a></li>
+</ul>
+</div>
+</aside><p>A prompt library is useful when each prompt names inputs, boundaries and a check. Without recorded outputs, it is a set of exercises rather than evidence that a phrase reliably improves SwiftUI.</p>
+<figure class="lesson-diagram" aria-label="Choose one behavior → Supply project context → Request bounded change → Inspect result"><figcaption>Choose one behavior → Supply project context → Request bounded change → Inspect result</figcaption><ol><li><span class="diagram-step">1</span><span>Choose one behavior</span><span class="diagram-arrow" aria-hidden="true">↓</span></li><li><span class="diagram-step">2</span><span>Supply project context</span><span class="diagram-arrow" aria-hidden="true">↓</span></li><li><span class="diagram-step">3</span><span>Request bounded change</span><span class="diagram-arrow" aria-hidden="true">↓</span></li><li><span class="diagram-step">4</span><span>Inspect result</span></li></ol></figure>
+
+<h2 id="work-through-the-example">Work through the example</h2>
+<p>Adapt the supplied prompts to a known scheme and one screen. Preserve failed attempts rather than deleting them from a success story.</p>
+<p>Start with a disposable branch and synthetic data. Write the expected outcome before changing the implementation, then keep the first failing result. This prevents a later repair from quietly redefining the task. The procedure below is grounded in the repository reference; its examples must still be checked against your project and installed toolchain.</p>
+<h2 id="implementation-reference">Implementation reference</h2>
+<p>The following focused section is adapted from the maintained project guide. It preserves the source’s examples and limitations.</p>
+<h3 id="prompt-template">Prompt Template</h3>
+<p>Use this exact template when turning a description into an executable prompt:</p>
+<pre><code class="language-text">You are building a native iOS app from this user description:
+&quot;&lt;USER_DESCRIPTION&gt;&quot;
+
+Create a production-ready SwiftUI implementation with:
+- iOS deployment target: iOS 17+ unless the user asks otherwise
+- Architecture: MVVM with protocol-based dependencies
+- State: @MainActor @Observable view models for UI-rendered state
+- Navigation: typed routes and deep-link-ready structure
+- Design: tokenized colors, spacing, typography, radius, shadows
+- Accessibility: Dynamic Type, VoiceOver labels, 44pt targets, contrast checks
+- Previews: every main state must render without network or disk
+- Testing: unit-testable use cases and injected repositories
+
+Derived product brief:
+- Name:
+- Audience:
+- Problem:
+- Primary user journey:
+- Secondary flows:
+- Data model:
+- Offline behavior:
+
+Derived visual direction:
+- Personality:
+- Color tokens:
+- Typography:
+- Component style:
+- Motion:
+
+Implement:
+1. App entry point
+2. Theme/design tokens
+3. Models
+4. Repository protocols and mock repositories
+5. View models
+6. Screens
+7. Reusable components
+8. Previews
+9. Tests where practical
+
+Do not:
+- Use raw colors, spacing, or font sizes in views
+- Create live dependencies inside view models
+- Use @Observable without @MainActor for UI state
+- Claim the app works without build/test/screenshot evidence
+</code></pre>
+<h2 id="acceptance-and-failure-review">Acceptance and failure review</h2>
+<table>
+<thead>
+<tr>
+<th>Checkpoint</th>
+<th>What to inspect</th>
+<th>If it does not match</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Choose one behavior</td>
+<td>Confirm the input and environment</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+<tr>
+<td>Supply project context</td>
+<td>Inspect the intermediate artifact</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+<tr>
+<td>Request bounded change</td>
+<td>Run the focused check</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+<tr>
+<td>Inspect result</td>
+<td>Record the observed result</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+</tbody>
+</table>
+<p>Ask the agent to explain the smallest change that resolves the observed mismatch. Keep unrelated refactors out of the repair. A change that makes a warning disappear is not enough if the behavior or ownership contract has changed. Re-run the same acceptance check so the before and after results are comparable.</p>
+<h2 id="twenty-five-practice-prompts">Twenty-five practice prompts</h2>
+<p>Use the request column as a starting sentence; supply the actual file and behavior. These are not labelled tested because this chapter does not contain 25 recorded model sessions.</p>
+<table>
+<thead>
+<tr>
+<th>Topic</th>
+<th>Request</th>
+<th>Check</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Empty library</td>
+<td>Describe the first useful action</td>
+<td>No items is distinct from failure</td>
+</tr>
+<tr>
+<td>Empty search</td>
+<td>Add a clear-query action</td>
+<td>Stored data remains intact</td>
+</tr>
+<tr>
+<td>Loading</td>
+<td>Show progress without duplicate requests</td>
+<td>One request per intended action</td>
+</tr>
+<tr>
+<td>Error</td>
+<td>Preserve useful data on failure</td>
+<td>Retry has a defined effect</td>
+</tr>
+<tr>
+<td>Add form</td>
+<td>Reject blank titles</td>
+<td>Whitespace-only input fails</td>
+</tr>
+<tr>
+<td>Edit form</td>
+<td>Support cancellation</td>
+<td>Original data is unchanged</td>
+</tr>
+<tr>
+<td>Deletion</td>
+<td>Explain recovery behavior</td>
+<td>Deletion affects only selected item</td>
+</tr>
+<tr>
+<td>Persistence</td>
+<td>Use an injected store</td>
+<td>Relaunch preserves data</td>
+</tr>
+<tr>
+<td>Search</td>
+<td>Define matching rules</td>
+<td>Case behavior is intentional</td>
+</tr>
+<tr>
+<td>Navigation</td>
+<td>Use stable route identity</td>
+<td>Missing item has a fallback</td>
+</tr>
+<tr>
+<td>Deep link</td>
+<td>Validate input</td>
+<td>Unknown route does not crash</td>
+</tr>
+<tr>
+<td>Dark mode</td>
+<td>Use semantic tokens</td>
+<td>Text remains readable</td>
+</tr>
+<tr>
+<td>High contrast</td>
+<td>Use explicit assets</td>
+<td>Variants resolve correctly</td>
+</tr>
+<tr>
+<td>Dynamic Type</td>
+<td>Allow content to grow</td>
+<td>Long labels do not clip</td>
+</tr>
+<tr>
+<td>VoiceOver label</td>
+<td>Name the action meaningfully</td>
+<td>Label describes the control</td>
+</tr>
+<tr>
+<td>Focus</td>
+<td>Preserve a sensible destination</td>
+<td>Dismissal restores context</td>
+</tr>
+<tr>
+<td>Cancellation</td>
+<td>Stop obsolete work</td>
+<td>Stale result cannot replace current data</td>
+</tr>
+<tr>
+<td>Networking</td>
+<td>Validate status before decoding</td>
+<td>Error payload is not success</td>
+</tr>
+<tr>
+<td>Previews</td>
+<td>Inject deterministic fixtures</td>
+<td>No production disk or network access</td>
+</tr>
+<tr>
+<td>Unit test</td>
+<td>Assert one domain transition</td>
+<td>Test fails for a broken transition</td>
+</tr>
+<tr>
+<td>UI test</td>
+<td>Use stable identifiers</td>
+<td>Wait for observable state</td>
+</tr>
+<tr>
+<td>Screenshots</td>
+<td>Name state and destination</td>
+<td>Image matches requested state</td>
+</tr>
+<tr>
+<td>Refactor</td>
+<td>Preserve public behavior</td>
+<td>Same acceptance suite passes</td>
+</tr>
+<tr>
+<td>Review</td>
+<td>Locate one finding</td>
+<td>Supporting source is included</td>
+</tr>
+<tr>
+<td>Completion</td>
+<td>Separate executed from unverified</td>
+<td>No unsupported success claim</td>
+</tr>
+</tbody>
+</table>
+<h2 id="evidence-and-limits">Evidence and limits</h2>
+<p>The prompts below are practice prompts, not 25 completed comparative runs.</p>
+<p>This is an educational guide. Its presence in the series does not certify a completed client-specific lab. The <a href="../evidence/series/verification.json">series evidence record</a> separates executed checks from exercises and blocked environments.</p>
+<p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/tooling/app-description-workflow.md">Inspect the source used in this lesson</a>.</p><h2>What to do next</h2><p><a href="2.8.html">Next: When a SwiftUI agent task fails: ten failure categories to distinguish</a></p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

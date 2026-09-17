@@ -1,0 +1,128 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Security review of an agent-built app: keychain, ATS, secrets in source — iOS Agent Skill</title><meta name="description" content="An illustrated guide to AI-assisted Swift development: Security review of an agent-built app: keychain, ATS, secrets in source"><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/series/5.6.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="Security review of an agent-built app: keychain, ATS, secrets in source"><meta property="og:description" content="An illustrated guide to AI-assisted Swift development: Security review of an agent-built app: keychain, ATS, secrets in source"><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/series/5.6.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css?v=fluid-series-2"><link rel="stylesheet" href="../navigation.css?v=2"><script src="../appearance.js?v=2" defer></script><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "Security review of an agent-built app: keychain, ATS, secrets in source", "description": "An illustrated guide to AI-assisted Swift development: Security review of an agent-built app: keychain, ATS, secrets in source", "url": "https://nagarjuna2997.github.io/ios-agent-skill/series/5.6.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../series.html">Guided series</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div><button class="appearance-toggle" type="button" aria-label="Use dark appearance" aria-pressed="false"><span aria-hidden="true">☾</span><span class="appearance-label">Dark mode</span></button></nav><main id="main"><article class="blog-article"><p class="article-back"><a href="../series.html#level-5">← Guided series</a> · <a href="../blog.html">All articles</a></p><header class="page-intro"><p class="eyebrow">Lesson 5.6 · Guided learning</p><h1>Security review of an agent-built app: keychain, ATS, secrets in source</h1></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#work-through-the-example">Work through the example</a></li>
+<li><a href="#implementation-reference">Implementation reference</a><ul>
+<li><a href="#keychain-for-sensitive-data">Keychain for Sensitive Data</a></li>
+</ul>
+</li>
+<li><a href="#acceptance-and-failure-review">Acceptance and failure review</a></li>
+<li><a href="#evidence-and-limits">Evidence and limits</a></li>
+</ul>
+</div>
+</aside><p>Security review follows data through storage, transport and diagnostics. A secret kept out of source can still leak through logs, screenshots or an overly broad tool connection.</p>
+<figure class="lesson-diagram" aria-label="Sensitive input → Storage boundary → Network boundary → Redacted diagnostics"><figcaption>Sensitive input → Storage boundary → Network boundary → Redacted diagnostics</figcaption><ol><li><span class="diagram-step">1</span><span>Sensitive input</span><span class="diagram-arrow" aria-hidden="true">↓</span></li><li><span class="diagram-step">2</span><span>Storage boundary</span><span class="diagram-arrow" aria-hidden="true">↓</span></li><li><span class="diagram-step">3</span><span>Network boundary</span><span class="diagram-arrow" aria-hidden="true">↓</span></li><li><span class="diagram-step">4</span><span>Redacted diagnostics</span></li></ol></figure>
+
+<h2 id="work-through-the-example">Work through the example</h2>
+<p>Use synthetic credentials when testing failures. Check what leaves the device and who can read stored values.</p>
+<p>Start with a disposable branch and synthetic data. Write the expected outcome before changing the implementation, then keep the first failing result. This prevents a later repair from quietly redefining the task. The procedure below is grounded in the repository reference; its examples must still be checked against your project and installed toolchain.</p>
+<h2 id="implementation-reference">Implementation reference</h2>
+<p>The following focused section is adapted from the maintained project guide. It preserves the source’s examples and limitations.</p>
+<h3 id="keychain-for-sensitive-data">Keychain for Sensitive Data</h3>
+<ul>
+<li>[ ] Store authentication tokens in Keychain, never in <code>UserDefaults</code> or files</li>
+<li>[ ] Store API keys and secrets in Keychain (or better, fetch from server at runtime)</li>
+<li>[ ] Set appropriate Keychain accessibility level for each item</li>
+<li>[ ] Use <code>kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly</code> for tokens needed in background</li>
+<li>[ ] Use <code>kSecAttrAccessibleWhenUnlockedThisDeviceOnly</code> for highly sensitive data</li>
+<li>[ ] Never use <code>kSecAttrAccessibleAlways</code> (deprecated and insecure)</li>
+<li>[ ] Set <code>kSecAttrAccessControl</code> with biometric requirement for high-value secrets</li>
+<li>[ ] Delete Keychain items on user logout</li>
+</ul>
+<pre><code class="language-swift">import Security
+
+enum KeychainHelper {
+
+    static func save(
+        key: String,
+        data: Data,
+        accessibility: CFString = kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
+    ) throws {
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: key,
+            kSecValueData as String: data,
+            kSecAttrAccessible as String: accessibility
+        ]
+
+        // Delete any existing item first
+        SecItemDelete(query as CFDictionary)
+
+        let status = SecItemAdd(query as CFDictionary, nil)
+        guard status == errSecSuccess else {
+            throw KeychainError.saveFailed(status: status)
+        }
+    }
+
+    static func load(key: String) throws -&gt; Data? {
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: key,
+            kSecReturnData as String: true,
+            kSecMatchLimit as String: kSecMatchLimitOne
+        ]
+
+        var result: AnyObject?
+        let status = SecItemCopyMatching(query as CFDictionary, &amp;result)
+
+        switch status {
+        case errSecSuccess:
+            return result as? Data
+        case errSecItemNotFound:
+            return nil
+        default:
+            throw KeychainError.loadFailed(status: status)
+        }
+    }
+
+    static func delete(key: String) {
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: key
+        ]
+        SecItemDelete(query as CFDictionary)
+    }
+}
+
+enum KeychainError: Error {
+    case saveFailed(status: OSStatus)
+    case loadFailed(status: OSStatus)
+}
+</code></pre>
+<hr />
+<h2 id="acceptance-and-failure-review">Acceptance and failure review</h2>
+<table>
+<thead>
+<tr>
+<th>Checkpoint</th>
+<th>What to inspect</th>
+<th>If it does not match</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sensitive input</td>
+<td>Confirm the input and environment</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+<tr>
+<td>Storage boundary</td>
+<td>Inspect the intermediate artifact</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+<tr>
+<td>Network boundary</td>
+<td>Run the focused check</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+<tr>
+<td>Redacted diagnostics</td>
+<td>Record the observed result</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+</tbody>
+</table>
+<p>Ask the agent to explain the smallest change that resolves the observed mismatch. Keep unrelated refactors out of the repair. A change that makes a warning disappear is not enough if the behavior or ownership contract has changed. Re-run the same acceptance check so the before and after results are comparable.</p>
+<h2 id="evidence-and-limits">Evidence and limits</h2>
+<p>This checklist is not a penetration test or a guarantee of security.</p>
+<p>This is an educational guide. Its presence in the series does not certify a completed client-specific lab. The <a href="../evidence/series/verification.json">series evidence record</a> separates executed checks from exercises and blocked environments.</p>
+<p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/checklists/security.md">Inspect the source used in this lesson</a>.</p><h2>What to do next</h2><p><a href="5.7.html">Next: Static review vs the compiler: what heuristics catch and what they miss</a></p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

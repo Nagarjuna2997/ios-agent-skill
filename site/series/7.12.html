@@ -1,0 +1,104 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Planning a safe Swift 6 and iOS 27 migration — iOS Agent Skill</title><meta name="description" content="An illustrated guide to AI-assisted Swift development: Planning a safe Swift 6 and iOS 27 migration"><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/series/7.12.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="Planning a safe Swift 6 and iOS 27 migration"><meta property="og:description" content="An illustrated guide to AI-assisted Swift development: Planning a safe Swift 6 and iOS 27 migration"><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/series/7.12.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css?v=fluid-series-2"><link rel="stylesheet" href="../navigation.css?v=2"><script src="../appearance.js?v=2" defer></script><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "Planning a safe Swift 6 and iOS 27 migration", "description": "An illustrated guide to AI-assisted Swift development: Planning a safe Swift 6 and iOS 27 migration", "url": "https://nagarjuna2997.github.io/ios-agent-skill/series/7.12.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../series.html">Guided series</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div><button class="appearance-toggle" type="button" aria-label="Use dark appearance" aria-pressed="false"><span aria-hidden="true">☾</span><span class="appearance-label">Dark mode</span></button></nav><main id="main"><article class="blog-article"><p class="article-back"><a href="../series.html#level-7">← Guided series</a> · <a href="../blog.html">All articles</a></p><header class="page-intro"><p class="eyebrow">Lesson 7.12 · Guided learning</p><h1>Planning a safe Swift 6 and iOS 27 migration</h1></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#work-through-the-example">Work through the example</a></li>
+<li><a href="#implementation-reference">Implementation reference</a><ul>
+<li><a href="#sendable-protocol">Sendable Protocol</a></li>
+</ul>
+</li>
+<li><a href="#acceptance-and-failure-review">Acceptance and failure review</a></li>
+<li><a href="#evidence-and-limits">Evidence and limits</a></li>
+</ul>
+</div>
+</aside><p>A migration is easier to diagnose when language-mode changes and feature changes are separate. Preserve behavior first, then fix isolated compiler failures with small checkpoints.</p>
+<figure class="lesson-diagram" aria-label="Baseline tests → Toolchain change → Scoped fixes → Same acceptance suite"><figcaption>Baseline tests → Toolchain change → Scoped fixes → Same acceptance suite</figcaption><ol><li><span class="diagram-step">1</span><span>Baseline tests</span><span class="diagram-arrow" aria-hidden="true">↓</span></li><li><span class="diagram-step">2</span><span>Toolchain change</span><span class="diagram-arrow" aria-hidden="true">↓</span></li><li><span class="diagram-step">3</span><span>Scoped fixes</span><span class="diagram-arrow" aria-hidden="true">↓</span></li><li><span class="diagram-step">4</span><span>Same acceptance suite</span></li></ol></figure>
+
+<h2 id="work-through-the-example">Work through the example</h2>
+<p>Record the old and new build settings. Do not silence concurrency diagnostics by changing semantics without a test.</p>
+<p>Start with a disposable branch and synthetic data. Write the expected outcome before changing the implementation, then keep the first failing result. This prevents a later repair from quietly redefining the task. The procedure below is grounded in the repository reference; its examples must still be checked against your project and installed toolchain.</p>
+<h2 id="implementation-reference">Implementation reference</h2>
+<p>The following focused section is adapted from the maintained project guide. It preserves the source’s examples and limitations.</p>
+<h3 id="sendable-protocol">Sendable Protocol</h3>
+<p><code>Sendable</code> marks types that are safe to transfer across concurrency domains.</p>
+<pre><code class="language-swift">// Value types with Sendable fields are implicitly Sendable
+struct UserDTO: Sendable {
+    let id: String
+    let name: String
+    let email: String
+}
+
+// Classes must be final and have only immutable stored properties
+final class Configuration: Sendable {
+    let apiKey: String
+    let baseURL: URL
+
+    init(apiKey: String, baseURL: URL) {
+        self.apiKey = apiKey
+        self.baseURL = baseURL
+    }
+}
+
+// @unchecked Sendable — when you manage thread safety manually
+final class AtomicCounter: @unchecked Sendable {
+    private let lock = NSLock()
+    private var _value = 0
+
+    var value: Int {
+        lock.withLock { _value }
+    }
+
+    func increment() {
+        lock.withLock { _value += 1 }
+    }
+}
+
+// @Sendable closures
+func performAsync(_ work: @Sendable @escaping () async -&gt; Void) {
+    Task {
+        await work()
+    }
+}
+
+// Common Sendable conformances
+// - All value types with Sendable properties
+// - Actors (always Sendable)
+// - Enums with Sendable associated values
+// - Tuples of Sendable types
+</code></pre>
+<hr />
+<h2 id="acceptance-and-failure-review">Acceptance and failure review</h2>
+<table>
+<thead>
+<tr>
+<th>Checkpoint</th>
+<th>What to inspect</th>
+<th>If it does not match</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Baseline tests</td>
+<td>Confirm the input and environment</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+<tr>
+<td>Toolchain change</td>
+<td>Inspect the intermediate artifact</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+<tr>
+<td>Scoped fixes</td>
+<td>Run the focused check</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+<tr>
+<td>Same acceptance suite</td>
+<td>Record the observed result</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+</tbody>
+</table>
+<p>Ask the agent to explain the smallest change that resolves the observed mismatch. Keep unrelated refactors out of the repair. A change that makes a warning disappear is not enough if the behavior or ownership contract has changed. Re-run the same acceptance check so the before and after results are comparable.</p>
+<h2 id="evidence-and-limits">Evidence and limits</h2>
+<p>A complete old-project migration to iOS 27 has not been executed here.</p>
+<p>This is an educational guide. Its presence in the series does not certify a completed client-specific lab. The <a href="../evidence/series/verification.json">series evidence record</a> separates executed checks from exercises and blocked environments.</p>
+<p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/swift/swift-concurrency.md">Inspect the source used in this lesson</a>.</p><h2>What to do next</h2><p><a href="8.1.html">Next: Ask for the finding, not the fix: why review-first prompts produce better Swift</a></p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

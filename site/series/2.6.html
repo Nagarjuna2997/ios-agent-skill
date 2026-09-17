@@ -1,0 +1,278 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Keeping the agent inside your design: tokens, no hardcoded colors, no fixed fonts — iOS Agent Skill</title><meta name="description" content="An illustrated guide to AI-assisted Swift development: Keeping the agent inside your design: tokens, no hardcoded colors, no fixed fonts"><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/series/2.6.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="Keeping the agent inside your design: tokens, no hardcoded colors, no fixed fonts"><meta property="og:description" content="An illustrated guide to AI-assisted Swift development: Keeping the agent inside your design: tokens, no hardcoded colors, no fixed fonts"><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/series/2.6.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css?v=fluid-series-2"><link rel="stylesheet" href="../navigation.css?v=2"><script src="../appearance.js?v=2" defer></script><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "Keeping the agent inside your design: tokens, no hardcoded colors, no fixed fonts", "description": "An illustrated guide to AI-assisted Swift development: Keeping the agent inside your design: tokens, no hardcoded colors, no fixed fonts", "url": "https://nagarjuna2997.github.io/ios-agent-skill/series/2.6.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../series.html">Guided series</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div><button class="appearance-toggle" type="button" aria-label="Use dark appearance" aria-pressed="false"><span aria-hidden="true">☾</span><span class="appearance-label">Dark mode</span></button></nav><main id="main"><article class="blog-article"><p class="article-back"><a href="../series.html#level-2">← Guided series</a> · <a href="../blog.html">All articles</a></p><header class="page-intro"><p class="eyebrow">Lesson 2.6 · Guided learning</p><h1>Keeping the agent inside your design: tokens, no hardcoded colors, no fixed fonts</h1></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#work-through-the-example">Work through the example</a></li>
+<li><a href="#implementation-reference">Implementation reference</a><ul>
+<li><a href="#1-the-three-tier-token-architecture">1. The Three-Tier Token Architecture</a></li>
+<li><a href="#implementation">Implementation</a></li>
+<li><a href="#injecting-the-theme">Injecting the theme</a></li>
+<li><a href="#tier-3-component-tokens-as-viewmodifiers">Tier 3 — component tokens as ViewModifiers</a></li>
+<li><a href="#anti-patterns">Anti-patterns</a></li>
+</ul>
+</li>
+<li><a href="#acceptance-and-failure-review">Acceptance and failure review</a></li>
+<li><a href="#evidence-and-limits">Evidence and limits</a></li>
+</ul>
+</div>
+</aside><p>Design tokens preserve intent across appearances. A semantic name such as primaryText describes purpose; a literal hex value describes only one rendering choice.</p>
+<figure class="lesson-diagram" aria-label="Primitive palette → Semantic roles → Component usage → Appearance checks"><figcaption>Primitive palette → Semantic roles → Component usage → Appearance checks</figcaption><ol><li><span class="diagram-step">1</span><span>Primitive palette</span><span class="diagram-arrow" aria-hidden="true">↓</span></li><li><span class="diagram-step">2</span><span>Semantic roles</span><span class="diagram-arrow" aria-hidden="true">↓</span></li><li><span class="diagram-step">3</span><span>Component usage</span><span class="diagram-arrow" aria-hidden="true">↓</span></li><li><span class="diagram-step">4</span><span>Appearance checks</span></li></ol></figure>
+
+<h2 id="work-through-the-example">Work through the example</h2>
+<p>Trace one button from its semantic color to its light, dark and high-contrast values. Remove literal colors only after understanding their role.</p>
+<p>Start with a disposable branch and synthetic data. Write the expected outcome before changing the implementation, then keep the first failing result. This prevents a later repair from quietly redefining the task. The procedure below is grounded in the repository reference; its examples must still be checked against your project and installed toolchain.</p>
+<h2 id="implementation-reference">Implementation reference</h2>
+<p>The following focused section is adapted from the maintained project guide. It preserves the source’s examples and limitations.</p>
+<h3 id="1-the-three-tier-token-architecture">1. The Three-Tier Token Architecture</h3>
+<p>Never let a raw color or number appear at a call site. Tokens flow in one
+direction through three tiers:</p>
+<pre><code>Tier 1 — Primitive   Tier 2 — Semantic        Tier 3 — Component
+(raw values)          (intent)                  (usage)
+blue500  #0A84FF  →   accent                →   Button.background
+gray900  #1C1C1E  →   textPrimary           →   Card.titleColor
+space4   16pt     →   spacing.contentInset  →   Card.padding
+</code></pre>
+<p><strong>Rules</strong></p>
+<ul>
+<li>Views reference <strong>Tier 3 or Tier 2 only</strong>. A view that names <code>blue500</code> is a bug.</li>
+<li>Tier 1 is <code>private</code> to the token module. It has no dark-mode variant — it is
+  literally just a number.</li>
+<li>Tier 2 is where light/dark, high-contrast, and theme switching resolve.</li>
+<li>Adding a theme means adding one Tier 2 implementation, not editing views.</li>
+</ul>
+<h3 id="implementation">Implementation</h3>
+<pre><code class="language-swift">// DesignSystem/Tokens/Primitives.swift
+// Tier 1 — raw values. Never referenced from a View.
+enum Primitive {
+    static let blue500  = Color(hex: 0x0A84FF)
+    static let blue600  = Color(hex: 0x0060DF)
+    static let indigo500 = Color(hex: 0x5E5CE6)
+    static let red500   = Color(hex: 0xFF3B30)
+    static let green500 = Color(hex: 0x34C759)
+    static let amber500 = Color(hex: 0xFF9F0A)
+
+    // Spacing scale — a 4pt rhythm. Nothing else is permitted.
+    static let space1: CGFloat = 4
+    static let space2: CGFloat = 8
+    static let space3: CGFloat = 12
+    static let space4: CGFloat = 16
+    static let space5: CGFloat = 24
+    static let space6: CGFloat = 32
+    static let space7: CGFloat = 48
+
+    // Radii
+    static let radiusS: CGFloat = 8
+    static let radiusM: CGFloat = 16
+    static let radiusL: CGFloat = 24
+}
+
+// THE canonical hex initialiser for this skill. Defined here, in the token
+// layer, and nowhere else — `color-system.md` and
+// `templates/common-patterns/design-system.swift` reference this file rather
+// than redeclaring it. Two files declaring `init(hex: String)` with different
+// bodies is not a style disagreement: copy both into one target and the
+// compiler rejects it with `invalid redeclaration of 'init(hex:)'`.
+extension Color {
+    /// Hex as an integer literal: `Color(hex: 0x6C63FF)`.
+    ///
+    /// Preferred over the string form because a typo is a compile error rather
+    /// than a runtime surprise — `0x6C63FZ` does not build, `&quot;6C63FZ&quot;` does.
+    init(hex: UInt32, opacity: Double = 1) {
+        self.init(
+            .sRGB,
+            red:   Double((hex &gt;&gt; 16) &amp; 0xFF) / 255,
+            green: Double((hex &gt;&gt;  8) &amp; 0xFF) / 255,
+            blue:  Double( hex        &amp; 0xFF) / 255,
+            opacity: opacity
+        )
+    }
+
+    /// Hex as a string: `Color(hex: &quot;6C63FF&quot;)`, with or without `#`,
+    /// 6 digits (RGB) or 8 (RRGGBBAA).
+    ///
+    /// Exists because designers hand over strings and remote themes arrive as
+    /// JSON. A malformed value traps in DEBUG and renders **magenta** in
+    /// release — never black. The earlier versions of this initialiser fell
+    /// back to black, which is indistinguishable from a deliberate colour and
+    /// so shipped unnoticed; magenta appears nowhere in any of these palettes
+    /// and is impossible to mistake for intent.
+    init(hex string: String, opacity: Double = 1) {
+        let cleaned = string
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .replacingOccurrences(of: &quot;#&quot;, with: &quot;&quot;)
+
+        var value: UInt64 = 0
+        let scanned = Scanner(string: cleaned).scanHexInt64(&amp;value)
+
+        switch (scanned, cleaned.count) {
+        case (true, 6):
+            self.init(hex: UInt32(truncatingIfNeeded: value), opacity: opacity)
+        case (true, 8):
+            let alpha = Double(value &amp; 0xFF) / 255
+            self.init(hex: UInt32(truncatingIfNeeded: value &gt;&gt; 8), opacity: opacity * alpha)
+        default:
+            assertionFailure(&quot;Malformed hex colour literal: \(string)&quot;)
+            self.init(hex: 0xFF00FF, opacity: opacity)
+        }
+    }
+}
+</code></pre>
+<pre><code class="language-swift">// DesignSystem/Tokens/Theme.swift
+// Tier 2 — semantic intent. This is the swappable layer.
+protocol Theme: Sendable {
+    // Surfaces
+    var background: Color { get }        // the page
+    var surface: Color { get }           // cards, sheets
+    var surfaceElevated: Color { get }   // popovers, menus
+
+    // Content — must meet contrast against the surface it sits on
+    var textPrimary: Color { get }
+    var textSecondary: Color { get }
+    var textOnAccent: Color { get }
+
+    // Intent
+    var accent: Color { get }
+    var accentPressed: Color { get }
+    var destructive: Color { get }
+    var success: Color { get }
+    var warning: Color { get }
+
+    // Separators and elevation
+    var separator: Color { get }
+    var shadow: Color { get }
+}
+
+struct OceanTheme: Theme {
+    // Apple's semantic colors already resolve light/dark AND increased contrast.
+    // Prefer them for surfaces and text; reserve custom hex for brand accents.
+    var background      = Color(.systemBackground)
+    var surface         = Color(.secondarySystemBackground)
+    var surfaceElevated = Color(.tertiarySystemBackground)
+
+    var textPrimary   = Color(.label)
+    var textSecondary = Color(.secondaryLabel)
+    var textOnAccent  = Color.white
+
+    var accent        = Primitive.blue500
+    var accentPressed = Primitive.blue600
+    var destructive   = Color(.systemRed)
+    var success       = Color(.systemGreen)
+    var warning       = Color(.systemOrange)
+
+    var separator = Color(.separator)
+    var shadow    = Color.black.opacity(0.08)
+}
+</code></pre>
+<pre><code class="language-swift">// DesignSystem/Tokens/Spacing.swift — Tier 2 for layout
+enum Space {
+    static let hairline    = Primitive.space1   // icon-to-label
+    static let tight       = Primitive.space2   // within a control
+    static let element     = Primitive.space3   // between related elements
+    static let contentInset = Primitive.space4  // card padding, screen margins
+    static let section     = Primitive.space5   // between sections
+    static let major       = Primitive.space6   // above a page title
+}
+
+enum Radius {
+    static let control = Primitive.radiusS      // buttons, chips
+    static let card    = Primitive.radiusM      // cards, tiles
+    static let sheet   = Primitive.radiusL      // modals
+}
+</code></pre>
+<h3 id="injecting-the-theme">Injecting the theme</h3>
+<pre><code class="language-swift">private struct ThemeKey: EnvironmentKey {
+    static let defaultValue: any Theme = OceanTheme()
+}
+
+extension EnvironmentValues {
+    var theme: any Theme {
+        get { self[ThemeKey.self] }
+        set { self[ThemeKey.self] = newValue }
+    }
+}
+
+@main
+struct MyApp: App {
+    var body: some Scene {
+        WindowGroup {
+            RootView().environment(\.theme, OceanTheme())
+        }
+    }
+}
+</code></pre>
+<h3 id="tier-3-component-tokens-as-viewmodifiers">Tier 3 — component tokens as ViewModifiers</h3>
+<pre><code class="language-swift">struct CardStyle: ViewModifier {
+    @Environment(\.theme) private var theme
+
+    func body(content: Content) -&gt; some View {
+        content
+            .padding(Space.contentInset)
+            .background(theme.surface, in: .rect(cornerRadius: Radius.card))
+            .shadow(color: theme.shadow, radius: 8, y: 4)
+    }
+}
+
+extension View {
+    func cardStyle() -&gt; some View { modifier(CardStyle()) }
+}
+
+// Usage — no raw values anywhere.
+VStack(alignment: .leading, spacing: Space.element) {
+    Text(&quot;Monthly total&quot;).font(.headline).foregroundStyle(theme.textPrimary)
+    Text(&quot;$1,240&quot;).font(.largeTitle.bold()).foregroundStyle(theme.accent)
+}
+.cardStyle()
+</code></pre>
+<h3 id="anti-patterns">Anti-patterns</h3>
+<pre><code class="language-swift">// WRONG — raw values at the call site. Changing the brand means grepping.
+.padding(16)
+.background(Color(red: 0.04, green: 0.52, blue: 1.0))
+.cornerRadius(16)
+
+// WRONG — a Tier 1 primitive leaking into a view.
+.foregroundStyle(Primitive.blue500)
+
+// WRONG — a semantic name that describes appearance, not intent.
+var lightGray: Color { … }        // what happens in dark mode?
+var textSecondary: Color { … }    // correct
+
+// RIGHT
+.padding(Space.contentInset)
+.background(theme.accent, in: .rect(cornerRadius: Radius.card))
+</code></pre>
+<hr />
+<h2 id="acceptance-and-failure-review">Acceptance and failure review</h2>
+<table>
+<thead>
+<tr>
+<th>Checkpoint</th>
+<th>What to inspect</th>
+<th>If it does not match</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Primitive palette</td>
+<td>Confirm the input and environment</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+<tr>
+<td>Semantic roles</td>
+<td>Inspect the intermediate artifact</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+<tr>
+<td>Component usage</td>
+<td>Run the focused check</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+<tr>
+<td>Appearance checks</td>
+<td>Record the observed result</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+</tbody>
+</table>
+<p>Ask the agent to explain the smallest change that resolves the observed mismatch. Keep unrelated refactors out of the repair. A change that makes a warning disappear is not enough if the behavior or ownership contract has changed. Re-run the same acceptance check so the before and after results are comparable.</p>
+<h2 id="evidence-and-limits">Evidence and limits</h2>
+<p>Generated asset structure has evidence; visual quality still needs checks in the actual app.</p>
+<p>This is an educational guide. Its presence in the series does not certify a completed client-specific lab. The <a href="../evidence/series/verification.json">series evidence record</a> separates executed checks from exercises and blocked environments.</p>
+<p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/design/design-tokens.md">Inspect the source used in this lesson</a>.</p><h2>What to do next</h2><p><a href="2.7.html">Next: SwiftUI prompt practice: 25 scoped exercises and acceptance checks</a></p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

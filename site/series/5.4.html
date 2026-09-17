@@ -1,0 +1,108 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Performance: hangs, launch time and the patterns agents introduce — iOS Agent Skill</title><meta name="description" content="An illustrated guide to AI-assisted Swift development: Performance: hangs, launch time and the patterns agents introduce"><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/series/5.4.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="Performance: hangs, launch time and the patterns agents introduce"><meta property="og:description" content="An illustrated guide to AI-assisted Swift development: Performance: hangs, launch time and the patterns agents introduce"><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/series/5.4.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css?v=fluid-series-2"><link rel="stylesheet" href="../navigation.css?v=2"><script src="../appearance.js?v=2" defer></script><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "Performance: hangs, launch time and the patterns agents introduce", "description": "An illustrated guide to AI-assisted Swift development: Performance: hangs, launch time and the patterns agents introduce", "url": "https://nagarjuna2997.github.io/ios-agent-skill/series/5.4.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../series.html">Guided series</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div><button class="appearance-toggle" type="button" aria-label="Use dark appearance" aria-pressed="false"><span aria-hidden="true">☾</span><span class="appearance-label">Dark mode</span></button></nav><main id="main"><article class="blog-article"><p class="article-back"><a href="../series.html#level-5">← Guided series</a> · <a href="../blog.html">All articles</a></p><header class="page-intro"><p class="eyebrow">Lesson 5.4 · Guided learning</p><h1>Performance: hangs, launch time and the patterns agents introduce</h1></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#work-through-the-example">Work through the example</a></li>
+<li><a href="#implementation-reference">Implementation reference</a><ul>
+<li><a href="#instruments-profiling">Instruments Profiling</a></li>
+<li><a href="#time-profiler">Time Profiler</a></li>
+<li><a href="#allocations">Allocations</a></li>
+<li><a href="#leaks">Leaks</a></li>
+<li><a href="#network-instruments">Network (Instruments)</a></li>
+<li><a href="#animation-hitches-core-animation-renderserver">Animation Hitches (Core Animation / RenderServer)</a></li>
+</ul>
+</li>
+<li><a href="#acceptance-and-failure-review">Acceptance and failure review</a></li>
+<li><a href="#evidence-and-limits">Evidence and limits</a></li>
+</ul>
+</div>
+</aside><p>Performance investigation starts with a reproducible symptom and a representative workload. Static patterns point to possible problems; runtime measurements establish whether the change helps.</p>
+<figure class="lesson-diagram" aria-label="Reproduce workload → Record baseline → Change one cause → Compare trace"><figcaption>Reproduce workload → Record baseline → Change one cause → Compare trace</figcaption><ol><li><span class="diagram-step">1</span><span>Reproduce workload</span><span class="diagram-arrow" aria-hidden="true">↓</span></li><li><span class="diagram-step">2</span><span>Record baseline</span><span class="diagram-arrow" aria-hidden="true">↓</span></li><li><span class="diagram-step">3</span><span>Change one cause</span><span class="diagram-arrow" aria-hidden="true">↓</span></li><li><span class="diagram-step">4</span><span>Compare trace</span></li></ol></figure>
+
+<h2 id="work-through-the-example">Work through the example</h2>
+<p>Separate cold launch, warm launch and interaction responsiveness. Record device conditions alongside measurements.</p>
+<p>Start with a disposable branch and synthetic data. Write the expected outcome before changing the implementation, then keep the first failing result. This prevents a later repair from quietly redefining the task. The procedure below is grounded in the repository reference; its examples must still be checked against your project and installed toolchain.</p>
+<h2 id="implementation-reference">Implementation reference</h2>
+<p>The following focused section is adapted from the maintained project guide. It preserves the source’s examples and limitations.</p>
+<h3 id="instruments-profiling">Instruments Profiling</h3>
+<h3 id="time-profiler">Time Profiler</h3>
+<ul>
+<li>[ ] Profile the app with Time Profiler to find CPU hot spots</li>
+<li>[ ] Look for methods consuming &gt;10% of total CPU time</li>
+<li>[ ] Check for work on the main thread that should be on a background queue</li>
+<li>[ ] Verify no synchronous I/O (file reads, database queries) on the main thread</li>
+<li>[ ] Identify redundant or repeated calculations that can be cached</li>
+</ul>
+<pre><code>How to run: Xcode &gt; Product &gt; Profile &gt; Time Profiler
+Focus: Check &quot;Hide System Libraries&quot; to see only your code
+Tip:  Use Call Tree &gt; Invert Call Tree to find leaf functions consuming the most time
+</code></pre>
+<h3 id="allocations">Allocations</h3>
+<ul>
+<li>[ ] Profile with Allocations to track memory growth over time</li>
+<li>[ ] Check for unbounded memory growth during scrolling or navigation</li>
+<li>[ ] Identify transient allocations that could be reduced (e.g., creating objects in tight loops)</li>
+<li>[ ] Look for large allocations (images, data buffers) that are not released</li>
+</ul>
+<pre><code>How to run: Xcode &gt; Product &gt; Profile &gt; Allocations
+Focus: Mark Generation snapshots before and after user flows to isolate growth
+Tip:  Filter by &quot;Persistent&quot; to find objects that never get deallocated
+</code></pre>
+<h3 id="leaks">Leaks</h3>
+<ul>
+<li>[ ] Run Leaks instrument to detect retain cycles</li>
+<li>[ ] Investigate any leaked objects (especially closures capturing <code>self</code>)</li>
+<li>[ ] Verify delegates are declared <code>weak</code></li>
+<li>[ ] Verify closures use <code>[weak self]</code> when capturing view models or coordinators</li>
+<li>[ ] Check Combine subscriptions are stored and cancelled properly</li>
+</ul>
+<h3 id="network-instruments">Network (Instruments)</h3>
+<ul>
+<li>[ ] Profile network calls with the Network instrument</li>
+<li>[ ] Identify redundant or duplicate API requests</li>
+<li>[ ] Check for requests that could be batched or deduplicated</li>
+<li>[ ] Verify responses are cached appropriately (HTTP cache headers)</li>
+</ul>
+<h3 id="animation-hitches-core-animation-renderserver">Animation Hitches (Core Animation / RenderServer)</h3>
+<ul>
+<li>[ ] Profile with the Animation Hitches instrument</li>
+<li>[ ] Target zero commit hitches (frame drops during layout/render)</li>
+<li>[ ] Target zero render hitches (GPU cannot complete frame in time)</li>
+<li>[ ] Investigate any hitch duration &gt; 8ms on 120Hz devices</li>
+</ul>
+<hr />
+<h2 id="acceptance-and-failure-review">Acceptance and failure review</h2>
+<table>
+<thead>
+<tr>
+<th>Checkpoint</th>
+<th>What to inspect</th>
+<th>If it does not match</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Reproduce workload</td>
+<td>Confirm the input and environment</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+<tr>
+<td>Record baseline</td>
+<td>Inspect the intermediate artifact</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+<tr>
+<td>Change one cause</td>
+<td>Run the focused check</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+<tr>
+<td>Compare trace</td>
+<td>Record the observed result</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+</tbody>
+</table>
+<p>Ask the agent to explain the smallest change that resolves the observed mismatch. Keep unrelated refactors out of the repair. A change that makes a warning disappear is not enough if the behavior or ownership contract has changed. Re-run the same acceptance check so the before and after results are comparable.</p>
+<h2 id="evidence-and-limits">Evidence and limits</h2>
+<p>No invented launch-time or hang-rate numbers are supplied.</p>
+<p>This is an educational guide. Its presence in the series does not certify a completed client-specific lab. The <a href="../evidence/series/verification.json">series evidence record</a> separates executed checks from exercises and blocked environments.</p>
+<p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/checklists/performance.md">Inspect the source used in this lesson</a>.</p><h2>What to do next</h2><p><a href="5.5.html">Next: Memory: retain cycles agents create in closures and Combine</a></p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

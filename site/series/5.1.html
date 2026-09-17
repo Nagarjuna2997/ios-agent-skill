@@ -1,0 +1,143 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Swift Testing vs XCTest: what to have the agent generate in 2026 — iOS Agent Skill</title><meta name="description" content="An illustrated guide to AI-assisted Swift development: Swift Testing vs XCTest: what to have the agent generate in 2026"><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/series/5.1.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="Swift Testing vs XCTest: what to have the agent generate in 2026"><meta property="og:description" content="An illustrated guide to AI-assisted Swift development: Swift Testing vs XCTest: what to have the agent generate in 2026"><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/series/5.1.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css?v=fluid-series-2"><link rel="stylesheet" href="../navigation.css?v=2"><script src="../appearance.js?v=2" defer></script><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "Swift Testing vs XCTest: what to have the agent generate in 2026", "description": "An illustrated guide to AI-assisted Swift development: Swift Testing vs XCTest: what to have the agent generate in 2026", "url": "https://nagarjuna2997.github.io/ios-agent-skill/series/5.1.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../series.html">Guided series</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div><button class="appearance-toggle" type="button" aria-label="Use dark appearance" aria-pressed="false"><span aria-hidden="true">☾</span><span class="appearance-label">Dark mode</span></button></nav><main id="main"><article class="blog-article"><p class="article-back"><a href="../series.html#level-5">← Guided series</a> · <a href="../blog.html">All articles</a></p><header class="page-intro"><p class="eyebrow">Lesson 5.1 · Guided learning</p><h1>Swift Testing vs XCTest: what to have the agent generate in 2026</h1></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#work-through-the-example">Work through the example</a></li>
+<li><a href="#implementation-reference">Implementation reference</a><ul>
+<li><a href="#unit-testing-viewmodels-with-mocks">Unit Testing ViewModels with Mocks</a></li>
+</ul>
+</li>
+<li><a href="#acceptance-and-failure-review">Acceptance and failure review</a></li>
+<li><a href="#choose-a-test-layer-before-a-framework">Choose a test layer before a framework</a></li>
+<li><a href="#evidence-and-limits">Evidence and limits</a></li>
+</ul>
+</div>
+</aside><p>Choose test tools by the layer under test. Pure model behavior and UI automation have different lifecycles; migrating names alone does not improve the assertions.</p>
+<figure class="lesson-diagram" aria-label="Behavior contract → Test layer → Controlled dependency → Assertion"><figcaption>Behavior contract → Test layer → Controlled dependency → Assertion</figcaption><ol><li><span class="diagram-step">1</span><span>Behavior contract</span><span class="diagram-arrow" aria-hidden="true">↓</span></li><li><span class="diagram-step">2</span><span>Test layer</span><span class="diagram-arrow" aria-hidden="true">↓</span></li><li><span class="diagram-step">3</span><span>Controlled dependency</span><span class="diagram-arrow" aria-hidden="true">↓</span></li><li><span class="diagram-step">4</span><span>Assertion</span></li></ol></figure>
+
+<h2 id="work-through-the-example">Work through the example</h2>
+<p>Keep existing XCTest coverage while considering Swift Testing for suitable tests. Do not replace UI automation with a model-level assertion.</p>
+<p>Start with a disposable branch and synthetic data. Write the expected outcome before changing the implementation, then keep the first failing result. This prevents a later repair from quietly redefining the task. The procedure below is grounded in the repository reference; its examples must still be checked against your project and installed toolchain.</p>
+<h2 id="implementation-reference">Implementation reference</h2>
+<p>The following focused section is adapted from the maintained project guide. It preserves the source’s examples and limitations.</p>
+<h3 id="unit-testing-viewmodels-with-mocks">Unit Testing ViewModels with Mocks</h3>
+<ul>
+<li>[ ] Define protocols for all dependencies (repository, service, API client)</li>
+<li>[ ] Create mock implementations that allow stubbing return values and tracking calls</li>
+<li>[ ] Test each ViewModel method in isolation</li>
+<li>[ ] Verify state changes (loading, error, data) after each action</li>
+<li>[ ] Test edge cases: empty data, nil values, concurrent calls</li>
+</ul>
+<pre><code class="language-swift">// MARK: - Mock Repository
+
+final class MockArticleRepository: ArticleRepositoryProtocol, @unchecked Sendable {
+    var stubbedArticles: [Article] = []
+    var shouldFail = false
+    var createCallCount = 0
+    var lastCreatedArticle: Article?
+
+    func getAll() async throws -&gt; [Article] {
+        if shouldFail { throw RepositoryError.offline }
+        return stubbedArticles
+    }
+
+    func getById(_ id: String) async throws -&gt; Article? {
+        if shouldFail { throw RepositoryError.notFound }
+        return stubbedArticles.first { $0.id == id }
+    }
+
+    func create(_ entity: Article) async throws -&gt; Article {
+        if shouldFail { throw RepositoryError.invalidResponse }
+        createCallCount += 1
+        lastCreatedArticle = entity
+        stubbedArticles.append(entity)
+        return entity
+    }
+
+    func update(_ entity: Article) async throws -&gt; Article {
+        if shouldFail { throw RepositoryError.invalidResponse }
+        if let index = stubbedArticles.firstIndex(where: { $0.id == entity.id }) {
+            stubbedArticles[index] = entity
+        }
+        return entity
+    }
+
+    func delete(_ id: String) async throws {
+        if shouldFail { throw RepositoryError.notFound }
+        stubbedArticles.removeAll { $0.id == id }
+    }
+}
+
+// MARK: - ViewModel Tests
+
+@Suite(&quot;Create Article Flow&quot;)
+struct CreateArticleViewModelTests {
+
+    @Test(&quot;creates article and resets form&quot;)
+    func createSuccess() async {
+        let mock = MockArticleRepository()
+        let vm = CreateArticleViewModel(repository: mock)
+        vm.title = &quot;New Article&quot;
+        vm.body = &quot;Content here&quot;
+
+        await vm.save()
+
+        #expect(mock.createCallCount == 1)
+        #expect(mock.lastCreatedArticle?.title == &quot;New Article&quot;)
+        #expect(vm.title.isEmpty) // form reset
+        #expect(vm.isSaved)
+    }
+
+    @Test(&quot;shows validation error when title is empty&quot;)
+    func validationError() async {
+        let mock = MockArticleRepository()
+        let vm = CreateArticleViewModel(repository: mock)
+        vm.title = &quot;&quot;
+        vm.body = &quot;Content&quot;
+
+        await vm.save()
+
+        #expect(mock.createCallCount == 0)
+        #expect(vm.titleError == .emptyField(fieldName: &quot;Title&quot;))
+    }
+}
+</code></pre>
+<hr />
+<h2 id="acceptance-and-failure-review">Acceptance and failure review</h2>
+<table>
+<thead>
+<tr>
+<th>Checkpoint</th>
+<th>What to inspect</th>
+<th>If it does not match</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Behavior contract</td>
+<td>Confirm the input and environment</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+<tr>
+<td>Test layer</td>
+<td>Inspect the intermediate artifact</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+<tr>
+<td>Controlled dependency</td>
+<td>Run the focused check</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+<tr>
+<td>Assertion</td>
+<td>Record the observed result</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+</tbody>
+</table>
+<p>Ask the agent to explain the smallest change that resolves the observed mismatch. Keep unrelated refactors out of the repair. A change that makes a warning disappear is not enough if the behavior or ownership contract has changed. Re-run the same acceptance check so the before and after results are comparable.</p>
+<h2 id="choose-a-test-layer-before-a-framework">Choose a test layer before a framework</h2>
+<p>Apple explains that Swift Testing and XCTest can coexist in a project in its <a href="https://developer.apple.com/xcode/swift-testing/">Swift Testing overview</a>. Keep UI automation separate from pure model assertions. A storage round-trip can be tested without tapping a screen; a save button’s interaction with the form needs a UI-level check.</p>
+<p>The example mock above is source guidance, not a production concurrency guarantee. Its mutable <code>@unchecked Sendable</code> state requires externally controlled access; do not use that annotation to bypass races in parallel tests. Prefer isolation that matches the dependency contract and create independent fixtures per test.</p>
+<h2 id="evidence-and-limits">Evidence and limits</h2>
+<p>Apple documents coexistence; no complete project migration is claimed here.</p>
+<p>This is an educational guide. Its presence in the series does not certify a completed client-specific lab. The <a href="../evidence/series/verification.json">series evidence record</a> separates executed checks from exercises and blocked environments.</p>
+<p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/checklists/testing.md">Inspect the source used in this lesson</a>.</p><h2>What to do next</h2><p><a href="5.2.html">Next: UI tests an agent can write and maintain</a></p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

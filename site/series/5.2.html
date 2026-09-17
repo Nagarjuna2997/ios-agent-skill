@@ -1,0 +1,82 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>UI tests an agent can write and maintain — iOS Agent Skill</title><meta name="description" content="An illustrated guide to AI-assisted Swift development: UI tests an agent can write and maintain"><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/series/5.2.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="UI tests an agent can write and maintain"><meta property="og:description" content="An illustrated guide to AI-assisted Swift development: UI tests an agent can write and maintain"><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/series/5.2.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css?v=fluid-series-2"><link rel="stylesheet" href="../navigation.css?v=2"><script src="../appearance.js?v=2" defer></script><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "UI tests an agent can write and maintain", "description": "An illustrated guide to AI-assisted Swift development: UI tests an agent can write and maintain", "url": "https://nagarjuna2997.github.io/ios-agent-skill/series/5.2.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../series.html">Guided series</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div><button class="appearance-toggle" type="button" aria-label="Use dark appearance" aria-pressed="false"><span aria-hidden="true">☾</span><span class="appearance-label">Dark mode</span></button></nav><main id="main"><article class="blog-article"><p class="article-back"><a href="../series.html#level-5">← Guided series</a> · <a href="../blog.html">All articles</a></p><header class="page-intro"><p class="eyebrow">Lesson 5.2 · Guided learning</p><h1>UI tests an agent can write and maintain</h1></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#work-through-the-example">Work through the example</a></li>
+<li><a href="#implementation-reference">Implementation reference</a><ul>
+<li><a href="#pattern">Pattern</a></li>
+</ul>
+</li>
+<li><a href="#acceptance-and-failure-review">Acceptance and failure review</a></li>
+<li><a href="#evidence-and-limits">Evidence and limits</a></li>
+<li><a href="#recorded-sample-check">Recorded sample check</a></li>
+</ul>
+</div>
+</aside><p>A maintainable UI test drives stable identifiers and waits for observable state. Arbitrary sleeps can hide timing assumptions while making the suite slower and less reliable.</p>
+<figure class="lesson-diagram" aria-label="Launch isolated state → Perform action → Wait for condition → Assert outcome"><figcaption>Launch isolated state → Perform action → Wait for condition → Assert outcome</figcaption><ol><li><span class="diagram-step">1</span><span>Launch isolated state</span><span class="diagram-arrow" aria-hidden="true">↓</span></li><li><span class="diagram-step">2</span><span>Perform action</span><span class="diagram-arrow" aria-hidden="true">↓</span></li><li><span class="diagram-step">3</span><span>Wait for condition</span><span class="diagram-arrow" aria-hidden="true">↓</span></li><li><span class="diagram-step">4</span><span>Assert outcome</span></li></ol></figure>
+
+<h2 id="work-through-the-example">Work through the example</h2>
+<p>Give test data a separate store and ensure repeated runs do not depend on a previous test's items.</p>
+<p>Start with a disposable branch and synthetic data. Write the expected outcome before changing the implementation, then keep the first failing result. This prevents a later repair from quietly redefining the task. The procedure below is grounded in the repository reference; its examples must still be checked against your project and installed toolchain.</p>
+<h2 id="implementation-reference">Implementation reference</h2>
+<p>The following focused section is adapted from the maintained project guide. It preserves the source’s examples and limitations.</p>
+<h3 id="pattern">Pattern</h3>
+<p>Stabilize UI tests with accessibility identifiers at meaningful boundaries:</p>
+<pre><code class="language-swift">Button(&quot;Continue&quot;) {
+    viewModel.continueTapped()
+}
+.accessibilityIdentifier(&quot;onboarding.continue&quot;)
+</code></pre>
+<p>Then test the user path, not the view hierarchy:</p>
+<pre><code class="language-swift">import XCTest
+
+final class OnboardingUITests: XCTestCase {
+    func testContinueOpensHome() {
+        let app = XCUIApplication()
+        app.launchArguments = [&quot;--ui-testing&quot;, &quot;--mock-state=first-run&quot;]
+        app.launch()
+
+        app.buttons[&quot;onboarding.continue&quot;].tap()
+
+        XCTAssertTrue(app.navigationBars[&quot;Home&quot;].waitForExistence(timeout: 2))
+    }
+}
+</code></pre>
+<h2 id="acceptance-and-failure-review">Acceptance and failure review</h2>
+<table>
+<thead>
+<tr>
+<th>Checkpoint</th>
+<th>What to inspect</th>
+<th>If it does not match</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Launch isolated state</td>
+<td>Confirm the input and environment</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+<tr>
+<td>Perform action</td>
+<td>Inspect the intermediate artifact</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+<tr>
+<td>Wait for condition</td>
+<td>Run the focused check</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+<tr>
+<td>Assert outcome</td>
+<td>Record the observed result</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+</tbody>
+</table>
+<p>Ask the agent to explain the smallest change that resolves the observed mismatch. Keep unrelated refactors out of the repair. A change that makes a warning disappear is not enough if the behavior or ownership contract has changed. Re-run the same acceptance check so the before and after results are comparable.</p>
+<h2 id="evidence-and-limits">Evidence and limits</h2>
+<p>The Reading List suite provides concrete UI coverage; it does not prove the absence of all flakes.</p>
+<p>This is an educational guide. Its presence in the series does not certify a completed client-specific lab. The <a href="../evidence/series/verification.json">series evidence record</a> separates executed checks from exercises and blocked environments.</p>
+<p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/testing/xcuiautomation.md">Inspect the source used in this lesson</a>.</p>
+<h2 id="recorded-sample-check">Recorded sample check</h2>
+<p>On Xcode 26.6 with an iOS 26.5 simulator, the Reading List verification script passed 3 unit tests and 2 UI tests. It exported six screenshots. This image is one of those outputs, not an AI-generated mockup. The sample uses JSON persistence and does not establish all-client app generation or a complete accessibility audit.</p>
+<figure><img src="../evidence/series/reading-list/add.png" alt="Reading List simulator capture: add state" style="max-width:300px;display:block;margin:auto"></figure><h2>What to do next</h2><p><a href="5.3.html">Next: Accessibility review of an agent-built app: the checks that matter</a></p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

@@ -1,0 +1,81 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>App icons in 2026: Liquid Glass, Icon Composer, and generating them from SVG layers — iOS Agent Skill</title><meta name="description" content="An illustrated guide to AI-assisted Swift development: App icons in 2026: Liquid Glass, Icon Composer, and generating them from SVG layers"><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/series/4.1.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="App icons in 2026: Liquid Glass, Icon Composer, and generating them from SVG layers"><meta property="og:description" content="An illustrated guide to AI-assisted Swift development: App icons in 2026: Liquid Glass, Icon Composer, and generating them from SVG layers"><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/series/4.1.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css?v=fluid-series-2"><link rel="stylesheet" href="../navigation.css?v=2"><script src="../appearance.js?v=2" defer></script><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "App icons in 2026: Liquid Glass, Icon Composer, and generating them from SVG layers", "description": "An illustrated guide to AI-assisted Swift development: App icons in 2026: Liquid Glass, Icon Composer, and generating them from SVG layers", "url": "https://nagarjuna2997.github.io/ios-agent-skill/series/4.1.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../series.html">Guided series</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div><button class="appearance-toggle" type="button" aria-label="Use dark appearance" aria-pressed="false"><span aria-hidden="true">☾</span><span class="appearance-label">Dark mode</span></button></nav><main id="main"><article class="blog-article"><p class="article-back"><a href="../series.html#level-4">← Guided series</a> · <a href="../blog.html">All articles</a></p><header class="page-intro"><p class="eyebrow">Lesson 4.1 · Guided learning</p><h1>App icons in 2026: Liquid Glass, Icon Composer, and generating them from SVG layers</h1></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#work-through-the-example">Work through the example</a></li>
+<li><a href="#implementation-reference">Implementation reference</a><ul>
+<li><a href="#pattern">Pattern</a></li>
+<li><a href="#make-the-layer-plan-first">Make the layer plan first</a></li>
+<li><a href="#compose-and-annotate">Compose and annotate</a></li>
+<li><a href="#integrate-with-the-app">Integrate with the app</a></li>
+<li><a href="#what-an-agent-must-report">What an agent must report</a></li>
+</ul>
+</li>
+<li><a href="#acceptance-and-failure-review">Acceptance and failure review</a></li>
+<li><a href="#evidence-and-limits">Evidence and limits</a></li>
+</ul>
+</div>
+</aside><p>Editable icon layers and a flattened PNG solve different needs. Keep the layers as source, inspect the final silhouette at small sizes and validate the catalog consumed by the app.</p>
+<figure class="lesson-diagram" aria-label="Layer sources → Composite preview → Catalog asset → Device inspection"><figcaption>Layer sources → Composite preview → Catalog asset → Device inspection</figcaption><ol><li><span class="diagram-step">1</span><span>Layer sources</span><span class="diagram-arrow" aria-hidden="true">↓</span></li><li><span class="diagram-step">2</span><span>Composite preview</span><span class="diagram-arrow" aria-hidden="true">↓</span></li><li><span class="diagram-step">3</span><span>Catalog asset</span><span class="diagram-arrow" aria-hidden="true">↓</span></li><li><span class="diagram-step">4</span><span>Device inspection</span></li></ol></figure>
+
+<h2 id="work-through-the-example">Work through the example</h2>
+<p>Separate a generated placeholder from a release icon. Review transparency, safe composition and the installed toolchain's accepted format.</p>
+<p>Start with a disposable branch and synthetic data. Write the expected outcome before changing the implementation, then keep the first failing result. This prevents a later repair from quietly redefining the task. The procedure below is grounded in the repository reference; its examples must still be checked against your project and installed toolchain.</p>
+<h2 id="implementation-reference">Implementation reference</h2>
+<p>The following focused section is adapted from the maintained project guide. It preserves the source’s examples and limitations.</p>
+<h3 id="pattern">Pattern</h3>
+<h3 id="make-the-layer-plan-first">Make the layer plan first</h3>
+<p>Define the app’s recognizable symbol and a single visual idea. Separate the background, supporting shape, primary symbol, and optional accent. Use semantic names and stable ordering. For example, a reading app can use a background fill, a book silhouette, a page mark, and a small bookmark accent; each foreground shape remains editable independently.</p>
+<p>Prefer clean vector foregrounds. Use SVG or transparent PNG assets for import, exported on the same canvas so positions remain aligned. Keep text outlined. For raster art, retain transparent backgrounds around foreground artwork. Keep imported background art opaque and full bleed. Do not rasterize all pieces into one image.</p>
+<p>A useful project handoff contains:</p>
+<pre><code class="language-text">IconLayers/
+  01-base.svg
+  02-symbol.svg
+  03-accent.svg
+  manifest.json
+  README.md
+</code></pre>
+<p>These filenames are a recommended project convention, not an Apple file-format requirement. The CLI’s <code>--xcodegen</code> starter creates editable layers as a starting point; replace their shapes and colors for the actual brand.</p>
+<h3 id="compose-and-annotate">Compose and annotate</h3>
+<p>Launch Icon Composer from Xcode’s developer tools menu or the standalone app. Start a new document, choose the supported platforms, and set its background fill. Import foreground artwork, organize it into no more than four groups, and arrange depth from back to front. Use its material controls for highlights, refraction, translucency, and shadow rather than painting those effects into every asset.</p>
+<p>Tune Default, Dark, and Mono appearances. Inspect at small sizes and against different surrounding backgrounds. Keep the silhouette recognizable when decorative detail disappears. Save the native <code>.icon</code> document, reopen it, and check that its layers and appearance settings remain editable.</p>
+<h3 id="integrate-with-the-app">Integrate with the app</h3>
+<p>Add the saved icon document to the Xcode project and associate it with the app target’s icon setting. Build with the actual SDK and inspect the installed icon. Use Apple’s asset-catalog image-stack workflow for platforms whose icon format differs, including tvOS and visionOS; do not assume the same Composer workflow applies to every platform.</p>
+<p>Export flattened images only for marketing, previews, or compatibility workflows that specifically require them. Retain the editable source and native document alongside those exports.</p>
+<h3 id="what-an-agent-must-report">What an agent must report</h3>
+<p>List the artwork files, layer ordering, appearance variants checked, native document path if created, and Xcode verification performed. If Icon Composer is unavailable, deliver the SVG/PNG layer pack plus import instructions and explicitly leave native <code>.icon</code> verification pending. Do not invent an undocumented <code>.icon</code> schema or rename a JSON file to make it appear native.</p>
+<h2 id="acceptance-and-failure-review">Acceptance and failure review</h2>
+<table>
+<thead>
+<tr>
+<th>Checkpoint</th>
+<th>What to inspect</th>
+<th>If it does not match</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Layer sources</td>
+<td>Confirm the input and environment</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+<tr>
+<td>Composite preview</td>
+<td>Inspect the intermediate artifact</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+<tr>
+<td>Catalog asset</td>
+<td>Run the focused check</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+<tr>
+<td>Device inspection</td>
+<td>Record the observed result</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+</tbody>
+</table>
+<p>Ask the agent to explain the smallest change that resolves the observed mismatch. Keep unrelated refactors out of the repair. A change that makes a warning disappear is not enough if the behavior or ownership contract has changed. Re-run the same acceptance check so the before and after results are comparable.</p>
+<h2 id="evidence-and-limits">Evidence and limits</h2>
+<p>A PNG export is not automatically a native Icon Composer bundle or App Review approval.</p>
+<p>This is an educational guide. Its presence in the series does not certify a completed client-specific lab. The <a href="../evidence/series/verification.json">series evidence record</a> separates executed checks from exercises and blocked environments.</p>
+<p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/design/icon-composer.md">Inspect the source used in this lesson</a>.</p><h2>What to do next</h2><p><a href="4.2.html">Next: Color systems that survive dark mode and high contrast, generated from tokens</a></p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

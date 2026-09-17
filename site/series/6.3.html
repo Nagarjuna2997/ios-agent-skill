@@ -1,0 +1,102 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Preparing for TestFlight: signing, builds and account boundaries — iOS Agent Skill</title><meta name="description" content="An illustrated guide to AI-assisted Swift development: Preparing for TestFlight: signing, builds and account boundaries"><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/series/6.3.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="Preparing for TestFlight: signing, builds and account boundaries"><meta property="og:description" content="An illustrated guide to AI-assisted Swift development: Preparing for TestFlight: signing, builds and account boundaries"><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/series/6.3.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css?v=fluid-series-2"><link rel="stylesheet" href="../navigation.css?v=2"><script src="../appearance.js?v=2" defer></script><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "Preparing for TestFlight: signing, builds and account boundaries", "description": "An illustrated guide to AI-assisted Swift development: Preparing for TestFlight: signing, builds and account boundaries", "url": "https://nagarjuna2997.github.io/ios-agent-skill/series/6.3.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../series.html">Guided series</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div><button class="appearance-toggle" type="button" aria-label="Use dark appearance" aria-pressed="false"><span aria-hidden="true">☾</span><span class="appearance-label">Dark mode</span></button></nav><main id="main"><article class="blog-article"><p class="article-back"><a href="../series.html#level-6">← Guided series</a> · <a href="../blog.html">All articles</a></p><header class="page-intro"><p class="eyebrow">Lesson 6.3 · Guided learning</p><h1>Preparing for TestFlight: signing, builds and account boundaries</h1></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#work-through-the-example">Work through the example</a></li>
+<li><a href="#prepare-the-distribution-handoff">Prepare the distribution handoff</a></li>
+<li><a href="#keep-a-release-handoff-record">Keep a release handoff record</a></li>
+<li><a href="#acceptance-and-failure-review">Acceptance and failure review</a></li>
+<li><a href="#prepare-without-pretending-to-upload">Prepare without pretending to upload</a></li>
+<li><a href="#evidence-and-limits">Evidence and limits</a></li>
+</ul>
+</div>
+</aside><p>TestFlight requires a real distribution workflow, account access and a signed build. An agent can help prepare artifacts, but a local simulator result does not establish signing or upload success.</p>
+<figure class="lesson-diagram" aria-label="Local acceptance → Distribution configuration → Upload build → Tester feedback"><figcaption>Local acceptance → Distribution configuration → Upload build → Tester feedback</figcaption><ol><li><span class="diagram-step">1</span><span>Local acceptance</span><span class="diagram-arrow" aria-hidden="true">↓</span></li><li><span class="diagram-step">2</span><span>Distribution configuration</span><span class="diagram-arrow" aria-hidden="true">↓</span></li><li><span class="diagram-step">3</span><span>Upload build</span><span class="diagram-arrow" aria-hidden="true">↓</span></li><li><span class="diagram-step">4</span><span>Tester feedback</span></li></ol></figure>
+
+<h2 id="work-through-the-example">Work through the example</h2>
+<p>Separate account setup from code fixes. Record archive and upload outcomes without publishing signing material.</p>
+<p>Start with a disposable branch and synthetic data. Write the expected outcome before changing the implementation, then keep the first failing result. This prevents a later repair from quietly redefining the task. The procedure below is grounded in the repository reference; its examples must still be checked against your project and installed toolchain.</p>
+<h2 id="prepare-the-distribution-handoff">Prepare the distribution handoff</h2>
+<p>This is a preparation guide. It deliberately does not present an unperformed upload as an end-to-end TestFlight tutorial.</p>
+<ol>
+<li>Record the intended app record, bundle identifier, version and build number. Make sure the identity belongs to the app you intend to distribute, rather than a sample identifier copied from a tutorial.</li>
+<li>Confirm the account has the required program access and role for the distribution action. Keep sign-in in Apple's local or web interface; do not paste credentials into an agent transcript.</li>
+<li>Run the app's acceptance suite before preparing a release artifact. Record unresolved failures separately from optional improvements.</li>
+<li>In Xcode, inspect the intended target's signing and capability settings. A simulator build that disabled signing is useful development evidence, but it is not the distribution archive.</li>
+<li>Use the distribution workflow supported by the installed Xcode and account. Inspect archive validation errors before retrying an upload; do not switch bundle identities simply to make an error disappear.</li>
+<li>After an actual upload, confirm processing in App Store Connect, complete the required beta metadata, and select the intended testing audience. Internal and external testing have different review and access steps; consult the current Apple instructions for that audience.</li>
+<li>Ask a tester to install the distributed build and repeat a small acceptance journey. A successful upload is not proof that the installed build starts correctly or uses the intended environment.</li>
+</ol>
+<h2 id="keep-a-release-handoff-record">Keep a release handoff record</h2>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>What belongs here</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Build identity</td>
+<td>App identifier, version and build number</td>
+</tr>
+<tr>
+<td>Source</td>
+<td>Commit used for the archive</td>
+</tr>
+<tr>
+<td>Validation</td>
+<td>Commands and outcomes before distribution</td>
+</tr>
+<tr>
+<td>Distribution</td>
+<td>Actual processing or validation outcome, when performed</td>
+</tr>
+<tr>
+<td>Tester check</td>
+<td>Device/runtime, observed behavior and feedback</td>
+</tr>
+<tr>
+<td>Unresolved items</td>
+<td>Explicit blockers with an owner</td>
+</tr>
+</tbody>
+</table>
+<p>Do not include signing private keys, provisioning files or account tokens in the public record. A private account operation cannot be reconstructed from a screenshot of a local simulator. The lack of distribution access is a legitimate blocker for the lab, while the preparation checklist remains useful.</p>
+<h2 id="acceptance-and-failure-review">Acceptance and failure review</h2>
+<table>
+<thead>
+<tr>
+<th>Checkpoint</th>
+<th>What to inspect</th>
+<th>If it does not match</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Local acceptance</td>
+<td>Confirm the input and environment</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+<tr>
+<td>Distribution configuration</td>
+<td>Inspect the intermediate artifact</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+<tr>
+<td>Upload build</td>
+<td>Run the focused check</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+<tr>
+<td>Tester feedback</td>
+<td>Record the observed result</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+</tbody>
+</table>
+<p>Ask the agent to explain the smallest change that resolves the observed mismatch. Keep unrelated refactors out of the repair. A change that makes a warning disappear is not enough if the behavior or ownership contract has changed. Re-run the same acceptance check so the before and after results are comparable.</p>
+<h2 id="prepare-without-pretending-to-upload">Prepare without pretending to upload</h2>
+<p>Apple’s <a href="https://developer.apple.com/testflight/">TestFlight overview</a> describes beta distribution. This lesson stops before account-specific distribution operations. Record the bundle identifier, intended audience and local acceptance results, then use the actual account’s distribution workflow. A simulator build with signing disabled cannot be uploaded as the release artifact.</p>
+<h2 id="evidence-and-limits">Evidence and limits</h2>
+<p>No TestFlight upload is authorized or performed in this series; the end-to-end lab is blocked.</p>
+<p>This is an educational guide. Its presence in the series does not certify a completed client-specific lab. The <a href="../evidence/series/verification.json">series evidence record</a> separates executed checks from exercises and blocked environments.</p>
+<p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/tooling/idea-to-app.md">Inspect the source used in this lesson</a>.</p><h2>What to do next</h2><p><a href="6.4.html">Next: Investigating App Review feedback without guessing the cause</a></p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

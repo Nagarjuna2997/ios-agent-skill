@@ -1,0 +1,43 @@
+{
+  "checkedAt": "2026-09-16",
+  "sourceCommit": "a06c710",
+  "xcode": "26.6 (17F113)",
+  "runtime": "iOS 26.5",
+  "readingList": {
+    "command": "IOS_AGENT_SIMULATOR_UDID=<available-device> python3 verify.py",
+    "unitTests": 3,
+    "uiTests": 2,
+    "failures": 0,
+    "result": "TEST SUCCEEDED",
+    "screenshots": [
+      "reading-list/add.png",
+      "reading-list/detail.png",
+      "reading-list/empty.png",
+      "reading-list/error.png",
+      "reading-list/library.png",
+      "reading-list/search-empty.png"
+    ],
+    "warning": "Metadata extraction skipped: no AppIntents.framework dependency",
+    "limitations": [
+      "Existing JSON-persistence sample; not a new agent-generated to-do app",
+      "Not SwiftData validation",
+      "Not a full VoiceOver or physical-device audit"
+    ],
+    "workingDirectory": "samples/ReadingList"
+  },
+  "mcpTests": {
+    "command": "npm test --prefix mcp-server",
+    "tests": 165,
+    "passed": 165,
+    "failed": 0,
+    "durationMs": 3205.592625
+  },
+  "blockedLabs": [
+    "Antigravity executable unavailable",
+    "Muse executable unavailable on current PATH; existing echo-provider record has narrower scope",
+    "Xcode 27-only integration requires Xcode 27",
+    "TestFlight and App Review submission not performed",
+    "Paired client app builds and benchmark not run"
+  ],
+  "credentialsIncluded": false
+}

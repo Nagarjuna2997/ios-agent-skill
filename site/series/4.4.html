@@ -1,0 +1,304 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Motion and haptics: what to ask an agent for, and what reduced-motion users need — iOS Agent Skill</title><meta name="description" content="An illustrated guide to AI-assisted Swift development: Motion and haptics: what to ask an agent for, and what reduced-motion users need"><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/series/4.4.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="Motion and haptics: what to ask an agent for, and what reduced-motion users need"><meta property="og:description" content="An illustrated guide to AI-assisted Swift development: Motion and haptics: what to ask an agent for, and what reduced-motion users need"><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/series/4.4.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css?v=fluid-series-2"><link rel="stylesheet" href="../navigation.css?v=2"><script src="../appearance.js?v=2" defer></script><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "Motion and haptics: what to ask an agent for, and what reduced-motion users need", "description": "An illustrated guide to AI-assisted Swift development: Motion and haptics: what to ask an agent for, and what reduced-motion users need", "url": "https://nagarjuna2997.github.io/ios-agent-skill/series/4.4.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../series.html">Guided series</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div><button class="appearance-toggle" type="button" aria-label="Use dark appearance" aria-pressed="false"><span aria-hidden="true">☾</span><span class="appearance-label">Dark mode</span></button></nav><main id="main"><article class="blog-article"><p class="article-back"><a href="../series.html#level-4">← Guided series</a> · <a href="../blog.html">All articles</a></p><header class="page-intro"><p class="eyebrow">Lesson 4.4 · Guided learning</p><h1>Motion and haptics: what to ask an agent for, and what reduced-motion users need</h1></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#work-through-the-example">Work through the example</a></li>
+<li><a href="#implementation-reference">Implementation reference</a><ul>
+<li><a href="#1-animation-standards">1. Animation Standards</a></li>
+<li><a href="#default-curves-and-durations">Default Curves and Durations</a></li>
+<li><a href="#when-to-use-which-animation">When to Use Which Animation</a></li>
+<li><a href="#transition-standards">Transition Standards</a></li>
+</ul>
+</li>
+<li><a href="#acceptance-and-failure-review">Acceptance and failure review</a></li>
+<li><a href="#evidence-and-limits">Evidence and limits</a></li>
+</ul>
+</div>
+</aside><p>Motion should explain a state change, and haptics should reinforce a meaningful event. Reduced-motion settings require a deliberate alternative rather than disabling unrelated feedback.</p>
+<figure class="lesson-diagram" aria-label="User action → State change → Motion preference → Appropriate feedback"><figcaption>User action → State change → Motion preference → Appropriate feedback</figcaption><ol><li><span class="diagram-step">1</span><span>User action</span><span class="diagram-arrow" aria-hidden="true">↓</span></li><li><span class="diagram-step">2</span><span>State change</span><span class="diagram-arrow" aria-hidden="true">↓</span></li><li><span class="diagram-step">3</span><span>Motion preference</span><span class="diagram-arrow" aria-hidden="true">↓</span></li><li><span class="diagram-step">4</span><span>Appropriate feedback</span></li></ol></figure>
+
+<h2 id="work-through-the-example">Work through the example</h2>
+<p>Compare the same interaction with reduced motion enabled. Preserve the result and focus order even if the transition changes.</p>
+<p>Start with a disposable branch and synthetic data. Write the expected outcome before changing the implementation, then keep the first failing result. This prevents a later repair from quietly redefining the task. The procedure below is grounded in the repository reference; its examples must still be checked against your project and installed toolchain.</p>
+<h2 id="implementation-reference">Implementation reference</h2>
+<p>The following focused section is adapted from the maintained project guide. It preserves the source’s examples and limitations.</p>
+<h3 id="1-animation-standards">1. Animation Standards</h3>
+<h3 id="default-curves-and-durations">Default Curves and Durations</h3>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Duration</th>
+<th>Curve</th>
+<th>Usage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Micro interaction</td>
+<td>0.2s</td>
+<td><code>.easeOut</code></td>
+<td>Toggles, button presses, icon changes</td>
+</tr>
+<tr>
+<td>Navigation transition</td>
+<td>0.35s</td>
+<td><code>.spring(response: 0.35, dampingFraction: 0.85)</code></td>
+<td>Push, pop, tab switches</td>
+</tr>
+<tr>
+<td>Content loading</td>
+<td>0.3s</td>
+<td><code>.easeInOut</code></td>
+<td>Skeleton to content, fade-in</td>
+</tr>
+<tr>
+<td>Dismissal</td>
+<td>0.25s</td>
+<td><code>.easeIn</code></td>
+<td>Sheet dismiss, alert close, toast exit</td>
+</tr>
+<tr>
+<td>Bouncy spring</td>
+<td>--</td>
+<td><code>.bouncy</code></td>
+<td>Playful UI: reactions, badges, celebrations</td>
+</tr>
+<tr>
+<td>Snappy spring</td>
+<td>--</td>
+<td><code>.snappy</code></td>
+<td>Responsive controls: sliders, toggles</td>
+</tr>
+<tr>
+<td>Smooth spring</td>
+<td>--</td>
+<td><code>.smooth</code></td>
+<td>Elegant reveals: cards, overlays</td>
+</tr>
+</tbody>
+</table>
+<h3 id="when-to-use-which-animation">When to Use Which Animation</h3>
+<table>
+<thead>
+<tr>
+<th>Use Case</th>
+<th>Animation</th>
+<th>Rationale</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Button tap feedback</td>
+<td><code>.easeOut, 0.2s</code></td>
+<td>Quick acknowledgment, no lingering</td>
+</tr>
+<tr>
+<td>Toggle switch</td>
+<td><code>.snappy</code></td>
+<td>Responsive mechanical feel</td>
+</tr>
+<tr>
+<td>Card expand/collapse</td>
+<td><code>.spring(response: 0.35, dampingFraction: 0.85)</code></td>
+<td>Natural, physical motion</td>
+</tr>
+<tr>
+<td>Pull-to-refresh</td>
+<td><code>.bouncy</code></td>
+<td>Playful rubber-band feel</td>
+</tr>
+<tr>
+<td>Modal presentation</td>
+<td><code>.smooth</code></td>
+<td>Elegant, unhurried entrance</td>
+</tr>
+<tr>
+<td>Error shake</td>
+<td><code>.default.repeatCount(3)</code></td>
+<td>Attention-grabbing without being jarring</td>
+</tr>
+<tr>
+<td>Skeleton shimmer</td>
+<td><code>.easeInOut, 1.2s, repeat</code></td>
+<td>Smooth continuous loop</td>
+</tr>
+<tr>
+<td>Item deletion</td>
+<td><code>.easeIn, 0.25s</code></td>
+<td>Quick exit, attention moves forward</td>
+</tr>
+<tr>
+<td>List reorder</td>
+<td><code>.snappy</code></td>
+<td>Keeps up with the finger</td>
+</tr>
+<tr>
+<td>Hero transition</td>
+<td><code>matchedGeometryEffect</code></td>
+<td>Spatial continuity between screens</td>
+</tr>
+</tbody>
+</table>
+<h3 id="transition-standards">Transition Standards</h3>
+<pre><code class="language-swift">// MARK: - Sheet Presentation (use system default)
+.sheet(isPresented: $showSettings) {
+    SettingsView()
+}
+
+// MARK: - Full Screen Cover with Custom Transition
+.fullScreenCover(isPresented: $showOnboarding) {
+    OnboardingView()
+        .transition(.opacity.combined(with: .move(edge: .bottom)))
+}
+
+// MARK: - Navigation Push (system default)
+NavigationStack {
+    List(items) { item in
+        NavigationLink(value: item) {
+            ItemRow(item: item)
+        }
+    }
+    .navigationDestination(for: Item.self) { item in
+        ItemDetailView(item: item)
+    }
+}
+
+// MARK: - Hero Transition with matchedGeometryEffect
+struct HeroTransitionExample: View {
+    @Namespace private var heroNamespace
+    @State private var isExpanded = false
+
+    var body: some View {
+        if isExpanded {
+            DetailCard(namespace: heroNamespace)
+                .onTapGesture {
+                    withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                        isExpanded = false
+                    }
+                }
+        } else {
+            ThumbnailCard(namespace: heroNamespace)
+                .onTapGesture {
+                    withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                        isExpanded = true
+                    }
+                }
+        }
+    }
+}
+
+struct ThumbnailCard: View {
+    var namespace: Namespace.ID
+
+    var body: some View {
+        RoundedRectangle(cornerRadius: 12)
+            .fill(.blue.gradient)
+            .matchedGeometryEffect(id: &quot;card&quot;, in: namespace)
+            .frame(width: 120, height: 120)
+            .overlay {
+                Text(&quot;Tap&quot;)
+                    .matchedGeometryEffect(id: &quot;title&quot;, in: namespace)
+            }
+    }
+}
+
+struct DetailCard: View {
+    var namespace: Namespace.ID
+
+    var body: some View {
+        RoundedRectangle(cornerRadius: 24)
+            .fill(.blue.gradient)
+            .matchedGeometryEffect(id: &quot;card&quot;, in: namespace)
+            .frame(maxWidth: .infinity, maxHeight: 400)
+            .overlay {
+                Text(&quot;Detail View&quot;)
+                    .matchedGeometryEffect(id: &quot;title&quot;, in: namespace)
+            }
+            .padding()
+    }
+}
+
+// MARK: - Custom Asymmetric Transition
+extension AnyTransition {
+    static var slideAndFade: AnyTransition {
+        .asymmetric(
+            insertion: .move(edge: .trailing).combined(with: .opacity),
+            removal: .move(edge: .leading).combined(with: .opacity)
+        )
+    }
+}
+
+// Usage:
+struct CustomTransitionExample: View {
+    @State private var showContent = false
+
+    var body: some View {
+        VStack {
+            if showContent {
+                ContentView()
+                    .transition(.slideAndFade)
+            }
+            Button(&quot;Toggle&quot;) {
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    showContent.toggle()
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Phased Animation for Multi-Step Effects
+struct PhasedAnimationExample: View {
+    @State private var trigger = false
+
+    var body: some View {
+        Image(systemName: &quot;bell.fill&quot;)
+            .font(.system(size: 32))
+            .phaseAnimator([false, true], trigger: trigger) { content, phase in
+                content
+                    .scaleEffect(phase ? 1.2 : 1.0)
+                    .rotationEffect(.degrees(phase ? 15 : 0))
+            } animation: { phase in
+                phase ? .bouncy : .snappy
+            }
+            .onTapGesture { trigger.toggle() }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="acceptance-and-failure-review">Acceptance and failure review</h2>
+<table>
+<thead>
+<tr>
+<th>Checkpoint</th>
+<th>What to inspect</th>
+<th>If it does not match</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>User action</td>
+<td>Confirm the input and environment</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+<tr>
+<td>State change</td>
+<td>Inspect the intermediate artifact</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+<tr>
+<td>Motion preference</td>
+<td>Run the focused check</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+<tr>
+<td>Appropriate feedback</td>
+<td>Record the observed result</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+</tbody>
+</table>
+<p>Ask the agent to explain the smallest change that resolves the observed mismatch. Keep unrelated refactors out of the repair. A change that makes a warning disappear is not enough if the behavior or ownership contract has changed. Re-run the same acceptance check so the before and after results are comparable.</p>
+<h2 id="evidence-and-limits">Evidence and limits</h2>
+<p>No physical-device haptic evaluation is included in the simulator baseline.</p>
+<p>This is an educational guide. Its presence in the series does not certify a completed client-specific lab. The <a href="../evidence/series/verification.json">series evidence record</a> separates executed checks from exercises and blocked environments.</p>
+<p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/design/interaction-standards.md">Inspect the source used in this lesson</a>.</p><h2>What to do next</h2><p><a href="4.5.html">Next: Making an agent-built app look intentional, not templated</a></p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

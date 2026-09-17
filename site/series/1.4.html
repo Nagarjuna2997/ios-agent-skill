@@ -1,0 +1,118 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Prepare a Muse app-building trial beyond tool discovery — iOS Agent Skill</title><meta name="description" content="An illustrated guide to AI-assisted Swift development: Prepare a Muse app-building trial beyond tool discovery"><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/series/1.4.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="Prepare a Muse app-building trial beyond tool discovery"><meta property="og:description" content="An illustrated guide to AI-assisted Swift development: Prepare a Muse app-building trial beyond tool discovery"><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/series/1.4.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css?v=fluid-series-2"><link rel="stylesheet" href="../navigation.css?v=2"><script src="../appearance.js?v=2" defer></script><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "Prepare a Muse app-building trial beyond tool discovery", "description": "An illustrated guide to AI-assisted Swift development: Prepare a Muse app-building trial beyond tool discovery", "url": "https://nagarjuna2997.github.io/ios-agent-skill/series/1.4.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../series.html">Guided series</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div><button class="appearance-toggle" type="button" aria-label="Use dark appearance" aria-pressed="false"><span aria-hidden="true">☾</span><span class="appearance-label">Dark mode</span></button></nav><main id="main"><article class="blog-article"><p class="article-back"><a href="../series.html#level-1">← Guided series</a> · <a href="../blog.html">All articles</a></p><header class="page-intro"><p class="eyebrow">Lesson 1.4 · Guided learning</p><h1>Prepare a Muse app-building trial beyond tool discovery</h1></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#work-through-the-example">Work through the example</a></li>
+<li><a href="#implementation-reference">Implementation reference</a><ul>
+<li><a href="#muse-code">Muse Code</a></li>
+<li><a href="#verified-compatibility-2026-09-16">Verified compatibility, 2026-09-16</a></li>
+<li><a href="#recheck-on-upgrades">Recheck on upgrades</a></li>
+</ul>
+</li>
+<li><a href="#acceptance-and-failure-review">Acceptance and failure review</a></li>
+<li><a href="#evidence-and-limits">Evidence and limits</a></li>
+</ul>
+</div>
+</aside><p>Muse tool discovery and a model-driven build are separate milestones. The existing echo-provider record proves a connection and a Stop hook, not that Muse wrote or repaired the same to-do app.</p>
+<figure class="lesson-diagram" aria-label="Installed executable → MCP discovery → Model task → Independent checks"><figcaption>Installed executable → MCP discovery → Model task → Independent checks</figcaption><ol><li><span class="diagram-step">1</span><span>Installed executable</span><span class="diagram-arrow" aria-hidden="true">↓</span></li><li><span class="diagram-step">2</span><span>MCP discovery</span><span class="diagram-arrow" aria-hidden="true">↓</span></li><li><span class="diagram-step">3</span><span>Model task</span><span class="diagram-arrow" aria-hidden="true">↓</span></li><li><span class="diagram-step">4</span><span>Independent checks</span></li></ol></figure>
+
+<h2 id="work-through-the-example">Work through the example</h2>
+<p>Read the bounded connection record before attempting edits. Keep sandbox configuration errors separate from compiler diagnostics.</p>
+<p>Start with a disposable branch and synthetic data. Write the expected outcome before changing the implementation, then keep the first failing result. This prevents a later repair from quietly redefining the task. The procedure below is grounded in the repository reference; its examples must still be checked against your project and installed toolchain.</p>
+<h2 id="implementation-reference">Implementation reference</h2>
+<p>The following focused section is adapted from the maintained project guide. It preserves the source’s examples and limitations.</p>
+<h3 id="muse-code">Muse Code</h3>
+<p>Muse Code joins Claude, Codex and Gemini CLI through the same unified local MCP
+server. No separate server package, plugin ZIP or <code>MUSE.md</code> is needed.</p>
+<p>Install the server outside the agent sandbox, using Node.js 20 or later:</p>
+<pre><code class="language-sh">npm install -g ios-agent-mcp@latest
+</code></pre>
+<p>Merge this into <code>~/.config/muse/settings.json</code>; preserve your other settings and
+existing server entries. Do not replace the whole file. <code>schema_version</code> is required.</p>
+<pre><code class="language-json">{
+  &quot;schema_version&quot;: 1,
+  &quot;mcpServers&quot;: {
+    &quot;ios-agent&quot;: {
+      &quot;command&quot;: &quot;ios-agent-mcp&quot;,
+      &quot;args&quot;: []
+    }
+  }
+}
+</code></pre>
+<p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/templates/clients/muse-settings.json">Copyable template</a> · <a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/templates/clients/muse-settings.md">Settings-key verification note</a> · <a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/templates/hooks/README.md#muse-code">Hook verification scope</a>. If Muse cannot find
+the command, use the absolute executable path printed by <code>command -v ios-agent-mcp</code>.
+Restart Muse after updating settings. This avoids fetching a package inside Muse's
+default proxy-only sandbox. It does not disable sandboxing or grant network access.</p>
+<p>For local instructions, use the repository's <code>AGENTS.md</code>. For skill discovery,
+keep the original frontmatter-bearing <code>SKILL.md</code> under your project's
+project-local .claude/skills/ios-agent-skill folder with its companion references. Do not rename the
+frontmatter-stripped <code>AGENTS.md</code> to <code>SKILL.md</code>. Trust only workspaces you recognize.</p>
+<h3 id="verified-compatibility-2026-09-16">Verified compatibility, 2026-09-16</h3>
+<p>Muse Code <strong>1.3.0 (1.3.0-R3233.1)</strong> connected to the published <strong>ios-agent-mcp 2.7.0</strong>
+using stdio and discovered <strong>36 tools</strong>, including reviews, local references,
+<code>create_app</code> and simulator tools. Initialization and tool discovery used the actual
+Muse executable with its local <code>echo</code> provider. No account credentials or model
+request were needed. <code>muse init</code> and discovery of the repository's Claude-format
+skill were separately verified earlier.</p>
+<p>A command-based <strong>Stop hook executed</strong> in an isolated test. The
+<a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/templates/hooks/muse-settings.json">optional maintainer hook template</a> runs
+this repository's existing verification script. It is for sessions rooted in this
+repository only: confirm the working directory before enabling it. Do not copy it
+into an unrelated user's app or apply it globally across projects. Hook commands
+execute shell code, so inspect commands before merging them into your settings.</p>
+<p><strong>Not verified:</strong> model-directed tool invocation, PreToolUse/PostToolUse ports,
+verification observer behavior, sandboxed simulator operations and end-to-end
+app creation by Muse. Tool discovery is not evidence that a model completed an app.
+No observer toggle or privacy/pricing-tier claim is supplied without verification.</p>
+<p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/examples/client-verification/muse-1.3.0.json">Recorded verification result</a>.
+The harness asserts four representative tools and records the complete discovered
+catalog and installed server package version.</p>
+<h3 id="recheck-on-upgrades">Recheck on upgrades</h3>
+<p>From this repository, with Muse and the MCP package already installed:</p>
+<pre><code class="language-sh">node scripts/verify-muse.mjs /absolute/path/to/muse /absolute/path/to/ios-agent-mcp/dist/unified.js
+</code></pre>
+<p>This uses temporary configuration, disables foreign personal context, and checks
+MCP discovery plus a Stop hook without a model call. It prints versioned JSON
+results and removes the temporary files. It does not edit your Muse settings.
+Rerun it when either client or server changes; record model-based checks separately.
+Updating npm's <code>@latest</code> does not automatically upgrade an existing global install:
+rerun <code>npm install -g ios-agent-mcp@latest</code> when choosing to upgrade.</p>
+<p>Official sources: <a href="https://research.meta.ai/blog/introducing-muse-code-and-muse-spark-1-2">Meta announcement</a>,
+<a href="https://dev.meta.ai/docs/muse-code/configuration">configuration</a>, and
+<a href="https://dev.meta.ai/docs/muse-code/extending">extensions</a>. The latter documentation
+requires sign-in; the compatibility claims above come from executable tests.</p>
+<h2 id="acceptance-and-failure-review">Acceptance and failure review</h2>
+<table>
+<thead>
+<tr>
+<th>Checkpoint</th>
+<th>What to inspect</th>
+<th>If it does not match</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Installed executable</td>
+<td>Confirm the input and environment</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+<tr>
+<td>MCP discovery</td>
+<td>Inspect the intermediate artifact</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+<tr>
+<td>Model task</td>
+<td>Run the focused check</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+<tr>
+<td>Independent checks</td>
+<td>Record the observed result</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+</tbody>
+</table>
+<p>Ask the agent to explain the smallest change that resolves the observed mismatch. Keep unrelated refactors out of the repair. A change that makes a warning disappear is not enough if the behavior or ownership contract has changed. Re-run the same acceptance check so the before and after results are comparable.</p>
+<h2 id="evidence-and-limits">Evidence and limits</h2>
+<p>Muse is not on the current PATH, and the existing echo test cannot stand in for the requested app run.</p>
+<p>This is an educational guide. Its presence in the series does not certify a completed client-specific lab. The <a href="../evidence/series/verification.json">series evidence record</a> separates executed checks from exercises and blocked environments.</p>
+<p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/mcp/installation.md">Inspect the source used in this lesson</a>.</p><h2>What to do next</h2><p><a href="1.5.html">Next: Writing an app brief an agent can build from: ten practice briefs</a></p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

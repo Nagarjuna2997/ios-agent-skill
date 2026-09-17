@@ -1,0 +1,116 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Memory: retain cycles agents create in closures and Combine — iOS Agent Skill</title><meta name="description" content="An illustrated guide to AI-assisted Swift development: Memory: retain cycles agents create in closures and Combine"><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/series/5.5.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="Memory: retain cycles agents create in closures and Combine"><meta property="og:description" content="An illustrated guide to AI-assisted Swift development: Memory: retain cycles agents create in closures and Combine"><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/series/5.5.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css?v=fluid-series-2"><link rel="stylesheet" href="../navigation.css?v=2"><script src="../appearance.js?v=2" defer></script><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "Memory: retain cycles agents create in closures and Combine", "description": "An illustrated guide to AI-assisted Swift development: Memory: retain cycles agents create in closures and Combine", "url": "https://nagarjuna2997.github.io/ios-agent-skill/series/5.5.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../series.html">Guided series</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div><button class="appearance-toggle" type="button" aria-label="Use dark appearance" aria-pressed="false"><span aria-hidden="true">☾</span><span class="appearance-label">Dark mode</span></button></nav><main id="main"><article class="blog-article"><p class="article-back"><a href="../series.html#level-5">← Guided series</a> · <a href="../blog.html">All articles</a></p><header class="page-intro"><p class="eyebrow">Lesson 5.5 · Guided learning</p><h1>Memory: retain cycles agents create in closures and Combine</h1></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#work-through-the-example">Work through the example</a></li>
+<li><a href="#implementation-reference">Implementation reference</a><ul>
+<li><a href="#common-retain-cycle-shapes">Common retain-cycle shapes</a></li>
+</ul>
+</li>
+<li><a href="#acceptance-and-failure-review">Acceptance and failure review</a></li>
+<li><a href="#evidence-and-limits">Evidence and limits</a></li>
+</ul>
+</div>
+</aside><p>A retain cycle is an ownership graph that cannot release itself. Weak references are useful only when they match the desired lifetime; adding weak everywhere can hide missing ownership.</p>
+<figure class="lesson-diagram" aria-label="Owner → Stored closure or subscription → Captured owner → Break intended edge"><figcaption>Owner → Stored closure or subscription → Captured owner → Break intended edge</figcaption><ol><li><span class="diagram-step">1</span><span>Owner</span><span class="diagram-arrow" aria-hidden="true">↓</span></li><li><span class="diagram-step">2</span><span>Stored closure or subscription</span><span class="diagram-arrow" aria-hidden="true">↓</span></li><li><span class="diagram-step">3</span><span>Captured owner</span><span class="diagram-arrow" aria-hidden="true">↓</span></li><li><span class="diagram-step">4</span><span>Break intended edge</span></li></ol></figure>
+
+<h2 id="work-through-the-example">Work through the example</h2>
+<p>Draw the ownership graph before changing a capture list. Confirm deallocation after the screen or task ends.</p>
+<p>Start with a disposable branch and synthetic data. Write the expected outcome before changing the implementation, then keep the first failing result. This prevents a later repair from quietly redefining the task. The procedure below is grounded in the repository reference; its examples must still be checked against your project and installed toolchain.</p>
+<h2 id="implementation-reference">Implementation reference</h2>
+<p>The following focused section is adapted from the maintained project guide. It preserves the source’s examples and limitations.</p>
+<h3 id="common-retain-cycle-shapes">Common retain-cycle shapes</h3>
+<p>Delegate cycles:</p>
+<pre><code class="language-swift">protocol PlayerCoordinatorDelegate: AnyObject {
+    func playerDidFinish()
+}
+
+final class PlayerCoordinator {
+    weak var delegate: PlayerCoordinatorDelegate?
+}
+</code></pre>
+<p>Closure cycles:</p>
+<pre><code class="language-swift">final class Loader {
+    private var onComplete: (() -&gt; Void)?
+
+    func start() {
+        onComplete = { [weak self] in
+            self?.finish()
+        }
+    }
+
+    private func finish() {}
+}
+</code></pre>
+<p>Timer cycles:</p>
+<pre><code class="language-swift">final class Poller {
+    private var timer: Timer?
+
+    func start() {
+        timer = Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { [weak self] _ in
+            self?.tick()
+        }
+    }
+
+    func stop() {
+        timer?.invalidate()
+        timer = nil
+    }
+
+    deinit {
+        timer?.invalidate()
+    }
+
+    private func tick() {}
+}
+</code></pre>
+<p>Combine cycles:</p>
+<pre><code class="language-swift">final class SearchModel {
+    private var cancellables = Set&lt;AnyCancellable&gt;()
+
+    func bind(_ publisher: AnyPublisher&lt;String, Never&gt;) {
+        publisher
+            .sink { [weak self] query in
+                self?.runSearch(query)
+            }
+            .store(in: &amp;cancellables)
+    }
+
+    private func runSearch(_ query: String) {}
+}
+</code></pre>
+<h2 id="acceptance-and-failure-review">Acceptance and failure review</h2>
+<table>
+<thead>
+<tr>
+<th>Checkpoint</th>
+<th>What to inspect</th>
+<th>If it does not match</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Owner</td>
+<td>Confirm the input and environment</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+<tr>
+<td>Stored closure or subscription</td>
+<td>Inspect the intermediate artifact</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+<tr>
+<td>Captured owner</td>
+<td>Run the focused check</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+<tr>
+<td>Break intended edge</td>
+<td>Record the observed result</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+</tbody>
+</table>
+<p>Ask the agent to explain the smallest change that resolves the observed mismatch. Keep unrelated refactors out of the repair. A change that makes a warning disappear is not enough if the behavior or ownership contract has changed. Re-run the same acceptance check so the before and after results are comparable.</p>
+<h2 id="evidence-and-limits">Evidence and limits</h2>
+<p>Static review findings require runtime confirmation when lifetime depends on navigation or cancellation.</p>
+<p>This is an educational guide. Its presence in the series does not certify a completed client-specific lab. The <a href="../evidence/series/verification.json">series evidence record</a> separates executed checks from exercises and blocked environments.</p>
+<p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/swift/memory-lifetime.md">Inspect the source used in this lesson</a>.</p><h2>What to do next</h2><p><a href="5.6.html">Next: Security review of an agent-built app: keychain, ATS, secrets in source</a></p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

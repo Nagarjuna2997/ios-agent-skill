@@ -1,0 +1,102 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Git for vibe coders: branches per prompt, checkpoints, and undoing an agent&#x27;s mess — iOS Agent Skill</title><meta name="description" content="An illustrated guide to AI-assisted Swift development: Git for vibe coders: branches per prompt, checkpoints, and undoing an agent&#x27;s mess"><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/series/2.5.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="Git for vibe coders: branches per prompt, checkpoints, and undoing an agent&#x27;s mess"><meta property="og:description" content="An illustrated guide to AI-assisted Swift development: Git for vibe coders: branches per prompt, checkpoints, and undoing an agent&#x27;s mess"><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/series/2.5.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css?v=fluid-series-2"><link rel="stylesheet" href="../navigation.css?v=2"><script src="../appearance.js?v=2" defer></script><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "Git for vibe coders: branches per prompt, checkpoints, and undoing an agent's mess", "description": "An illustrated guide to AI-assisted Swift development: Git for vibe coders: branches per prompt, checkpoints, and undoing an agent's mess", "url": "https://nagarjuna2997.github.io/ios-agent-skill/series/2.5.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../series.html">Guided series</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div><button class="appearance-toggle" type="button" aria-label="Use dark appearance" aria-pressed="false"><span aria-hidden="true">☾</span><span class="appearance-label">Dark mode</span></button></nav><main id="main"><article class="blog-article"><p class="article-back"><a href="../series.html#level-2">← Guided series</a> · <a href="../blog.html">All articles</a></p><header class="page-intro"><p class="eyebrow">Lesson 2.5 · Guided learning</p><h1>Git for vibe coders: branches per prompt, checkpoints, and undoing an agent&#x27;s mess</h1></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#work-through-the-example">Work through the example</a></li>
+<li><a href="#implementation-reference">Implementation reference</a><ul>
+<li><a href="#2-batch-many-isolated-changes">2. /batch — many isolated changes</a></li>
+<li><a href="#making-a-batch-succeed">Making a batch succeed</a></li>
+<li><a href="#worktrees">Worktrees</a></li>
+</ul>
+</li>
+<li><a href="#acceptance-and-failure-review">Acceptance and failure review</a></li>
+<li><a href="#evidence-and-limits">Evidence and limits</a></li>
+</ul>
+</div>
+</aside><p>A checkpoint gives you a known state to compare and recover. A branch labels a line of work; a worktree gives another checkout. Neither automatically isolates simulator data or external resources.</p>
+<figure class="lesson-diagram" aria-label="Clean baseline → New branch or worktree → Small reviewed change → Test then integrate"><figcaption>Clean baseline → New branch or worktree → Small reviewed change → Test then integrate</figcaption><ol><li><span class="diagram-step">1</span><span>Clean baseline</span><span class="diagram-arrow" aria-hidden="true">↓</span></li><li><span class="diagram-step">2</span><span>New branch or worktree</span><span class="diagram-arrow" aria-hidden="true">↓</span></li><li><span class="diagram-step">3</span><span>Small reviewed change</span><span class="diagram-arrow" aria-hidden="true">↓</span></li><li><span class="diagram-step">4</span><span>Test then integrate</span></li></ol></figure>
+
+<h2 id="work-through-the-example">Work through the example</h2>
+<p>Inspect git status before asking an agent to edit. Commit coherent work, and review untracked files before switching tasks.</p>
+<p>Start with a disposable branch and synthetic data. Write the expected outcome before changing the implementation, then keep the first failing result. This prevents a later repair from quietly redefining the task. The procedure below is grounded in the repository reference; its examples must still be checked against your project and installed toolchain.</p>
+<h2 id="implementation-reference">Implementation reference</h2>
+<p>The following focused section is adapted from the maintained project guide. It preserves the source’s examples and limitations.</p>
+<h3 id="2-batch-many-isolated-changes">2. <code>/batch</code> — many isolated changes</h3>
+<p><code>/batch</code> is a packaged use of subagents plus <strong>git worktrees</strong>, aimed at roughly
+5–30 isolated changes that each become their own PR. Each unit gets a fresh
+subagent working in its own worktree, so the changes cannot collide on disk.</p>
+<p>Good fits:</p>
+<ul>
+<li>Apply one mechanical rule across many modules — "add <code>@MainActor</code> to every
+  view model", "replace literal spacing with <code>Space.*</code> tokens".</li>
+<li>Fix the same class of bug in many independent places.</li>
+<li>Bump a dependency across several packages.</li>
+<li>Migrate N files to a new API where each file stands alone.</li>
+</ul>
+<p>Bad fits:</p>
+<ul>
+<li><strong>Units that share files.</strong> Two workers editing <code>AppDelegate.swift</code> will
+  produce conflicting PRs.</li>
+<li><strong>Units with ordering constraints.</strong> Batch has no dependency graph.</li>
+<li><strong>Exploratory work.</strong> Batch executes a known change; it does not decide what
+  the change should be. Plan first (<code>ios-plan</code>), then batch.</li>
+<li><strong>One large refactor.</strong> That is one PR, not thirty.</li>
+</ul>
+<h3 id="making-a-batch-succeed">Making a batch succeed</h3>
+<p>The per-unit prompt must be <strong>complete and self-contained</strong> — each worker starts
+cold and cannot see the others.</p>
+<pre><code>For &lt;module&gt;:
+  goal:     every @Observable type the UI renders is @MainActor final class
+  scope:    only files under &lt;module&gt;/ — do not touch shared/ or Package.swift
+  rules:    behavior must not change; add nothing but the isolation annotations
+  verify:   swift build &amp;&amp; swift test --filter &lt;module&gt;
+  report:   the diff, plus the real output of the verify command
+  if the module has no such types: report &quot;no change needed&quot; and stop
+</code></pre>
+<p>That last line matters. Without an explicit no-op path, workers invent work to
+justify their existence.</p>
+<h3 id="worktrees">Worktrees</h3>
+<p>Each unit gets its own working copy, so parallel writes are safe:</p>
+<pre><code class="language-bash">git worktree add ../wt-cart -b batch/cart-mainactor
+git worktree add ../wt-orders -b batch/orders-mainactor
+### … worker per worktree …
+git worktree remove ../wt-cart
+</code></pre>
+<p>Isolation is the whole point. Without it, parallel writers corrupt each other's
+work in ways that are extremely hard to diagnose after the fact.</p>
+<hr />
+<h2 id="acceptance-and-failure-review">Acceptance and failure review</h2>
+<table>
+<thead>
+<tr>
+<th>Checkpoint</th>
+<th>What to inspect</th>
+<th>If it does not match</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Clean baseline</td>
+<td>Confirm the input and environment</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+<tr>
+<td>New branch or worktree</td>
+<td>Inspect the intermediate artifact</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+<tr>
+<td>Small reviewed change</td>
+<td>Run the focused check</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+<tr>
+<td>Test then integrate</td>
+<td>Record the observed result</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+</tbody>
+</table>
+<p>Ask the agent to explain the smallest change that resolves the observed mismatch. Keep unrelated refactors out of the repair. A change that makes a warning disappear is not enough if the behavior or ownership contract has changed. Re-run the same acceptance check so the before and after results are comparable.</p>
+<h2 id="evidence-and-limits">Evidence and limits</h2>
+<p>The workflow is source guidance; a four-client isolation experiment is not claimed.</p>
+<p>This is an educational guide. Its presence in the series does not certify a completed client-specific lab. The <a href="../evidence/series/verification.json">series evidence record</a> separates executed checks from exercises and blocked environments.</p>
+<p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/orchestration/dynamic-workflows.md">Inspect the source used in this lesson</a>.</p><h2>What to do next</h2><p><a href="2.6.html">Next: Keeping the agent inside your design: tokens, no hardcoded colors, no fixed fonts</a></p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>

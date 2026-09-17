@@ -1,0 +1,860 @@
+{
+  "1.1": {
+    "label": "Empty task list \u2192 Add valid title \u2192 Save locally \u2192 Relaunch and verify",
+    "nodes": [
+      "Empty task list",
+      "Add valid title",
+      "Save locally",
+      "Relaunch and verify"
+    ],
+    "source": "docs/tooling/app-building-loop.md",
+    "verification": "A timed Claude to-do app run has not been completed. The Reading List run is a separate reference, not this experiment."
+  },
+  "1.2": {
+    "label": "Same starting commit \u2192 Same task brief \u2192 Independent test run \u2192 Compare differences",
+    "nodes": [
+      "Same starting commit",
+      "Same task brief",
+      "Independent test run",
+      "Compare differences"
+    ],
+    "source": "benchmarks/README.md",
+    "verification": "No paired to-do app run or cost comparison is available; do not infer a winning client."
+  },
+  "1.3": {
+    "label": "Check executable \u2192 Verify authentication \u2192 Discover local tools \u2192 Run shared contract",
+    "nodes": [
+      "Check executable",
+      "Verify authentication",
+      "Discover local tools",
+      "Run shared contract"
+    ],
+    "source": "docs/orchestration/verification.md",
+    "verification": "Antigravity is not installed in this environment. Its app-building tutorial is blocked; no commands or behavior are invented here."
+  },
+  "1.4": {
+    "label": "Installed executable \u2192 MCP discovery \u2192 Model task \u2192 Independent checks",
+    "nodes": [
+      "Installed executable",
+      "MCP discovery",
+      "Model task",
+      "Independent checks"
+    ],
+    "source": "docs/mcp/installation.md",
+    "verification": "Muse is not on the current PATH, and the existing echo test cannot stand in for the requested app run."
+  },
+  "1.5": {
+    "label": "User goal \u2192 Observable behavior \u2192 Data and failure states \u2192 Acceptance criteria",
+    "nodes": [
+      "User goal",
+      "Observable behavior",
+      "Data and failure states",
+      "Acceptance criteria"
+    ],
+    "source": "docs/tooling/app-description-workflow.md",
+    "verification": "The example briefs are editorial exercises; they are not ten recorded model-generated plans."
+  },
+  "1.6": {
+    "label": "Description \u2192 Project specification \u2192 Generated project \u2192 Build scheme",
+    "nodes": [
+      "Description",
+      "Project specification",
+      "Generated project",
+      "Build scheme"
+    ],
+    "source": "docs/tooling/project-scaffolding.md",
+    "verification": "XcodeGen is not on the current PATH; the checked-in project builds without regeneration."
+  },
+  "1.7": {
+    "label": "Find available device \u2192 Boot runtime \u2192 Install and launch \u2192 Capture intended state",
+    "nodes": [
+      "Find available device",
+      "Boot runtime",
+      "Install and launch",
+      "Capture intended state"
+    ],
+    "source": "docs/tooling/ios-simulator-mcp.md",
+    "verification": "A real baseline build, installation, launch and screenshot are recorded; this is not a newly generated to-do app."
+  },
+  "1.8": {
+    "label": "Reproduce command \u2192 Identify first error \u2192 Patch one cause \u2192 Repeat same check",
+    "nodes": [
+      "Reproduce command",
+      "Identify first error",
+      "Patch one cause",
+      "Repeat same check"
+    ],
+    "source": "docs/tooling/app-building-loop.md",
+    "verification": "The diagnostic exercises are examples, not a measured ranking of the ten most common errors."
+  },
+  "2.1": {
+    "label": "Inspect build settings \u2192 Locate isolation boundary \u2192 Apply minimal correction \u2192 Compile and exercise",
+    "nodes": [
+      "Inspect build settings",
+      "Locate isolation boundary",
+      "Apply minimal correction",
+      "Compile and exercise"
+    ],
+    "source": "docs/swift/swift-concurrency.md",
+    "verification": "The local concurrency fixture has recorded static before/after findings; it is not proof that one setting fixes every migration."
+  },
+  "2.2": {
+    "label": "Tool event \u2192 Hook handler \u2192 Exit status \u2192 Continue or stop",
+    "nodes": [
+      "Tool event",
+      "Hook handler",
+      "Exit status",
+      "Continue or stop"
+    ],
+    "source": "docs/orchestration/hooks.md",
+    "verification": "Claude script-level checks and Muse Stop discovery have different scopes. Full cross-client enforcement remains unverified."
+  },
+  "2.3": {
+    "label": "Choose state \u2192 Navigate deterministically \u2192 Capture screen \u2192 Compare criterion",
+    "nodes": [
+      "Choose state",
+      "Navigate deterministically",
+      "Capture screen",
+      "Compare criterion"
+    ],
+    "source": "docs/tooling/visual-iteration-loop.md",
+    "verification": "The baseline screenshot proves an empty screen was visible; it does not prove persistence or VoiceOver navigation."
+  },
+  "2.4": {
+    "label": "Inspect scope \u2192 Review risky boundaries \u2192 Run focused checks \u2192 Accept or revise",
+    "nodes": [
+      "Inspect scope",
+      "Review risky boundaries",
+      "Run focused checks",
+      "Accept or revise"
+    ],
+    "source": "docs/orchestration/verification.md",
+    "verification": "This is a review procedure, not a guaranteed five-minute duration."
+  },
+  "2.5": {
+    "label": "Clean baseline \u2192 New branch or worktree \u2192 Small reviewed change \u2192 Test then integrate",
+    "nodes": [
+      "Clean baseline",
+      "New branch or worktree",
+      "Small reviewed change",
+      "Test then integrate"
+    ],
+    "source": "docs/orchestration/dynamic-workflows.md",
+    "verification": "The workflow is source guidance; a four-client isolation experiment is not claimed."
+  },
+  "2.6": {
+    "label": "Primitive palette \u2192 Semantic roles \u2192 Component usage \u2192 Appearance checks",
+    "nodes": [
+      "Primitive palette",
+      "Semantic roles",
+      "Component usage",
+      "Appearance checks"
+    ],
+    "source": "docs/design/design-tokens.md",
+    "verification": "Generated asset structure has evidence; visual quality still needs checks in the actual app."
+  },
+  "2.7": {
+    "label": "Choose one behavior \u2192 Supply project context \u2192 Request bounded change \u2192 Inspect result",
+    "nodes": [
+      "Choose one behavior",
+      "Supply project context",
+      "Request bounded change",
+      "Inspect result"
+    ],
+    "source": "docs/tooling/app-description-workflow.md",
+    "verification": "The prompts below are practice prompts, not 25 completed comparative runs."
+  },
+  "2.8": {
+    "label": "Expected behavior \u2192 Actual output \u2192 Reproduction \u2192 Bounded conclusion",
+    "nodes": [
+      "Expected behavior",
+      "Actual output",
+      "Reproduction",
+      "Bounded conclusion"
+    ],
+    "source": "docs/orchestration/verification.md",
+    "verification": "No evidence supports a universal list of ten things agents cannot do; the lesson teaches failure classification instead."
+  },
+  "3.1": {
+    "label": "View model \u2192 Store protocol \u2192 SwiftData adapter \u2192 Relaunch verification",
+    "nodes": [
+      "View model",
+      "Store protocol",
+      "SwiftData adapter",
+      "Relaunch verification"
+    ],
+    "source": "docs/frameworks/swiftdata.md",
+    "verification": "The Reading List acceptance suite does not verify a SwiftData migration."
+  },
+  "3.2": {
+    "label": "Stored collection \u2192 Search query \u2192 Filtered result \u2192 Clear to recover",
+    "nodes": [
+      "Stored collection",
+      "Search query",
+      "Filtered result",
+      "Clear to recover"
+    ],
+    "source": "docs/swiftui/state-and-data-flow.md",
+    "verification": "Reading List contains corresponding checks; a full accessibility audit is a separate task."
+  },
+  "3.3": {
+    "label": "Request \u2192 Validate response \u2192 Decode model \u2192 Publish current result",
+    "nodes": [
+      "Request",
+      "Validate response",
+      "Decode model",
+      "Publish current result"
+    ],
+    "source": "docs/frameworks/networking.md",
+    "verification": "This chapter's networking exercise is not a new recorded network integration test."
+  },
+  "3.4": {
+    "label": "User action or URL \u2192 Validated route \u2192 Navigation state \u2192 Destination",
+    "nodes": [
+      "User action or URL",
+      "Validated route",
+      "Navigation state",
+      "Destination"
+    ],
+    "source": "docs/swiftui/navigation.md",
+    "verification": "The source guide supplies patterns; no blanket claim is made that a navigation review catches every routing bug."
+  },
+  "3.5": {
+    "label": "Shared snapshot \u2192 Timeline entry \u2192 Widget view \u2192 Intent-triggered change",
+    "nodes": [
+      "Shared snapshot",
+      "Timeline entry",
+      "Widget view",
+      "Intent-triggered change"
+    ],
+    "source": "docs/frameworks/widgetkit.md",
+    "verification": "The installed Xcode 26.6 cannot verify iOS 27-only widget styling; that lab is blocked."
+  },
+  "3.6": {
+    "label": "User request \u2192 Intent parameters \u2192 Domain operation \u2192 Result and presentation",
+    "nodes": [
+      "User request",
+      "Intent parameters",
+      "Domain operation",
+      "Result and presentation"
+    ],
+    "source": "docs/frameworks/app-intents.md",
+    "verification": "Do not infer Siri behavior from a static review or claim new SDK deprecations without checking Apple documentation."
+  },
+  "3.7": {
+    "label": "SDK guard \u2192 Runtime readiness \u2192 Model session \u2192 Useful fallback",
+    "nodes": [
+      "SDK guard",
+      "Runtime readiness",
+      "Model session",
+      "Useful fallback"
+    ],
+    "source": "docs/frameworks/foundation-models.md",
+    "verification": "A simulator or static sample cannot establish every supported physical-device model configuration."
+  },
+  "3.8": {
+    "label": "User permission \u2192 Register capability \u2192 Schedule work \u2192 Handle expiration",
+    "nodes": [
+      "User permission",
+      "Register capability",
+      "Schedule work",
+      "Handle expiration"
+    ],
+    "source": "docs/frameworks/background-tasks.md",
+    "verification": "A source review cannot prove that the operating system will schedule a task at a specific time."
+  },
+  "3.9": {
+    "label": "Incoming URL \u2192 Validate fields \u2192 Resolve route \u2192 Render state",
+    "nodes": [
+      "Incoming URL",
+      "Validate fields",
+      "Resolve route",
+      "Render state"
+    ],
+    "source": "docs/swiftui/deep-linking-and-routing.md",
+    "verification": "Custom URL routing and universal-link association are different checks; one does not validate the other."
+  },
+  "3.10": {
+    "label": "Source string \u2192 Context and placeholders \u2192 Translation review \u2192 Layout checks",
+    "nodes": [
+      "Source string",
+      "Context and placeholders",
+      "Translation review",
+      "Layout checks"
+    ],
+    "source": "docs/design/interaction-standards.md",
+    "verification": "Machine-generated translations still need language review; no multi-language audit is claimed."
+  },
+  "4.1": {
+    "label": "Layer sources \u2192 Composite preview \u2192 Catalog asset \u2192 Device inspection",
+    "nodes": [
+      "Layer sources",
+      "Composite preview",
+      "Catalog asset",
+      "Device inspection"
+    ],
+    "source": "docs/design/icon-composer.md",
+    "verification": "A PNG export is not automatically a native Icon Composer bundle or App Review approval."
+  },
+  "4.2": {
+    "label": "Explicit tokens \u2192 Validate names \u2192 Generate catalog \u2192 Compile and inspect",
+    "nodes": [
+      "Explicit tokens",
+      "Validate names",
+      "Generate catalog",
+      "Compile and inspect"
+    ],
+    "source": "docs/design/asset-generation.md",
+    "verification": "The existing asset walkthrough includes actool evidence; it does not establish contrast in every screen."
+  },
+  "4.3": {
+    "label": "Semantic text style \u2192 Scaled content \u2192 Flexible layout \u2192 Largest-size check",
+    "nodes": [
+      "Semantic text style",
+      "Scaled content",
+      "Flexible layout",
+      "Largest-size check"
+    ],
+    "source": "docs/design/typography-system.md",
+    "verification": "Source examples are guidance; screenshots and VoiceOver checks must come from the actual app."
+  },
+  "4.4": {
+    "label": "User action \u2192 State change \u2192 Motion preference \u2192 Appropriate feedback",
+    "nodes": [
+      "User action",
+      "State change",
+      "Motion preference",
+      "Appropriate feedback"
+    ],
+    "source": "docs/design/interaction-standards.md",
+    "verification": "No physical-device haptic evaluation is included in the simulator baseline."
+  },
+  "4.5": {
+    "label": "Task hierarchy \u2192 Content and controls \u2192 Tokens and spacing \u2192 State review",
+    "nodes": [
+      "Task hierarchy",
+      "Content and controls",
+      "Tokens and spacing",
+      "State review"
+    ],
+    "source": "docs/design/README.md",
+    "verification": "The pattern library is a starting point, not evidence that a particular redesign improved usability."
+  },
+  "4.6": {
+    "label": "Select device \u2192 Seed safe content \u2192 Navigate state \u2192 Capture and inspect",
+    "nodes": [
+      "Select device",
+      "Seed safe content",
+      "Navigate state",
+      "Capture and inspect"
+    ],
+    "source": "docs/tooling/visual-iteration-loop.md",
+    "verification": "The baseline screenshot is demonstration evidence, not a complete App Store screenshot set."
+  },
+  "4.7": {
+    "label": "Design variables \u2192 Semantic token mapping \u2192 Asset catalog \u2192 SwiftUI usage",
+    "nodes": [
+      "Design variables",
+      "Semantic token mapping",
+      "Asset catalog",
+      "SwiftUI usage"
+    ],
+    "source": "docs/design/asset-generation.md",
+    "verification": "No live Figma import session was run; this is the supported handoff contract, not a custom parser."
+  },
+  "5.1": {
+    "label": "Behavior contract \u2192 Test layer \u2192 Controlled dependency \u2192 Assertion",
+    "nodes": [
+      "Behavior contract",
+      "Test layer",
+      "Controlled dependency",
+      "Assertion"
+    ],
+    "source": "checklists/testing.md",
+    "verification": "Apple documents coexistence; no complete project migration is claimed here."
+  },
+  "5.2": {
+    "label": "Launch isolated state \u2192 Perform action \u2192 Wait for condition \u2192 Assert outcome",
+    "nodes": [
+      "Launch isolated state",
+      "Perform action",
+      "Wait for condition",
+      "Assert outcome"
+    ],
+    "source": "docs/testing/xcuiautomation.md",
+    "verification": "The Reading List suite provides concrete UI coverage; it does not prove the absence of all flakes."
+  },
+  "5.3": {
+    "label": "Semantic labels \u2192 Navigation order \u2192 Adaptive layout \u2192 Device review",
+    "nodes": [
+      "Semantic labels",
+      "Navigation order",
+      "Adaptive layout",
+      "Device review"
+    ],
+    "source": "docs/frameworks/accessibility.md",
+    "verification": "A successful UI test is not a complete VoiceOver audit."
+  },
+  "5.4": {
+    "label": "Reproduce workload \u2192 Record baseline \u2192 Change one cause \u2192 Compare trace",
+    "nodes": [
+      "Reproduce workload",
+      "Record baseline",
+      "Change one cause",
+      "Compare trace"
+    ],
+    "source": "checklists/performance.md",
+    "verification": "No invented launch-time or hang-rate numbers are supplied."
+  },
+  "5.5": {
+    "label": "Owner \u2192 Stored closure or subscription \u2192 Captured owner \u2192 Break intended edge",
+    "nodes": [
+      "Owner",
+      "Stored closure or subscription",
+      "Captured owner",
+      "Break intended edge"
+    ],
+    "source": "docs/swift/memory-lifetime.md",
+    "verification": "Static review findings require runtime confirmation when lifetime depends on navigation or cancellation."
+  },
+  "5.6": {
+    "label": "Sensitive input \u2192 Storage boundary \u2192 Network boundary \u2192 Redacted diagnostics",
+    "nodes": [
+      "Sensitive input",
+      "Storage boundary",
+      "Network boundary",
+      "Redacted diagnostics"
+    ],
+    "source": "checklists/security.md",
+    "verification": "This checklist is not a penetration test or a guarantee of security."
+  },
+  "5.7": {
+    "label": "Static finding \u2192 Inspect context \u2192 Compile \u2192 Exercise behavior",
+    "nodes": [
+      "Static finding",
+      "Inspect context",
+      "Compile",
+      "Exercise behavior"
+    ],
+    "source": "docs/orchestration/verification.md",
+    "verification": "Do not count a suppressed warning as a repaired defect."
+  },
+  "6.1": {
+    "label": "Working build \u2192 Privacy and metadata \u2192 Signed archive \u2192 Submission review",
+    "nodes": [
+      "Working build",
+      "Privacy and metadata",
+      "Signed archive",
+      "Submission review"
+    ],
+    "source": "checklists/app-store-submission.md",
+    "verification": "No app was submitted to App Review for this series."
+  },
+  "6.2": {
+    "label": "Inventory data use \u2192 Inspect SDK behavior \u2192 Declare reasons \u2192 Review release archive",
+    "nodes": [
+      "Inventory data use",
+      "Inspect SDK behavior",
+      "Declare reasons",
+      "Review release archive"
+    ],
+    "source": "checklists/app-store-submission.md",
+    "verification": "Current Apple requirements must be checked for the actual release; this is not legal advice or submission approval."
+  },
+  "6.3": {
+    "label": "Local acceptance \u2192 Distribution configuration \u2192 Upload build \u2192 Tester feedback",
+    "nodes": [
+      "Local acceptance",
+      "Distribution configuration",
+      "Upload build",
+      "Tester feedback"
+    ],
+    "source": "docs/tooling/idea-to-app.md",
+    "verification": "No TestFlight upload is authorized or performed in this series; the end-to-end lab is blocked."
+  },
+  "6.4": {
+    "label": "Review message \u2192 Relevant behavior \u2192 Small correction \u2192 Resubmission evidence",
+    "nodes": [
+      "Review message",
+      "Relevant behavior",
+      "Small correction",
+      "Resubmission evidence"
+    ],
+    "source": "checklists/app-store-submission.md",
+    "verification": "No sourced rejection case collection has been assembled; no invented rejection stories are presented."
+  },
+  "6.5": {
+    "label": "Changes since tag \u2192 User-facing behavior \u2192 Version consistency \u2192 Release notes",
+    "nodes": [
+      "Changes since tag",
+      "User-facing behavior",
+      "Version consistency",
+      "Release notes"
+    ],
+    "source": "CHANGELOG.md",
+    "verification": "This writing task does not authorize a new npm release."
+  },
+  "6.6": {
+    "label": "Checkout \u2192 Install pinned dependencies \u2192 Build and test \u2192 Report failures",
+    "nodes": [
+      "Checkout",
+      "Install pinned dependencies",
+      "Build and test",
+      "Report failures"
+    ],
+    "source": "docs/orchestration/hooks.md",
+    "verification": "A workflow file is not a successful run; inspect the actual job result."
+  },
+  "7.1": {
+    "label": "Bounded task \u2192 Independent execution \u2192 Evidence report \u2192 Main-agent integration",
+    "nodes": [
+      "Bounded task",
+      "Independent execution",
+      "Evidence report",
+      "Main-agent integration"
+    ],
+    "source": "docs/orchestration/subagents.md",
+    "verification": "The repository's available roles are not proof that every role improves every task."
+  },
+  "7.2": {
+    "label": "Partition work \u2192 Isolate checkout \u2192 Coordinate shared resources \u2192 Integrate sequentially",
+    "nodes": [
+      "Partition work",
+      "Isolate checkout",
+      "Coordinate shared resources",
+      "Integrate sequentially"
+    ],
+    "source": "docs/orchestration/dynamic-workflows.md",
+    "verification": "No four-client concurrency experiment was executed for this chapter."
+  },
+  "7.3": {
+    "label": "Pattern candidate \u2192 Positive fixture \u2192 Negative fixture \u2192 Located finding",
+    "nodes": [
+      "Pattern candidate",
+      "Positive fixture",
+      "Negative fixture",
+      "Located finding"
+    ],
+    "source": "docs/mcp/tools.md",
+    "verification": "An explanatory example is not a newly shipped analyzer; rule changes require their own tests."
+  },
+  "7.4": {
+    "label": "Trigger \u2192 Relevant context \u2192 Bounded procedure \u2192 Evidence",
+    "nodes": [
+      "Trigger",
+      "Relevant context",
+      "Bounded procedure",
+      "Evidence"
+    ],
+    "source": "SKILL.md",
+    "verification": "Do not claim a skill improves quality without a controlled comparison."
+  },
+  "7.5": {
+    "label": "Plugin folder \u2192 Manifest validation \u2192 Clean install \u2192 Tool check",
+    "nodes": [
+      "Plugin folder",
+      "Manifest validation",
+      "Clean install",
+      "Tool check"
+    ],
+    "source": "docs/mcp/installation.md",
+    "verification": "A marketplace submission is not acceptance or an installed-client test."
+  },
+  "7.6": {
+    "label": "Manifest \u2192 Bundled guidance \u2192 Tool configuration \u2192 Installed verification",
+    "nodes": [
+      "Manifest",
+      "Bundled guidance",
+      "Tool configuration",
+      "Installed verification"
+    ],
+    "source": "docs/mcp/installation.md",
+    "verification": "No new marketplace acceptance is claimed by this chapter."
+  },
+  "7.7": {
+    "label": "Documented format \u2192 Client install \u2192 Discovery \u2192 Bounded task",
+    "nodes": [
+      "Documented format",
+      "Client install",
+      "Discovery",
+      "Bounded task"
+    ],
+    "source": "examples/client-verification/muse-1.3.0.json",
+    "verification": "Antigravity packaging and a Muse model-driven session are blocked pending real client tests."
+  },
+  "7.8": {
+    "label": "Environment \u2192 Command \u2192 Observed result \u2192 Explicit limits",
+    "nodes": [
+      "Environment",
+      "Command",
+      "Observed result",
+      "Explicit limits"
+    ],
+    "source": "docs/orchestration/verification.md",
+    "verification": "Existing records are dated snapshots, not guarantees for later versions."
+  },
+  "7.9": {
+    "label": "Fixed tasks \u2192 Alternating conditions \u2192 Independent scorer \u2192 Report all outcomes",
+    "nodes": [
+      "Fixed tasks",
+      "Alternating conditions",
+      "Independent scorer",
+      "Report all outcomes"
+    ],
+    "source": "benchmarks/README.md",
+    "verification": "No new full benchmark run is completed here; no quality or token-saving percentage is invented."
+  },
+  "7.10": {
+    "label": "Editor capability \u2192 Project access \u2192 Tool discovery \u2192 Real task check",
+    "nodes": [
+      "Editor capability",
+      "Project access",
+      "Tool discovery",
+      "Real task check"
+    ],
+    "source": "docs/tooling/xcode-27-agents.md",
+    "verification": "Xcode 27 is not installed on the test Mac; this integration lab is blocked."
+  },
+  "7.11": {
+    "label": "Upstream change \u2192 Source comparison \u2192 Guide update \u2192 Compile affected sample",
+    "nodes": [
+      "Upstream change",
+      "Source comparison",
+      "Guide update",
+      "Compile affected sample"
+    ],
+    "source": "docs/tooling/offline-source-library.md",
+    "verification": "A successful index refresh is not a GA compatibility test."
+  },
+  "7.12": {
+    "label": "Baseline tests \u2192 Toolchain change \u2192 Scoped fixes \u2192 Same acceptance suite",
+    "nodes": [
+      "Baseline tests",
+      "Toolchain change",
+      "Scoped fixes",
+      "Same acceptance suite"
+    ],
+    "source": "docs/swift/swift-concurrency.md",
+    "verification": "A complete old-project migration to iOS 27 has not been executed here."
+  },
+  "8.1": {
+    "label": "Requirement \u2192 Finding location \u2192 Context \u2192 Minimal patch",
+    "nodes": [
+      "Requirement",
+      "Finding location",
+      "Context",
+      "Minimal patch"
+    ],
+    "source": "docs/orchestration/verification.md",
+    "verification": "A review-first prompt is a technique, not a measured universal quality gain."
+  },
+  "8.2": {
+    "label": "State owner \u2192 Mutation sites \u2192 Isolation decision \u2192 Compiler check",
+    "nodes": [
+      "State owner",
+      "Mutation sites",
+      "Isolation decision",
+      "Compiler check"
+    ],
+    "source": "docs/swift/swift-concurrency.md",
+    "verification": "No evidence supports the original claim that one prompt fixes half of all concurrency errors."
+  },
+  "8.3": {
+    "label": "Named state \u2192 Reproduction steps \u2192 Capture \u2192 Compare",
+    "nodes": [
+      "Named state",
+      "Reproduction steps",
+      "Capture",
+      "Compare"
+    ],
+    "source": "docs/tooling/visual-iteration-loop.md",
+    "verification": "A screenshot is visual evidence, not proof of every behavior."
+  },
+  "8.4": {
+    "label": "Recorded toolchain \u2192 API choice \u2192 Build \u2192 Availability review",
+    "nodes": [
+      "Recorded toolchain",
+      "API choice",
+      "Build",
+      "Availability review"
+    ],
+    "source": "docs/tooling/device-hub.md",
+    "verification": "Do not label an API available solely because it appears in a newer guide."
+  },
+  "8.5": {
+    "label": "Validated URL \u2192 Seeded item \u2192 Destination \u2192 Screenshot",
+    "nodes": [
+      "Validated URL",
+      "Seeded item",
+      "Destination",
+      "Screenshot"
+    ],
+    "source": "docs/swiftui/deep-linking-and-routing.md",
+    "verification": "Not every screen should expose a public route; keep test hooks appropriately scoped."
+  },
+  "8.6": {
+    "label": "Token source \u2192 Named asset \u2192 View use \u2192 Appearance check",
+    "nodes": [
+      "Token source",
+      "Named asset",
+      "View use",
+      "Appearance check"
+    ],
+    "source": "docs/design/design-tokens.md",
+    "verification": "Centralized tokens do not guarantee contrast or visual quality."
+  },
+  "8.7": {
+    "label": "Spec change \u2192 Generator \u2192 Project diff \u2192 Build",
+    "nodes": [
+      "Spec change",
+      "Generator",
+      "Project diff",
+      "Build"
+    ],
+    "source": "docs/tooling/project-scaffolding.md",
+    "verification": "Do not regenerate with an unrecorded tool version or overwrite unrelated manual changes."
+  },
+  "8.8": {
+    "label": "API introduction \u2192 Deployment target \u2192 Runtime readiness \u2192 Fallback",
+    "nodes": [
+      "API introduction",
+      "Deployment target",
+      "Runtime readiness",
+      "Fallback"
+    ],
+    "source": "docs/frameworks/foundation-models.md",
+    "verification": "Text-based guard checks cannot model every control-flow path."
+  },
+  "8.9": {
+    "label": "Lifecycle event \u2192 Handler \u2192 Exit status \u2192 Explain result",
+    "nodes": [
+      "Lifecycle event",
+      "Handler",
+      "Exit status",
+      "Explain result"
+    ],
+    "source": "docs/orchestration/hooks.md",
+    "verification": "Hook schemas and exit behavior are client-specific; copying JSON does not verify dispatch."
+  },
+  "8.10": {
+    "label": "Completion claim \u2192 Exact command \u2192 Fresh result \u2192 Accept or reopen",
+    "nodes": [
+      "Completion claim",
+      "Exact command",
+      "Fresh result",
+      "Accept or reopen"
+    ],
+    "source": "docs/orchestration/verification.md",
+    "verification": "Passing selected tests does not prove untested paths."
+  },
+  "8.11": {
+    "label": "One goal \u2192 Small diff \u2192 Acceptance check \u2192 Checkpoint",
+    "nodes": [
+      "One goal",
+      "Small diff",
+      "Acceptance check",
+      "Checkpoint"
+    ],
+    "source": "docs/orchestration/looping.md",
+    "verification": "Small work units can still require careful integration testing."
+  },
+  "8.12": {
+    "label": "Code task \u2192 Need account change? \u2192 Explicit review \u2192 Local configuration",
+    "nodes": [
+      "Code task",
+      "Need account change?",
+      "Explicit review",
+      "Local configuration"
+    ],
+    "source": "checklists/security.md",
+    "verification": "An absolute ban is not necessary for every authorized workflow; secret values still stay out of chat and source."
+  },
+  "8.13": {
+    "label": "Claim \u2192 Supporting artifact \u2192 Missing check \u2192 Follow-up",
+    "nodes": [
+      "Claim",
+      "Supporting artifact",
+      "Missing check",
+      "Follow-up"
+    ],
+    "source": "docs/orchestration/verification.md",
+    "verification": "Wording alone cannot prove deception or correctness; inspect the evidence."
+  },
+  "8.14": {
+    "label": "Failure \u2192 Minimal fixture \u2192 Negative case \u2192 Review rule",
+    "nodes": [
+      "Failure",
+      "Minimal fixture",
+      "Negative case",
+      "Review rule"
+    ],
+    "source": "docs/mcp/tools.md",
+    "verification": "Do not upload private app code to build a public fixture."
+  },
+  "8.15": {
+    "label": "Feature claim \u2192 Official schema \u2192 Controlled failure \u2192 Observed response",
+    "nodes": [
+      "Feature claim",
+      "Official schema",
+      "Controlled failure",
+      "Observed response"
+    ],
+    "source": "examples/client-verification/muse-1.3.0.json",
+    "verification": "Observer enablement instructions are blocked until verified; no setting is guessed."
+  },
+  "8.16": {
+    "label": "Shared baseline \u2192 Separate checkout \u2192 Independent task \u2192 Reviewed integration",
+    "nodes": [
+      "Shared baseline",
+      "Separate checkout",
+      "Independent task",
+      "Reviewed integration"
+    ],
+    "source": "docs/orchestration/dynamic-workflows.md",
+    "verification": "Resolve shared simulator and data-store ownership separately."
+  },
+  "8.17": {
+    "label": "Start build \u2192 Retain logs \u2192 Wait for completion \u2192 Inspect exit status",
+    "nodes": [
+      "Start build",
+      "Retain logs",
+      "Wait for completion",
+      "Inspect exit status"
+    ],
+    "source": "docs/orchestration/subagents.md",
+    "verification": "Antigravity background-subagent behavior is unverified here, so no client-specific command is provided."
+  },
+  "8.18": {
+    "label": "Inspect files \u2192 Identify dependencies \u2192 Agree criteria \u2192 Edit one slice",
+    "nodes": [
+      "Inspect files",
+      "Identify dependencies",
+      "Agree criteria",
+      "Edit one slice"
+    ],
+    "source": "docs/tooling/app-description-workflow.md",
+    "verification": "Planning does not itself validate implementation or guarantee lower cost."
+  },
+  "8.19": {
+    "label": "Focused local search \u2192 Read source section \u2192 Identify gap \u2192 Check primary source",
+    "nodes": [
+      "Focused local search",
+      "Read source section",
+      "Identify gap",
+      "Check primary source"
+    ],
+    "source": "docs/tooling/offline-source-library.md",
+    "verification": "A local catalog is dated and is not Apple's proprietary framework implementation."
+  },
+  "8.20": {
+    "label": "Classify file \u2192 Source or generated? \u2192 Ignore narrowly \u2192 Inspect git status",
+    "nodes": [
+      "Classify file",
+      "Source or generated?",
+      "Ignore narrowly",
+      "Inspect git status"
+    ],
+    "source": "docs/tooling/project-scaffolding.md",
+    "verification": "Ignoring a secret after committing it does not remove it from history."
+  }
+}

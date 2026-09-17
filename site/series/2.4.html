@@ -1,0 +1,111 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Reviewing agent output before you commit: a focused checklist — iOS Agent Skill</title><meta name="description" content="An illustrated guide to AI-assisted Swift development: Reviewing agent output before you commit: a focused checklist"><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/series/2.4.html"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:title" content="Reviewing agent output before you commit: a focused checklist"><meta property="og:description" content="An illustrated guide to AI-assisted Swift development: Reviewing agent output before you commit: a focused checklist"><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/series/2.4.html"><meta property="og:type" content="website"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css?v=fluid-series-2"><link rel="stylesheet" href="../navigation.css?v=2"><script src="../appearance.js?v=2" defer></script><script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "headline": "Reviewing agent output before you commit: a focused checklist", "description": "An illustrated guide to AI-assisted Swift development: Reviewing agent output before you commit: a focused checklist", "url": "https://nagarjuna2997.github.io/ios-agent-skill/series/2.4.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../series.html">Guided series</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div><button class="appearance-toggle" type="button" aria-label="Use dark appearance" aria-pressed="false"><span aria-hidden="true">☾</span><span class="appearance-label">Dark mode</span></button></nav><main id="main"><article class="blog-article"><p class="article-back"><a href="../series.html#level-2">← Guided series</a> · <a href="../blog.html">All articles</a></p><header class="page-intro"><p class="eyebrow">Lesson 2.4 · Guided learning</p><h1>Reviewing agent output before you commit: a focused checklist</h1></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><div class="toc">
+<ul>
+<li><a href="#work-through-the-example">Work through the example</a></li>
+<li><a href="#implementation-reference">Implementation reference</a><ul>
+<li><a href="#3-what-counts-as-evidence">3. What counts as evidence</a></li>
+<li><a href="#evidence-for-ios-specifically">Evidence for iOS specifically</a></li>
+<li><a href="#when-you-genuinely-cannot-build">When you genuinely cannot build</a></li>
+</ul>
+</li>
+<li><a href="#acceptance-and-failure-review">Acceptance and failure review</a></li>
+<li><a href="#evidence-and-limits">Evidence and limits</a></li>
+</ul>
+</div>
+</aside><p>Review the diff in an order that exposes expensive mistakes early: scope, data flow, errors, tests, then polish. A long list of stylistic suggestions is less useful than one reproducible blocker.</p>
+<figure class="lesson-diagram" aria-label="Inspect scope → Review risky boundaries → Run focused checks → Accept or revise"><figcaption>Inspect scope → Review risky boundaries → Run focused checks → Accept or revise</figcaption><ol><li><span class="diagram-step">1</span><span>Inspect scope</span><span class="diagram-arrow" aria-hidden="true">↓</span></li><li><span class="diagram-step">2</span><span>Review risky boundaries</span><span class="diagram-arrow" aria-hidden="true">↓</span></li><li><span class="diagram-step">3</span><span>Run focused checks</span><span class="diagram-arrow" aria-hidden="true">↓</span></li><li><span class="diagram-step">4</span><span>Accept or revise</span></li></ol></figure>
+
+<h2 id="work-through-the-example">Work through the example</h2>
+<p>Ask for a file location, supporting context and the smallest proposed change. Treat a clean heuristic report as limited evidence.</p>
+<p>Start with a disposable branch and synthetic data. Write the expected outcome before changing the implementation, then keep the first failing result. This prevents a later repair from quietly redefining the task. The procedure below is grounded in the repository reference; its examples must still be checked against your project and installed toolchain.</p>
+<h2 id="implementation-reference">Implementation reference</h2>
+<p>The following focused section is adapted from the maintained project guide. It preserves the source’s examples and limitations.</p>
+<h3 id="3-what-counts-as-evidence">3. What counts as evidence</h3>
+<p>Ordered by strength:</p>
+<ol>
+<li><strong>Test output</strong> — the suite ran, with counts and pass/fail state.</li>
+<li><strong>Build output</strong> — it compiles, with the exact command shown.</li>
+<li><strong>Command output</strong> — a lint run, a script, a grep whose emptiness is the point.</li>
+<li><strong>A screenshot</strong> — for UI work, the actual rendered result.</li>
+<li><strong>A file diff</strong> — what changed, when the change itself is the deliverable.</li>
+<li><strong>A <code>file:line</code> citation</strong> — for claims about what code does.</li>
+</ol>
+<p>What does <strong>not</strong> count:</p>
+<ul>
+<li>"It should work now."</li>
+<li>"The change is correct."</li>
+<li>"I verified the logic."</li>
+<li>A summary of what a command would print.</li>
+<li>A test you wrote but did not run.</li>
+</ul>
+<h3 id="evidence-for-ios-specifically">Evidence for iOS specifically</h3>
+<pre><code class="language-bash">### Build — SPM
+swift build 2&gt;&amp;1 | tail -40
+
+### Build — Xcode. List schemes first; never guess one.
+xcodebuild -list -project MyApp.xcodeproj
+xcodebuild build -scheme &quot;MyApp&quot; \
+  -destination 'platform=iOS Simulator,name=iPhone 16' 2&gt;&amp;1 | tail -40
+
+### Tests
+swift test 2&gt;&amp;1 | tail -60
+xcodebuild test -scheme &quot;MyApp&quot; \
+  -destination 'platform=iOS Simulator,name=iPhone 16' 2&gt;&amp;1 | tail -60
+
+### Lint
+swiftlint lint --quiet
+swiftformat --lint .
+
+### Rule checks whose empty output IS the evidence
+grep -rn &quot;DispatchQueue.main.async&quot; Sources/          # expect: nothing
+grep -rn &quot;APIClient\|URLSession&quot; Sources/Presentation/ # expect: nothing
+</code></pre>
+<p>When a grep is the check, <strong>show that it returned nothing</strong>. An empty result you
+did not display is indistinguishable from a check you did not run.</p>
+<h3 id="when-you-genuinely-cannot-build">When you genuinely cannot build</h3>
+<p>Common on Linux CI, in containers without Xcode, or in a docs-only repository.
+Say it once, plainly, and downgrade the affected claims:</p>
+<pre><code>UNVERIFIED — no Xcode toolchain in this environment (`xcodebuild: command not
+found`). All Swift samples are INSPECTED against the framework docs in
+docs/frameworks/, not compiled. A human should build before merging.
+</code></pre>
+<p>Then verify what you <em>can</em>: markdown structure, cross-references, script syntax
+(<code>bash -n</code>), JSON/YAML validity. Partial verification honestly labelled beats
+none.</p>
+<hr />
+<h2 id="acceptance-and-failure-review">Acceptance and failure review</h2>
+<table>
+<thead>
+<tr>
+<th>Checkpoint</th>
+<th>What to inspect</th>
+<th>If it does not match</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Inspect scope</td>
+<td>Confirm the input and environment</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+<tr>
+<td>Review risky boundaries</td>
+<td>Inspect the intermediate artifact</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+<tr>
+<td>Run focused checks</td>
+<td>Run the focused check</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+<tr>
+<td>Accept or revise</td>
+<td>Record the observed result</td>
+<td>Preserve the failure and return to this step</td>
+</tr>
+</tbody>
+</table>
+<p>Ask the agent to explain the smallest change that resolves the observed mismatch. Keep unrelated refactors out of the repair. A change that makes a warning disappear is not enough if the behavior or ownership contract has changed. Re-run the same acceptance check so the before and after results are comparable.</p>
+<h2 id="evidence-and-limits">Evidence and limits</h2>
+<p>This is a review procedure, not a guaranteed five-minute duration.</p>
+<p>This is an educational guide. Its presence in the series does not certify a completed client-specific lab. The <a href="../evidence/series/verification.json">series evidence record</a> separates executed checks from exercises and blocked environments.</p>
+<p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/orchestration/verification.md">Inspect the source used in this lesson</a>.</p><h2>What to do next</h2><p><a href="2.5.html">Next: Git for vibe coders: branches per prompt, checkpoints, and undoing an agent&#x27;s mess</a></p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><p>Maintainer-authored with AI assistance. Independent open-source project; not affiliated with Apple.</p></footer></div></body></html>
