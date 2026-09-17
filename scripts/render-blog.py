@@ -92,3 +92,6 @@ with (r/'blog.css').open('a') as css:
 
 with (r/'blog.css').open('a') as css:
  css.write('\n.blog-paths{display:flex;flex-wrap:wrap;gap:12px;margin:24px 0}.subpage nav.series-map{height:auto;min-height:0;position:static;display:flex;flex-wrap:wrap;gap:10px;margin:24px 0 40px}.series-map a{border:1px solid var(--line);border-radius:14px;padding:12px;text-decoration:none;background:var(--panel)}.series-level{padding:28px 0;border-top:1px solid var(--line);scroll-margin-top:160px}.series-level h2{font-size:32px}.series-lessons{padding-left:0;list-style:none}.series-lessons li{display:flex;gap:16px;align-items:baseline;padding:16px 0;border-bottom:1px solid var(--line)}.lesson-status{margin-left:auto;white-space:nowrap;color:var(--muted);font-size:12px}.series-level .related-reading{padding:20px;border-radius:16px;background:var(--panel)}@media(max-width:600px){.series-lessons li{flex-wrap:wrap}.lesson-status{margin-left:0}}')
+
+with (r/'blog.css').open('a') as css:
+ css.write((r/'learning-layout.css').read_text())

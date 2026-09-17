@@ -1,0 +1,14 @@
+/* Shared learning surfaces: explicit grids, accessible controls, no nav flex distribution. */
+.subpage nav.series-map{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:stretch;justify-content:initial;gap:12px;padding:18px;box-shadow:none;background:var(--panel);border:1px solid var(--line);border-radius:24px;backdrop-filter:none}
+.series-map a{display:flex;align-items:center;min-width:0;min-height:64px;padding:16px;line-height:1.4;background:var(--bg);border-radius:16px;overflow-wrap:anywhere;transition:border-color .18s,background .18s}
+.series-map a:hover{border-color:var(--accent)}
+.subpage .blog-filters button{min-height:44px;font-size:14px;line-height:1.4;padding:11px 18px}
+html[data-appearance] .subpage .blog-filters button:not(.appearance-toggle){color:var(--ink);background:var(--panel)}
+html[data-appearance] .subpage .blog-filters button:not(.appearance-toggle)[aria-pressed=true]{color:var(--bg);background:var(--ink)}
+.series-lessons li{display:grid;grid-template-columns:42px minmax(0,1fr) auto;gap:16px;align-items:start;padding:20px 0}.series-lessons li>span{min-width:0;overflow-wrap:anywhere}.lesson-status{margin:2px 0 0;padding:3px 9px;border:1px solid var(--line);border-radius:999px}
+.subpage nav[aria-label="Main navigation"] .links{flex-wrap:wrap;row-gap:10px}
+.subpage .appearance-toggle{min-width:44px;min-height:44px}
+.blog-paths .btn{line-height:1.45;text-align:left}
+@media(max-width:900px){.subpage nav.series-map{grid-template-columns:repeat(2,minmax(0,1fr))}.subpage .blog-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.subpage nav.series-map{grid-template-columns:1fr;padding:12px;gap:8px;border-radius:20px}.series-map a{min-height:52px;padding:13px 15px}.subpage .blog-grid{grid-template-columns:1fr}.blog-paths{display:grid;grid-template-columns:1fr}.blog-paths .btn{justify-content:space-between;width:100%;padding:14px 18px}.series-lessons li{grid-template-columns:36px minmax(0,1fr);gap:8px 12px}.series-lessons .lesson-status{grid-column:2;justify-self:start}.subpage nav[aria-label="Main navigation"] .links{gap:10px 16px;justify-content:flex-start}.subpage .wrap{padding-inline:18px}.blog-article h1{font-size:clamp(30px,8vw,42px);overflow-wrap:anywhere}}
+@media(prefers-reduced-motion:reduce){.series-map a{transition:none}}
