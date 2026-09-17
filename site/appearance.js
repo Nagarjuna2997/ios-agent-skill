@@ -15,7 +15,10 @@
       const symbol = document.createElement('span');
       symbol.setAttribute('aria-hidden', 'true');
       symbol.textContent = dark ? '☀' : '☾';
-      control.replaceChildren(symbol);
+      const label = document.createElement('span');
+      label.className = 'appearance-label';
+      label.textContent = dark ? 'Light mode' : 'Dark mode';
+      control.replaceChildren(symbol, label);
       control.hidden = false;
     }
     document.querySelector('meta[name="theme-color"]')?.setAttribute('content', dark ? '#101113' : '#f5f5f7');

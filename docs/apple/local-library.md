@@ -481,7 +481,7 @@ Search offline with `node scripts/query-library.mjs search "SwiftData"`. Read a 
 | [docs/uikit/uikit-swiftui-interop.md](../../docs/uikit/uikit-swiftui-interop.md) | guide | 11023 |
 | [docs/web/native-vs-web-animation.md](../../docs/web/native-vs-web-animation.md) | guide | 3374 |
 | [docs/web/README.md](../../docs/web/README.md) | guide | 1541 |
-| [docs/website-discovery.md](../../docs/website-discovery.md) | guide | 4636 |
+| [docs/website-discovery.md](../../docs/website-discovery.md) | guide | 5311 |
 | [patterns/3d/README.md](../../patterns/3d/README.md) | guide | 1114 |
 | [patterns/accessibility/README.md](../../patterns/accessibility/README.md) | guide | 544 |
 | [patterns/ai/README.md](../../patterns/ai/README.md) | guide | 607 |

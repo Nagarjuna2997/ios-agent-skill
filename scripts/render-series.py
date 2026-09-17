@@ -27,7 +27,7 @@ def render(root,page,base):
   next_lesson=lessons[i+1] if i+1<len(lessons) else None
   next_path=(next_lesson['number']+'.html' if (root/'content/series'/f"{next_lesson['number']}.md").exists() else '../series.html#level-'+next_lesson['number'].split('.')[0]) if next_lesson else '../series.html'
   next_title=next_lesson['title'] if next_lesson else 'All levels'
-  content='<article class="blog-article"><p><a href="../series.html#level-'+number.split('.')[0]+'">← Guided series</a> · <a href="../blog.html">All articles</a></p><header class="page-intro"><p class="eyebrow">Lesson '+number+' · Orientation</p><h1>'+html.escape(title)+'</h1></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong>'+md.toc+'</aside>'+body+'<h2>What to do next</h2><p><a href="'+next_path+'">Next: '+html.escape(next_title)+'</a></p></div></article>'
+  content='<article class="blog-article"><p class="article-back"><a href="../series.html#level-'+number.split('.')[0]+'">← Guided series</a> · <a href="../blog.html">All articles</a></p><header class="page-intro"><p class="eyebrow">Lesson '+number+' · Orientation</p><h1>'+html.escape(title)+'</h1></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong>'+md.toc+'</aside>'+body+'<h2>What to do next</h2><p><a href="'+next_path+'">Next: '+html.escape(next_title)+'</a></p></div></article>'
   path='series/'+number+'.html';urls.append(path)
   (site/path).write_text(page(title,'An illustrated orientation lesson for AI-assisted Swift development: '+title,content,path,1))
  return urls

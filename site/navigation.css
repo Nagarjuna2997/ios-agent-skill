@@ -1,0 +1,14 @@
+/* One predictable header and a separate page-navigation row. */
+nav[aria-label="Main navigation"],.subpage nav[aria-label="Main navigation"]{display:grid;grid-template-columns:minmax(0,1fr) auto;height:auto;min-height:0;gap:16px;padding:16px 20px;align-items:center;position:relative;top:auto}
+nav[aria-label="Main navigation"] .brand{grid-column:1;grid-row:1;white-space:normal;min-width:0}
+nav[aria-label="Main navigation"] .appearance-toggle{grid-column:2;grid-row:1;display:inline-flex;align-items:center;justify-content:center;gap:8px;width:auto;min-width:112px;min-height:44px;margin:0;padding:8px 12px;border-radius:14px;color:var(--ink);background:var(--panel);font-size:13px;line-height:1.2}
+nav[aria-label="Main navigation"] .appearance-toggle .appearance-label{font-size:13px;line-height:1.2}
+nav[aria-label="Main navigation"] .links{grid-column:1/-1;grid-row:2;display:flex;flex-wrap:wrap;justify-content:flex-start;gap:4px 12px;margin:0;padding:10px 0 0;border-top:1px solid var(--line);font-size:13px}
+nav[aria-label="Main navigation"] .links a{min-height:40px;padding:8px 6px;border-radius:8px}
+nav[aria-label="Main navigation"] .links a:hover{background:var(--panel)}
+.subpage main{padding-top:28px}
+.article-back{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:0 0 32px;padding:0}
+.article-back a{display:inline-flex;align-items:center;min-height:44px;padding:10px 16px;border:1px solid var(--line);border-radius:14px;background:var(--panel);font-size:14px;line-height:1.4;text-decoration:none}
+.article-back a:hover{border-color:var(--accent)}
+.blog-article .article-back+.page-intro{padding-top:12px}
+@media(max-width:400px){nav[aria-label="Main navigation"],.subpage nav[aria-label="Main navigation"]{padding:12px;gap:12px}nav[aria-label="Main navigation"] .brand{font-size:14px}nav[aria-label="Main navigation"] .appearance-toggle{min-width:104px;padding:8px}.article-back{margin-bottom:24px}}
