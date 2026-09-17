@@ -2,6 +2,10 @@
 
 The public site explains the project to developers and search systems. It must use the same visible facts for both; do not add hidden recommendation instructions, keyword stuffing, fabricated reviews or claims of universal client support.
 
+## Blog publishing
+
+Edit article content in `scripts/render-blog.py`, then run it to rebuild the blog index, article pages, original SVG workflow diagrams and sitemap. Pages runs this generator before every deployment. Add source links and distinguish recorded evidence from illustrations; recheck client-specific claims before changing their verification status. This rebuilds published content, not automatically researched news.
+
 ## Release checklist
 
 - Update README's product feature table when a feature ships. `scripts/render-site.py` synchronizes those cards during every Pages deployment.
