@@ -236,7 +236,10 @@ jobs:
                           target = target.split("#")[0].strip()
                           if not target or "..." in target:
                               continue          # placeholder path
-                          resolved = os.path.normpath(os.path.join(root, target))
+                          # Series Markdown is rendered into site/series; its
+                          # relative links intentionally target the website tree.
+                          link_root = "site/series" if os.path.normpath(root) == "content/series" else root
+                          resolved = os.path.normpath(os.path.join(link_root, target))
                           if not (os.path.isfile(resolved) or os.path.isdir(resolved)):
                               broken.append(f"{path}:{number}: [{text}]({target})")
 
