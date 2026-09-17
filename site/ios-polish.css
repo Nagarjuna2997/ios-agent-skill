@@ -14,3 +14,11 @@ h2{font-weight:650;letter-spacing:-.045em}.eyebrow{color:var(--muted);text-trans
 @supports not (backdrop-filter:blur(1px)){nav,.scene-controls{background:var(--panel)}}
 @media(max-width:1000px){.hero-stage,.workflow,.final-cta{max-width:calc(100% - 32px)}.setup-grid{width:calc(100% - 32px);padding:38px;gap:30px}.workflow h2{margin-bottom:0}.landing>header{width:calc(100% - 32px)}}
 @media(max-width:700px){.landing>header{top:8px;margin-top:10px}.hero{padding-top:34px}.hero h1{font-size:clamp(43px,9vw,61px);line-height:1.05}.hero .actions{gap:20px}.hero-lead{font-size:18px}.hero-stage{width:calc(100% - 24px);margin:32px auto 0!important}.stage-caption{padding-inline:22px;margin-top:20px}.scene-controls{margin-left:0}.workflow{padding:30px 0;margin-top:10px;border-radius:26px}.workflow-grid{padding-inline:24px}.workflow h2{font-size:29px}.setup-grid{padding:30px 20px;border-radius:28px}.setup-panel{padding:18px;border-radius:22px}.card{padding:28px;border-radius:26px}.card h3{font-size:25px;margin-top:28px}.final-cta{border-radius:28px}.final-cta h2{font-size:54px}nav,.subpage nav{gap:10px;flex-wrap:wrap;height:auto;min-height:66px;padding:12px 15px;border-radius:23px}nav .brand{font-size:15px}nav .links{order:3;flex-basis:100%;justify-content:space-between;font-size:12px;gap:14px;margin-left:0;padding:3px 2px 0}.appearance-toggle{margin-left:auto;width:32px;height:32px}.subpage nav{top:8px}.subpage .guide{scroll-margin-top:145px}html{scroll-padding-top:140px}}
+/* Shared navigation appearance control, including nested articles and guides. */
+.appearance-toggle[hidden]{display:none}.appearance-toggle span{font-size:22px;line-height:1}
+[data-appearance=dark] .subpage .blog-filters button{color:var(--ink)}
+[data-appearance=dark] .subpage .blog-filters button[aria-pressed=true]{color:var(--bg)}
+.library-search{background:var(--panel);color:var(--ink)}
+@media(min-width:701px) and (max-width:1000px){.subpage nav{height:auto;flex-wrap:wrap}.subpage nav .links{order:3;flex-basis:100%;justify-content:space-between;margin-left:0}}
+[data-appearance=dark] .subpage .blog-filters button:not(.appearance-toggle){color:var(--ink)}
+[data-appearance=dark] .subpage .blog-filters button:not(.appearance-toggle)[aria-pressed=true]{color:var(--bg)}
