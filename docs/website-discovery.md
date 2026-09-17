@@ -31,3 +31,7 @@ Track Search Console queries and clicks, GitHub referrers and npm downloads sepa
 ## Educational blog and guide library
 
 Install `scripts/requirements-site.txt`, then run `python3 scripts/render-library.py`. This renders the blog and sitemap first, then the source-linked guide library. Five evidence walkthroughs are maintained in `content/blog/articles.json`; the existing practical articles remain in `scripts/render-blog.py`. Framework coverage comes from `frameworks.json`, with additional design, tooling, SwiftUI, orchestration and MCP guides. Preserve per-guide verification limits. Article covers are conceptual editorial artwork; linked evidence files are the actual test records.
+
+### Standing editorial requirements
+
+Developer articles teach the supplied topic thoroughly; do not target an arbitrary word count or reduce a detailed brief to a few paragraphs. Choose visuals from the article's substance: architecture diagrams for component boundaries, flowcharts for decisions and sequences, annotated examples or screenshots for concrete behavior, and tables for comparisons. A cover image alone is not enough when the explanation needs supporting visuals. Create topic-specific assets rather than reusing one thumbnail everywhere. Keep diagrams technically accurate, accessible, and accompanied by explanatory text. Do not fabricate screenshots or runtime evidence. Include a table of contents for long articles and a visible “Back to all articles” link near the top. Apply these requirements to future blog briefs as well as revisions.
