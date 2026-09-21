@@ -115,7 +115,7 @@
       "id": "verifymcp",
       "platform": "VerifyMCP",
       "kind": "directory",
-      "category": "Directory · automated analysis",
+      "category": "Security analysis · automated",
       "description": "Publishes automated package checks and captured tool schemas, including limitations and findings.",
       "url": "https://verifymcp.io/servers/nagarjuna2997-ios-agent-skill/ios-agent-mcp",
       "verifiedOn": "2026-09-20",
@@ -125,11 +125,41 @@
       "id": "smallprint",
       "platform": "Small Print",
       "kind": "directory",
-      "category": "Directory · change monitoring",
+      "category": "Tracking index · automated",
       "description": "Tracks the Gemini extension’s instruction changes and publishes automated change flags.",
       "url": "https://smallprint.dev/a/gemini/nagarjuna2997/ios-agent-skill",
       "verifiedOn": "2026-09-20",
       "evidence": "Opened page links the exact repository and reports version comparisons. Automated flags are not confirmed security incidents or endorsements."
+    },
+    {
+      "id": "voronkin-studio",
+      "platform": "Voronkin Studio",
+      "kind": "article",
+      "category": "Third-party article",
+      "description": "Discusses ios-agent-mcp and the Swift, Xcode and simulator development workflow.",
+      "url": "https://voronkin.com/news/revolutionizing-ios-development-ai-agents-and-the-mcp-toolbo/",
+      "verifiedOn": "2026-09-21",
+      "evidence": "Opened the September 17 article naming ios-agent-mcp. Its image is hosted on DEV; editorial independence, implementation claims and adoption were not verified."
+    },
+    {
+      "id": "socket",
+      "platform": "Socket",
+      "kind": "directory",
+      "category": "Package analysis",
+      "description": "Provides an npm package analysis page for ios-agent-mcp with package metadata and source links.",
+      "url": "https://socket.dev/npm/package/ios-agent-mcp",
+      "verifiedOn": "2026-09-21",
+      "evidence": "Search-indexed page identifies ios-agent-mcp, its source and package metadata. Direct browser extraction was unavailable; changing download/version figures are not repeated."
+    },
+    {
+      "id": "libhunt",
+      "platform": "LibHunt",
+      "kind": "directory",
+      "category": "Project discovery",
+      "description": "Indexes the project, related alternatives and mentions, including the maintainer’s DEV and Show HN posts.",
+      "url": "https://www.libhunt.com/r/ios-agent-skill",
+      "verifiedOn": "2026-09-21",
+      "evidence": "Search-indexed project page identifies Nagarjuna2997/ios-agent-skill and its website, DEV posts and Show HN submission. Direct fetch returned an access error; mention counts are not treated as independent endorsements."
     }
   ]
 }
