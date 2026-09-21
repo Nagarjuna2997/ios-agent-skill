@@ -66,7 +66,7 @@ The published 2.7.0 server exposes 36 tools. Static reviews are heuristics, not 
 
 Xcode already ships agent expertise and build/test tools. Use those when they meet your needs. This repository adds shared guidance across these four client families, inspectable review rules, local source retrieval and repeatable asset workflows. It has not been established that it makes an AI outperform Xcode's skills or use fewer tokens.
 
-[Where the guidance comes from, evidence and unfinished work](docs/evidence-and-scope.md). A paired Claude/Codex benchmark is running; results will be published without assuming a win.
+[Where the guidance comes from, evidence and unfinished work](docs/evidence-and-scope.md). The [paired benchmark harness](benchmarks/README.md) contains 20 Swift microtasks; results are not published, and it does not yet measure complete app builds.
 
 ## Help improve the tools
 

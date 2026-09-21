@@ -10,6 +10,9 @@ iOS launch screens are system-controlled and should stay static, fast, and faith
 LaunchScreen -> AnimatedSplashView -> MainAppView
 ```
 
+For target-aware configuration, storyboard and asset checks, see
+[Launch-screen review](../../docs/tooling/launch-screen-review.md).
+
 ## Pattern
 
 ```swift

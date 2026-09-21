@@ -75,3 +75,8 @@ local until the paired table and limitations have been reviewed.
 [Benchmark v2 protocol proposal](v2/PLAN.md) specifies 30 diagnostic task fixtures,
 neutral selection, independent acceptance checks and efficiency metrics. It is
 planned work, not an implemented or executed suite. The original tasks stay frozen.
+
+The separate [launch-screen diagnostic suite](launch-screen/README.md) contains
+eight repair fixtures and four valid controls, an independent acceptance oracle,
+and a resumable runner. Fixture validation and reference builds passed locally;
+paired agent trials have not run. It does not replace or rescore the original suite.

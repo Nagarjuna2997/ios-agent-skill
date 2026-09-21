@@ -76,7 +76,10 @@ jobs:
         run: npm test
 
       - name: Benchmark harness regression tests (no provider calls)
-        run: python3 ../benchmarks/test_run.py
+        run: |
+          python3 ../benchmarks/test_run.py
+          python3 ../benchmarks/launch-screen/test_runner.py
+          node ../benchmarks/launch-screen/validate.mjs
 
       - name: Private feedback receiver tests (mock GitHub only)
         run: node --test ../services/private-feedback/server.test.mjs

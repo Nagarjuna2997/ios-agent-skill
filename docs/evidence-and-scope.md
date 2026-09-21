@@ -63,7 +63,7 @@ This status is about implementation and evidence, not promises made in conversat
 | Accessibility-tree tooling and runtime log/hang measurements | Not implemented in the published simulator package. |
 | Asset auditing, symbol-availability index, screenshot batches, dark-mode comparison | Not implemented in the published package. |
 | Native Icon Composer .icon generation | Not implemented; use Apple's Icon Composer with the editable layers. |
-| Paired benchmark | Running; no favorable outcome assumed. |
+| Paired benchmark | A 20-microtask harness exists; results are not published. A controlled full-app benchmark remains unfinished. |
 | Xcode 27, Siri, Core AI and live model-routing integration | Documentation exists; runtime verification remains incomplete. |
 
 Private developer-account data, API keys, certificates and signing profiles are

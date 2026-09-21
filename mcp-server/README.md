@@ -159,7 +159,7 @@ npm install && npm run build
 | `review_swift_architecture` | Live-implementation default arguments, presentation naming `URLSession`/`APIClient`/`ModelContext`, singletons in view models, domain importing SwiftUI, nested `NavigationStack`, `NavigationView` |
 | `review_swiftui` | Fixed font sizes and heights, `AnyView`, `.cornerRadius`, literal spacing, materials over solid backgrounds, view state on models, `ObservableObject`, `@EnvironmentObject`, `try!` |
 | `check_availability_guards` | Missing guards, **over-restrictive guards** (an iOS 26 API guarded at iOS 27 silently drops every iOS 26 device), Foundation Models without a runtime availability check |
-| `audit_app_store_readiness` | Permission frameworks with no Info.plist purpose string, missing `PrivacyInfo.xcprivacy`, unlocalized strings, unlabeled icon buttons, `print()` |
+| `audit_app_store_readiness` | Permission frameworks with no Info.plist purpose string, missing `PrivacyInfo.xcprivacy`, unlocalized strings, unlabeled icon buttons, `print()`; source builds also check launch configuration, storyboards and assets |
 | `review_swift_memory` | Repeating `Timer` and `NotificationCenter` blocks capturing self, Combine sinks, non-`weak` delegates, stored closures, `unowned self` |
 | `review_swift_security` | Hardcoded secrets, credentials in `UserDefaults`, disabled ATS, cleartext HTTP, TLS trust accepted without evaluation, MD5/SHA-1, Keychain accessibility |
 | `review_swift_testing` | **Test files only.** Sleeping, tests with no assertion, live `URLSession`, `await` in an `XCTAssert` autoclosure, order-dependent static state |
@@ -328,3 +328,7 @@ Adds `review_app_intents` with conservative SiriKit migration advice and opt-in 
 ## Private chat feedback — source preview only
 
 The source adds `private_feedback` as a 37th tool. It requires an operator-configured HTTPS receiver, a local preview, and explicit user approval before sending fixed categories to a private repository. Hosting is not configured; this is not live or included in npm 2.7.0. No user GitHub sign-in is needed once deployed. No source, logs or credentials are accepted, and there is no automatic public fallback. See [the reporting workflow](https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/tooling/issue-reporting.md).
+
+### Launch-screen review (source build)
+
+The existing App Store audit and project analysis include target-aware static launch-screen checks. Unresolved settings are reported as coverage gaps. See [checks and limitations](../docs/tooling/launch-screen-review.md). This is not yet an npm release.

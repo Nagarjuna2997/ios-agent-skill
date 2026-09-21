@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { reviewLaunchScreens } from './analyzers/launch-screen.js';
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
@@ -239,17 +240,19 @@ server.registerTool(
   {
     title: "Audit App Store submission readiness",
     description:
-      "Check a Swift project for issues that cause App Store rejection or runtime termination: permission-gated frameworks used without an Info.plist purpose string, a missing PrivacyInfo.xcprivacy manifest, unlocalized user-facing strings, icon-only buttons with no accessibility label, and print() used for logging. Use before submitting to App Review.",
+      "Check a Swift project for issues that cause App Store rejection or runtime termination: permission-gated frameworks used without an Info.plist purpose string, a missing PrivacyInfo.xcprivacy manifest, unlocalized user-facing strings, icon-only buttons with no accessibility label, print() used for logging, and target-aware launch-screen configuration/storyboard/asset checks with explicit coverage limitations. Use before submitting to App Review.",
     inputSchema: pathInput,
   },
   async ({ path }) => {
     try {
       const root = await resolveProjectRoot(path);
-      const [files, context] = await Promise.all([
+      const [files, context, launch] = await Promise.all([
         readSwiftFiles(root),
         readProjectContext(root),
+        reviewLaunchScreens(root),
       ]);
       const findings = [
+        ...launch.findings,
         ...analyzeProjectLevelAppStore(context),
         ...files.flatMap((file) => analyzeAppStore(file, context)),
       ];
@@ -257,7 +260,7 @@ server.registerTool(
         content: [
           {
             type: "text" as const,
-            text: renderFindings("App Store Readiness Audit", findings, files.length),
+            text: renderFindings("App Store Readiness Audit", findings, files.length) + "\n\nLaunch-screen coverage: " + launch.configurations + " configurations.\n" + launch.coverage.map(x => "- " + x).join("\n"),
           },
         ],
       };
@@ -286,9 +289,10 @@ server.registerTool(
   async ({ path }) => {
     try {
       const root = await resolveProjectRoot(path);
-      const [files, context] = await Promise.all([
+      const [files, context, launch] = await Promise.all([
         readSwiftFiles(root),
         readProjectContext(root),
+        reviewLaunchScreens(root),
       ]);
       const summary = await summarizeProject(root, files);
 
@@ -303,13 +307,16 @@ server.registerTool(
         Performance: files.flatMap(analyzePerformance),
         Testing: [...analyzeTestCoverage(files), ...files.flatMap(analyzeTesting)],
         "App Store": [
-          ...analyzeProjectLevelAppStore(context),
+          ...launch.findings,
+        ...analyzeProjectLevelAppStore(context),
           ...files.flatMap((file) => analyzeAppStore(file, context)),
         ],
       };
 
       const lines: string[] = [
         "# Swift Project Analysis",
+        `Launch-screen coverage: ${launch.configurations} configurations.`,
+        ...launch.coverage.map(x => `- ${x}`),
         "",
         "## Structure",
         "",

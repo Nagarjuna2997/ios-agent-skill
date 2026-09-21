@@ -1,0 +1,14 @@
+[
+ {"id":"stale-storyboard","brief":"The target opens with the wrong launch appearance after a file rename. Diagnose and repair the launch reference without changing the app UI.","expected":["configuration-reference"]},
+ {"id":"target-membership","brief":"The launch file is visible in the repository but does not appear in the built app. Determine the configuration defect and make the smallest repair.","expected":["configuration-reference"]},
+ {"id":"image-case","brief":"The dictionary-based launch screen no longer shows the supplied logo. Diagnose why and preserve the intended logo and background.","expected":["asset-reference"]},
+ {"id":"image-payload","brief":"The launch image set exists but its Contents.json no longer matches its image file. Restore the intended asset without replacing the logo.","expected":["asset-reference"]},
+ {"id":"interactive-launch","brief":"A previous edit tried to make the launch screen run app behavior. Restore a valid static launch screen without deleting the launch design or modifying the real app.","expected":["storyboard-behavior"]},
+ {"id":"initial-controller","brief":"The launch storyboard builds unreliably and its scene is not displayed. Diagnose the entry point and preserve its static layout.","expected":["configuration-reference"]},
+ {"id":"release-reference","brief":"The launch screen is correct in Debug but incorrect in Release. Diagnose the configuration-specific difference without rewriting the working Debug configuration.","expected":["configuration-reference"]},
+ {"id":"overlap","brief":"The iOS 17 target was migrated to a dictionary launch screen. Remove the obsolete storyboard configuration while preserving the dictionary appearance and files used elsewhere.","expected":["configuration-overlap"]},
+ {"id":"valid-empty","brief":"Review the intentionally plain launch appearance. Fix only proven launch defects; preserve a valid plain screen without adding branding.","expected":[]},
+ {"id":"valid-generated","brief":"Review this SwiftUI app's generated launch configuration. Fix only proven defects and do not introduce a redundant plist or storyboard mechanism.","expected":[]},
+ {"id":"valid-namespace","brief":"Review the launch logo in a namespaced asset group. Fix only proven defects and preserve the asset namespace.","expected":[]},
+ {"id":"valid-intro","brief":"Review the launch configuration. The app also contains an ordinary animated intro; preserve that code and change only proven system launch defects.","expected":[]}
+]
