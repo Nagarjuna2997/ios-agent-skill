@@ -1337,5 +1337,31 @@
       "Web content boundary",
       "Animation runtime"
     ]
+  },
+  "docs/tooling/launch-screen-review.md": {
+    "flow": [
+      "Select target and configuration",
+      "Resolve launch mechanism",
+      "Check storyboard and assets",
+      "Report findings or coverage gaps"
+    ],
+    "architecture": [
+      "Xcode settings and Info.plist",
+      "Static launch evidence",
+      "App Store audit findings"
+    ]
+  },
+  "docs/tooling/local-release-package.md": {
+    "flow": [
+      "Select application target",
+      "Collect evidence and unknowns",
+      "Prepare integrity-hashed draft",
+      "Verify unchanged inputs before reuse"
+    ],
+    "architecture": [
+      "Local project evidence",
+      "App model and questions",
+      "Immutable local release package"
+    ]
   }
 }

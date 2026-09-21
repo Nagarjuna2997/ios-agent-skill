@@ -133,6 +133,8 @@ Give your coding agent the Apple references, Swift source and local tools it nee
 - [From an Idea to a Running Apple App](https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-idea-to-app.html)
 - [iOS Simulator MCP](https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-ios-simulator-mcp.html)
 - [AI-assisted issue previews](https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-issue-reporting.html)
+- [Review iOS launch-screen configuration](https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-launch-screen-review.html)
+- [Prepare an evidence-backed local release draft](https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-local-release-package.html)
 - [Build from local source and Apple guidance](https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-offline-source-library.html)
 - [Project Scaffolding and Layout](https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-project-scaffolding.html)
 - [Visual Iteration Loop](https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-visual-iteration-loop.html)

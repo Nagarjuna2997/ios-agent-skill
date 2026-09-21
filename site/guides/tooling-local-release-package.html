@@ -1,0 +1,188 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-local-release-package.html"><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-local-release-package.html"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css?v=guide-visuals-3"><link rel="stylesheet" href="../navigation.css?v=2"><script src="../appearance.js?v=2" defer=""></script><title>Prepare an evidence-backed local release draft</title><meta name="description" content="Inspect application targets, separate observed facts from inferences and create integrity-checked local release packages without Apple access."><meta property="og:title" content="Prepare an evidence-backed local release draft"><meta property="og:description" content="Inspect application targets, separate observed facts from inferences and create integrity-checked local release packages without Apple access."><meta property="og:type" content="article"><meta property="og:site_name" content="iOS Agent Skill"><meta name="twitter:title" content="Prepare an evidence-backed local release draft"><meta name="twitter:description" content="Inspect application targets, separate observed facts from inferences and create integrity-checked local release packages without Apple access."><meta name="twitter:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-local-release-package.html"><meta name="robots" content="index,follow"><link rel="alternate" type="application/atom+xml" href="/ios-agent-skill/feed.xml" title="iOS Agent Skill"><script id="site-discovery-schema" type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Prepare an evidence-backed local release draft","image":"https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg","datePublished":"2026-09-16T20:25:44-05:00","dateModified":"2026-09-21T00:29:39-05:00","author":{"@type":"Person","name":"Nagarjuna"},"mainEntityOfPage":"https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-local-release-package.html","url":"https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-local-release-package.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../series.html">Guided series</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div><button class="appearance-toggle" type="button" aria-label="Use dark appearance" aria-pressed="false"><span aria-hidden="true">☾</span><span class="appearance-label">Dark mode</span></button></nav><main id="main"><div class="article-back"><a class="btn secondary" href="../library.html">← Back to all frameworks &amp; guides</a><a class="btn secondary" href="../blog.html">All articles →</a></div><article class="blog-article"><header class="page-intro"><p class="eyebrow">Tooling · Reference guide</p><h1>Local App Store release preparation — Phase 1</h1><p class="lead">Repository guidance for Local App Store release preparation — Phase 1. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/tooling/local-release-package.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><p><a href="#visual-overview">Visual overview: workflow and architecture</a></p><div class="toc">
+<ul>
+<li><a href="#use-the-existing-combined-executable">Use the existing combined executable</a></li>
+<li><a href="#app-model-contract">App Model contract</a></li>
+<li><a href="#selection-and-evidence">Selection and evidence</a></li>
+<li><a href="#brief-and-questions">Brief and questions</a></li>
+<li><a href="#package-hashes-and-resume">Package, hashes and resume</a></li>
+<li><a href="#privacy-and-safety">Privacy and safety</a></li>
+<li><a href="#limits">Limits</a></li>
+</ul>
+</div>
+</aside><section class="guide-visuals" aria-labelledby="visual-overview"><h2 id="visual-overview">Visual overview</h2>
+<p>Use the workflow to follow the task, and the architecture map to separate responsibilities. These are conceptual maps; the guide below defines implementation details and verification limits.</p>
+<figure class="guide-flow"><figcaption><span class="guide-visual-kicker">01 / Workflow</span>From intent to a checked result</figcaption><ol role="list"><li><span class="guide-step-number" aria-hidden="true">1</span><span>Select application target</span><span class="guide-flow-arrow" aria-hidden="true">↓</span></li><li><span class="guide-step-number" aria-hidden="true">2</span><span>Collect evidence and unknowns</span><span class="guide-flow-arrow" aria-hidden="true">↓</span></li><li><span class="guide-step-number" aria-hidden="true">3</span><span>Prepare integrity-hashed draft</span><span class="guide-flow-arrow" aria-hidden="true">↓</span></li><li><span class="guide-step-number" aria-hidden="true">4</span><span>Verify unchanged inputs before reuse</span></li></ol></figure>
+<figure class="guide-architecture"><figcaption><span class="guide-visual-kicker">02 / Architecture</span>Responsibility boundaries</figcaption><ol role="list"><li><span class="guide-boundary-label">Boundary 1</span><strong>Local project evidence</strong></li><li><span class="guide-boundary-label">Boundary 2</span><strong>App model and questions</strong></li><li><span class="guide-boundary-label">Boundary 3</span><strong>Immutable local release package</strong></li></ol><p class="guide-visual-note">Connected responsibilities, not a required class hierarchy or an execution trace.</p></figure></section><p>Included in ios-agent-mcp 2.7.1. This phase
+collects deterministic, target-aware evidence and writes a private local draft.
+It does not connect to Apple, use AI, generate marketing copy or images, build,
+archive, sign, upload, submit, or release an app.</p>
+<h2 id="use-the-existing-combined-executable">Use the existing combined executable</h2>
+<pre><code class="language-sh">npm ci --prefix mcp-server
+npm run build --prefix mcp-server
+node mcp-server/dist/unified.js apple analyze --project /path/to/app \
+  --xcodeproj App.xcodeproj --target App --configuration Release --json
+node mcp-server/dist/unified.js apple prepare --project /path/to/app \
+  --xcodeproj App.xcodeproj --target App --configuration Release \
+  --prompt 'For students. No account required.'
+</code></pre>
+<p><code>--project</code> is the root directory, not the .xcodeproj file. <code>--xcodeproj</code> and
+<code>--workspace</code> select paths within that root. Release is the default configuration;
+there is no fallback to Debug. One unambiguous application target may be selected
+automatically. Multiple projects/targets require explicit selection. Simple flat
+workspace group references are supported; nested workspace groups are deferred.</p>
+<p><code>analyze</code> writes only its terminal/JSON response. <code>prepare</code> writes a package.
+Both commands return status 2 when target/configuration selection is blocked,
+1 on an invocation or file/integrity failure, and 0 for completed local analysis.
+Status 0 does not mean submission-ready: inspect questions, requirements and
+coverage. No MCP tool was added; the exported services and <code>--json</code> form the
+future MCP boundary without increasing the advertised tool count.</p>
+<h2 id="app-model-contract">App Model contract</h2>
+<p><code>mcp-server/src/release/model.ts</code> exports TypeScript interfaces and a runtime Zod
+<code>AppModelSchema</code>. Schema version 1 includes:</p>
+<ul>
+<li><code>selection</code>: project, optional workspace, target and configuration.</li>
+<li><code>claims</code>: identity/configuration, frameworks, permissions, entitlements, package
+  products, privacy/resource declarations and unresolved facts.</li>
+<li><code>features</code>: conservative API-use candidates, evidence, related screen candidates
+  and permissions. Service relationships stay empty when not established.</li>
+<li><code>screens</code>: lexical Swift type or storyboard candidates. Reachability is UNKNOWN
+  and runtime is NOT_CHECKED in this phase; reusable View types may be candidates.</li>
+<li><code>evidence</code>: stable IDs, relative paths, file SHA-256 and evidence group. No excerpts.</li>
+<li><code>coverage</code>: machine-readable limitations.</li>
+<li><code>sectionHashes</code>: semantic input/observation hashes for project, source, resources,
+  dependencies and brief evidence.</li>
+</ul>
+<p>Every observed claim requires evidence; all evidence IDs must resolve. States:</p>
+<table>
+<thead>
+<tr>
+<th>State</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OBSERVED</td>
+<td>A configuration/declaration or source syntax exists in inspected inputs</td>
+</tr>
+<tr>
+<td>INFERRED</td>
+<td>API/screen candidate, not verified user-facing behavior</td>
+</tr>
+<tr>
+<td>DEVELOPER_CONFIRMED</td>
+<td>Recognized explicit product intent from the brief</td>
+</tr>
+<tr>
+<td>CONFLICTING</td>
+<td>Brief assertion conflicts with detected evidence and needs clarification</td>
+</tr>
+<tr>
+<td>UNKNOWN</td>
+<td>Insufficient evidence; absence is not a negative claim</td>
+</tr>
+<tr>
+<td>NOT_APPLICABLE</td>
+<td>Reserved for an established non-applicable fact; never used as a fallback</td>
+</tr>
+</tbody>
+</table>
+<p>A camera permission does not prove off-device collection. StoreKit imports do not
+prove that subscriptions are sold. Authentication indicators do not prove login
+is required. Development team/signing settings do not establish signing validity.</p>
+<h2 id="selection-and-evidence">Selection and evidence</h2>
+<p>The implementation reuses the launch analyzer's OpenStep/plist dependencies and
+shared Xcode group/path resolver. It merges matching project/target configurations
+and reads explicit source/resource build phases. Generated Info.plist keys and
+simple substitutions are supported. XML and binary plists are supported.</p>
+<p>Only member Swift files contribute feature/screen candidates. Extension target
+references remain separate; their code is not attributed to the app. Selected
+resource trees contribute asset bytes, privacy manifests, localizations, storyboard
+and local StoreKit configuration presence. App icon configuration and successfully
+read icon-set metadata are separate claims. Existing launch analysis is scoped to
+the selected project, target and configuration, with findings retained as review
+requirements rather than a runtime certification.</p>
+<p>Package product membership is observed; lockfile presence alone does not prove
+linkage. Selected project lockfiles and package-manifest presence are hashed, but
+this phase does not interpret arbitrary dependency code or package scripts.
+README/BRIEF presence is hashed as untrusted context, not treated as feature proof.
+URL syntax is recorded without destinations, credentials, paths or query strings.
+Required-reason evidence currently covers manifest declarations and a conservative
+UserDefaults source indicator, not a comprehensive required-reason API scan.</p>
+<h2 id="brief-and-questions">Brief and questions</h2>
+<p>The optional brief is not sent to a model and is not saved verbatim. A small fixed
+controlled grammar accepts complete statements such as “For students” and the phrase “No account required” (and
+its supported login variants). Every statement must match the grammar; negated, quoted or mixed free-form briefs are not promoted to confirmed facts. Other free-form positioning is intentionally not
+interpreted. This is not natural-language app understanding. A no-account assertion
+with authentication API evidence creates a conflict. Without conflicting evidence,
+the explicit assertion avoids a repeat question while static authentication remains
+UNKNOWN. Secrets and arbitrary prose do not become artifact text.</p>
+<p>Questions cover unresolved identity, review access, sensitive data handling,
+purchases and signing. Sensitive permission/dependency/manifest evidence yields
+one grouped data-handling question rather than many generic questions. Questions
+have priority, domain, claim IDs and evidence IDs. Some missing-answer questions
+have no evidence because the fact itself is unknown. Phase 1 does not collect or
+persist arbitrary answers, prepare a legal questionnaire, or select legal reasons.</p>
+<h2 id="package-hashes-and-resume">Package, hashes and resume</h2>
+<p>Output is <code>.ios-agent/releases/local-&lt;digest&gt;/</code>. It contains:</p>
+<pre><code class="language-text">manifest.json           versioned provenance and readiness limits
+app-model.json          schema-validated facts and candidates
+requirements.json       local checks and unresolved review requirements
+questions.json          prioritized missing information
+change-plan.json        explicitly empty remote/project operations
+integrity.json          SHA-256 for each generated JSON artifact
+metadata/ privacy/ review/ icons/ screenshots/raw/ screenshots/composed/
+validation/ evidence/ approvals/ operations/
+</code></pre>
+<p>Empty directories reserve future boundaries; they are not generated release assets.
+The manifest includes selection, identity claims, revision when Git is available,
+source fingerprint, package/model schema versions, implementation hash, Node/tool
+versions, timestamp, model and evidence hashes, and blockers. Xcode/Swift and
+build/test/signing state are NOT_CHECKED because this phase executes none of them.
+Its semantic hash excludes the timestamp; integrity includes the timestamp.
+The source fingerprint includes selected evidence and coverage, not unrelated
+Swift files elsewhere in the repository.</p>
+<p>Equivalent inputs produce identical semantic hashes; a second prepare validates
+and reuses the immutable package. Changes create a new package, preserving prior
+packages. Section hashes include associated facts/candidates as well as input
+bytes, so unchanged unrelated sections retain identity. <code>reusedSections</code> records
+matching verified section identities, not a claim that parsing was skipped.
+Inputs are reread to verify validity; there is no persistent parse cache.</p>
+<p>All existing packages used for reuse are integrity-checked. Corruption stops
+preparation rather than silently overwriting evidence. Atomic directory rename
+publishes a complete package after a second fingerprint check. A preparation lock
+prevents competing writes. Following a crash, inspect the lock/staging directory
+and remove the stale lock before rerunning; completed packages remain intact.
+Hashes detect accidental corruption, not malicious edits by someone who can rewrite
+both artifacts and their hashes. Live filesystem mutation races are not a sandbox.</p>
+<h2 id="privacy-and-safety">Privacy and safety</h2>
+<p>No Apple credentials, AI providers or networking are needed. The only child process
+in preparation is a bounded local Git revision read. No project scripts, package
+resolution, xcodebuild, shell commands from project content or simulator actions run.</p>
+<p>Artifacts contain summaries/hashes, not source, raw manifests, signing keys, URLs,
+permission prose or raw briefs. Sensitive file formats and conventional credential
+paths are excluded. Common token/private-key patterns and unsafe values are
+filtered. Do not intentionally place arbitrary secrets in app names/identifiers:
+no heuristic filter can recognize every possible secret disguised as ordinary text.</p>
+<p>The package is private working data, not a public export. Paths and app identity can
+still identify an unpublished product. New directories/files use restrictive modes
+where supported. The generated releases/.gitignore ignores all contents; no parent
+project .gitignore is rewritten. Already tracked files cannot be untracked by an
+ignore rule. Symlink output paths/files are refused; inventory symlinks are excluded.</p>
+<h2 id="limits">Limits</h2>
+<ul>
+<li>xcconfig inheritance, conditional build settings, synchronized Xcode groups,
+  inclusion/exclusion rules and preprocessed plists block static resolution.</li>
+<li>Swift conditional-compilation files are deferred. Lexical masking handles strings
+  and comments, but syntax/type resolution, macros and semantic reachability are
+  not implemented. Identically named APIs/types may still be unrelated symbols.</li>
+<li>Generated/copied resources yield partial membership coverage. Missing/unreadable
+  inputs and bounded scans remain visible. No claim of whole-app completeness.</li>
+<li>Objective-C, arbitrary project generators, nested workspaces, native Icon Composer
+  validation, compiled SDK behavior and extension internals are unsupported.</li>
+<li>Backend behavior, actual privacy collection, retention, tracking, review credentials,
+  signing validity and App Store state remain unknown.</li>
+</ul>
+<p>These are foundation artifacts, not a guarantee of App Review approval.
+See <a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/tooling/launch-screen-review.md">launch checks</a> and the
+<a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/benchmarks/release-preparation/README.md">release preparation evaluation</a>.</p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><!-- discovery-nav:start --><div role="navigation" aria-label="Site discovery"><a href="../">Home</a> · <a href="../install.html">Install</a> · <a href="../community.html">Community</a> · <a href="../blog.html">Blog</a> · <a href="../docs-index.html">Docs index</a> · <a href="../pages.html">Site map</a> · <a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a> · <a href="https://www.npmjs.com/package/ios-agent-mcp">npm</a></div><!-- discovery-nav:end --></footer></div></body></html>

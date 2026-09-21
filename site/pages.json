@@ -922,5 +922,13 @@
   "releases.html": {
     "title": "Release notes — iOS Agent Skill",
     "description": "What changed in ios-agent-mcp 2.7.1: launch-screen reviews, local release preparation, regression tests and current limitations."
+  },
+  "guides/tooling-launch-screen-review.html": {
+    "title": "Review iOS launch-screen configuration",
+    "description": "Check target-specific launch settings, missing storyboards and asset references while keeping unresolved configurations visible."
+  },
+  "guides/tooling-local-release-package.html": {
+    "title": "Prepare an evidence-backed local release draft",
+    "description": "Inspect application targets, separate observed facts from inferences and create integrity-checked local release packages without Apple access."
   }
 }

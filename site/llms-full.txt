@@ -56772,7 +56772,7 @@ All articles →Tooling · Project internalsAI-assisted issue previewsRepository
 All guidesOn this pageVisual overview: workflow and architecture
 
 Local developer feedback on every failed step
-Private feedback from the AI chat — source preview only
+Private feedback from the AI chat — experimental
 
 Visual overview
 
@@ -56792,7 +56792,7 @@ Local failure categoryBoundary 2
 Report previewBoundary 3
 User-controlled GitHub issueConnected responsibilities, not a required class hierarchy or an execution trace.
 Availability:
- ios-agent-mcp 2.7.0 and later, with 36 unified tools.
+ ios-agent-mcp 2.7.0 and later, with 36 unified tools in 2.7.0; 37 in 2.7.1.
 
 When an iOS Agent operation fails, the AI can prepare a report using
 
@@ -56852,11 +56852,11 @@ The unified server appends troubleshooting guidance to returned unified tool err
 
 This feedback stays in the coding session, not in the generated app or the public website. Redact secrets before repeating diagnostics. It does not transmit additional details or confirm a GitHub submission. Repeated failures get local attention and public submission remains separately authorized. For an actionable public bug report, separately review and authorize a minimal synthetic reproduction; never attach private app code or raw logs automatically.
 
-Private feedback from the AI chat — source preview only
+Private feedback from the AI chat — experimental
 
-The source adds
+Version 2.7.1 includes
 private_feedback
- as a 37th tool. It is not in npm 2.7.0 and the
+ as a 37th tool. The
 receiver is not deployed. Without
 IOS_AGENT_PRIVATE_FEEDBACK_URL
 , it returns
@@ -56904,6 +56904,451 @@ independently prove that an AI obtained consent; client instructions and the cod
 client’s tool-approval controls remain important. There is no background failure hook
 or automatic report on every tool call. See the
 operator setup
+.
+
+---
+
+# Review iOS launch-screen configuration
+https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-launch-screen-review.html
+
+← Back to all frameworks & guides
+All articles →Tooling · Reference guideReviewing iOS launch screensRepository guidance for Reviewing iOS launch screens. Examples, decisions, and verification limits from the maintained source guide.Read or improve the source
+ ·
+All guidesOn this pageVisual overview: workflow and architecture
+
+What is resolved
+Diagnostics
+Conservative limits
+Evidence and benchmark
+Apple references
+
+Visual overview
+
+Use the workflow to follow the task, and the architecture map to separate responsibilities. These are conceptual maps; the guide below defines implementation details and verification limits.
+
+01 / WorkflowFrom intent to a checked result1
+Select target and configuration
+↓2
+Resolve launch mechanism
+↓3
+Check storyboard and assets
+↓4
+Report findings or coverage gaps
+
+02 / ArchitectureResponsibility boundariesBoundary 1
+Xcode settings and Info.plistBoundary 2
+Static launch evidenceBoundary 3
+App Store audit findingsConnected responsibilities, not a required class hierarchy or an execution trace.
+Since ios-agent-mcp 2.7.1,
+audit_app_store_readiness
+ and
+analyze_swift_project
+
+includes launch-screen checks. No additional MCP connection or tool is needed.
+Point the server at an app's
+project directory; the audit prints findings and a separate coverage summary.
+
+A system launch screen is static. A SwiftUI or UIKit intro shown after the app
+starts is ordinary app UI. The analyzer does not classify an animated Swift view
+as an invalid launch screen merely because its name includes “Splash”. See the
+existing
+splash/intro pattern
+.
+
+What is resolved
+
+The reader parses OpenStep Xcode project files and XML/binary Info.plists. It
+selects iOS application targets, merges matching project and target build
+configurations, and follows explicit resource build phases and localized variant
+groups. Configuration findings identify the target/configuration, file and line.
+For binary plists, line 1 is used because binary data has no source line mapping.
+
+Supported launch sources are
+UILaunchStoryboardName
+,
+UILaunchScreen
+, an
+explicit
+INFOPLIST_FILE
+, and generated-plist settings including
+
+INFOPLIST_KEY_UILaunchStoryboardName
+ and
+INFOPLIST_KEY_UILaunchScreen_Generation
+.
+SwiftUI and UIKit use the same project evidence; neither framework import proves
+that launch configuration is present or absent. An empty
+UILaunchScreen
+
+dictionary and a plain background are valid, not automatically “blank-screen” bugs.
+
+The reader checks explicit target asset catalogs, case-sensitive image/color
+names, namespaced asset groups, and referenced image payload filenames. A file
+in another target does not satisfy this target's resource membership. System
+colors and explicitly system-catalog storyboard images are not treated as missing
+app assets. Static presence does not certify that a resource was compiled or that
+it looks correct on a device.
+
+Diagnostics
+
+Rule
+
+Evidence required
+
+launch-configuration-missing
+
+Resolved iOS app configuration lacks either supported mechanism; no alternative launch key or unknown resource pipeline explains it
+
+launch-configuration-type
+
+A single-storyboard key is not a nonempty string, or UILaunchScreen is not a dictionary
+
+launch-storyboard-missing
+
+Explicit target resource membership or the referenced file is absent, with a complete applicable inventory
+
+launch-asset-missing
+
+A referenced launch image/color is absent from the target's explicit resources; namespace resolution is known
+
+launch-asset-file-missing
+
+A referenced image set names a payload file that is absent
+
+launch-storyboard-invalid
+
+The selected storyboard is malformed XML
+
+launch-initial-controller-missing
+
+The storyboard has no initial entry point or its identifier cannot resolve
+
+launch-custom-class
+
+The selected launch storyboard declares a custom class
+
+launch-code-connection
+
+It declares actions, outlets or outlet collections
+
+launch-runtime-attribute
+
+It declares user-defined runtime attributes
+
+launch-deprecated-view
+
+It contains a UIWebView element
+
+launch-dictionary-availability
+
+Dictionary-only launch configuration with a known deployment target below iOS 14
+
+launch-mechanisms-overlap
+
+Both single-storyboard and dictionary mechanisms are configured with a known minimum iOS 14+ target; minor review advisory, not a build/rejection claim
+
+The overlap advisory asks the developer to review intent. It does not delete
+configuration or override deliberate compatibility decisions. Lower deployment
+targets with a storyboard fallback do not receive that advisory.
+
+Conservative limits
+
+Unresolved cases produce coverage notes rather than speculative missing-resource
+findings. These include xcconfig inheritance, conditional build settings,
+preprocessed plists, launch-variable substitutions, unsupported or unreadable
+plists/projects, resource inclusion/exclusion settings, generated resources from
+scripts, copy phases, synchronized groups, folder references and referenced paths
+inside skipped dependency/build directories. Device-qualified launch keys,
+multiple launch screens/storyboards and legacy launch-image configurations are
+recognized but deferred. Non-generated plists with launch build-setting overrides
+need resolved Xcode evidence and are deferred too.
+
+The inventory does not follow symlinks and limits files/directories and parsed
+file size. An incomplete inventory cannot prove an asset is absent. Malformed
+namespace metadata is not interpreted as a valid non-namespaced group. Libraries,
+packages, extensions and unconfigured source folders are not accused of missing
+an app launch screen. Missing/unparseable Info.plists are coverage gaps, not
+launch-specific defects.
+
+This does not evaluate layout quality, contrast, exact rendered appearance,
+launch duration, screenshot caching, state-restoration snapshots, compiled asset
+variants, asset file encoding, app-store acceptance, or arbitrary third-party
+project generators. It never runs Xcode, scripts or app code during a review.
+Validate unresolved cases with resolved build settings, the built app's Info.plist
+and resources, an actual build, and a cold launch on supported simulators/devices.
+Do not delete user data to clear launch caches without explicit approval.
+
+Evidence and benchmark
+
+Launch benchmark suite
+ contains valid
+and intentionally broken multi-file projects, a separate contract oracle, and a
+resumable Codex runner. Fixture validation is not evidence that the skill improves
+agent output. The original 120-run benchmark and its 60 paired ties stay unchanged.
+
+Apple references
+
+Specifying your app’s launch screen
+UILaunchScreen
+UILaunchStoryboardName
+Debugging your app’s launch screen (TN3118)
+
+These sources informed the configuration and static-document constraints. A
+project-level finding is based on local evidence, not a claim that Apple tested it.
+
+---
+
+# Prepare an evidence-backed local release draft
+https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-local-release-package.html
+
+← Back to all frameworks & guides
+All articles →Tooling · Reference guideLocal App Store release preparation — Phase 1Repository guidance for Local App Store release preparation — Phase 1. Examples, decisions, and verification limits from the maintained source guide.Read or improve the source
+ ·
+All guidesOn this pageVisual overview: workflow and architecture
+
+Use the existing combined executable
+App Model contract
+Selection and evidence
+Brief and questions
+Package, hashes and resume
+Privacy and safety
+Limits
+
+Visual overview
+
+Use the workflow to follow the task, and the architecture map to separate responsibilities. These are conceptual maps; the guide below defines implementation details and verification limits.
+
+01 / WorkflowFrom intent to a checked result1
+Select application target
+↓2
+Collect evidence and unknowns
+↓3
+Prepare integrity-hashed draft
+↓4
+Verify unchanged inputs before reuse
+
+02 / ArchitectureResponsibility boundariesBoundary 1
+Local project evidenceBoundary 2
+App model and questionsBoundary 3
+Immutable local release packageConnected responsibilities, not a required class hierarchy or an execution trace.
+Included in ios-agent-mcp 2.7.1. This phase
+collects deterministic, target-aware evidence and writes a private local draft.
+It does not connect to Apple, use AI, generate marketing copy or images, build,
+archive, sign, upload, submit, or release an app.
+
+Use the existing combined executable
+
+npm ci --prefix mcp-server
+npm run build --prefix mcp-server
+node mcp-server/dist/unified.js apple analyze --project /path/to/app \
+  --xcodeproj App.xcodeproj --target App --configuration Release --json
+node mcp-server/dist/unified.js apple prepare --project /path/to/app \
+  --xcodeproj App.xcodeproj --target App --configuration Release \
+  --prompt 'For students. No account required.'
+
+--project
+ is the root directory, not the .xcodeproj file.
+--xcodeproj
+ and
+
+--workspace
+ select paths within that root. Release is the default configuration;
+there is no fallback to Debug. One unambiguous application target may be selected
+automatically. Multiple projects/targets require explicit selection. Simple flat
+workspace group references are supported; nested workspace groups are deferred.
+
+analyze
+ writes only its terminal/JSON response.
+prepare
+ writes a package.
+Both commands return status 2 when target/configuration selection is blocked,
+1 on an invocation or file/integrity failure, and 0 for completed local analysis.
+Status 0 does not mean submission-ready: inspect questions, requirements and
+coverage. No MCP tool was added; the exported services and
+--json
+ form the
+future MCP boundary without increasing the advertised tool count.
+
+App Model contract
+
+mcp-server/src/release/model.ts
+ exports TypeScript interfaces and a runtime Zod
+
+AppModelSchema
+. Schema version 1 includes:
+
+selection
+: project, optional workspace, target and configuration.
+claims
+: identity/configuration, frameworks, permissions, entitlements, package
+  products, privacy/resource declarations and unresolved facts.
+features
+: conservative API-use candidates, evidence, related screen candidates
+  and permissions. Service relationships stay empty when not established.
+screens
+: lexical Swift type or storyboard candidates. Reachability is UNKNOWN
+  and runtime is NOT_CHECKED in this phase; reusable View types may be candidates.
+evidence
+: stable IDs, relative paths, file SHA-256 and evidence group. No excerpts.
+coverage
+: machine-readable limitations.
+sectionHashes
+: semantic input/observation hashes for project, source, resources,
+  dependencies and brief evidence.
+
+Every observed claim requires evidence; all evidence IDs must resolve. States:
+
+State
+
+Meaning
+
+OBSERVED
+
+A configuration/declaration or source syntax exists in inspected inputs
+
+INFERRED
+
+API/screen candidate, not verified user-facing behavior
+
+DEVELOPER_CONFIRMED
+
+Recognized explicit product intent from the brief
+
+CONFLICTING
+
+Brief assertion conflicts with detected evidence and needs clarification
+
+UNKNOWN
+
+Insufficient evidence; absence is not a negative claim
+
+NOT_APPLICABLE
+
+Reserved for an established non-applicable fact; never used as a fallback
+
+A camera permission does not prove off-device collection. StoreKit imports do not
+prove that subscriptions are sold. Authentication indicators do not prove login
+is required. Development team/signing settings do not establish signing validity.
+
+Selection and evidence
+
+The implementation reuses the launch analyzer's OpenStep/plist dependencies and
+shared Xcode group/path resolver. It merges matching project/target configurations
+and reads explicit source/resource build phases. Generated Info.plist keys and
+simple substitutions are supported. XML and binary plists are supported.
+
+Only member Swift files contribute feature/screen candidates. Extension target
+references remain separate; their code is not attributed to the app. Selected
+resource trees contribute asset bytes, privacy manifests, localizations, storyboard
+and local StoreKit configuration presence. App icon configuration and successfully
+read icon-set metadata are separate claims. Existing launch analysis is scoped to
+the selected project, target and configuration, with findings retained as review
+requirements rather than a runtime certification.
+
+Package product membership is observed; lockfile presence alone does not prove
+linkage. Selected project lockfiles and package-manifest presence are hashed, but
+this phase does not interpret arbitrary dependency code or package scripts.
+README/BRIEF presence is hashed as untrusted context, not treated as feature proof.
+URL syntax is recorded without destinations, credentials, paths or query strings.
+Required-reason evidence currently covers manifest declarations and a conservative
+UserDefaults source indicator, not a comprehensive required-reason API scan.
+
+Brief and questions
+
+The optional brief is not sent to a model and is not saved verbatim. A small fixed
+controlled grammar accepts complete statements such as “For students” and the phrase “No account required” (and
+its supported login variants). Every statement must match the grammar; negated, quoted or mixed free-form briefs are not promoted to confirmed facts. Other free-form positioning is intentionally not
+interpreted. This is not natural-language app understanding. A no-account assertion
+with authentication API evidence creates a conflict. Without conflicting evidence,
+the explicit assertion avoids a repeat question while static authentication remains
+UNKNOWN. Secrets and arbitrary prose do not become artifact text.
+
+Questions cover unresolved identity, review access, sensitive data handling,
+purchases and signing. Sensitive permission/dependency/manifest evidence yields
+one grouped data-handling question rather than many generic questions. Questions
+have priority, domain, claim IDs and evidence IDs. Some missing-answer questions
+have no evidence because the fact itself is unknown. Phase 1 does not collect or
+persist arbitrary answers, prepare a legal questionnaire, or select legal reasons.
+
+Package, hashes and resume
+
+Output is
+.ios-agent/releases/local-<digest>/
+. It contains:
+
+manifest.json           versioned provenance and readiness limits
+app-model.json          schema-validated facts and candidates
+requirements.json       local checks and unresolved review requirements
+questions.json          prioritized missing information
+change-plan.json        explicitly empty remote/project operations
+integrity.json          SHA-256 for each generated JSON artifact
+metadata/ privacy/ review/ icons/ screenshots/raw/ screenshots/composed/
+validation/ evidence/ approvals/ operations/
+
+Empty directories reserve future boundaries; they are not generated release assets.
+The manifest includes selection, identity claims, revision when Git is available,
+source fingerprint, package/model schema versions, implementation hash, Node/tool
+versions, timestamp, model and evidence hashes, and blockers. Xcode/Swift and
+build/test/signing state are NOT_CHECKED because this phase executes none of them.
+Its semantic hash excludes the timestamp; integrity includes the timestamp.
+The source fingerprint includes selected evidence and coverage, not unrelated
+Swift files elsewhere in the repository.
+
+Equivalent inputs produce identical semantic hashes; a second prepare validates
+and reuses the immutable package. Changes create a new package, preserving prior
+packages. Section hashes include associated facts/candidates as well as input
+bytes, so unchanged unrelated sections retain identity.
+reusedSections
+ records
+matching verified section identities, not a claim that parsing was skipped.
+Inputs are reread to verify validity; there is no persistent parse cache.
+
+All existing packages used for reuse are integrity-checked. Corruption stops
+preparation rather than silently overwriting evidence. Atomic directory rename
+publishes a complete package after a second fingerprint check. A preparation lock
+prevents competing writes. Following a crash, inspect the lock/staging directory
+and remove the stale lock before rerunning; completed packages remain intact.
+Hashes detect accidental corruption, not malicious edits by someone who can rewrite
+both artifacts and their hashes. Live filesystem mutation races are not a sandbox.
+
+Privacy and safety
+
+No Apple credentials, AI providers or networking are needed. The only child process
+in preparation is a bounded local Git revision read. No project scripts, package
+resolution, xcodebuild, shell commands from project content or simulator actions run.
+
+Artifacts contain summaries/hashes, not source, raw manifests, signing keys, URLs,
+permission prose or raw briefs. Sensitive file formats and conventional credential
+paths are excluded. Common token/private-key patterns and unsafe values are
+filtered. Do not intentionally place arbitrary secrets in app names/identifiers:
+no heuristic filter can recognize every possible secret disguised as ordinary text.
+
+The package is private working data, not a public export. Paths and app identity can
+still identify an unpublished product. New directories/files use restrictive modes
+where supported. The generated releases/.gitignore ignores all contents; no parent
+project .gitignore is rewritten. Already tracked files cannot be untracked by an
+ignore rule. Symlink output paths/files are refused; inventory symlinks are excluded.
+
+Limits
+
+xcconfig inheritance, conditional build settings, synchronized Xcode groups,
+  inclusion/exclusion rules and preprocessed plists block static resolution.
+Swift conditional-compilation files are deferred. Lexical masking handles strings
+  and comments, but syntax/type resolution, macros and semantic reachability are
+  not implemented. Identically named APIs/types may still be unrelated symbols.
+Generated/copied resources yield partial membership coverage. Missing/unreadable
+  inputs and bounded scans remain visible. No claim of whole-app completeness.
+Objective-C, arbitrary project generators, nested workspaces, native Icon Composer
+  validation, compiled SDK behavior and extension internals are unsupported.
+Backend behavior, actual privacy collection, retention, tracking, review credentials,
+  signing validity and App Store state remain unknown.
+
+These are foundation artifacts, not a guarantee of App Review approval.
+See
+launch checks
+ and the
+
+release preparation evaluation
 .
 
 ---
@@ -59176,7 +59621,7 @@ https://nagarjuna2997.github.io/ios-agent-skill/library.html
 
 Learn from the sourceFrameworks. Features.
 
-Practical decisions.Explore 99 tracked technologies and 98 developer guides. Project maintenance and contributor references are listed separately below. These are maintained references, not a claim that every example has been compiled. Each guide retains its own availability and verification notes.Start with a tested walkthrough →
+Practical decisions.Explore 99 tracked technologies and 100 developer guides. Project maintenance and contributor references are listed separately below. These are maintained references, not a claim that every example has been compiled. Each guide retains its own availability and verification notes.Start with a tested walkthrough →
  ·
 Project internalsFind a framework, feature or workflowAuthentication, Security, and PrivacyApp Store Submission ChecklistPrivacy Manifest
 DesignProfessional UI/UX SystemDesign
@@ -59269,6 +59714,8 @@ Developer ToolsFoundation Models `fm` CLIfm CLI
 Developer ToolsFoundation Models InstrumentsFoundation Models Instruments
 ToolingFrom an Idea to a Running Apple AppTooling
 Developer ToolsiOS Simulator MCPiOS Simulator MCP
+ToolingReviewing iOS launch screensTooling
+ToolingLocal App Store release preparation — Phase 1Tooling
 ToolingBuild from local source and Apple guidanceTooling
 ToolingProject Scaffolding and LayoutTooling
 ToolingVisual Iteration LoopTooling
@@ -59292,7 +59739,7 @@ Site mapEvery public page on this website.Pages
 Practical Swift & AI development guidesDaily community monitorCommunity & MentionsiOS Agent Skill — Swift Reviews & Xcode Simulator MCPApple development guide librarySite mapRelease notes — iOS Agent SkillFrom first prompt to shipped app: guided Swift seriesInstall guides
 Install iOS Agent MCP — Claude, Codex, Gemini CLI & MuseBlog
 How can design tokens generate light, dark and…How should I review availability guards when moving a…ChatGPT and Codex: plan the app, then verify it locallyChoose an AI client for your iOS workflowHow can Claude Code hooks protect generated files and…Claude Code: turn a Swift finding into a tested patchGemini CLI: connect once and review one iOS featureGenerate light and dark asset catalogs without a paid…Which Muse Code MCP settings actually work with a local…Muse Code: what our integration actually verifiesReview AI-generated Swift before you trust itHow can I catch Swift concurrency review findings before…SwiftUI: review state transitions before polishing the…Five checks for an AI-built SwiftUI appDocs
-Documentation indexApp Store Submission ChecklistGenerate real asset catalogsiOS Color System -- Complete Guide for Stunning SwiftUI UIsDesign Tokens, Adaptive Color, and Liquid GlassiOS Font Catalog — Ultimate ReferenceLayer-by-Layer Icons with Icon ComposerInteraction StandardsAdopting Liquid GlassProfessional UI/UX SystemStunning UI Patterns -- Complete SwiftUI Pattern LibraryThird-Party Animation IntegrationiOS Typography System -- Complete Guide for Stunning…ActivityKit & Live ActivitiesApp ClipsApp IntentsApple IntelligenceARKit -- Complete Guide for Augmented Reality on iOS and…AuthenticationServicesAVFoundationBackgroundTasksCloudKitCore AI -- Custom On-Device AI Models on Apple SiliconCore DataCoreLocationCore Spotlight RAG -- Private App-Local Retrieval for…CryptoKitSwiftData and Core Data ConcurrencyDevice Integrity (DeviceCheck & App Attest)Extended Apple FrameworksFoundation ModelsFoundation FrameworkCoreBluetoothCoreMotionCoreNFCHealthKitHomeKit and MatterLocalAuthenticationMapKitMetal -- GPU Rendering, Compute, and Performance-Critical…CoreML -- Complete Guide for On-Device Machine LearningNaturalLanguage Framework -- Complete Guide for Text…Sound AnalysisSpeech Framework -- Complete Guide for Speech Recognition…TranslationVision Framework -- Complete Guide for Image Analysis and…Network.frameworkNetworkingOSLog & MetricKitPhotosUI & AVKitRealityKit -- Complete Guide for 3D Rendering, AR, and…SceneKit -- Legacy 3D Scenes, Animation, and AR RenderingContacts FrameworkEventKitPassKit & FinanceKitWeatherKitStoreKit 2Swift ChartsSwiftDataTipKitUserNotificationsVisionKitWidgetKitMCP Usage ExamplesInstalling the iOS Agent MCP ServerApple Knowledge MCPOfficial MCP Registry publicationMCP Tool ReferencevNext MCP Analysis ToolsDynamic Workflows and Large-Scale JobsHooks — Deterministic EnforcementLoopsMain Agent RouterSubagentsVerification and the Evidence ContractiOS Platform GuidemacOS Platform GuidetvOS Platform GuidevisionOS Platform GuidewatchOS Platform GuideSwiftUI AnimationsRouting, Deep Links, and State RestorationSwiftUI GesturesSwiftUI iOS 27 InteractionsSwiftUI Layout SystemSwiftUI NavigationSwiftUI State and Data FlowSwiftUI Views and ControlsEvaluations -- Testing Intelligence-Powered FeaturesApp-building loop (preview)App Description WorkflowDevice HubFoundation Models `fm` CLIFoundation Models InstrumentsFrom an Idea to a Running Apple AppiOS Simulator MCPAI-assisted issue previewsBuild from local source and Apple guidanceProject Scaffolding and LayoutVisual Iteration LoopXcode 27 Coding AgentsXcode Memory DebuggingUIKit EssentialsNative vs. Web Animation and 3DWhat "vibe coding" a Swift app actually means, and what…What you need before an AI can build you an iOS app: Mac,…Choosing a coding agent for iOS in 2026: Claude Code,…Your first hour: install Xcode, run the simulator, build…How coding agents read a project: AGENTS.md, CLAUDE.md,…Skills, plugins, MCP servers, hooks: the four words…Build a SwiftUI to-do app with Claude Code: the brief,…Compare the same to-do app task in Codex without changing…Prepare an Antigravity app-building trial and identify…Prepare a Muse app-building trial beyond tool discoveryWriting an app brief an agent can build from: ten…Generating an Xcode project the agent can edit: XcodeGen…Running and seeing your app: simulator boot, install,…What to do when the build fails: reading Xcode errors…Review Swift 6 settings and actor isolation before…Getting an agent to run checks: hooks, Stop conditions…Making the agent prove it: screenshots as evidence, not…Reviewing agent output before you commit: a focused…Git for vibe coders: branches per prompt, checkpoints,…Keeping the agent inside your design: tokens, no…SwiftUI prompt practice: 25 scoped exercises and…When a SwiftUI agent task fails: ten failure categories…Local persistence contracts: Reading List JSON storage…Localization with an agent: what to check before it…Search, filtering and empty states that pass…Networking and Codable with an agent: the concurrency…Navigation in SwiftUI: what agents get wrong with…Adding widgets with App Intents: a timeline and…Designing Siri actions with App Intents and testable…On-device AI: Foundation Models readiness and fallback…Notifications, background tasks and the permissions…Deep links and universal links, and using them for…App icons in 2026: Liquid Glass, Icon Composer, and…Color systems that survive dark mode and high contrast,…Typography in SwiftUI that respects Dynamic Type: rules…Motion and haptics: what to ask an agent for, and what…Making an agent-built app look intentional, not templatedPreparing repeatable simulator captures for App Store…From Figma to SwiftUI with an agent: variables to tokens…Swift Testing vs XCTest: what to have the agent generate…UI tests an agent can write and maintainAccessibility review of an agent-built app: the checks…Performance: hangs, launch time and the patterns agents…Memory: retain cycles agents create in closures and CombineSecurity review of an agent-built app: keychain, ATS,…Static review vs the compiler: what heuristics catch and…App Store readiness: the checks before you upload an…Privacy manifests, permissions strings and the things…Preparing for TestFlight: signing, builds and account…Investigating App Review feedback without guessing the…Versioning, changelogs and release notes the agent can…CI for an iOS repo with agent-written code: what to run…Subagents for iOS: splitting review, build and design…Preparing to verify Xcode 27 agents with external skillsKeeping up with Apple: refreshing references after each…Planning a safe Swift 6 and iOS 27 migrationCoordinating parallel coding work with isolated checkoutsWriting your own review rule for a Swift codebaseWriting your own skill for a Swift project: SKILL.md…Building a Claude Code plugin from a skillBuilding a Codex plugin from the same skillCross-client packaging: verified Muse scope and an…Verifying a skill across clients: the client verification…Measuring whether a skill helps: a paired benchmark…Ask for the finding, not the fix: why review-first…When the agent says "done", run the tests yourself onceSmall prompts, one screen at a time, commit between eachKeep signing and account changes separate from code repairsReading agent transcripts: the three phrases that mean it…Turn every failure into a rule: how findings become reviewsVerify Muse observer behavior before recommending itCodex worktrees for parallel screensTreat background builds as running work, not completed…Claude Code plan mode before any multi-file Swift changeAsk the agent to search local Apple references before the…Ask about actor ownership before adding MainActorWhat to put in .gitignore for agent-built Xcode projects"Show me the screenshot" as a standing instructionPin your Xcode version in AGENTS.md and stop the agent…One deep link per screen makes every screenshot automatableKeep design tokens in one file and tell the agent it's…Review the XcodeGen spec before regenerating the projectUse `#available` audits before every beta upgradeHooks beat reminders: enforce, don't request
+Documentation indexApp Store Submission ChecklistGenerate real asset catalogsiOS Color System -- Complete Guide for Stunning SwiftUI UIsDesign Tokens, Adaptive Color, and Liquid GlassiOS Font Catalog — Ultimate ReferenceLayer-by-Layer Icons with Icon ComposerInteraction StandardsAdopting Liquid GlassProfessional UI/UX SystemStunning UI Patterns -- Complete SwiftUI Pattern LibraryThird-Party Animation IntegrationiOS Typography System -- Complete Guide for Stunning…ActivityKit & Live ActivitiesApp ClipsApp IntentsApple IntelligenceARKit -- Complete Guide for Augmented Reality on iOS and…AuthenticationServicesAVFoundationBackgroundTasksCloudKitCore AI -- Custom On-Device AI Models on Apple SiliconCore DataCoreLocationCore Spotlight RAG -- Private App-Local Retrieval for…CryptoKitSwiftData and Core Data ConcurrencyDevice Integrity (DeviceCheck & App Attest)Extended Apple FrameworksFoundation ModelsFoundation FrameworkCoreBluetoothCoreMotionCoreNFCHealthKitHomeKit and MatterLocalAuthenticationMapKitMetal -- GPU Rendering, Compute, and Performance-Critical…CoreML -- Complete Guide for On-Device Machine LearningNaturalLanguage Framework -- Complete Guide for Text…Sound AnalysisSpeech Framework -- Complete Guide for Speech Recognition…TranslationVision Framework -- Complete Guide for Image Analysis and…Network.frameworkNetworkingOSLog & MetricKitPhotosUI & AVKitRealityKit -- Complete Guide for 3D Rendering, AR, and…SceneKit -- Legacy 3D Scenes, Animation, and AR RenderingContacts FrameworkEventKitPassKit & FinanceKitWeatherKitStoreKit 2Swift ChartsSwiftDataTipKitUserNotificationsVisionKitWidgetKitMCP Usage ExamplesInstalling the iOS Agent MCP ServerApple Knowledge MCPOfficial MCP Registry publicationMCP Tool ReferencevNext MCP Analysis ToolsDynamic Workflows and Large-Scale JobsHooks — Deterministic EnforcementLoopsMain Agent RouterSubagentsVerification and the Evidence ContractiOS Platform GuidemacOS Platform GuidetvOS Platform GuidevisionOS Platform GuidewatchOS Platform GuideSwiftUI AnimationsRouting, Deep Links, and State RestorationSwiftUI GesturesSwiftUI iOS 27 InteractionsSwiftUI Layout SystemSwiftUI NavigationSwiftUI State and Data FlowSwiftUI Views and ControlsEvaluations -- Testing Intelligence-Powered FeaturesApp-building loop (preview)App Description WorkflowDevice HubFoundation Models `fm` CLIFoundation Models InstrumentsFrom an Idea to a Running Apple AppiOS Simulator MCPAI-assisted issue previewsReview iOS launch-screen configurationPrepare an evidence-backed local release draftBuild from local source and Apple guidanceProject Scaffolding and LayoutVisual Iteration LoopXcode 27 Coding AgentsXcode Memory DebuggingUIKit EssentialsNative vs. Web Animation and 3DWhat "vibe coding" a Swift app actually means, and what…What you need before an AI can build you an iOS app: Mac,…Choosing a coding agent for iOS in 2026: Claude Code,…Your first hour: install Xcode, run the simulator, build…How coding agents read a project: AGENTS.md, CLAUDE.md,…Skills, plugins, MCP servers, hooks: the four words…Build a SwiftUI to-do app with Claude Code: the brief,…Compare the same to-do app task in Codex without changing…Prepare an Antigravity app-building trial and identify…Prepare a Muse app-building trial beyond tool discoveryWriting an app brief an agent can build from: ten…Generating an Xcode project the agent can edit: XcodeGen…Running and seeing your app: simulator boot, install,…What to do when the build fails: reading Xcode errors…Review Swift 6 settings and actor isolation before…Getting an agent to run checks: hooks, Stop conditions…Making the agent prove it: screenshots as evidence, not…Reviewing agent output before you commit: a focused…Git for vibe coders: branches per prompt, checkpoints,…Keeping the agent inside your design: tokens, no…SwiftUI prompt practice: 25 scoped exercises and…When a SwiftUI agent task fails: ten failure categories…Local persistence contracts: Reading List JSON storage…Localization with an agent: what to check before it…Search, filtering and empty states that pass…Networking and Codable with an agent: the concurrency…Navigation in SwiftUI: what agents get wrong with…Adding widgets with App Intents: a timeline and…Designing Siri actions with App Intents and testable…On-device AI: Foundation Models readiness and fallback…Notifications, background tasks and the permissions…Deep links and universal links, and using them for…App icons in 2026: Liquid Glass, Icon Composer, and…Color systems that survive dark mode and high contrast,…Typography in SwiftUI that respects Dynamic Type: rules…Motion and haptics: what to ask an agent for, and what…Making an agent-built app look intentional, not templatedPreparing repeatable simulator captures for App Store…From Figma to SwiftUI with an agent: variables to tokens…Swift Testing vs XCTest: what to have the agent generate…UI tests an agent can write and maintainAccessibility review of an agent-built app: the checks…Performance: hangs, launch time and the patterns agents…Memory: retain cycles agents create in closures and CombineSecurity review of an agent-built app: keychain, ATS,…Static review vs the compiler: what heuristics catch and…App Store readiness: the checks before you upload an…Privacy manifests, permissions strings and the things…Preparing for TestFlight: signing, builds and account…Investigating App Review feedback without guessing the…Versioning, changelogs and release notes the agent can…CI for an iOS repo with agent-written code: what to run…Subagents for iOS: splitting review, build and design…Preparing to verify Xcode 27 agents with external skillsKeeping up with Apple: refreshing references after each…Planning a safe Swift 6 and iOS 27 migrationCoordinating parallel coding work with isolated checkoutsWriting your own review rule for a Swift codebaseWriting your own skill for a Swift project: SKILL.md…Building a Claude Code plugin from a skillBuilding a Codex plugin from the same skillCross-client packaging: verified Muse scope and an…Verifying a skill across clients: the client verification…Measuring whether a skill helps: a paired benchmark…Ask for the finding, not the fix: why review-first…When the agent says "done", run the tests yourself onceSmall prompts, one screen at a time, commit between eachKeep signing and account changes separate from code repairsReading agent transcripts: the three phrases that mean it…Turn every failure into a rule: how findings become reviewsVerify Muse observer behavior before recommending itCodex worktrees for parallel screensTreat background builds as running work, not completed…Claude Code plan mode before any multi-file Swift changeAsk the agent to search local Apple references before the…Ask about actor ownership before adding MainActorWhat to put in .gitignore for agent-built Xcode projects"Show me the screenshot" as a standing instructionPin your Xcode version in AGENTS.md and stop the agent…One deep link per screen makes every screenshot automatableKeep design tokens in one file and tell the agent it's…Review the XcodeGen spec before regenerating the projectUse `#available` audits before every beta upgradeHooks beat reminders: enforce, don't request
 
 ---
 

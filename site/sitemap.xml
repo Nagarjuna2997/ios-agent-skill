@@ -17,7 +17,7 @@
   <url><loc>https://nagarjuna2997.github.io/ios-agent-skill/blog/verify-swiftui-simulator.html</loc><lastmod>2026-09-16T21:51:01-05:00</lastmod></url>
   <url><loc>https://nagarjuna2997.github.io/ios-agent-skill/community-monitor.html</loc><lastmod>2026-09-16T21:51:01-05:00</lastmod></url>
   <url><loc>https://nagarjuna2997.github.io/ios-agent-skill/community.html</loc><lastmod>2026-09-20T23:25:46-05:00</lastmod></url>
-  <url><loc>https://nagarjuna2997.github.io/ios-agent-skill/docs-index.html</loc><lastmod>2026-09-16T21:51:01-05:00</lastmod></url>
+  <url><loc>https://nagarjuna2997.github.io/ios-agent-skill/docs-index.html</loc><lastmod>2026-09-21T00:29:39-05:00</lastmod></url>
   <url><loc>https://nagarjuna2997.github.io/ios-agent-skill/guides/checklists-app-store-submission.html</loc><lastmod>2026-09-16T21:51:01-05:00</lastmod></url>
   <url><loc>https://nagarjuna2997.github.io/ios-agent-skill/guides/design-asset-generation.html</loc><lastmod>2026-09-16T21:51:01-05:00</lastmod></url>
   <url><loc>https://nagarjuna2997.github.io/ios-agent-skill/guides/design-color-system.html</loc><lastmod>2026-09-16T21:51:01-05:00</lastmod></url>
@@ -113,7 +113,9 @@
   <url><loc>https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-foundation-models-instruments.html</loc><lastmod>2026-09-16T21:51:01-05:00</lastmod></url>
   <url><loc>https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-idea-to-app.html</loc><lastmod>2026-09-16T21:51:01-05:00</lastmod></url>
   <url><loc>https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-ios-simulator-mcp.html</loc><lastmod>2026-09-16T21:51:01-05:00</lastmod></url>
-  <url><loc>https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-issue-reporting.html</loc><lastmod>2026-09-16T21:51:01-05:00</lastmod></url>
+  <url><loc>https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-issue-reporting.html</loc><lastmod>2026-09-21T00:29:39-05:00</lastmod></url>
+  <url><loc>https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-launch-screen-review.html</loc><lastmod>2026-09-21T00:29:39-05:00</lastmod></url>
+  <url><loc>https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-local-release-package.html</loc><lastmod>2026-09-21T00:29:39-05:00</lastmod></url>
   <url><loc>https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-offline-source-library.html</loc><lastmod>2026-09-16T21:51:01-05:00</lastmod></url>
   <url><loc>https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-project-scaffolding.html</loc><lastmod>2026-09-16T21:51:01-05:00</lastmod></url>
   <url><loc>https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-visual-iteration-loop.html</loc><lastmod>2026-09-16T21:51:01-05:00</lastmod></url>
@@ -121,11 +123,11 @@
   <url><loc>https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-xcode-memory-debugging.html</loc><lastmod>2026-09-16T21:51:01-05:00</lastmod></url>
   <url><loc>https://nagarjuna2997.github.io/ios-agent-skill/guides/uikit-uikit-essentials.html</loc><lastmod>2026-09-16T21:51:01-05:00</lastmod></url>
   <url><loc>https://nagarjuna2997.github.io/ios-agent-skill/guides/web-native-vs-web-animation.html</loc><lastmod>2026-09-16T21:51:01-05:00</lastmod></url>
-  <url><loc>https://nagarjuna2997.github.io/ios-agent-skill/</loc><lastmod>2026-09-16T21:31:04-05:00</lastmod></url>
+  <url><loc>https://nagarjuna2997.github.io/ios-agent-skill/</loc><lastmod>2026-09-21T00:29:39-05:00</lastmod></url>
   <url><loc>https://nagarjuna2997.github.io/ios-agent-skill/install.html</loc><lastmod>2026-09-16T21:31:04-05:00</lastmod></url>
   <url><loc>https://nagarjuna2997.github.io/ios-agent-skill/library.html</loc><lastmod>2026-09-16T21:51:01-05:00</lastmod></url>
-  <url><loc>https://nagarjuna2997.github.io/ios-agent-skill/pages.html</loc><lastmod>2026-09-16T21:51:01-05:00</lastmod></url>
-  <url><loc>https://nagarjuna2997.github.io/ios-agent-skill/releases.html</loc><lastmod>2026-09-21T00:04:48-05:00</lastmod></url>
+  <url><loc>https://nagarjuna2997.github.io/ios-agent-skill/pages.html</loc><lastmod>2026-09-21T00:29:39-05:00</lastmod></url>
+  <url><loc>https://nagarjuna2997.github.io/ios-agent-skill/releases.html</loc><lastmod>2026-09-21T00:29:39-05:00</lastmod></url>
   <url><loc>https://nagarjuna2997.github.io/ios-agent-skill/series.html</loc><lastmod>2026-09-16T21:31:04-05:00</lastmod></url>
   <url><loc>https://nagarjuna2997.github.io/ios-agent-skill/series/0.1.html</loc><lastmod>2026-09-16T21:51:01-05:00</lastmod></url>
   <url><loc>https://nagarjuna2997.github.io/ios-agent-skill/series/0.2.html</loc><lastmod>2026-09-16T21:51:01-05:00</lastmod></url>

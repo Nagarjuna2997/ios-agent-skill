@@ -1,0 +1,141 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-launch-screen-review.html"><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-launch-screen-review.html"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css?v=guide-visuals-3"><link rel="stylesheet" href="../navigation.css?v=2"><script src="../appearance.js?v=2" defer=""></script><title>Review iOS launch-screen configuration</title><meta name="description" content="Check target-specific launch settings, missing storyboards and asset references while keeping unresolved configurations visible."><meta property="og:title" content="Review iOS launch-screen configuration"><meta property="og:description" content="Check target-specific launch settings, missing storyboards and asset references while keeping unresolved configurations visible."><meta property="og:type" content="article"><meta property="og:site_name" content="iOS Agent Skill"><meta name="twitter:title" content="Review iOS launch-screen configuration"><meta name="twitter:description" content="Check target-specific launch settings, missing storyboards and asset references while keeping unresolved configurations visible."><meta name="twitter:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-launch-screen-review.html"><meta name="robots" content="index,follow"><link rel="alternate" type="application/atom+xml" href="/ios-agent-skill/feed.xml" title="iOS Agent Skill"><script id="site-discovery-schema" type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Review iOS launch-screen configuration","image":"https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg","datePublished":"2026-09-16T20:25:44-05:00","dateModified":"2026-09-21T00:29:39-05:00","author":{"@type":"Person","name":"Nagarjuna"},"mainEntityOfPage":"https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-launch-screen-review.html","url":"https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-launch-screen-review.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../series.html">Guided series</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a></div><button class="appearance-toggle" type="button" aria-label="Use dark appearance" aria-pressed="false"><span aria-hidden="true">☾</span><span class="appearance-label">Dark mode</span></button></nav><main id="main"><div class="article-back"><a class="btn secondary" href="../library.html">← Back to all frameworks &amp; guides</a><a class="btn secondary" href="../blog.html">All articles →</a></div><article class="blog-article"><header class="page-intro"><p class="eyebrow">Tooling · Reference guide</p><h1>Reviewing iOS launch screens</h1><p class="lead">Repository guidance for Reviewing iOS launch screens. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/tooling/launch-screen-review.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><p><a href="#visual-overview">Visual overview: workflow and architecture</a></p><div class="toc">
+<ul>
+<li><a href="#what-is-resolved">What is resolved</a></li>
+<li><a href="#diagnostics">Diagnostics</a></li>
+<li><a href="#conservative-limits">Conservative limits</a></li>
+<li><a href="#evidence-and-benchmark">Evidence and benchmark</a></li>
+<li><a href="#apple-references">Apple references</a></li>
+</ul>
+</div>
+</aside><section class="guide-visuals" aria-labelledby="visual-overview"><h2 id="visual-overview">Visual overview</h2>
+<p>Use the workflow to follow the task, and the architecture map to separate responsibilities. These are conceptual maps; the guide below defines implementation details and verification limits.</p>
+<figure class="guide-flow"><figcaption><span class="guide-visual-kicker">01 / Workflow</span>From intent to a checked result</figcaption><ol role="list"><li><span class="guide-step-number" aria-hidden="true">1</span><span>Select target and configuration</span><span class="guide-flow-arrow" aria-hidden="true">↓</span></li><li><span class="guide-step-number" aria-hidden="true">2</span><span>Resolve launch mechanism</span><span class="guide-flow-arrow" aria-hidden="true">↓</span></li><li><span class="guide-step-number" aria-hidden="true">3</span><span>Check storyboard and assets</span><span class="guide-flow-arrow" aria-hidden="true">↓</span></li><li><span class="guide-step-number" aria-hidden="true">4</span><span>Report findings or coverage gaps</span></li></ol></figure>
+<figure class="guide-architecture"><figcaption><span class="guide-visual-kicker">02 / Architecture</span>Responsibility boundaries</figcaption><ol role="list"><li><span class="guide-boundary-label">Boundary 1</span><strong>Xcode settings and Info.plist</strong></li><li><span class="guide-boundary-label">Boundary 2</span><strong>Static launch evidence</strong></li><li><span class="guide-boundary-label">Boundary 3</span><strong>App Store audit findings</strong></li></ol><p class="guide-visual-note">Connected responsibilities, not a required class hierarchy or an execution trace.</p></figure></section><p>Since ios-agent-mcp 2.7.1, <code>audit_app_store_readiness</code> and <code>analyze_swift_project</code>
+includes launch-screen checks. No additional MCP connection or tool is needed.
+Point the server at an app's
+project directory; the audit prints findings and a separate coverage summary.</p>
+<p>A system launch screen is static. A SwiftUI or UIKit intro shown after the app
+starts is ordinary app UI. The analyzer does not classify an animated Swift view
+as an invalid launch screen merely because its name includes “Splash”. See the
+existing <a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/patterns/motion/splash-screens.md">splash/intro pattern</a>.</p>
+<h2 id="what-is-resolved">What is resolved</h2>
+<p>The reader parses OpenStep Xcode project files and XML/binary Info.plists. It
+selects iOS application targets, merges matching project and target build
+configurations, and follows explicit resource build phases and localized variant
+groups. Configuration findings identify the target/configuration, file and line.
+For binary plists, line 1 is used because binary data has no source line mapping.</p>
+<p>Supported launch sources are <code>UILaunchStoryboardName</code>, <code>UILaunchScreen</code>, an
+explicit <code>INFOPLIST_FILE</code>, and generated-plist settings including
+<code>INFOPLIST_KEY_UILaunchStoryboardName</code> and <code>INFOPLIST_KEY_UILaunchScreen_Generation</code>.
+SwiftUI and UIKit use the same project evidence; neither framework import proves
+that launch configuration is present or absent. An empty <code>UILaunchScreen</code>
+dictionary and a plain background are valid, not automatically “blank-screen” bugs.</p>
+<p>The reader checks explicit target asset catalogs, case-sensitive image/color
+names, namespaced asset groups, and referenced image payload filenames. A file
+in another target does not satisfy this target's resource membership. System
+colors and explicitly system-catalog storyboard images are not treated as missing
+app assets. Static presence does not certify that a resource was compiled or that
+it looks correct on a device.</p>
+<h2 id="diagnostics">Diagnostics</h2>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Evidence required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>launch-configuration-missing</code></td>
+<td>Resolved iOS app configuration lacks either supported mechanism; no alternative launch key or unknown resource pipeline explains it</td>
+</tr>
+<tr>
+<td><code>launch-configuration-type</code></td>
+<td>A single-storyboard key is not a nonempty string, or <code>UILaunchScreen</code> is not a dictionary</td>
+</tr>
+<tr>
+<td><code>launch-storyboard-missing</code></td>
+<td>Explicit target resource membership or the referenced file is absent, with a complete applicable inventory</td>
+</tr>
+<tr>
+<td><code>launch-asset-missing</code></td>
+<td>A referenced launch image/color is absent from the target's explicit resources; namespace resolution is known</td>
+</tr>
+<tr>
+<td><code>launch-asset-file-missing</code></td>
+<td>A referenced image set names a payload file that is absent</td>
+</tr>
+<tr>
+<td><code>launch-storyboard-invalid</code></td>
+<td>The selected storyboard is malformed XML</td>
+</tr>
+<tr>
+<td><code>launch-initial-controller-missing</code></td>
+<td>The storyboard has no initial entry point or its identifier cannot resolve</td>
+</tr>
+<tr>
+<td><code>launch-custom-class</code></td>
+<td>The selected launch storyboard declares a custom class</td>
+</tr>
+<tr>
+<td><code>launch-code-connection</code></td>
+<td>It declares actions, outlets or outlet collections</td>
+</tr>
+<tr>
+<td><code>launch-runtime-attribute</code></td>
+<td>It declares user-defined runtime attributes</td>
+</tr>
+<tr>
+<td><code>launch-deprecated-view</code></td>
+<td>It contains a UIWebView element</td>
+</tr>
+<tr>
+<td><code>launch-dictionary-availability</code></td>
+<td>Dictionary-only launch configuration with a known deployment target below iOS 14</td>
+</tr>
+<tr>
+<td><code>launch-mechanisms-overlap</code></td>
+<td>Both single-storyboard and dictionary mechanisms are configured with a known minimum iOS 14+ target; minor review advisory, not a build/rejection claim</td>
+</tr>
+</tbody>
+</table>
+<p>The overlap advisory asks the developer to review intent. It does not delete
+configuration or override deliberate compatibility decisions. Lower deployment
+targets with a storyboard fallback do not receive that advisory.</p>
+<h2 id="conservative-limits">Conservative limits</h2>
+<p>Unresolved cases produce coverage notes rather than speculative missing-resource
+findings. These include xcconfig inheritance, conditional build settings,
+preprocessed plists, launch-variable substitutions, unsupported or unreadable
+plists/projects, resource inclusion/exclusion settings, generated resources from
+scripts, copy phases, synchronized groups, folder references and referenced paths
+inside skipped dependency/build directories. Device-qualified launch keys,
+multiple launch screens/storyboards and legacy launch-image configurations are
+recognized but deferred. Non-generated plists with launch build-setting overrides
+need resolved Xcode evidence and are deferred too.</p>
+<p>The inventory does not follow symlinks and limits files/directories and parsed
+file size. An incomplete inventory cannot prove an asset is absent. Malformed
+namespace metadata is not interpreted as a valid non-namespaced group. Libraries,
+packages, extensions and unconfigured source folders are not accused of missing
+an app launch screen. Missing/unparseable Info.plists are coverage gaps, not
+launch-specific defects.</p>
+<p>This does not evaluate layout quality, contrast, exact rendered appearance,
+launch duration, screenshot caching, state-restoration snapshots, compiled asset
+variants, asset file encoding, app-store acceptance, or arbitrary third-party
+project generators. It never runs Xcode, scripts or app code during a review.
+Validate unresolved cases with resolved build settings, the built app's Info.plist
+and resources, an actual build, and a cold launch on supported simulators/devices.
+Do not delete user data to clear launch caches without explicit approval.</p>
+<h2 id="evidence-and-benchmark">Evidence and benchmark</h2>
+<p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/benchmarks/launch-screen/README.md">Launch benchmark suite</a> contains valid
+and intentionally broken multi-file projects, a separate contract oracle, and a
+resumable Codex runner. Fixture validation is not evidence that the skill improves
+agent output. The original 120-run benchmark and its 60 paired ties stay unchanged.</p>
+<h2 id="apple-references">Apple references</h2>
+<ul>
+<li><a href="https://developer.apple.com/documentation/xcode/specifying-your-apps-launch-screen">Specifying your app’s launch screen</a></li>
+<li><a href="https://developer.apple.com/documentation/bundleresources/information-property-list/uilaunchscreen">UILaunchScreen</a></li>
+<li><a href="https://developer.apple.com/documentation/bundleresources/information-property-list/uilaunchstoryboardname">UILaunchStoryboardName</a></li>
+<li><a href="https://developer.apple.com/documentation/technotes/tn3118-debugging-your-apps-launch-screen">Debugging your app’s launch screen (TN3118)</a></li>
+</ul>
+<p>These sources informed the configuration and static-document constraints. A
+project-level finding is based on local evidence, not a claim that Apple tested it.</p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><!-- discovery-nav:start --><div role="navigation" aria-label="Site discovery"><a href="../">Home</a> · <a href="../install.html">Install</a> · <a href="../community.html">Community</a> · <a href="../blog.html">Blog</a> · <a href="../docs-index.html">Docs index</a> · <a href="../pages.html">Site map</a> · <a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a> · <a href="https://www.npmjs.com/package/ios-agent-mcp">npm</a></div><!-- discovery-nav:end --></footer></div></body></html>
