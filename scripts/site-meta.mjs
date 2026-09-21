@@ -68,6 +68,15 @@ for(const p of pages){
  source=source.replace(/<html\b([^>]*)>/i,(_,a)=>'<html'+a.replace(/\s+lang\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/ig,'')+' lang="en">');
  source=source.replace(/<!-- discovery-nav:start -->[\s\S]*?<!-- discovery-nav:end -->/g,'');
  const prefix=path.posix.relative(path.posix.dirname(p.file),'.');const pageFooter=footer.replaceAll(BASE,prefix?prefix+'/':'./');
+ const releaseHref=(prefix?prefix+'/':'./')+'releases.html';
+ source=source.replace(/<nav\b([^>]*aria-label="Main navigation"[^>]*)>([\s\S]*?)<\/nav>/i,(_,attrs,body)=>{
+  body=body.replace(/<!-- release-link:start -->[\s\S]*?<!-- release-link:end -->/g,'');
+  const link='<!-- release-link:start --><a class="release-link" href="'+releaseHref+'"'+(p.file==='releases.html'?' aria-current="page"':'')+'>What’s new <span aria-hidden="true">↗</span></a><!-- release-link:end -->';
+  if(/<div\b[^>]*class="links"[^>]*>/i.test(body))body=body.replace(/(<div\b[^>]*class="links"[^>]*>)([\s\S]*?)(<\/div>)/i,(_,open,links,close)=>open+links+link+close);
+  else body+='<div class="links">'+link+'</div>';
+  return '<nav'+attrs+'>'+body+'</nav>';
+ });
+
  if(/<\/footer>/i.test(source))source=source.replace(/<\/footer>/i,pageFooter+'</footer>');else source=source.replace(/<\/body>/i,'<footer>'+pageFooter+'</footer></body>');
  fs.writeFileSync(file,source);changes.push({file:p.file,fields:[...new Set(fields)],headChanged:before!==built});
 }

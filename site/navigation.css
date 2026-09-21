@@ -12,3 +12,7 @@ nav[aria-label="Main navigation"] .links a:hover{background:var(--panel)}
 .article-back a:hover{border-color:var(--accent)}
 .blog-article .article-back+.page-intro{padding-top:12px}
 @media(max-width:400px){nav[aria-label="Main navigation"],.subpage nav[aria-label="Main navigation"]{padding:12px;gap:12px}nav[aria-label="Main navigation"] .brand{font-size:14px}nav[aria-label="Main navigation"] .appearance-toggle{min-width:104px;padding:8px}.article-back{margin-bottom:24px}}
+
+/* Persistent release discovery, generated into each page at build time. */
+nav[aria-label="Main navigation"] .links .release-link{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font-weight:650;text-decoration:none;white-space:nowrap}
+nav[aria-label="Main navigation"] .links .release-link:hover,nav[aria-label="Main navigation"] .links .release-link[aria-current="page"]{border-color:currentColor}
