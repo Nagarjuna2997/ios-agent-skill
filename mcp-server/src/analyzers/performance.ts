@@ -64,9 +64,9 @@ export function analyzePerformance(file: SourceFile): Finding[] {
   eachLine(file, (line, number) => {
     const index = number - 1;
 
-    // Formatters are famously expensive to construct — and this is inside body.
+    // Formatter-specific advice does not apply to JSON encoders or decoders.
     if (
-      /\b(DateFormatter|NumberFormatter|ISO8601DateFormatter|DateComponentsFormatter|JSONDecoder|JSONEncoder)\s*\(\s*\)/.test(
+      /\b(DateFormatter|NumberFormatter|ISO8601DateFormatter|DateComponentsFormatter)\s*\(\s*\)/.test(
         line,
       )
     ) {

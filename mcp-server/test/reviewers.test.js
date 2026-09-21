@@ -271,6 +271,26 @@ describe("performance", () => {
       "}",
     ]);
 
+  for (const codec of ["JSONDecoder", "JSONEncoder"]) {
+    test(`${codec} is not classified as a formatter`, () => {
+      const sources = [
+        file("Sources/Settings.swift", [
+          "import Foundation",
+          "func makeCodec() {",
+          `    let codec = ${codec}()`,
+          "}",
+        ]),
+        view([`        let codec = ${codec}()`, '        Text("Settings")']),
+      ];
+      for (const source of sources) {
+        assert.deepEqual(
+          rules(analyzePerformance(source)).filter((rule) => rule.startsWith("formatter-")),
+          [],
+        );
+      }
+    });
+  }
+
   test("flags a formatter allocated inside body", () => {
     const found = analyzePerformance(view(["        Text(DateFormatter().string(from: date))"]));
     assert.equal(severityOf(found, "formatter-allocated-in-body"), "serious");
