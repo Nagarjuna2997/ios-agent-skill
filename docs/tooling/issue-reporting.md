@@ -1,6 +1,6 @@
 # AI-assisted issue previews
 
-**Availability:** ios-agent-mcp 2.7.0 and later, with 36 unified tools.
+**Availability:** ios-agent-mcp 2.7.0 and later, with 36 unified tools in 2.7.0; 37 in 2.7.1.
 
 When an iOS Agent operation fails, the AI can prepare a report using
 `prepare_issue_report`. Report problems with this package, not ordinary errors
@@ -50,9 +50,9 @@ The unified server appends troubleshooting guidance to returned unified tool err
 
 This feedback stays in the coding session, not in the generated app or the public website. Redact secrets before repeating diagnostics. It does not transmit additional details or confirm a GitHub submission. Repeated failures get local attention and public submission remains separately authorized. For an actionable public bug report, separately review and authorize a minimal synthetic reproduction; never attach private app code or raw logs automatically.
 
-## Private feedback from the AI chat — source preview only
+## Private feedback from the AI chat — experimental
 
-The source adds `private_feedback` as a 37th tool. It is not in npm 2.7.0 and the
+Version 2.7.1 includes `private_feedback` as a 37th tool. The
 receiver is not deployed. Without `IOS_AGENT_PRIVATE_FEEDBACK_URL`, it returns
 `not-configured` and sends nothing. There is no automatic public fallback.
 

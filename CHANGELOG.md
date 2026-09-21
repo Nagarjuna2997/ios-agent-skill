@@ -6,7 +6,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
-- Source-only private feedback preview/approval tool and receiver for a private GitHub inbox. Explicit in-chat approval, fixed categories, private-destination checks and no public fallback. Hosting is not configured; no npm publication.
+## [3.6.1] -- 2026-09-21
+
+Package: **ios-agent-mcp 2.7.1**. One patch release; bundled CLI and simulator package versions stay unchanged.
+
+### Added
+
+- Local `apple analyze` and `apple prepare` commands: explicit target/configuration selection, evidence-linked facts and inferred candidates, unresolved questions, integrity-hashed draft packages, and verified reuse. No Apple authentication, archive, signing, upload or submission.
+- Thirteen conservative launch-screen diagnostics in the existing App Store/project reviews, with coverage gaps for unresolved configuration.
+- 29 launch-screen regression tests, 52 release-preparation tests, and 12 launch benchmark fixtures with independent diagnostic/fix oracles. New agent benchmark trials have not been run.
+- Experimental private feedback tool with explicit preview/approval and fixed categories. Requires a configured HTTPS receiver; hosted delivery is not live by default.
+- Website release notes with the current scope and verification limits.
+
+### Fixed
+
+- JSONDecoder/JSONEncoder false positives in the formatter review.
+
+### Evidence
+
+- MCP build and 248 tests pass. The previous 120-run benchmark remains unchanged: both arms passed 60/60, with 60 paired ties. No improvement claim follows from this release.
 
 ## [3.6.0] -- 2026-09-16
 

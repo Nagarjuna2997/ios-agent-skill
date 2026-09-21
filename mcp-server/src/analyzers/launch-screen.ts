@@ -4,10 +4,11 @@ import { posix } from 'node:path';
 import * as plist from 'plist';
 import { XMLParser, XMLValidator } from 'fast-xml-parser';
 import { Finding } from './types.js';
+import {projectPaths, parsePropertyList} from '../release/project.js';
 const DOC = 'docs/tooling/launch-screen-review.md';
 type Obj = Record<string, any>;
 export interface LaunchReport { findings: Finding[]; coverage: string[]; configurations: number }
-const skip = new Set(['.git', '.build', 'DerivedData', 'Pods', 'Carthage', 'node_modules', 'build', 'vendor', 'Vendor']);
+const skip = new Set(['.git', '.ios-agent', '.build', 'DerivedData', 'Pods', 'Carthage', 'node_modules', 'build', 'vendor', 'Vendor']);
 const xml = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: '@_', processEntities: false });
 const dict = (v: any): v is Obj => !!v && typeof v === 'object' && !Array.isArray(v);
 const literal = (v: any): v is string => typeof v === 'string' && !/\$[({]/.test(v);
@@ -15,7 +16,7 @@ const yes = (v: any) => v === 'YES' || v === true;
 const array = (v: any): any[] => Array.isArray(v) ? v : v ? [v] : [];
 
 /** Inventory never follows symlinks; incomplete scans cannot prove missing resources. */
-export async function reviewLaunchScreens(root: string): Promise<LaunchReport> {
+export async function reviewLaunchScreens(root: string, selection?: {project: string; target: string; configuration: string}): Promise<LaunchReport> {
   const findings: Finding[] = [], coverage: string[] = [];
   const excluded = new Set<string>();
   const files = new Set<string>(), contents = new Map<string, Buffer>();
@@ -59,36 +60,21 @@ export async function reviewLaunchScreens(root: string): Promise<LaunchReport> {
     const b = contents.get(p);
     if (!b) return;
     try {
-      const result = b.subarray(0, 6).toString() === 'bplist' ? plist.parseBinary(b) : plist.parse(b.toString());
+      const result = parsePropertyList(b);
       return dict(result) ? result : undefined;
     } catch { return; }
   }
-  for (const project of [...files].filter(p => p.endsWith('.xcodeproj/project.pbxproj'))) {
+  for (const project of [...files].filter(p => p.endsWith('.xcodeproj/project.pbxproj') && (!selection || selection.project === p))) {
     let parsed: Obj;
     try { parsed = plist.parseOpenStep(contents.get(project)!.toString()) as Obj; }
     catch { coverage.push(`${project}: cannot parse project; skipped.`); continue; }
     const objects: Obj = parsed.objects || {}, base = posix.dirname(posix.dirname(project));
     const projectObj = objects[parsed.rootObject];
     if (!projectObj) { coverage.push(`${project}: missing project object.`); continue; }
-    const parents = new Map<string, string[]>();
-    for (const [id, ob] of Object.entries<Obj>(objects)) for (const child of array(ob.children)) parents.set(child, [...(parents.get(child) || []), id]);
-    function filePath(id: string, seen = new Set<string>()): string | undefined {
-      if (seen.has(id)) return;
-      seen.add(id);
-      const ob = objects[id]; if (!ob) return;
-      const name = ob.path || '';
-      if (!literal(name) || name.startsWith('/')) return;
-      let parent = base;
-      if (ob.sourceTree === '<group>') {
-        const ps = parents.get(id) || [];
-        if (ps.length > 1) return;
-        if (ps.length === 1) { const p = filePath(ps[0]!, seen); if (p === undefined) return; parent = p; }
-      } else if (ob.sourceTree && ob.sourceTree !== 'SOURCE_ROOT') return;
-      const p = posix.normalize(posix.join(parent, name));
-      return p === '..' || p.startsWith('../') ? undefined : p;
-    }
+    const filePath = projectPaths(objects, base);
     const configs = (id: string) => array(objects[id]?.buildConfigurations).map(k => objects[k]).filter(Boolean);
     for (const target of array(projectObj.targets).map(id => objects[id]).filter((o: Obj) => o && o.isa === 'PBXNativeTarget' && o.productType === 'com.apple.product-type.application')) {
+      if (selection && target.name !== selection.target) continue;
       const resources = new Set<string>(); let resourceKnown = !array(target.fileSystemSynchronizedGroups).length;
       for (const id of array(target.buildPhases)) {
         const phase = objects[id];
@@ -106,6 +92,7 @@ export async function reviewLaunchScreens(root: string): Promise<LaunchReport> {
         }
       }
       for (const cfg of configs(target.buildConfigurationList)) {
+        if (selection && cfg.name !== selection.configuration) continue;
         const pc = configs(projectObj.buildConfigurationList).find(c => c.name === cfg.name);
         const label = `${target.name || 'app'}/${cfg.name || 'configuration'}`;
         const settings = { ...(pc?.buildSettings || {}), ...(cfg.buildSettings || {}) };

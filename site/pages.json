@@ -918,5 +918,9 @@
     "title": "Hooks beat reminders: enforce, don't request",
     "description": "Move repeatable checks into hooks when reminders are insufficient, and verify the hook’s actual exit-code behavior.",
     "image": "assets/series/level-8.png"
+  },
+  "releases.html": {
+    "title": "Release notes — iOS Agent Skill",
+    "description": "What changed in ios-agent-mcp 2.7.1: launch-screen reviews, local release preparation, regression tests and current limitations."
   }
 }

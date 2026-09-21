@@ -1342,6 +1342,8 @@ Community & Mentions
 A record of verified directory listings, articles and developer discussions about ios-agent-skill. Thank you to everyone who has shared useful feedback or helped others find the project.
 Verified links, clearly labelled. Directory listings are not endorsements; maintainer posts and republications are identified separately.
 
+Third-party articleVoronkin StudioDiscusses ios-agent-mcp and the Swift, Xcode and simulator development workflow.Visit Voronkin Studio (opens in a new tab)
+
 Developer ResourceKimiLists ios-agent-skill among open-source software skills and links to the repository.Visit Kimi (opens in a new tab)
 
 Discussion · maintainer-startedReddit / r/XcodeReaders discuss Xcode overlap, rule sources and the need for measured evidence.Visit Reddit / r/Xcode (opens in a new tab)
@@ -1357,6 +1359,16 @@ DirectoryAwesome MCP ServersLists the MCP server and reproduces project document
 DirectoryAgentmodsIndexes the project’s Gemini CLI extension with links to its source.Visit Agentmods (opens in a new tab)
 
 Directoryskills.restProvides an indexed skill page linking to this repository.Visit skills.rest (opens in a new tab)
+
+Directory · automated indexMCPHQIndexes the MCP package with installation configurations and repository release information.Visit MCPHQ (opens in a new tab)
+
+Security analysis · automatedVerifyMCPPublishes automated package checks and captured tool schemas, including limitations and findings.Visit VerifyMCP (opens in a new tab)
+
+Tracking index · automatedSmall PrintTracks the Gemini extension’s instruction changes and publishes automated change flags.Visit Small Print (opens in a new tab)
+
+Package analysisSocketProvides an npm package analysis page for ios-agent-mcp with package metadata and source links.Visit Socket (opens in a new tab)
+
+Project discoveryLibHuntIndexes the project, related alternatives and mentions, including the maintainer’s DEV and Show HN posts.Visit LibHunt (opens in a new tab)
 
 Article · maintainer-authoredDEV CommunityThe maintainer explains the Swift, Xcode and simulator toolbox and asks for feedback.Visit DEV Community (opens in a new tab)
 
@@ -59011,7 +59023,12 @@ Keep your favorite AI. Give it a focused toolkit for the work of building an App
 
 05Verify on a simulatorBuild, test, install, launch and capture screenshots through Xcode.
 
-Your agent implements the app and verifies the result. Local simulator tools require a Mac with Xcode. The features above are available in ios-agent-mcp 2.7.0.
+06Review launch screensConservative target-aware checks for launch configuration, storyboards and asset references.
+
+07Prepare a local release draftInspect selected-target facts, unresolved questions and hashed, resumable local packages without connecting to Apple.
+
+Your agent implements the app and verifies the result. Local simulator tools require a Mac with Xcode. The features above are available in ios-agent-mcp 2.7.1.
+What changed in 2.7.1 →
 One package. Your choice.
 Meet your agent’s
 
@@ -59272,10 +59289,52 @@ ToolingAI-assisted issue previewsTooling
 https://nagarjuna2997.github.io/ios-agent-skill/pages.html
 
 Site mapEvery public page on this website.Pages
-Practical Swift & AI development guidesDaily community monitorCommunity & MentionsiOS Agent Skill — Swift Reviews & Xcode Simulator MCPApple development guide librarySite mapFrom first prompt to shipped app: guided Swift seriesInstall guides
+Practical Swift & AI development guidesDaily community monitorCommunity & MentionsiOS Agent Skill — Swift Reviews & Xcode Simulator MCPApple development guide librarySite mapRelease notes — iOS Agent SkillFrom first prompt to shipped app: guided Swift seriesInstall guides
 Install iOS Agent MCP — Claude, Codex, Gemini CLI & MuseBlog
 How can design tokens generate light, dark and…How should I review availability guards when moving a…ChatGPT and Codex: plan the app, then verify it locallyChoose an AI client for your iOS workflowHow can Claude Code hooks protect generated files and…Claude Code: turn a Swift finding into a tested patchGemini CLI: connect once and review one iOS featureGenerate light and dark asset catalogs without a paid…Which Muse Code MCP settings actually work with a local…Muse Code: what our integration actually verifiesReview AI-generated Swift before you trust itHow can I catch Swift concurrency review findings before…SwiftUI: review state transitions before polishing the…Five checks for an AI-built SwiftUI appDocs
 Documentation indexApp Store Submission ChecklistGenerate real asset catalogsiOS Color System -- Complete Guide for Stunning SwiftUI UIsDesign Tokens, Adaptive Color, and Liquid GlassiOS Font Catalog — Ultimate ReferenceLayer-by-Layer Icons with Icon ComposerInteraction StandardsAdopting Liquid GlassProfessional UI/UX SystemStunning UI Patterns -- Complete SwiftUI Pattern LibraryThird-Party Animation IntegrationiOS Typography System -- Complete Guide for Stunning…ActivityKit & Live ActivitiesApp ClipsApp IntentsApple IntelligenceARKit -- Complete Guide for Augmented Reality on iOS and…AuthenticationServicesAVFoundationBackgroundTasksCloudKitCore AI -- Custom On-Device AI Models on Apple SiliconCore DataCoreLocationCore Spotlight RAG -- Private App-Local Retrieval for…CryptoKitSwiftData and Core Data ConcurrencyDevice Integrity (DeviceCheck & App Attest)Extended Apple FrameworksFoundation ModelsFoundation FrameworkCoreBluetoothCoreMotionCoreNFCHealthKitHomeKit and MatterLocalAuthenticationMapKitMetal -- GPU Rendering, Compute, and Performance-Critical…CoreML -- Complete Guide for On-Device Machine LearningNaturalLanguage Framework -- Complete Guide for Text…Sound AnalysisSpeech Framework -- Complete Guide for Speech Recognition…TranslationVision Framework -- Complete Guide for Image Analysis and…Network.frameworkNetworkingOSLog & MetricKitPhotosUI & AVKitRealityKit -- Complete Guide for 3D Rendering, AR, and…SceneKit -- Legacy 3D Scenes, Animation, and AR RenderingContacts FrameworkEventKitPassKit & FinanceKitWeatherKitStoreKit 2Swift ChartsSwiftDataTipKitUserNotificationsVisionKitWidgetKitMCP Usage ExamplesInstalling the iOS Agent MCP ServerApple Knowledge MCPOfficial MCP Registry publicationMCP Tool ReferencevNext MCP Analysis ToolsDynamic Workflows and Large-Scale JobsHooks — Deterministic EnforcementLoopsMain Agent RouterSubagentsVerification and the Evidence ContractiOS Platform GuidemacOS Platform GuidetvOS Platform GuidevisionOS Platform GuidewatchOS Platform GuideSwiftUI AnimationsRouting, Deep Links, and State RestorationSwiftUI GesturesSwiftUI iOS 27 InteractionsSwiftUI Layout SystemSwiftUI NavigationSwiftUI State and Data FlowSwiftUI Views and ControlsEvaluations -- Testing Intelligence-Powered FeaturesApp-building loop (preview)App Description WorkflowDevice HubFoundation Models `fm` CLIFoundation Models InstrumentsFrom an Idea to a Running Apple AppiOS Simulator MCPAI-assisted issue previewsBuild from local source and Apple guidanceProject Scaffolding and LayoutVisual Iteration LoopXcode 27 Coding AgentsXcode Memory DebuggingUIKit EssentialsNative vs. Web Animation and 3DWhat "vibe coding" a Swift app actually means, and what…What you need before an AI can build you an iOS app: Mac,…Choosing a coding agent for iOS in 2026: Claude Code,…Your first hour: install Xcode, run the simulator, build…How coding agents read a project: AGENTS.md, CLAUDE.md,…Skills, plugins, MCP servers, hooks: the four words…Build a SwiftUI to-do app with Claude Code: the brief,…Compare the same to-do app task in Codex without changing…Prepare an Antigravity app-building trial and identify…Prepare a Muse app-building trial beyond tool discoveryWriting an app brief an agent can build from: ten…Generating an Xcode project the agent can edit: XcodeGen…Running and seeing your app: simulator boot, install,…What to do when the build fails: reading Xcode errors…Review Swift 6 settings and actor isolation before…Getting an agent to run checks: hooks, Stop conditions…Making the agent prove it: screenshots as evidence, not…Reviewing agent output before you commit: a focused…Git for vibe coders: branches per prompt, checkpoints,…Keeping the agent inside your design: tokens, no…SwiftUI prompt practice: 25 scoped exercises and…When a SwiftUI agent task fails: ten failure categories…Local persistence contracts: Reading List JSON storage…Localization with an agent: what to check before it…Search, filtering and empty states that pass…Networking and Codable with an agent: the concurrency…Navigation in SwiftUI: what agents get wrong with…Adding widgets with App Intents: a timeline and…Designing Siri actions with App Intents and testable…On-device AI: Foundation Models readiness and fallback…Notifications, background tasks and the permissions…Deep links and universal links, and using them for…App icons in 2026: Liquid Glass, Icon Composer, and…Color systems that survive dark mode and high contrast,…Typography in SwiftUI that respects Dynamic Type: rules…Motion and haptics: what to ask an agent for, and what…Making an agent-built app look intentional, not templatedPreparing repeatable simulator captures for App Store…From Figma to SwiftUI with an agent: variables to tokens…Swift Testing vs XCTest: what to have the agent generate…UI tests an agent can write and maintainAccessibility review of an agent-built app: the checks…Performance: hangs, launch time and the patterns agents…Memory: retain cycles agents create in closures and CombineSecurity review of an agent-built app: keychain, ATS,…Static review vs the compiler: what heuristics catch and…App Store readiness: the checks before you upload an…Privacy manifests, permissions strings and the things…Preparing for TestFlight: signing, builds and account…Investigating App Review feedback without guessing the…Versioning, changelogs and release notes the agent can…CI for an iOS repo with agent-written code: what to run…Subagents for iOS: splitting review, build and design…Preparing to verify Xcode 27 agents with external skillsKeeping up with Apple: refreshing references after each…Planning a safe Swift 6 and iOS 27 migrationCoordinating parallel coding work with isolated checkoutsWriting your own review rule for a Swift codebaseWriting your own skill for a Swift project: SKILL.md…Building a Claude Code plugin from a skillBuilding a Codex plugin from the same skillCross-client packaging: verified Muse scope and an…Verifying a skill across clients: the client verification…Measuring whether a skill helps: a paired benchmark…Ask for the finding, not the fix: why review-first…When the agent says "done", run the tests yourself onceSmall prompts, one screen at a time, commit between eachKeep signing and account changes separate from code repairsReading agent transcripts: the three phrases that mean it…Turn every failure into a rule: how findings become reviewsVerify Muse observer behavior before recommending itCodex worktrees for parallel screensTreat background builds as running work, not completed…Claude Code plan mode before any multi-file Swift changeAsk the agent to search local Apple references before the…Ask about actor ownership before adding MainActorWhat to put in .gitignore for agent-built Xcode projects"Show me the screenshot" as a standing instructionPin your Xcode version in AGENTS.md and stop the agent…One deep link per screen makes every screenshot automatableKeep design tokens in one file and tell the agent it's…Review the XcodeGen spec before regenerating the projectUse `#available` audits before every beta upgradeHooks beat reminders: enforce, don't request
+
+---
+
+# Release notes — iOS Agent Skill
+https://nagarjuna2997.github.io/ios-agent-skill/releases.html
+
+Release notes← Home
+ ·
+Installation
+ ·
+npm package
+September 21, 2026 · npm 2.7.1 · repository v3.6.1
+Inspect the app. Prepare the evidence.
+This patch adds conservative launch-screen reviews and the first local release-preparation workflow. It helps you identify missing project facts before attempting a release.
+
+Launch-screen review
+The existing App Store audit and project analysis now inspect launch configuration, storyboard and asset references using selected-target evidence. Thirteen diagnostics have regression coverage; unresolved settings remain explicit coverage gaps.
+Checks and supported configurations →
+
+Local release preparation
+Use
+apple analyze
+ to inspect a target and
+apple prepare
+ to create an integrity-hashed local draft. The output separates observed facts, inferred candidates and unanswered questions. Unchanged inputs reuse a verified package; changed evidence creates a new package.
+npx -y ios-agent-mcp@latest apple analyze --project /path/to/app --target App --configuration Release --json
+npx -y ios-agent-mcp@latest apple prepare --project /path/to/app --target App --configuration Release --json
+This phase does not connect to Apple, run an AI provider, archive, sign, upload or submit an app. Draft evidence is not a release approval.
+Workflow, evidence states and limitations →
+
+Fixes and verification
+Corrected JSONDecoder/JSONEncoder formatter false positives.248 MCP tests pass, including 29 launch tests and 52 release-preparation tests.Twelve launch benchmark fixtures include valid and broken configurations, diagnosis/fix checks and unnecessary-change detection. Agent trials for these tasks have not been run.
+The previous benchmark stays unchanged: 120 runs, 60/60 passes in each arm, and 60 paired ties. We do not claim measured improvement from this update.
+
+Private reporting remains experimental
+The 37th unified tool,
+private_feedback
+, requires a configured HTTPS receiver and explicit preview approval. Hosted delivery is not live by default. No silent public submission is added.
+
+Next milestone
+Evaluate the harder launch-screen tasks, inspect diagnosis quality and unnecessary changes, and resolve unsupported project configurations before extending release automation.
+Full project changelog →
 
 ---
 

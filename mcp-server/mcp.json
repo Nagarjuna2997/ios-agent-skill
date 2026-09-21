@@ -1,7 +1,7 @@
 {
   "name": "ios-agent-mcp",
   "displayName": "iOS Agent",
-  "version": "2.7.0",
+  "version": "2.7.1",
   "description": "Unified iOS development tools: Swift reviews, Apple source retrieval, app scaffolding and Xcode simulator workflows.",
   "author": "Nagarjuna Reddy",
   "license": "MIT",

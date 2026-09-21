@@ -2,7 +2,9 @@
 
 [Explore the website](https://nagarjuna2997.github.io/ios-agent-skill/) · [Choose your AI and install](https://nagarjuna2997.github.io/ios-agent-skill/install.html)
 
-## Version 2.7.0
+## Version 2.7.1
+
+Adds conservative launch-screen checks and local `apple analyze` / `apple prepare` drafts. See [release notes](https://nagarjuna2997.github.io/ios-agent-skill/releases.html) for scope and evidence.
 
 Includes real appearance-aware color catalogs and offline SVG-layer app icons,
 Muse Code setup with verified MCP discovery, and refreshed public Apple references
@@ -18,7 +20,7 @@ the skills package or a separately configured MCP connection. See the
 claude mcp add ios-agent -- npx -y ios-agent-mcp@latest
 ```
 
-The published 2.7.0 server exposes 36 tools: 12 review/metadata tools, 8 Apple reference tools, 14 simulator tools, `create_app`, and the local `prepare_issue_report` tool. App scaffolding and simulator packages install automatically as dependencies; no separate installation or MCP connection is needed. Remove the separate knowledge/simulator connections if you previously configured them to avoid duplicate tools.
+The published 2.7.1 server exposes 37 tools: 12 review/metadata tools, 8 Apple reference tools, 14 simulator tools, `create_app`, the local `prepare_issue_report` tool, and experimental `private_feedback`. App scaffolding and simulator packages install automatically as dependencies; no separate installation or MCP connection is needed. Remove the separate knowledge/simulator connections if you previously configured them to avoid duplicate tools.
 
 Create a starter directly:
 
@@ -32,7 +34,7 @@ Requires Node.js 20+. Simulator operations require macOS and Xcode; XcodeGen is 
 
 # Local source retrieval in 2.4.0
 
-The knowledge server now searches bundled repository source, templates and guides, outlines sections, and reads exact content with bounded output and continuation offsets. It exposes eight knowledge tools separately from the eleven analyzer tools. No runtime browsing is needed for local source retrieval. See [offline source workflow](../docs/tooling/offline-source-library.md).
+The knowledge server now searches bundled repository source, templates and guides, outlines sections, and reads exact content with bounded output and continuation offsets. It exposes eight knowledge tools separately from the eleven analyzer tools. No runtime browsing is needed for local source retrieval. See [offline source workflow](https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/tooling/offline-source-library.md).
 
 ## New in 2.4.0: Apple knowledge tools for more clients
 
@@ -315,7 +317,7 @@ MIT — see [LICENSE](./LICENSE).
 
 ## App-building loop preview (source checkout)
 
-The CLI now provides `loop init`, `loop resume` and `loop status` alongside the unified MCP connection. See the [workflow guide](../docs/tooling/app-building-loop.md) and [reading-list demo](../samples/ReadingList/README.md) for reproducible acceptance checks, bounded Claude repairs, simulator evidence and saved progress. Real Claude repair is not yet integration-verified; the published npm version does not include this preview.
+The CLI now provides `loop init`, `loop resume` and `loop status` alongside the unified MCP connection. See the [workflow guide](https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/tooling/app-building-loop.md) and [reading-list demo](../samples/ReadingList/README.md) for reproducible acceptance checks, bounded Claude repairs, simulator evidence and saved progress. Real Claude repair is not yet integration-verified; the published npm version does not include this preview.
 
 ## 2.6.0
 
@@ -325,10 +327,17 @@ Adds `review_app_intents` with conservative SiriKit migration advice and opt-in 
 
 `prepare_issue_report` is included in 2.7.0. It creates a local preview from fixed failure categories and links to this project’s issue tracker. It does not collect diagnostics, open a browser, make network calls or submit issues. Show the preview to the user before opening any link. GitHub sign-in and user submission are required.
 
-## Private chat feedback — source preview only
+## Private chat feedback — experimental
 
-The source adds `private_feedback` as a 37th tool. It requires an operator-configured HTTPS receiver, a local preview, and explicit user approval before sending fixed categories to a private repository. Hosting is not configured; this is not live or included in npm 2.7.0. No user GitHub sign-in is needed once deployed. No source, logs or credentials are accepted, and there is no automatic public fallback. See [the reporting workflow](https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/tooling/issue-reporting.md).
+Version 2.7.1 includes `private_feedback` as a 37th tool. It requires an operator-configured HTTPS receiver, a local preview, and explicit user approval before sending fixed categories to a private repository. Hosting is not configured; private delivery is not live by default. No user GitHub sign-in is needed once deployed. No source, logs or credentials are accepted, and there is no automatic public fallback. See [the reporting workflow](https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/tooling/issue-reporting.md).
 
-### Launch-screen review (source build)
+### Launch-screen review (2.7.1)
 
-The existing App Store audit and project analysis include target-aware static launch-screen checks. Unresolved settings are reported as coverage gaps. See [checks and limitations](../docs/tooling/launch-screen-review.md). This is not yet an npm release.
+The existing App Store audit and project analysis include target-aware static launch-screen checks. Unresolved settings are reported as coverage gaps. See [checks and limitations](https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/tooling/launch-screen-review.md). Included in npm 2.7.1.
+
+### Local release-package foundation (2.7.1)
+
+`npx -y ios-agent-mcp@latest apple analyze|prepare --project /path/to/app --target App --configuration Release --json`
+collects selected-target facts, conservative feature/screen candidates, questions
+and hashed local draft packages. No Apple connection, AI provider, build, upload
+or submission is performed. See the [Phase 1 workflow and limitations](https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/tooling/local-release-package.md).

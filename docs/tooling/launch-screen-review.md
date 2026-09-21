@@ -1,8 +1,8 @@
 # Reviewing iOS launch screens
 
-The source version of `audit_app_store_readiness` and `analyze_swift_project`
+Since ios-agent-mcp 2.7.1, `audit_app_store_readiness` and `analyze_swift_project`
 includes launch-screen checks. No additional MCP connection or tool is needed.
-This change is not yet an npm release. Point a source-built server at an app's
+Point the server at an app's
 project directory; the audit prints findings and a separate coverage summary.
 
 A system launch screen is static. A SwiftUI or UIKit intro shown after the app

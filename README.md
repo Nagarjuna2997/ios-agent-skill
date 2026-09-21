@@ -40,6 +40,8 @@ For an existing app, provide its absolute project path and ask for a focused rev
 | Review Swift code | File-located findings for concurrency, architecture, SwiftUI, availability, security, performance and App Intents. |
 | Generate design assets | Named light/dark/high-contrast colors and an opaque 1024px app icon rendered locally from editable SVG layers. |
 | Verify on a simulator | Build, test, install, launch and capture screenshots through Xcode. |
+| Review launch screens | Conservative target-aware checks for launch configuration, storyboards and asset references. |
+| Prepare a local release draft | Inspect selected-target facts, unresolved questions and hashed, resumable local packages without connecting to Apple. |
 <!-- product-features:end -->
 
 [Asset generation](docs/design/asset-generation.md) · [Review tools](docs/mcp/tools.md) · [Simulator setup](docs/tooling/ios-simulator-mcp.md) · [Apple release status](docs/apple/ios-27-release-verification.md)
@@ -60,7 +62,7 @@ The [Reading List demo](samples/ReadingList/README.md) has persistence, search, 
   <img src="examples/reading-list/library.png" alt="Reading List running in the simulator" width="260">
 </a>
 
-The published 2.7.0 server exposes 36 tools. Static reviews are heuristics, not compiler diagnostics. The Apple directory is a reference map, not Apple's proprietary framework source or proof of 405 working integrations. Token savings have not been benchmarked. [Build-loop verification limits](docs/tooling/app-building-loop.md).
+The published 2.7.1 server exposes 37 tools. Static reviews are heuristics, not compiler diagnostics. The Apple directory is a reference map, not Apple's proprietary framework source or proof of 405 working integrations. Token savings have not been benchmarked. [Build-loop verification limits](docs/tooling/app-building-loop.md).
 
 ## Why use this alongside Xcode?
 
@@ -74,7 +76,7 @@ Failure feedback belongs in your coding session: the observed error, the propose
 
 `prepare_issue_report` lets your AI prepare a local report when an iOS Agent tool fails. It accepts fixed categories only, shows a preview and a duplicate-search link, and leaves public submission to you. No app source or logs are collected. [Reporting workflow](docs/tooling/issue-reporting.md).
 
-Source preview, not in npm 2.7.0: optional `private_feedback` keeps approval in the AI chat and sends fixed categories to a private inbox through a configured HTTPS receiver. Hosting is not configured, so private submission is not live. It never silently submits or falls back to public issues.
+Included as an experimental tool in 2.7.1: optional `private_feedback` keeps approval in the AI chat and sends fixed categories to a private inbox through a configured HTTPS receiver. Hosting is not configured, so private submission is not live. It never silently submits or falls back to public issues.
 
 ## Four client families, one project
 
