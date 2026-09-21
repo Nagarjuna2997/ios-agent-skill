@@ -1,0 +1,5 @@
+# Synthetic Xcode projects are fixture inputs, not generated user projects.
+!fixtures/**/Fixture.xcodeproj/
+!fixtures/**/Fixture.xcodeproj/**
+__pycache__/
+*.pyc
