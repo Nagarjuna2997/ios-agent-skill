@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-09-16",
+  "checkedAt": "2026-09-21",
   "source": "https://developer.apple.com/documentation/updates",
   "entries": [
     {
@@ -37,6 +37,163 @@
       "url": "https://developer.apple.com/documentation/updates/appintents",
       "summary": "Learn about important changes in App Intents.",
       "topics": []
+    },
+    {
+      "title": "App Store Connect API Release Notes",
+      "url": "https://developer.apple.com/documentation/appstoreconnectapi/app-store-connect-api-release-notes",
+      "summary": "Learn about new features and updates in the App Store Connect API.",
+      "topics": [
+        {
+          "title": "App Store Connect API 4.4.1 release notes",
+          "url": "https://developer.apple.com/documentation/appstoreconnectapi/app-store-connect-api-4-4-1-release-notes",
+          "section": "Versions"
+        },
+        {
+          "title": "App Store Connect API 4.4 release notes",
+          "url": "https://developer.apple.com/documentation/appstoreconnectapi/app-store-connect-api-4-4-release-notes",
+          "section": "Versions"
+        },
+        {
+          "title": "App Store Connect API 4.3.1 release notes",
+          "url": "https://developer.apple.com/documentation/appstoreconnectapi/app-store-connect-api-4-3-1-release-notes",
+          "section": "Versions"
+        },
+        {
+          "title": "App Store Connect API 4.3 release notes",
+          "url": "https://developer.apple.com/documentation/appstoreconnectapi/app-store-connect-api-4-3-release-notes",
+          "section": "Versions"
+        },
+        {
+          "title": "App Store Connect API 4.2 release notes",
+          "url": "https://developer.apple.com/documentation/appstoreconnectapi/app-store-connect-api-4-2-release-notes",
+          "section": "Versions"
+        },
+        {
+          "title": "App Store Connect API 4.1 release notes",
+          "url": "https://developer.apple.com/documentation/appstoreconnectapi/app-store-connect-api-4-1-release-notes",
+          "section": "Versions"
+        },
+        {
+          "title": "App Store Connect API 4.0 release notes",
+          "url": "https://developer.apple.com/documentation/appstoreconnectapi/app-store-connect-api-4-0-release-notes",
+          "section": "Versions"
+        },
+        {
+          "title": "App Store Connect API 3.8 release notes",
+          "url": "https://developer.apple.com/documentation/appstoreconnectapi/app-store-connect-api-3-8-release-notes",
+          "section": "Versions"
+        },
+        {
+          "title": "App Store Connect API 3.7 release notes",
+          "url": "https://developer.apple.com/documentation/appstoreconnectapi/app-store-connect-api-3-7-release-notes",
+          "section": "Versions"
+        },
+        {
+          "title": "App Store Connect API 3.6 release notes",
+          "url": "https://developer.apple.com/documentation/appstoreconnectapi/app-store-connect-api-3-6-release-notes",
+          "section": "Versions"
+        },
+        {
+          "title": "App Store Connect API 3.5 release notes",
+          "url": "https://developer.apple.com/documentation/appstoreconnectapi/app-store-connect-api-3-5-release-notes",
+          "section": "Versions"
+        },
+        {
+          "title": "App Store Connect API 3.4 release notes",
+          "url": "https://developer.apple.com/documentation/appstoreconnectapi/app-store-connect-api-3-4-release-notes",
+          "section": "Versions"
+        },
+        {
+          "title": "App Store Connect API 3.3 release notes",
+          "url": "https://developer.apple.com/documentation/appstoreconnectapi/app-store-connect-api-3-3-release-notes",
+          "section": "Versions"
+        },
+        {
+          "title": "App Store Connect API 3.2 release notes",
+          "url": "https://developer.apple.com/documentation/appstoreconnectapi/app-store-connect-api-3-2-release-notes",
+          "section": "Versions"
+        },
+        {
+          "title": "App Store Connect API 3.1 release notes",
+          "url": "https://developer.apple.com/documentation/appstoreconnectapi/app-store-connect-api-3-1-release-notes",
+          "section": "Versions"
+        },
+        {
+          "title": "App Store Connect API 3.0 release notes",
+          "url": "https://developer.apple.com/documentation/appstoreconnectapi/app-store-connect-api-3-0-release-notes",
+          "section": "Versions"
+        },
+        {
+          "title": "App Store Connect API 2.4 release notes",
+          "url": "https://developer.apple.com/documentation/appstoreconnectapi/app-store-connect-api-2-4-release-notes",
+          "section": "Versions"
+        },
+        {
+          "title": "App Store Connect API 2.3 release notes",
+          "url": "https://developer.apple.com/documentation/appstoreconnectapi/app-store-connect-api-2-3-release-notes",
+          "section": "Versions"
+        },
+        {
+          "title": "App Store Connect API 2.2 release notes",
+          "url": "https://developer.apple.com/documentation/appstoreconnectapi/app-store-connect-api-2-2-release-notes",
+          "section": "Versions"
+        },
+        {
+          "title": "App Store Connect API 2.1 release notes",
+          "url": "https://developer.apple.com/documentation/appstoreconnectapi/app-store-connect-api-2-1-release-notes",
+          "section": "Versions"
+        },
+        {
+          "title": "App Store Connect API 2.0 release notes",
+          "url": "https://developer.apple.com/documentation/appstoreconnectapi/app-store-connect-api-2-0-release-notes",
+          "section": "Versions"
+        },
+        {
+          "title": "App Store Connect API 1.8 release notes",
+          "url": "https://developer.apple.com/documentation/appstoreconnectapi/app-store-connect-api-1-8-release-notes",
+          "section": "Versions"
+        },
+        {
+          "title": "App Store Connect API 1.7 release notes",
+          "url": "https://developer.apple.com/documentation/appstoreconnectapi/app-store-connect-api-1-7-release-notes",
+          "section": "Versions"
+        },
+        {
+          "title": "App Store Connect API 1.6 release notes",
+          "url": "https://developer.apple.com/documentation/appstoreconnectapi/app-store-connect-api-1-6-release-notes",
+          "section": "Versions"
+        },
+        {
+          "title": "App Store Connect API 1.5 release notes",
+          "url": "https://developer.apple.com/documentation/appstoreconnectapi/app-store-connect-api-1-5-release-notes",
+          "section": "Versions"
+        },
+        {
+          "title": "App Store Connect API 1.4 release notes",
+          "url": "https://developer.apple.com/documentation/appstoreconnectapi/app-store-connect-api-1-4-release-notes",
+          "section": "Versions"
+        },
+        {
+          "title": "App Store Connect API 1.3 release notes",
+          "url": "https://developer.apple.com/documentation/appstoreconnectapi/app-store-connect-api-1-3-release-notes",
+          "section": "Versions"
+        },
+        {
+          "title": "App Store Connect API 1.2 release notes",
+          "url": "https://developer.apple.com/documentation/appstoreconnectapi/app-store-connect-api-1-2-release-notes",
+          "section": "Versions"
+        },
+        {
+          "title": "App Store Connect API 1.1 release notes",
+          "url": "https://developer.apple.com/documentation/appstoreconnectapi/app-store-connect-api-1-1-release-notes",
+          "section": "Versions"
+        },
+        {
+          "title": "App Store Connect API 1.0 release notes",
+          "url": "https://developer.apple.com/documentation/appstoreconnectapi/app-store-connect-api-1-0-release-notes",
+          "section": "Versions"
+        }
+      ]
     },
     {
       "title": "AppKit updates",
@@ -2648,7 +2805,7 @@
           "section": "App Store"
         },
         {
-          "title": "In-App Purchase",
+          "title": "Apple In-App Purchase",
           "url": "https://developer.apple.com/documentation/storekit/in-app-purchase",
           "section": "App Store"
         },
@@ -4860,6 +5017,11 @@
         {
           "title": "Xcode 27.2 Beta Release Notes",
           "url": "https://developer.apple.com/documentation/xcode-release-notes/xcode-27_2-release-notes",
+          "section": "Xcode 27"
+        },
+        {
+          "title": "Xcode 27.1 Beta Release Notes",
+          "url": "https://developer.apple.com/documentation/xcode-release-notes/xcode-27_1-release-notes",
           "section": "Xcode 27"
         },
         {

@@ -651,3 +651,7 @@ struct AppUpdate {
     let downloadURL: URL
 }
 ```
+
+## September 21 follow-up
+
+See `docs/tooling/september-2026-distribution.md` for the newly checked beta APIs and tooling limitations.

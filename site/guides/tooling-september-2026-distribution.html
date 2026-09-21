@@ -1,0 +1,58 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-september-2026-distribution.html"><meta property="og:title" content="September 2026 distribution and runtime update notes"><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-september-2026-distribution.html"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css?v=guide-visuals-3"><link rel="stylesheet" href="../navigation.css?v=2"><script src="../appearance.js?v=2" defer=""></script><title>September 2026 distribution and runtime update notes</title><meta property="og:type" content="article"><meta property="og:site_name" content="iOS Agent Skill"><meta name="twitter:title" content="September 2026 distribution and runtime update notes"><meta name="twitter:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-september-2026-distribution.html"><meta name="robots" content="index,follow"><link rel="alternate" type="application/atom+xml" href="/ios-agent-skill/feed.xml" title="iOS Agent Skill"><meta name="description" content="Check September TestFlight eligibility, ATT and StoreKit beta caveats, and App Store Connect API 4.4 and 4.4.1 migration guidance."><meta property="og:description" content="Check September TestFlight eligibility, ATT and StoreKit beta caveats, and App Store Connect API 4.4 and 4.4.1 migration guidance."><meta name="twitter:description" content="Check September TestFlight eligibility, ATT and StoreKit beta caveats, and App Store Connect API 4.4 and 4.4.1 migration guidance."><script id="site-discovery-schema" type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"September 2026 distribution and runtime update notes","image":"https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg","datePublished":"2026-09-16T20:25:44-05:00","dateModified":"2026-09-21T00:32:18-05:00","author":{"@type":"Person","name":"Nagarjuna"},"mainEntityOfPage":"https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-september-2026-distribution.html","url":"https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-september-2026-distribution.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../series.html">Guided series</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a><!-- release-link:start --><a class="release-link" href="../releases.html">What’s new <span aria-hidden="true">↗</span></a><!-- release-link:end --></div><button class="appearance-toggle" type="button" aria-label="Use dark appearance" aria-pressed="false"><span aria-hidden="true">☾</span><span class="appearance-label">Dark mode</span></button></nav><main id="main"><div class="article-back"><a class="btn secondary" href="../library.html">← Back to all frameworks &amp; guides</a><a class="btn secondary" href="../blog.html">All articles →</a></div><article class="blog-article"><header class="page-intro"><p class="eyebrow">Tooling · Reference guide</p><h1>September 2026 distribution and runtime update notes</h1><p class="lead">Repository guidance for September 2026 distribution and runtime update notes. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/tooling/september-2026-distribution.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><p><a href="#visual-overview">Visual overview: workflow and architecture</a></p><div class="toc">
+<ul>
+<li><a href="#context">Context</a></li>
+<li><a href="#pattern">Pattern</a><ul>
+<li><a href="#testflight-and-asset-packs">TestFlight and asset packs</a></li>
+<li><a href="#att-and-storekit-testing-on-iosipados-272-beta">ATT and StoreKit Testing on iOS/iPadOS 27.2 beta</a></li>
+<li><a href="#app-store-connect-api-44">App Store Connect API 4.4</a></li>
+<li><a href="#app-store-connect-api-441">App Store Connect API 4.4.1</a></li>
+</ul>
+</li>
+<li><a href="#anti-patterns">Anti-Patterns</a></li>
+</ul>
+</div>
+</aside><section class="guide-visuals" aria-labelledby="visual-overview"><h2 id="visual-overview">Visual overview</h2>
+<p>Use the workflow to follow the task, and the architecture map to separate responsibilities. These are conceptual maps; the guide below defines implementation details and verification limits.</p>
+<figure class="guide-flow"><figcaption><span class="guide-visual-kicker">01 / Workflow</span>From intent to a checked result</figcaption><ol role="list"><li><span class="guide-step-number" aria-hidden="true">1</span><span>Identify beta or production destination</span><span class="guide-flow-arrow" aria-hidden="true">↓</span></li><li><span class="guide-step-number" aria-hidden="true">2</span><span>Check current submission eligibility</span><span class="guide-flow-arrow" aria-hidden="true">↓</span></li><li><span class="guide-step-number" aria-hidden="true">3</span><span>Pin runtime and API schema</span><span class="guide-flow-arrow" aria-hidden="true">↓</span></li><li><span class="guide-step-number" aria-hidden="true">4</span><span>Verify without changing account state</span></li></ol></figure>
+<figure class="guide-architecture"><figcaption><span class="guide-visual-kicker">02 / Architecture</span>Responsibility boundaries</figcaption><ol role="list"><li><span class="guide-boundary-label">Boundary 1</span><strong>Apple release notes</strong></li><li><span class="guide-boundary-label">Boundary 2</span><strong>Local guidance and test evidence</strong></li><li><span class="guide-boundary-label">Boundary 3</span><strong>Separate authorized submission workflow</strong></li></ol><p class="guide-visual-note">Connected responsibilities, not a required class hierarchy or an execution trace.</p></figure></section><h2 id="context">Context</h2>
+<p>Apple sources checked 2026-09-21. Keep beta runtime behavior, TestFlight eligibility,
+App Store distribution and API version numbers separate.</p>
+<h2 id="pattern">Pattern</h2>
+<h3 id="testflight-and-asset-packs">TestFlight and asset packs</h3>
+<p>Apple’s September 18 update permits Xcode 27.1 beta iOS/iPadOS 27.1 beta builds for
+internal and external TestFlight testing. The September 16 update permits the
+listed Xcode 27.2 beta platform SDK builds in TestFlight and adds localized
+Apple-hosted asset-pack distribution. Beta testing eligibility is not a general
+App Store production-upload guarantee. Verify current upload requirements before
+submission. <a href="https://developer.apple.com/help/app-store-connect/release-notes/">App Store Connect release notes</a>.</p>
+<h3 id="att-and-storekit-testing-on-iosipados-272-beta">ATT and StoreKit Testing on iOS/iPadOS 27.2 beta</h3>
+<p>Apple documents an expanded ATT prompt and annual EU re-prompting. Its notes name
+France, Germany, Italy, Poland and Romania as requiring the alternative prompt.
+Use Apple’s current platform guidance; do not implement a custom consent prompt,
+a guessed country detector or a hand-rolled annual timer from this summary.</p>
+<p>The beta notes resolve delayed eligibility reset after <code>SKTestSession.clearTransactions()</code>,
+missing <code>Storefront.updates</code> after test storefront/locale changes, and error dialogs
+appearing despite <code>dialogsDisabled</code>. A subscription-bundle purchase can still
+incorrectly offer unbundling instead of failing. Pin the test runtime and preserve
+a minimal reproduction before blaming app code or weakening an assertion.
+<a href="https://developer.apple.com/documentation/ios-ipados-release-notes/ios-ipados-27_2-release-notes">Apple iOS/iPadOS 27.2 beta notes</a>.</p>
+<h3 id="app-store-connect-api-44">App Store Connect API 4.4</h3>
+<p>Version 4.4 adds subscription plan availability, storage/animation metrics and
+additional performance goals. Background Assets supports locale filtering. Review
+replacements for deprecated subscription availability, report permissions and
+metric goal keys. Age-rating lookups move from app-store-version endpoints to
+app-info endpoints. These are API migration notes, not calls performed by this repo.
+<a href="https://developer.apple.com/documentation/appstoreconnectapi/app-store-connect-api-4-4-release-notes">Apple API 4.4 notes</a>.</p>
+<h3 id="app-store-connect-api-441">App Store Connect API 4.4.1</h3>
+<p>Version 4.4.1 adds separately versioned in-app purchase, subscription and subscription
+group metadata. Their localizations/images attach to the corresponding versions;
+review submission items can reference those versions. Older localization/image and
+standalone submission resources are deprecated. It also adds adjusted subscription
+price equalizations and social-media age-rating attributes. Download and pin the
+current OpenAPI schema before generating a client; don’t reuse an old request body
+just because a resource name looks similar.
+<a href="https://developer.apple.com/documentation/appstoreconnectapi/app-store-connect-api-4-4-1-release-notes">Apple API 4.4.1 notes</a>.</p>
+<h2 id="anti-patterns">Anti-Patterns</h2>
+<p>Do not fabricate endpoint payloads, make account/API calls while updating knowledge,
+or describe static guidance as an App Review/compliance guarantee. This update does
+not add authenticated App Store Connect API execution.</p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><!-- discovery-nav:start --><div role="navigation" aria-label="Site discovery"><a href="../">Home</a> · <a href="../install.html">Install</a> · <a href="../community.html">Community</a> · <a href="../blog.html">Blog</a> · <a href="../docs-index.html">Docs index</a> · <a href="../pages.html">Site map</a> · <a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a> · <a href="https://www.npmjs.com/package/ios-agent-mcp">npm</a></div><!-- discovery-nav:end --></footer></div></body></html>

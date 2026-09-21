@@ -2406,8 +2406,8 @@
       "path": "docs/apple/updates-and-release-notes.md",
       "title": "Apple Updates and Release Notes",
       "kind": "guide",
-      "characters": 10957,
-      "hash": "719dfd4179f06e7cc1fc7e3056566626d4870ae2576b20711de63faac5d5f568"
+      "characters": 11109,
+      "hash": "d9eaada780468f03037144a2e4e80d6a60fb1b9f96da2c7028513decc93185fa"
     },
     {
       "path": "docs/compatibility-matrix.md",
@@ -2854,8 +2854,8 @@
       "path": "docs/frameworks/storekit.md",
       "title": "StoreKit 2",
       "kind": "guide",
-      "characters": 21191,
-      "hash": "aea1281157b631f3c3e0fa1bc88a83301b82451c8ce47c744af701a2bebfdf30"
+      "characters": 21326,
+      "hash": "6308af0b439a4c3c19db09b64b4ddb72302b2cfe11f2a0f73d4f1dd5dd84a2d5"
     },
     {
       "path": "docs/frameworks/swift-charts.md",
@@ -3036,8 +3036,8 @@
       "path": "docs/platforms/iphone-duo.md",
       "title": "iPhone Duo: adaptive apps and simulator readiness",
       "kind": "guide",
-      "characters": 3908,
-      "hash": "ee0f2e8a2d23f5fd181dbcff8b98740fbbf0b4912465754304597ed7f31b0d2c"
+      "characters": 3983,
+      "hash": "3823f1149eeab4dc9084736177e3104cb11ed3f45b61dda1697312d66bfb96f5"
     },
     {
       "path": "docs/platforms/macos.md",
@@ -3117,6 +3117,13 @@
       "hash": "391f51d89792d3ef948ff05bbcaa8e000f7d78f20dd316a307f68c3d292bde18"
     },
     {
+      "path": "docs/swiftui/arrangement-views.md",
+      "title": "SwiftUI and UIKit arrangement views",
+      "kind": "guide",
+      "characters": 2749,
+      "hash": "7e5532c50f804fe39eea9d0fe9d796cb04b9144ac4967c94bc28bc4bc9f27d03"
+    },
+    {
       "path": "docs/swiftui/deep-linking-and-routing.md",
       "title": "Routing, Deep Links, and State Restoration",
       "kind": "guide",
@@ -3134,8 +3141,8 @@
       "path": "docs/swiftui/ios-27-interactions.md",
       "title": "SwiftUI iOS 27 Interactions",
       "kind": "guide",
-      "characters": 5162,
-      "hash": "4b7bd39b9f4b1f0317ab2a91dcf73d75d5c39211d942f44dec79b03d4db47f74"
+      "characters": 5287,
+      "hash": "41bdca50aed0ed6ed92b64e1b86f9a1210650df071a605cda2ccc84d0232e8a8"
     },
     {
       "path": "docs/swiftui/layout.md",
@@ -3204,8 +3211,8 @@
       "path": "docs/tooling/device-hub.md",
       "title": "Device Hub",
       "kind": "guide",
-      "characters": 7046,
-      "hash": "44971d3b5277da4d29370b646bc339c4225642025aa1cf0e8df5a1b8f4620aac"
+      "characters": 7591,
+      "hash": "f7fb4f4d71bce5752c3067c32f03304c05ab762e3d13dadcc0befda1a39b7d5b"
     },
     {
       "path": "docs/tooling/fm-cli.md",
@@ -3271,6 +3278,13 @@
       "hash": "569306705c836e4141b476921c445a1633c979d9173e0841f856ef401e89e337"
     },
     {
+      "path": "docs/tooling/september-2026-distribution.md",
+      "title": "September 2026 distribution and runtime update notes",
+      "kind": "guide",
+      "characters": 3197,
+      "hash": "7991a000aa5a18f8c9ec3abd3a6231d4601fd517553711a46534ee3cdea6bb5e"
+    },
+    {
       "path": "docs/tooling/visual-iteration-loop.md",
       "title": "Visual Iteration Loop",
       "kind": "guide",
@@ -3278,11 +3292,18 @@
       "hash": "01497ff58a5f6bd3b22985d4ba6738361a8fa1c9debf9f4c36202e525dbbdc08"
     },
     {
+      "path": "docs/tooling/xcode-27-2.md",
+      "title": "Xcode 27.2 beta: project format and preview tooling",
+      "kind": "guide",
+      "characters": 2291,
+      "hash": "e9238289830c87d1d0e67b6a3e3e6bb3f5ec87b548fe64345b3fd90ae077adea"
+    },
+    {
       "path": "docs/tooling/xcode-27-agents.md",
       "title": "Xcode 27 Coding Agents",
       "kind": "guide",
-      "characters": 9895,
-      "hash": "6de6a0c9d81abc5e6413901daba3f589c67416dbb9ae7bf026054ecaa6b66156"
+      "characters": 10013,
+      "hash": "323ca584b551b6a5c9c5b41578376d607776a45b781cce6150096de8dea1cd9e"
     },
     {
       "path": "docs/tooling/xcode-memory-debugging.md",
@@ -3302,8 +3323,8 @@
       "path": "docs/uikit/uikit-essentials.md",
       "title": "UIKit Essentials",
       "kind": "guide",
-      "characters": 12954,
-      "hash": "a6850833bf72bef9e4800a59aa1b5a812c228d47e460333f60a669ad3f25514c"
+      "characters": 13079,
+      "hash": "8512186da4ac37b3fe300aab1116e7bfa9f4d8d44075785dd0906c7c4d58e2a9"
     },
     {
       "path": "docs/uikit/uikit-swiftui-interop.md",

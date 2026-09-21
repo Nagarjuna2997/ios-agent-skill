@@ -1363,5 +1363,44 @@
       "App model and questions",
       "Immutable local release package"
     ]
+  },
+  "docs/tooling/xcode-27-2.md": {
+    "flow": [
+      "Identify the configuration file",
+      "Validate syntax without conversion",
+      "Resolve targets in compatible Xcode",
+      "Record preview destination and evidence"
+    ],
+    "architecture": [
+      "Xcode project bundle",
+      "JSON or legacy configuration",
+      "Read-only analysis boundary"
+    ]
+  },
+  "docs/swiftui/arrangement-views.md": {
+    "flow": [
+      "Own state outside the layout",
+      "Choose split or overlay",
+      "Adapt axes and proportions",
+      "Verify state and accessibility"
+    ],
+    "architecture": [
+      "Primary and secondary content",
+      "Arrangement style and environment",
+      "SDK availability and fallback"
+    ]
+  },
+  "docs/tooling/september-2026-distribution.md": {
+    "flow": [
+      "Identify beta or production destination",
+      "Check current submission eligibility",
+      "Pin runtime and API schema",
+      "Verify without changing account state"
+    ],
+    "architecture": [
+      "Apple release notes",
+      "Local guidance and test evidence",
+      "Separate authorized submission workflow"
+    ]
   }
 }

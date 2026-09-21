@@ -190,3 +190,12 @@ actually varies by device.
 - [ ] Verified on at least one physical device.
 - [ ] VoiceOver reaches every control with a meaningful label.
 - [ ] A reported bug was reproduced on its exact configuration before fixing.
+
+## Xcode 27.2 beta input caveat
+
+Checked 2026-09-21: Apple reports ignored keyboard/mouse input for Simulator OS
+versions earlier than iOS 18, tvOS 18, watchOS 11 and visionOS 2. Separate this
+Device Hub limitation from app hit-testing bugs. Reproduce on a supported runtime
+before changing UI code. Apple also notes physical devices can retain hardware
+keyboard mode for up to two minutes after disconnecting; wait for it to clear.
+[Apple release notes](https://developer.apple.com/documentation/xcode-release-notes/xcode-27_2-release-notes).

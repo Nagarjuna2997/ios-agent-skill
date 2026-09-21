@@ -1,6 +1,6 @@
 # Apple Updates and Release Notes
 
-Source snapshot: 2026-09-16. **97 update/release-note landing pages** fetched from Apple, with **916 unique-within-page topic links**.
+Source snapshot: 2026-09-21. **98 update/release-note landing pages** fetched from Apple, with **947 unique-within-page topic links**.
 
 ## Context
 
@@ -18,6 +18,7 @@ Match the app’s installed SDK, deployment target, and affected framework to th
 | AdAttributionKit Updates | [Open](https://developer.apple.com/documentation/updates/adattributionkit) | 0 |
 | App Clips updates | [Open](https://developer.apple.com/documentation/updates/appclips) | 0 |
 | App Intents updates | [Open](https://developer.apple.com/documentation/updates/appintents) | 0 |
+| App Store Connect API Release Notes | [Open](https://developer.apple.com/documentation/appstoreconnectapi/app-store-connect-api-release-notes) | 30 |
 | AppKit updates | [Open](https://developer.apple.com/documentation/updates/appkit) | 0 |
 | Apple Intelligence updates | [Open](https://developer.apple.com/documentation/updates/apple-intelligence) | 0 |
 | Apple Pencil updates | [Open](https://developer.apple.com/documentation/updates/applepencil) | 0 |
@@ -105,7 +106,7 @@ Match the app’s installed SDK, deployment target, and affected framework to th
 | WWDC23 | [Open](https://developer.apple.com/documentation/updates/wwdc2023) | 96 |
 | WWDC24 | [Open](https://developer.apple.com/documentation/updates/wwdc2024) | 52 |
 | WWDC25 | [Open](https://developer.apple.com/documentation/updates/wwdc2025) | 101 |
-| Xcode Release Notes | [Open](https://developer.apple.com/documentation/xcode-release-notes) | 60 |
+| Xcode Release Notes | [Open](https://developer.apple.com/documentation/xcode-release-notes) | 61 |
 | Xcode updates | [Open](https://developer.apple.com/documentation/updates/xcode) | 0 |
 | XCUIAutomation updates | [Open](https://developer.apple.com/documentation/updates/xcuiautomation) | 0 |
 | XPC updates | [Open](https://developer.apple.com/documentation/updates/xpc) | 0 |

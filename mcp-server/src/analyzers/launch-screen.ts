@@ -3,6 +3,7 @@ import { readdir, readFile, stat } from 'node:fs/promises';
 import { posix } from 'node:path';
 import * as plist from 'plist';
 import { XMLParser, XMLValidator } from 'fast-xml-parser';
+import { isXcodeConfiguration, jsonProjectStatus, JSON_PROJECT_LIMITATION } from '../project-format.js';
 import { Finding } from './types.js';
 import {projectPaths, parsePropertyList} from '../release/project.js';
 const DOC = 'docs/tooling/launch-screen-review.md';
@@ -33,7 +34,7 @@ export async function reviewLaunchScreens(root: string, selection?: {project: st
       if (!e.isFile()) continue;
       if (files.size >= 10000) { complete = false; return; }
       files.add(p);
-      if (/\.(pbxproj|plist|storyboard)$|\/Contents\.json$/.test(p)) {
+      if (/\.(pbxproj|xcproj|plist|storyboard)$|\/Contents\.json$/.test(p)) {
         try {
           const size = (await stat(posix.join(root, p))).size;
           if (size > 1024 * 1024 || parsedBytes + size > 32 * 1024 * 1024) { complete = false; continue; }
@@ -64,7 +65,13 @@ export async function reviewLaunchScreens(root: string, selection?: {project: st
       return dict(result) ? result : undefined;
     } catch { return; }
   }
-  for (const project of [...files].filter(p => p.endsWith('.xcodeproj/project.pbxproj') && (!selection || selection.project === p))) {
+  const jsonProjects = [...files].filter(p => isXcodeConfiguration(p) && p.endsWith('.xcproj'));
+  for (const project of jsonProjects) {
+    if (selection && selection.project !== project && posix.dirname(selection.project) !== posix.dirname(project)) continue;
+    const buffer = contents.get(project);
+    coverage.push(`${project}: ${buffer ? jsonProjectStatus(buffer.toString()) : 'unreadable'}; ${JSON_PROJECT_LIMITATION}`);
+  }
+  for (const project of [...files].filter(p => !jsonProjects.some(j => posix.dirname(j) === posix.dirname(p)) && p.endsWith('.xcodeproj/project.pbxproj') && (!selection || selection.project === p))) {
     let parsed: Obj;
     try { parsed = plist.parseOpenStep(contents.get(project)!.toString()) as Obj; }
     catch { coverage.push(`${project}: cannot parse project; skipped.`); continue; }

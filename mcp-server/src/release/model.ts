@@ -1,3 +1,4 @@
+import { isXcodeConfiguration, jsonProjectStatus, JSON_PROJECT_LIMITATION } from '../project-format.js';
 import { createHash } from 'node:crypto';
 import { readdir, readFile, lstat, realpath } from 'node:fs/promises';
 import { resolve, relative, posix, sep } from 'node:path';
@@ -223,7 +224,7 @@ export async function analyzeApp(options: Options): Promise<Analysis> {
     };
     function projectPath(v: string) { const p = relative(root, resolve(root, v)).split(sep).join('/'); if (p.startsWith('../') || p === '..' || posix.isAbsolute(p))
         throw Error('Selection must be inside project root'); return p; }
-    let projects = [...inv.files].filter(p => p.endsWith('.xcodeproj/project.pbxproj'));
+    let projects = [...inv.files].filter(p => isXcodeConfiguration(p));
     if (options.workspace) {
         const w = projectPath(options.workspace);
         selection.workspace = label(w);
@@ -243,7 +244,7 @@ export async function analyzeApp(options: Options): Promise<Analysis> {
                     for (const r of list(v)) {
                         const loc = r['@_location'];
                         if (typeof loc === 'string' && loc.startsWith('group:') && !doc.Workspace?.Group)
-                            refs.push(posix.normalize(posix.join(posix.dirname(w), loc.slice(6), 'project.pbxproj')));
+                            refs.push(posix.normalize(posix.join(posix.dirname(w), loc.slice(6))));
                         else
                             inv.coverage.add('workspace-reference-unresolved');
                     }
@@ -251,7 +252,7 @@ export async function analyzeApp(options: Options): Promise<Analysis> {
                     visit(v);
             } }
             visit(doc);
-            projects = projects.filter(p => refs.includes(p));
+            projects = projects.filter(p => refs.includes(posix.dirname(p)));
         }
         catch {
             inv.coverage.add('workspace-parse-failed');
@@ -260,7 +261,16 @@ export async function analyzeApp(options: Options): Promise<Analysis> {
     }
     if (options.project) {
         const p = projectPath(options.project);
-        projects = projects.filter(x => x === (p.endsWith('.pbxproj') ? p : posix.join(p, 'project.pbxproj')));
+        projects = projects.filter(x => x === p || posix.dirname(x) === p || (isXcodeConfiguration(p) && posix.dirname(x) === posix.dirname(p)));
+    }
+    const jsonProjects = projects.filter(p => p.endsWith('.xcproj'));
+    if (jsonProjects.length) {
+        for (const p of jsonProjects) {
+            const entry = await input(p, 'project');
+            inv.coverage.add(`${label(p)}: ${entry ? jsonProjectStatus(entry.b.toString()) : 'unreadable'}; ${JSON_PROJECT_LIMITATION}`);
+        }
+        claim('project-format', 'xcproj-json', 'UNKNOWN', [], [JSON_PROJECT_LIMITATION]);
+        return finish();
     }
     if (projects.length !== 1) {
         claim('project-selection', null, 'UNKNOWN', [], ['Select one Xcode project; no source-wide fallback is used.']);

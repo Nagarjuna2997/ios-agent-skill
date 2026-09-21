@@ -318,6 +318,8 @@ server.registerTool(
         `Launch-screen coverage: ${launch.configurations} configurations.`,
         ...launch.coverage.map(x => `- ${x}`),
         "",
+        ...summary.projectConfigurations.map(p => `Project configuration: ${p.path} (${p.format}; ${p.status}).`),
+        ...summary.adaptiveAPIReferences.map(a => `Adaptive API reference: ${a.symbol} at ${a.file}:${a.line}; iOS/iPadOS ${a.introducedIOS} beta. ${a.guidance} Source: ${a.source}`),
         "## Structure",
         "",
         `- **Swift files:** ${summary.swiftFileCount}`,

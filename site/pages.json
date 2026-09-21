@@ -930,5 +930,17 @@
   "guides/tooling-local-release-package.html": {
     "title": "Prepare an evidence-backed local release draft",
     "description": "Inspect application targets, separate observed facts from inferences and create integrity-checked local release packages without Apple access."
+  },
+  "guides/swiftui-arrangement-views.html": {
+    "title": "SwiftUI and UIKit arrangement views",
+    "description": "Review iOS 27.1 SwiftUI and UIKit arrangement APIs, adaptive state ownership, split and overlay layouts, and SDK verification limits."
+  },
+  "guides/tooling-xcode-27-2.html": {
+    "title": "Xcode 27.2 beta: project format and preview tooling",
+    "description": "Understand JSON configuration inside Xcode projects, read-only analysis limits, RenderPreview destinations, and the separate Duo beta toolchain."
+  },
+  "guides/tooling-september-2026-distribution.html": {
+    "title": "September 2026 distribution and runtime update notes",
+    "description": "Check September TestFlight eligibility, ATT and StoreKit beta caveats, and App Store Connect API 4.4 and 4.4.1 migration guidance."
   }
 }

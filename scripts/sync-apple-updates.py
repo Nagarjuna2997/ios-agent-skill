@@ -20,7 +20,10 @@ def read(url):
 
 def main():
     technologies = json.loads((ROOT / 'docs/apple/technologies.json').read_text())['technologies']
-    urls = {'https://developer.apple.com/documentation/updates': 'Updates'}
+    urls = {
+        'https://developer.apple.com/documentation/updates': 'Updates',
+        'https://developer.apple.com/documentation/appstoreconnectapi/app-store-connect-api-release-notes': 'App Store Connect API Release Notes',
+    }
     for row in technologies:
         if 'Release Notes' in row['categories']:
             urls[row['url']] = row['name']

@@ -133,3 +133,7 @@ See also: `docs/swiftui/views-and-controls.md`, `docs/swiftui/layout.md`, `docs/
 [Apple’s SwiftUI updates](https://developer.apple.com/documentation/updates/swiftui) document `reorderable()` with `reorderContainer(for:isEnabled:move:)`, and URL-based documents using `ReadableDocument`, `WritableDocument`, and `URLDocumentConfiguration`. Keep the actual availability guards; older document protocols and container approaches do not become deprecated merely because these additions exist.
 
 The static SwiftUI reviewer’s regression tests accept these new names. No speculative deprecation list was added. Prefetching and widget styling require API-specific review and runtime tests; a lexical scan cannot establish their performance or Siri behavior.
+
+## September 21 follow-up
+
+See `docs/swiftui/arrangement-views.md` for the newly checked beta APIs and tooling limitations.

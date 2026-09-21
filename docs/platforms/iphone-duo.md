@@ -2,7 +2,7 @@
 
 ## Context
 
-Checked September 10, 2026. Apple announced iPhone Duo on September 9: a foldable iPhone running iOS 27 with inner and outer displays and Split View multitasking. Apple's announcement describes Device Hub support for Duo as **upcoming**. That announcement is not evidence that a Duo simulator profile is already installed or downloadable for a particular Xcode build.
+Checked September 21, 2026. Apple’s [September 18 resources](https://developer.apple.com/news/?id=nyuppv9r) now point developers to Xcode 27.1 beta for Duo SDK and Simulator support. Apple’s [release announcement](https://developer.apple.com/news/?id=rfb1rooi) gives October 23, 2026 availability with iOS 27.1. The Xcode 27.2 beta notes also direct Duo developers to 27.1 beta. Download availability is not evidence that this Mac has the runtime installed.
 
 Source: [Apple introduces iPhone Duo](https://www.apple.com/newsroom/2026/09/apple-unveils-iphone-duo/). For toolchain changes use [Apple Xcode updates](https://developer.apple.com/documentation/updates/xcode) and `docs/tooling/device-hub.md`.
 
@@ -16,7 +16,7 @@ On the development Mac checked for this release, Xcode 26.6 had iOS 26.1, 26.2, 
 
 The viewer uses real Simulator screenshots. Renaming an ordinary simulator to “Duo”, drawing a foldable device frame, or testing an iPad does not emulate Duo hardware or prove fold transitions work.
 
-### Engineering guidance until and after device support arrives
+### Engineering guidance and device verification
 
 The following is our implementation guidance inferred from adaptive app requirements, not a claim about undocumented Duo APIs:
 

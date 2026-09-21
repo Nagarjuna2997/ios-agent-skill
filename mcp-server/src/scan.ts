@@ -1,6 +1,8 @@
+import { recognizeAdaptiveAPIs } from "./analyzers/adaptive-apis.js";
 import { readFile, readdir, stat } from "node:fs/promises";
-import { join, relative, resolve, sep } from "node:path";
+import { join, relative, resolve, sep, dirname } from "node:path";
 import { SourceFile } from "./analyzers/types.js";
+import { isXcodeConfiguration, jsonProjectStatus } from "./project-format.js";
 import { ProjectContext } from "./analyzers/appstore.js";
 
 const SKIP_DIRS = new Set([
@@ -16,6 +18,7 @@ async function walk(
   root: string,
   accept: (path: string) => boolean,
   limit: number,
+  includeProjects = false,
 ): Promise<string[]> {
   const found: string[] = [];
 
@@ -34,9 +37,9 @@ async function walk(
       const full = join(dir, entry.name);
 
       if (entry.isDirectory()) {
-        if (SKIP_DIRS.has(entry.name) || entry.name.endsWith(".xcodeproj")) continue;
+        if (SKIP_DIRS.has(entry.name) || (!includeProjects && entry.name.endsWith(".xcodeproj"))) continue;
         await visit(full);
-      } else if (accept(full)) {
+      } else if (entry.isFile() && accept(full)) {
         found.push(full);
       }
     }
@@ -116,8 +119,11 @@ export async function readProjectContext(root: string): Promise<ProjectContext> 
 
   // An Info.plist or an Xcode project means this is an app target, not a
   // library. App Store rules only apply to the former.
-  const xcodeprojs = await walk(root, (p) => p.endsWith(".pbxproj"), 3);
-  const isApp = plists.length > 0 || xcodeprojs.length > 0;
+  const xcodeprojs = await walk(root, isXcodeConfiguration, 20, true);
+  let isApp = plists.length > 0;
+  for (const path of xcodeprojs.filter(p => p.endsWith('.pbxproj'))) {
+    try { if ((await readFile(path, 'utf8')).includes('com.apple.product-type.application')) isApp = true; } catch { /* unknown */ }
+  }
 
   return { infoPlist, hasPrivacyManifest: manifests.length > 0, isApp };
 }
@@ -130,7 +136,9 @@ export interface ProjectSummary {
   frameworks: string[];
   hasTests: boolean;
   hasPackageSwift: boolean;
+  adaptiveAPIReferences: ReturnType<typeof recognizeAdaptiveAPIs>;
   hasXcodeProject: boolean;
+  projectConfigurations: Array<{ path: string; format: string; status: string }>;
   /** SwiftUI, UIKit, both, or neither — inferred from imports. */
   uiFramework: "SwiftUI" | "UIKit" | "SwiftUI + UIKit" | "unknown";
   /** Best-effort architecture read. Evidence is reported alongside it. */
@@ -273,7 +281,9 @@ export async function summarizeProject(
   }
 
   if (!deploymentTarget) {
-    const pbxproj = await walk(root, (p) => p.endsWith("project.pbxproj"), 3);
+    const jsonConfigs = await walk(root, p => isXcodeConfiguration(p) && p.endsWith('.xcproj'), 20, true);
+    const pbxproj = (await walk(root, (p) => p.endsWith("project.pbxproj"), 3, true))
+      .filter(p => !jsonConfigs.some(j => dirname(j) === dirname(p)));
     if (pbxproj.length > 0) {
       try {
         const content = await readFile(pbxproj[0], "utf8");
@@ -284,7 +294,15 @@ export async function summarizeProject(
     }
   }
 
-  const xcodeprojs = await walk(root, (p) => p.endsWith(".pbxproj"), 3);
+  const xcodeprojs = await walk(root, isXcodeConfiguration, 20, true);
+  const projectConfigurations = await Promise.all(xcodeprojs.map(async path => {
+    let status = 'legacy-configuration-detected';
+    if (path.endsWith('.xcproj')) {
+      try { status = (await stat(path)).size > MAX_FILE_BYTES ? 'size-limit' : jsonProjectStatus(await readFile(path, 'utf8')); }
+      catch { status = 'unreadable'; }
+    }
+    return { path: relative(root, path), format: path.endsWith('.xcproj') ? 'xcproj-json' : 'pbxproj', status };
+  }));
   const { architecture, evidence } = inferArchitecture(files);
   const dependencies = await readDependencies(root);
 
@@ -313,6 +331,8 @@ export async function summarizeProject(
     hasTests: files.some((f) => /Tests?\.swift$/.test(f.path)),
     hasPackageSwift: packages.length > 0,
     hasXcodeProject: xcodeprojs.length > 0,
+    projectConfigurations,
+    adaptiveAPIReferences: recognizeAdaptiveAPIs(files),
     uiFramework,
     architecture,
     architectureEvidence: evidence,

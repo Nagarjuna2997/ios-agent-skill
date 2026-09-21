@@ -371,3 +371,7 @@ extension FormViewController: UITextFieldDelegate {
     }
 }
 ```
+
+## September 21 follow-up
+
+See `docs/swiftui/arrangement-views.md` for the newly checked beta APIs and tooling limitations.

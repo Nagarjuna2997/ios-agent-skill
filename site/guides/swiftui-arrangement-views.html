@@ -1,0 +1,53 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/swiftui-arrangement-views.html"><meta property="og:title" content="SwiftUI and UIKit arrangement views"><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/swiftui-arrangement-views.html"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css?v=guide-visuals-3"><link rel="stylesheet" href="../navigation.css?v=2"><script src="../appearance.js?v=2" defer=""></script><title>SwiftUI and UIKit arrangement views</title><meta name="description" content="Review iOS 27.1 SwiftUI and UIKit arrangement APIs, adaptive state ownership, split and overlay layouts, and SDK verification limits."><meta property="og:description" content="Review iOS 27.1 SwiftUI and UIKit arrangement APIs, adaptive state ownership, split and overlay layouts, and SDK verification limits."><meta property="og:type" content="article"><meta property="og:site_name" content="iOS Agent Skill"><meta name="twitter:title" content="SwiftUI and UIKit arrangement views"><meta name="twitter:description" content="Review iOS 27.1 SwiftUI and UIKit arrangement APIs, adaptive state ownership, split and overlay layouts, and SDK verification limits."><meta name="twitter:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/swiftui-arrangement-views.html"><meta name="robots" content="index,follow"><link rel="alternate" type="application/atom+xml" href="/ios-agent-skill/feed.xml" title="iOS Agent Skill"><script id="site-discovery-schema" type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"SwiftUI and UIKit arrangement views","image":"https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg","datePublished":"2026-09-16T20:25:44-05:00","dateModified":"2026-09-21T00:32:18-05:00","author":{"@type":"Person","name":"Nagarjuna"},"mainEntityOfPage":"https://nagarjuna2997.github.io/ios-agent-skill/guides/swiftui-arrangement-views.html","url":"https://nagarjuna2997.github.io/ios-agent-skill/guides/swiftui-arrangement-views.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../series.html">Guided series</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a><!-- release-link:start --><a class="release-link" href="../releases.html">What’s new <span aria-hidden="true">↗</span></a><!-- release-link:end --></div><button class="appearance-toggle" type="button" aria-label="Use dark appearance" aria-pressed="false"><span aria-hidden="true">☾</span><span class="appearance-label">Dark mode</span></button></nav><main id="main"><div class="article-back"><a class="btn secondary" href="../library.html">← Back to all frameworks &amp; guides</a><a class="btn secondary" href="../blog.html">All articles →</a></div><article class="blog-article"><header class="page-intro"><p class="eyebrow">Swiftui · Reference guide</p><h1>SwiftUI and UIKit arrangement views</h1><p class="lead">Repository guidance for SwiftUI and UIKit arrangement views. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/swiftui/arrangement-views.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><p><a href="#visual-overview">Visual overview: workflow and architecture</a></p><div class="toc">
+<ul>
+<li><a href="#context">Context</a></li>
+<li><a href="#pattern">Pattern</a></li>
+<li><a href="#related-september-apis">Related September APIs</a></li>
+<li><a href="#anti-patterns">Anti-Patterns</a></li>
+<li><a href="#verification">Verification</a></li>
+</ul>
+</div>
+</aside><section class="guide-visuals" aria-labelledby="visual-overview"><h2 id="visual-overview">Visual overview</h2>
+<p>Use the workflow to follow the task, and the architecture map to separate responsibilities. These are conceptual maps; the guide below defines implementation details and verification limits.</p>
+<figure class="guide-flow"><figcaption><span class="guide-visual-kicker">01 / Workflow</span>From intent to a checked result</figcaption><ol role="list"><li><span class="guide-step-number" aria-hidden="true">1</span><span>Own state outside the layout</span><span class="guide-flow-arrow" aria-hidden="true">↓</span></li><li><span class="guide-step-number" aria-hidden="true">2</span><span>Choose split or overlay</span><span class="guide-flow-arrow" aria-hidden="true">↓</span></li><li><span class="guide-step-number" aria-hidden="true">3</span><span>Adapt axes and proportions</span><span class="guide-flow-arrow" aria-hidden="true">↓</span></li><li><span class="guide-step-number" aria-hidden="true">4</span><span>Verify state and accessibility</span></li></ol></figure>
+<figure class="guide-architecture"><figcaption><span class="guide-visual-kicker">02 / Architecture</span>Responsibility boundaries</figcaption><ol role="list"><li><span class="guide-boundary-label">Boundary 1</span><strong>Primary and secondary content</strong></li><li><span class="guide-boundary-label">Boundary 2</span><strong>Arrangement style and environment</strong></li><li><span class="guide-boundary-label">Boundary 3</span><strong>SDK availability and fallback</strong></li></ol><p class="guide-visual-note">Connected responsibilities, not a required class hierarchy or an execution trace.</p></figure></section><h2 id="context">Context</h2>
+<p>Apple symbol metadata checked 2026-09-21 lists <strong>iOS/iPadOS 27.1 beta</strong>, not 27.0,
+for <a href="https://developer.apple.com/documentation/swiftui/arrangementview">ArrangementView</a>
+and <a href="https://developer.apple.com/documentation/uikit/uiarrangementviewcontroller">UIArrangementViewController</a>.
+A runtime guard cannot make an older SDK recognize these symbols.</p>
+<h2 id="pattern">Pattern</h2>
+<p>In SwiftUI, <code>ArrangementView</code> owns primary and secondary view content.
+<code>arrangementViewStyle(_:)</code> selects a split or overlay presentation. Restrict layout
+axes through the style’s <code>axes(_:)</code>, and use <code>splitArrangementLayoutRatio(...)</code>
+for proportional constraints. A custom <code>ArrangementViewStyle</code> implements
+<code>makeBody(configuration:)</code> using the supplied primary/secondary content.
+Keep app state outside layout decisions so changing orientation or arrangement
+preserves selection, drafts and ongoing work.</p>
+<p>In UIKit, use <code>setViewController(_:for:animated:)</code> with primary/secondary
+placements and <code>updateArrangement(_:animated:)</code> to change between
+<code>UISplitArrangement</code> and <code>UIOverlayArrangement</code>. Custom arrangements implement
+the documented <code>Arrangement</code> contract, including default and per-placement view
+properties. Query placement and state through the controller, rather than
+inferring them from child ordering.</p>
+<p>Review split, overlay, narrow/wide sizes, accessibility text sizes and state
+preservation independently. For older deployment targets, provide a supported
+layout fallback. Compile both paths using an SDK that declares the new APIs.</p>
+<p>Sources: <a href="https://developer.apple.com/documentation/updates/swiftui">SwiftUI September updates</a>,
+<a href="https://developer.apple.com/documentation/updates/uikit">UIKit September updates</a>.</p>
+<h2 id="related-september-apis">Related September APIs</h2>
+<p>The same update pages describe reserved-region queries, hinge updates, vertical
+bar placement and camera-capture scene accessories. Retrieve their specific symbol
+metadata before adoption; do not assume every item shares the same minimum OS.
+Prefer documented reserved-region geometry over hardcoded hinge dimensions.</p>
+<h2 id="anti-patterns">Anti-Patterns</h2>
+<ul>
+<li>Do not require migration from a working NavigationSplitView or custom layout.</li>
+<li>Do not confuse <code>.split</code> or <code>.axes</code> on an unrelated type with an arrangement API.</li>
+<li>Do not claim an iPad resize test validates Duo folding or outer-display behavior.</li>
+</ul>
+<h2 id="verification">Verification</h2>
+<p><code>analyze_swift_project</code> recognizes nine specific arrangement API references with
+source links and 27.1 metadata, excluding comments, strings and same-file type
+shadows. This is lexical recognition, not Swift name resolution or a missing-guard
+diagnostic. Tests validate recognition; real arrangement builds/runtime behavior
+remain unverified because the local SDK is older.</p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><!-- discovery-nav:start --><div role="navigation" aria-label="Site discovery"><a href="../">Home</a> · <a href="../install.html">Install</a> · <a href="../community.html">Community</a> · <a href="../blog.html">Blog</a> · <a href="../docs-index.html">Docs index</a> · <a href="../pages.html">Site map</a> · <a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a> · <a href="https://www.npmjs.com/package/ios-agent-mcp">npm</a></div><!-- discovery-nav:end --></footer></div></body></html>

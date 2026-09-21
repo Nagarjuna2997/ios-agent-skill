@@ -219,3 +219,7 @@ Apple documents separate [in-Xcode agent environments](https://developer.apple.c
 Apple also supports agent plug-ins through Intelligence settings → Plug-ins. This repository does not claim its existing client ZIPs have passed Xcode’s plug-in import. No Xcode-only artifact is published without that check.
 
 **Current result:** local stdio MCP tests pass. The above **Xcode 27 session remains untested** because the verification host has Xcode 26.6. No global agent configuration was changed during this documentation pass. Apple’s own external-tools server (`mcpbridge`/`mcp-server`) is a separate integration; do not confuse it with this project’s `ios-agent` server.
+
+## September 21 follow-up
+
+See `docs/tooling/xcode-27-2.md` for the newly checked beta APIs and tooling limitations.

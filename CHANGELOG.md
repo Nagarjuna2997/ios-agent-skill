@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+### Added
+- September 21 Apple knowledge refresh: iOS/iPadOS 27.1 Arrangement API recognition, Xcode 27.2 preview guidance, Duo beta tooling, ATT/StoreKit notes, and App Store Connect API 4.4/4.4.1 guidance.
+- Read-only `.xcproj` JSON configuration recognition inside `.xcodeproj` bundles. JSON schema/target resolution remains unsupported; release preparation blocks rather than guessing settings.
+- Eight regression tests for project format discovery, unresolved configurations, mixed-format safety, API recognition and offline knowledge retrieval.
+
+### Updated
+- Refetched 98 Apple update/release-note landing pages and refreshed the local guide index and website. No npm version change or new SDK runtime verification.
+
 ## [3.6.1] -- 2026-09-21
 
 Package: **ios-agent-mcp 2.7.1**. One patch release; bundled CLI and simulator package versions stay unchanged.
