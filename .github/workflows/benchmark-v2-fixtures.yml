@@ -6,6 +6,9 @@ on:
   pull_request:
     paths: ['benchmarks/v2/**', 'benchmarks/observability/**', '.github/workflows/benchmark-v2-fixtures.yml']
   workflow_dispatch:
+defaults:
+  run:
+    shell: bash
 permissions:
   contents: read
 jobs:

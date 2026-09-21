@@ -7,6 +7,24 @@ class Contracts(unittest.TestCase):
   fixtures=[json.loads(p.read_text()) for p in (harness.ROOT/'fixtures').glob('*/fixture.json')]
   self.assertEqual(len(fixtures),30)
   self.assertEqual({c:sum(f['category']==c for f in fixtures) for c in {f['category'] for f in fixtures}},dict(concurrency=5,**{'swiftui-state-lifecycle':5,'persistence-codable':5,'testing':5,'build-configuration':5,'quality':5}))
+ def test_mutation_substitutions_invalidate_build_cache(self):
+  with tempfile.TemporaryDirectory() as td:
+   work=pathlib.Path(td)/'workspace'
+   fixture=harness.ROOT/'fixtures/T02'
+   shutil.copytree(fixture/'reference',work)
+   seen=[]
+   def fake_command(args,cwd,timeout):
+    source=(cwd/'Sources/Fixture/Solution.swift').read_bytes()
+    if len(seen) in [0,1,2]:self.assertFalse((cwd/'.build').exists())
+    (cwd/'.build').mkdir(exist_ok=True)
+    seen.append(source)
+    mutant=source==(fixture/'oracle/mutant.swift').read_bytes()
+    return dict(exit=1 if mutant else 0,status='completed',stdout='Executed 1 test'+(' failed' if mutant else ''),stderr='Build complete!')
+   with patch.object(harness,'command',fake_command):
+    status,logs,reason=harness.check_package(fixture,work,[],{'kind':'test-quality'})
+   self.assertEqual(status,'pass',reason)
+   self.assertEqual(len(seen),4)
+   self.assertEqual(seen[0],seen[2]);self.assertEqual(seen[2],seen[3]);self.assertNotEqual(seen[0],seen[1])
  def test_exports_all_hide_oracles(self):
   with tempfile.TemporaryDirectory() as td:
    for p in sorted((harness.ROOT/'fixtures').iterdir()):

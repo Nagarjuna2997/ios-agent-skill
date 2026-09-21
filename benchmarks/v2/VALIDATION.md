@@ -61,3 +61,7 @@ and repairs are excluded from exports; the evaluator checkout must never be give
 to the agent. Public source memorization is outside filesystem isolation guarantees.
 
 See FIXTURES.md for the independent acceptance contract of every fixture.
+
+## Linux CI portability correction — September 21, 2026
+
+The first Swift 6.2.3 Linux validation exposed two fixture-contract failures, not scored agent outcomes. T01's unawaited assertion raced with XCTest completion; its starter now discards the asynchronous result and checks only a constant, so the defect is deterministic. T02 could execute a cached mutant after restoring the same-size correct source; each oracle substitution now clears the build cache. A harness regression checks cache invalidation for every substitution. Earlier validation evidence and historical benchmark scores remain unchanged. Fresh CI evidence is uploaded per cell by the portable fixture workflow; no provider comparison is run.

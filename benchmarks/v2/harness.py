@@ -121,9 +121,14 @@ def check_package(fixture,work,logs,meta):
  tests=work/'Tests/FixtureTests/RepairTests.swift'
  if not tests.exists():return 'fail',logs,'missing candidate tests'
  # XCTest count and semantic mutation detection, not style, wording or assertion spelling.
- original=(work/'Sources/Fixture/Solution.swift').read_bytes();outcomes=[];ran_tests=[]
- for name in ['correct','mutant']:
+ def substitute(name):
   (work/'Sources/Fixture/Solution.swift').write_bytes((fixture/f'oracle/{name}.swift').read_bytes())
+  # Linux incremental builds can reuse same-size source rewritten within one timestamp tick.
+  # A mutation must never execute the previous implementation's cached binary.
+  if (work/'.build').exists():shutil.rmtree(work/'.build')
+ outcomes=[];ran_tests=[]
+ for name in ['correct','mutant']:
+  substitute(name)
   c=command(['swift','test','--disable-automatic-resolution','--parallel'],work,60);logs.append(c)
   test_output=c['stdout']+c['stderr']
   ran=bool(re.search(r'Executed [1-9][0-9]* test|Test run with [1-9][0-9]* test|\[[1-9][0-9]*/[1-9][0-9]*\] Testing',test_output))
@@ -131,10 +136,9 @@ def check_package(fixture,work,logs,meta):
   if c['status']!='completed':return 'infrastructure_error',logs,'mutation check did not complete'
   if 'Build complete!' not in test_output:return 'fail',logs,'mutation check must compile before tests'
   if name=='mutant' and (not ran or not re.search(r'(?:failed|failure|issue was recorded)',test_output,re.I)):return 'fail',logs,'mutant requires an observed test failure'
- (work/'Sources/Fixture/Solution.swift').write_bytes(original)
  if outcomes != [True,False]:return 'fail',logs,'tests must pass correct behavior and detect seeded defect'
  # Repeat the correct arm to catch global/order dependent state. No provider arms involved.
- (work/'Sources/Fixture/Solution.swift').write_bytes((fixture/'oracle/correct.swift').read_bytes())
+ substitute('correct')
  for _ in range(2):
   logs.append(command(['swift','test','--disable-automatic-resolution','--parallel'],work,60))
   if logs[-1]['exit']!=0:return 'fail',logs,'repeat/parallel inconsistency'
