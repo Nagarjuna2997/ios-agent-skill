@@ -1,6 +1,6 @@
 # Benchmark v2: diagnostic Swift and iOS tasks
 
-Status: protocol proposal; fixtures and execution are not implemented yet.
+Status: fixture implementation is available; scored agent execution remains unimplemented and has not run. See README.md for validation and isolation requirements.
 
 The original 20-task suite and its completed 120-run evidence remain unchanged.
 Both arms passed all 60 runs. This is a ceiling result on synchronous Foundation
@@ -22,7 +22,7 @@ A tie or regression is a valid outcome; a skill win is never an acceptance gate.
 
 ## Proposed 30 tasks
 
-These are fixture specifications, not completed tests or measured results.
+These specifications are implemented under fixtures/. Fixture self-validation is separate from any measured agent comparison.
 
 | ID | Starting failure | Required independent evidence |
 |---|---|---|

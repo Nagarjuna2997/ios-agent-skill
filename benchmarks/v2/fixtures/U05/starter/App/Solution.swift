@@ -1,0 +1,6 @@
+import SwiftUI
+@MainActor final class Tracker:ObservableObject {@Published var events=0;@Published var report="Not inspected";weak var owner:Owner?;let stream:AsyncStream<Int>;let continuation:AsyncStream<Int>.Continuation;init(){let pair=AsyncStream<Int>.makeStream();stream=pair.stream;continuation=pair.continuation};func inspect(){report="Events \(events), alive \(owner != nil)"}}
+@MainActor final class Owner:ObservableObject {var task:Task<Void,Never>?;func start(_ tracker:Tracker){tracker.owner=self;task=Task {[self] in for await n in tracker.stream {_ = self.task;tracker.events+=n}}};func stop(){}}
+struct Child:View {@StateObject var owner=Owner();let tracker:Tracker;var body:some View {Text("Worker active").onAppear{owner.start(tracker)}.onDisappear{owner.stop()}}}
+@main struct FixtureApp:App {var body:some Scene {WindowGroup {Root()}}}
+struct Root:View {@StateObject var tracker=Tracker();@State var show=true;var body:some View {VStack {if show{Child(tracker:tracker)};Button("Hide"){show=false};Button("Send event"){tracker.continuation.yield(1)};Button("Inspect"){tracker.inspect()};Text(tracker.report).accessibilityIdentifier("report")}}}

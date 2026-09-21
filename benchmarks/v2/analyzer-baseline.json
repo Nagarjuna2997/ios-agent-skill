@@ -1,0 +1,9 @@
+{
+  "purpose": "corrected analyzer baseline, not an oracle",
+  "issue": 12,
+  "source": "mcp-server/src/analyzers/performance.ts",
+  "sha256": "b98eb60a8e7524947ce99d30b43bae5eb2f1b3ed71048182e8881c01ec57a37c",
+  "lastSourceCommit": "2a6f597ee1e754ee229bf1aca759e82dd23ec381",
+  "regressionCommand": "node --test --test-name-pattern='JSONDecoder|JSONEncoder' mcp-server/test/reviewers.test.js",
+  "regressionResult": "2 passed, 0 failed; local fixture implementation validation"
+}

@@ -1,0 +1,6 @@
+import SwiftUI
+@MainActor final class ControlledService {var pending:[Int:(Result<[String],Failure>)->Void]=[:];enum Failure:Error {case offline};func load(_ id:Int,completion:@escaping(Result<[String],Failure>)->Void){pending[id]=completion};func complete(_ id:Int,_ result:Result<[String],Failure>){pending.removeValue(forKey:id)?(result)}}
+@MainActor final class LoadModel:ObservableObject {@Published var state="Idle";var latest=0;let service=ControlledService();func load(_ id:Int){latest=id;state="Loading";service.load(id){[weak self] result in guard let self else{return};guard latest == id else{return}; switch result {case .success(let rows):state=rows.isEmpty ? "Empty" : rows.joined(separator:",");case .failure:state="Error"}}}}
+@main struct FixtureApp:App {var body:some Scene {WindowGroup {Root()}}}
+struct Root:View {@StateObject var model=LoadModel();var body:some View {VStack{Text(model.state).accessibilityIdentifier("state");Button("Load old"){model.load(1)};Button("Load new"){model.load(2)};Button("Finish old"){model.service.complete(1,.success(["Old"]))};Button("Finish new"){model.service.complete(2,.success(["New"]))};Button("Finish empty"){model.service.complete(2,.success([]))};Button("Finish error"){model.service.complete(2,.failure(.offline))}}}
+}

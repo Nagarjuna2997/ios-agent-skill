@@ -1,0 +1,3 @@
+import Foundation
+func require(_ condition: Bool, _ message: String) { if !condition { print("CONTRACT: "+message); exit(1) } }
+@main struct Check {static func main() {var logs:[String]=[];let secret="SYNTHETIC_credential_41",user="synthetic@example.invalid";recordLogin(user:user,credential:secret) {logs.append($0)};let a=logs;logs=[];recordLogin(user:"other@example.invalid",credential:"OTHER_SECRET") {logs.append($0)};require(!a.isEmpty && a.contains {$0.lowercased().contains("login")},"retain useful event");require(a == logs,"secret-dependent data in log");require(!a.joined().contains(secret) && !a.joined().contains(user),"sensitive logging")}}

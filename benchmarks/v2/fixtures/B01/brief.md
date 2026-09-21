@@ -1,0 +1,1 @@
+The local Fixture package cannot resolve its bundled LocalMath dependency. Fix offline target linkage. doubled(6) must be 12, and negative/zero inputs must work. Do not replace or download the dependency.

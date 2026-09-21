@@ -1,0 +1,7 @@
+{
+  "id": "B05",
+  "category": "build-configuration",
+  "lane": "simulator",
+  "kind": "simulator",
+  "timeout": 150
+}

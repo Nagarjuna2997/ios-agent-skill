@@ -1,0 +1,7 @@
+{
+  "id": "B02",
+  "category": "build-configuration",
+  "lane": "portable",
+  "kind": "spm",
+  "timeout": 60
+}

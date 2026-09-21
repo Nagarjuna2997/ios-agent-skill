@@ -1,0 +1,7 @@
+{
+  "id": "U03",
+  "category": "swiftui-state-lifecycle",
+  "lane": "simulator",
+  "kind": "simulator",
+  "timeout": 150
+}

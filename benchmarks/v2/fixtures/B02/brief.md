@@ -1,0 +1,1 @@
+The bundled catalog cannot load at runtime. Include the offline Catalog.json resource in the package and preserve its synthetic contents. catalog() must return the decoded names, without hardcoding them.

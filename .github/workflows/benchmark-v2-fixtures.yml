@@ -1,0 +1,31 @@
+name: Benchmark v2 portable fixture contracts
+on:
+  push:
+    branches: [main]
+    paths: ['benchmarks/v2/**', 'benchmarks/observability/**', '.github/workflows/benchmark-v2-fixtures.yml']
+  pull_request:
+    paths: ['benchmarks/v2/**', 'benchmarks/observability/**', '.github/workflows/benchmark-v2-fixtures.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  portable:
+    runs-on: ubuntu-latest
+    container: swift:6.2.3
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Provision validator tooling (before offline fixtures)
+        run: apt-get update && apt-get install -y python3
+      - name: Harness contracts
+        run: python3 benchmarks/v2/test_harness.py
+      - name: Offline event parser contracts
+        run: python3 -m unittest discover -s benchmarks/observability -p 'test_*.py'
+      - name: Validate portable starters and references; never call providers
+        run: python3 benchmarks/v2/harness.py validate --lane portable --output /tmp/v2-evidence
+      - name: Preserve separate cell evidence, including failures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v2-portable-fixture-validation
+          path: /tmp/v2-evidence

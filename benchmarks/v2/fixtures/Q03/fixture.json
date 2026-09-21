@@ -1,0 +1,7 @@
+{
+  "id": "Q03",
+  "category": "quality",
+  "lane": "simulator",
+  "kind": "simulator",
+  "timeout": 150
+}

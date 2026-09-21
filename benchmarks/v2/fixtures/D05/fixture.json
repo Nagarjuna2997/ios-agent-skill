@@ -1,0 +1,7 @@
+{
+  "id": "D05",
+  "category": "persistence-codable",
+  "lane": "portable",
+  "kind": "swift",
+  "timeout": 30
+}

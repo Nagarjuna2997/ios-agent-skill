@@ -1,0 +1,7 @@
+{
+  "id": "T01",
+  "category": "testing",
+  "lane": "portable",
+  "kind": "test-quality",
+  "timeout": 60
+}

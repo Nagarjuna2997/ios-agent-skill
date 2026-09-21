@@ -1,0 +1,3 @@
+import Foundation
+func require(_ condition: Bool, _ message: String) { if !condition { print("CONTRACT: "+message); exit(1) } }
+@main struct Check { static func main() throws { for json in [#"{"id":12,"name":"A"}"#,#"{"id":12,"name":"A","note":null}"#] { let r=try decodeRecord(Data(json.utf8)); require(r.id == 12 && r.name == "A" && r.note == nil,"valid optional/null") }; for json in [#"{"name":"A"}"#,#"{"id":"x","name":"A"}"#,#"{"id":1,"name":null}"#,#"{"id":1,"name":"A","note":4}"#,"{bad"] { do { _=try decodeRecord(Data(json.utf8)); require(false,"malformed required data became success") } catch {} }; let r=Record(id:6,name:"Synthetic",note:"note"); let output=try decodeRecord(JSONEncoder().encode(r)); require(output == r,"round trip") } }

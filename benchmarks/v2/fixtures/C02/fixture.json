@@ -1,0 +1,7 @@
+{
+  "id": "C02",
+  "category": "concurrency",
+  "lane": "portable",
+  "kind": "swift",
+  "timeout": 30
+}

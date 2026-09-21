@@ -1,0 +1,1 @@
+Repair the privacy manifest structure. This synthetic app uses UserDefaults for its own settings. Preserve its already-reviewed CA92.1 required reason; do not invent collection claims or legal reasons. The app does not track users.

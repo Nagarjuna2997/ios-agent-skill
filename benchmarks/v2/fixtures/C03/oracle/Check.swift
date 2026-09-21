@@ -1,0 +1,3 @@
+import Foundation
+func require(_ condition: Bool, _ message: String) { if !condition { print("CONTRACT: "+message); exit(1) } }
+@main struct Check { static func main() async { for _ in 0..<5 { do { let n=try await request(.success); require(n == 7,"success value") } catch { require(false,"success unexpectedly threw") }; do { _=try await request(.failure); require(false,"error swallowed") } catch RequestError.failed {} catch { require(false,"wrong failure") }; do { _=try await request(.cancelled); require(false,"cancel swallowed") } catch is CancellationError {} catch { require(false,"wrong cancellation") } } } }

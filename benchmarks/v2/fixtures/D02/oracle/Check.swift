@@ -1,0 +1,3 @@
+import Foundation
+import SwiftData
+@main struct Check {@MainActor static func main() throws {let store=try ModelContainer(for:Folder.self,Note.self,configurations:ModelConfiguration(isStoredInMemoryOnly:true));let c=ModelContext(store);let f=Folder(name:"Delete",notes:[Note(text:"one"),Note(text:"two")]);let keep=Folder(name:"Keep",notes:[Note(text:"three")]);c.insert(f);c.insert(keep);try c.save();try deleteFolder(f,in:c);let remaining=try c.fetch(FetchDescriptor<Note>()),folders=try c.fetch(FetchDescriptor<Folder>());guard remaining.map({$0.text})==["three"],folders.count==1,folders[0].name=="Keep" else {print("CONTRACT: folder deletion must remove only its owned notes");exit(1)}}}

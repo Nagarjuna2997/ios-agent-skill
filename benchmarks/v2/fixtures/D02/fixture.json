@@ -1,0 +1,7 @@
+{
+  "id": "D02",
+  "category": "persistence-codable",
+  "lane": "macos",
+  "kind": "swiftdata",
+  "timeout": 30
+}
