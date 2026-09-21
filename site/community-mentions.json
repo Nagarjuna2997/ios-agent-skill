@@ -100,6 +100,36 @@
       "url": "https://github.com/Nagarjuna2997/ios-agent-skill",
       "verifiedOn": "2026-09-16",
       "evidence": "Opened repository page; official source, not independent coverage."
+    },
+    {
+      "id": "mcphq",
+      "platform": "MCPHQ",
+      "kind": "directory",
+      "category": "Directory · automated index",
+      "description": "Indexes the MCP package with installation configurations and repository release information.",
+      "url": "https://mcphq.ai/mcp/nagarjuna2997-ios-agent-skill",
+      "verifiedOn": "2026-09-20",
+      "evidence": "Opened listing identifies the exact GitHub repository, registry name and npm package. Automated directory, not an endorsement."
+    },
+    {
+      "id": "verifymcp",
+      "platform": "VerifyMCP",
+      "kind": "directory",
+      "category": "Directory · automated analysis",
+      "description": "Publishes automated package checks and captured tool schemas, including limitations and findings.",
+      "url": "https://verifymcp.io/servers/nagarjuna2997-ios-agent-skill/ios-agent-mcp",
+      "verifiedOn": "2026-09-20",
+      "evidence": "Opened page identifies io.github.Nagarjuna2997/ios-agent-skill and ios-agent-mcp. Its scores and findings are third-party automated assessments, not independently validated here."
+    },
+    {
+      "id": "smallprint",
+      "platform": "Small Print",
+      "kind": "directory",
+      "category": "Directory · change monitoring",
+      "description": "Tracks the Gemini extension’s instruction changes and publishes automated change flags.",
+      "url": "https://smallprint.dev/a/gemini/nagarjuna2997/ios-agent-skill",
+      "verifiedOn": "2026-09-20",
+      "evidence": "Opened page links the exact repository and reports version comparisons. Automated flags are not confirmed security incidents or endorsements."
     }
   ]
 }
