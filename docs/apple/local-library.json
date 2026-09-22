@@ -2410,11 +2410,116 @@
       "hash": "d9eaada780468f03037144a2e4e80d6a60fb1b9f96da2c7028513decc93185fa"
     },
     {
+      "path": "docs/backend/app-architectures.md",
+      "title": "Backend architectures by app workflow",
+      "kind": "guide",
+      "characters": 3005,
+      "hash": "9afd2c6ca8c97ccd7c00718aa03141ba1378d6ca0cb6e21d10a178e716a0e7be"
+    },
+    {
+      "path": "docs/backend/appwrite.md",
+      "title": "Appwrite for Apple clients",
+      "kind": "guide",
+      "characters": 2906,
+      "hash": "d13644cf9b9365e2d668e0eb22121f3d766f365199b48fe7ca3098a47d7caed1"
+    },
+    {
+      "path": "docs/backend/authentication.md",
+      "title": "Authentication and session boundaries",
+      "kind": "guide",
+      "characters": 3980,
+      "hash": "23aa873fb37bd4bff0d78c95f87e2748744cf0b12dbac34a01f3ff01fd6ae66d"
+    },
+    {
+      "path": "docs/backend/aws-amplify.md",
+      "title": "AWS Amplify in a Swift app",
+      "kind": "guide",
+      "characters": 2934,
+      "hash": "6882ed35df6dfa833ac1bedf9ef9e960c3d746dfffaeed5daa0edb7f96f34ba5"
+    },
+    {
+      "path": "docs/backend/choosing-a-backend.md",
+      "title": "Choosing an iOS backend",
+      "kind": "guide",
+      "characters": 3861,
+      "hash": "5475bd5cde971147f7655eae68ae72c7c29eba0407244e04ec41287ad4b0f713"
+    },
+    {
+      "path": "docs/backend/cloudkit.md",
+      "title": "CloudKit as an Apple-native backend",
+      "kind": "guide",
+      "characters": 3902,
+      "hash": "58c46036962bcd2ec8d0389f6ab71b2ef68eb63ee470214804d6891ea962d2d7"
+    },
+    {
+      "path": "docs/backend/firebase.md",
+      "title": "Firebase for iOS",
+      "kind": "guide",
+      "characters": 5522,
+      "hash": "f1281c9f3fe80de09b40f1113ef50eee4669574a3bbc23dbba26711eb272aa14"
+    },
+    {
+      "path": "docs/backend/graphql.md",
+      "title": "GraphQL and Apollo iOS",
+      "kind": "guide",
+      "characters": 2729,
+      "hash": "a3d1b47f120a2c1d7b24741ee3a74ffb02e7eca2aa417fdaa3308eb429851bb2"
+    },
+    {
+      "path": "docs/backend/overview.md",
+      "title": "Backend services for Swift apps",
+      "kind": "guide",
+      "characters": 3732,
+      "hash": "fe154e0d0d929dbb4e21d0ad6c5b8fbc50e1311d11c8592989a6419a017f661f"
+    },
+    {
+      "path": "docs/backend/privacy.md",
+      "title": "Backend privacy and account lifecycle",
+      "kind": "guide",
+      "characters": 3528,
+      "hash": "22b69381ce39ccaf28a7936d3a3f3cec7670275186230831fd7646dd485ec714"
+    },
+    {
+      "path": "docs/backend/rest.md",
+      "title": "REST clients with URLSession",
+      "kind": "guide",
+      "characters": 4051,
+      "hash": "a4c38f992d58147aee83e1bf5b8ff4197ad5f787b46cc7c21bc33a791453da0b"
+    },
+    {
+      "path": "docs/backend/security.md",
+      "title": "Backend authorization and client secrets",
+      "kind": "guide",
+      "characters": 3718,
+      "hash": "23aa0452ce189cc489a1f568b4b33d97d28f5712f8cb7640afe2971167749e29"
+    },
+    {
+      "path": "docs/backend/sources.json",
+      "title": "sources.json",
+      "kind": "source",
+      "characters": 7405,
+      "hash": "8834c03ed19667d1c4367170397ccbbf9d44a3302a67afd763b5b8d46853d363"
+    },
+    {
+      "path": "docs/backend/supabase.md",
+      "title": "Supabase for Swift apps",
+      "kind": "guide",
+      "characters": 10439,
+      "hash": "1e47fb8bd713dce7bbdd754ffdaa6e3aa5b49641a3c53a5316c51551d4441985"
+    },
+    {
+      "path": "docs/backend/websockets.md",
+      "title": "Realtime connections on iOS",
+      "kind": "guide",
+      "characters": 2771,
+      "hash": "375a522602ad398ae26d9eb2e964845cf8ac2eb21d0ab755faf20ad22f305baa"
+    },
+    {
       "path": "docs/compatibility-matrix.md",
       "title": "Compatibility Matrix",
       "kind": "guide",
-      "characters": 8442,
-      "hash": "a322c60421dac9447ca99a41e473f29c6846657845b0269dd85ccbfd4e822108"
+      "characters": 9000,
+      "hash": "53f20f3248b6a87589cf049f09319dd820db01133f210dd4a1362c7a10fe543f"
     },
     {
       "path": "docs/data/README.md",
@@ -2427,22 +2532,43 @@
       "path": "docs/design/asset-generation.md",
       "title": "Generate real asset catalogs",
       "kind": "guide",
-      "characters": 4186,
-      "hash": "f58e30129e6421447ac4cf85c98b10cb6f144cc398a0aec408eeee5805e946d0"
+      "characters": 4521,
+      "hash": "a4d92389de52098fa9103d9eefd02dd8d4124dfa65eb0ecc492f2ef4acd205b5"
+    },
+    {
+      "path": "docs/design/brand-color-extraction.md",
+      "title": "Derive a usable seed from brand color evidence",
+      "kind": "guide",
+      "characters": 2145,
+      "hash": "d6399806771982e4a866cea3612234b53529456f683fcdef9655eb702af4eba5"
+    },
+    {
+      "path": "docs/design/color-accessibility.md",
+      "title": "Validate color relationships, not just swatches",
+      "kind": "guide",
+      "characters": 2860,
+      "hash": "e5be3f7a7fa0ebf1d7f08b7b6e1873d27ab6d2c28ff24eb561660567263eeae8"
     },
     {
       "path": "docs/design/color-system.md",
       "title": "iOS Color System -- Complete Guide for Stunning SwiftUI UIs",
       "kind": "guide",
-      "characters": 31912,
-      "hash": "99e4c9a2355a35a440d85e63af6db6fd03da3078184b2821b6aa1df21d1e9318"
+      "characters": 33077,
+      "hash": "65b0749cc834b99616fe0e2eff3aaddff428265edfcf18183748cf47c169d376"
+    },
+    {
+      "path": "docs/design/dark-mode-colors.md",
+      "title": "Dark and increased-contrast app colors",
+      "kind": "guide",
+      "characters": 2632,
+      "hash": "43f8455d500a647a5c28068f58f39c0f1d9202568551db5efd9e5697d6149bee"
     },
     {
       "path": "docs/design/design-tokens.md",
       "title": "Design Tokens, Adaptive Color, and Liquid Glass",
       "kind": "guide",
-      "characters": 22323,
-      "hash": "7cafc4714a19270ea49bb16e9aea506016b971b82d3571caa2c004e7150b2fab"
+      "characters": 22658,
+      "hash": "c12f1e57af14af7033d6b886748a9c1e4b2741121ad121494bf4e2d7eeed1bbd"
     },
     {
       "path": "docs/design/fonts-catalog.md",
@@ -2473,11 +2599,18 @@
       "hash": "313f10faff3511adfe3b7eee8f0211f071ae0ac005450896e66affc6d0257673"
     },
     {
+      "path": "docs/design/palette-generation.md",
+      "title": "Generate an iOS palette from a brief",
+      "kind": "guide",
+      "characters": 6158,
+      "hash": "49a00a1a945af5b96361dc1d59f0228fb437e2c59122a49a0ed210bf03aeec4b"
+    },
+    {
       "path": "docs/design/README.md",
       "title": "Professional UI/UX System",
       "kind": "guide",
-      "characters": 2657,
-      "hash": "cfe64978965c1c29f7ce8d75980319f5444d21f6fc007ef2c84b80b1f9d24d89"
+      "characters": 2992,
+      "hash": "87e7d97bc0b7a72cca972fa410c89a5c8a0d0ec25dc2db40d717054f3d7ec1dd"
     },
     {
       "path": "docs/design/stunning-ui-patterns.md",
@@ -2595,8 +2728,8 @@
       "path": "docs/frameworks/cloudkit.md",
       "title": "CloudKit",
       "kind": "guide",
-      "characters": 28559,
-      "hash": "96f0e562bffd3941357111df5209e842644bab3e02f5e7c985f40aae2808e1be"
+      "characters": 28577,
+      "hash": "0ef2343f293968ad17e2eb80abbf2513bb6f081e9c5a9372767ee4d5d7545b3e"
     },
     {
       "path": "docs/frameworks/combine.md",
@@ -2917,8 +3050,8 @@
       "path": "docs/mcp/installation.md",
       "title": "Installing the iOS Agent MCP Server",
       "kind": "guide",
-      "characters": 14383,
-      "hash": "c070c864e579b47552121803d1ecf3d7bed8a78bb2a00407cffe97ade4534719"
+      "characters": 14810,
+      "hash": "5b564187d3c445b34ebe3860703ccdbcee6a83b6bdf3e1cd379aae24e2e95a4a"
     },
     {
       "path": "docs/mcp/knowledge-server.md",
@@ -2938,8 +3071,8 @@
       "path": "docs/mcp/tools.md",
       "title": "MCP Tool Reference",
       "kind": "guide",
-      "characters": 12955,
-      "hash": "703dd32c44f5e1dc9f5979cb02b48401690843fbc16b75c7d631dece664fff3c"
+      "characters": 13477,
+      "hash": "4867f88168bd66059647605c5cd359d33e4798909a9e977f6d5e6064e718c0c6"
     },
     {
       "path": "docs/mcp/vnext-analysis-tools.md",
@@ -2973,8 +3106,8 @@
       "path": "docs/networking/README.md",
       "title": "Networking and Connectivity",
       "kind": "guide",
-      "characters": 1754,
-      "hash": "7e16bec18b87b1aca44fe8f4b7a1e9daecf487c623c27a001183e804c13eb320"
+      "characters": 1981,
+      "hash": "1bc4d98b80e04184949371f4e4881cf9b6ec8e84f9b78007a88021b0f7d2d5e8"
     },
     {
       "path": "docs/orchestration/dynamic-workflows.md",
@@ -3549,6 +3682,363 @@
       "kind": "source",
       "characters": 4797,
       "hash": "f996933b90eb27e7b47174be9536af21010f2a03ae7c6c3c57eb811e59d54c85"
+    },
+    {
+      "path": "samples/BackendPatterns/Package.swift",
+      "title": "Package.swift",
+      "kind": "source",
+      "characters": 358,
+      "hash": "02e9438cda9535d7b125bd8aefa8ee286c901ab6b4390cac5cc64befdf3d93f7"
+    },
+    {
+      "path": "samples/BackendPatterns/README.md",
+      "title": "Offline backend patterns",
+      "kind": "guide",
+      "characters": 1695,
+      "hash": "387a2534f9c51e2e39e4e832f90ad1052998d1dec7bb8aa27c284d9e4c070b83"
+    },
+    {
+      "path": "samples/BackendPatterns/Sources/BackendPatterns/AppleAdapters.swift",
+      "title": "AppleAdapters.swift",
+      "kind": "source",
+      "characters": 2388,
+      "hash": "8d7acc3c16587fd75dd913fed183a8f9bf5e2264817f3581e004f3b0d8dfb853"
+    },
+    {
+      "path": "samples/BackendPatterns/Sources/BackendPatterns/CallbackRoute.swift",
+      "title": "CallbackRoute.swift",
+      "kind": "source",
+      "characters": 789,
+      "hash": "042774057e6cbe305fd5e108fd779106513c39e8bfd4d5b08a0d0ca0dacbead7"
+    },
+    {
+      "path": "samples/BackendPatterns/Sources/BackendPatterns/HTTPClient.swift",
+      "title": "HTTPClient.swift",
+      "kind": "source",
+      "characters": 2944,
+      "hash": "51cac174578a53b0046c319f418f1c94336f2fbd17fbd7ea51fe99de49276b36"
+    },
+    {
+      "path": "samples/BackendPatterns/Tests/BackendPatternsTests/BackendTests.swift",
+      "title": "BackendTests.swift",
+      "kind": "source",
+      "characters": 4239,
+      "hash": "f90da28e801dd8e4d02d8da2005c5b0df59934c4a31b7f2efabbd5228fce8698"
+    },
+    {
+      "path": "samples/ColorSystem/Assets.xcassets/Accent.colorset/Contents.json",
+      "title": "Contents.json",
+      "kind": "source",
+      "characters": 1543,
+      "hash": "8420492e6e3f1d439abfebbbccd411161b0000b3e47140ca0004bd9193ef409e"
+    },
+    {
+      "path": "samples/ColorSystem/Assets.xcassets/AccentColor.colorset/Contents.json",
+      "title": "Contents.json",
+      "kind": "source",
+      "characters": 1543,
+      "hash": "9be7da7325ddf2843b61f2bf6ce314a319847294d37fad777f2a42b9cc14d223"
+    },
+    {
+      "path": "samples/ColorSystem/Assets.xcassets/Background.colorset/Contents.json",
+      "title": "Contents.json",
+      "kind": "source",
+      "characters": 1543,
+      "hash": "71b4b7a807012c115168dd1bbe1e30c4358e5ae7c03041eaa6968dcfb9b7df59"
+    },
+    {
+      "path": "samples/ColorSystem/Assets.xcassets/BackgroundSecondary.colorset/Contents.json",
+      "title": "Contents.json",
+      "kind": "source",
+      "characters": 1543,
+      "hash": "d50637c501278448f17e0590f6b1bd43f23ad81d99475dc20c605ec23d1f303a"
+    },
+    {
+      "path": "samples/ColorSystem/Assets.xcassets/Border.colorset/Contents.json",
+      "title": "Contents.json",
+      "kind": "source",
+      "characters": 1543,
+      "hash": "4c7491562acdb5906b7b229d9b1421e1d654a0580b81f17514e4f9a945cd3b19"
+    },
+    {
+      "path": "samples/ColorSystem/Assets.xcassets/Contents.json",
+      "title": "Contents.json",
+      "kind": "source",
+      "characters": 60,
+      "hash": "7b225591af0371e8fea9f152cab6dd13013bf49ed2b277380503c4501698cbb7"
+    },
+    {
+      "path": "samples/ColorSystem/Assets.xcassets/Destructive.colorset/Contents.json",
+      "title": "Contents.json",
+      "kind": "source",
+      "characters": 1543,
+      "hash": "05ef0466e83ce5a45a27e290ce30853b2d572edefb974be4fdb4a58c084192eb"
+    },
+    {
+      "path": "samples/ColorSystem/Assets.xcassets/Error.colorset/Contents.json",
+      "title": "Contents.json",
+      "kind": "source",
+      "characters": 1543,
+      "hash": "05ef0466e83ce5a45a27e290ce30853b2d572edefb974be4fdb4a58c084192eb"
+    },
+    {
+      "path": "samples/ColorSystem/Assets.xcassets/ErrorContainer.colorset/Contents.json",
+      "title": "Contents.json",
+      "kind": "source",
+      "characters": 1543,
+      "hash": "63a38a18eef356f0cb10938957eb02feb49266a3e8600160a5ce4359010de413"
+    },
+    {
+      "path": "samples/ColorSystem/Assets.xcassets/Focus.colorset/Contents.json",
+      "title": "Contents.json",
+      "kind": "source",
+      "characters": 1543,
+      "hash": "9be7da7325ddf2843b61f2bf6ce314a319847294d37fad777f2a42b9cc14d223"
+    },
+    {
+      "path": "samples/ColorSystem/Assets.xcassets/IconPrimary.colorset/Contents.json",
+      "title": "Contents.json",
+      "kind": "source",
+      "characters": 1543,
+      "hash": "babb7a9967434864e43dcc22943ef45933938dc748417d46f8c4a6ce2c6832e2"
+    },
+    {
+      "path": "samples/ColorSystem/Assets.xcassets/IconSecondary.colorset/Contents.json",
+      "title": "Contents.json",
+      "kind": "source",
+      "characters": 1543,
+      "hash": "663208d086fb02e3d3d799883bf3dca86789b02f562439a5878ed262ce5e8d75"
+    },
+    {
+      "path": "samples/ColorSystem/Assets.xcassets/Info.colorset/Contents.json",
+      "title": "Contents.json",
+      "kind": "source",
+      "characters": 1543,
+      "hash": "b21bb8099466ed708f06b5076676c89410319d590e3715891bd433a32fd138b9"
+    },
+    {
+      "path": "samples/ColorSystem/Assets.xcassets/Link.colorset/Contents.json",
+      "title": "Contents.json",
+      "kind": "source",
+      "characters": 1543,
+      "hash": "a3a0dce5d1cd81bab9e8f5910c55718127f9da4289c6ce706eba487490bf1b4e"
+    },
+    {
+      "path": "samples/ColorSystem/Assets.xcassets/OnPrimary.colorset/Contents.json",
+      "title": "Contents.json",
+      "kind": "source",
+      "characters": 1543,
+      "hash": "a937ac74d609e63d646d0b507e044f36c0de021e2f2ae67c7a9ab75da18a478e"
+    },
+    {
+      "path": "samples/ColorSystem/Assets.xcassets/OnSecondary.colorset/Contents.json",
+      "title": "Contents.json",
+      "kind": "source",
+      "characters": 1543,
+      "hash": "a937ac74d609e63d646d0b507e044f36c0de021e2f2ae67c7a9ab75da18a478e"
+    },
+    {
+      "path": "samples/ColorSystem/Assets.xcassets/Primary.colorset/Contents.json",
+      "title": "Contents.json",
+      "kind": "source",
+      "characters": 1543,
+      "hash": "9be7da7325ddf2843b61f2bf6ce314a319847294d37fad777f2a42b9cc14d223"
+    },
+    {
+      "path": "samples/ColorSystem/Assets.xcassets/PrimaryContainer.colorset/Contents.json",
+      "title": "Contents.json",
+      "kind": "source",
+      "characters": 1543,
+      "hash": "86521d70cba9ca3444f9af48ab4ea80d6eb938bfff381fb8b33b093917028223"
+    },
+    {
+      "path": "samples/ColorSystem/Assets.xcassets/PrimaryDisabled.colorset/Contents.json",
+      "title": "Contents.json",
+      "kind": "source",
+      "characters": 1543,
+      "hash": "b1b566244e5b4aa507699582ff06d45785ccb780a43ec9dbd3a6acdc35f48b11"
+    },
+    {
+      "path": "samples/ColorSystem/Assets.xcassets/PrimaryPressed.colorset/Contents.json",
+      "title": "Contents.json",
+      "kind": "source",
+      "characters": 1543,
+      "hash": "8d3272b5ba6543f8f5f6e462b97e77f86bc3c6b7d6296e69285c5dd3f8deef99"
+    },
+    {
+      "path": "samples/ColorSystem/Assets.xcassets/Secondary.colorset/Contents.json",
+      "title": "Contents.json",
+      "kind": "source",
+      "characters": 1543,
+      "hash": "e5e1231a6b65346fdc974640ef1aa177dc278e07ba65ea1231521fc13893a363"
+    },
+    {
+      "path": "samples/ColorSystem/Assets.xcassets/SecondaryContainer.colorset/Contents.json",
+      "title": "Contents.json",
+      "kind": "source",
+      "characters": 1543,
+      "hash": "1ebec1027b5f18a538b992e54f4d73237c59e52d6993b978031e99e75ec59b1c"
+    },
+    {
+      "path": "samples/ColorSystem/Assets.xcassets/Selection.colorset/Contents.json",
+      "title": "Contents.json",
+      "kind": "source",
+      "characters": 1543,
+      "hash": "5ff9648427cbf0503a43437463cceaa40b94e7a4ce1865fbc3a9f8e1045cdb7c"
+    },
+    {
+      "path": "samples/ColorSystem/Assets.xcassets/Separator.colorset/Contents.json",
+      "title": "Contents.json",
+      "kind": "source",
+      "characters": 1543,
+      "hash": "a5c186a5df56fa8a313c9a2318fcfdf24ff8104e132246d2c75f7dc8732e6011"
+    },
+    {
+      "path": "samples/ColorSystem/Assets.xcassets/Success.colorset/Contents.json",
+      "title": "Contents.json",
+      "kind": "source",
+      "characters": 1543,
+      "hash": "2639963ffb0b79deb057c9010ba98342c5a1d54ad137c5856d2d105da5d684df"
+    },
+    {
+      "path": "samples/ColorSystem/Assets.xcassets/SuccessContainer.colorset/Contents.json",
+      "title": "Contents.json",
+      "kind": "source",
+      "characters": 1543,
+      "hash": "de109f16cac2ee6b1fd7e16b40e5fc8901ed6fa2239d54c31084910eaa9677f1"
+    },
+    {
+      "path": "samples/ColorSystem/Assets.xcassets/Surface.colorset/Contents.json",
+      "title": "Contents.json",
+      "kind": "source",
+      "characters": 1543,
+      "hash": "07551b5b5922aa335f11cf0702a6bb383571cf45e9551de1245b830106cab8eb"
+    },
+    {
+      "path": "samples/ColorSystem/Assets.xcassets/SurfaceElevated.colorset/Contents.json",
+      "title": "Contents.json",
+      "kind": "source",
+      "characters": 1543,
+      "hash": "15e2b588b7d4200dddd95f3b85d56f74ccba3394d6c0ca8441ba0fbe95b5f624"
+    },
+    {
+      "path": "samples/ColorSystem/Assets.xcassets/SurfaceGrouped.colorset/Contents.json",
+      "title": "Contents.json",
+      "kind": "source",
+      "characters": 1543,
+      "hash": "d50637c501278448f17e0590f6b1bd43f23ad81d99475dc20c605ec23d1f303a"
+    },
+    {
+      "path": "samples/ColorSystem/Assets.xcassets/SurfaceOverlay.colorset/Contents.json",
+      "title": "Contents.json",
+      "kind": "source",
+      "characters": 1543,
+      "hash": "15e2b588b7d4200dddd95f3b85d56f74ccba3394d6c0ca8441ba0fbe95b5f624"
+    },
+    {
+      "path": "samples/ColorSystem/Assets.xcassets/Tertiary.colorset/Contents.json",
+      "title": "Contents.json",
+      "kind": "source",
+      "characters": 1543,
+      "hash": "be2979febae40fca77a1c3fbba6b28edd1457d750ccdaca920b1e883bdce0a5d"
+    },
+    {
+      "path": "samples/ColorSystem/Assets.xcassets/TextDisabled.colorset/Contents.json",
+      "title": "Contents.json",
+      "kind": "source",
+      "characters": 1543,
+      "hash": "30d34ecaca7af360238a86ce20112dc5d425d96175d542c17c1d6aa96c7c4ff4"
+    },
+    {
+      "path": "samples/ColorSystem/Assets.xcassets/TextPrimary.colorset/Contents.json",
+      "title": "Contents.json",
+      "kind": "source",
+      "characters": 1543,
+      "hash": "babb7a9967434864e43dcc22943ef45933938dc748417d46f8c4a6ce2c6832e2"
+    },
+    {
+      "path": "samples/ColorSystem/Assets.xcassets/TextSecondary.colorset/Contents.json",
+      "title": "Contents.json",
+      "kind": "source",
+      "characters": 1543,
+      "hash": "663208d086fb02e3d3d799883bf3dca86789b02f562439a5878ed262ce5e8d75"
+    },
+    {
+      "path": "samples/ColorSystem/Assets.xcassets/TextTertiary.colorset/Contents.json",
+      "title": "Contents.json",
+      "kind": "source",
+      "characters": 1543,
+      "hash": "bc378c6735b5f405cd5d683a8471b81dec5f657a2391653df712fda9d67881f6"
+    },
+    {
+      "path": "samples/ColorSystem/Assets.xcassets/Warning.colorset/Contents.json",
+      "title": "Contents.json",
+      "kind": "source",
+      "characters": 1543,
+      "hash": "6ae36b0ddfb32e1919b03005c03fc6389486e07e2a498f983f0ade0ffe7e8c64"
+    },
+    {
+      "path": "samples/ColorSystem/Assets.xcassets/WarningContainer.colorset/Contents.json",
+      "title": "Contents.json",
+      "kind": "source",
+      "characters": 1543,
+      "hash": "7680a156f26d5bb6e139ae537385420862ab57d01901507db4481e7e58930c76"
+    },
+    {
+      "path": "samples/ColorSystem/design-tokens.json",
+      "title": "design-tokens.json",
+      "kind": "source",
+      "characters": 5537,
+      "hash": "08c6e30b6a6d832e729f3a4cd2e297811ab204225e3e595a0e47f32a0d405fea"
+    },
+    {
+      "path": "samples/ColorSystem/Package.swift",
+      "title": "Package.swift",
+      "kind": "source",
+      "characters": 352,
+      "hash": "e4475b58b29e340a902ba7387f007524c3104a6f7dc46f850aa598fb8a9531ea"
+    },
+    {
+      "path": "samples/ColorSystem/README.md",
+      "title": "Semantic color sample",
+      "kind": "guide",
+      "characters": 1380,
+      "hash": "197416308427a75e9f76c0d678f08ee777bc8537f28cb561a17f4c749784534c"
+    },
+    {
+      "path": "samples/ColorSystem/render-preview.swift",
+      "title": "render-preview.swift",
+      "kind": "source",
+      "characters": 3494,
+      "hash": "ea9238a9d6b4a96afd408829dbbb07d89e2fa693d60459a8807de90f03ffe044"
+    },
+    {
+      "path": "samples/ColorSystem/Sources/ColorSystem/ColorPreview.swift",
+      "title": "ColorPreview.swift",
+      "kind": "source",
+      "characters": 2110,
+      "hash": "17af79ad49b8f2a2292cba9b809543456909b89f044a2e7dce816a780feff865"
+    },
+    {
+      "path": "samples/ColorSystem/Sources/ColorSystem/palette.json",
+      "title": "palette.json",
+      "kind": "source",
+      "characters": 32714,
+      "hash": "836715e92e835963f294c9cded04cfd020dcb8a4a2b4f0a1f126c3ec449f79f3"
+    },
+    {
+      "path": "samples/ColorSystem/Sources/ColorSystem/Palette.swift",
+      "title": "Palette.swift",
+      "kind": "source",
+      "characters": 518,
+      "hash": "a5f762435b4e441631e94a73633fa0375b2c2d69e7f305c05d82ffdfcf3140ca"
+    },
+    {
+      "path": "samples/ColorSystem/Tests/ColorSystemTests/PaletteTests.swift",
+      "title": "PaletteTests.swift",
+      "kind": "source",
+      "characters": 881,
+      "hash": "caca849ff8ede38c67d6d9f27e562b7e16d097e4d8bfced613092fdc77cf85a0"
     },
     {
       "path": "samples/ReadingList/App/ReadingListApp.swift",

@@ -6,13 +6,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
-### Added
-- September 21 Apple knowledge refresh: iOS/iPadOS 27.1 Arrangement API recognition, Xcode 27.2 preview guidance, Duo beta tooling, ATT/StoreKit notes, and App Store Connect API 4.4/4.4.1 guidance.
-- Read-only `.xcproj` JSON configuration recognition inside `.xcodeproj` bundles. JSON schema/target resolution remains unsupported; release preparation blocks rather than guessing settings.
-- Eight regression tests for project format discovery, unresolved configurations, mixed-format safety, API recognition and offline knowledge retrieval.
+## [3.6.2] -- 2026-09-22
 
-### Updated
-- Refetched 98 Apple update/release-note landing pages and refreshed the local guide index and website. No npm version change or new SDK runtime verification.
+Package: **ios-agent-mcp 2.7.2**. One combined patch release; CLI and simulator dependency versions stay unchanged.
+
+### Added -- 3.6.2
+
+- Read-only `generate_color_system` and `review_color_system`: OKLCH palettes, 35 semantic roles, four appearances, contrast reports, bounded PNG color extraction and catalog evidence.
+- Read-only `review_backend_integration`: evidence-based detection for Supabase, Firebase, CloudKit, Amplify, Appwrite, REST, Apollo/GraphQL and WebSockets, with redacted credential and policy diagnostics.
+- Four color guides, 14 backend guides, per-guide diagrams and offline Swift samples. Supabase and Firebase auth examples distinguish native identity from browser OAuth; provider configuration is still required.
+- September 21 Apple knowledge refresh and conservative `.xcproj` recognition. Unsupported JSON target resolution stays explicit.
+
+### Fixed -- 3.6.2
+
+- Distinguish client-safe keys from privileged credentials and redact literals across security finding excerpts.
+- Avoid interpreting preference text or quoted SQL/Rules examples as executable security evidence.
+
+### Evidence -- 3.6.2
+
+- 308 MCP tests pass, including 20 color tests and 32 backend tests. Backend sample: 9 Swift tests and iOS Simulator-target typechecking pass. Color sample: 3 tests and iOS typechecking passed in its implementation verification.
+- External provider SDKs and live OAuth, MFA/passkeys, hosted policies and device behavior are not verified by these offline tests. Contrast reports are not complete accessibility certification.
+- Historical benchmark scores and evidence remain unchanged; no improvement claim is made.
 
 ## [3.6.1] -- 2026-09-21
 

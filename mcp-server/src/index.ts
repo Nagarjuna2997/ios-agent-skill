@@ -4,6 +4,10 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 
+import { reviewBackendIntegration } from './backend/review.js';
+import { samplePNG } from './colors/image.js';
+import { generationSchema, generateColorSystem } from './colors/generate.js';
+import { reviewColorSystem } from './colors/review.js';
 import { VERSION } from "./version.js";
 
 import { Finding } from "./analyzers/types.js";
@@ -162,6 +166,26 @@ async function scanAndRender(
     };
   }
 }
+
+server.registerTool('review_backend_integration', {
+  title: 'Review iOS backend integration',
+  description: 'Use when integrating or reviewing Supabase, Firebase, CloudKit, Amplify, Appwrite, Apollo, REST or WebSockets. Detects concrete imports/dependencies/configuration and redacted auth/security evidence. Read-only; no service calls or deployment claims.',
+  inputSchema: pathInput,
+  annotations: { readOnlyHint: true, destructiveHint: false, openWorldHint: false },
+}, async ({path}) => ({ content: [{ type: 'text' as const, text: JSON.stringify(await reviewBackendIntegration(path), null, 2) }] }));
+
+server.registerTool('generate_color_system', {
+  title: 'Generate an iOS color system preview',
+  description: 'Use when designing or revising app colors. Deterministic OKLCH seed/intent palette, four appearances, contrast report, named-color Swift snippets and existing assets-CLI token JSON. Read-only: no project changes, network. Image input accepts opaque samples or an explicitly provided local sRGB PNG.',
+  inputSchema: { ...generationSchema.shape, imagePath: z.string().max(4096).optional().describe("Explicit local PNG, at most 1024 × 1024 and 4 MiB; no upload. Samples are candidates, not official brand colors.") },
+  annotations: { readOnlyHint: true, destructiveHint: false, openWorldHint: false },
+}, async ({imagePath,...input}) => ({ content: [{ type: 'text' as const, text: JSON.stringify(generateColorSystem({...input,...(imagePath?{imageSamples:await samplePNG(imagePath)}:{})}), null, 2) }] }));
+server.registerTool('review_color_system', {
+  title: 'Review an iOS color system',
+  description: 'Use when reviewing an existing project’s color decisions. Read-only color inventory, duplicate colors, catalog appearance coverage and conservative direct named-color text contrast. Reports evidence and limitations; custom branding is not an error.',
+  inputSchema: pathInput,
+  annotations: { readOnlyHint: true, destructiveHint: false, openWorldHint: false },
+}, async ({path}) => ({ content: [{ type: 'text' as const, text: JSON.stringify(await reviewColorSystem(path), null, 2) }] }));
 
 server.registerTool(
   "review_app_intents",

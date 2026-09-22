@@ -1402,5 +1402,239 @@
       "Local guidance and test evidence",
       "Separate authorized submission workflow"
     ]
+  },
+  "docs/design/palette-generation.md": {
+    "flow": [
+      "Describe the app",
+      "Derive OKLCH roles",
+      "Validate appearance pairs",
+      "Review asset preview"
+    ],
+    "architecture": [
+      "Intent and seed",
+      "Pure palette engine",
+      "Asset CLI handoff"
+    ]
+  },
+  "docs/design/dark-mode-colors.md": {
+    "flow": [
+      "Choose base surfaces",
+      "Separate raised layers",
+      "Check both appearances",
+      "Inspect accessibility settings"
+    ],
+    "architecture": [
+      "Named assets",
+      "Appearance resolution",
+      "Native containers"
+    ]
+  },
+  "docs/design/color-accessibility.md": {
+    "flow": [
+      "Identify foreground and background",
+      "Measure opaque sRGB pairs",
+      "Mark unresolved contexts",
+      "Verify in the app"
+    ],
+    "architecture": [
+      "Luminance math",
+      "Evidence report",
+      "Runtime inspection"
+    ]
+  },
+  "docs/design/brand-color-extraction.md": {
+    "flow": [
+      "Sample locally",
+      "Remove background noise",
+      "Rank candidates",
+      "Confirm brand intent"
+    ],
+    "architecture": [
+      "Opaque pixel samples",
+      "Candidate seed",
+      "Semantic variants"
+    ]
+  },
+  "docs/backend/authentication.md": {
+    "flow": [
+      "Restore session",
+      "Start provider transaction",
+      "Validate callback and exchange",
+      "Observe identity changes"
+    ],
+    "architecture": [
+      "Swift feature model",
+      "Authentication and session boundaries",
+      "Authorized server and local state"
+    ]
+  },
+  "docs/backend/firebase.md": {
+    "flow": [
+      "Configure selected products",
+      "Restore Firebase identity",
+      "Test Rules and cache states",
+      "Verify deletion and telemetry"
+    ],
+    "architecture": [
+      "Swift feature model",
+      "Firebase for iOS",
+      "Authorized server and local state"
+    ]
+  },
+  "docs/backend/overview.md": {
+    "flow": [
+      "Identify data ownership",
+      "Choose service boundary",
+      "Validate identity and policies",
+      "Record recovery evidence"
+    ],
+    "architecture": [
+      "Swift feature model",
+      "Backend services for Swift apps",
+      "Authorized server and local state"
+    ]
+  },
+  "docs/backend/appwrite.md": {
+    "flow": [
+      "Match SDK and server",
+      "Authenticate registered client",
+      "Scope resource permissions",
+      "Verify recovery and upgrades"
+    ],
+    "architecture": [
+      "Swift feature model",
+      "Appwrite for Apple clients",
+      "Authorized server and local state"
+    ]
+  },
+  "docs/backend/cloudkit.md": {
+    "flow": [
+      "Select container and database",
+      "Check iCloud account",
+      "Merge local and remote records",
+      "Verify sharing and recovery"
+    ],
+    "architecture": [
+      "Swift feature model",
+      "CloudKit as an Apple-native backend",
+      "Authorized server and local state"
+    ]
+  },
+  "docs/backend/app-architectures.md": {
+    "flow": [
+      "Choose feature contract",
+      "Separate repository and transport",
+      "Define offline ownership",
+      "Test failure transitions"
+    ],
+    "architecture": [
+      "Swift feature model",
+      "Backend architectures by app workflow",
+      "Authorized server and local state"
+    ]
+  },
+  "docs/backend/privacy.md": {
+    "flow": [
+      "Inventory outgoing data",
+      "Classify collection and tracking",
+      "Implement deletion lifecycle",
+      "Verify actual SDK behavior"
+    ],
+    "architecture": [
+      "Swift feature model",
+      "Backend privacy and account lifecycle",
+      "Authorized server and local state"
+    ]
+  },
+  "docs/backend/supabase.md": {
+    "flow": [
+      "Configure public client",
+      "Authenticate and restore",
+      "Enforce RLS and object policies",
+      "Reconcile data and revoke"
+    ],
+    "architecture": [
+      "Swift feature model",
+      "Supabase for Swift apps",
+      "Authorized server and local state"
+    ]
+  },
+  "docs/backend/graphql.md": {
+    "flow": [
+      "Pin schema and generator",
+      "Run typed operation",
+      "Handle partial errors",
+      "Reconcile normalized cache"
+    ],
+    "architecture": [
+      "Swift feature model",
+      "GraphQL and Apollo iOS",
+      "Authorized server and local state"
+    ]
+  },
+  "docs/backend/choosing-a-backend.md": {
+    "flow": [
+      "Define hardest requirement",
+      "Compare operating costs",
+      "Prototype denied and offline paths",
+      "Choose a verified fit"
+    ],
+    "architecture": [
+      "Swift feature model",
+      "Choosing an iOS backend",
+      "Authorized server and local state"
+    ]
+  },
+  "docs/backend/aws-amplify.md": {
+    "flow": [
+      "Pin generated environment",
+      "Configure Auth and API plugins",
+      "Enforce AWS authorization",
+      "Test sync and transfer recovery"
+    ],
+    "architecture": [
+      "Swift feature model",
+      "AWS Amplify in a Swift app",
+      "Authorized server and local state"
+    ]
+  },
+  "docs/backend/security.md": {
+    "flow": [
+      "Classify client and server keys",
+      "Enforce object authorization",
+      "Test cross-user denial",
+      "Rotate and redact"
+    ],
+    "architecture": [
+      "Swift feature model",
+      "Backend authorization and client secrets",
+      "Authorized server and local state"
+    ]
+  },
+  "docs/backend/websockets.md": {
+    "flow": [
+      "Authenticate connection",
+      "Receive and deduplicate",
+      "Back off on disconnect",
+      "Catch up and resubscribe"
+    ],
+    "architecture": [
+      "Swift feature model",
+      "Realtime connections on iOS",
+      "Authorized server and local state"
+    ]
+  },
+  "docs/backend/rest.md": {
+    "flow": [
+      "Construct typed request",
+      "Validate HTTP response",
+      "Decode domain value",
+      "Bound retry and cancellation"
+    ],
+    "architecture": [
+      "Swift feature model",
+      "REST clients with URLSession",
+      "Authorized server and local state"
+    ]
   }
 }

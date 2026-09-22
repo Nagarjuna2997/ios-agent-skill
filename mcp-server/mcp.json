@@ -1,7 +1,7 @@
 {
   "name": "ios-agent-mcp",
   "displayName": "iOS Agent",
-  "version": "2.7.1",
+  "version": "2.7.2",
   "description": "Unified iOS development tools: Swift reviews, Apple source retrieval, app scaffolding and Xcode simulator workflows.",
   "author": "Nagarjuna Reddy",
   "license": "MIT",
@@ -184,6 +184,18 @@
     {
       "name": "private_feedback",
       "summary": "Source-preview consented category-only private feedback. Preview first, explicitly approve, then submit to configured HTTPS receiver; unavailable without backend. No public fallback."
+    },
+    {
+      "name": "generate_color_system",
+      "summary": "Read-only deterministic iOS palette preview with contrast and asset tokens."
+    },
+    {
+      "name": "review_color_system",
+      "summary": "Read-only project colors, appearance coverage, duplicates and explicit contrast evidence."
+    },
+    {
+      "name": "review_backend_integration",
+      "summary": "Use when integrating a backend: detect supported Swift SDKs and inspect concrete credential, auth, policy and transport evidence. Read-only, bounded and credential-redacted; does not audit deployed services."
     }
   ],
   "resources": [

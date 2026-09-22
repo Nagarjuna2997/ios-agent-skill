@@ -3,13 +3,13 @@
 **Load this when:** choosing which `ios-agent-mcp` tool to call, or interpreting
 a finding it returned.
 
-Every tool takes one argument — an **absolute** path to the project root:
+Source-review tools take an **absolute** project path (some also accept review options):
 
 ```json
 { "path": "/Users/you/Projects/MyApp" }
 ```
 
-Ten of the eleven analyze Swift source. `lint_skill` is the exception: it reads a
+`lint_skill` reads a
 skill repository's own metadata, so its path is the folder containing
 `SKILL.md`.
 
@@ -19,6 +19,9 @@ skill repository's own metadata, so its path is the folder containing
 
 | You want to… | Tool |
 |--------------|------|
+| Generate a semantic palette preview | `generate_color_system` (palette inputs; no project path required) |
+| Review Swift colors and asset catalogs | `review_color_system` |
+| Review backend/auth/policy evidence | `review_backend_integration` |
 | Understand an unfamiliar codebase | `analyze_swift_project` |
 | Diagnose a data race or migrate to Swift 6 | `review_swift_concurrency` |
 | Find out why a screen can't be previewed | `review_swift_architecture` |
@@ -310,3 +313,7 @@ rather than hanging.
 ## review_app_intents
 
 Read-only project review. Inputs: absolute `path`, optional booleans `appleIntelligence` and `onscreenContent` (both default false). Returns the same structured findings as other reviewers. SiriKit migration, missing schema and missing onscreen association are minor advisories with scope limitations; no blanket SiriKit deprecation is asserted. See [rule semantics](../frameworks/app-intents-intelligence.md#static-integration-review).
+
+## Color and backend scope
+
+See [palette generation](../design/palette-generation.md), [color review](../design/color-accessibility.md) and [backend integration](../backend/overview.md). All three tools are read-only. Provider logins require app-specific configuration; static evidence is not live-service verification.

@@ -151,3 +151,7 @@ Severity:
   `docs/design/design-tokens.md`) or mark it NOT CHECKED.
 - Be explicit that static analysis cannot replace real VoiceOver testing on a
   device. Say what still needs a human.
+
+## Color-system evidence
+
+Consult `docs/design/palette-generation.md` and `docs/design/color-accessibility.md`. When available, use the parent agent’s `review_color_system` report for concrete color locations and explicit pairs. Missing Dark variants and duplicate RGB values are advisories, not proof of a defect. Require rendered verification for materials and gradients; no full-accessibility claim from ratios alone.

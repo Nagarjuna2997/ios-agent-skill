@@ -35,3 +35,7 @@ PRIVACY
 - local vs network:
 - logging:
 ```
+
+## Backend integration knowledge
+
+Load `docs/backend/overview.md` and the matching provider guide for backend tasks. Review client/server credentials, identity-scoped caches, policy denial tests and callback/session boundaries. `review_backend_integration` provides local evidence only; do not infer absent RLS, missing deletion or Apple-login obligations from keywords. Never return credential values.

@@ -1,0 +1,194 @@
+{
+  "snapshot": "2026-09-21",
+  "status": "Official documentation reviewed; external SDK compilation and live-service authentication not verified.",
+  "sources": [
+    {
+      "url": "https://appwrite.io/docs/quick-starts/apple",
+      "kind": "official documentation or official SDK repository"
+    },
+    {
+      "url": "https://developer.apple.com/app-store/app-privacy-details/",
+      "kind": "official documentation or official SDK repository"
+    },
+    {
+      "url": "https://developer.apple.com/app-store/review/guidelines/",
+      "kind": "official documentation or official SDK repository"
+    },
+    {
+      "url": "https://developer.apple.com/app-store/review/guidelines/#login-services",
+      "kind": "official documentation or official SDK repository"
+    },
+    {
+      "url": "https://developer.apple.com/documentation/authenticationservices/aswebauthenticationsession",
+      "kind": "official documentation or official SDK repository"
+    },
+    {
+      "url": "https://developer.apple.com/documentation/bundleresources/privacy-manifest-files",
+      "kind": "official documentation or official SDK repository"
+    },
+    {
+      "url": "https://developer.apple.com/documentation/cloudkit",
+      "kind": "official documentation or official SDK repository"
+    },
+    {
+      "url": "https://developer.apple.com/documentation/cloudkit/cksyncengine",
+      "kind": "official documentation or official SDK repository"
+    },
+    {
+      "url": "https://developer.apple.com/documentation/coredata/mirroring-a-core-data-store-with-cloudkit",
+      "kind": "official documentation or official SDK repository"
+    },
+    {
+      "url": "https://developer.apple.com/documentation/foundation/downloading-files-in-the-background",
+      "kind": "official documentation or official SDK repository"
+    },
+    {
+      "url": "https://developer.apple.com/documentation/foundation/urlprotocol",
+      "kind": "official documentation or official SDK repository"
+    },
+    {
+      "url": "https://developer.apple.com/documentation/foundation/urlsession",
+      "kind": "official documentation or official SDK repository"
+    },
+    {
+      "url": "https://developer.apple.com/documentation/foundation/urlsessionwebsockettask",
+      "kind": "official documentation or official SDK repository"
+    },
+    {
+      "url": "https://developer.apple.com/documentation/security/keychain-services",
+      "kind": "official documentation or official SDK repository"
+    },
+    {
+      "url": "https://developer.apple.com/documentation/swiftdata/syncing-model-data-across-a-persons-devices",
+      "kind": "official documentation or official SDK repository"
+    },
+    {
+      "url": "https://developer.apple.com/support/offering-account-deletion-in-your-app/",
+      "kind": "official documentation or official SDK repository"
+    },
+    {
+      "url": "https://docs.amplify.aws/swift/frontend/auth/",
+      "kind": "official documentation or official SDK repository"
+    },
+    {
+      "url": "https://docs.amplify.aws/swift/frontend/data/connect-to-API/",
+      "kind": "official documentation or official SDK repository"
+    },
+    {
+      "url": "https://docs.amplify.aws/swift/start/",
+      "kind": "official documentation or official SDK repository"
+    },
+    {
+      "url": "https://firebase.google.com/docs/app-check",
+      "kind": "official documentation or official SDK repository"
+    },
+    {
+      "url": "https://firebase.google.com/docs/auth/ios/anonymous-auth",
+      "kind": "official documentation or official SDK repository"
+    },
+    {
+      "url": "https://firebase.google.com/docs/auth/ios/apple",
+      "kind": "official documentation or official SDK repository"
+    },
+    {
+      "url": "https://firebase.google.com/docs/auth/ios/google-signin",
+      "kind": "official documentation or official SDK repository"
+    },
+    {
+      "url": "https://firebase.google.com/docs/auth/ios/password-auth",
+      "kind": "official documentation or official SDK repository"
+    },
+    {
+      "url": "https://firebase.google.com/docs/firestore/manage-data/enable-offline",
+      "kind": "official documentation or official SDK repository"
+    },
+    {
+      "url": "https://firebase.google.com/docs/ios/setup",
+      "kind": "official documentation or official SDK repository"
+    },
+    {
+      "url": "https://firebase.google.com/docs/rules",
+      "kind": "official documentation or official SDK repository"
+    },
+    {
+      "url": "https://github.com/apollographql/apollo-ios`",
+      "kind": "official documentation or official SDK repository"
+    },
+    {
+      "url": "https://github.com/appwrite/sdk-for-apple`",
+      "kind": "official documentation or official SDK repository"
+    },
+    {
+      "url": "https://github.com/aws-amplify/amplify-swift`",
+      "kind": "official documentation or official SDK repository"
+    },
+    {
+      "url": "https://github.com/firebase/firebase-ios-sdk`",
+      "kind": "official documentation or official SDK repository"
+    },
+    {
+      "url": "https://github.com/supabase/supabase-swift`",
+      "kind": "official documentation or official SDK repository"
+    },
+    {
+      "url": "https://supabase.com/docs/guides/auth/auth-mfa",
+      "kind": "official documentation or official SDK repository"
+    },
+    {
+      "url": "https://supabase.com/docs/guides/auth/native-mobile-deep-linking",
+      "kind": "official documentation or official SDK repository"
+    },
+    {
+      "url": "https://supabase.com/docs/guides/auth/passkeys",
+      "kind": "official documentation or official SDK repository"
+    },
+    {
+      "url": "https://supabase.com/docs/guides/auth/sessions",
+      "kind": "official documentation or official SDK repository"
+    },
+    {
+      "url": "https://supabase.com/docs/guides/auth/social-login",
+      "kind": "official documentation or official SDK repository"
+    },
+    {
+      "url": "https://supabase.com/docs/guides/database/postgres/row-level-security",
+      "kind": "official documentation or official SDK repository"
+    },
+    {
+      "url": "https://supabase.com/docs/guides/functions/auth",
+      "kind": "official documentation or official SDK repository"
+    },
+    {
+      "url": "https://supabase.com/docs/guides/getting-started/api-keys",
+      "kind": "official documentation or official SDK repository"
+    },
+    {
+      "url": "https://supabase.com/docs/guides/storage/security/access-control",
+      "kind": "official documentation or official SDK repository"
+    },
+    {
+      "url": "https://supabase.com/docs/reference/swift/auth-api",
+      "kind": "official documentation or official SDK repository"
+    },
+    {
+      "url": "https://supabase.com/docs/reference/swift/auth-onauthstatechange",
+      "kind": "official documentation or official SDK repository"
+    },
+    {
+      "url": "https://supabase.com/docs/reference/swift/auth-signinwithidtoken",
+      "kind": "official documentation or official SDK repository"
+    },
+    {
+      "url": "https://supabase.com/docs/reference/swift/auth-signinwithoauth",
+      "kind": "official documentation or official SDK repository"
+    },
+    {
+      "url": "https://supabase.com/docs/reference/swift/auth-signinwithotp",
+      "kind": "official documentation or official SDK repository"
+    },
+    {
+      "url": "https://www.apollographql.com/docs/ios",
+      "kind": "official documentation or official SDK repository"
+    }
+  ]
+}

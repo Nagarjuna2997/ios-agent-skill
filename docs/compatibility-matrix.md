@@ -209,3 +209,7 @@ guard case .available = SystemLanguageModel.default.availability else { return }
 | Swift 5.9 → 6 → 6.4 | `migration/swift-6-migration.md` |
 | iOS 17 → 26 → 27 | `migration/ios-deployment-migration.md` |
 | Xcode 15 → 16 → 27 | `migration/xcode-migration.md` |
+
+## Backend guidance verification
+
+The [backend source snapshot](backend/sources.json) separates documentation review from SDK execution. The Foundation/Security/CloudKit examples in `samples/BackendPatterns` target Swift 6 with iOS 16/macOS 13 minimums; cloud and Keychain runtime behavior require separate device tests. Supabase, Firebase, Amplify, Appwrite and Apollo snippets require the selected external package and service configuration, and are not certified by these offline tests. Pin Package.resolved and check deployment availability before use.

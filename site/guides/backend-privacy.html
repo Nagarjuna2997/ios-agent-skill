@@ -1,0 +1,60 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/backend-privacy.html"><meta property="og:title" content="Backend privacy and account lifecycle"><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/backend-privacy.html"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css?v=guide-visuals-3"><link rel="stylesheet" href="../navigation.css?v=2"><script src="../appearance.js?v=2" defer=""></script><title>Backend privacy and account lifecycle</title><meta name="description" content="Map data before selecting SDKs: what leaves the device, why, who receives it, how long it persists and how deletion propagates."><meta property="og:description" content="Map data before selecting SDKs: what leaves the device, why, who receives it, how long it persists and how deletion propagates."><meta property="og:type" content="article"><meta property="og:site_name" content="iOS Agent Skill"><meta name="twitter:title" content="Backend privacy and account lifecycle"><meta name="twitter:description" content="Map data before selecting SDKs: what leaves the device, why, who receives it, how long it persists and how deletion propagates."><meta name="twitter:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/backend-privacy.html"><meta name="robots" content="index,follow"><link rel="alternate" type="application/atom+xml" href="/ios-agent-skill/feed.xml" title="iOS Agent Skill"><script id="site-discovery-schema" type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Backend privacy and account lifecycle","image":"https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg","datePublished":"2026-09-16T20:25:44-05:00","dateModified":"2026-09-21T11:03:33-05:00","author":{"@type":"Person","name":"Nagarjuna"},"mainEntityOfPage":"https://nagarjuna2997.github.io/ios-agent-skill/guides/backend-privacy.html","url":"https://nagarjuna2997.github.io/ios-agent-skill/guides/backend-privacy.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../series.html">Guided series</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a><!-- release-link:start --><a class="release-link" href="../releases.html">What’s new <span aria-hidden="true">↗</span></a><!-- release-link:end --></div><button class="appearance-toggle" type="button" aria-label="Use dark appearance" aria-pressed="false"><span aria-hidden="true">☾</span><span class="appearance-label">Dark mode</span></button></nav><main id="main"><div class="article-back"><a class="btn secondary" href="../library.html">← Back to all frameworks &amp; guides</a><a class="btn secondary" href="../blog.html">All articles →</a></div><article class="blog-article"><header class="page-intro"><p class="eyebrow">Backend · Reference guide</p><h1>Backend privacy and account lifecycle</h1><p class="lead">Repository guidance for Backend privacy and account lifecycle. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/backend/privacy.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><p><a href="#visual-overview">Visual overview: workflow and architecture</a></p><div class="toc">
+<ul>
+<li><a href="#service-specific-inventory">Service-specific inventory</a></li>
+<li><a href="#apple-policy-review">Apple policy review</a></li>
+<li><a href="#deletion-workflow">Deletion workflow</a></li>
+<li><a href="#verification-record">Verification record</a></li>
+</ul>
+</div>
+</aside><section class="guide-visuals" aria-labelledby="visual-overview"><h2 id="visual-overview">Visual overview</h2>
+<p>Use the workflow to follow the task, and the architecture map to separate responsibilities. These are conceptual maps; the guide below defines implementation details and verification limits.</p>
+<figure class="guide-flow"><figcaption><span class="guide-visual-kicker">01 / Workflow</span>From intent to a checked result</figcaption><ol role="list"><li><span class="guide-step-number" aria-hidden="true">1</span><span>Inventory outgoing data</span><span class="guide-flow-arrow" aria-hidden="true">↓</span></li><li><span class="guide-step-number" aria-hidden="true">2</span><span>Classify collection and tracking</span><span class="guide-flow-arrow" aria-hidden="true">↓</span></li><li><span class="guide-step-number" aria-hidden="true">3</span><span>Implement deletion lifecycle</span><span class="guide-flow-arrow" aria-hidden="true">↓</span></li><li><span class="guide-step-number" aria-hidden="true">4</span><span>Verify actual SDK behavior</span></li></ol></figure>
+<figure class="guide-architecture"><figcaption><span class="guide-visual-kicker">02 / Architecture</span>Responsibility boundaries</figcaption><ol role="list"><li><span class="guide-boundary-label">Boundary 1</span><strong>Swift feature model</strong></li><li><span class="guide-boundary-label">Boundary 2</span><strong>Backend privacy and account lifecycle</strong></li><li><span class="guide-boundary-label">Boundary 3</span><strong>Authorized server and local state</strong></li></ol><p class="guide-visual-note">Connected responsibilities, not a required class hierarchy or an execution trace.</p></figure></section><p>Map data before selecting SDKs: what leaves the device, why, who receives it, how long it persists and how deletion propagates. A backend service name does not determine an app's App Privacy answers. Audit the actual product configuration, optional SDKs and server behavior.</p>
+<h2 id="service-specific-inventory">Service-specific inventory</h2>
+<table>
+<thead>
+<tr>
+<th>Integration</th>
+<th>Data and operational questions</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Supabase</td>
+<td>Auth identifiers, Postgres rows, Storage files, function logs and realtime payloads; delete dependent objects and review log retention</td>
+</tr>
+<tr>
+<td>Firebase</td>
+<td>Separate Auth/data/storage from optional Analytics, Crashlytics, FCM and Remote Config; review breadcrumbs, device tokens and consent configuration</td>
+</tr>
+<tr>
+<td>CloudKit</td>
+<td>Private/public/shared scope, synchronized records/assets and participant visibility; inspect local copies and account changes</td>
+</tr>
+<tr>
+<td>Amplify</td>
+<td>Cognito attributes, AppSync data, S3 objects, Lambda logs and optional push/analytics; deletion spans services</td>
+</tr>
+<tr>
+<td>Appwrite</td>
+<td>Identity, database/files/functions and realtime; managed/self-hosted retention and backup policy differ</td>
+</tr>
+<tr>
+<td>REST / GraphQL</td>
+<td>Request payloads, error bodies, access logs, identifiers and resolver/service telemetry; the custom server remains responsible</td>
+</tr>
+<tr>
+<td>WebSockets</td>
+<td>Message contents, subscription metadata, connection logs and retention; avoid token-bearing URLs</td>
+</tr>
+</tbody>
+</table>
+<h2 id="apple-policy-review">Apple policy review</h2>
+<p>Use Apple's current App Privacy guidance to classify data collection, linkage and tracking. Advertising identifiers and tracking are separate decisions; do not request ATT merely because any backend exists. Review SDK privacy manifests and required-reason API use in the actual built dependencies. A manifest does not replace accurate App Privacy disclosures.</p>
+<p>App Review 4.8 has conditions and exceptions for apps using third-party/social login. Assess the specific app against the policy rather than asserting every social login always mandates the same implementation. When the app supports account creation, review Apple's in-app account-deletion requirements and applicable exceptions. Signing out, disabling a local cache or opening a support email is not automatically a compliant deletion flow.</p>
+<p>For user-generated content, evaluate moderation, reporting and blocking obligations under the applicable guideline. Public chat and a private personal notebook have different risks. Don't use one generic backend checklist as legal approval.</p>
+<h2 id="deletion-workflow">Deletion workflow</h2>
+<p>Reauthenticate as needed → submit an authorized deletion operation → stop listeners and pending writes → remove or anonymize dependent records/files according to the disclosed policy → revoke credentials → clear local identity data → present the actual outcome. Explain legally required retention and backup handling. A server failure must not be reported as successful deletion.</p>
+<h2 id="verification-record">Verification record</h2>
+<p>Use synthetic identities to test export/deletion, telemetry redaction, account switching and sync cleanup. Inspect network destinations and crash SDK custom fields. Record which configurations were inspected versus exercised on a device; this library does not certify compliance.</p>
+<p>Primary sources: <a href="https://developer.apple.com/app-store/review/guidelines/">App Review Guidelines</a>, <a href="https://developer.apple.com/app-store/app-privacy-details/">App Privacy details</a>, <a href="https://developer.apple.com/support/offering-account-deletion-in-your-app/">account deletion</a>, <a href="https://developer.apple.com/documentation/bundleresources/privacy-manifest-files">privacy manifests</a>.</p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><!-- discovery-nav:start --><div role="navigation" aria-label="Site discovery"><a href="../">Home</a> · <a href="../install.html">Install</a> · <a href="../community.html">Community</a> · <a href="../blog.html">Blog</a> · <a href="../docs-index.html">Docs index</a> · <a href="../pages.html">Site map</a> · <a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a> · <a href="https://www.npmjs.com/package/ios-agent-mcp">npm</a></div><!-- discovery-nav:end --></footer></div></body></html>

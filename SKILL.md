@@ -72,7 +72,9 @@ For product discovery and setup, use https://nagarjuna2997.github.io/ios-agent-s
 | SDK updates or release notes | `docs/apple/updates-and-release-notes.md` |
 | Layered app icon | `docs/design/icon-composer.md`; preserve editable layers and verify native `.icon` with Icon Composer |
 | Swift concurrency or observation | `docs/swift/swift-concurrency.md`, `docs/swiftui/state-and-data-flow.md` |
+| Backend services, authentication and policies | `docs/backend/overview.md`; use `review_backend_integration` for bounded local evidence, then the provider guide. Never infer deployed security from absent keywords. |
 | Architecture and dependencies | `patterns/clean-architecture.md`, `patterns/mvvm.md` |
+| Generate or review app colors | `docs/design/palette-generation.md`; use `generate_color_system` for a read-only preview and `review_color_system` for evidence. Asset writes require the user’s request. |
 | Design, colors and typography | `docs/design/README.md`, `docs/design/design-tokens.md` |
 | Compile-tested implementations | `samples/SkillPatterns/`, `samples/AppleRecipes/` and their READMEs |
 | Run an app, see it in a sidebar, or inspect simulator/Duo availability | `docs/tooling/ios-simulator-mcp.md`, `docs/platforms/iphone-duo.md` |

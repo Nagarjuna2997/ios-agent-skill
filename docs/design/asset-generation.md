@@ -87,3 +87,7 @@ a full screenshot capture pipeline, symbol availability or visual accessibility.
 
 Catalog format: [Apple named colors](https://developer.apple.com/library/archive/documentation/Xcode/Reference/xcode_ref-Asset_Catalog_Format/Named_Color.html)
 and [appearance variants](https://developer.apple.com/documentation/uikit/providing-images-for-different-appearances).
+
+## Palette tooling
+
+Use [palette generation](palette-generation.md) to produce a four-appearance token preview compatible with the existing assets CLI. Use [color accessibility](color-accessibility.md) to interpret measured pairs. Only write or merge a catalog when requested; retain system semantics when custom colors add no value.

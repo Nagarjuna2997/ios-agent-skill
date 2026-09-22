@@ -1383,7 +1383,1378 @@ Share Feedback
 # Documentation index
 https://nagarjuna2997.github.io/ios-agent-skill/docs-index.html
 
-Documentation indexBrowse the repository’s documentation indexes and their linked source guides on GitHub.AI and Apple IntelligenceProfessional Motion and AnimationApple Framework Indexdocs/frameworks/apple-intelligence.mddocs/frameworks/core-ai.mddocs/frameworks/ml/coreml.mddocs/frameworks/core-spotlight-rag.mddocs/testing/evaluations.mddocs/frameworks/foundation-models.mddocs/frameworks/extended-apple-frameworks.mddocs/frameworks/ml/natural-language.mddocs/frameworks/ml/sound-analysis.mddocs/frameworks/ml/speech.mddocs/frameworks/ml/translation.mddocs/frameworks/ml/vision.mddocs/frameworks/authentication-services.mddocs/frameworks/cryptokit.mddocs/frameworks/device-integrity.mddocs/frameworks/local-authentication.mddocs/frameworks/avfoundation.mddocs/frameworks/photosui.mddocs/frameworks/services/passkit.mddocs/frameworks/storekit.mddocs/frameworks/activitykit.mddocs/frameworks/app-clips.mddocs/frameworks/app-intents.mddocs/frameworks/swift-charts.mddocs/swiftui/views-and-controls.mddocs/frameworks/tipkit.mddocs/uikit/uikit-essentials.mddocs/frameworks/visionkit.mddocs/frameworks/widgetkit.mddocs/frameworks/cloudkit.mddocs/frameworks/core-data.mddocs/frameworks/data-concurrency.mddocs/frameworks/foundation.mddocs/frameworks/swiftdata.mddocs/design/stunning-ui-patterns.mddocs/design/liquid-glass-adoption.mddocs/web/native-vs-web-animation.mddocs/swiftui/animations.mddocs/tooling/device-hub.mddocs/tooling/fm-cli.mddocs/tooling/foundation-models-instruments.mddocs/tooling/ios-simulator-mcp.mddocs/tooling/xcode-27-agents.mddocs/frameworks/arkit.mddocs/frameworks/metal.mddocs/frameworks/realitykit.mddocs/frameworks/scenekit.mddocs/frameworks/hardware/core-motion.mddocs/frameworks/hardware/core-nfc.mddocs/frameworks/hardware/healthkit.mddocs/frameworks/hardware/core-bluetooth.mddocs/frameworks/network-framework.mddocs/frameworks/networking.mddocs/platforms/ios.mddocs/platforms/macos.mddocs/platforms/tvos.mddocs/platforms/visionos.mddocs/platforms/watchos.mddocs/frameworks/background-tasks.mddocs/frameworks/services/contacts.mddocs/frameworks/core-location.mddocs/frameworks/services/eventkit.mddocs/frameworks/hardware/homekit.mddocs/frameworks/mapkit.mddocs/frameworks/oslog.mddocs/frameworks/usernotifications.mddocs/frameworks/services/weatherkit.mdData and PersistenceProfessional UI/UX SystemGraphics, 3D, and Spatial DevelopmentNetworking and ConnectivityPerformanceSecurity, Authentication, and PrivacyWebKit and JavaScript Interoperability
+Documentation indexBrowse the repository’s documentation indexes and their linked source guides on GitHub.AI and Apple IntelligenceProfessional Motion and AnimationApple Framework Indexdocs/frameworks/apple-intelligence.mddocs/frameworks/core-ai.mddocs/frameworks/ml/coreml.mddocs/frameworks/core-spotlight-rag.mddocs/testing/evaluations.mddocs/frameworks/foundation-models.mddocs/frameworks/extended-apple-frameworks.mddocs/frameworks/ml/natural-language.mddocs/frameworks/ml/sound-analysis.mddocs/frameworks/ml/speech.mddocs/frameworks/ml/translation.mddocs/frameworks/ml/vision.mddocs/frameworks/authentication-services.mddocs/frameworks/cryptokit.mddocs/frameworks/device-integrity.mddocs/frameworks/local-authentication.mddocs/frameworks/avfoundation.mddocs/frameworks/photosui.mddocs/frameworks/services/passkit.mddocs/frameworks/storekit.mddocs/frameworks/activitykit.mddocs/frameworks/app-clips.mddocs/frameworks/app-intents.mddocs/frameworks/swift-charts.mddocs/swiftui/views-and-controls.mddocs/frameworks/tipkit.mddocs/uikit/uikit-essentials.mddocs/frameworks/visionkit.mddocs/frameworks/widgetkit.mddocs/frameworks/cloudkit.mddocs/frameworks/core-data.mddocs/frameworks/data-concurrency.mddocs/frameworks/foundation.mddocs/frameworks/swiftdata.mddocs/design/stunning-ui-patterns.mddocs/design/liquid-glass-adoption.mddocs/web/native-vs-web-animation.mddocs/swiftui/animations.mddocs/tooling/device-hub.mddocs/tooling/fm-cli.mddocs/tooling/foundation-models-instruments.mddocs/tooling/ios-simulator-mcp.mddocs/tooling/xcode-27-agents.mddocs/frameworks/arkit.mddocs/frameworks/metal.mddocs/frameworks/realitykit.mddocs/frameworks/scenekit.mddocs/frameworks/hardware/core-motion.mddocs/frameworks/hardware/core-nfc.mddocs/frameworks/hardware/healthkit.mddocs/frameworks/hardware/core-bluetooth.mddocs/frameworks/network-framework.mddocs/frameworks/networking.mddocs/platforms/ios.mddocs/platforms/macos.mddocs/platforms/tvos.mddocs/platforms/visionos.mddocs/platforms/watchos.mddocs/frameworks/background-tasks.mddocs/frameworks/services/contacts.mddocs/frameworks/core-location.mddocs/frameworks/services/eventkit.mddocs/frameworks/hardware/homekit.mddocs/frameworks/mapkit.mddocs/frameworks/oslog.mddocs/frameworks/usernotifications.mddocs/frameworks/services/weatherkit.mdData and PersistenceProfessional UI/UX Systempalette generationcolor accessibilityGraphics, 3D, and Spatial DevelopmentNetworking and Connectivitybackend knowledge layerPerformanceSecurity, Authentication, and PrivacyWebKit and JavaScript Interoperability
+
+---
+
+# Backend architectures by app workflow
+https://nagarjuna2997.github.io/ios-agent-skill/guides/backend-app-architectures.html
+
+← Back to all frameworks & guides
+All articles →Backend · Reference guideBackend architectures by app workflowRepository guidance for Backend architectures by app workflow. Examples, decisions, and verification limits from the maintained source guide.Read or improve the source
+ ·
+All guidesOn this pageVisual overview: workflow and architecture
+
+A notes app's state flow
+Avoid hidden coupling
+Evidence to keep
+
+Visual overview
+
+Use the workflow to follow the task, and the architecture map to separate responsibilities. These are conceptual maps; the guide below defines implementation details and verification limits.
+
+01 / WorkflowFrom intent to a checked result1
+Choose feature contract
+↓2
+Separate repository and transport
+↓3
+Define offline ownership
+↓4
+Test failure transitions
+
+02 / ArchitectureResponsibility boundariesBoundary 1
+Swift feature modelBoundary 2
+Backend architectures by app workflowBoundary 3
+Authorized server and local stateConnected responsibilities, not a required class hierarchy or an execution trace.
+Keep feature models independent from service-specific records. The following are design options, not endorsements or live-tested deployments. Start with the failure state and choose a backend only after a small prototype verifies it.
+
+App
+
+Suggested boundary
+
+Data and recovery design
+
+Check before shipping
+
+Notes
+
+Local store → sync repository → CloudKit or an authorized API
+
+Stable note IDs, tombstones, revision/conflict policy; local edit first
+
+Offline edit, account switch, delete/reappear race
+
+Social
+
+Feed repository → Supabase/Postgres or Firebase data + storage
+
+Server pagination, ownership policy, moderation, upload cleanup
+
+Cross-user denial, blocked content, cursor stability
+
+File storage
+
+Transfer coordinator → authorized object store
+
+File-backed uploads, progress/cancel, short-lived signed access, metadata record
+
+Interrupted upload, orphan cleanup, unauthorized download
+
+Chat
+
+Conversation store → realtime coordinator + catch-up API
+
+Message IDs, acknowledgements, ordering, dedupe and durable catch-up
+
+Disconnect during send, duplicate events, revoked membership
+
+Subscription
+
+StoreKit client → entitlement repository → trusted verification
+
+Server verifies transaction/entitlement contract; client boolean is not access control
+
+Expired/revoked entitlement, offline grace policy, replay
+
+Collaborative
+
+Local document → sync engine → shared records or revisioned server
+
+Explicit conflict/merge rules, participant permissions, change cursor
+
+Concurrent edits, removal from share, stale permissions
+
+Offline-first
+
+Local database + outbox → bounded sync worker
+
+Durable operation IDs, replay policy, tombstones and visible pending state
+
+Relaunch mid-sync, auth loss, repeated delivery, migration
+
+A notes app's state flow
+
+The UI reads local notes. A repository accepts an edit and atomically records pending work. A sync owner sends it when authenticated, records the acknowledged revision, then updates local status. Incoming changes merge through the same repository. A view disappearing cancels view-owned fetches, not necessarily durable sync work. Account changes cancel and isolate both.
+
+Avoid hidden coupling
+
+Use DTO-to-domain mapping at the boundary. Do not put SDK singleton calls inside SwiftUI body, copy a token into each feature or create competing refresh loops. Tests inject an offline repository. Provider migration then replaces an adapter and data migration, rather than every screen. See
+REST
+ and
+BackendPatterns
+.
+
+Evidence to keep
+
+Save exact SDK versions, policy tests, schema migration tests and device lifecycle outcomes. Test a rejected operation as carefully as a successful one. A compiled view is not evidence of authorized storage or correct offline synchronization. Consult
+choosing a backend
+,
+security
+ and
+privacy
+.
+
+---
+
+# Appwrite for Apple clients
+https://nagarjuna2997.github.io/ios-agent-skill/guides/backend-appwrite.html
+
+← Back to all frameworks & guides
+All articles →Backend · Reference guideAppwrite for Apple clientsRepository guidance for Appwrite for Apple clients. Examples, decisions, and verification limits from the maintained source guide.Read or improve the source
+ ·
+All guidesOn this pageVisual overview: workflow and architecture
+
+Swift SDK setup
+Data and realtime
+Production gate
+
+Visual overview
+
+Use the workflow to follow the task, and the architecture map to separate responsibilities. These are conceptual maps; the guide below defines implementation details and verification limits.
+
+01 / WorkflowFrom intent to a checked result1
+Match SDK and server
+↓2
+Authenticate registered client
+↓3
+Scope resource permissions
+↓4
+Verify recovery and upgrades
+
+02 / ArchitectureResponsibility boundariesBoundary 1
+Swift feature modelBoundary 2
+Appwrite for Apple clientsBoundary 3
+Authorized server and local stateConnected responsibilities, not a required class hierarchy or an execution trace.
+Appwrite combines auth, data, storage, functions and realtime, with managed or self-hosted operations. Choose it when its permissions and hosting model fit the team. Self-hosting also means owning backups, mail delivery, upgrades, monitoring and security fixes.
+
+Swift SDK setup
+
+Add
+https://github.com/appwrite/sdk-for-apple
+ through SPM. The official Apple quickstart currently references
+10.1.0
+; pin the version you validate against your server. Register the app's bundle platform and inject the endpoint/project ID. Never call a server-key configuration method with an administrator API key in an iOS target.
+
+import Appwrite
+
+func signIn(account: Account, email: String, password: String) async throws {
+    _ = try await account.createEmailPasswordSession(email: email, password: password)
+}
+func signOut(account: Account) async throws {
+    _ = try await account.deleteSession(sessionId: "current")
+}
+
+These snippets need the external SDK and configured service; they were not SDK-compiled here. OAuth uses the documented browser flow and callback configuration. Validate the exact registered callback route, not a substring match. Inspect session persistence in the pinned SDK and never copy sensitive session state to UserDefaults. Test relaunch, expired sessions and identity switching.
+
+Data and realtime
+
+Match the database API generation to the server/SDK—current TablesDB terminology and older Databases examples must not be mixed blindly. Use explicit permissions, bounded queries, stable ordering and cursor pagination. Client filtering is not authorization. Storage buckets/files need permission, size/type and orphan-cleanup policies. Functions keep privileged operations server-side and must validate caller identity and input.
+
+A realtime subscription is not an offline database. Reconnect with backoff, resubscribe once, deduplicate events and fetch missing changes. One repository owns subscriptions and cancellation. Queue offline edits only with idempotency and conflict rules; background execution and socket delivery are not guaranteed on iOS.
+
+Production gate
+
+Test with synthetic users in an isolated instance: cross-user denial, OAuth cancellation, callback cold launch, session revocation, pagination, file cancellation and deletion of account-owned data. Use injected repositories for offline Swift tests; self-hosted compatibility and upgrades need integration tests against the actual server. Configure development and production endpoints separately and avoid logging sessions or signed URLs.
+
+Review
+privacy
+ for identity, cloud storage, telemetry and data synchronization. Plan server/SDK upgrades, schema migration and backup restore before shipping. Primary source:
+official Apple quickstart
+, with linked SDK/server references for the pinned release.
+
+---
+
+# Authentication and session boundaries
+https://nagarjuna2997.github.io/ios-agent-skill/guides/backend-authentication.html
+
+← Back to all frameworks & guides
+All articles →Backend · Reference guideAuthentication and session boundariesRepository guidance for Authentication and session boundaries. Examples, decisions, and verification limits from the maintained source guide.Read or improve the source
+ ·
+All guidesOn this pageVisual overview: workflow and architecture
+
+OAuth callback ownership
+Secure persistence and refresh
+Native identity versus browser OAuth
+Production verification
+
+Visual overview
+
+Use the workflow to follow the task, and the architecture map to separate responsibilities. These are conceptual maps; the guide below defines implementation details and verification limits.
+
+01 / WorkflowFrom intent to a checked result1
+Restore session
+↓2
+Start provider transaction
+↓3
+Validate callback and exchange
+↓4
+Observe identity changes
+
+02 / ArchitectureResponsibility boundariesBoundary 1
+Swift feature modelBoundary 2
+Authentication and session boundariesBoundary 3
+Authorized server and local stateConnected responsibilities, not a required class hierarchy or an execution trace.
+Model authentication as restoring, signed out, authenticating, signed in, refreshing and revoked states. The first screen must wait for restoration or show a deliberate loading state; an SDK client existing is not evidence of a valid session.
+
+OAuth callback ownership
+
+Use the provider's documented ASWebAuthenticationSession or native SDK flow. PKCE binds an authorization code to the initiating client; state binds the callback to the initiating attempt; an OIDC nonce binds an ID token to that attempt. They are different protections. Prefer the SDK's implementation instead of manually concatenating an authorization URL or decoding a JWT as proof of identity.
+
+Register a custom URL scheme or an associated-domain universal link, configure the exact redirect allowlist on the server, and route scene/openURL callbacks to one coordinator. Match scheme, host and path exactly, reject unexpected ports/userinfo, and let the SDK validate the transaction's state and exchange the code. Never use
+url.absoluteString.contains("callback")
+ as authorization. Universal links also require a valid association file and entitlements. A syntactically matching URL alone does not authenticate anybody.
+
+BackendPatterns
+ demonstrates exact callback-route validation. It intentionally does not implement OAuth state, PKCE or token exchange. Test cancelled browser sessions, duplicate callbacks, cold launch, expired links, alternate schemes and malicious suffix hosts. Do not log callback URLs: they can carry credentials.
+
+Secure persistence and refresh
+
+Inspect the pinned SDK's storage implementation. If you supply sensitive persistence, use Keychain with a deliberate accessibility class, access group and synchronizability policy.
+WhenUnlockedThisDeviceOnly
+ may be inappropriate for a legitimate background operation; select the policy from the actual access requirement. Do not put tokens in UserDefaults, app-group preferences, analytics properties or source control. Do not replace SDK session storage with an incomplete homemade token store.
+
+Use one refresh owner. Concurrent 401s must join one refresh attempt, not race and overwrite rotated refresh tokens. Retry the original operation only if safe; do not turn every 403 into refresh. Clear identity-scoped local records, image caches and pending work on account changes. Stop listeners before presenting another user's data. Account deletion is a server-authorized operation; signing out is not deletion.
+
+Native identity versus browser OAuth
+
+Apple and Google can provide native ID-token credentials for supported SDK exchange. Native Apple uses a fresh nonce and its documented digest/exchange contract; an authorization code is not an ID token. Other social providers generally use browser OAuth. Do not reuse the native Apple example for GitHub, Slack or X. Verify the provider name and credential type in the exact Swift SDK version.
+
+Supabase
+ and
+Firebase
+ contain SDK-specific snippets.
+App Review 4.8
+ defines conditions and exceptions for an equivalent login option; social login is a reason to review the policy, not an automatic scanner error.
+Privacy
+ covers deletion and data disclosures.
+
+Production verification
+
+Test relaunch, refresh-token rotation, server revocation, offline restoration, clock skew, reauthentication before destructive actions and cancellation before callback delivery. Use synthetic accounts in isolated environments. Never paste provider secrets into agent context. Official references:
+ASWebAuthenticationSession
+,
+Supabase sessions
+,
+native mobile deep links
+.
+
+---
+
+# AWS Amplify in a Swift app
+https://nagarjuna2997.github.io/ios-agent-skill/guides/backend-aws-amplify.html
+
+← Back to all frameworks & guides
+All articles →Backend · Reference guideAWS Amplify in a Swift appRepository guidance for AWS Amplify in a Swift app. Examples, decisions, and verification limits from the maintained source guide.Read or improve the source
+ ·
+All guidesOn this pageVisual overview: workflow and architecture
+
+Install and environment
+Data, files and functions
+Recovery and production
+
+Visual overview
+
+Use the workflow to follow the task, and the architecture map to separate responsibilities. These are conceptual maps; the guide below defines implementation details and verification limits.
+
+01 / WorkflowFrom intent to a checked result1
+Pin generated environment
+↓2
+Configure Auth and API plugins
+↓3
+Enforce AWS authorization
+↓4
+Test sync and transfer recovery
+
+02 / ArchitectureResponsibility boundariesBoundary 1
+Swift feature modelBoundary 2
+AWS Amplify in a Swift appBoundary 3
+Authorized server and local stateConnected responsibilities, not a required class hierarchy or an execution trace.
+Amplify fits teams already operating Cognito, AppSync, S3 and Lambda with explicit cloud ownership. It is less suitable when IAM, multiple auth modes and deployment configuration would exceed the team's operational capacity.
+
+Install and environment
+
+Use
+https://github.com/aws-amplify/amplify-swift
+ and the documented products/plugins for Auth, API and Storage. Pin the SDK. Initialize plugins and configure once in the composition root before repositories issue work. Match generated backend configuration to the environment and SDK generation; do not combine an old amplifyconfiguration.json recipe with new outputs without following the migration guide.
+
+Cognito Auth handles user-pool sessions and supported social/hosted UI flows. Configure redirect sign-in/sign-out URLs and native provider identifiers; use the documented web authentication session integration. Inspect credential persistence and never store AWS secret access keys in the app. Temporary identity credentials and server IAM permissions are different from hardcoded administrator keys.
+
+Data, files and functions
+
+AppSync/GraphQL needs a deliberate authorization mode: Cognito, IAM, API key or other configured identity paths have different access boundaries. A client API key is not user authorization. Generated models and schema belong in reviewed source/code-generation workflows. Keep UI code behind repositories instead of exposing generated network types everywhere.
+
+S3 Storage requires prefix/object authorization, upload cancellation and cleanup. Invoke Lambda/serverless integrations through authenticated APIs with server validation; never ship deployment credentials. Push support is product/provider-specific: confirm the currently supported AWS integration and APNs setup instead of assuming an installed Auth plugin delivers notifications.
+
+Recovery and production
+
+GraphQL cache behavior and DataStore synchronization are distinct; do not claim all Amplify API requests have automatic offline replay. Choose a local cache/outbox with conflict rules, cursor pagination and idempotent writes. Own async tasks/listeners, preserve cancellation and avoid multiplying retries already performed by an SDK. Reconcile on foreground; iOS background execution is bounded.
+
+Test configuration selection, auth restoration/revocation, cross-user denial, upload progress/cancel, subscription recovery and schema evolution. Use dependency injection for offline tests and an isolated AWS environment for separately authorized integration tests. No deployment or Amplify SDK compilation occurred in this change. Follow
+privacy
+ for Cognito identities, cloud files, telemetry and deletion across services.
+
+Primary sources:
+Amplify Swift
+,
+Auth
+,
+Data API
+.
+
+---
+
+# Choosing an iOS backend
+https://nagarjuna2997.github.io/ios-agent-skill/guides/backend-choosing-a-backend.html
+
+← Back to all frameworks & guides
+All articles →Backend · Reference guideChoosing an iOS backendRepository guidance for Choosing an iOS backend. Examples, decisions, and verification limits from the maintained source guide.Read or improve the source
+ ·
+All guidesOn this pageVisual overview: workflow and architecture
+
+Decision matrix
+Capabilities to price and prototype
+A useful prototype
+
+Visual overview
+
+Use the workflow to follow the task, and the architecture map to separate responsibilities. These are conceptual maps; the guide below defines implementation details and verification limits.
+
+01 / WorkflowFrom intent to a checked result1
+Define hardest requirement
+↓2
+Compare operating costs
+↓3
+Prototype denied and offline paths
+↓4
+Choose a verified fit
+
+02 / ArchitectureResponsibility boundariesBoundary 1
+Swift feature modelBoundary 2
+Choosing an iOS backendBoundary 3
+Authorized server and local stateConnected responsibilities, not a required class hierarchy or an execution trace.
+Begin with the hardest requirement: cross-platform identity, relational joins, offline edits, Apple-only sharing or operational control. There is no universally best service. Budget for migration and policy testing as well as a happy-path SDK demo.
+
+Decision matrix
+
+Backend
+
+Strong fit
+
+Important tradeoff
+
+Offline and local testing
+
+CloudKit
+
+Apple accounts, private records and system sharing
+
+iCloud identity and Apple platform boundaries; public data needs deliberate permissions
+
+App owns local persistence; CKSyncEngine coordinates supported sync, not a complete database. Test account transitions on devices
+
+Supabase
+
+Postgres relationships, SQL/RLS, flexible auth, storage and realtime
+
+Schema, grants and RLS require server expertise
+
+Explicit app cache/outbox; local stack and policy tests; no automatic Swift offline database
+
+Firebase
+
+Mobile auth, realtime data, push and operational SDKs
+
+Document/tree modeling, Rules and indexes; query costs and lock-in
+
+Firestore persistent cache is supported on Apple; emulator tests differ from production
+
+Amplify
+
+Cognito, AppSync and S3 within AWS operations
+
+IAM/auth modes, generated configuration and cloud complexity
+
+Cache/offline behavior depends on selected API/DataStore architecture; do not assume all GraphQL calls sync
+
+Appwrite
+
+Integrated auth/data/storage/functions, managed or self-hosted
+
+Hosting upgrades, permissions and SDK/server compatibility
+
+Explicit local state/outbox and isolated test instance
+
+Custom REST
+
+Stable contract, existing backend, transport ownership
+
+Build auth, rate limiting, observability and policy tests
+
+URLProtocol/injected transports; explicit cache and sync design
+
+GraphQL
+
+Typed multi-resource queries, schema evolution
+
+Resolver authorization, code generation and partial errors
+
+Normalized cache does not by itself queue offline mutations
+
+Capabilities to price and prototype
+
+CloudKit sharing is Apple-native; multi-provider login favors Supabase, Firebase, Cognito or Appwrite. Relational constraints favor Postgres or a custom relational backend. Realtime delivery is not a guarantee of ordered, durable synchronization in any of these choices. CloudKit subscriptions, FCM and AWS push integrations have different setup paths; Appwrite or custom services need a compatible push path and APNs configuration.
+
+Supabase Storage, Firebase Storage, S3 and Appwrite Storage need per-object access policy and orphan cleanup. Server functions differ in runtime and deployment: Supabase Edge Functions, Firebase Functions, Lambda and Appwrite Functions all keep privileged credentials off-device. CloudKit is not a general server-function runtime.
+
+Self-hosting is an option for Supabase and Appwrite; it transfers backups, patching, mail delivery and incident response to you. Export data, preserve stable domain IDs and isolate provider types behind repositories to reduce migration cost. Assess Swift SDK release cadence and deployment targets from the pinned package, not this matrix.
+
+A useful prototype
+
+Implement one list, one upload and one identity transition. Test two users, denied access, revocation, airplane mode, interrupted writes and account switching. Measure payloads and query count, not only the number of SDK calls. Choose only after validating the hardest flow.
+
+Convex, PocketBase, Parse/Back4App, Hasura and Workers/D1/R2 can fit particular teams; confirm a maintained Swift integration or use a documented HTTP boundary. Vapor, FastAPI and Node.js/NestJS are server implementation choices, not interchangeable iOS SDKs. Keep secondary choices behind the same repository contracts.
+
+See
+app architectures
+,
+security
+, and each provider's primary sources in
+the source record
+.
+
+---
+
+# CloudKit as an Apple-native backend
+https://nagarjuna2997.github.io/ios-agent-skill/guides/backend-cloudkit.html
+
+← Back to all frameworks & guides
+All articles →Backend · Reference guideCloudKit as an Apple-native backendRepository guidance for CloudKit as an Apple-native backend. Examples, decisions, and verification limits from the maintained source guide.Read or improve the source
+ ·
+All guidesOn this pageVisual overview: workflow and architecture
+
+Configuration and identity
+Databases, records and sharing
+Sync and local persistence
+Verification and privacy
+
+Visual overview
+
+Use the workflow to follow the task, and the architecture map to separate responsibilities. These are conceptual maps; the guide below defines implementation details and verification limits.
+
+01 / WorkflowFrom intent to a checked result1
+Select container and database
+↓2
+Check iCloud account
+↓3
+Merge local and remote records
+↓4
+Verify sharing and recovery
+
+02 / ArchitectureResponsibility boundariesBoundary 1
+Swift feature modelBoundary 2
+CloudKit as an Apple-native backendBoundary 3
+Authorized server and local stateConnected responsibilities, not a required class hierarchy or an execution trace.
+CloudKit is a major choice for Apple-only apps with iCloud identity, private synchronization and system sharing. It is not a drop-in multi-provider auth service or a relational SQL backend. Start with
+existing CloudKit API guidance
+, then apply the lifecycle and deployment decisions here.
+
+Configuration and identity
+
+CloudKit ships in the Apple SDK; no external SPM package is required. Enable iCloud/CloudKit capabilities and select the actual container entitlement.
+CKContainer.default()
+ uses the configured default container, not an assumption that its identifier equals the bundle ID. Development and production environments have separate schema/data behavior.
+
+Check
+accountStatus()
+ and present deliberate unavailable/restricted/indeterminate states. Do not promise an email address or another cross-service identity from an iCloud account. A user can change accounts while the app is installed. Rebind caches and sync state to the current account; never blend private data between accounts.
+
+Databases, records and sharing
+
+Choose private, public or shared CKDatabase scope explicitly. Public database does not mean every user can read/write everything; inspect record type permissions. Model CKRecord IDs, zones and ownership as stable domain decisions. CKQuery is paginated; follow cursors and inspect per-record failures. Store file data with CKAsset through managed local files, retaining those files for the operation's required lifetime.
+
+Use CKShare and supported sharing flows for collaboration. Shared data has permission and participant transitions that must be tested. Never assume a record in the shared database is editable. Resolve conflict errors with server/client/ancestor records and a domain merge policy rather than last-writer-wins by accident.
+
+Sync and local persistence
+
+CKSubscription/push signals tell the app to fetch changes; they are not guaranteed complete event delivery. CKSyncEngine coordinates supported change tracking and scheduling on available OS versions; persist its state and your own local records/outbox. It is not a complete local database. Recreate state safely after account/zone deletion and handle retries/rate limits as documented.
+
+SwiftData + CloudKit and NSPersistentCloudKitContainer are higher-level sync choices with model/schema constraints. Choose one owner for a dataset; do not simultaneously mutate the same records through an unrelated manual sync layer. Check availability and supported schema features in the installed SDK. Plan additive migrations, defaults and old-client compatibility before deploying schema.
+
+Verification and privacy
+
+Use injected repositories for offline tests;
+BackendPatterns
+ includes an account-status adapter compiled against the local Apple SDK without calling iCloud. Test real private/public/shared databases on entitled devices with multiple accounts, revoked sharing, offline changes, quota/rate limits, asset failures and account switching. Simulator results alone are insufficient for production iCloud claims.
+
+Review CloudKit Dashboard schema promotion, indexes and permissions deliberately; never make cloud changes from an unaudited preview. Show sync/pending/conflict status and a recovery path. Account deletion/data deletion requirements depend on the app's account model; iCloud usage does not exempt data disclosure or retention review. See
+privacy
+.
+
+Primary sources:
+CloudKit
+,
+CKSyncEngine
+,
+SwiftData sync
+,
+Core Data and CloudKit
+.
+
+---
+
+# Firebase for iOS
+https://nagarjuna2997.github.io/ios-agent-skill/guides/backend-firebase.html
+
+← Back to all frameworks & guides
+All articles →Backend · Reference guideFirebase for iOSRepository guidance for Firebase for iOS. Examples, decisions, and verification limits from the maintained source guide.Read or improve the source
+ ·
+All guidesOn this pageVisual overview: workflow and architecture
+
+Installation and authentication
+Data, files and authorization
+Optional products
+Concurrency, lifecycle and migration
+Testing and production gate
+
+Visual overview
+
+Use the workflow to follow the task, and the architecture map to separate responsibilities. These are conceptual maps; the guide below defines implementation details and verification limits.
+
+01 / WorkflowFrom intent to a checked result1
+Configure selected products
+↓2
+Restore Firebase identity
+↓3
+Test Rules and cache states
+↓4
+Verify deletion and telemetry
+
+02 / ArchitectureResponsibility boundariesBoundary 1
+Swift feature modelBoundary 2
+Firebase for iOSBoundary 3
+Authorized server and local stateConnected responsibilities, not a required class hierarchy or an execution trace.
+Firebase suits apps needing mobile authentication, document or realtime data, push and operational tooling. Avoid adopting every product by default: analytics, crash reporting and messaging add configuration and disclosure responsibilities independently of database access.
+
+Installation and authentication
+
+Add
+https://github.com/firebase/firebase-ios-sdk
+ with SPM and only the needed products. Register the exact bundle ID, include the intended GoogleService-Info.plist in the target, and configure Firebase once at the app composition root. This plist contains client identifiers, not an admin service-account credential. Pin the SDK and check its minimum iOS/Xcode versions.
+
+import FirebaseAuth
+
+func passwordSignIn(email: String, password: String) async throws {
+    _ = try await Auth.auth().signIn(withEmail: email, password: password)
+}
+func guestSignIn() async throws {
+    _ = try await Auth.auth().signInAnonymously()
+}
+func appleSignIn(idToken: String, rawNonce: String) async throws {
+    let credential = OAuthProvider.appleCredential(
+        withIDToken: idToken, rawNonce: rawNonce, fullName: nil
+    )
+    _ = try await Auth.auth().signIn(with: credential)
+}
+func googleSignIn(idToken: String, accessToken: String) async throws {
+    let credential = GoogleAuthProvider.credential(
+        withIDToken: idToken, accessToken: accessToken
+    )
+    _ = try await Auth.auth().signIn(with: credential)
+}
+
+These SDK snippets require configured native Apple/Google flows and an installed Firebase release; they were not compiled against Firebase in the offline sample. Apple needs a fresh nonce/digest pairing; Google needs its own SDK and client ID configuration. Do not log either credential. Phone auth requires its platform verification setup, APNs/reCAPTCHA path as applicable, quotas and abuse controls. Test on a device, including denial and timeout.
+
+Own the auth-state listener and remove it at teardown. Wait for restoration before selecting an account cache. Inspect SDK token persistence instead of copying tokens into UserDefaults. Linking anonymous accounts needs conflict handling; deleting an auth user does not automatically remove Firestore documents or Storage objects.
+
+Data, files and authorization
+
+Firestore document queries need indexes, limits and cursor pagination. Apple-platform offline persistence can serve cached results; distinguish pending writes and server acknowledgement. Realtime Database uses a different tree model, rules language and persistence behavior; do not assume Firestore rules or query semantics apply.
+
+Cloud Storage requires object rules, upload cancellation/progress and orphan cleanup. Cloud Functions perform privileged operations with server validation; callable transport alone does not establish authorization. Test unauthenticated and cross-user denial in Security Rules. Admin SDK operations are a separate trusted boundary. App Check helps reject untrusted clients but does not replace user authorization or Rules.
+
+Optional products
+
+Product
+
+Integration decision and verification
+
+FCM
+
+Configure APNs, authorization UX and token rotation; notification delivery is not guaranteed sync
+
+Crashlytics
+
+Review crash collection, breadcrumbs and custom keys; never attach sessions or payloads
+
+Analytics
+
+Enable only with a documented data/consent policy and accurate disclosures
+
+Remote Config
+
+Use safe defaults and bounded fetch; never store secrets or treat a flag as authorization
+
+App Check
+
+Configure a supported Apple attestation provider and debug tokens only in development
+
+Concurrency, lifecycle and migration
+
+Repository adapters own listeners and cancellation; marshal UI updates to the UI model's isolation. Bound queries and uploads. Distinguish SDK retry behavior from your own retries to avoid duplicate writes. Stable document IDs or transactions can support idempotent workflows; assess the actual mutation semantics. Pause listeners when no longer needed and reconcile on foreground—no continuous-background promise.
+
+Use exact callback routing for native providers. Follow the current email-link documentation rather than resurrecting legacy Dynamic Links recipes. Plan schema evolution for old clients, security-rule deployment order, index creation and local-cache/account transitions. Read
+authentication
+ and
+privacy
+ for deletion and App Review considerations.
+
+Testing and production gate
+
+Inject repositories for offline Swift tests. Separately run Auth/Firestore/Database/Storage emulators where supported, with explicit emulator endpoints and synthetic users. Ensure emulator/debug App Check configuration cannot leak into production. Test rule denial, session revocation, offline writes, conflict recovery, upload cancellation, account deletion and real APNs behavior. No Firebase SDK or emulator/live-service execution is claimed by this documentation.
+
+Primary sources:
+Apple setup
+,
+Apple auth
+,
+Google auth
+,
+password
+,
+anonymous
+,
+offline Firestore
+,
+Rules
+,
+App Check
+.
+
+---
+
+# GraphQL and Apollo iOS
+https://nagarjuna2997.github.io/ios-agent-skill/guides/backend-graphql.html
+
+← Back to all frameworks & guides
+All articles →Backend · Reference guideGraphQL and Apollo iOSRepository guidance for GraphQL and Apollo iOS. Examples, decisions, and verification limits from the maintained source guide.Read or improve the source
+ ·
+All guidesOn this pageVisual overview: workflow and architecture
+
+Installation and schema boundary
+Correctness beyond HTTP 200
+Lifecycle, testing and migration
+
+Visual overview
+
+Use the workflow to follow the task, and the architecture map to separate responsibilities. These are conceptual maps; the guide below defines implementation details and verification limits.
+
+01 / WorkflowFrom intent to a checked result1
+Pin schema and generator
+↓2
+Run typed operation
+↓3
+Handle partial errors
+↓4
+Reconcile normalized cache
+
+02 / ArchitectureResponsibility boundariesBoundary 1
+Swift feature modelBoundary 2
+GraphQL and Apollo iOSBoundary 3
+Authorized server and local stateConnected responsibilities, not a required class hierarchy or an execution trace.
+GraphQL fits a typed schema with related resources and clients needing different selections. It does not remove backend authorization, query-cost controls or network failures. Use REST when a small stable endpoint surface is simpler.
+
+Installation and schema boundary
+
+Add the official
+https://github.com/apollographql/apollo-ios
+ package and select the products needed by the pinned release. Match the code generation tool to that release. Keep a reviewed schema snapshot and operation files; generate types in CI without calling production. Package product/module names and subscription transport APIs vary by major version: compile your lockfile, not an unversioned tutorial.
+
+Queries read data; mutations express writes; subscriptions stream changes. Put operations behind a repository returning domain models, so generated types do not spread through SwiftUI. Inject authentication at the network transport boundary; refresh once and recreate/re-authenticate subscriptions when identity changes.
+
+Correctness beyond HTTP 200
+
+A response can contain both data and GraphQL errors. Define which partial data is safe to show and distinguish transport errors from field errors. Normalize cache identity consistently; account-scope or clear caches on logout. A normalized cache is not an offline mutation queue. Optimistic updates need reconciliation and rollback after server rejection.
+
+Use cursor pagination and server-provided pageInfo, not an unbounded collection query. Bound selection depth and payloads on the server. Store large files using an authorized upload service or signed URL contract instead of base64 blobs in arbitrary mutations. Realtime subscriptions still require deduplication and a catch-up query after disconnection.
+
+Lifecycle, testing and migration
+
+Do not keep subscriptions alive indefinitely in the background; iOS may suspend the app. One actor/coordinator owns subscription cancellation, retry and state. Use bounded backoff, honour authorization failures and avoid retrying mutations without idempotency. Validate deep links before selecting an entity, then re-authorize the fetch.
+
+Use generated mocks or injected repositories for previews and offline tests. Test partial responses, missing nullable fields, cursor termination, optimistic rollback, account changes and schema compatibility. Verify code generation determinism and compilation with the pinned SDK; no Apollo SDK execution is claimed by the dependency-free sample.
+
+Follow
+authentication
+,
+security
+ and
+privacy
+ for token storage, account deletion and analytics. Primary source:
+Apollo iOS documentation
+.
+
+---
+
+# Backend services for Swift apps
+https://nagarjuna2997.github.io/ios-agent-skill/guides/backend-overview.html
+
+← Back to all frameworks & guides
+All articles →Backend · Reference guideBackend services for Swift appsRepository guidance for Backend services for Swift apps. Examples, decisions, and verification limits from the maintained source guide.Read or improve the source
+ ·
+All guidesOn this pageVisual overview: workflow and architecture
+
+Start with a boundary
+Verification contract
+Review output and limits
+Production gate
+
+Visual overview
+
+Use the workflow to follow the task, and the architecture map to separate responsibilities. These are conceptual maps; the guide below defines implementation details and verification limits.
+
+01 / WorkflowFrom intent to a checked result1
+Identify data ownership
+↓2
+Choose service boundary
+↓3
+Validate identity and policies
+↓4
+Record recovery evidence
+
+02 / ArchitectureResponsibility boundariesBoundary 1
+Swift feature modelBoundary 2
+Backend services for Swift appsBoundary 3
+Authorized server and local stateConnected responsibilities, not a required class hierarchy or an execution trace.
+Choose a backend around the app's data ownership, identity and recovery requirements. This library connects iOS lifecycle and concurrency decisions to concrete service configuration; it is not a hosted backend or a security certification.
+
+Start with a boundary
+
+SwiftUI view → UI-isolated feature model → injected repository → SDK or HTTP transport → server authorization. Keep SDK sessions and caches behind this boundary. A preview receives an in-memory repository and never creates a live service. An actor owns shared mutable pagination, refresh or reconnect state; do not put the entire networking layer on the main actor.
+
+Choose a backend
+ and
+map your app architecture
+.
+Establish
+authentication and callback ownership
+, then
+authorization and secret boundaries
+.
+Read the specific integration:
+Supabase
+,
+Firebase
+,
+CloudKit
+,
+AWS Amplify
+,
+Appwrite
+,
+REST
+,
+GraphQL
+ or
+WebSockets
+.
+Exercise
+privacy and account lifecycle
+ using synthetic identities.
+Run
+review_backend_integration
+ with the project path. Treat its file/line evidence as a review starting point, not a remote configuration audit.
+
+Verification contract
+
+The source snapshot is dated
+2026-09-21
+. Provider API documentation was reviewed; that does not mean every SDK version was compiled, every OAuth provider was configured, or any live service was tested.
+Source record
+ records this distinction. Resolve and pin your chosen SDK, retain Package.resolved, compile for your deployment target, and then test the specific provider configuration on a device.
+
+BackendPatterns
+ contains dependency-free Swift examples and offline tests. Provider auth snippets in these guides need the named SDK and configured service; they are not complete applications. Use environment-injected client identifiers. Never put a server key in the app, a preview or a prompt.
+
+Review output and limits
+
+The new read-only tool returns services, matched imports/dependencies/configurations, auth and data-use evidence, risks with severity/confidence, and contextual review questions. It reads bounded local text only; it neither calls providers nor writes fixes. It omits credential values. Paths remain developer-local information.
+
+Concrete checks cover privileged literal credentials, sensitive UserDefaults writes, direct token logging, discarded raw HTTP responses, immediate reconnect loops, explicit RLS disabling and unconditional Firebase allow rules. A public Firebase collection can be intentional; the finding asks for policy review, not an automatic rewrite. Missing RLS files, missing Apple login, missing deletion or absence of a cancellation keyword do not prove a defect.
+
+Use existing SwiftUI/performance/security reviewers for body-side effects, force unwraps and error handling. Review pagination, endpoint environments, relaunch restoration and background assumptions with feature context. The scanner cannot infer custom wrappers, deployed policies, entitlements, SDK persistence or an app's eligibility for App Review exceptions.
+
+Production gate
+
+Record the exact SDK/toolchain, environment and test identity. Verify cross-user denial, expired/revoked sessions, sign-out cache clearing, offline recovery, bounded paging, upload cancellation and deletion of dependent records/files. Capture safe event IDs and outcomes, never tokens, callback URLs or user payloads. Do not label local tests as proof that production is secure.
+
+---
+
+# Backend privacy and account lifecycle
+https://nagarjuna2997.github.io/ios-agent-skill/guides/backend-privacy.html
+
+← Back to all frameworks & guides
+All articles →Backend · Reference guideBackend privacy and account lifecycleRepository guidance for Backend privacy and account lifecycle. Examples, decisions, and verification limits from the maintained source guide.Read or improve the source
+ ·
+All guidesOn this pageVisual overview: workflow and architecture
+
+Service-specific inventory
+Apple policy review
+Deletion workflow
+Verification record
+
+Visual overview
+
+Use the workflow to follow the task, and the architecture map to separate responsibilities. These are conceptual maps; the guide below defines implementation details and verification limits.
+
+01 / WorkflowFrom intent to a checked result1
+Inventory outgoing data
+↓2
+Classify collection and tracking
+↓3
+Implement deletion lifecycle
+↓4
+Verify actual SDK behavior
+
+02 / ArchitectureResponsibility boundariesBoundary 1
+Swift feature modelBoundary 2
+Backend privacy and account lifecycleBoundary 3
+Authorized server and local stateConnected responsibilities, not a required class hierarchy or an execution trace.
+Map data before selecting SDKs: what leaves the device, why, who receives it, how long it persists and how deletion propagates. A backend service name does not determine an app's App Privacy answers. Audit the actual product configuration, optional SDKs and server behavior.
+
+Service-specific inventory
+
+Integration
+
+Data and operational questions
+
+Supabase
+
+Auth identifiers, Postgres rows, Storage files, function logs and realtime payloads; delete dependent objects and review log retention
+
+Firebase
+
+Separate Auth/data/storage from optional Analytics, Crashlytics, FCM and Remote Config; review breadcrumbs, device tokens and consent configuration
+
+CloudKit
+
+Private/public/shared scope, synchronized records/assets and participant visibility; inspect local copies and account changes
+
+Amplify
+
+Cognito attributes, AppSync data, S3 objects, Lambda logs and optional push/analytics; deletion spans services
+
+Appwrite
+
+Identity, database/files/functions and realtime; managed/self-hosted retention and backup policy differ
+
+REST / GraphQL
+
+Request payloads, error bodies, access logs, identifiers and resolver/service telemetry; the custom server remains responsible
+
+WebSockets
+
+Message contents, subscription metadata, connection logs and retention; avoid token-bearing URLs
+
+Apple policy review
+
+Use Apple's current App Privacy guidance to classify data collection, linkage and tracking. Advertising identifiers and tracking are separate decisions; do not request ATT merely because any backend exists. Review SDK privacy manifests and required-reason API use in the actual built dependencies. A manifest does not replace accurate App Privacy disclosures.
+
+App Review 4.8 has conditions and exceptions for apps using third-party/social login. Assess the specific app against the policy rather than asserting every social login always mandates the same implementation. When the app supports account creation, review Apple's in-app account-deletion requirements and applicable exceptions. Signing out, disabling a local cache or opening a support email is not automatically a compliant deletion flow.
+
+For user-generated content, evaluate moderation, reporting and blocking obligations under the applicable guideline. Public chat and a private personal notebook have different risks. Don't use one generic backend checklist as legal approval.
+
+Deletion workflow
+
+Reauthenticate as needed → submit an authorized deletion operation → stop listeners and pending writes → remove or anonymize dependent records/files according to the disclosed policy → revoke credentials → clear local identity data → present the actual outcome. Explain legally required retention and backup handling. A server failure must not be reported as successful deletion.
+
+Verification record
+
+Use synthetic identities to test export/deletion, telemetry redaction, account switching and sync cleanup. Inspect network destinations and crash SDK custom fields. Record which configurations were inspected versus exercised on a device; this library does not certify compliance.
+
+Primary sources:
+App Review Guidelines
+,
+App Privacy details
+,
+account deletion
+,
+privacy manifests
+.
+
+---
+
+# REST clients with URLSession
+https://nagarjuna2997.github.io/ios-agent-skill/guides/backend-rest.html
+
+← Back to all frameworks & guides
+All articles →Backend · Reference guideREST clients with URLSessionRepository guidance for REST clients with URLSession. Examples, decisions, and verification limits from the maintained source guide.Read or improve the source
+ ·
+All guidesOn this pageVisual overview: workflow and architecture
+
+Request to domain value
+Retry and cancellation contract
+Paging, cache and files
+Security, migration and tests
+
+Visual overview
+
+Use the workflow to follow the task, and the architecture map to separate responsibilities. These are conceptual maps; the guide below defines implementation details and verification limits.
+
+01 / WorkflowFrom intent to a checked result1
+Construct typed request
+↓2
+Validate HTTP response
+↓3
+Decode domain value
+↓4
+Bound retry and cancellation
+
+02 / ArchitectureResponsibility boundariesBoundary 1
+Swift feature modelBoundary 2
+REST clients with URLSessionBoundary 3
+Authorized server and local stateConnected responsibilities, not a required class hierarchy or an execution trace.
+Use REST when a stable HTTP contract or existing service fits the app. Do not add GraphQL or a vendor SDK merely to avoid writing status validation. URLSession is part of Foundation; no external SPM dependency is required. Inject the transport and base URL at the composition root; keep endpoint paths and response types explicit.
+
+Request to domain value
+
+Construct URLs with URLComponents and URLQueryItem. Set the HTTP method, content type, timeout and acceptable payload size deliberately. Obtain bearer credentials from a session owner immediately before dispatch. A request interceptor should add safe headers, not log the complete request or independently refresh every failing request.
+
+Retain HTTPURLResponse and validate the endpoint's success statuses before decoding Codable. Handle 204 without decoding an empty JSON object. Distinguish transport, cancellation, HTTP status, API error and decoding errors; a JSON body alone is not success. Server error payloads are untrusted and may contain personal information. Translate them to a bounded domain error rather than displaying or logging them wholesale.
+
+BackendPatterns
+ supplies an injected transport, validated response and bounded GET retries. It deliberately does not implement token refresh, multipart encoding or a background transfer service.
+
+Retry and cancellation contract
+
+Retry only operations whose semantics permit it: GET/HEAD are normally safe; writes need a server-enforced idempotency key and documented replay behavior. Bound attempts and total deadline. Respect Retry-After and rate limiting; use exponential backoff plus jitter in a real transport. Cancellation must escape immediately, including during the delay. Do not retry validation failures, authorization denial or arbitrary decoding errors. A 401 can trigger one coordinated refresh; a 403 is not automatically an expired session.
+
+A feature
+.task
+ should cancel its request when no longer needed. A long-lived sync owner may outlive one view but must still expose cancellation and account-switch handling. URLSession's async APIs do not grant unlimited background execution.
+
+Paging, cache and files
+
+Use server cursors with stable ordering, preserve the next cursor as opaque data and deduplicate by stable record ID. Avoid fetching all rows to paginate locally. Bind cache entries and ETags to identity and request representation; handle 304 through the existing cached body. Never reuse private cached content after logout.
+
+For multipart uploads follow the server contract for boundaries and disposition fields; use a file-backed request for large payloads. Validate file size/type server-side and clean up partial uploads. Prefer download tasks for large responses rather than accumulating Data. Background URLSession transfers need an app delegate completion handoff and supported task configuration; the server must tolerate resumption and duplicate completion delivery.
+
+Security, migration and tests
+
+Use HTTPS with ATS intact. Certificate pinning has rotation and outage costs; adopt it only with a reviewed recovery plan, not a blanket disable-trust workaround. Keep production/staging endpoints in explicit configuration. Test URLProtocol or an injected transport for status, malformed JSON, timeout, cancellation, 429, retry limits, pagination and refresh races. Contract tests should include backward-compatible server schema evolution and unknown fields. Run live integration checks separately from offline fixtures.
+
+Review data disclosure, deletion and retention in
+privacy
+. Primary sources:
+URLSession
+,
+URLProtocol
+,
+background downloads
+. Extend the existing
+networking guide
+ rather than creating a second global networking manager.
+
+---
+
+# Backend authorization and client secrets
+https://nagarjuna2997.github.io/ios-agent-skill/guides/backend-security.html
+
+← Back to all frameworks & guides
+All articles →Backend · Reference guideBackend authorization and client secretsRepository guidance for Backend authorization and client secrets. Examples, decisions, and verification limits from the maintained source guide.Read or improve the source
+ ·
+All guidesOn this pageVisual overview: workflow and architecture
+
+Keys are not all equivalent
+Server responsibilities
+Tool evidence
+Safe observability
+
+Visual overview
+
+Use the workflow to follow the task, and the architecture map to separate responsibilities. These are conceptual maps; the guide below defines implementation details and verification limits.
+
+01 / WorkflowFrom intent to a checked result1
+Classify client and server keys
+↓2
+Enforce object authorization
+↓3
+Test cross-user denial
+↓4
+Rotate and redact
+
+02 / ArchitectureResponsibility boundariesBoundary 1
+Swift feature modelBoundary 2
+Backend authorization and client secretsBoundary 3
+Authorized server and local stateConnected responsibilities, not a required class hierarchy or an execution trace.
+An iOS binary is a public client. Bundle files, strings, configuration and network traffic on a developer-controlled device can be inspected. Obfuscating a server key does not create a trusted boundary.
+
+Keys are not all equivalent
+
+Supabase
+sb_publishable_
+ keys and legacy anon-role keys identify a public client. They depend on correctly configured grants and RLS.
+sb_secret_
+ and legacy service-role keys are privileged server credentials and must never ship. A decoded JWT role is only classification evidence, not signature verification. Firebase's GoogleService-Info.plist contains client identifiers; it is not a service-account private key. Appwrite server API keys, AWS secret access keys and OAuth client secrets belong on trusted infrastructure.
+
+Keep environments separate. Commit reviewed client configuration only when intended; use private secret management for server values. A gitignored file can still enter an app bundle. If a real key leaked, revoke/rotate it and audit access; deleting a line does not erase history or already published binaries.
+
+Server responsibilities
+
+Authorize each operation against the authenticated identity, tenant and object. Enforce ownership during insert and update, not only reads. Restrict storage paths, signed URL lifetime, functions and database RPC privileges. Validate payload limits and rate limits server-side. Client checks improve UX but cannot enforce access control.
+
+For Supabase test RLS with an unauthenticated client and two different users using client-safe keys. For Firebase test Rules with the emulator and verify production deployment; Admin SDK operations bypass the client's rules boundary. For Amplify review AppSync auth modes and IAM/Cognito claims. For CloudKit review database scope, record type permissions and sharing. For Appwrite inspect resource permissions and server functions. Auth success alone establishes none of these policies.
+
+Tool evidence
+
+review_backend_integration
+ flags explicit privileged literals and returns only a rule, relative file, line, risk and repair advice. It also checks sensitive UserDefaults writes, direct credential logging, raw URLSession response discards, tight reconnect loops, explicit SQL RLS disabling and unconditional Firebase allows. It reads bounded source/config text, skips dependency/build/test folders and symlinks, and does not validate deployed policy state. Quoted SQL identifiers and dollar-quoted procedure bodies are deliberately outside its top-level policy checks.
+
+An allow-true rule may intentionally expose public content. A migration can temporarily disable RLS. Review target scope and deployment order; do not automatically rewrite either. No local policy file is not evidence that remote RLS is absent. No
+@MainActor
+ keyword is not proof of unsafe concurrency. Use compiler and existing reviewers for their respective contracts.
+
+Safe observability
+
+Record event type, duration, status class, retry count and a non-sensitive correlation identifier. Never record passwords, OTPs, tokens, raw callback URLs, authorization headers or entire request/response objects. Crash reporters can capture breadcrumbs and custom keys; redact there too. Reports contain local filenames, so review them before sharing.
+
+Test redaction with sentinel secrets and verify cross-user denial, upload type/size limits, revoked identities, replayed callbacks and rate limiting. See
+privacy
+,
+RLS
+,
+Firebase Rules
+, and
+Apple Keychain
+.
+
+---
+
+# Supabase for Swift apps
+https://nagarjuna2997.github.io/ios-agent-skill/guides/backend-supabase.html
+
+← Back to all frameworks & guides
+All articles →Backend · Reference guideSupabase for Swift appsRepository guidance for Supabase for Swift apps. Examples, decisions, and verification limits from the maintained source guide.Read or improve the source
+ ·
+All guidesOn this pageVisual overview: workflow and architecture
+
+Install and configure
+Native Apple and Google examples
+Social provider verification
+MFA and passkeys
+Sessions, metadata and deletion
+Postgres, RPC and RLS
+Storage, realtime and functions
+Offline and production checklist
+Primary references
+
+Visual overview
+
+Use the workflow to follow the task, and the architecture map to separate responsibilities. These are conceptual maps; the guide below defines implementation details and verification limits.
+
+01 / WorkflowFrom intent to a checked result1
+Configure public client
+↓2
+Authenticate and restore
+↓3
+Enforce RLS and object policies
+↓4
+Reconcile data and revoke
+
+02 / ArchitectureResponsibility boundariesBoundary 1
+Swift feature modelBoundary 2
+Supabase for Swift appsBoundary 3
+Authorized server and local stateConnected responsibilities, not a required class hierarchy or an execution trace.
+Supabase fits relational apps needing Postgres, flexible authentication, storage and realtime. It is a poor shortcut if the team cannot maintain schemas, grants and Row Level Security. The Swift client is not an offline database or a trusted server.
+
+Install and configure
+
+Add
+https://github.com/supabase/supabase-swift
+ through SPM, choose the Supabase product and pin the resolved version. Inject a SupabaseClient at the composition root using a validated project URL and publishable key from client configuration. Never use a secret or service-role key. Separate local, staging and production projects and redirect allowlists. These snippets use the documented Swift API surface; external SDK compilation and live provider sign-in are not claimed here.
+
+import Foundation
+import Supabase
+
+// URL and client-safe key are supplied by validated environment configuration.
+func makeClient(url: URL, publishableKey: String) -> SupabaseClient {
+    SupabaseClient(supabaseURL: url, supabaseKey: publishableKey)
+}
+
+func signIn(client: SupabaseClient, email: String, password: String) async throws {
+    _ = try await client.auth.signIn(email: email, password: password)
+}
+
+func requestLink(client: SupabaseClient, email: String, redirect: URL) async throws {
+    try await client.auth.signInWithOTP(email: email, redirectTo: redirect)
+}
+
+func requestPhoneOTP(client: SupabaseClient, phone: String) async throws {
+    try await client.auth.signInWithOTP(phone: phone)
+}
+
+func verifyEmailOTP(client: SupabaseClient, email: String, token: String) async throws {
+    _ = try await client.auth.verifyOTP(email: email, token: token, type: .email)
+}
+
+func startGuest(client: SupabaseClient) async throws {
+    _ = try await client.auth.signInAnonymously()
+}
+
+Configure email templates to distinguish a clickable magic link from a user-entered OTP. SMS requires an enabled provider, limits and abuse controls; phone OTP is not free proof of identity. Keep passwords and OTPs out of logs and analytics. Anonymous users still have identities and policies; plan upgrade/linking and cleanup instead of treating guest data as globally public.
+
+Native Apple and Google examples
+
+Obtain the ID token through the native provider SDK, not by decoding an arbitrary callback. For Apple generate a fresh cryptographic nonce, supply its SHA-256 digest to the Apple request, then pass the original nonce to Supabase. For Google obtain a current ID token with the configured iOS/server client IDs; do not substitute an access token for it.
+
+func exchangeApple(client: SupabaseClient, idToken: String, rawNonce: String) async throws {
+    _ = try await client.auth.signInWithIdToken(
+        credentials: .init(provider: .apple, idToken: idToken, nonce: rawNonce)
+    )
+}
+
+func exchangeGoogle(client: SupabaseClient, idToken: String) async throws {
+    _ = try await client.auth.signInWithIdToken(
+        credentials: .init(provider: .google, idToken: idToken)
+    )
+}
+
+func browserGitHub(client: SupabaseClient, redirect: URL) async throws {
+    _ = try await client.auth.signInWithOAuth(provider: .github, redirectTo: redirect)
+}
+
+func receiveAuthCallback(client: SupabaseClient, url: URL) async throws {
+    // Caller has matched the exact registered route; SDK validates the auth exchange.
+    _ = try await client.auth.session(from: url)
+}
+
+func observeSession(client: SupabaseClient) async {
+    for await (_, session) in client.auth.authStateChanges {
+        if Task.isCancelled { break }
+        // Send a domain signed-in/signed-out state to the UI owner; never print session.
+        _ = session?.user.id
+    }
+}
+
+The coordinator owns and cancels the observer task on teardown. A production implementation updates state and clears identity-scoped caches; the snippet only illustrates safe API wiring. See
+callback validation
+ before calling
+session(from:)
+ from
+onOpenURL
+.
+
+Social provider verification
+
+Official Supabase social-login documentation lists the following providers as of the source snapshot. Server support is not a claim that every provider supports native Swift ID-token exchange.
+
+Provider
+
+iOS approach
+
+Configuration check
+
+Apple
+
+Native ID token + nonce, or documented browser flow
+
+Sign in with Apple identifiers, nonce, redirect and provider secret lifecycle
+
+Google
+
+Native Google ID token or browser OAuth
+
+iOS/server client IDs and callback setup
+
+GitHub
+
+Browser OAuth
+
+Provider app callback and granted scopes
+
+Facebook
+
+Browser OAuth unless using a separately verified native integration
+
+App review, scopes and redirect
+
+Microsoft / Azure
+
+Browser OAuth
+
+Tenant policy and identity scopes
+
+LinkedIn
+
+Supported OIDC provider path
+
+Use the current OIDC configuration, not an obsolete provider slug
+
+Discord
+
+Browser OAuth
+
+Redirect and least scopes
+
+Slack
+
+Supported OIDC provider path
+
+Workspace/org restrictions and current OIDC configuration
+
+Spotify
+
+Browser OAuth
+
+Scope and provider access restrictions
+
+Twitch
+
+Browser OAuth
+
+Registered callback and scopes
+
+X / Twitter
+
+Browser OAuth
+
+Provider app access and enabled OAuth flow
+
+Only use enum cases that exist in the pinned Swift SDK. Do not translate this table into guessed case names. Supabase session refresh does not automatically refresh an external provider's access token; if the app calls that provider's APIs, implement the documented separate token lifecycle server-side where necessary.
+
+MFA and passkeys
+
+MFA is an enrollment → challenge → verify flow, with assurance level checked before sensitive server operations. Test recovery, unenrollment and expired challenges; do not invent recovery codes or accept a client-only MFA flag.
+
+The official passkeys guide currently labels passkeys
+experimental
+, requires opt-in, and lists
+supabase-swift 2.48.0 or later
+. Registration requires an existing confirmed, non-anonymous user. RP identity and associated platform configuration are security-critical. The documented high-level operations include sign-in and registration, but no live Swift passkey ceremony was verified in this change. Pin a supported SDK and follow its current platform recipe before enabling production passkeys. Do not describe WebAuthn support as generally stable or interchangeable with password authentication.
+
+Sessions, metadata and deletion
+
+Let the SDK coordinate access/refresh tokens and inspect the pinned version's persistence policy. Use an appropriate Keychain-backed storage adapter when supplying sensitive persistence. Handle initial restoration, refresh, revoked sessions and signed-out events.
+try await client.auth.signOut()
+ ends the selected session scope; clear local identity data and listeners as well. Choose global/local scope deliberately according to the SDK contract.
+
+User-editable metadata is not an authorization claim. Derive tenant and role access from trusted server policy. Account deletion must invoke an authenticated server function that verifies the caller and performs privileged deletion plus related row/file cleanup. Never embed the admin API key to call deletion from the app. Reauthenticate where warranted, cancel pending uploads and explain retention exceptions.
+
+Postgres, RPC and RLS
+
+Use typed Codable DTOs and explicit selections. Filter and paginate on the server with stable ordering; do not load a whole table to filter in Swift. Keep domain models independent from database column naming. Test nullable columns, timestamps and incompatible migrations.
+
+Enable and test RLS for exposed tables and review grants. Policies need ownership constraints on insert and update as well as select. Test two users and unauthenticated clients with client-safe keys; service-role tests can accidentally bypass the boundary you intended to measure. RPC functions need reviewed execution grants and security-definer/search-path behavior. SQL constraints protect invariants even when clients are stale.
+
+Storage, realtime and functions
+
+Scope Storage bucket/object policies by identity and path; enforce file size/type and clean orphaned objects. Treat signed URLs as temporary bearer access and omit them from logs. Upload progress/cancellation belongs to a repository, not a SwiftUI body.
+
+Realtime channels need cancellation, reconnect/catch-up and duplicate handling. Event delivery does not replace initial queries or durable local state. Auth changes require channel reauthorization or recreation. Edge Functions verify identity and authorize operations independently; a client publishable key alone is not user authentication. Keep outbound provider secrets and privileged database operations on the function/server.
+
+Offline and production checklist
+
+Use a local store and explicit outbox if offline edits are required. Define conflict resolution and idempotency keys; retry only safe operations with bounded backoff. Foreground listeners cannot run continuously while iOS is suspended. Deep links can arrive before restoration: route once, then reconcile session state.
+
+Use the Supabase CLI/local stack for synthetic policy and migration tests, and an injected repository for offline Swift tests. Apply reviewed migrations to staging before production. Verify auth redirects on a device, RLS denials, session revocation, paging termination, upload cleanup, deletion and schema rollback strategy. Record
+App Privacy and telemetry choices
+; third-party social login needs an App Review 4.8 assessment.
+
+Primary references
+
+Swift auth
+,
+OAuth
+,
+ID token exchange
+,
+OTP
+,
+auth events
+,
+social providers
+,
+passkeys
+,
+MFA
+,
+RLS
+,
+Storage policies
+,
+function auth
+,
+client keys
+.
+
+---
+
+# Realtime connections on iOS
+https://nagarjuna2997.github.io/ios-agent-skill/guides/backend-websockets.html
+
+← Back to all frameworks & guides
+All articles →Backend · Reference guideRealtime connections on iOSRepository guidance for Realtime connections on iOS. Examples, decisions, and verification limits from the maintained source guide.Read or improve the source
+ ·
+All guidesOn this pageVisual overview: workflow and architecture
+
+Connection owner
+Recovery protocol
+App lifecycle
+Verification
+
+Visual overview
+
+Use the workflow to follow the task, and the architecture map to separate responsibilities. These are conceptual maps; the guide below defines implementation details and verification limits.
+
+01 / WorkflowFrom intent to a checked result1
+Authenticate connection
+↓2
+Receive and deduplicate
+↓3
+Back off on disconnect
+↓4
+Catch up and resubscribe
+
+02 / ArchitectureResponsibility boundariesBoundary 1
+Swift feature modelBoundary 2
+Realtime connections on iOSBoundary 3
+Authorized server and local stateConnected responsibilities, not a required class hierarchy or an execution trace.
+Use a WebSocket for foreground bidirectional events when polling or push notification delivery is insufficient. A socket is not a durable offline sync engine and cannot guarantee continuous background execution on iOS.
+
+Connection owner
+
+URLSessionWebSocketTask is provided by Foundation; no external package is required. Wrap connect, receive, send, ping and close in one injected connection interface. Model disconnected, connecting, connected, backing off and stopped states. One owner serializes transitions so two views do not create duplicate subscriptions. Separate transport connectivity from authenticated readiness.
+
+A receive loop handles one message at a time, bounds message sizes and validates event schemas. A ping timeout should transition to reconnect once, not start another independent loop. On cancellation, close the task and stop timers. Preserve cancellation errors rather than swallowing them.
+
+Recovery protocol
+
+Use bounded exponential backoff with jitter and a retry budget. Treat authentication rejection differently from transient loss. Refresh credentials through the shared session owner, then resubscribe deliberately. Supply a last-seen cursor or perform a catch-up fetch. Dedupe by stable event ID and resolve ordering/version conflicts; receipt order across reconnects is not necessarily commit order.
+
+Persist accepted domain state in a local store. An outgoing queue needs durable IDs, acknowledgement and replay rules. Never resend a purchase or other non-idempotent action merely because an acknowledgement was lost. For uploads use authorized HTTP/file transfer, not an unbounded socket payload.
+
+App lifecycle
+
+Stop or suspend foreground subscriptions when appropriate and revalidate on activation. APNs can signal that a fetch is needed, but silent pushes are not guaranteed delivery. Deep links may open a conversation before reconnect completes: show cached/loading states and authorize the target. Restrict heartbeat frequency to avoid battery and mobile-data waste.
+
+Verification
+
+Use a fake clock and scripted transport to exercise duplicate events, out-of-order versions, expired credentials, delayed pong, repeated disconnect, cancellation during backoff and resubscription exactly once. Test foreground/background and network transitions on a physical device separately. Log event classes and counters only, not token-bearing connection URLs or message bodies. Follow
+privacy
+ for messages and retention.
+
+The analyzer flags only an immediate unbounded reconnect shape; it cannot prove arbitrary wrappers have correct cancellation or ordering. Primary source:
+URLSessionWebSocketTask
+.
 
 ---
 
@@ -1691,6 +3062,7 @@ All guidesOn this pageVisual overview: workflow and architecture
 Icons without paid tools
 Optional Figma handoff
 Evidence and limits
+Palette tooling
 
 Visual overview
 
@@ -1840,6 +3212,138 @@ and
 appearance variants
 .
 
+Palette tooling
+
+Use
+palette generation
+ to produce a four-appearance token preview compatible with the existing assets CLI. Use
+color accessibility
+ to interpret measured pairs. Only write or merge a catalog when requested; retain system semantics when custom colors add no value.
+
+---
+
+# Derive a usable seed from brand color evidence
+https://nagarjuna2997.github.io/ios-agent-skill/guides/design-brand-color-extraction.html
+
+← Back to all frameworks & guides
+All articles →Design · Reference guideDerive a usable seed from brand color evidenceRepository guidance for Derive a usable seed from brand color evidence. Examples, decisions, and verification limits from the maintained source guide.Read or improve the source
+ ·
+All guidesOn this pageVisual overview: workflow and architecture
+
+Context
+Local workflow
+Limits
+
+Visual overview
+
+Use the workflow to follow the task, and the architecture map to separate responsibilities. These are conceptual maps; the guide below defines implementation details and verification limits.
+
+01 / WorkflowFrom intent to a checked result1
+Sample locally
+↓2
+Remove background noise
+↓3
+Rank candidates
+↓4
+Confirm brand intent
+
+02 / ArchitectureResponsibility boundariesBoundary 1
+Opaque pixel samplesBoundary 2
+Candidate seedBoundary 3
+Semantic variantsConnected responsibilities, not a required class hierarchy or an execution trace.
+Context
+
+An extracted logo color is a candidate, not proof of an official brand standard. Prefer a user-provided brand seed when available.
+generate_color_system
+ accepts locally sampled opaque sRGB colors; the MCP adapter also accepts
+imagePath
+ for a local PNG. It never uploads images or fetches URLs.
+
+Local workflow
+
+Supply an explicit local
+imagePath
+ (PNG, at most 1024 × 1024 and 4 MiB), or use a trusted local decoder to produce opaque sRGB samples. The PNG adapter skips transparent pixels and rejects color profiles requiring conversion. Exclude known background regions before manual sampling.
+Pass a bounded list of colors and positive frequency weights as
+imageSamples
+.
+The generator rejects very light/dark and near-neutral background-like samples, combines identical colors and ranks by frequency, with deterministic tie-breaking.
+Inspect the chosen seed and candidates. The report includes black/white text contrast, showing which foreground is unsuitable without adjustment.
+Confirm the intended identity with the designer. Regenerate supporting semantic variants and inspect them in real screens.
+
+{"imageSamples":[{"color":"#FFFFFF","weight":900},{"color":"#145AC8","weight":160},{"color":"#E34D7A","weight":30}]}
+
+This heuristic favors chromatic logo colors. A monochrome logo can legitimately produce no extracted seed; provide black/gray explicitly rather than pretending background rejection identifies brand intent. Existing project colors and design tokens can also supply seeds, but neither reveals the designer's semantic roles automatically.
+
+Limits
+
+The existing bundled PNG decoder is reused with size/dimension bounds. JPEG/HEIC/SVG, color-profile conversion, alpha compositing, spatial segmentation, near-color clustering and trademark lookup are unsupported. JPEG noise may create many small buckets; pre-quantize with the local decoder or select an explicit seed. Do not claim this is a full image-understanding system. Sample weights must be finite positive values; inputs are bounded for predictable local operation.
+
+---
+
+# Validate color relationships, not just swatches
+https://nagarjuna2997.github.io/ios-agent-skill/guides/design-color-accessibility.html
+
+← Back to all frameworks & guides
+All articles →Design · Reference guideValidate color relationships, not just swatchesRepository guidance for Validate color relationships, not just swatches. Examples, decisions, and verification limits from the maintained source guide.Read or improve the source
+ ·
+All guidesOn this pageVisual overview: workflow and architecture
+
+Context
+What is measured
+What contrast cannot establish
+Source and formula
+
+Visual overview
+
+Use the workflow to follow the task, and the architecture map to separate responsibilities. These are conceptual maps; the guide below defines implementation details and verification limits.
+
+01 / WorkflowFrom intent to a checked result1
+Identify foreground and background
+↓2
+Measure opaque sRGB pairs
+↓3
+Mark unresolved contexts
+↓4
+Verify in the app
+
+02 / ArchitectureResponsibility boundariesBoundary 1
+Luminance mathBoundary 2
+Evidence reportBoundary 3
+Runtime inspectionConnected responsibilities, not a required class hierarchy or an execution trace.
+Context
+
+The generator measures opaque sRGB foreground/background pairs using WCAG relative luminance. Its standard target for text is 4.5:1; the high setting targets 7:1. Focus against the base background is measured at 3:1. These are numerical guidance checks, not a complete native-app accessibility audit.
+
+What is measured
+
+The report includes primary/secondary text on background, text on surface and elevated/grouped surfaces, primary and pressed buttons, secondary buttons, destructive labels, links, selected text, success/warning/error on their containers, focus and disabled controls. Ratios are evaluated before rounding.
+
+Disabled controls are
+informational
+, because WCAG's minimum text contrast criterion exempts inactive components. Do not convert this observation into a requirement or silently count an inactive control as a failure. Readability may still be a product goal.
+
+The project reviewer only diagnoses an explicit, contiguous
+Text(...).foregroundStyle(Color("Name")).background(Color("Name"))
+ pair with unambiguous opaque sRGB catalog values. A ratio below 3:1 is a concern even for large text. The static catalog check leaves a conservative 0.05 margin because its inventory normalizes components to eight-bit sRGB. Between 3:1 and 4.5:1 requires font/context evidence that this lexical reviewer does not have. It does not claim coverage of all view compositions.
+
+What contrast cannot establish
+
+Contrast does not establish Dynamic Type support, VoiceOver labels, focus order, usable touch targets, color-vision accessibility, or adequate error recovery. Links need a non-color cue when their surrounding context requires one. Selection, success, warning and destructive states need text, symbols, shape or other cues beyond color alone. Test Differentiate Without Color and Increase Contrast in the running app.
+
+Materials, gradients, opacity, Display P3, HDR, dynamic UIColor providers and inherited modifiers require rendered inspection. A system color cannot be reduced to one universal RGB value. No warning is emitted simply because an app uses Apple semantic colors or legitimate custom branding.
+
+Source and formula
+
+WCAG contrast minimum
+ explains text thresholds and inactive-component exceptions. For each sRGB component c, linearize with c/12.92 below 0.04045, otherwise ((c+0.055)/1.055)^2.4. Relative luminance is 0.2126R + 0.7152G + 0.0722B. The ratio is (lighter+0.05)/(darker+0.05).
+
+Apple's
+SwiftUI Color
+ and
+UIColor
+ documentation are the primary API sources for named and adaptive colors. WCAG is cited as contrast guidance, not an invented App Store rule.
+
 ---
 
 # iOS Color System -- Complete Guide for Stunning SwiftUI UIs
@@ -1850,6 +3354,7 @@ All articles →Design · Reference guideiOS Color System -- Complete Guide for 
  ·
 All guidesOn this pageVisual overview: workflow and architecture
 
+Generate and review a project color system
 Overview
 1. Apple's Semantic Colors
 
@@ -1910,9 +3415,28 @@ Inspect real screens
 Semantic rolesBoundary 2
 Light and dark palettesBoundary 3
 Accessible UIConnected responsibilities, not a required class hierarchy or an execution trace.
+Generate and review a project color system
+
+Use
+generate_color_system
+ for a read-only semantic palette preview, and
+review_color_system
+ for bounded project evidence. The new engine extends the existing token schema rather than replacing Apple system colors or creating a second asset writer.
+
+Palette generation
+: seed inputs, families, harmonies, OKLCH scales and asset handoff.
+Dark-mode colors
+: independent appearances, OLED and native materials.
+Color accessibility
+: measured relationships and unsupported contexts.
+Brand extraction
+: local sample input and identity limitations.
+
+The reviewer returns color locations, duplicate values, approximate families, catalog appearance coverage, explicit contrast concerns and consolidation suggestions. Missing Dark variants are advisories; identical values do not prove identical roles. Dynamic or ambiguous cases are unresolved rather than guessed. Generation never modifies a project; the existing assets CLI remains the explicit mutation step.
+
 Overview
 
-Color is the single most powerful tool for creating emotional impact in iOS applications. This guide covers every aspect of the SwiftUI color system, from Apple's semantic tokens to custom brand palettes, gradients, materials, and accessibility. Every code example compiles and produces production-quality results.
+Color is the single most powerful tool for creating emotional impact in iOS applications. This guide covers every aspect of the SwiftUI color system, from Apple's semantic tokens to custom brand palettes, gradients, materials, and accessibility. Examples are guidance; compile the selected code in the target SDK and inspect the result before claiming it is verified.
 
 1. Apple's Semantic Colors
 
@@ -3175,6 +4699,85 @@ Body-text pairs
 
 ---
 
+# Dark and increased-contrast app colors
+https://nagarjuna2997.github.io/ios-agent-skill/guides/design-dark-mode-colors.html
+
+← Back to all frameworks & guides
+All articles →Design · Reference guideDark and increased-contrast app colorsRepository guidance for Dark and increased-contrast app colors. Examples, decisions, and verification limits from the maintained source guide.Read or improve the source
+ ·
+All guidesOn this pageVisual overview: workflow and architecture
+
+Context
+Pattern
+Verification sequence
+Sources
+
+Visual overview
+
+Use the workflow to follow the task, and the architecture map to separate responsibilities. These are conceptual maps; the guide below defines implementation details and verification limits.
+
+01 / WorkflowFrom intent to a checked result1
+Choose base surfaces
+↓2
+Separate raised layers
+↓3
+Check both appearances
+↓4
+Inspect accessibility settings
+
+02 / ArchitectureResponsibility boundariesBoundary 1
+Named assetsBoundary 2
+Appearance resolutionBoundary 3
+Native containersConnected responsibilities, not a required class hierarchy or an execution trace.
+Context
+
+A dark palette is not an RGB inverse. The generator independently assigns a dark base, raised and grouped surfaces, text and state colors. The primary seed retains its hue identity while foreground roles are adjusted for contrast.
+
+Pattern
+
+Use named asset colors with Any and Dark values. The existing asset schema also requires highContrastLight and highContrastDark; these map to Xcode's contrast appearance selectors. Keep the same semantic role across appearances. A light brand blue can become lighter in dark mode while the button foreground changes to black.
+
+OLED preference sets only the dark base to black. Elevated and grouped surfaces remain visible. Do not assume black alone reduces energy consumption for every device or screen composition. Shadows are not reliable separation on a black base; use native materials, spacing or appropriate boundaries.
+
+For native lists prefer
+UIColor.systemGroupedBackground
+ and the secondary/tertiary system grouped backgrounds. In SwiftUI
+.primary
+,
+.secondary
+,
+.background
+ and system materials adapt to context. The custom
+SurfaceOverlay
+ token is an opaque fallback, not a substitute for blur or Liquid Glass.
+
+Verification sequence
+
+Inspect text, buttons, selection and status indicators in Any and Dark.
+Turn on Increase Contrast; check the selected asset variants and native material changes.
+Turn on Differentiate Without Color; selected and error states need icons, labels or shape cues.
+Increase Dynamic Type and check truncation, alignment and touch targets separately.
+Check toolbar, navigation and tab tint in actual native containers. Avoid coloring every symbol or toolbar background manually.
+
+SwiftUI
+tint
+ is the preferred control-level customization where supported.
+Color.accentColor
+ reads the asset accent; it is not a guarantee that every control is tinted identically. For SF Symbols retain hierarchical/monochrome system rendering unless palette rendering carries meaning that remains understandable without color.
+
+Sources
+
+Apple UIColor
+,
+SwiftUI Color
+, and
+Xcode color-scheme setup
+ describe adaptive color and appearance assets. Consult the
+HIG Dark Mode page
+ when evaluating the finished UI; its JavaScript-only content was not used as evidence of new requirements in this implementation.
+
+---
+
 # Design Tokens, Adaptive Color, and Liquid Glass
 https://nagarjuna2997.github.io/ios-agent-skill/guides/design-design-tokens.html
 
@@ -3213,6 +4816,7 @@ Availability fallback
 
 5. Contrast Verification
 Quick Reference
+Palette tooling
 
 Visual overview
 
@@ -4029,6 +5633,14 @@ ViewThatFits or typeSize.isAccessibilitySize
 Verifying a pairing
 
 contrastRatio(against:) in a test
+
+Palette tooling
+
+Use
+palette generation
+ to produce a four-appearance token preview compatible with the existing assets CLI. Use
+color accessibility
+ to interpret measured pairs. Only write or merge a catalog when requested; retain system semantics when custom colors add no value.
 
 ---
 
@@ -10495,6 +12107,158 @@ its own
 
 ---
 
+# Generate an iOS palette from a brief
+https://nagarjuna2997.github.io/ios-agent-skill/guides/design-palette-generation.html
+
+← Back to all frameworks & guides
+All articles →Design · Reference guideGenerate an iOS palette from a briefRepository guidance for Generate an iOS palette from a brief. Examples, decisions, and verification limits from the maintained source guide.Read or improve the source
+ ·
+All guidesOn this pageVisual overview: workflow and architecture
+
+Context
+Workflow
+Inputs and precedence
+Families and strategies
+Perceptual derivation
+Implementation
+Verification
+Native preview
+
+Visual overview
+
+Use the workflow to follow the task, and the architecture map to separate responsibilities. These are conceptual maps; the guide below defines implementation details and verification limits.
+
+01 / WorkflowFrom intent to a checked result1
+Describe the app
+↓2
+Derive OKLCH roles
+↓3
+Validate appearance pairs
+↓4
+Review asset preview
+
+02 / ArchitectureResponsibility boundariesBoundary 1
+Intent and seedBoundary 2
+Pure palette engineBoundary 3
+Asset CLI handoffConnected responsibilities, not a required class hierarchy or an execution trace.
+Context
+
+generate_color_system
+ returns an offline, deterministic preview. It does not call a model, fetch an image, write tokens, or change an asset catalog. An explicit
+imagePath
+ lets the MCP adapter read a bounded local PNG; the pure generator itself accepts sample colors. This capability is local source work, not a claim about the currently published npm version. Start from the existing
+design-token contract
+, and keep native system semantics wherever custom branding adds no value.
+
+Workflow
+
+Ask for the app task, a seed if available, and the emotional intent. A description is sufficient; do not make users fill every field.
+Generate a preview, inspect the rationale and contrast pairs, then compare it in the app's actual UI.
+Choose or revise the seed, family and harmony. Color meaning depends on the audience; finance is not required to be blue.
+Only when requested, save
+assetTokens
+ to a JSON file and run the existing
+asset generator
+. It refuses to overwrite a catalog. Review and merge the intended assets.
+Build the app, inspect both appearances and Increase Contrast, and test non-color state indicators.
+
+{
+  "description": "Minimal finance app for young professionals. Calm, trustworthy, premium. Prefer blue.",
+  "category": "finance",
+  "mood": ["calm", "trustworthy", "premium"],
+  "family": "Blue",
+  "strategy": "dominant-plus-supporting",
+  "appearance": "both",
+  "accessibility": "standard"
+}
+
+The result includes the seed and its provenance, rationale, all semantic tokens, light/dark palettes, high-contrast variants, eleven-step tonal scales, contrast rows, restrained gradient samples, SwiftUI/UIKit snippets, and compatible asset-token JSON.
+appearance
+ records a preference; both modes are always returned.
+oled
+ makes the dark base black but keeps raised surfaces distinguishable.
+
+Inputs and precedence
+
+A valid seed is opaque sRGB
+#RRGGBB
+. Priority is
+primaryColor
+, first
+brandColors
+,
+existingTokens.primary
+ or
+.Primary
+, first
+existingColors
+, extracted sample candidate, then the intent heuristic. All values are validated and bounded. Existing tokens are seed input,
+not
+ an automatic migration preserving every role. Explicit brand input is kept as
+seed
+; UI variants may differ to meet measured contrast constraints.
+
+Image samples are
+{ "color": "#2457DB", "weight": 20 }
+ in
+imageSamples
+. Read
+brand extraction
+ before interpreting them. A project reviewer inventory can supply
+existingColors
+; project files are never read by the generation tool itself.
+
+Families and strategies
+
+Hue families: Neutral / Minimal, Blue, Indigo, Violet, Purple, Magenta, Teal, Cyan, Green, Emerald, Mint, Yellow, Amber, Orange, Red, Rose, Pink, Brown / Earth, Navy / Midnight, Slate / Graphite.
+
+Treatment families: Pastel, Muted, High Contrast, Monochrome, Gradient-led, Dark OLED, Warm Light, Cool Light, Glass / Translucent, Dynamic Brand, Category-aware palettes. Families are heuristic starting points, not copyrighted themes or a catalog of fixed RGB tables. Some are treatment hints: Glass returns an opaque fallback and material guidance, not a simulated Apple material. High Contrast sets the enhanced contrast target; Gradient-led defaults to restrained gradient. Both can also be requested with the explicit accessibility and strategy inputs.
+
+Available harmonies are monochromatic, analogous, complementary, split-complementary, triadic, neutral-plus-accent, dominant-plus-supporting and restrained gradient. Supporting hues use limited chroma. The intent hash varies automatic seeds within the suggested hue area, so a category does not force a single color. Free-form categories and moods are accepted; heuristics recognize broad groups and fall back to restrained neutrals. There is no semantic language model interpreting every word.
+
+Perceptual derivation
+
+sRGB is decoded to linear RGB, converted to OKLab/OKLCH, and mapped back to sRGB by reducing out-of-gamut chroma while holding lightness and hue. Tonal steps are 50, 100, 200, 300, 400, 500, 600, 700, 800, 900 and 950, with intentionally tapered chroma at the ends. Near-neutral colors have unstable perceptual hue; they are treated as neutrals.
+
+Contrast repair searches lightness while preserving hue and as much chroma as the gamut allows. This is an engineering constraint, not proof of visual quality. Gradient stops follow a short OKLCH hue arc; stop samples do not prove contrast at every rendered pixel or interpolation space. Use gradients decoratively unless the rendered foreground has been verified.
+
+Implementation
+
+The returned
+implementation
+ strings define named-color accessors. Add assets to the
+same target
+ that loads them. For a Swift package pass its resource bundle explicitly; see
+samples/ColorSystem
+.
+
+Text("Continue")
+    .foregroundStyle(AppColors.onPrimary)
+    .padding()
+    .background(AppColors.primary)
+
+Do not apply
+onPrimary
+ to an arbitrary gradient, disabled fill or destructive fill. Each is a separate foreground/background relationship. Use native
+Button(role: .destructive)
+ when possible.
+
+Verification
+
+Regression tests cover determinism, all families, token completeness, gamut output, tonal ordering, OLED and high contrast, input bounds, image-sample filtering and direct project evidence. They do not establish beauty, cultural meaning, native material behavior or App Review acceptance.
+
+Native preview
+
+These SwiftUI renders use the sample's compiled named-color assets on macOS. They show the sample palette, not an iOS Simulator acceptance test. Reproduce with
+samples/ColorSystem/render-preview.swift
+; see the sample README for the asset compilation step.
+
+The perceptual math follows
+the published OKLab definition
+; no third-party palette branding or fixed theme was copied.
+
+---
+
 # Professional UI/UX System
 https://nagarjuna2997.github.io/ios-agent-skill/guides/design-README.html
 
@@ -10509,6 +12273,7 @@ Review Order
 Pattern
 Anti-Patterns
 Production Checklist
+Palette tooling
 
 Visual overview
 
@@ -10606,6 +12371,14 @@ Production Checklist
 [ ] Loading, empty, error, success, and offline states exist where relevant.
 [ ] iPad layout is not a stretched phone screen.
 [ ] Motion and haptics clarify state, not decoration.
+
+Palette tooling
+
+Use
+palette generation
+ to produce a four-appearance token preview compatible with the existing assets CLI. Use
+color accessibility
+ to interpret measured pairs. Only write or merge a catalog when requested; retain system semantics when custom colors add no value.
 
 ---
 
@@ -18469,7 +20242,7 @@ class CloudKitManager: ObservableObject {
     let customContainer = CKContainer(identifier: "iCloud.com.yourapp.name")
 
     // Access different databases
-    lazy var publicDB = container.publicCloudDatabase     // Accessible to all users
+    lazy var publicDB = container.publicCloudDatabase     // Access depends on record type permissions
     lazy var privateDB = container.privateCloudDatabase    // User's private data (counts toward user's iCloud quota)
     lazy var sharedDB = container.sharedCloudDatabase      // Data shared with this user by others
 
@@ -42456,6 +44229,7 @@ Verified compatibility, 2026-09-16
 Recheck on upgrades
 
 Support scope and optional source installer
+Local color-system tools
 
 Visual overview
 
@@ -42976,6 +44750,16 @@ for Claude, Codex or Muse, and prints dedicated instructions for Gemini/ChatGPT.
 It does not configure MCP. Existing installs update only when the checkout has
 the expected origin, a clean worktree and the main branch.
 
+Local color-system tools
+
+Source builds add
+generate_color_system
+ and
+review_color_system
+ to the existing stdio connection. They use no client-specific APIs and make no network calls or file writes. No new Claude, Codex, Gemini or Muse runtime verification is implied. The remote knowledge-only server does not run project analyzers. See
+palette generation
+. Not yet published to npm.
+
 ---
 
 # Apple Knowledge MCP
@@ -43172,6 +44956,7 @@ lint_skill
 Structured output
 Limits
 review_app_intents
+Color and backend scope
 
 Visual overview
 
@@ -43196,15 +44981,14 @@ ios-agent-mcp
  tool to call, or interpreting
 a finding it returned.
 
-Every tool takes one argument — an
+Source-review tools take an
 absolute
- path to the project root:
+ project path (some also accept review options):
 
 { "path": "/Users/you/Projects/MyApp" }
 
-Ten of the eleven analyze Swift source.
 lint_skill
- is the exception: it reads a
+ reads a
 skill repository's own metadata, so its path is the folder containing
 
 SKILL.md
@@ -43215,6 +44999,18 @@ Choosing a tool
 You want to…
 
 Tool
+
+Generate a semantic palette preview
+
+generate_color_system (palette inputs; no project path required)
+
+Review Swift colors and asset catalogs
+
+review_color_system
+
+Review backend/auth/policy evidence
+
+review_backend_integration
 
 Understand an unfamiliar codebase
 
@@ -43864,6 +45660,16 @@ onscreenContent
  (both default false). Returns the same structured findings as other reviewers. SiriKit migration, missing schema and missing onscreen association are minor advisories with scope limitations; no blanket SiriKit deprecation is asserted. See
 rule semantics
 .
+
+Color and backend scope
+
+See
+palette generation
+,
+color review
+ and
+backend integration
+. All three tools are read-only. Provider logins require app-specific configuration; static evidence is not live-service verification.
 
 ---
 
@@ -59832,14 +61638,18 @@ Keep your favorite AI. Give it a focused toolkit for the work of building an App
 
 04Generate design assetsNamed light/dark/high-contrast colors and an opaque 1024px app icon rendered locally from editable SVG layers.
 
-05Verify on a simulatorBuild, test, install, launch and capture screenshots through Xcode.
+05Review app color systemsGenerate semantic palettes and inspect light, dark and high-contrast color evidence.
 
-06Review launch screensConservative target-aware checks for launch configuration, storyboards and asset references.
+06Review backend integrationIdentify supported services and review credential, auth, policy and networking evidence locally.
 
-07Prepare a local release draftInspect selected-target facts, unresolved questions and hashed, resumable local packages without connecting to Apple.
+07Verify on a simulatorBuild, test, install, launch and capture screenshots through Xcode.
 
-Your agent implements the app and verifies the result. Local simulator tools require a Mac with Xcode. The features above are available in ios-agent-mcp 2.7.1.
-What changed in 2.7.1 →
+08Review launch screensConservative target-aware checks for launch configuration, storyboards and asset references.
+
+09Prepare a local release draftInspect selected-target facts, unresolved questions and hashed, resumable local packages without connecting to Apple.
+
+Your agent implements the app and verifies the result. Local simulator tools require a Mac with Xcode. The features above are available in ios-agent-mcp 2.7.2.
+What changed in 2.7.2 →
 One package. Your choice.
 Meet your agent’s
 
@@ -59987,17 +61797,35 @@ https://nagarjuna2997.github.io/ios-agent-skill/library.html
 
 Learn from the sourceFrameworks. Features.
 
-Practical decisions.Explore 99 tracked technologies and 103 developer guides. Project maintenance and contributor references are listed separately below. These are maintained references, not a claim that every example has been compiled. Each guide retains its own availability and verification notes.Start with a tested walkthrough →
+Practical decisions.Explore 99 tracked technologies and 121 developer guides. Project maintenance and contributor references are listed separately below. These are maintained references, not a claim that every example has been compiled. Each guide retains its own availability and verification notes.Start with a tested walkthrough →
  ·
 Project internalsFind a framework, feature or workflowAuthentication, Security, and PrivacyApp Store Submission ChecklistPrivacy Manifest
+BackendBackend architectures by app workflowBackend
+BackendAppwrite for Apple clientsBackend
+BackendAuthentication and session boundariesBackend
+BackendAWS Amplify in a Swift appBackend
+BackendChoosing an iOS backendBackend
+BackendCloudKit as an Apple-native backendBackend
+BackendFirebase for iOSBackend
+BackendGraphQL and Apollo iOSBackend
+BackendBackend services for Swift appsBackend
+BackendBackend privacy and account lifecycleBackend
+BackendREST clients with URLSessionBackend
+BackendBackend authorization and client secretsBackend
+BackendSupabase for Swift appsBackend
+BackendRealtime connections on iOSBackend
 DesignProfessional UI/UX SystemDesign
 DesignGenerate real asset catalogsDesign
+DesignDerive a usable seed from brand color evidenceDesign
+DesignValidate color relationships, not just swatchesDesign
 DesigniOS Color System -- Complete Guide for Stunning SwiftUI UIsDesign
+DesignDark and increased-contrast app colorsDesign
 DesignDesign Tokens, Adaptive Color, and Liquid GlassDesign
 DesigniOS Font Catalog — Ultimate ReferenceDesign
 DesignLayer-by-Layer Icons with Icon ComposerDesign
 DesignInteraction StandardsDesign
 Design and MotionAdopting Liquid GlassLiquid Glass
+DesignGenerate an iOS palette from a briefDesign
 Design and MotionStunning UI Patterns -- Complete SwiftUI Pattern LibraryHuman Interface Guidelines
 DesignThird-Party Animation IntegrationDesign
 DesigniOS Typography System -- Complete Guide for Stunning SwiftUI TextDesign
@@ -60108,7 +61936,7 @@ Site mapEvery public page on this website.Pages
 Practical Swift & AI development guidesDaily community monitorCommunity & MentionsiOS Agent Skill — Swift Reviews & Xcode Simulator MCPApple development guide librarySite mapRelease notes — iOS Agent SkillFrom first prompt to shipped app: guided Swift seriesInstall guides
 Install iOS Agent MCP — Claude, Codex, Gemini CLI & MuseBlog
 How can design tokens generate light, dark and…How should I review availability guards when moving a…ChatGPT and Codex: plan the app, then verify it locallyChoose an AI client for your iOS workflowHow can Claude Code hooks protect generated files and…Claude Code: turn a Swift finding into a tested patchGemini CLI: connect once and review one iOS featureGenerate light and dark asset catalogs without a paid…Which Muse Code MCP settings actually work with a local…Muse Code: what our integration actually verifiesReview AI-generated Swift before you trust itHow can I catch Swift concurrency review findings before…SwiftUI: review state transitions before polishing the…Five checks for an AI-built SwiftUI appDocs
-Documentation indexApp Store Submission ChecklistGenerate real asset catalogsiOS Color System -- Complete Guide for Stunning SwiftUI UIsDesign Tokens, Adaptive Color, and Liquid GlassiOS Font Catalog — Ultimate ReferenceLayer-by-Layer Icons with Icon ComposerInteraction StandardsAdopting Liquid GlassProfessional UI/UX SystemStunning UI Patterns -- Complete SwiftUI Pattern LibraryThird-Party Animation IntegrationiOS Typography System -- Complete Guide for Stunning…ActivityKit & Live ActivitiesApp ClipsApp IntentsApple IntelligenceARKit -- Complete Guide for Augmented Reality on iOS and…AuthenticationServicesAVFoundationBackgroundTasksCloudKitCore AI -- Custom On-Device AI Models on Apple SiliconCore DataCoreLocationCore Spotlight RAG -- Private App-Local Retrieval for…CryptoKitSwiftData and Core Data ConcurrencyDevice Integrity (DeviceCheck & App Attest)Extended Apple FrameworksFoundation ModelsFoundation FrameworkCoreBluetoothCoreMotionCoreNFCHealthKitHomeKit and MatterLocalAuthenticationMapKitMetal -- GPU Rendering, Compute, and Performance-Critical…CoreML -- Complete Guide for On-Device Machine LearningNaturalLanguage Framework -- Complete Guide for Text…Sound AnalysisSpeech Framework -- Complete Guide for Speech Recognition…TranslationVision Framework -- Complete Guide for Image Analysis and…Network.frameworkNetworkingOSLog & MetricKitPhotosUI & AVKitRealityKit -- Complete Guide for 3D Rendering, AR, and…SceneKit -- Legacy 3D Scenes, Animation, and AR RenderingContacts FrameworkEventKitPassKit & FinanceKitWeatherKitStoreKit 2Swift ChartsSwiftDataTipKitUserNotificationsVisionKitWidgetKitMCP Usage ExamplesInstalling the iOS Agent MCP ServerApple Knowledge MCPOfficial MCP Registry publicationMCP Tool ReferencevNext MCP Analysis ToolsDynamic Workflows and Large-Scale JobsHooks — Deterministic EnforcementLoopsMain Agent RouterSubagentsVerification and the Evidence ContractiOS Platform GuidemacOS Platform GuidetvOS Platform GuidevisionOS Platform GuidewatchOS Platform GuideSwiftUI AnimationsSwiftUI and UIKit arrangement viewsRouting, Deep Links, and State RestorationSwiftUI GesturesSwiftUI iOS 27 InteractionsSwiftUI Layout SystemSwiftUI NavigationSwiftUI State and Data FlowSwiftUI Views and ControlsEvaluations -- Testing Intelligence-Powered FeaturesApp-building loop (preview)App Description WorkflowDevice HubFoundation Models `fm` CLIFoundation Models InstrumentsFrom an Idea to a Running Apple AppiOS Simulator MCPAI-assisted issue previewsReview iOS launch-screen configurationPrepare an evidence-backed local release draftBuild from local source and Apple guidanceProject Scaffolding and LayoutSeptember 2026 distribution and runtime update notesVisual Iteration LoopXcode 27.2 beta: project format and preview toolingXcode 27 Coding AgentsXcode Memory DebuggingUIKit EssentialsNative vs. Web Animation and 3DWhat "vibe coding" a Swift app actually means, and what…What you need before an AI can build you an iOS app: Mac,…Choosing a coding agent for iOS in 2026: Claude Code,…Your first hour: install Xcode, run the simulator, build…How coding agents read a project: AGENTS.md, CLAUDE.md,…Skills, plugins, MCP servers, hooks: the four words…Build a SwiftUI to-do app with Claude Code: the brief,…Compare the same to-do app task in Codex without changing…Prepare an Antigravity app-building trial and identify…Prepare a Muse app-building trial beyond tool discoveryWriting an app brief an agent can build from: ten…Generating an Xcode project the agent can edit: XcodeGen…Running and seeing your app: simulator boot, install,…What to do when the build fails: reading Xcode errors…Review Swift 6 settings and actor isolation before…Getting an agent to run checks: hooks, Stop conditions…Making the agent prove it: screenshots as evidence, not…Reviewing agent output before you commit: a focused…Git for vibe coders: branches per prompt, checkpoints,…Keeping the agent inside your design: tokens, no…SwiftUI prompt practice: 25 scoped exercises and…When a SwiftUI agent task fails: ten failure categories…Local persistence contracts: Reading List JSON storage…Localization with an agent: what to check before it…Search, filtering and empty states that pass…Networking and Codable with an agent: the concurrency…Navigation in SwiftUI: what agents get wrong with…Adding widgets with App Intents: a timeline and…Designing Siri actions with App Intents and testable…On-device AI: Foundation Models readiness and fallback…Notifications, background tasks and the permissions…Deep links and universal links, and using them for…App icons in 2026: Liquid Glass, Icon Composer, and…Color systems that survive dark mode and high contrast,…Typography in SwiftUI that respects Dynamic Type: rules…Motion and haptics: what to ask an agent for, and what…Making an agent-built app look intentional, not templatedPreparing repeatable simulator captures for App Store…From Figma to SwiftUI with an agent: variables to tokens…Swift Testing vs XCTest: what to have the agent generate…UI tests an agent can write and maintainAccessibility review of an agent-built app: the checks…Performance: hangs, launch time and the patterns agents…Memory: retain cycles agents create in closures and CombineSecurity review of an agent-built app: keychain, ATS,…Static review vs the compiler: what heuristics catch and…App Store readiness: the checks before you upload an…Privacy manifests, permissions strings and the things…Preparing for TestFlight: signing, builds and account…Investigating App Review feedback without guessing the…Versioning, changelogs and release notes the agent can…CI for an iOS repo with agent-written code: what to run…Subagents for iOS: splitting review, build and design…Preparing to verify Xcode 27 agents with external skillsKeeping up with Apple: refreshing references after each…Planning a safe Swift 6 and iOS 27 migrationCoordinating parallel coding work with isolated checkoutsWriting your own review rule for a Swift codebaseWriting your own skill for a Swift project: SKILL.md…Building a Claude Code plugin from a skillBuilding a Codex plugin from the same skillCross-client packaging: verified Muse scope and an…Verifying a skill across clients: the client verification…Measuring whether a skill helps: a paired benchmark…Ask for the finding, not the fix: why review-first…When the agent says "done", run the tests yourself onceSmall prompts, one screen at a time, commit between eachKeep signing and account changes separate from code repairsReading agent transcripts: the three phrases that mean it…Turn every failure into a rule: how findings become reviewsVerify Muse observer behavior before recommending itCodex worktrees for parallel screensTreat background builds as running work, not completed…Claude Code plan mode before any multi-file Swift changeAsk the agent to search local Apple references before the…Ask about actor ownership before adding MainActorWhat to put in .gitignore for agent-built Xcode projects"Show me the screenshot" as a standing instructionPin your Xcode version in AGENTS.md and stop the agent…One deep link per screen makes every screenshot automatableKeep design tokens in one file and tell the agent it's…Review the XcodeGen spec before regenerating the projectUse `#available` audits before every beta upgradeHooks beat reminders: enforce, don't request
+Documentation indexBackend architectures by app workflowAppwrite for Apple clientsAuthentication and session boundariesAWS Amplify in a Swift appChoosing an iOS backendCloudKit as an Apple-native backendFirebase for iOSGraphQL and Apollo iOSBackend services for Swift appsBackend privacy and account lifecycleREST clients with URLSessionBackend authorization and client secretsSupabase for Swift appsRealtime connections on iOSApp Store Submission ChecklistGenerate real asset catalogsDerive a usable seed from brand color evidenceValidate color relationships, not just swatchesiOS Color System -- Complete Guide for Stunning SwiftUI UIsDark and increased-contrast app colorsDesign Tokens, Adaptive Color, and Liquid GlassiOS Font Catalog — Ultimate ReferenceLayer-by-Layer Icons with Icon ComposerInteraction StandardsAdopting Liquid GlassGenerate an iOS palette from a briefProfessional UI/UX SystemStunning UI Patterns -- Complete SwiftUI Pattern LibraryThird-Party Animation IntegrationiOS Typography System -- Complete Guide for Stunning…ActivityKit & Live ActivitiesApp ClipsApp IntentsApple IntelligenceARKit -- Complete Guide for Augmented Reality on iOS and…AuthenticationServicesAVFoundationBackgroundTasksCloudKitCore AI -- Custom On-Device AI Models on Apple SiliconCore DataCoreLocationCore Spotlight RAG -- Private App-Local Retrieval for…CryptoKitSwiftData and Core Data ConcurrencyDevice Integrity (DeviceCheck & App Attest)Extended Apple FrameworksFoundation ModelsFoundation FrameworkCoreBluetoothCoreMotionCoreNFCHealthKitHomeKit and MatterLocalAuthenticationMapKitMetal -- GPU Rendering, Compute, and Performance-Critical…CoreML -- Complete Guide for On-Device Machine LearningNaturalLanguage Framework -- Complete Guide for Text…Sound AnalysisSpeech Framework -- Complete Guide for Speech Recognition…TranslationVision Framework -- Complete Guide for Image Analysis and…Network.frameworkNetworkingOSLog & MetricKitPhotosUI & AVKitRealityKit -- Complete Guide for 3D Rendering, AR, and…SceneKit -- Legacy 3D Scenes, Animation, and AR RenderingContacts FrameworkEventKitPassKit & FinanceKitWeatherKitStoreKit 2Swift ChartsSwiftDataTipKitUserNotificationsVisionKitWidgetKitMCP Usage ExamplesInstalling the iOS Agent MCP ServerApple Knowledge MCPOfficial MCP Registry publicationMCP Tool ReferencevNext MCP Analysis ToolsDynamic Workflows and Large-Scale JobsHooks — Deterministic EnforcementLoopsMain Agent RouterSubagentsVerification and the Evidence ContractiOS Platform GuidemacOS Platform GuidetvOS Platform GuidevisionOS Platform GuidewatchOS Platform GuideSwiftUI AnimationsSwiftUI and UIKit arrangement viewsRouting, Deep Links, and State RestorationSwiftUI GesturesSwiftUI iOS 27 InteractionsSwiftUI Layout SystemSwiftUI NavigationSwiftUI State and Data FlowSwiftUI Views and ControlsEvaluations -- Testing Intelligence-Powered FeaturesApp-building loop (preview)App Description WorkflowDevice HubFoundation Models `fm` CLIFoundation Models InstrumentsFrom an Idea to a Running Apple AppiOS Simulator MCPAI-assisted issue previewsReview iOS launch-screen configurationPrepare an evidence-backed local release draftBuild from local source and Apple guidanceProject Scaffolding and LayoutSeptember 2026 distribution and runtime update notesVisual Iteration LoopXcode 27.2 beta: project format and preview toolingXcode 27 Coding AgentsXcode Memory DebuggingUIKit EssentialsNative vs. Web Animation and 3DWhat "vibe coding" a Swift app actually means, and what…What you need before an AI can build you an iOS app: Mac,…Choosing a coding agent for iOS in 2026: Claude Code,…Your first hour: install Xcode, run the simulator, build…How coding agents read a project: AGENTS.md, CLAUDE.md,…Skills, plugins, MCP servers, hooks: the four words…Build a SwiftUI to-do app with Claude Code: the brief,…Compare the same to-do app task in Codex without changing…Prepare an Antigravity app-building trial and identify…Prepare a Muse app-building trial beyond tool discoveryWriting an app brief an agent can build from: ten…Generating an Xcode project the agent can edit: XcodeGen…Running and seeing your app: simulator boot, install,…What to do when the build fails: reading Xcode errors…Review Swift 6 settings and actor isolation before…Getting an agent to run checks: hooks, Stop conditions…Making the agent prove it: screenshots as evidence, not…Reviewing agent output before you commit: a focused…Git for vibe coders: branches per prompt, checkpoints,…Keeping the agent inside your design: tokens, no…SwiftUI prompt practice: 25 scoped exercises and…When a SwiftUI agent task fails: ten failure categories…Local persistence contracts: Reading List JSON storage…Localization with an agent: what to check before it…Search, filtering and empty states that pass…Networking and Codable with an agent: the concurrency…Navigation in SwiftUI: what agents get wrong with…Adding widgets with App Intents: a timeline and…Designing Siri actions with App Intents and testable…On-device AI: Foundation Models readiness and fallback…Notifications, background tasks and the permissions…Deep links and universal links, and using them for…App icons in 2026: Liquid Glass, Icon Composer, and…Color systems that survive dark mode and high contrast,…Typography in SwiftUI that respects Dynamic Type: rules…Motion and haptics: what to ask an agent for, and what…Making an agent-built app look intentional, not templatedPreparing repeatable simulator captures for App Store…From Figma to SwiftUI with an agent: variables to tokens…Swift Testing vs XCTest: what to have the agent generate…UI tests an agent can write and maintainAccessibility review of an agent-built app: the checks…Performance: hangs, launch time and the patterns agents…Memory: retain cycles agents create in closures and CombineSecurity review of an agent-built app: keychain, ATS,…Static review vs the compiler: what heuristics catch and…App Store readiness: the checks before you upload an…Privacy manifests, permissions strings and the things…Preparing for TestFlight: signing, builds and account…Investigating App Review feedback without guessing the…Versioning, changelogs and release notes the agent can…CI for an iOS repo with agent-written code: what to run…Subagents for iOS: splitting review, build and design…Preparing to verify Xcode 27 agents with external skillsKeeping up with Apple: refreshing references after each…Planning a safe Swift 6 and iOS 27 migrationCoordinating parallel coding work with isolated checkoutsWriting your own review rule for a Swift codebaseWriting your own skill for a Swift project: SKILL.md…Building a Claude Code plugin from a skillBuilding a Codex plugin from the same skillCross-client packaging: verified Muse scope and an…Verifying a skill across clients: the client verification…Measuring whether a skill helps: a paired benchmark…Ask for the finding, not the fix: why review-first…When the agent says "done", run the tests yourself onceSmall prompts, one screen at a time, commit between eachKeep signing and account changes separate from code repairsReading agent transcripts: the three phrases that mean it…Turn every failure into a rule: how findings become reviewsVerify Muse observer behavior before recommending itCodex worktrees for parallel screensTreat background builds as running work, not completed…Claude Code plan mode before any multi-file Swift changeAsk the agent to search local Apple references before the…Ask about actor ownership before adding MainActorWhat to put in .gitignore for agent-built Xcode projects"Show me the screenshot" as a standing instructionPin your Xcode version in AGENTS.md and stop the agent…One deep link per screen makes every screenshot automatableKeep design tokens in one file and tell the agent it's…Review the XcodeGen spec before regenerating the projectUse `#available` audits before every beta upgradeHooks beat reminders: enforce, don't request
 
 ---
 
@@ -60120,7 +61948,17 @@ Release notes← Home
 Installation
  ·
 npm package
-September 21, 2026 · npm 2.7.1 · repository v3.6.1
+September 22, 2026 · npm 2.7.2 · repository v3.6.2
+App colors and backend guidance, together.
+One connection now exposes 40 tools. This update adds semantic palette generation, color review and backend integration review while preserving the existing app, simulator and release-preparation tools.
+Build a color system
+Generate 35 semantic roles across light, dark and high-contrast appearances, inspect contrast evidence and review catalog usage. Generation returns a preview; it does not silently edit your app.
+Color generation and verification →
+Review your backend boundary
+Detect Supabase, Firebase, CloudKit, AWS Amplify, Appwrite, REST, Apollo/GraphQL and WebSockets. Review concrete credential, policy and networking evidence without sending your project to a provider.
+Explore 14 backend guides →
+What is verified
+308 MCP tests pass. The backend Swift sample passes 9 offline tests and iOS Simulator-target typechecking. Login examples still need each app’s provider configuration; live authentication and deployed policies have not been verified. Historical benchmark results are unchanged.September 21, 2026 · npm 2.7.1 · repository v3.6.1
 Inspect the app. Prepare the evidence.
 This patch adds conservative launch-screen reviews and the first local release-preparation workflow. It helps you identify missing project facts before attempting a release.
 

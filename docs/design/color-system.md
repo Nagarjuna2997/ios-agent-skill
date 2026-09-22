@@ -1,8 +1,19 @@
 # iOS Color System -- Complete Guide for Stunning SwiftUI UIs
 
+## Generate and review a project color system
+
+Use `generate_color_system` for a read-only semantic palette preview, and `review_color_system` for bounded project evidence. The new engine extends the existing token schema rather than replacing Apple system colors or creating a second asset writer.
+
+- [Palette generation](palette-generation.md): seed inputs, families, harmonies, OKLCH scales and asset handoff.
+- [Dark-mode colors](dark-mode-colors.md): independent appearances, OLED and native materials.
+- [Color accessibility](color-accessibility.md): measured relationships and unsupported contexts.
+- [Brand extraction](brand-color-extraction.md): local sample input and identity limitations.
+
+The reviewer returns color locations, duplicate values, approximate families, catalog appearance coverage, explicit contrast concerns and consolidation suggestions. Missing Dark variants are advisories; identical values do not prove identical roles. Dynamic or ambiguous cases are unresolved rather than guessed. Generation never modifies a project; the existing assets CLI remains the explicit mutation step.
+
 ## Overview
 
-Color is the single most powerful tool for creating emotional impact in iOS applications. This guide covers every aspect of the SwiftUI color system, from Apple's semantic tokens to custom brand palettes, gradients, materials, and accessibility. Every code example compiles and produces production-quality results.
+Color is the single most powerful tool for creating emotional impact in iOS applications. This guide covers every aspect of the SwiftUI color system, from Apple's semantic tokens to custom brand palettes, gradients, materials, and accessibility. Examples are guidance; compile the selected code in the target SDK and inspect the result before claiming it is verified.
 
 ---
 

@@ -1,0 +1,166 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/backend-supabase.html"><meta property="og:title" content="Supabase for Swift apps"><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/backend-supabase.html"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css?v=guide-visuals-3"><link rel="stylesheet" href="../navigation.css?v=2"><script src="../appearance.js?v=2" defer=""></script><title>Supabase for Swift apps</title><meta name="description" content="Supabase fits relational apps needing Postgres, flexible authentication, storage and realtime."><meta property="og:description" content="Supabase fits relational apps needing Postgres, flexible authentication, storage and realtime."><meta property="og:type" content="article"><meta property="og:site_name" content="iOS Agent Skill"><meta name="twitter:title" content="Supabase for Swift apps"><meta name="twitter:description" content="Supabase fits relational apps needing Postgres, flexible authentication, storage and realtime."><meta name="twitter:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/backend-supabase.html"><meta name="robots" content="index,follow"><link rel="alternate" type="application/atom+xml" href="/ios-agent-skill/feed.xml" title="iOS Agent Skill"><script id="site-discovery-schema" type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Supabase for Swift apps","image":"https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg","datePublished":"2026-09-16T20:25:44-05:00","dateModified":"2026-09-21T11:03:33-05:00","author":{"@type":"Person","name":"Nagarjuna"},"mainEntityOfPage":"https://nagarjuna2997.github.io/ios-agent-skill/guides/backend-supabase.html","url":"https://nagarjuna2997.github.io/ios-agent-skill/guides/backend-supabase.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../series.html">Guided series</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a><!-- release-link:start --><a class="release-link" href="../releases.html">What’s new <span aria-hidden="true">↗</span></a><!-- release-link:end --></div><button class="appearance-toggle" type="button" aria-label="Use dark appearance" aria-pressed="false"><span aria-hidden="true">☾</span><span class="appearance-label">Dark mode</span></button></nav><main id="main"><div class="article-back"><a class="btn secondary" href="../library.html">← Back to all frameworks &amp; guides</a><a class="btn secondary" href="../blog.html">All articles →</a></div><article class="blog-article"><header class="page-intro"><p class="eyebrow">Backend · Reference guide</p><h1>Supabase for Swift apps</h1><p class="lead">Repository guidance for Supabase for Swift apps. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/backend/supabase.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><p><a href="#visual-overview">Visual overview: workflow and architecture</a></p><div class="toc">
+<ul>
+<li><a href="#install-and-configure">Install and configure</a></li>
+<li><a href="#native-apple-and-google-examples">Native Apple and Google examples</a></li>
+<li><a href="#social-provider-verification">Social provider verification</a></li>
+<li><a href="#mfa-and-passkeys">MFA and passkeys</a></li>
+<li><a href="#sessions-metadata-and-deletion">Sessions, metadata and deletion</a></li>
+<li><a href="#postgres-rpc-and-rls">Postgres, RPC and RLS</a></li>
+<li><a href="#storage-realtime-and-functions">Storage, realtime and functions</a></li>
+<li><a href="#offline-and-production-checklist">Offline and production checklist</a></li>
+<li><a href="#primary-references">Primary references</a></li>
+</ul>
+</div>
+</aside><section class="guide-visuals" aria-labelledby="visual-overview"><h2 id="visual-overview">Visual overview</h2>
+<p>Use the workflow to follow the task, and the architecture map to separate responsibilities. These are conceptual maps; the guide below defines implementation details and verification limits.</p>
+<figure class="guide-flow"><figcaption><span class="guide-visual-kicker">01 / Workflow</span>From intent to a checked result</figcaption><ol role="list"><li><span class="guide-step-number" aria-hidden="true">1</span><span>Configure public client</span><span class="guide-flow-arrow" aria-hidden="true">↓</span></li><li><span class="guide-step-number" aria-hidden="true">2</span><span>Authenticate and restore</span><span class="guide-flow-arrow" aria-hidden="true">↓</span></li><li><span class="guide-step-number" aria-hidden="true">3</span><span>Enforce RLS and object policies</span><span class="guide-flow-arrow" aria-hidden="true">↓</span></li><li><span class="guide-step-number" aria-hidden="true">4</span><span>Reconcile data and revoke</span></li></ol></figure>
+<figure class="guide-architecture"><figcaption><span class="guide-visual-kicker">02 / Architecture</span>Responsibility boundaries</figcaption><ol role="list"><li><span class="guide-boundary-label">Boundary 1</span><strong>Swift feature model</strong></li><li><span class="guide-boundary-label">Boundary 2</span><strong>Supabase for Swift apps</strong></li><li><span class="guide-boundary-label">Boundary 3</span><strong>Authorized server and local state</strong></li></ol><p class="guide-visual-note">Connected responsibilities, not a required class hierarchy or an execution trace.</p></figure></section><p>Supabase fits relational apps needing Postgres, flexible authentication, storage and realtime. It is a poor shortcut if the team cannot maintain schemas, grants and Row Level Security. The Swift client is not an offline database or a trusted server.</p>
+<h2 id="install-and-configure">Install and configure</h2>
+<p>Add <code>https://github.com/supabase/supabase-swift</code> through SPM, choose the Supabase product and pin the resolved version. Inject a SupabaseClient at the composition root using a validated project URL and publishable key from client configuration. Never use a secret or service-role key. Separate local, staging and production projects and redirect allowlists. These snippets use the documented Swift API surface; external SDK compilation and live provider sign-in are not claimed here.</p>
+<pre><code class="language-swift">import Foundation
+import Supabase
+
+// URL and client-safe key are supplied by validated environment configuration.
+func makeClient(url: URL, publishableKey: String) -&gt; SupabaseClient {
+    SupabaseClient(supabaseURL: url, supabaseKey: publishableKey)
+}
+
+func signIn(client: SupabaseClient, email: String, password: String) async throws {
+    _ = try await client.auth.signIn(email: email, password: password)
+}
+
+func requestLink(client: SupabaseClient, email: String, redirect: URL) async throws {
+    try await client.auth.signInWithOTP(email: email, redirectTo: redirect)
+}
+
+func requestPhoneOTP(client: SupabaseClient, phone: String) async throws {
+    try await client.auth.signInWithOTP(phone: phone)
+}
+
+func verifyEmailOTP(client: SupabaseClient, email: String, token: String) async throws {
+    _ = try await client.auth.verifyOTP(email: email, token: token, type: .email)
+}
+
+func startGuest(client: SupabaseClient) async throws {
+    _ = try await client.auth.signInAnonymously()
+}
+</code></pre>
+<p>Configure email templates to distinguish a clickable magic link from a user-entered OTP. SMS requires an enabled provider, limits and abuse controls; phone OTP is not free proof of identity. Keep passwords and OTPs out of logs and analytics. Anonymous users still have identities and policies; plan upgrade/linking and cleanup instead of treating guest data as globally public.</p>
+<h2 id="native-apple-and-google-examples">Native Apple and Google examples</h2>
+<p>Obtain the ID token through the native provider SDK, not by decoding an arbitrary callback. For Apple generate a fresh cryptographic nonce, supply its SHA-256 digest to the Apple request, then pass the original nonce to Supabase. For Google obtain a current ID token with the configured iOS/server client IDs; do not substitute an access token for it.</p>
+<pre><code class="language-swift">func exchangeApple(client: SupabaseClient, idToken: String, rawNonce: String) async throws {
+    _ = try await client.auth.signInWithIdToken(
+        credentials: .init(provider: .apple, idToken: idToken, nonce: rawNonce)
+    )
+}
+
+func exchangeGoogle(client: SupabaseClient, idToken: String) async throws {
+    _ = try await client.auth.signInWithIdToken(
+        credentials: .init(provider: .google, idToken: idToken)
+    )
+}
+
+func browserGitHub(client: SupabaseClient, redirect: URL) async throws {
+    _ = try await client.auth.signInWithOAuth(provider: .github, redirectTo: redirect)
+}
+
+func receiveAuthCallback(client: SupabaseClient, url: URL) async throws {
+    // Caller has matched the exact registered route; SDK validates the auth exchange.
+    _ = try await client.auth.session(from: url)
+}
+
+func observeSession(client: SupabaseClient) async {
+    for await (_, session) in client.auth.authStateChanges {
+        if Task.isCancelled { break }
+        // Send a domain signed-in/signed-out state to the UI owner; never print session.
+        _ = session?.user.id
+    }
+}
+</code></pre>
+<p>The coordinator owns and cancels the observer task on teardown. A production implementation updates state and clears identity-scoped caches; the snippet only illustrates safe API wiring. See <a href="backend-authentication.html">callback validation</a> before calling <code>session(from:)</code> from <code>onOpenURL</code>.</p>
+<h2 id="social-provider-verification">Social provider verification</h2>
+<p>Official Supabase social-login documentation lists the following providers as of the source snapshot. Server support is not a claim that every provider supports native Swift ID-token exchange.</p>
+<table>
+<thead>
+<tr>
+<th>Provider</th>
+<th>iOS approach</th>
+<th>Configuration check</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Apple</td>
+<td>Native ID token + nonce, or documented browser flow</td>
+<td>Sign in with Apple identifiers, nonce, redirect and provider secret lifecycle</td>
+</tr>
+<tr>
+<td>Google</td>
+<td>Native Google ID token or browser OAuth</td>
+<td>iOS/server client IDs and callback setup</td>
+</tr>
+<tr>
+<td>GitHub</td>
+<td>Browser OAuth</td>
+<td>Provider app callback and granted scopes</td>
+</tr>
+<tr>
+<td>Facebook</td>
+<td>Browser OAuth unless using a separately verified native integration</td>
+<td>App review, scopes and redirect</td>
+</tr>
+<tr>
+<td>Microsoft / Azure</td>
+<td>Browser OAuth</td>
+<td>Tenant policy and identity scopes</td>
+</tr>
+<tr>
+<td>LinkedIn</td>
+<td>Supported OIDC provider path</td>
+<td>Use the current OIDC configuration, not an obsolete provider slug</td>
+</tr>
+<tr>
+<td>Discord</td>
+<td>Browser OAuth</td>
+<td>Redirect and least scopes</td>
+</tr>
+<tr>
+<td>Slack</td>
+<td>Supported OIDC provider path</td>
+<td>Workspace/org restrictions and current OIDC configuration</td>
+</tr>
+<tr>
+<td>Spotify</td>
+<td>Browser OAuth</td>
+<td>Scope and provider access restrictions</td>
+</tr>
+<tr>
+<td>Twitch</td>
+<td>Browser OAuth</td>
+<td>Registered callback and scopes</td>
+</tr>
+<tr>
+<td>X / Twitter</td>
+<td>Browser OAuth</td>
+<td>Provider app access and enabled OAuth flow</td>
+</tr>
+</tbody>
+</table>
+<p>Only use enum cases that exist in the pinned Swift SDK. Do not translate this table into guessed case names. Supabase session refresh does not automatically refresh an external provider's access token; if the app calls that provider's APIs, implement the documented separate token lifecycle server-side where necessary.</p>
+<h2 id="mfa-and-passkeys">MFA and passkeys</h2>
+<p>MFA is an enrollment → challenge → verify flow, with assurance level checked before sensitive server operations. Test recovery, unenrollment and expired challenges; do not invent recovery codes or accept a client-only MFA flag.</p>
+<p>The official passkeys guide currently labels passkeys <strong>experimental</strong>, requires opt-in, and lists <strong>supabase-swift 2.48.0 or later</strong>. Registration requires an existing confirmed, non-anonymous user. RP identity and associated platform configuration are security-critical. The documented high-level operations include sign-in and registration, but no live Swift passkey ceremony was verified in this change. Pin a supported SDK and follow its current platform recipe before enabling production passkeys. Do not describe WebAuthn support as generally stable or interchangeable with password authentication.</p>
+<h2 id="sessions-metadata-and-deletion">Sessions, metadata and deletion</h2>
+<p>Let the SDK coordinate access/refresh tokens and inspect the pinned version's persistence policy. Use an appropriate Keychain-backed storage adapter when supplying sensitive persistence. Handle initial restoration, refresh, revoked sessions and signed-out events. <code>try await client.auth.signOut()</code> ends the selected session scope; clear local identity data and listeners as well. Choose global/local scope deliberately according to the SDK contract.</p>
+<p>User-editable metadata is not an authorization claim. Derive tenant and role access from trusted server policy. Account deletion must invoke an authenticated server function that verifies the caller and performs privileged deletion plus related row/file cleanup. Never embed the admin API key to call deletion from the app. Reauthenticate where warranted, cancel pending uploads and explain retention exceptions.</p>
+<h2 id="postgres-rpc-and-rls">Postgres, RPC and RLS</h2>
+<p>Use typed Codable DTOs and explicit selections. Filter and paginate on the server with stable ordering; do not load a whole table to filter in Swift. Keep domain models independent from database column naming. Test nullable columns, timestamps and incompatible migrations.</p>
+<p>Enable and test RLS for exposed tables and review grants. Policies need ownership constraints on insert and update as well as select. Test two users and unauthenticated clients with client-safe keys; service-role tests can accidentally bypass the boundary you intended to measure. RPC functions need reviewed execution grants and security-definer/search-path behavior. SQL constraints protect invariants even when clients are stale.</p>
+<h2 id="storage-realtime-and-functions">Storage, realtime and functions</h2>
+<p>Scope Storage bucket/object policies by identity and path; enforce file size/type and clean orphaned objects. Treat signed URLs as temporary bearer access and omit them from logs. Upload progress/cancellation belongs to a repository, not a SwiftUI body.</p>
+<p>Realtime channels need cancellation, reconnect/catch-up and duplicate handling. Event delivery does not replace initial queries or durable local state. Auth changes require channel reauthorization or recreation. Edge Functions verify identity and authorize operations independently; a client publishable key alone is not user authentication. Keep outbound provider secrets and privileged database operations on the function/server.</p>
+<h2 id="offline-and-production-checklist">Offline and production checklist</h2>
+<p>Use a local store and explicit outbox if offline edits are required. Define conflict resolution and idempotency keys; retry only safe operations with bounded backoff. Foreground listeners cannot run continuously while iOS is suspended. Deep links can arrive before restoration: route once, then reconcile session state.</p>
+<p>Use the Supabase CLI/local stack for synthetic policy and migration tests, and an injected repository for offline Swift tests. Apply reviewed migrations to staging before production. Verify auth redirects on a device, RLS denials, session revocation, paging termination, upload cleanup, deletion and schema rollback strategy. Record <a href="backend-privacy.html">App Privacy and telemetry choices</a>; third-party social login needs an App Review 4.8 assessment.</p>
+<h2 id="primary-references">Primary references</h2>
+<p><a href="https://supabase.com/docs/reference/swift/auth-api">Swift auth</a>, <a href="https://supabase.com/docs/reference/swift/auth-signinwithoauth">OAuth</a>, <a href="https://supabase.com/docs/reference/swift/auth-signinwithidtoken">ID token exchange</a>, <a href="https://supabase.com/docs/reference/swift/auth-signinwithotp">OTP</a>, <a href="https://supabase.com/docs/reference/swift/auth-onauthstatechange">auth events</a>, <a href="https://supabase.com/docs/guides/auth/social-login">social providers</a>, <a href="https://supabase.com/docs/guides/auth/passkeys">passkeys</a>, <a href="https://supabase.com/docs/guides/auth/auth-mfa">MFA</a>, <a href="https://supabase.com/docs/guides/database/postgres/row-level-security">RLS</a>, <a href="https://supabase.com/docs/guides/storage/security/access-control">Storage policies</a>, <a href="https://supabase.com/docs/guides/functions/auth">function auth</a>, <a href="https://supabase.com/docs/guides/getting-started/api-keys">client keys</a>.</p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><!-- discovery-nav:start --><div role="navigation" aria-label="Site discovery"><a href="../">Home</a> · <a href="../install.html">Install</a> · <a href="../community.html">Community</a> · <a href="../blog.html">Blog</a> · <a href="../docs-index.html">Docs index</a> · <a href="../pages.html">Site map</a> · <a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a> · <a href="https://www.npmjs.com/package/ios-agent-mcp">npm</a></div><!-- discovery-nav:end --></footer></div></body></html>

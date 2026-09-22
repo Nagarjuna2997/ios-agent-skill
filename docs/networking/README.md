@@ -49,3 +49,7 @@ protocol FeedServicing: Sendable {
 - `../frameworks/cryptokit.md`
 - `../frameworks/authentication-services.md`
 - `../security/README.md`
+
+## Provider-backed apps
+
+See the [backend knowledge layer](../backend/overview.md) for provider selection, authentication, authorization and production verification. Keep this networking reference as the transport foundation.

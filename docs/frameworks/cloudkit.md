@@ -15,7 +15,7 @@ class CloudKitManager: ObservableObject {
     let customContainer = CKContainer(identifier: "iCloud.com.yourapp.name")
 
     // Access different databases
-    lazy var publicDB = container.publicCloudDatabase     // Accessible to all users
+    lazy var publicDB = container.publicCloudDatabase     // Access depends on record type permissions
     lazy var privateDB = container.privateCloudDatabase    // User's private data (counts toward user's iCloud quota)
     lazy var sharedDB = container.sharedCloudDatabase      // Data shared with this user by others
 

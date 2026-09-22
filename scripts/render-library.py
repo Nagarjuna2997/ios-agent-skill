@@ -7,7 +7,7 @@ blog=runpy.run_path(str(root/'scripts/render-blog.py'))
 site=root/'site';base=blog['base'];page=blog['page']
 technologies=json.loads((root/'frameworks.json').read_text())['technologies']
 paths={t['guide'] for t in technologies if t.get('guide')}
-for folder in ['docs/design','docs/tooling','docs/swiftui','docs/orchestration','docs/mcp']:
+for folder in ['docs/backend','docs/design','docs/tooling','docs/swiftui','docs/orchestration','docs/mcp']:
  paths.update(str(p.relative_to(root)) for p in (root/folder).glob('*.md'))
 (site/'guides').mkdir(exist_ok=True)
 visual_plans=json.loads((root/'content/guides/visuals.json').read_text())
@@ -26,6 +26,20 @@ for source in sorted(paths):
  def link(m):
   label,url=m.groups()
   if url.startswith(('https:','http:','mailto:','#')):return m[0]
+  # Keep the new backend learning path inside the generated guide library.
+  target=(p.parent/url.split('#',1)[0]).resolve()
+  if source.startswith('docs/backend/') and target.is_relative_to(root.resolve()):
+   rel=target.relative_to(root.resolve()).as_posix()
+   if rel in paths:
+    dest=rel.removeprefix('docs/').removesuffix('.md').replace('/','-')+'.html'
+    fragment=('#'+url.split('#',1)[1]) if '#' in url else ''
+    return '['+label+']('+dest+fragment+')'
+  # Repository-relative images under site/ should load from the local/deployed site,
+  # not GitHub's HTML blob viewer. Keep source Markdown usable on GitHub too.
+  if m.start() > 0 and text[m.start()-1] == '!':
+   asset=(p.parent/url).resolve()
+   if asset.is_relative_to(site.resolve()):
+    return '['+label+'](../'+asset.relative_to(site.resolve()).as_posix()+')'
   from urllib.parse import urljoin
   return '['+label+']('+urljoin('https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/'+source,url)+')'
  text=re.sub(r'\[([^\]]+)\]\(([^\s)]+)\)',link,text)

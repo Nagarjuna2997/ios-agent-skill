@@ -39,6 +39,8 @@ For an existing app, provide its absolute project path and ask for a focused rev
 | Reuse Apple knowledge | Search local Swift source and guides in bounded sections, plus a dated directory of Apple technologies and release notes. |
 | Review Swift code | File-located findings for concurrency, architecture, SwiftUI, availability, security, performance and App Intents. |
 | Generate design assets | Named light/dark/high-contrast colors and an opaque 1024px app icon rendered locally from editable SVG layers. |
+| Review app color systems | Generate semantic palettes and inspect light, dark and high-contrast color evidence. |
+| Review backend integration | Identify supported services and review credential, auth, policy and networking evidence locally. |
 | Verify on a simulator | Build, test, install, launch and capture screenshots through Xcode. |
 | Review launch screens | Conservative target-aware checks for launch configuration, storyboards and asset references. |
 | Prepare a local release draft | Inspect selected-target facts, unresolved questions and hashed, resumable local packages without connecting to Apple. |
@@ -62,7 +64,7 @@ The [Reading List demo](samples/ReadingList/README.md) has persistence, search, 
   <img src="examples/reading-list/library.png" alt="Reading List running in the simulator" width="260">
 </a>
 
-The published 2.7.1 server exposes 37 tools. Static reviews are heuristics, not compiler diagnostics. The Apple directory is a reference map, not Apple's proprietary framework source or proof of 405 working integrations. Token savings have not been benchmarked. [Build-loop verification limits](docs/tooling/app-building-loop.md).
+The 2.7.2 server exposes 40 tools. Static reviews are heuristics, not compiler diagnostics. The Apple directory is a reference map, not Apple's proprietary framework source or proof of 405 working integrations. Token savings have not been benchmarked. [Build-loop verification limits](docs/tooling/app-building-loop.md).
 
 ## Why use this alongside Xcode?
 
@@ -106,3 +108,5 @@ Coverage counts describe documentation, not compiled integrations. Download coun
 [Contributing](CONTRIBUTING.md) · [Development](docs/development.md) · [Security](SECURITY.md) · [Roadmap](ROADMAP.md) · [MIT license](LICENSE)
 
 https://www.producthunt.com/products/ios-agent-mcp?launch=ios-agent-mcp
+
+Backend integration guidance: [choose a service and review auth, data and security boundaries](docs/backend/overview.md).

@@ -1,0 +1,1035 @@
+{
+  "version": 1,
+  "family": "Blue",
+  "strategy": "dominant-plus-supporting",
+  "seed": "#497EB3",
+  "seedSource": "intent heuristic",
+  "preferredAppearance": "both",
+  "rationale": [
+    "Derived Blue from category, description and mood heuristics; category is a starting suggestion, not a rule.",
+    "dominant-plus-supporting limits supporting hue variation; gamut mapping reduces chroma at constant lightness/hue.",
+    "Dark surfaces and foregrounds are generated independently; brand seed is preserved separately from contrast-adjusted UI colors."
+  ],
+  "semanticTokens": [
+    "primary",
+    "primaryPressed",
+    "primaryDisabled",
+    "primaryContainer",
+    "onPrimary",
+    "secondary",
+    "secondaryContainer",
+    "onSecondary",
+    "tertiary",
+    "accent",
+    "background",
+    "backgroundSecondary",
+    "surface",
+    "surfaceElevated",
+    "surfaceGrouped",
+    "surfaceOverlay",
+    "border",
+    "separator",
+    "textPrimary",
+    "textSecondary",
+    "textTertiary",
+    "textDisabled",
+    "iconPrimary",
+    "iconSecondary",
+    "success",
+    "successContainer",
+    "warning",
+    "warningContainer",
+    "error",
+    "errorContainer",
+    "info",
+    "selection",
+    "focus",
+    "link",
+    "destructive"
+  ],
+  "light": {
+    "primary": "#2C6193",
+    "primaryPressed": "#124A7B",
+    "primaryDisabled": "#D0D9E2",
+    "primaryContainer": "#DDEDFF",
+    "onPrimary": "#FFFFFF",
+    "secondary": "#595786",
+    "secondaryContainer": "#E8E9FF",
+    "onSecondary": "#FFFFFF",
+    "tertiary": "#5D5075",
+    "accent": "#8E7AB5",
+    "background": "#F6FBFF",
+    "backgroundSecondary": "#E9EFF6",
+    "surface": "#FFFFFF",
+    "surfaceElevated": "#ECF3FA",
+    "surfaceGrouped": "#E9EFF6",
+    "surfaceOverlay": "#ECF3FA",
+    "border": "#8F9397",
+    "separator": "#C8CBCE",
+    "textPrimary": "#101214",
+    "textSecondary": "#3F4347",
+    "textTertiary": "#52565A",
+    "textDisabled": "#616365",
+    "iconPrimary": "#101214",
+    "iconSecondary": "#3F4347",
+    "success": "#005E28",
+    "successContainer": "#DFF6E2",
+    "warning": "#664700",
+    "warningContainer": "#FBEDD5",
+    "error": "#8D1B19",
+    "errorContainer": "#FFE9E6",
+    "info": "#03528E",
+    "selection": "#CDE0F5",
+    "focus": "#2C6193",
+    "link": "#2C6193",
+    "destructive": "#8D1B19"
+  },
+  "dark": {
+    "primary": "#76ACE4",
+    "primaryPressed": "#649AD0",
+    "primaryDisabled": "#2D343B",
+    "primaryContainer": "#172A3E",
+    "onPrimary": "#000000",
+    "secondary": "#A5A5D9",
+    "secondaryContainer": "#242437",
+    "onSecondary": "#000000",
+    "tertiary": "#BDAFD9",
+    "accent": "#8E7AB5",
+    "background": "#080C10",
+    "backgroundSecondary": "#0E1217",
+    "surface": "#12171B",
+    "surfaceElevated": "#1D2227",
+    "surfaceGrouped": "#0E1217",
+    "surfaceOverlay": "#1D2227",
+    "border": "#606468",
+    "separator": "#3B3D40",
+    "textPrimary": "#EFF2F6",
+    "textSecondary": "#B4B8BC",
+    "textTertiary": "#9B9FA3",
+    "textDisabled": "#848688",
+    "iconPrimary": "#EFF2F6",
+    "iconSecondary": "#B4B8BC",
+    "success": "#67D283",
+    "successContainer": "#152619",
+    "warning": "#E9AB2B",
+    "warningContainer": "#2A200D",
+    "error": "#FF968A",
+    "errorContainer": "#311B18",
+    "info": "#7CBDFF",
+    "selection": "#19324B",
+    "focus": "#76ACE4",
+    "link": "#76ACE4",
+    "destructive": "#FF968A"
+  },
+  "highContrastLight": {
+    "primary": "#265C8D",
+    "primaryPressed": "#124A7B",
+    "primaryDisabled": "#D0D9E2",
+    "primaryContainer": "#DDEDFF",
+    "onPrimary": "#FFFFFF",
+    "secondary": "#565483",
+    "secondaryContainer": "#E8E9FF",
+    "onSecondary": "#FFFFFF",
+    "tertiary": "#5D5075",
+    "accent": "#8E7AB5",
+    "background": "#F6FBFF",
+    "backgroundSecondary": "#E9EFF6",
+    "surface": "#FFFFFF",
+    "surfaceElevated": "#ECF3FA",
+    "surfaceGrouped": "#E9EFF6",
+    "surfaceOverlay": "#ECF3FA",
+    "border": "#8F9397",
+    "separator": "#C8CBCE",
+    "textPrimary": "#101214",
+    "textSecondary": "#3F4347",
+    "textTertiary": "#42464A",
+    "textDisabled": "#616365",
+    "iconPrimary": "#101214",
+    "iconSecondary": "#3F4347",
+    "success": "#005D28",
+    "successContainer": "#DFF6E2",
+    "warning": "#664700",
+    "warningContainer": "#FBEDD5",
+    "error": "#8D1B19",
+    "errorContainer": "#FFE9E6",
+    "info": "#03528E",
+    "selection": "#CDE0F5",
+    "focus": "#265C8D",
+    "link": "#23598A",
+    "destructive": "#8D1B19"
+  },
+  "highContrastDark": {
+    "primary": "#76ACE4",
+    "primaryPressed": "#649AD0",
+    "primaryDisabled": "#2D343B",
+    "primaryContainer": "#172A3E",
+    "onPrimary": "#000000",
+    "secondary": "#A5A5D9",
+    "secondaryContainer": "#242437",
+    "onSecondary": "#000000",
+    "tertiary": "#BDAFD9",
+    "accent": "#8E7AB5",
+    "background": "#080C10",
+    "backgroundSecondary": "#0E1217",
+    "surface": "#12171B",
+    "surfaceElevated": "#1D2227",
+    "surfaceGrouped": "#0E1217",
+    "surfaceOverlay": "#1D2227",
+    "border": "#606468",
+    "separator": "#3B3D40",
+    "textPrimary": "#EFF2F6",
+    "textSecondary": "#B9BEC2",
+    "textTertiary": "#B9BEC2",
+    "textDisabled": "#848688",
+    "iconPrimary": "#EFF2F6",
+    "iconSecondary": "#B9BEC2",
+    "success": "#67D283",
+    "successContainer": "#152619",
+    "warning": "#E9AB2B",
+    "warningContainer": "#2A200D",
+    "error": "#FF968A",
+    "errorContainer": "#311B18",
+    "info": "#7CBDFF",
+    "selection": "#19324B",
+    "focus": "#76ACE4",
+    "link": "#76ACE4",
+    "destructive": "#FF968A"
+  },
+  "tonalScales": {
+    "primary": {
+      "50": "#F4F9FF",
+      "100": "#E2F0FF",
+      "200": "#C0DEFF",
+      "300": "#99C9FB",
+      "400": "#78ACE2",
+      "500": "#5B90C7",
+      "600": "#4072A5",
+      "700": "#295580",
+      "800": "#183A5B",
+      "900": "#0A2036",
+      "950": "#040C16"
+    },
+    "secondary": {
+      "50": "#F7F8FF",
+      "100": "#ECEDFF",
+      "200": "#D6D7FE",
+      "300": "#BFBFEE",
+      "400": "#A2A2D4",
+      "500": "#8786B9",
+      "600": "#6A6998",
+      "700": "#4F4D75",
+      "800": "#353453",
+      "900": "#1D1D31",
+      "950": "#0A0A13"
+    },
+    "accent": {
+      "50": "#F9F7FF",
+      "100": "#F1EBFF",
+      "200": "#E0D2FF",
+      "300": "#CBB9F0",
+      "400": "#AF9CD7",
+      "500": "#9480BB",
+      "600": "#76639A",
+      "700": "#594877",
+      "800": "#3D3054",
+      "900": "#221A31",
+      "950": "#0D0914"
+    }
+  },
+  "contrast": {
+    "light": [
+      {
+        "name": "primary text",
+        "foreground": "textPrimary",
+        "background": "background",
+        "ratio": 18.022916562307344,
+        "required": 4.5,
+        "status": "pass"
+      },
+      {
+        "name": "secondary text",
+        "foreground": "textSecondary",
+        "background": "background",
+        "ratio": 9.576967216448196,
+        "required": 4.5,
+        "status": "pass"
+      },
+      {
+        "name": "surface text",
+        "foreground": "textPrimary",
+        "background": "surface",
+        "ratio": 18.772532253316175,
+        "required": 4.5,
+        "status": "pass"
+      },
+      {
+        "name": "elevated text",
+        "foreground": "textPrimary",
+        "background": "surfaceElevated",
+        "ratio": 16.776597068343424,
+        "required": 4.5,
+        "status": "pass"
+      },
+      {
+        "name": "grouped text",
+        "foreground": "textSecondary",
+        "background": "surfaceGrouped",
+        "ratio": 8.617749631869653,
+        "required": 4.5,
+        "status": "pass"
+      },
+      {
+        "name": "primary button",
+        "foreground": "onPrimary",
+        "background": "primary",
+        "ratio": 6.484906033426989,
+        "required": 4.5,
+        "status": "pass"
+      },
+      {
+        "name": "pressed button",
+        "foreground": "onPrimary",
+        "background": "primaryPressed",
+        "ratio": 9.165328875612136,
+        "required": 4.5,
+        "status": "pass"
+      },
+      {
+        "name": "secondary button",
+        "foreground": "onSecondary",
+        "background": "secondary",
+        "ratio": 6.704352595024477,
+        "required": 4.5,
+        "status": "pass"
+      },
+      {
+        "name": "destructive label",
+        "foreground": "destructive",
+        "background": "background",
+        "ratio": 8.75307591337578,
+        "required": 4.5,
+        "status": "pass"
+      },
+      {
+        "name": "link",
+        "foreground": "link",
+        "background": "background",
+        "ratio": 6.225953897839848,
+        "required": 4.5,
+        "status": "pass"
+      },
+      {
+        "name": "selected text",
+        "foreground": "textPrimary",
+        "background": "selection",
+        "ratio": 13.924394778717412,
+        "required": 4.5,
+        "status": "pass"
+      },
+      {
+        "name": "success label",
+        "foreground": "success",
+        "background": "successContainer",
+        "ratio": 6.998498102480595,
+        "required": 4.5,
+        "status": "pass"
+      },
+      {
+        "name": "warning label",
+        "foreground": "warning",
+        "background": "warningContainer",
+        "ratio": 7.370027207911332,
+        "required": 4.5,
+        "status": "pass"
+      },
+      {
+        "name": "error label",
+        "foreground": "error",
+        "background": "errorContainer",
+        "ratio": 7.8364830021646865,
+        "required": 4.5,
+        "status": "pass"
+      },
+      {
+        "name": "focus",
+        "foreground": "focus",
+        "background": "background",
+        "ratio": 6.225953897839848,
+        "required": 3,
+        "status": "pass"
+      },
+      {
+        "name": "disabled control",
+        "foreground": "textDisabled",
+        "background": "primaryDisabled",
+        "ratio": 4.224536573025273,
+        "required": null,
+        "status": "informational"
+      }
+    ],
+    "dark": [
+      {
+        "name": "primary text",
+        "foreground": "textPrimary",
+        "background": "background",
+        "ratio": 17.471820856069876,
+        "required": 4.5,
+        "status": "pass"
+      },
+      {
+        "name": "secondary text",
+        "foreground": "textSecondary",
+        "background": "background",
+        "ratio": 9.83096639696925,
+        "required": 4.5,
+        "status": "pass"
+      },
+      {
+        "name": "surface text",
+        "foreground": "textPrimary",
+        "background": "surface",
+        "ratio": 16.06536288606523,
+        "required": 4.5,
+        "status": "pass"
+      },
+      {
+        "name": "elevated text",
+        "foreground": "textPrimary",
+        "background": "surfaceElevated",
+        "ratio": 14.272342204055994,
+        "required": 4.5,
+        "status": "pass"
+      },
+      {
+        "name": "grouped text",
+        "foreground": "textSecondary",
+        "background": "surfaceGrouped",
+        "ratio": 9.416008938081953,
+        "required": 4.5,
+        "status": "pass"
+      },
+      {
+        "name": "primary button",
+        "foreground": "onPrimary",
+        "background": "primary",
+        "ratio": 8.791607193074524,
+        "required": 4.5,
+        "status": "pass"
+      },
+      {
+        "name": "pressed button",
+        "foreground": "onPrimary",
+        "background": "primaryPressed",
+        "ratio": 7.074918785247856,
+        "required": 4.5,
+        "status": "pass"
+      },
+      {
+        "name": "secondary button",
+        "foreground": "onSecondary",
+        "background": "secondary",
+        "ratio": 8.983870777524894,
+        "required": 4.5,
+        "status": "pass"
+      },
+      {
+        "name": "destructive label",
+        "foreground": "destructive",
+        "background": "background",
+        "ratio": 9.325088544213653,
+        "required": 4.5,
+        "status": "pass"
+      },
+      {
+        "name": "link",
+        "foreground": "link",
+        "background": "background",
+        "ratio": 8.213418315147472,
+        "required": 4.5,
+        "status": "pass"
+      },
+      {
+        "name": "selected text",
+        "foreground": "textPrimary",
+        "background": "selection",
+        "ratio": 11.694627337456678,
+        "required": 4.5,
+        "status": "pass"
+      },
+      {
+        "name": "success label",
+        "foreground": "success",
+        "background": "successContainer",
+        "ratio": 8.406403310281819,
+        "required": 4.5,
+        "status": "pass"
+      },
+      {
+        "name": "warning label",
+        "foreground": "warning",
+        "background": "warningContainer",
+        "ratio": 7.876309792048982,
+        "required": 4.5,
+        "status": "pass"
+      },
+      {
+        "name": "error label",
+        "foreground": "error",
+        "background": "errorContainer",
+        "ratio": 7.674818805103157,
+        "required": 4.5,
+        "status": "pass"
+      },
+      {
+        "name": "focus",
+        "foreground": "focus",
+        "background": "background",
+        "ratio": 8.213418315147472,
+        "required": 3,
+        "status": "pass"
+      },
+      {
+        "name": "disabled control",
+        "foreground": "textDisabled",
+        "background": "primaryDisabled",
+        "ratio": 3.4495257239697237,
+        "required": null,
+        "status": "informational"
+      }
+    ],
+    "highContrastLight": [
+      {
+        "name": "primary text",
+        "foreground": "textPrimary",
+        "background": "background",
+        "ratio": 18.022916562307344,
+        "required": 7,
+        "status": "pass"
+      },
+      {
+        "name": "secondary text",
+        "foreground": "textSecondary",
+        "background": "background",
+        "ratio": 9.576967216448196,
+        "required": 7,
+        "status": "pass"
+      },
+      {
+        "name": "surface text",
+        "foreground": "textPrimary",
+        "background": "surface",
+        "ratio": 18.772532253316175,
+        "required": 7,
+        "status": "pass"
+      },
+      {
+        "name": "elevated text",
+        "foreground": "textPrimary",
+        "background": "surfaceElevated",
+        "ratio": 16.776597068343424,
+        "required": 7,
+        "status": "pass"
+      },
+      {
+        "name": "grouped text",
+        "foreground": "textSecondary",
+        "background": "surfaceGrouped",
+        "ratio": 8.617749631869653,
+        "required": 7,
+        "status": "pass"
+      },
+      {
+        "name": "primary button",
+        "foreground": "onPrimary",
+        "background": "primary",
+        "ratio": 7.004927366020497,
+        "required": 7,
+        "status": "pass"
+      },
+      {
+        "name": "pressed button",
+        "foreground": "onPrimary",
+        "background": "primaryPressed",
+        "ratio": 9.165328875612136,
+        "required": 7,
+        "status": "pass"
+      },
+      {
+        "name": "secondary button",
+        "foreground": "onSecondary",
+        "background": "secondary",
+        "ratio": 7.019760772575544,
+        "required": 7,
+        "status": "pass"
+      },
+      {
+        "name": "destructive label",
+        "foreground": "destructive",
+        "background": "background",
+        "ratio": 8.75307591337578,
+        "required": 7,
+        "status": "pass"
+      },
+      {
+        "name": "link",
+        "foreground": "link",
+        "background": "background",
+        "ratio": 7.0312317098502515,
+        "required": 7,
+        "status": "pass"
+      },
+      {
+        "name": "selected text",
+        "foreground": "textPrimary",
+        "background": "selection",
+        "ratio": 13.924394778717412,
+        "required": 7,
+        "status": "pass"
+      },
+      {
+        "name": "success label",
+        "foreground": "success",
+        "background": "successContainer",
+        "ratio": 7.093759514656676,
+        "required": 7,
+        "status": "pass"
+      },
+      {
+        "name": "warning label",
+        "foreground": "warning",
+        "background": "warningContainer",
+        "ratio": 7.370027207911332,
+        "required": 7,
+        "status": "pass"
+      },
+      {
+        "name": "error label",
+        "foreground": "error",
+        "background": "errorContainer",
+        "ratio": 7.8364830021646865,
+        "required": 7,
+        "status": "pass"
+      },
+      {
+        "name": "focus",
+        "foreground": "focus",
+        "background": "background",
+        "ratio": 6.7252099897449265,
+        "required": 3,
+        "status": "pass"
+      },
+      {
+        "name": "disabled control",
+        "foreground": "textDisabled",
+        "background": "primaryDisabled",
+        "ratio": 4.224536573025273,
+        "required": null,
+        "status": "informational"
+      }
+    ],
+    "highContrastDark": [
+      {
+        "name": "primary text",
+        "foreground": "textPrimary",
+        "background": "background",
+        "ratio": 17.471820856069876,
+        "required": 7,
+        "status": "pass"
+      },
+      {
+        "name": "secondary text",
+        "foreground": "textSecondary",
+        "background": "background",
+        "ratio": 10.470192276778144,
+        "required": 7,
+        "status": "pass"
+      },
+      {
+        "name": "surface text",
+        "foreground": "textPrimary",
+        "background": "surface",
+        "ratio": 16.06536288606523,
+        "required": 7,
+        "status": "pass"
+      },
+      {
+        "name": "elevated text",
+        "foreground": "textPrimary",
+        "background": "surfaceElevated",
+        "ratio": 14.272342204055994,
+        "required": 7,
+        "status": "pass"
+      },
+      {
+        "name": "grouped text",
+        "foreground": "textSecondary",
+        "background": "surfaceGrouped",
+        "ratio": 10.028253589796906,
+        "required": 7,
+        "status": "pass"
+      },
+      {
+        "name": "primary button",
+        "foreground": "onPrimary",
+        "background": "primary",
+        "ratio": 8.791607193074524,
+        "required": 7,
+        "status": "pass"
+      },
+      {
+        "name": "pressed button",
+        "foreground": "onPrimary",
+        "background": "primaryPressed",
+        "ratio": 7.074918785247856,
+        "required": 7,
+        "status": "pass"
+      },
+      {
+        "name": "secondary button",
+        "foreground": "onSecondary",
+        "background": "secondary",
+        "ratio": 8.983870777524894,
+        "required": 7,
+        "status": "pass"
+      },
+      {
+        "name": "destructive label",
+        "foreground": "destructive",
+        "background": "background",
+        "ratio": 9.325088544213653,
+        "required": 7,
+        "status": "pass"
+      },
+      {
+        "name": "link",
+        "foreground": "link",
+        "background": "background",
+        "ratio": 8.213418315147472,
+        "required": 7,
+        "status": "pass"
+      },
+      {
+        "name": "selected text",
+        "foreground": "textPrimary",
+        "background": "selection",
+        "ratio": 11.694627337456678,
+        "required": 7,
+        "status": "pass"
+      },
+      {
+        "name": "success label",
+        "foreground": "success",
+        "background": "successContainer",
+        "ratio": 8.406403310281819,
+        "required": 7,
+        "status": "pass"
+      },
+      {
+        "name": "warning label",
+        "foreground": "warning",
+        "background": "warningContainer",
+        "ratio": 7.876309792048982,
+        "required": 7,
+        "status": "pass"
+      },
+      {
+        "name": "error label",
+        "foreground": "error",
+        "background": "errorContainer",
+        "ratio": 7.674818805103157,
+        "required": 7,
+        "status": "pass"
+      },
+      {
+        "name": "focus",
+        "foreground": "focus",
+        "background": "background",
+        "ratio": 8.213418315147472,
+        "required": 3,
+        "status": "pass"
+      },
+      {
+        "name": "disabled control",
+        "foreground": "textDisabled",
+        "background": "primaryDisabled",
+        "ratio": 3.4495257239697237,
+        "required": null,
+        "status": "informational"
+      }
+    ]
+  },
+  "gradients": {
+    "light": {
+      "stops": [
+        "#396189",
+        "#3D608A",
+        "#415F8A",
+        "#455E8B",
+        "#485D8B"
+      ],
+      "foreground": "#FFFFFF",
+      "contrast": [
+        6.471339744949742,
+        6.484355405964741,
+        6.504281230413661,
+        6.507714657595446,
+        6.5337111607202
+      ],
+      "verification": "Stop samples only; rendered interpolation and overlays require inspection. Decorative use by default."
+    },
+    "dark": {
+      "stops": [
+        "#81ACD8",
+        "#85AAD9",
+        "#88A9DA",
+        "#8CA8DA",
+        "#90A7DA"
+      ],
+      "foreground": "#000000",
+      "contrast": [
+        8.826008535679204,
+        8.749150061373957,
+        8.734425993412295,
+        8.728533649499523,
+        8.72573616114456
+      ],
+      "verification": "Stop samples only; rendered interpolation and overlays require inspection. Decorative use by default."
+    }
+  },
+  "assetTokens": {
+    "version": 1,
+    "colors": {
+      "Primary": {
+        "light": "#2C6193",
+        "dark": "#76ACE4",
+        "highContrastLight": "#265C8D",
+        "highContrastDark": "#76ACE4"
+      },
+      "PrimaryPressed": {
+        "light": "#124A7B",
+        "dark": "#649AD0",
+        "highContrastLight": "#124A7B",
+        "highContrastDark": "#649AD0"
+      },
+      "PrimaryDisabled": {
+        "light": "#D0D9E2",
+        "dark": "#2D343B",
+        "highContrastLight": "#D0D9E2",
+        "highContrastDark": "#2D343B"
+      },
+      "PrimaryContainer": {
+        "light": "#DDEDFF",
+        "dark": "#172A3E",
+        "highContrastLight": "#DDEDFF",
+        "highContrastDark": "#172A3E"
+      },
+      "OnPrimary": {
+        "light": "#FFFFFF",
+        "dark": "#000000",
+        "highContrastLight": "#FFFFFF",
+        "highContrastDark": "#000000"
+      },
+      "Secondary": {
+        "light": "#595786",
+        "dark": "#A5A5D9",
+        "highContrastLight": "#565483",
+        "highContrastDark": "#A5A5D9"
+      },
+      "SecondaryContainer": {
+        "light": "#E8E9FF",
+        "dark": "#242437",
+        "highContrastLight": "#E8E9FF",
+        "highContrastDark": "#242437"
+      },
+      "OnSecondary": {
+        "light": "#FFFFFF",
+        "dark": "#000000",
+        "highContrastLight": "#FFFFFF",
+        "highContrastDark": "#000000"
+      },
+      "Tertiary": {
+        "light": "#5D5075",
+        "dark": "#BDAFD9",
+        "highContrastLight": "#5D5075",
+        "highContrastDark": "#BDAFD9"
+      },
+      "Accent": {
+        "light": "#8E7AB5",
+        "dark": "#8E7AB5",
+        "highContrastLight": "#8E7AB5",
+        "highContrastDark": "#8E7AB5"
+      },
+      "Background": {
+        "light": "#F6FBFF",
+        "dark": "#080C10",
+        "highContrastLight": "#F6FBFF",
+        "highContrastDark": "#080C10"
+      },
+      "BackgroundSecondary": {
+        "light": "#E9EFF6",
+        "dark": "#0E1217",
+        "highContrastLight": "#E9EFF6",
+        "highContrastDark": "#0E1217"
+      },
+      "Surface": {
+        "light": "#FFFFFF",
+        "dark": "#12171B",
+        "highContrastLight": "#FFFFFF",
+        "highContrastDark": "#12171B"
+      },
+      "SurfaceElevated": {
+        "light": "#ECF3FA",
+        "dark": "#1D2227",
+        "highContrastLight": "#ECF3FA",
+        "highContrastDark": "#1D2227"
+      },
+      "SurfaceGrouped": {
+        "light": "#E9EFF6",
+        "dark": "#0E1217",
+        "highContrastLight": "#E9EFF6",
+        "highContrastDark": "#0E1217"
+      },
+      "SurfaceOverlay": {
+        "light": "#ECF3FA",
+        "dark": "#1D2227",
+        "highContrastLight": "#ECF3FA",
+        "highContrastDark": "#1D2227"
+      },
+      "Border": {
+        "light": "#8F9397",
+        "dark": "#606468",
+        "highContrastLight": "#8F9397",
+        "highContrastDark": "#606468"
+      },
+      "Separator": {
+        "light": "#C8CBCE",
+        "dark": "#3B3D40",
+        "highContrastLight": "#C8CBCE",
+        "highContrastDark": "#3B3D40"
+      },
+      "TextPrimary": {
+        "light": "#101214",
+        "dark": "#EFF2F6",
+        "highContrastLight": "#101214",
+        "highContrastDark": "#EFF2F6"
+      },
+      "TextSecondary": {
+        "light": "#3F4347",
+        "dark": "#B4B8BC",
+        "highContrastLight": "#3F4347",
+        "highContrastDark": "#B9BEC2"
+      },
+      "TextTertiary": {
+        "light": "#52565A",
+        "dark": "#9B9FA3",
+        "highContrastLight": "#42464A",
+        "highContrastDark": "#B9BEC2"
+      },
+      "TextDisabled": {
+        "light": "#616365",
+        "dark": "#848688",
+        "highContrastLight": "#616365",
+        "highContrastDark": "#848688"
+      },
+      "IconPrimary": {
+        "light": "#101214",
+        "dark": "#EFF2F6",
+        "highContrastLight": "#101214",
+        "highContrastDark": "#EFF2F6"
+      },
+      "IconSecondary": {
+        "light": "#3F4347",
+        "dark": "#B4B8BC",
+        "highContrastLight": "#3F4347",
+        "highContrastDark": "#B9BEC2"
+      },
+      "Success": {
+        "light": "#005E28",
+        "dark": "#67D283",
+        "highContrastLight": "#005D28",
+        "highContrastDark": "#67D283"
+      },
+      "SuccessContainer": {
+        "light": "#DFF6E2",
+        "dark": "#152619",
+        "highContrastLight": "#DFF6E2",
+        "highContrastDark": "#152619"
+      },
+      "Warning": {
+        "light": "#664700",
+        "dark": "#E9AB2B",
+        "highContrastLight": "#664700",
+        "highContrastDark": "#E9AB2B"
+      },
+      "WarningContainer": {
+        "light": "#FBEDD5",
+        "dark": "#2A200D",
+        "highContrastLight": "#FBEDD5",
+        "highContrastDark": "#2A200D"
+      },
+      "Error": {
+        "light": "#8D1B19",
+        "dark": "#FF968A",
+        "highContrastLight": "#8D1B19",
+        "highContrastDark": "#FF968A"
+      },
+      "ErrorContainer": {
+        "light": "#FFE9E6",
+        "dark": "#311B18",
+        "highContrastLight": "#FFE9E6",
+        "highContrastDark": "#311B18"
+      },
+      "Info": {
+        "light": "#03528E",
+        "dark": "#7CBDFF",
+        "highContrastLight": "#03528E",
+        "highContrastDark": "#7CBDFF"
+      },
+      "Selection": {
+        "light": "#CDE0F5",
+        "dark": "#19324B",
+        "highContrastLight": "#CDE0F5",
+        "highContrastDark": "#19324B"
+      },
+      "Focus": {
+        "light": "#2C6193",
+        "dark": "#76ACE4",
+        "highContrastLight": "#265C8D",
+        "highContrastDark": "#76ACE4"
+      },
+      "Link": {
+        "light": "#2C6193",
+        "dark": "#76ACE4",
+        "highContrastLight": "#23598A",
+        "highContrastDark": "#76ACE4"
+      },
+      "Destructive": {
+        "light": "#8D1B19",
+        "dark": "#FF968A",
+        "highContrastLight": "#8D1B19",
+        "highContrastDark": "#FF968A"
+      },
+      "AccentColor": {
+        "light": "#2C6193",
+        "dark": "#76ACE4",
+        "highContrastLight": "#265C8D",
+        "highContrastDark": "#76ACE4"
+      }
+    }
+  },
+  "extraction": {
+    "candidates": [],
+    "note": "Extracted candidate, not an official brand color. Opaque sampled pixels only; transparent/background pixels must be removed by the decoder."
+  },
+  "implementation": {
+    "swiftUI": "import SwiftUI\nenum AppColors {\n    static let primary = Color(\"Primary\")\n    static let primaryPressed = Color(\"PrimaryPressed\")\n    static let primaryDisabled = Color(\"PrimaryDisabled\")\n    static let primaryContainer = Color(\"PrimaryContainer\")\n    static let onPrimary = Color(\"OnPrimary\")\n    static let secondary = Color(\"Secondary\")\n    static let secondaryContainer = Color(\"SecondaryContainer\")\n    static let onSecondary = Color(\"OnSecondary\")\n    static let tertiary = Color(\"Tertiary\")\n    static let accent = Color(\"Accent\")\n    static let background = Color(\"Background\")\n    static let backgroundSecondary = Color(\"BackgroundSecondary\")\n    static let surface = Color(\"Surface\")\n    static let surfaceElevated = Color(\"SurfaceElevated\")\n    static let surfaceGrouped = Color(\"SurfaceGrouped\")\n    static let surfaceOverlay = Color(\"SurfaceOverlay\")\n    static let border = Color(\"Border\")\n    static let separator = Color(\"Separator\")\n    static let textPrimary = Color(\"TextPrimary\")\n    static let textSecondary = Color(\"TextSecondary\")\n    static let textTertiary = Color(\"TextTertiary\")\n    static let textDisabled = Color(\"TextDisabled\")\n    static let iconPrimary = Color(\"IconPrimary\")\n    static let iconSecondary = Color(\"IconSecondary\")\n    static let success = Color(\"Success\")\n    static let successContainer = Color(\"SuccessContainer\")\n    static let warning = Color(\"Warning\")\n    static let warningContainer = Color(\"WarningContainer\")\n    static let error = Color(\"Error\")\n    static let errorContainer = Color(\"ErrorContainer\")\n    static let info = Color(\"Info\")\n    static let selection = Color(\"Selection\")\n    static let focus = Color(\"Focus\")\n    static let link = Color(\"Link\")\n    static let destructive = Color(\"Destructive\")\n}\n// Text(\"Continue\").foregroundStyle(AppColors.onPrimary).padding().background(AppColors.primary)",
+    "uiKit": "import UIKit\nenum AppUIColors {\n    static var primary: UIColor { UIColor(named: \"Primary\") ?? .label }\n    static var primaryPressed: UIColor { UIColor(named: \"PrimaryPressed\") ?? .label }\n    static var primaryDisabled: UIColor { UIColor(named: \"PrimaryDisabled\") ?? .label }\n    static var primaryContainer: UIColor { UIColor(named: \"PrimaryContainer\") ?? .label }\n    static var onPrimary: UIColor { UIColor(named: \"OnPrimary\") ?? .label }\n    static var secondary: UIColor { UIColor(named: \"Secondary\") ?? .label }\n    static var secondaryContainer: UIColor { UIColor(named: \"SecondaryContainer\") ?? .label }\n    static var onSecondary: UIColor { UIColor(named: \"OnSecondary\") ?? .label }\n    static var tertiary: UIColor { UIColor(named: \"Tertiary\") ?? .label }\n    static var accent: UIColor { UIColor(named: \"Accent\") ?? .label }\n    static var background: UIColor { UIColor(named: \"Background\") ?? .label }\n    static var backgroundSecondary: UIColor { UIColor(named: \"BackgroundSecondary\") ?? .label }\n    static var surface: UIColor { UIColor(named: \"Surface\") ?? .label }\n    static var surfaceElevated: UIColor { UIColor(named: \"SurfaceElevated\") ?? .label }\n    static var surfaceGrouped: UIColor { UIColor(named: \"SurfaceGrouped\") ?? .label }\n    static var surfaceOverlay: UIColor { UIColor(named: \"SurfaceOverlay\") ?? .label }\n    static var border: UIColor { UIColor(named: \"Border\") ?? .label }\n    static var separator: UIColor { UIColor(named: \"Separator\") ?? .label }\n    static var textPrimary: UIColor { UIColor(named: \"TextPrimary\") ?? .label }\n    static var textSecondary: UIColor { UIColor(named: \"TextSecondary\") ?? .label }\n    static var textTertiary: UIColor { UIColor(named: \"TextTertiary\") ?? .label }\n    static var textDisabled: UIColor { UIColor(named: \"TextDisabled\") ?? .label }\n    static var iconPrimary: UIColor { UIColor(named: \"IconPrimary\") ?? .label }\n    static var iconSecondary: UIColor { UIColor(named: \"IconSecondary\") ?? .label }\n    static var success: UIColor { UIColor(named: \"Success\") ?? .label }\n    static var successContainer: UIColor { UIColor(named: \"SuccessContainer\") ?? .label }\n    static var warning: UIColor { UIColor(named: \"Warning\") ?? .label }\n    static var warningContainer: UIColor { UIColor(named: \"WarningContainer\") ?? .label }\n    static var error: UIColor { UIColor(named: \"Error\") ?? .label }\n    static var errorContainer: UIColor { UIColor(named: \"ErrorContainer\") ?? .label }\n    static var info: UIColor { UIColor(named: \"Info\") ?? .label }\n    static var selection: UIColor { UIColor(named: \"Selection\") ?? .label }\n    static var focus: UIColor { UIColor(named: \"Focus\") ?? .label }\n    static var link: UIColor { UIColor(named: \"Link\") ?? .label }\n    static var destructive: UIColor { UIColor(named: \"Destructive\") ?? .label }\n}"
+  },
+  "guidance": [
+    "Prefer system label/link/grouped-background colors where branding is unnecessary. These custom tokens are optional, not replacements for system semantics.",
+    "Use tint for native controls, destructive Button roles, hierarchical SF Symbols and system materials. Glass is an opaque fallback recommendation, not simulated Liquid Glass.",
+    "Test Increase Contrast, Differentiate Without Color, Dynamic Type, semantic labels and non-color state indicators. Contrast alone is not full accessibility.",
+    "Existing tokens supply a seed, not a lossless migration. Review the preview and use the existing assets CLI only after explicit permission.",
+    "Only opaque sRGB is generated. No HDR, Display P3, alpha compositing or alpha compositing."
+  ]
+}

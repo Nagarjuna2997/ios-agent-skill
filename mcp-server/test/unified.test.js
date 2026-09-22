@@ -10,8 +10,14 @@ test('single connection exposes reviews, knowledge, simulator and safe app creat
  const client=new Client({name:'test',version:'1'});
  try {
   await client.connect(new StdioClientTransport({command:process.execPath,args:['dist/unified.js','--project',root],env:{...process.env,HOME:root,USERPROFILE:root}}));
-  const {tools}=await client.listTools();assert.equal(tools.length,37);assert.equal(new Set(tools.map(t=>t.name)).size,37);
-  for(const name of ['analyze_swift_project','search_local_references','simulator_list','create_app'])assert.ok(tools.some(t=>t.name===name));
+  const {tools}=await client.listTools();assert.equal(tools.length,40);assert.equal(new Set(tools.map(t=>t.name)).size,40);
+  for(const name of ['review_backend_integration','generate_color_system','review_color_system','analyze_swift_project','search_local_references','simulator_list','create_app'])assert.ok(tools.some(t=>t.name===name));
+  const backend=await client.callTool({name:'review_backend_integration',arguments:{path:root}});
+  assert.notEqual(backend.isError,true);assert.equal(JSON.parse(backend.content[0].text).services.length,0);
+  const colors=await client.callTool({name:'generate_color_system',arguments:{primaryColor:'#145AC8',appearance:'oled'}});
+  assert.notEqual(colors.isError,true);assert.equal(JSON.parse(colors.content[0].text).dark.background,'#000000');
+  const inventory=await client.callTool({name:'review_color_system',arguments:{path:root}});
+  assert.notEqual(inventory.isError,true);assert.equal(JSON.parse(inventory.content[0].text).detectedColors.length,0);
   const privatePreview=await client.callTool({name:'private_feedback',arguments:{action:'preview',report:{feature:'installation',symptom:'timeout'}}});
   assert.equal(JSON.parse(privatePreview.content[0].text).status,'not-configured');
   const preview=await client.callTool({name:'prepare_issue_report',arguments:{feature:'installation',symptom:'timeout'}});

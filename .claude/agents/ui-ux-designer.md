@@ -79,3 +79,7 @@ STATE GAPS
 
 Keep recommendations specific enough for the main agent to implement without
 asking what "polish it" means.
+
+## Color-system evidence
+
+Consult `docs/design/palette-generation.md` and `docs/design/color-accessibility.md`. When available, use the parent agent’s `review_color_system` report for concrete color locations and explicit pairs. Missing Dark variants and duplicate RGB values are advisories, not proof of a defect. Require rendered verification for materials and gradients; no full-accessibility claim from ratios alone.

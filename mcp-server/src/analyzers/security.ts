@@ -1,3 +1,4 @@
+import { clientSafeKey } from '../backend/credentials.js';
 import { Finding, SourceFile, eachLine, isSupportFile } from "./types.js";
 
 const SECURITY_DOC = "checklists/security.md";
@@ -38,7 +39,7 @@ export function analyzeSecurity(file: SourceFile): Finding[] {
       consequence,
       fix,
       doc,
-      excerpt: excerpt.trim(),
+      excerpt: excerpt.replace(/"(?:\\.|[^"\\])*"/g, '"[literal redacted]"').trim(),
     });
 
   eachLine(file, (line, number) => {
@@ -46,10 +47,10 @@ export function analyzeSecurity(file: SourceFile): Finding[] {
     const assignment = /\b(?:let|var)\s+(\w+)\s*(?::\s*String\s*)?=\s*"([^"]*)"/.exec(line);
     if (assignment) {
       const [, name, value] = assignment;
-      if (SECRET_NAME.test(name) && !PLACEHOLDER.test(value.trim()) && value.length >= 8) {
+      if (SECRET_NAME.test(name) && !PLACEHOLDER.test(value.trim()) && !clientSafeKey(value) && value.length >= 8) {
         push(
           number,
-          line,
+          "[credential literal redacted]",
           "hardcoded-secret",
           "blocker",
           `\`${name}\` is a string literal in source.`,

@@ -921,7 +921,7 @@
   },
   "releases.html": {
     "title": "Release notes — iOS Agent Skill",
-    "description": "What changed in ios-agent-mcp 2.7.1: launch-screen reviews, local release preparation, regression tests and current limitations."
+    "description": "What changed in ios-agent-mcp 2.7.2: semantic colors, backend integration reviews, local guides and verification limits."
   },
   "guides/tooling-launch-screen-review.html": {
     "title": "Review iOS launch-screen configuration",
@@ -942,5 +942,77 @@
   "guides/tooling-september-2026-distribution.html": {
     "title": "September 2026 distribution and runtime update notes",
     "description": "Check September TestFlight eligibility, ATT and StoreKit beta caveats, and App Store Connect API 4.4 and 4.4.1 migration guidance."
+  },
+  "guides/design-palette-generation.html": {
+    "title": "Generate an iOS palette from a brief",
+    "description": "Derive semantic SwiftUI and UIKit colors from a seed, inspect four appearances and contrast, then hand approved tokens to the asset generator."
+  },
+  "guides/design-dark-mode-colors.html": {
+    "title": "Dark and increased-contrast app colors",
+    "description": "Design independent dark surfaces, OLED backgrounds and higher-contrast named colors without replacing native iOS materials."
+  },
+  "guides/design-color-accessibility.html": {
+    "title": "Validate color relationships, not just swatches",
+    "description": "Understand measured text and control contrast, inactive-control exceptions and the runtime checks needed beyond color ratios."
+  },
+  "guides/design-brand-color-extraction.html": {
+    "title": "Derive a usable seed from brand color evidence",
+    "description": "Extract a candidate seed from bounded local PNGs or sampled colors, preserve privacy and distinguish extracted colors from official brand identity."
+  },
+  "guides/backend-authentication.html": {
+    "title": "Authentication and session boundaries",
+    "description": "Model authentication as restoring, signed out, authenticating, signed in, refreshing and revoked states."
+  },
+  "guides/backend-firebase.html": {
+    "title": "Firebase for iOS",
+    "description": "Firebase suits apps needing mobile authentication, document or realtime data, push and operational tooling."
+  },
+  "guides/backend-overview.html": {
+    "title": "Backend services for Swift apps",
+    "description": "Choose a backend around the app's data ownership, identity and recovery requirements."
+  },
+  "guides/backend-appwrite.html": {
+    "title": "Appwrite for Apple clients",
+    "description": "Appwrite combines auth, data, storage, functions and realtime, with managed or self-hosted operations."
+  },
+  "guides/backend-cloudkit.html": {
+    "title": "CloudKit as an Apple-native backend",
+    "description": "CloudKit is a major choice for Apple-only apps with iCloud identity, private synchronization and system sharing."
+  },
+  "guides/backend-app-architectures.html": {
+    "title": "Backend architectures by app workflow",
+    "description": "Keep feature models independent from service-specific records."
+  },
+  "guides/backend-privacy.html": {
+    "title": "Backend privacy and account lifecycle",
+    "description": "Map data before selecting SDKs: what leaves the device, why, who receives it, how long it persists and how deletion propagates."
+  },
+  "guides/backend-supabase.html": {
+    "title": "Supabase for Swift apps",
+    "description": "Supabase fits relational apps needing Postgres, flexible authentication, storage and realtime."
+  },
+  "guides/backend-graphql.html": {
+    "title": "GraphQL and Apollo iOS",
+    "description": "GraphQL fits a typed schema with related resources and clients needing different selections."
+  },
+  "guides/backend-choosing-a-backend.html": {
+    "title": "Choosing an iOS backend",
+    "description": "Begin with the hardest requirement: cross-platform identity, relational joins, offline edits, Apple-only sharing or operational control."
+  },
+  "guides/backend-aws-amplify.html": {
+    "title": "AWS Amplify in a Swift app",
+    "description": "Amplify fits teams already operating Cognito, AppSync, S3 and Lambda with explicit cloud ownership."
+  },
+  "guides/backend-security.html": {
+    "title": "Backend authorization and client secrets",
+    "description": "An iOS binary is a public client."
+  },
+  "guides/backend-websockets.html": {
+    "title": "Realtime connections on iOS",
+    "description": "Use a WebSocket for foreground bidirectional events when polling or push notification delivery is insufficient."
+  },
+  "guides/backend-rest.html": {
+    "title": "REST clients with URLSession",
+    "description": "Use REST when a stable HTTP contract or existing service fits the app."
   }
 }

@@ -279,3 +279,11 @@ jobs:
           name: reading-list-evidence
           path: samples/ReadingList/.ios-agent/evidence/*.png
           if-no-files-found: warn
+
+  backend-patterns:
+    name: Offline backend Swift patterns
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile Apple adapters and run synthetic transport tests
+        run: swift test --package-path samples/BackendPatterns

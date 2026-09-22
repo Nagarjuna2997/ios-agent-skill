@@ -646,3 +646,7 @@ func themeContrast() {
 | Text size | semantic styles, or `.custom(_:size:relativeTo:)` |
 | Row that must reflow | `ViewThatFits` or `typeSize.isAccessibilitySize` |
 | Verifying a pairing | `contrastRatio(against:)` in a test |
+
+## Palette tooling
+
+Use [palette generation](palette-generation.md) to produce a four-appearance token preview compatible with the existing assets CLI. Use [color accessibility](color-accessibility.md) to interpret measured pairs. Only write or merge a catalog when requested; retain system semantics when custom colors add no value.

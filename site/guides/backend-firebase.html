@@ -1,0 +1,78 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/backend-firebase.html"><meta property="og:title" content="Firebase for iOS"><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/backend-firebase.html"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css?v=guide-visuals-3"><link rel="stylesheet" href="../navigation.css?v=2"><script src="../appearance.js?v=2" defer=""></script><title>Firebase for iOS</title><meta name="description" content="Firebase suits apps needing mobile authentication, document or realtime data, push and operational tooling."><meta property="og:description" content="Firebase suits apps needing mobile authentication, document or realtime data, push and operational tooling."><meta property="og:type" content="article"><meta property="og:site_name" content="iOS Agent Skill"><meta name="twitter:title" content="Firebase for iOS"><meta name="twitter:description" content="Firebase suits apps needing mobile authentication, document or realtime data, push and operational tooling."><meta name="twitter:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/backend-firebase.html"><meta name="robots" content="index,follow"><link rel="alternate" type="application/atom+xml" href="/ios-agent-skill/feed.xml" title="iOS Agent Skill"><script id="site-discovery-schema" type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Firebase for iOS","image":"https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg","datePublished":"2026-09-16T20:25:44-05:00","dateModified":"2026-09-21T11:03:33-05:00","author":{"@type":"Person","name":"Nagarjuna"},"mainEntityOfPage":"https://nagarjuna2997.github.io/ios-agent-skill/guides/backend-firebase.html","url":"https://nagarjuna2997.github.io/ios-agent-skill/guides/backend-firebase.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../series.html">Guided series</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a><!-- release-link:start --><a class="release-link" href="../releases.html">What’s new <span aria-hidden="true">↗</span></a><!-- release-link:end --></div><button class="appearance-toggle" type="button" aria-label="Use dark appearance" aria-pressed="false"><span aria-hidden="true">☾</span><span class="appearance-label">Dark mode</span></button></nav><main id="main"><div class="article-back"><a class="btn secondary" href="../library.html">← Back to all frameworks &amp; guides</a><a class="btn secondary" href="../blog.html">All articles →</a></div><article class="blog-article"><header class="page-intro"><p class="eyebrow">Backend · Reference guide</p><h1>Firebase for iOS</h1><p class="lead">Repository guidance for Firebase for iOS. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/backend/firebase.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><p><a href="#visual-overview">Visual overview: workflow and architecture</a></p><div class="toc">
+<ul>
+<li><a href="#installation-and-authentication">Installation and authentication</a></li>
+<li><a href="#data-files-and-authorization">Data, files and authorization</a></li>
+<li><a href="#optional-products">Optional products</a></li>
+<li><a href="#concurrency-lifecycle-and-migration">Concurrency, lifecycle and migration</a></li>
+<li><a href="#testing-and-production-gate">Testing and production gate</a></li>
+</ul>
+</div>
+</aside><section class="guide-visuals" aria-labelledby="visual-overview"><h2 id="visual-overview">Visual overview</h2>
+<p>Use the workflow to follow the task, and the architecture map to separate responsibilities. These are conceptual maps; the guide below defines implementation details and verification limits.</p>
+<figure class="guide-flow"><figcaption><span class="guide-visual-kicker">01 / Workflow</span>From intent to a checked result</figcaption><ol role="list"><li><span class="guide-step-number" aria-hidden="true">1</span><span>Configure selected products</span><span class="guide-flow-arrow" aria-hidden="true">↓</span></li><li><span class="guide-step-number" aria-hidden="true">2</span><span>Restore Firebase identity</span><span class="guide-flow-arrow" aria-hidden="true">↓</span></li><li><span class="guide-step-number" aria-hidden="true">3</span><span>Test Rules and cache states</span><span class="guide-flow-arrow" aria-hidden="true">↓</span></li><li><span class="guide-step-number" aria-hidden="true">4</span><span>Verify deletion and telemetry</span></li></ol></figure>
+<figure class="guide-architecture"><figcaption><span class="guide-visual-kicker">02 / Architecture</span>Responsibility boundaries</figcaption><ol role="list"><li><span class="guide-boundary-label">Boundary 1</span><strong>Swift feature model</strong></li><li><span class="guide-boundary-label">Boundary 2</span><strong>Firebase for iOS</strong></li><li><span class="guide-boundary-label">Boundary 3</span><strong>Authorized server and local state</strong></li></ol><p class="guide-visual-note">Connected responsibilities, not a required class hierarchy or an execution trace.</p></figure></section><p>Firebase suits apps needing mobile authentication, document or realtime data, push and operational tooling. Avoid adopting every product by default: analytics, crash reporting and messaging add configuration and disclosure responsibilities independently of database access.</p>
+<h2 id="installation-and-authentication">Installation and authentication</h2>
+<p>Add <code>https://github.com/firebase/firebase-ios-sdk</code> with SPM and only the needed products. Register the exact bundle ID, include the intended GoogleService-Info.plist in the target, and configure Firebase once at the app composition root. This plist contains client identifiers, not an admin service-account credential. Pin the SDK and check its minimum iOS/Xcode versions.</p>
+<pre><code class="language-swift">import FirebaseAuth
+
+func passwordSignIn(email: String, password: String) async throws {
+    _ = try await Auth.auth().signIn(withEmail: email, password: password)
+}
+func guestSignIn() async throws {
+    _ = try await Auth.auth().signInAnonymously()
+}
+func appleSignIn(idToken: String, rawNonce: String) async throws {
+    let credential = OAuthProvider.appleCredential(
+        withIDToken: idToken, rawNonce: rawNonce, fullName: nil
+    )
+    _ = try await Auth.auth().signIn(with: credential)
+}
+func googleSignIn(idToken: String, accessToken: String) async throws {
+    let credential = GoogleAuthProvider.credential(
+        withIDToken: idToken, accessToken: accessToken
+    )
+    _ = try await Auth.auth().signIn(with: credential)
+}
+</code></pre>
+<p>These SDK snippets require configured native Apple/Google flows and an installed Firebase release; they were not compiled against Firebase in the offline sample. Apple needs a fresh nonce/digest pairing; Google needs its own SDK and client ID configuration. Do not log either credential. Phone auth requires its platform verification setup, APNs/reCAPTCHA path as applicable, quotas and abuse controls. Test on a device, including denial and timeout.</p>
+<p>Own the auth-state listener and remove it at teardown. Wait for restoration before selecting an account cache. Inspect SDK token persistence instead of copying tokens into UserDefaults. Linking anonymous accounts needs conflict handling; deleting an auth user does not automatically remove Firestore documents or Storage objects.</p>
+<h2 id="data-files-and-authorization">Data, files and authorization</h2>
+<p>Firestore document queries need indexes, limits and cursor pagination. Apple-platform offline persistence can serve cached results; distinguish pending writes and server acknowledgement. Realtime Database uses a different tree model, rules language and persistence behavior; do not assume Firestore rules or query semantics apply.</p>
+<p>Cloud Storage requires object rules, upload cancellation/progress and orphan cleanup. Cloud Functions perform privileged operations with server validation; callable transport alone does not establish authorization. Test unauthenticated and cross-user denial in Security Rules. Admin SDK operations are a separate trusted boundary. App Check helps reject untrusted clients but does not replace user authorization or Rules.</p>
+<h2 id="optional-products">Optional products</h2>
+<table>
+<thead>
+<tr>
+<th>Product</th>
+<th>Integration decision and verification</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FCM</td>
+<td>Configure APNs, authorization UX and token rotation; notification delivery is not guaranteed sync</td>
+</tr>
+<tr>
+<td>Crashlytics</td>
+<td>Review crash collection, breadcrumbs and custom keys; never attach sessions or payloads</td>
+</tr>
+<tr>
+<td>Analytics</td>
+<td>Enable only with a documented data/consent policy and accurate disclosures</td>
+</tr>
+<tr>
+<td>Remote Config</td>
+<td>Use safe defaults and bounded fetch; never store secrets or treat a flag as authorization</td>
+</tr>
+<tr>
+<td>App Check</td>
+<td>Configure a supported Apple attestation provider and debug tokens only in development</td>
+</tr>
+</tbody>
+</table>
+<h2 id="concurrency-lifecycle-and-migration">Concurrency, lifecycle and migration</h2>
+<p>Repository adapters own listeners and cancellation; marshal UI updates to the UI model's isolation. Bound queries and uploads. Distinguish SDK retry behavior from your own retries to avoid duplicate writes. Stable document IDs or transactions can support idempotent workflows; assess the actual mutation semantics. Pause listeners when no longer needed and reconcile on foreground—no continuous-background promise.</p>
+<p>Use exact callback routing for native providers. Follow the current email-link documentation rather than resurrecting legacy Dynamic Links recipes. Plan schema evolution for old clients, security-rule deployment order, index creation and local-cache/account transitions. Read <a href="backend-authentication.html">authentication</a> and <a href="backend-privacy.html">privacy</a> for deletion and App Review considerations.</p>
+<h2 id="testing-and-production-gate">Testing and production gate</h2>
+<p>Inject repositories for offline Swift tests. Separately run Auth/Firestore/Database/Storage emulators where supported, with explicit emulator endpoints and synthetic users. Ensure emulator/debug App Check configuration cannot leak into production. Test rule denial, session revocation, offline writes, conflict recovery, upload cancellation, account deletion and real APNs behavior. No Firebase SDK or emulator/live-service execution is claimed by this documentation.</p>
+<p>Primary sources: <a href="https://firebase.google.com/docs/ios/setup">Apple setup</a>, <a href="https://firebase.google.com/docs/auth/ios/apple">Apple auth</a>, <a href="https://firebase.google.com/docs/auth/ios/google-signin">Google auth</a>, <a href="https://firebase.google.com/docs/auth/ios/password-auth">password</a>, <a href="https://firebase.google.com/docs/auth/ios/anonymous-auth">anonymous</a>, <a href="https://firebase.google.com/docs/firestore/manage-data/enable-offline">offline Firestore</a>, <a href="https://firebase.google.com/docs/rules">Rules</a>, <a href="https://firebase.google.com/docs/app-check">App Check</a>.</p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><!-- discovery-nav:start --><div role="navigation" aria-label="Site discovery"><a href="../">Home</a> · <a href="../install.html">Install</a> · <a href="../community.html">Community</a> · <a href="../blog.html">Blog</a> · <a href="../docs-index.html">Docs index</a> · <a href="../pages.html">Site map</a> · <a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a> · <a href="https://www.npmjs.com/package/ios-agent-mcp">npm</a></div><!-- discovery-nav:end --></footer></div></body></html>

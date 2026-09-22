@@ -2,13 +2,13 @@
 
 [Explore the website](https://nagarjuna2997.github.io/ios-agent-skill/) · [Choose your AI and install](https://nagarjuna2997.github.io/ios-agent-skill/install.html)
 
-## Version 2.7.1
+## Version 2.7.2
 
-Adds conservative launch-screen checks and local `apple analyze` / `apple prepare` drafts. See [release notes](https://nagarjuna2997.github.io/ios-agent-skill/releases.html) for scope and evidence.
+Adds semantic color generation/review, backend integration review and local guides for eight backend families. Existing launch-screen checks and local release drafts remain included. See [release notes](https://nagarjuna2997.github.io/ios-agent-skill/releases.html) for scope and evidence.
 
 Includes real appearance-aware color catalogs and offline SVG-layer app icons,
 Muse Code setup with verified MCP discovery, and refreshed public Apple references
-through September 16, 2026 (27.0 releases and separately labeled 27.2 betas).
+through September 21, 2026, with explicit beta and runtime-verification limits.
 The CLI is included automatically. User accounts, signing profiles and credentials
 are not package resources. Gemini CLI uses the repository extension; ChatGPT uses
 the skills package or a separately configured MCP connection. See the
@@ -20,7 +20,7 @@ the skills package or a separately configured MCP connection. See the
 claude mcp add ios-agent -- npx -y ios-agent-mcp@latest
 ```
 
-The published 2.7.1 server exposes 37 tools: 12 review/metadata tools, 8 Apple reference tools, 14 simulator tools, `create_app`, the local `prepare_issue_report` tool, and experimental `private_feedback`. App scaffolding and simulator packages install automatically as dependencies; no separate installation or MCP connection is needed. Remove the separate knowledge/simulator connections if you previously configured them to avoid duplicate tools.
+The 2.7.2 server exposes 40 tools: 15 review/generation/metadata tools, 8 Apple reference tools, 14 simulator tools, `create_app`, the local `prepare_issue_report` tool, and experimental `private_feedback`. App scaffolding and simulator packages install automatically as dependencies; no separate installation or MCP connection is needed. Remove the separate knowledge/simulator connections if you previously configured them to avoid duplicate tools.
 
 Create a starter directly:
 
@@ -44,7 +44,7 @@ This package includes two MCP binaries: `ios-agent-mcp` for local Swift project 
 npx -y --package=ios-agent-mcp@2.4.0 ios-agent-knowledge
 ```
 
-Knowledge tools search 405 technologies and 96 update/release-note sources, retrieve guides, plan an app implementation, and specify separate Icon Composer layers. They do not write apps, access arbitrary project paths or claim native icon generation. [Setup](https://nagarjuna2997.github.io/ios-agent-skill/install.html).
+Knowledge tools search 405 technologies and 98 update/release-note sources, retrieve guides, plan an app implementation, and specify separate Icon Composer layers. They do not write apps, access arbitrary project paths or claim native icon generation. [Setup](https://nagarjuna2997.github.io/ios-agent-skill/install.html).
 
 # ios-agent-mcp
 
@@ -341,3 +341,13 @@ The existing App Store audit and project analysis include target-aware static la
 collects selected-target facts, conservative feature/screen candidates, questions
 and hashed local draft packages. No Apple connection, AI provider, build, upload
 or submission is performed. See the [Phase 1 workflow and limitations](https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/tooling/local-release-package.md).
+
+## Color and backend tools (2.7.2)
+
+- `generate_color_system`: read-only palette preview with light/dark/high-contrast semantic roles and contrast evidence; no automatic project writes.
+- `review_color_system`: local Swift/catalog evidence and conservative color review.
+- `review_backend_integration`: supported service detection and credential-redacted auth, policy and transport findings. No provider network calls.
+
+[Color guide](https://nagarjuna2997.github.io/ios-agent-skill/guides/design-palette-generation.html) · [Backend guides](https://nagarjuna2997.github.io/ios-agent-skill/guides/backend-overview.html)
+
+The backend guides include login examples, not configured login services. Each app needs its own provider setup. Live sign-in, external SDK compilation and hosted-policy validation remain unverified. The full MCP suite passes 308 tests; no benchmark improvement is claimed.

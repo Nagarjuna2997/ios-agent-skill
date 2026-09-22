@@ -339,3 +339,7 @@ The optional `install.sh` requires an explicit `--client`. It clones source skil
 for Claude, Codex or Muse, and prints dedicated instructions for Gemini/ChatGPT.
 It does not configure MCP. Existing installs update only when the checkout has
 the expected origin, a clean worktree and the main branch.
+
+## Local color-system tools
+
+Source builds add `generate_color_system` and `review_color_system` to the existing stdio connection. They use no client-specific APIs and make no network calls or file writes. No new Claude, Codex, Gemini or Muse runtime verification is implied. The remote knowledge-only server does not run project analyzers. See [palette generation](../design/palette-generation.md). Not yet published to npm.

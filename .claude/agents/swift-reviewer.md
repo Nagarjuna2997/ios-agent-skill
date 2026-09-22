@@ -133,3 +133,7 @@ one is not.
   PLAUSIBLE (it looks wrong but you could not run it).
 - If the build fails, that is the finding. Report it first and stop reviewing
   style.
+
+## Backend lifecycle review
+
+For backend features, read `docs/backend/overview.md` and the matching provider guide. Review injected repositories, cancellation, bounded pagination/retries, account restoration and foreground recovery. Use `review_backend_integration` for concrete local evidence; use build/device tests for behavior. Missing keywords are not defects and provider documentation is not live-service verification.

@@ -1,0 +1,71 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/backend-app-architectures.html"><meta property="og:title" content="Backend architectures by app workflow"><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/backend-app-architectures.html"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css?v=guide-visuals-3"><link rel="stylesheet" href="../navigation.css?v=2"><script src="../appearance.js?v=2" defer=""></script><title>Backend architectures by app workflow</title><meta name="description" content="Keep feature models independent from service-specific records."><meta property="og:description" content="Keep feature models independent from service-specific records."><meta property="og:type" content="article"><meta property="og:site_name" content="iOS Agent Skill"><meta name="twitter:title" content="Backend architectures by app workflow"><meta name="twitter:description" content="Keep feature models independent from service-specific records."><meta name="twitter:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/backend-app-architectures.html"><meta name="robots" content="index,follow"><link rel="alternate" type="application/atom+xml" href="/ios-agent-skill/feed.xml" title="iOS Agent Skill"><script id="site-discovery-schema" type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Backend architectures by app workflow","image":"https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg","datePublished":"2026-09-16T20:25:44-05:00","dateModified":"2026-09-21T11:03:33-05:00","author":{"@type":"Person","name":"Nagarjuna"},"mainEntityOfPage":"https://nagarjuna2997.github.io/ios-agent-skill/guides/backend-app-architectures.html","url":"https://nagarjuna2997.github.io/ios-agent-skill/guides/backend-app-architectures.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../series.html">Guided series</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a><!-- release-link:start --><a class="release-link" href="../releases.html">What’s new <span aria-hidden="true">↗</span></a><!-- release-link:end --></div><button class="appearance-toggle" type="button" aria-label="Use dark appearance" aria-pressed="false"><span aria-hidden="true">☾</span><span class="appearance-label">Dark mode</span></button></nav><main id="main"><div class="article-back"><a class="btn secondary" href="../library.html">← Back to all frameworks &amp; guides</a><a class="btn secondary" href="../blog.html">All articles →</a></div><article class="blog-article"><header class="page-intro"><p class="eyebrow">Backend · Reference guide</p><h1>Backend architectures by app workflow</h1><p class="lead">Repository guidance for Backend architectures by app workflow. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/backend/app-architectures.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><p><a href="#visual-overview">Visual overview: workflow and architecture</a></p><div class="toc">
+<ul>
+<li><a href="#a-notes-apps-state-flow">A notes app's state flow</a></li>
+<li><a href="#avoid-hidden-coupling">Avoid hidden coupling</a></li>
+<li><a href="#evidence-to-keep">Evidence to keep</a></li>
+</ul>
+</div>
+</aside><section class="guide-visuals" aria-labelledby="visual-overview"><h2 id="visual-overview">Visual overview</h2>
+<p>Use the workflow to follow the task, and the architecture map to separate responsibilities. These are conceptual maps; the guide below defines implementation details and verification limits.</p>
+<figure class="guide-flow"><figcaption><span class="guide-visual-kicker">01 / Workflow</span>From intent to a checked result</figcaption><ol role="list"><li><span class="guide-step-number" aria-hidden="true">1</span><span>Choose feature contract</span><span class="guide-flow-arrow" aria-hidden="true">↓</span></li><li><span class="guide-step-number" aria-hidden="true">2</span><span>Separate repository and transport</span><span class="guide-flow-arrow" aria-hidden="true">↓</span></li><li><span class="guide-step-number" aria-hidden="true">3</span><span>Define offline ownership</span><span class="guide-flow-arrow" aria-hidden="true">↓</span></li><li><span class="guide-step-number" aria-hidden="true">4</span><span>Test failure transitions</span></li></ol></figure>
+<figure class="guide-architecture"><figcaption><span class="guide-visual-kicker">02 / Architecture</span>Responsibility boundaries</figcaption><ol role="list"><li><span class="guide-boundary-label">Boundary 1</span><strong>Swift feature model</strong></li><li><span class="guide-boundary-label">Boundary 2</span><strong>Backend architectures by app workflow</strong></li><li><span class="guide-boundary-label">Boundary 3</span><strong>Authorized server and local state</strong></li></ol><p class="guide-visual-note">Connected responsibilities, not a required class hierarchy or an execution trace.</p></figure></section><p>Keep feature models independent from service-specific records. The following are design options, not endorsements or live-tested deployments. Start with the failure state and choose a backend only after a small prototype verifies it.</p>
+<table>
+<thead>
+<tr>
+<th>App</th>
+<th>Suggested boundary</th>
+<th>Data and recovery design</th>
+<th>Check before shipping</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Notes</td>
+<td>Local store → sync repository → CloudKit or an authorized API</td>
+<td>Stable note IDs, tombstones, revision/conflict policy; local edit first</td>
+<td>Offline edit, account switch, delete/reappear race</td>
+</tr>
+<tr>
+<td>Social</td>
+<td>Feed repository → Supabase/Postgres or Firebase data + storage</td>
+<td>Server pagination, ownership policy, moderation, upload cleanup</td>
+<td>Cross-user denial, blocked content, cursor stability</td>
+</tr>
+<tr>
+<td>File storage</td>
+<td>Transfer coordinator → authorized object store</td>
+<td>File-backed uploads, progress/cancel, short-lived signed access, metadata record</td>
+<td>Interrupted upload, orphan cleanup, unauthorized download</td>
+</tr>
+<tr>
+<td>Chat</td>
+<td>Conversation store → realtime coordinator + catch-up API</td>
+<td>Message IDs, acknowledgements, ordering, dedupe and durable catch-up</td>
+<td>Disconnect during send, duplicate events, revoked membership</td>
+</tr>
+<tr>
+<td>Subscription</td>
+<td>StoreKit client → entitlement repository → trusted verification</td>
+<td>Server verifies transaction/entitlement contract; client boolean is not access control</td>
+<td>Expired/revoked entitlement, offline grace policy, replay</td>
+</tr>
+<tr>
+<td>Collaborative</td>
+<td>Local document → sync engine → shared records or revisioned server</td>
+<td>Explicit conflict/merge rules, participant permissions, change cursor</td>
+<td>Concurrent edits, removal from share, stale permissions</td>
+</tr>
+<tr>
+<td>Offline-first</td>
+<td>Local database + outbox → bounded sync worker</td>
+<td>Durable operation IDs, replay policy, tombstones and visible pending state</td>
+<td>Relaunch mid-sync, auth loss, repeated delivery, migration</td>
+</tr>
+</tbody>
+</table>
+<h2 id="a-notes-apps-state-flow">A notes app's state flow</h2>
+<p>The UI reads local notes. A repository accepts an edit and atomically records pending work. A sync owner sends it when authenticated, records the acknowledged revision, then updates local status. Incoming changes merge through the same repository. A view disappearing cancels view-owned fetches, not necessarily durable sync work. Account changes cancel and isolate both.</p>
+<h2 id="avoid-hidden-coupling">Avoid hidden coupling</h2>
+<p>Use DTO-to-domain mapping at the boundary. Do not put SDK singleton calls inside SwiftUI body, copy a token into each feature or create competing refresh loops. Tests inject an offline repository. Provider migration then replaces an adapter and data migration, rather than every screen. See <a href="backend-rest.html">REST</a> and <a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/samples/BackendPatterns/README.md">BackendPatterns</a>.</p>
+<h2 id="evidence-to-keep">Evidence to keep</h2>
+<p>Save exact SDK versions, policy tests, schema migration tests and device lifecycle outcomes. Test a rejected operation as carefully as a successful one. A compiled view is not evidence of authorized storage or correct offline synchronization. Consult <a href="backend-choosing-a-backend.html">choosing a backend</a>, <a href="backend-security.html">security</a> and <a href="backend-privacy.html">privacy</a>.</p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><!-- discovery-nav:start --><div role="navigation" aria-label="Site discovery"><a href="../">Home</a> · <a href="../install.html">Install</a> · <a href="../community.html">Community</a> · <a href="../blog.html">Blog</a> · <a href="../docs-index.html">Docs index</a> · <a href="../pages.html">Site map</a> · <a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a> · <a href="https://www.npmjs.com/package/ios-agent-mcp">npm</a></div><!-- discovery-nav:end --></footer></div></body></html>

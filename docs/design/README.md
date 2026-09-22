@@ -66,3 +66,7 @@ Why: density and reading length break.
 - [ ] Loading, empty, error, success, and offline states exist where relevant.
 - [ ] iPad layout is not a stretched phone screen.
 - [ ] Motion and haptics clarify state, not decoration.
+
+## Palette tooling
+
+Use [palette generation](palette-generation.md) to produce a four-appearance token preview compatible with the existing assets CLI. Use [color accessibility](color-accessibility.md) to interpret measured pairs. Only write or merge a catalog when requested; retain system semantics when custom colors add no value.
