@@ -2,7 +2,7 @@
 
 [Explore the website](https://nagarjuna2997.github.io/ios-agent-skill/) · [Choose your AI and install](https://nagarjuna2997.github.io/ios-agent-skill/install.html)
 
-## Version 2.7.2
+## Version 2.8.0
 
 Adds semantic color generation/review, backend integration review and local guides for eight backend families. Existing launch-screen checks and local release drafts remain included. See [release notes](https://nagarjuna2997.github.io/ios-agent-skill/releases.html) for scope and evidence.
 
@@ -20,7 +20,7 @@ the skills package or a separately configured MCP connection. See the
 claude mcp add ios-agent -- npx -y ios-agent-mcp@latest
 ```
 
-The 2.7.2 server exposes 40 tools: 15 review/generation/metadata tools, 8 Apple reference tools, 14 simulator tools, `create_app`, the local `prepare_issue_report` tool, and experimental `private_feedback`. App scaffolding and simulator packages install automatically as dependencies; no separate installation or MCP connection is needed. Remove the separate knowledge/simulator connections if you previously configured them to avoid duplicate tools.
+The 2.8.0 server exposes 56 tools, including the existing 40-tool set, seven Apple system-integration tools and nine Screenshot Studio tools. Optional AI/provider and environment workflows are additional CLI commands. App scaffolding and simulator packages install automatically as dependencies; no separate installation or MCP connection is needed. Remove the separate knowledge/simulator connections if you previously configured them to avoid duplicate tools.
 
 Create a starter directly:
 

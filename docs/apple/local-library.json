@@ -51,6 +51,13 @@
       "hash": "1fce4038a7b2bda2e8be6abe1c57c2769e90719a9a48ec134edff08ad6f7aa29"
     },
     {
+      "path": "docs/ai/providers.md",
+      "title": "Optional AI providers and Apple environment discovery",
+      "kind": "guide",
+      "characters": 6011,
+      "hash": "f8387e1d044ef7c144870db3bf2bd191c53737cb8f94992e6a5e48163c162d2b"
+    },
+    {
       "path": "docs/ai/README.md",
       "title": "AI and Apple Intelligence",
       "kind": "guide",
@@ -3211,8 +3218,8 @@
       "path": "docs/screenshots/README.md",
       "title": "App Store Screenshot Studio",
       "kind": "guide",
-      "characters": 8859,
-      "hash": "c98abb8561ebae0d0951fa6fd513fef1bbebedad504203d794015c12f281865a"
+      "characters": 9298,
+      "hash": "d37663c44735f9dbcca2cdeacf76fc722671e1ada632cd7ea804e799903250e7"
     },
     {
       "path": "docs/security/README.md",
