@@ -160,6 +160,26 @@
       "url": "https://www.libhunt.com/r/ios-agent-skill",
       "verifiedOn": "2026-09-21",
       "evidence": "Search-indexed project page identifies Nagarjuna2997/ios-agent-skill and its website, DEV posts and Show HN submission. Direct fetch returned an access error; mention counts are not treated as independent endorsements."
+    },
+    {
+      "id": "glama",
+      "platform": "Glama",
+      "kind": "directory",
+      "category": "Directory · index",
+      "description": "Lists the MCP server with its tool schemas and a source-repository link.",
+      "url": "https://glama.ai/mcp/servers/Nagarjuna2997/ios-agent-skill",
+      "verifiedOn": "2026-09-29",
+      "evidence": "Opened canonical listing and confirmed repository, npm package and tool schemas. Directory listing, not an endorsement."
+    },
+    {
+      "id": "enterprise-dna",
+      "platform": "Enterprise DNA",
+      "kind": "directory",
+      "category": "Directory · index",
+      "description": "Indexes the repository in its MCP server directory with installation information.",
+      "url": "https://enterprisedna.co/directories/mcp/nagarjuna2997-ios-agent-skill/",
+      "verifiedOn": "2026-09-29",
+      "evidence": "Opened exact repository listing. Page identifies itself as indexed from awesome-mcp-servers-punkpeye and enriched automatically; its assessments are not independently verified."
     }
   ]
 }
