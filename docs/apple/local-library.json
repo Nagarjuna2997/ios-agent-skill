@@ -3050,8 +3050,8 @@
       "path": "docs/integrations/README.md",
       "title": "Apple System Integrations",
       "kind": "guide",
-      "characters": 7836,
-      "hash": "4e8d60dc54254a1c3d1eb65aec4bc93ba1d13e3d89e2c2fd5ae5efb525888d84"
+      "characters": 7749,
+      "hash": "e491079bf9cf406fc4493e621a4039949d1d1c04fb0d0c715fdc373dc93304b4"
     },
     {
       "path": "docs/mcp/examples.md",
@@ -3218,8 +3218,8 @@
       "path": "docs/screenshots/README.md",
       "title": "App Store Screenshot Studio",
       "kind": "guide",
-      "characters": 9298,
-      "hash": "d37663c44735f9dbcca2cdeacf76fc722671e1ada632cd7ea804e799903250e7"
+      "characters": 9274,
+      "hash": "3b90844b689d1bbe60e81c259837ffae9ef4f5aa7bc05b0c6f083ef5e1b6f969"
     },
     {
       "path": "docs/security/README.md",

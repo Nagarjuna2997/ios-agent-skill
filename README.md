@@ -66,7 +66,7 @@ The [Reading List demo](samples/ReadingList/README.md) has persistence, search, 
   <img src="examples/reading-list/library.png" alt="Reading List running in the simulator" width="260">
 </a>
 
-npm 2.7.2 exposes 40 tools; this GitHub source exposes 56. The seven [Apple system integration tools](docs/integrations/README.md) and nine [Screenshot Studio tools](docs/screenshots/README.md) are not yet published to npm. Static reviews are heuristics, not compiler diagnostics. The Apple directory is a reference map, not Apple's proprietary framework source or proof of 405 working integrations. Token savings have not been benchmarked. [Build-loop verification limits](docs/tooling/app-building-loop.md).
+npm 2.8.0 exposes 56 tools, including seven [Apple system integration tools](docs/integrations/README.md) and nine [Screenshot Studio tools](docs/screenshots/README.md). Static reviews are heuristics, not compiler diagnostics. The Apple directory is a reference map, not Apple's proprietary framework source or proof of 405 working integrations. Token savings have not been benchmarked. [Build-loop verification limits](docs/tooling/app-building-loop.md).
 
 ## Why use this alongside Xcode?
 
@@ -113,7 +113,7 @@ https://www.producthunt.com/products/ios-agent-mcp?launch=ios-agent-mcp
 
 Backend integration guidance: [choose a service and review auth, data and security boundaries](docs/backend/overview.md).
 
-## Optional provider commands (source update)
+## Optional provider commands
 
 Use `ios-agent-mcp environment` to inspect the actual Xcode/SDK/simulator inventory.
 `ios-agent-mcp ai models` and `ai doctor` inspect the dated catalog and account/local availability.

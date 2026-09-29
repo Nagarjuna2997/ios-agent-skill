@@ -1,6 +1,6 @@
 # App Store Screenshot Studio
 
-Turn existing simulator captures into localized, reusable marketing layouts. **GitHub source only; not included in npm 2.7.2.** Screenshot Studio runs offline in the unified server and never uploads images. Existing [simulator capture](../tooling/ios-simulator-mcp.md), UI-test attachments and Fastlane snapshot output remain the capture layer.
+Turn existing simulator captures into localized, reusable marketing layouts. **Included in npm 2.8.0.** Screenshot Studio runs offline in the unified server and never uploads images. Existing [simulator capture](../tooling/ios-simulator-mcp.md), UI-test attachments and Fastlane snapshot output remain the capture layer.
 
 ```mermaid
 flowchart LR

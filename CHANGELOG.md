@@ -10,7 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ### Added -- 3.7.0
 
-- Prepared ios-agent-mcp 2.8.0: optional OpenAI Responses, Anthropic Messages, Gemini text adapters and compiled local Apple Foundation Models helper. Local-only defaults, explicit cloud allowlists, bounded retries and optional quota fallback.
+- ios-agent-mcp 2.8.0: optional OpenAI Responses, Anthropic Messages, Gemini text adapters and compiled local Apple Foundation Models helper. Local-only defaults, explicit cloud allowlists, bounded retries and optional quota fallback.
 - Dated model catalog plus account discovery, conservative retired-model handling and actionable sanitized failure categories.
 - Private configuration backups, hashed handoff files and resumable advisory role proposals. Roles do not execute app edits, builds or releases.
 - Apple family/version helpers and installed Xcode/Swift/SDK/simulator discovery; validated simulator CLI operations and current-state capture matrix.
@@ -19,7 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ### Limitations -- 3.7.0
 
 - This is a bounded implementation, not completion of every modernization phase. Text-only provider requests; no streaming, cloud tool execution, autonomous coding collaboration, PCC/Core AI/MLX adapters, Duo pose automation or new video/log streaming.
-- Local SDK is Xcode 26.6; 27-only APIs and real Duo behavior remain unverified. Cloud calls are mocked in tests; account access and paid inference are not claimed. npm publication pending authentication and final checks.
+- Local SDK is Xcode 26.6; 27-only APIs and real Duo behavior remain unverified. Cloud calls are mocked in tests; account access and paid inference are not claimed. npm publication accepted; package registry verification is recorded separately.
 
 
 ### Evidence -- 3.7.0

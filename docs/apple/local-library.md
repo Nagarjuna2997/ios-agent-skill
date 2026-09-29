@@ -443,7 +443,7 @@ Search offline with `node scripts/query-library.mjs search "SwiftData"`. Read a 
 | [docs/frameworks/visionkit.md](../../docs/frameworks/visionkit.md) | guide | 3464 |
 | [docs/frameworks/widgetkit.md](../../docs/frameworks/widgetkit.md) | guide | 28424 |
 | [docs/graphics/README.md](../../docs/graphics/README.md) | guide | 2319 |
-| [docs/integrations/README.md](../../docs/integrations/README.md) | guide | 7836 |
+| [docs/integrations/README.md](../../docs/integrations/README.md) | guide | 7749 |
 | [docs/mcp/examples.md](../../docs/mcp/examples.md) | guide | 12256 |
 | [docs/mcp/installation.md](../../docs/mcp/installation.md) | guide | 14810 |
 | [docs/mcp/knowledge-server.md](../../docs/mcp/knowledge-server.md) | guide | 3028 |
@@ -467,7 +467,7 @@ Search offline with `node scripts/query-library.mjs search "SwiftData"`. Read a 
 | [docs/platforms/tvos.md](../../docs/platforms/tvos.md) | guide | 12093 |
 | [docs/platforms/visionos.md](../../docs/platforms/visionos.md) | guide | 16735 |
 | [docs/platforms/watchos.md](../../docs/platforms/watchos.md) | guide | 13107 |
-| [docs/screenshots/README.md](../../docs/screenshots/README.md) | guide | 9298 |
+| [docs/screenshots/README.md](../../docs/screenshots/README.md) | guide | 9274 |
 | [docs/security/README.md](../../docs/security/README.md) | guide | 1933 |
 | [docs/swift/memory-lifetime.md](../../docs/swift/memory-lifetime.md) | guide | 6184 |
 | [docs/swift/swift-brain.md](../../docs/swift/swift-brain.md) | guide | 13046 |

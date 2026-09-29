@@ -1,6 +1,6 @@
 # Apple System Integrations
 
-Connect app features to Apple's user-controlled services with focused Swift previews and evidence-based configuration checks. Available from this GitHub source release; **not yet published to npm**. The npm 2.7.2 release remains unchanged. Source package 2.7.3 is reserved for a later npm release.
+Connect app features to Apple's user-controlled services with focused Swift previews and evidence-based configuration checks. Included in **npm 2.8.0**. Source package 2.7.3 is reserved for a later npm release.
 
 ## Agent workflow
 
