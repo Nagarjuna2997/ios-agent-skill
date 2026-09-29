@@ -97,9 +97,14 @@ describe("mcp server", () => {
     assert.deepEqual(names, [
       "analyze_swift_project",
       "audit_app_store_readiness",
+      "check_apple_capabilities",
+      "check_apple_permissions",
       "check_availability_guards",
       "generate_color_system",
+      "get_system_integration",
       "lint_skill",
+      "list_system_integrations",
+      "recommend_system_integrations",
       "review_app_intents",
       "review_backend_integration",
       "review_color_system",
@@ -110,6 +115,8 @@ describe("mcp server", () => {
       "review_swift_security",
       "review_swift_testing",
       "review_swiftui",
+      "review_system_integrations",
+      "scaffold_system_integration",
     ]);
   });
 

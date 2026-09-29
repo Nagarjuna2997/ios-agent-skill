@@ -2966,8 +2966,8 @@
       "path": "docs/frameworks/services/eventkit.md",
       "title": "EventKit",
       "kind": "guide",
-      "characters": 13185,
-      "hash": "14a7b1b9f498f15da1724a16aaaba1f76efe7891a212631abe8785b73622b926"
+      "characters": 13419,
+      "hash": "8534e305dfa4fa39ff9764cbaf1f4a5a5e9a58f082acd4f670e159c84b8104fb"
     },
     {
       "path": "docs/frameworks/services/passkit.md",
@@ -3040,6 +3040,13 @@
       "hash": "078fa12a47251a4974de5bf162b801753e757bcc8f97ab0e793317db5efac3e4"
     },
     {
+      "path": "docs/integrations/README.md",
+      "title": "Apple System Integrations",
+      "kind": "guide",
+      "characters": 7836,
+      "hash": "4e8d60dc54254a1c3d1eb65aec4bc93ba1d13e3d89e2c2fd5ae5efb525888d84"
+    },
+    {
       "path": "docs/mcp/examples.md",
       "title": "MCP Usage Examples",
       "kind": "guide",
@@ -3071,8 +3078,8 @@
       "path": "docs/mcp/tools.md",
       "title": "MCP Tool Reference",
       "kind": "guide",
-      "characters": 13477,
-      "hash": "4867f88168bd66059647605c5cd359d33e4798909a9e977f6d5e6064e718c0c6"
+      "characters": 14574,
+      "hash": "f52e0370cee9b8e315db1e4cb778445cd4d7626193f8c93704192f1752a38d60"
     },
     {
       "path": "docs/mcp/vnext-analysis-tools.md",
@@ -4221,6 +4228,104 @@
       "kind": "source",
       "characters": 9392,
       "hash": "6b5cccd657c3ffa2b97bf570d07579701572caf7e9c3fba685217b35893d27a4"
+    },
+    {
+      "path": "samples/SystemIntegrationDemo/Info.plist",
+      "title": "Info.plist",
+      "kind": "source",
+      "characters": 1010,
+      "hash": "93e6064c80ae8a099a96478c98d1896dd808f4769b6fb583d0965d8efa032d1e"
+    },
+    {
+      "path": "samples/SystemIntegrationDemo/README.md",
+      "title": "SystemIntegrationDemo",
+      "kind": "guide",
+      "characters": 1402,
+      "hash": "52d910b8e6cbeee551a3842647182916b3dc7ff8171b07eaaba444e87ef4cf5d"
+    },
+    {
+      "path": "samples/SystemIntegrationDemo/Sources/CalendarService.swift",
+      "title": "CalendarService.swift",
+      "kind": "source",
+      "characters": 2290,
+      "hash": "bc28dd6b9dcd9c1c2f3e0855e3e8c0b9799226081e70a81f3f2b1f7f69d737e4"
+    },
+    {
+      "path": "samples/SystemIntegrationDemo/Sources/CameraService.swift",
+      "title": "CameraService.swift",
+      "kind": "source",
+      "characters": 2312,
+      "hash": "779b74fe76bd6a6795f1fc44f098b0a040ed181e09a920cd1c8ebfbf1625b540"
+    },
+    {
+      "path": "samples/SystemIntegrationDemo/Sources/ContactsService.swift",
+      "title": "ContactsService.swift",
+      "kind": "source",
+      "characters": 2597,
+      "hash": "0a4103211e8ca82f74313630a3d4bed359960c391c3f0f581113e1c245748426"
+    },
+    {
+      "path": "samples/SystemIntegrationDemo/Sources/DemoApp.swift",
+      "title": "DemoApp.swift",
+      "kind": "source",
+      "characters": 3503,
+      "hash": "3a6d82302519fa5958655a41812d62e3944b7ded626d914f013b0d011354db66"
+    },
+    {
+      "path": "samples/SystemIntegrationDemo/Sources/DocumentService.swift",
+      "title": "DocumentService.swift",
+      "kind": "source",
+      "characters": 1703,
+      "hash": "9f39f1c160529e61eb47f51e069c4e5e67fede5daa288eaf6ddcbc5808dfde21"
+    },
+    {
+      "path": "samples/SystemIntegrationDemo/Sources/IntegrationIntent.swift",
+      "title": "IntegrationIntent.swift",
+      "kind": "source",
+      "characters": 900,
+      "hash": "582481b5bcbb94b2fcd268a6f7a9dcfb208db14b12ff2c4f98cc687f75d43fbd"
+    },
+    {
+      "path": "samples/SystemIntegrationDemo/Sources/MapsService.swift",
+      "title": "MapsService.swift",
+      "kind": "source",
+      "characters": 1079,
+      "hash": "d0b0f467476364564d66c250ff1f9cfe678346a776cd066ec3ef1c69722ac590"
+    },
+    {
+      "path": "samples/SystemIntegrationDemo/Sources/NotificationService.swift",
+      "title": "NotificationService.swift",
+      "kind": "source",
+      "characters": 2372,
+      "hash": "74fd4a28c7183a562aacaffe3aaed79b4d9fdf7285687c1ad352a1c565acc1e2"
+    },
+    {
+      "path": "samples/SystemIntegrationDemo/Sources/PhotoLibraryService.swift",
+      "title": "PhotoLibraryService.swift",
+      "kind": "source",
+      "characters": 1917,
+      "hash": "a94686c8da4aa73d54104430fffb94487172d385e9e9d96f72f23e6442a720ae"
+    },
+    {
+      "path": "samples/SystemIntegrationDemo/Sources/ReminderService.swift",
+      "title": "ReminderService.swift",
+      "kind": "source",
+      "characters": 1669,
+      "hash": "9e4363452063d3433a93bff7059136b2d8a4cf6cbaaafdfca944130a56c24c0f"
+    },
+    {
+      "path": "samples/SystemIntegrationDemo/Sources/ShareSheet.swift",
+      "title": "ShareSheet.swift",
+      "kind": "source",
+      "characters": 805,
+      "hash": "818d564ddf79d988d93058c620d353675f4e86165dffe6f1e83ea78da7124f3b"
+    },
+    {
+      "path": "samples/SystemIntegrationDemo/SystemIntegrationDemo.xcodeproj/project.pbxproj",
+      "title": "project.pbxproj",
+      "kind": "source",
+      "characters": 5895,
+      "hash": "f1657d88457a62462db582468b7f6aca28daeb2d856d14a78ebe0f529592cf91"
     },
     {
       "path": "templates/ci-cd/github-actions.yml",

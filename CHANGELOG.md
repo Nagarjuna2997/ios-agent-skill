@@ -6,6 +6,31 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+## [3.6.3] -- 2026-09-29
+
+GitHub source release only. npm remains **ios-agent-mcp 2.7.2**; no package published. Source package version 2.7.3 is reserved for the next npm release.
+
+### Added -- 3.6.3
+
+- Seven Apple System Integrations MCP tools: registry lookup, evidence-based recommendations, Swift preview scaffolding, integration review, permission checks and capability checks. Source tool count: 40 → 47.
+- Ten iOS 17+ integration workflows, reusable Swift components, an unsigned demo and a registry-generated website page.
+
+### Fixed -- 3.6.3
+
+- Reuse concrete permission-operation evidence in the existing App Store analyzer; PhotosPicker, coordinate-only Maps, Contacts picker and AVFoundation playback no longer imply broad access.
+- Distinguish unresolved configuration from missing selected-target privacy keys and capabilities; reuse the existing App Intents reviewer.
+
+### Evidence -- 3.6.3
+
+- 359 MCP tests, 67 CLI tests, 16 simulator-tool tests, 16 Python documentation tests and 4 discovery tests pass. Offline benchmark harness regressions pass; no scored trials were run.
+- All demo Swift sources typecheck in Swift 6 mode with warnings as errors against iOS Simulator SDK 26.5, deployment target iOS 17. Unsigned simulator Xcode build succeeds.
+- Independent read-only review approved the repaired permission, capability and Swift isolation behavior. Runtime device/account behavior remains unverified.
+
+### Limitations -- 3.6.3
+
+- Scaffolding returns previews and never writes project files. Custom camera video/scanning, app-owned entity queries, location delegation and provisioning remain guide-driven integration work.
+- Static checks cannot prove runtime authorization UI, device hardware behavior, service delivery or complete target membership. Historical benchmark evidence remains unchanged.
+
 ## [3.6.2] -- 2026-09-22
 
 Package: **ios-agent-mcp 2.7.2**. One combined patch release; CLI and simulator dependency versions stay unchanged.

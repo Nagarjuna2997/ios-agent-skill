@@ -44,6 +44,7 @@ For an existing app, provide its absolute project path and ask for a focused rev
 | Verify on a simulator | Build, test, install, launch and capture screenshots through Xcode. |
 | Review launch screens | Conservative target-aware checks for launch configuration, storyboards and asset references. |
 | Prepare a local release draft | Inspect selected-target facts, unresolved questions and hashed, resumable local packages without connecting to Apple. |
+| Apple system integrations (GitHub source) | Preview and review Calendar, Reminders, Contacts, Photos, Camera, Maps, Files, Sharing, Shortcuts and Notifications with permission and capability evidence. |
 <!-- product-features:end -->
 
 [Asset generation](docs/design/asset-generation.md) · [Review tools](docs/mcp/tools.md) · [Simulator setup](docs/tooling/ios-simulator-mcp.md) · [Apple release status](docs/apple/ios-27-release-verification.md)
@@ -64,7 +65,7 @@ The [Reading List demo](samples/ReadingList/README.md) has persistence, search, 
   <img src="examples/reading-list/library.png" alt="Reading List running in the simulator" width="260">
 </a>
 
-The 2.7.2 server exposes 40 tools. Static reviews are heuristics, not compiler diagnostics. The Apple directory is a reference map, not Apple's proprietary framework source or proof of 405 working integrations. Token savings have not been benchmarked. [Build-loop verification limits](docs/tooling/app-building-loop.md).
+npm 2.7.2 exposes 40 tools; this GitHub source release exposes 47. The seven new [Apple system integration tools](docs/integrations/README.md) are not yet published to npm. Static reviews are heuristics, not compiler diagnostics. The Apple directory is a reference map, not Apple's proprietary framework source or proof of 405 working integrations. Token savings have not been benchmarked. [Build-loop verification limits](docs/tooling/app-building-loop.md).
 
 ## Why use this alongside Xcode?
 

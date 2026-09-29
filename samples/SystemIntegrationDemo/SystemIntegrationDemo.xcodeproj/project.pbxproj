@@ -1,0 +1,36 @@
+// !$*UTF8*$!
+{archiveVersion = 1; classes = {}; objectVersion = 56; objects = {
+000000000000000000000064 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/CalendarService.swift; sourceTree = SOURCE_ROOT;};
+0000000000000000000000C8 = {isa = PBXBuildFile; fileRef = 000000000000000000000064;};
+000000000000000000000065 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/CameraService.swift; sourceTree = SOURCE_ROOT;};
+0000000000000000000000C9 = {isa = PBXBuildFile; fileRef = 000000000000000000000065;};
+000000000000000000000066 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/ContactsService.swift; sourceTree = SOURCE_ROOT;};
+0000000000000000000000CA = {isa = PBXBuildFile; fileRef = 000000000000000000000066;};
+000000000000000000000067 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/DemoApp.swift; sourceTree = SOURCE_ROOT;};
+0000000000000000000000CB = {isa = PBXBuildFile; fileRef = 000000000000000000000067;};
+000000000000000000000068 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/DocumentService.swift; sourceTree = SOURCE_ROOT;};
+0000000000000000000000CC = {isa = PBXBuildFile; fileRef = 000000000000000000000068;};
+000000000000000000000069 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/IntegrationIntent.swift; sourceTree = SOURCE_ROOT;};
+0000000000000000000000CD = {isa = PBXBuildFile; fileRef = 000000000000000000000069;};
+00000000000000000000006A = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/MapsService.swift; sourceTree = SOURCE_ROOT;};
+0000000000000000000000CE = {isa = PBXBuildFile; fileRef = 00000000000000000000006A;};
+00000000000000000000006B = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/NotificationService.swift; sourceTree = SOURCE_ROOT;};
+0000000000000000000000CF = {isa = PBXBuildFile; fileRef = 00000000000000000000006B;};
+00000000000000000000006C = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/PhotoLibraryService.swift; sourceTree = SOURCE_ROOT;};
+0000000000000000000000D0 = {isa = PBXBuildFile; fileRef = 00000000000000000000006C;};
+00000000000000000000006D = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/ReminderService.swift; sourceTree = SOURCE_ROOT;};
+0000000000000000000000D1 = {isa = PBXBuildFile; fileRef = 00000000000000000000006D;};
+00000000000000000000006E = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/ShareSheet.swift; sourceTree = SOURCE_ROOT;};
+0000000000000000000000D2 = {isa = PBXBuildFile; fileRef = 00000000000000000000006E;};
+000000000000000000000001 = {isa = PBXProject; buildConfigurationList = 000000000000000000000008; compatibilityVersion = "Xcode 14.0"; mainGroup = 000000000000000000000002; projectDirPath = ""; targets = (000000000000000000000003,);};
+000000000000000000000002 = {isa = PBXGroup; children = (000000000000000000000064,000000000000000000000065,000000000000000000000066,000000000000000000000067,000000000000000000000068,000000000000000000000069,00000000000000000000006A,00000000000000000000006B,00000000000000000000006C,00000000000000000000006D,00000000000000000000006E,000000000000000000000004,); sourceTree = "<group>";};
+000000000000000000000003 = {isa = PBXNativeTarget; buildConfigurationList = 000000000000000000000009; buildPhases = (000000000000000000000005,); buildRules = (); dependencies = (); name = SystemIntegrationDemo; productName = SystemIntegrationDemo; productReference = 000000000000000000000004; productType = "com.apple.product-type.application";};
+000000000000000000000004 = {isa = PBXFileReference; explicitFileType = wrapper.application; path = SystemIntegrationDemo.app; sourceTree = BUILT_PRODUCTS_DIR;};
+000000000000000000000005 = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (0000000000000000000000C8,0000000000000000000000C9,0000000000000000000000CA,0000000000000000000000CB,0000000000000000000000CC,0000000000000000000000CD,0000000000000000000000CE,0000000000000000000000CF,0000000000000000000000D0,0000000000000000000000D1,0000000000000000000000D2,); runOnlyForDeploymentPostprocessing = 0;};
+000000000000000000000008 = {isa = XCConfigurationList; buildConfigurations = (00000000000000000000000A,00000000000000000000000B,); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release;};
+000000000000000000000009 = {isa = XCConfigurationList; buildConfigurations = (00000000000000000000000C,00000000000000000000000D,); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release;};
+00000000000000000000000A = {isa = XCBuildConfiguration; name = Debug; buildSettings = {ALWAYS_SEARCH_USER_PATHS = NO; SDKROOT = iphoneos; IPHONEOS_DEPLOYMENT_TARGET = 17.0; SWIFT_VERSION = 6.0;};};
+00000000000000000000000B = {isa = XCBuildConfiguration; name = Release; buildSettings = {ALWAYS_SEARCH_USER_PATHS = NO; SDKROOT = iphoneos; IPHONEOS_DEPLOYMENT_TARGET = 17.0; SWIFT_VERSION = 6.0;};};
+00000000000000000000000C = {isa = XCBuildConfiguration; name = Debug; buildSettings = {ALWAYS_SEARCH_USER_PATHS = NO; SDKROOT = iphoneos; IPHONEOS_DEPLOYMENT_TARGET = 17.0; SWIFT_VERSION = 6.0; PRODUCT_BUNDLE_IDENTIFIER = "org.example.SystemIntegrationDemo"; PRODUCT_NAME = "$(TARGET_NAME)"; INFOPLIST_FILE = Info.plist; TARGETED_DEVICE_FAMILY = "1,2"; CODE_SIGNING_ALLOWED = NO;};};
+00000000000000000000000D = {isa = XCBuildConfiguration; name = Release; buildSettings = {ALWAYS_SEARCH_USER_PATHS = NO; SDKROOT = iphoneos; IPHONEOS_DEPLOYMENT_TARGET = 17.0; SWIFT_VERSION = 6.0; PRODUCT_BUNDLE_IDENTIFIER = "org.example.SystemIntegrationDemo"; PRODUCT_NAME = "$(TARGET_NAME)"; INFOPLIST_FILE = Info.plist; TARGETED_DEVICE_FAMILY = "1,2"; CODE_SIGNING_ALLOWED = NO;};};
+}; rootObject = 000000000000000000000001;}

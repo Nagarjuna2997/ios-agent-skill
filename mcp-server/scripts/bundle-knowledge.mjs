@@ -12,3 +12,6 @@ console.log(`Bundled ${catalog.technologies.length} technologies and ${bundle.up
 
 for (const name of ['local-library.mjs','local-library.d.mts']) copyFileSync(new URL('../../scripts/lib/'+name,import.meta.url), new URL('../data/'+name,import.meta.url));
 console.log(`Bundled ${bundle.library.files.length} local files in ${Object.keys(bundle.library.blobs).length} deduplicated objects`);
+
+mkdirSync(new URL("../data/integrations/", import.meta.url), {recursive:true});
+for (const name of ['CalendarService.swift', 'ReminderService.swift', 'ContactsService.swift', 'PhotoLibraryService.swift', 'CameraService.swift', 'MapsService.swift', 'DocumentService.swift', 'ShareSheet.swift', 'IntegrationIntent.swift', 'NotificationService.swift']) copyFileSync(new URL("../../samples/SystemIntegrationDemo/Sources/"+name,import.meta.url),new URL("../data/integrations/"+name,import.meta.url));

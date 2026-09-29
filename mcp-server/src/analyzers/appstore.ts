@@ -2,17 +2,7 @@ import { Finding, SourceFile, eachLine, isSupportFile } from "./types.js";
 
 const DOC = "checklists/app-store-submission.md";
 
-/** Frameworks whose use requires a purpose string in Info.plist. */
-const PERMISSION_FRAMEWORKS: Array<{ pattern: RegExp; key: string; what: string }> = [
-  { pattern: /\bCLLocationManager\b|import\s+CoreLocation/, key: "NSLocationWhenInUseUsageDescription", what: "location" },
-  { pattern: /\bAVCaptureDevice\b|import\s+AVFoundation/, key: "NSCameraUsageDescription", what: "camera" },
-  { pattern: /\bPHPhotoLibrary\b|import\s+Photos\b/, key: "NSPhotoLibraryUsageDescription", what: "the photo library" },
-  { pattern: /\bHKHealthStore\b|import\s+HealthKit/, key: "NSHealthShareUsageDescription", what: "health data" },
-  { pattern: /\bCNContactStore\b|import\s+Contacts\b/, key: "NSContactsUsageDescription", what: "contacts" },
-  { pattern: /\bCBCentralManager\b|import\s+CoreBluetooth/, key: "NSBluetoothAlwaysUsageDescription", what: "Bluetooth" },
-  { pattern: /\bSFSpeechRecognizer\b|import\s+Speech\b/, key: "NSSpeechRecognitionUsageDescription", what: "speech recognition" },
-  { pattern: /\bEKEventStore\b|import\s+EventKit/, key: "NSCalendarsUsageDescription", what: "calendars" },
-];
+import { permissionEvidence } from "../integrations/permissions.js";
 
 export interface ProjectContext {
   /** Contents of Info.plist files found in the project, concatenated. */
@@ -57,22 +47,13 @@ export function analyzeAppStore(
       excerpt: excerpt.trim(),
     });
 
-  // Permission-gated framework used with no purpose string.
-  for (const framework of PERMISSION_FRAMEWORKS) {
-    if (!framework.pattern.test(file.content)) continue;
-    if (context.infoPlist.includes(framework.key)) continue;
-
-    const line =
-      file.content.split("\n").findIndex((l) => framework.pattern.test(l)) + 1;
-    push(
-      Math.max(line, 1),
-      framework.key,
-      "missing-purpose-string",
-      "blocker",
-      `Uses ${framework.what} but Info.plist has no ${framework.key}.`,
-      "iOS terminates the app the moment the permission is requested, and App Review rejects the submission.",
-      `Add ${framework.key} to Info.plist with a specific sentence explaining why the app needs ${framework.what}.`,
-    );
+  // Reuse concrete operation evidence. Imports and picker-only use are not permission requests.
+  for (const evidence of permissionEvidence(file.content)) {
+    if (context.infoPlist.includes(evidence.key)) continue;
+    push(evidence.line, evidence.operation, "missing-purpose-string", "serious",
+      `Detected ${evidence.key} requirement; key not found in scanned configuration.`,
+      "The operation may be denied or terminate if the effective app configuration lacks this key.",
+      `Verify selected-target generated settings, then add ${evidence.key} with a specific purpose if absent.`);
   }
 
   eachLine(file, (line, number) => {

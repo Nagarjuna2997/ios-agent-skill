@@ -1383,7 +1383,7 @@ Share Feedback
 # Documentation index
 https://nagarjuna2997.github.io/ios-agent-skill/docs-index.html
 
-Documentation indexBrowse the repository’s documentation indexes and their linked source guides on GitHub.AI and Apple IntelligenceProfessional Motion and AnimationApple Framework Indexdocs/frameworks/apple-intelligence.mddocs/frameworks/core-ai.mddocs/frameworks/ml/coreml.mddocs/frameworks/core-spotlight-rag.mddocs/testing/evaluations.mddocs/frameworks/foundation-models.mddocs/frameworks/extended-apple-frameworks.mddocs/frameworks/ml/natural-language.mddocs/frameworks/ml/sound-analysis.mddocs/frameworks/ml/speech.mddocs/frameworks/ml/translation.mddocs/frameworks/ml/vision.mddocs/frameworks/authentication-services.mddocs/frameworks/cryptokit.mddocs/frameworks/device-integrity.mddocs/frameworks/local-authentication.mddocs/frameworks/avfoundation.mddocs/frameworks/photosui.mddocs/frameworks/services/passkit.mddocs/frameworks/storekit.mddocs/frameworks/activitykit.mddocs/frameworks/app-clips.mddocs/frameworks/app-intents.mddocs/frameworks/swift-charts.mddocs/swiftui/views-and-controls.mddocs/frameworks/tipkit.mddocs/uikit/uikit-essentials.mddocs/frameworks/visionkit.mddocs/frameworks/widgetkit.mddocs/frameworks/cloudkit.mddocs/frameworks/core-data.mddocs/frameworks/data-concurrency.mddocs/frameworks/foundation.mddocs/frameworks/swiftdata.mddocs/design/stunning-ui-patterns.mddocs/design/liquid-glass-adoption.mddocs/web/native-vs-web-animation.mddocs/swiftui/animations.mddocs/tooling/device-hub.mddocs/tooling/fm-cli.mddocs/tooling/foundation-models-instruments.mddocs/tooling/ios-simulator-mcp.mddocs/tooling/xcode-27-agents.mddocs/frameworks/arkit.mddocs/frameworks/metal.mddocs/frameworks/realitykit.mddocs/frameworks/scenekit.mddocs/frameworks/hardware/core-motion.mddocs/frameworks/hardware/core-nfc.mddocs/frameworks/hardware/healthkit.mddocs/frameworks/hardware/core-bluetooth.mddocs/frameworks/network-framework.mddocs/frameworks/networking.mddocs/platforms/ios.mddocs/platforms/macos.mddocs/platforms/tvos.mddocs/platforms/visionos.mddocs/platforms/watchos.mddocs/frameworks/background-tasks.mddocs/frameworks/services/contacts.mddocs/frameworks/core-location.mddocs/frameworks/services/eventkit.mddocs/frameworks/hardware/homekit.mddocs/frameworks/mapkit.mddocs/frameworks/oslog.mddocs/frameworks/usernotifications.mddocs/frameworks/services/weatherkit.mdData and PersistenceProfessional UI/UX Systempalette generationcolor accessibilityGraphics, 3D, and Spatial DevelopmentNetworking and Connectivitybackend knowledge layerPerformanceSecurity, Authentication, and PrivacyWebKit and JavaScript Interoperability
+Documentation indexBrowse the repository’s documentation indexes and their linked source guides on GitHub.AI and Apple IntelligenceProfessional Motion and AnimationApple Framework Indexdocs/frameworks/apple-intelligence.mddocs/frameworks/core-ai.mddocs/frameworks/ml/coreml.mddocs/frameworks/core-spotlight-rag.mddocs/testing/evaluations.mddocs/frameworks/foundation-models.mdFramework referencedocs/frameworks/ml/natural-language.mddocs/frameworks/ml/sound-analysis.mddocs/frameworks/ml/speech.mddocs/frameworks/ml/translation.mddocs/frameworks/ml/vision.mddocs/frameworks/authentication-services.mddocs/frameworks/cryptokit.mddocs/frameworks/device-integrity.mddocs/frameworks/local-authentication.mdAVFoundationPhotosUIdocs/frameworks/services/passkit.mddocs/frameworks/storekit.mddocs/frameworks/activitykit.mddocs/frameworks/app-clips.mdApp Intentsdocs/frameworks/swift-charts.mddocs/swiftui/views-and-controls.mddocs/frameworks/tipkit.mddocs/uikit/uikit-essentials.mdVisionKitdocs/frameworks/widgetkit.mddocs/frameworks/cloudkit.mddocs/frameworks/core-data.mddocs/frameworks/data-concurrency.mdFoundationdocs/frameworks/swiftdata.mddocs/design/stunning-ui-patterns.mddocs/design/liquid-glass-adoption.mddocs/web/native-vs-web-animation.mddocs/swiftui/animations.mddocs/tooling/device-hub.mddocs/tooling/fm-cli.mddocs/tooling/foundation-models-instruments.mddocs/tooling/ios-simulator-mcp.mddocs/tooling/xcode-27-agents.mddocs/frameworks/arkit.mddocs/frameworks/metal.mddocs/frameworks/realitykit.mddocs/frameworks/scenekit.mddocs/frameworks/hardware/core-motion.mddocs/frameworks/hardware/core-nfc.mddocs/frameworks/hardware/healthkit.mddocs/frameworks/hardware/core-bluetooth.mddocs/frameworks/network-framework.mddocs/frameworks/networking.mddocs/platforms/ios.mddocs/platforms/macos.mddocs/platforms/tvos.mddocs/platforms/visionos.mddocs/platforms/watchos.mddocs/frameworks/background-tasks.mdContactsdocs/frameworks/core-location.mdEventKitdocs/frameworks/hardware/homekit.mdMapKitdocs/frameworks/oslog.mdUserNotificationsdocs/frameworks/services/weatherkit.mdData and PersistenceProfessional UI/UX Systempalette generationcolor accessibilityGraphics, 3D, and Spatial DevelopmentApple System IntegrationsNetworking and Connectivitybackend knowledge layerPerformanceSecurity, Authentication, and PrivacyWebKit and JavaScript Interoperability
 
 ---
 
@@ -38009,24 +38009,25 @@ Calendar or reminder dataBoundary 3
 Editing UIConnected responsibilities, not a required class hierarchy or an execution trace.
 EKEventStore Setup and Authorization
 
-Add to
-Info.plist
-:
--
-NSCalendarsUsageDescription
- — required for calendar access
--
+Choose purpose strings for the operations and OS paths you actually use:
+- iOS 17+ calendar reads/edits:
 NSCalendarsFullAccessUsageDescription
- — iOS 17+ full access
--
+.
+- iOS 17+ write-only calendar creation:
 NSCalendarsWriteOnlyAccessUsageDescription
- — iOS 17+ write-only access
--
-NSRemindersUsageDescription
- — required for reminders access
--
+.
+- iOS 17+ reminders:
 NSRemindersFullAccessUsageDescription
- — iOS 17+ reminders
+.
+- Legacy paths on iOS 16 and earlier:
+NSCalendarsUsageDescription
+ or
+NSRemindersUsageDescription
+, respectively.
+
+System event editing can avoid broad access. Do not add every key merely for importing EventKit. See
+integration previews and verification
+.
 
 import EventKit
 
@@ -44957,6 +44958,7 @@ Structured output
 Limits
 review_app_intents
 Color and backend scope
+Apple system integrations (GitHub source release)
 
 Visual overview
 
@@ -45670,6 +45672,60 @@ color review
  and
 backend integration
 . All three tools are read-only. Provider logins require app-specific configuration; static evidence is not live-service verification.
+
+Apple system integrations (GitHub source release)
+
+Seven additional read-only tools are available from a local source build, bringing the unified catalog from 40 to 47. They are not in npm 2.7.2 yet. See
+workflow, supported operations and limits
+.
+
+Tool
+
+Input
+
+Result
+
+list_system_integrations
+
+none
+
+Ten supported integration records
+
+get_system_integration
+
+integration
+
+Frameworks, permissions, guides and verification
+
+recommend_system_integrations
+
+path, optional infoPlist/entitlements
+
+Evidence-backed next checks only
+
+scaffold_system_integration
+
+path, integration, optional operations
+
+Swift file preview; no writes
+
+review_system_integrations
+
+path, optional infoPlist/entitlements
+
+Privacy/capability evidence and existing App Intents findings
+
+check_apple_permissions
+
+path, optional infoPlist/entitlements
+
+Required versus detected keys, unknown configuration explicit
+
+check_apple_capabilities
+
+path, optional infoPlist/entitlements
+
+Supported entitlement checks, separate from privacy strings
 
 ---
 
@@ -61648,6 +61704,8 @@ Keep your favorite AI. Give it a focused toolkit for the work of building an App
 
 09Prepare a local release draftInspect selected-target facts, unresolved questions and hashed, resumable local packages without connecting to Apple.
 
+10Apple system integrations (GitHub source)Preview and review Calendar, Reminders, Contacts, Photos, Camera, Maps, Files, Sharing, Shortcuts and Notifications with permission and capability evidence.
+
 Your agent implements the app and verifies the result. Local simulator tools require a Mac with Xcode. The features above are available in ios-agent-mcp 2.7.2.
 What changed in 2.7.2 →
 One package. Your choice.
@@ -61792,6 +61850,69 @@ Troubleshooting and full client documentation ↗
 
 ---
 
+# Apple system integrations for iOS agents
+https://nagarjuna2997.github.io/ios-agent-skill/integrations.html
+
+Apple system integrations
+Focused Swift previews and permission checks for the services your app uses.
+GitHub source release only. npm 2.7.2 does not include these seven new tools yet.
+← Home
+ ·
+Client setup
+ ·
+Agent workflow and limitations
+EventKit · EventKitUICalendarUse system event editing for user-confirmed creation without broad access; use explicit full access only for reading/editing existing events.Operations:
+ authorize, calendars, fetch, create, update, delete, alarmsPermissions:
+ NSCalendarsFullAccessUsageDescription for read/write; NSCalendarsWriteOnlyAccessUsageDescription for write-onlyVerification:
+ iOS 17 authorization APIs; legacy keys only for older OS paths. Simulator account data differs from device. Recurring edits require an explicit span; do not delete silently. Device verification required before shipping.Apple framework documentation
+
+EventKitRemindersRequest reminders access separately from calendars; let the user choose a writable list.Operations:
+ authorize, lists, create, due-date, priority, notes, complete, recurrencePermissions:
+ NSRemindersFullAccessUsageDescriptionVerification:
+ Verify device accounts, due-date time zones and recurrence. No write-only reminders authorization. Device verification required before shipping.Apple framework documentation
+
+Contacts · ContactsUIContactsPrefer CNContactPickerViewController for user-selected contacts. Direct store access must respect limited authorization.Operations:
+ pick, authorize, fetch, search, create, update, thumbnailPermissions:
+ NSContactsUsageDescription for direct store access onlyVerification:
+ Limited access does not imply an empty address book. Do not escalate to full access automatically. Test limited contacts on an iOS 18+ device. Device verification required before shipping.Apple framework documentation
+
+PhotosUI · PhotosPhotosUse PhotosPicker for import without broad permission. Request add-only access only when saving.Operations:
+ pick-multiple, filter, load-transferable, save-image, save-videoPermissions:
+ NSPhotoLibraryAddUsageDescription for add-only; NSPhotoLibraryUsageDescription for read/writeVerification:
+ Cloud-backed selections can fail or be cancelled; test offline and large media. Limited library access is a valid read/write authorization state. Device verification required before shipping.Apple framework documentation
+
+AVFoundation · UIKitCameraUse a presented capture controller for still photos; use AVFoundation for custom video pipelines and VisionKit/metadata output for scanning.Operations:
+ authorize, capture-photo, switch-camera, video-guidance, barcode-guidancePermissions:
+ NSCameraUsageDescription; NSMicrophoneUsageDescription only for audio recordingVerification:
+ Camera availability must be checked at runtime. Simulator cannot verify hardware capture. Video and barcode support are guidance routes, not generated custom capture pipelines. Device verification required before shipping.Apple framework documentation
+
+MapKit · CoreLocationMapsMapKit coordinates, search and opening Maps do not require device-location access. Keep location authorization separate.Operations:
+ map, annotations, search, directions, open-maps, current-location-guidancePermissions:
+ NSLocationWhenInUseUsageDescription only when accessing device locationVerification:
+ Search/directions require network; Simulator coordinates do not prove device accuracy. Maps routing UI remains system-controlled. Device verification required before shipping.Apple framework documentation
+
+SwiftUI · UniformTypeIdentifiersFilesUse fileImporter/fileExporter and FileDocument; balance security-scoped access with defer.Operations:
+ import, export, security-scope, pdfPermissions:
+ No broad-data permission for the supplied system UI workflow.Verification:
+ Test real document providers, cancellation and unavailable files on device. Provider access is user-mediated, not unrestricted filesystem access. Device verification required before shipping.Apple framework documentation
+
+SwiftUI · UIKitShare SheetUse ShareLink for Transferable values or UIActivityViewController for mixed items. AirDrop is a system destination.Operations:
+ text, url, image, pdf, filePermissions:
+ No broad-data permission for the supplied system UI workflow.Verification:
+ User chooses the destination and confirms. There is no public direct AirDrop-send API. Available destinations vary by device, installed apps and restrictions. Device verification required before shipping.Apple framework documentation
+
+AppIntentsSiri and ShortcutsExpose a real app action through AppIntent; use AppEntity/EntityQuery for app-owned data and reuse the App Intents reviewer.Operations:
+ intent, parameters, app-shortcuts, entity-guidance, deep-link-guidancePermissions:
+ No broad-data permission for the supplied system UI workflow.Verification:
+ A generic scaffold cannot infer your entity store or app navigation. Device testing is needed for Siri discovery; an AppIntent does not grant data access or require the legacy Siri entitlement. Device verification required before shipping.Apple framework documentation
+
+UserNotificationsNotificationsRequest authorization in context and schedule local notifications; handle responses through a retained delegate.Operations:
+ authorize, status, schedule, categories, actions, deep-linkPermissions:
+ No broad-data permission for the supplied system UI workflow.Verification:
+ Remote push additionally needs aps-environment, provisioning and a provider; local notifications do not. Test foreground/background actions and denied permissions on device. Delivery timing is controlled by iOS. Device verification required before shipping.Apple framework documentation
+
+---
+
 # Apple development guide library
 https://nagarjuna2997.github.io/ios-agent-skill/library.html
 
@@ -61933,7 +62054,7 @@ ToolingAI-assisted issue previewsTooling
 https://nagarjuna2997.github.io/ios-agent-skill/pages.html
 
 Site mapEvery public page on this website.Pages
-Practical Swift & AI development guidesDaily community monitorCommunity & MentionsiOS Agent Skill — Swift Reviews & Xcode Simulator MCPApple development guide librarySite mapRelease notes — iOS Agent SkillFrom first prompt to shipped app: guided Swift seriesInstall guides
+Practical Swift & AI development guidesDaily community monitorCommunity & MentionsiOS Agent Skill — Swift Reviews & Xcode Simulator MCPApple system integrations for iOS agentsApple development guide librarySite mapRelease notes — iOS Agent SkillFrom first prompt to shipped app: guided Swift seriesInstall guides
 Install iOS Agent MCP — Claude, Codex, Gemini CLI & MuseBlog
 How can design tokens generate light, dark and…How should I review availability guards when moving a…ChatGPT and Codex: plan the app, then verify it locallyChoose an AI client for your iOS workflowHow can Claude Code hooks protect generated files and…Claude Code: turn a Swift finding into a tested patchGemini CLI: connect once and review one iOS featureGenerate light and dark asset catalogs without a paid…Which Muse Code MCP settings actually work with a local…Muse Code: what our integration actually verifiesReview AI-generated Swift before you trust itHow can I catch Swift concurrency review findings before…SwiftUI: review state transitions before polishing the…Five checks for an AI-built SwiftUI appDocs
 Documentation indexBackend architectures by app workflowAppwrite for Apple clientsAuthentication and session boundariesAWS Amplify in a Swift appChoosing an iOS backendCloudKit as an Apple-native backendFirebase for iOSGraphQL and Apollo iOSBackend services for Swift appsBackend privacy and account lifecycleREST clients with URLSessionBackend authorization and client secretsSupabase for Swift appsRealtime connections on iOSApp Store Submission ChecklistGenerate real asset catalogsDerive a usable seed from brand color evidenceValidate color relationships, not just swatchesiOS Color System -- Complete Guide for Stunning SwiftUI UIsDark and increased-contrast app colorsDesign Tokens, Adaptive Color, and Liquid GlassiOS Font Catalog — Ultimate ReferenceLayer-by-Layer Icons with Icon ComposerInteraction StandardsAdopting Liquid GlassGenerate an iOS palette from a briefProfessional UI/UX SystemStunning UI Patterns -- Complete SwiftUI Pattern LibraryThird-Party Animation IntegrationiOS Typography System -- Complete Guide for Stunning…ActivityKit & Live ActivitiesApp ClipsApp IntentsApple IntelligenceARKit -- Complete Guide for Augmented Reality on iOS and…AuthenticationServicesAVFoundationBackgroundTasksCloudKitCore AI -- Custom On-Device AI Models on Apple SiliconCore DataCoreLocationCore Spotlight RAG -- Private App-Local Retrieval for…CryptoKitSwiftData and Core Data ConcurrencyDevice Integrity (DeviceCheck & App Attest)Extended Apple FrameworksFoundation ModelsFoundation FrameworkCoreBluetoothCoreMotionCoreNFCHealthKitHomeKit and MatterLocalAuthenticationMapKitMetal -- GPU Rendering, Compute, and Performance-Critical…CoreML -- Complete Guide for On-Device Machine LearningNaturalLanguage Framework -- Complete Guide for Text…Sound AnalysisSpeech Framework -- Complete Guide for Speech Recognition…TranslationVision Framework -- Complete Guide for Image Analysis and…Network.frameworkNetworkingOSLog & MetricKitPhotosUI & AVKitRealityKit -- Complete Guide for 3D Rendering, AR, and…SceneKit -- Legacy 3D Scenes, Animation, and AR RenderingContacts FrameworkEventKitPassKit & FinanceKitWeatherKitStoreKit 2Swift ChartsSwiftDataTipKitUserNotificationsVisionKitWidgetKitMCP Usage ExamplesInstalling the iOS Agent MCP ServerApple Knowledge MCPOfficial MCP Registry publicationMCP Tool ReferencevNext MCP Analysis ToolsDynamic Workflows and Large-Scale JobsHooks — Deterministic EnforcementLoopsMain Agent RouterSubagentsVerification and the Evidence ContractiOS Platform GuidemacOS Platform GuidetvOS Platform GuidevisionOS Platform GuidewatchOS Platform GuideSwiftUI AnimationsSwiftUI and UIKit arrangement viewsRouting, Deep Links, and State RestorationSwiftUI GesturesSwiftUI iOS 27 InteractionsSwiftUI Layout SystemSwiftUI NavigationSwiftUI State and Data FlowSwiftUI Views and ControlsEvaluations -- Testing Intelligence-Powered FeaturesApp-building loop (preview)App Description WorkflowDevice HubFoundation Models `fm` CLIFoundation Models InstrumentsFrom an Idea to a Running Apple AppiOS Simulator MCPAI-assisted issue previewsReview iOS launch-screen configurationPrepare an evidence-backed local release draftBuild from local source and Apple guidanceProject Scaffolding and LayoutSeptember 2026 distribution and runtime update notesVisual Iteration LoopXcode 27.2 beta: project format and preview toolingXcode 27 Coding AgentsXcode Memory DebuggingUIKit EssentialsNative vs. Web Animation and 3DWhat "vibe coding" a Swift app actually means, and what…What you need before an AI can build you an iOS app: Mac,…Choosing a coding agent for iOS in 2026: Claude Code,…Your first hour: install Xcode, run the simulator, build…How coding agents read a project: AGENTS.md, CLAUDE.md,…Skills, plugins, MCP servers, hooks: the four words…Build a SwiftUI to-do app with Claude Code: the brief,…Compare the same to-do app task in Codex without changing…Prepare an Antigravity app-building trial and identify…Prepare a Muse app-building trial beyond tool discoveryWriting an app brief an agent can build from: ten…Generating an Xcode project the agent can edit: XcodeGen…Running and seeing your app: simulator boot, install,…What to do when the build fails: reading Xcode errors…Review Swift 6 settings and actor isolation before…Getting an agent to run checks: hooks, Stop conditions…Making the agent prove it: screenshots as evidence, not…Reviewing agent output before you commit: a focused…Git for vibe coders: branches per prompt, checkpoints,…Keeping the agent inside your design: tokens, no…SwiftUI prompt practice: 25 scoped exercises and…When a SwiftUI agent task fails: ten failure categories…Local persistence contracts: Reading List JSON storage…Localization with an agent: what to check before it…Search, filtering and empty states that pass…Networking and Codable with an agent: the concurrency…Navigation in SwiftUI: what agents get wrong with…Adding widgets with App Intents: a timeline and…Designing Siri actions with App Intents and testable…On-device AI: Foundation Models readiness and fallback…Notifications, background tasks and the permissions…Deep links and universal links, and using them for…App icons in 2026: Liquid Glass, Icon Composer, and…Color systems that survive dark mode and high contrast,…Typography in SwiftUI that respects Dynamic Type: rules…Motion and haptics: what to ask an agent for, and what…Making an agent-built app look intentional, not templatedPreparing repeatable simulator captures for App Store…From Figma to SwiftUI with an agent: variables to tokens…Swift Testing vs XCTest: what to have the agent generate…UI tests an agent can write and maintainAccessibility review of an agent-built app: the checks…Performance: hangs, launch time and the patterns agents…Memory: retain cycles agents create in closures and CombineSecurity review of an agent-built app: keychain, ATS,…Static review vs the compiler: what heuristics catch and…App Store readiness: the checks before you upload an…Privacy manifests, permissions strings and the things…Preparing for TestFlight: signing, builds and account…Investigating App Review feedback without guessing the…Versioning, changelogs and release notes the agent can…CI for an iOS repo with agent-written code: what to run…Subagents for iOS: splitting review, build and design…Preparing to verify Xcode 27 agents with external skillsKeeping up with Apple: refreshing references after each…Planning a safe Swift 6 and iOS 27 migrationCoordinating parallel coding work with isolated checkoutsWriting your own review rule for a Swift codebaseWriting your own skill for a Swift project: SKILL.md…Building a Claude Code plugin from a skillBuilding a Codex plugin from the same skillCross-client packaging: verified Muse scope and an…Verifying a skill across clients: the client verification…Measuring whether a skill helps: a paired benchmark…Ask for the finding, not the fix: why review-first…When the agent says "done", run the tests yourself onceSmall prompts, one screen at a time, commit between eachKeep signing and account changes separate from code repairsReading agent transcripts: the three phrases that mean it…Turn every failure into a rule: how findings become reviewsVerify Muse observer behavior before recommending itCodex worktrees for parallel screensTreat background builds as running work, not completed…Claude Code plan mode before any multi-file Swift changeAsk the agent to search local Apple references before the…Ask about actor ownership before adding MainActorWhat to put in .gitignore for agent-built Xcode projects"Show me the screenshot" as a standing instructionPin your Xcode version in AGENTS.md and stop the agent…One deep link per screen makes every screenshot automatableKeep design tokens in one file and tell the agent it's…Review the XcodeGen spec before regenerating the projectUse `#available` audits before every beta upgradeHooks beat reminders: enforce, don't request
@@ -61948,7 +62069,11 @@ Release notes← Home
 Installation
  ·
 npm package
-September 22, 2026 · npm 2.7.2 · repository v3.6.2
+September 29, 2026 · repository v3.6.3 · GitHub source only
+Apple system integrations
+Ten integration workflows and seven new MCP tools provide Swift previews, evidence-based recommendations and separate permission/capability checks. Source builds expose 47 tools. npm remains on 2.7.2 with 40 tools until the next package release.
+Scaffolding does not overwrite files. Device authorization, hardware and account behavior require testing in your app.
+Explore the integrations →September 22, 2026 · npm 2.7.2 · repository v3.6.2
 App colors and backend guidance, together.
 One connection now exposes 40 tools. This update adds semantic palette generation, color review and backend integration review while preserving the existing app, simulator and release-preparation tools.
 Build a color system

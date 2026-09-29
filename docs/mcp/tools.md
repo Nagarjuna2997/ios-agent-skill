@@ -317,3 +317,17 @@ Read-only project review. Inputs: absolute `path`, optional booleans `appleIntel
 ## Color and backend scope
 
 See [palette generation](../design/palette-generation.md), [color review](../design/color-accessibility.md) and [backend integration](../backend/overview.md). All three tools are read-only. Provider logins require app-specific configuration; static evidence is not live-service verification.
+
+## Apple system integrations (GitHub source release)
+
+Seven additional read-only tools are available from a local source build, bringing the unified catalog from 40 to 47. They are not in npm 2.7.2 yet. See [workflow, supported operations and limits](../integrations/README.md).
+
+| Tool | Input | Result |
+|---|---|---|
+| list_system_integrations | none | Ten supported integration records |
+| get_system_integration | integration | Frameworks, permissions, guides and verification |
+| recommend_system_integrations | path, optional infoPlist/entitlements | Evidence-backed next checks only |
+| scaffold_system_integration | path, integration, optional operations | Swift file preview; no writes |
+| review_system_integrations | path, optional infoPlist/entitlements | Privacy/capability evidence and existing App Intents findings |
+| check_apple_permissions | path, optional infoPlist/entitlements | Required versus detected keys, unknown configuration explicit |
+| check_apple_capabilities | path, optional infoPlist/entitlements | Supported entitlement checks, separate from privacy strings |

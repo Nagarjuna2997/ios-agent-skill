@@ -4,6 +4,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 
+import { registerIntegrationTools } from './integrations/tools.js';
 import { reviewBackendIntegration } from './backend/review.js';
 import { samplePNG } from './colors/image.js';
 import { generationSchema, generateColorSystem } from './colors/generate.js';
@@ -166,6 +167,8 @@ async function scanAndRender(
     };
   }
 }
+
+registerIntegrationTools(server);
 
 server.registerTool('review_backend_integration', {
   title: 'Review iOS backend integration',

@@ -1,7 +1,7 @@
 {
   "name": "ios-agent-mcp",
   "displayName": "iOS Agent",
-  "version": "2.7.2",
+  "version": "2.7.3",
   "description": "Unified iOS development tools: Swift reviews, Apple source retrieval, app scaffolding and Xcode simulator workflows.",
   "author": "Nagarjuna Reddy",
   "license": "MIT",
@@ -196,6 +196,34 @@
     {
       "name": "review_backend_integration",
       "summary": "Use when integrating a backend: detect supported Swift SDKs and inspect concrete credential, auth, policy and transport evidence. Read-only, bounded and credential-redacted; does not audit deployed services."
+    },
+    {
+      "name": "list_system_integrations",
+      "summary": "Use this when adding or reviewing Apple integrations. List supported Apple system integration workflows, conditional permissions and verification limits."
+    },
+    {
+      "name": "get_system_integration",
+      "summary": "Use this when adding or reviewing Apple integrations. Get a supported integration’s APIs, guide routes, operations, permissions and device verification requirements."
+    },
+    {
+      "name": "scaffold_system_integration",
+      "summary": "Use this when adding or reviewing Apple integrations. Return a reusable Swift file preview for a supported system integration. Read-only: never writes or overwrites project files. iOS 17+ starter; app-specific wiring and device tests required."
+    },
+    {
+      "name": "review_system_integrations",
+      "summary": "Use this when adding or reviewing Apple integrations. Review concrete API usage, selected privacy configuration and entitlements; reuse App Intents checks. Unknown target/configuration is reported, not treated as missing."
+    },
+    {
+      "name": "check_apple_permissions",
+      "summary": "Use this when adding or reviewing Apple integrations. Report required versus detected privacy keys for concrete API operations. Picker-only Photos, Maps coordinates and system sharing do not imply broad data access."
+    },
+    {
+      "name": "check_apple_capabilities",
+      "summary": "Use this when adding or reviewing Apple integrations. Check selected entitlements separately from usage descriptions for concrete HealthKit, Apple Pay, CloudKit and push usage. Associated-domain provisioning needs manual verification."
+    },
+    {
+      "name": "recommend_system_integrations",
+      "summary": "Use this when adding or reviewing Apple integrations. Suggest verification of integrations already evidenced in source. Does not recommend unrelated features or infer product requirements."
     }
   ],
   "resources": [

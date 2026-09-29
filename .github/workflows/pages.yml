@@ -37,6 +37,11 @@ jobs:
           python3 scripts/render-library.py
       - name: Sync features from README
         run: python3 scripts/render-site.py
+      - name: Generate integration library
+        run: |
+          npm ci --prefix mcp-server --ignore-scripts
+          npm run build --prefix mcp-server
+          node scripts/render-integrations.mjs
       - name: Verify community section
         run: python3 scripts/render-community.py --check
       - name: Refresh total npm downloads

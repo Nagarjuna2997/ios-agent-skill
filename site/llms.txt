@@ -8,6 +8,7 @@ Give your coding agent the Apple references, Swift source and local tools it nee
 - [Daily community monitor](https://nagarjuna2997.github.io/ios-agent-skill/community-monitor.html)
 - [Community & Mentions](https://nagarjuna2997.github.io/ios-agent-skill/community.html)
 - [iOS Agent Skill — Swift Reviews & Xcode Simulator MCP](https://nagarjuna2997.github.io/ios-agent-skill/)
+- [Apple system integrations for iOS agents](https://nagarjuna2997.github.io/ios-agent-skill/integrations.html)
 - [Apple development guide library](https://nagarjuna2997.github.io/ios-agent-skill/library.html)
 - [Site map](https://nagarjuna2997.github.io/ios-agent-skill/pages.html)
 - [Release notes — iOS Agent Skill](https://nagarjuna2997.github.io/ios-agent-skill/releases.html)

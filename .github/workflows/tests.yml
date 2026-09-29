@@ -84,6 +84,9 @@ jobs:
       - name: Private feedback receiver tests (mock GitHub only)
         run: node --test ../services/private-feedback/server.test.mjs
 
+      - name: Integration website matches registry
+        run: node ../scripts/render-integrations.mjs --check
+
       - name: Manifest is valid
         run: |
           python3 - <<'PY'
@@ -287,3 +290,10 @@ jobs:
       - uses: actions/checkout@v4
       - name: Compile Apple adapters and run synthetic transport tests
         run: swift test --package-path samples/BackendPatterns
+
+  system-integration-swift:
+    name: Compile system integration demo
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: bash samples/SystemIntegrationDemo/verify.sh

@@ -1014,5 +1014,9 @@
   "guides/backend-rest.html": {
     "title": "REST clients with URLSession",
     "description": "Use REST when a stable HTTP contract or existing service fits the app."
+  },
+  "integrations.html": {
+    "title": "Apple system integrations for iOS agents",
+    "description": "Preview Swift components and check permissions for Calendar, Photos, Contacts, Maps and six other Apple integrations."
   }
 }

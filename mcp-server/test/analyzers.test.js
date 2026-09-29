@@ -253,7 +253,7 @@ describe("app store", () => {
 
   test("flags a permission framework with no purpose string", () => {
     const found = analyzeAppStore(
-      file("Sources/L.swift", "import CoreLocation\nlet m = CLLocationManager()\n"),
+      file("Sources/L.swift", "import CoreLocation\nlet m = CLLocationManager()\nm.requestWhenInUseAuthorization()\n"),
       noManifest,
     );
     assert.ok(rules(found).includes("missing-purpose-string"));
@@ -261,7 +261,7 @@ describe("app store", () => {
 
   test("accepts a permission framework when the purpose string exists", () => {
     const found = analyzeAppStore(
-      file("Sources/L.swift", "import CoreLocation\nlet m = CLLocationManager()\n"),
+      file("Sources/L.swift", "import CoreLocation\nlet m = CLLocationManager()\nm.requestWhenInUseAuthorization()\n"),
       { infoPlist: "<key>NSLocationWhenInUseUsageDescription</key><string>To show nearby stores.</string>", hasPrivacyManifest: true, isApp: true },
     );
     assert.ok(!rules(found).includes("missing-purpose-string"));

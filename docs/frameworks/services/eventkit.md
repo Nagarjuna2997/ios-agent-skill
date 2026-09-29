@@ -2,12 +2,13 @@
 
 ## EKEventStore Setup and Authorization
 
-Add to `Info.plist`:
-- `NSCalendarsUsageDescription` — required for calendar access
-- `NSCalendarsFullAccessUsageDescription` — iOS 17+ full access
-- `NSCalendarsWriteOnlyAccessUsageDescription` — iOS 17+ write-only access
-- `NSRemindersUsageDescription` — required for reminders access
-- `NSRemindersFullAccessUsageDescription` — iOS 17+ reminders
+Choose purpose strings for the operations and OS paths you actually use:
+- iOS 17+ calendar reads/edits: `NSCalendarsFullAccessUsageDescription`.
+- iOS 17+ write-only calendar creation: `NSCalendarsWriteOnlyAccessUsageDescription`.
+- iOS 17+ reminders: `NSRemindersFullAccessUsageDescription`.
+- Legacy paths on iOS 16 and earlier: `NSCalendarsUsageDescription` or `NSRemindersUsageDescription`, respectively.
+
+System event editing can avoid broad access. Do not add every key merely for importing EventKit. See [integration previews and verification](../../integrations/README.md).
 
 ```swift
 import EventKit
