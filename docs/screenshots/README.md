@@ -113,3 +113,7 @@ Inspection checks PNG dimensions/format, hashes, filenames, manifest consistency
 ## Reproducible example
 
 See [Reading List Screenshot Studio example](../../samples/ScreenshotStudio/README.md) for five real repository captures, three variants and supplied English/Spanish copy. Historical app/agent benchmarks are unchanged; rendering evidence makes no claim of higher conversion or agent performance.
+
+### September 29 profile extension
+
+The source renderer additionally accepts `mac` (2880×1800), `apple-tv` and `vision-pro` (3840×2160), and `watch-ultra` (422×514), verified against Apple's screenshot specifications. Keep Watch dimensions consistent across localizations. These are accepted pixel profiles, not a complete required-size determination. Brief copy must fit; overflow still fails. No guessed Duo upload profile is included.

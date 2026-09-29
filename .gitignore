@@ -82,3 +82,7 @@ __pycache__/
 
 # Private local release-package evidence
 .ios-agent/releases/
+
+# Private provider configuration and handoff state
+.ios-agent-ai.json*
+.ios-agent-ai-state*

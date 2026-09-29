@@ -2,7 +2,7 @@ import {mkdir,writeFile,readdir,rm,lstat} from 'node:fs/promises';
 import {resolve,dirname,join,relative,isAbsolute} from 'node:path';
 import {Resvg} from '@resvg/resvg-js';
 import {z} from 'zod';
-import {profiles,profileSource,getTemplate} from './catalog.js';
+import {profiles,profileNames,profileSource,getTemplate} from './catalog.js';
 import {boundedFile,imageInput,hash,rgbPNG} from './input.js';
 import {loadFonts,typography,LoadedFont} from './text.js';
 import {reviewColorSystem} from '../colors/review.js';
@@ -10,7 +10,7 @@ import {contrast} from '../colors/math.js';
 const path=z.string().min(1).max(4096);
 const copy=z.string().max(240).refine(s=>!/[\u0000-\u001f]/u.test(s),'Copy must be plain, single-paragraph text');
 export const screenSchema=z.object({image:path,headline:copy.optional(),description:copy.optional(),subtitle:copy.optional(),badge:copy.optional(),additionalImages:z.array(path).max(2).optional()}).strict();
-export const recipeSchema=z.object({projectPath:path.optional(),inputDirectory:path.optional(),screens:z.array(screenSchema).min(1).max(10).optional(),appName:copy.default('Your app'),templates:z.array(z.string().min(1).max(40)).min(1).max(8).default(['minimal']),profile:z.enum(['iphone-portrait','iphone-landscape','ipad-portrait','ipad-landscape']).default('iphone-portrait'),locale:z.string().regex(/^[a-zA-Z]{2,8}(?:-[a-zA-Z0-9]{1,8})*$/).default('en-US'),direction:z.enum(['ltr','rtl']).optional(),accent:z.string().regex(/^#[\da-fA-F]{6}$/).optional(),fontPaths:z.array(path).min(1).max(8).optional(),iconPath:path.optional(),outputDirectory:path}).strict();
+export const recipeSchema=z.object({projectPath:path.optional(),inputDirectory:path.optional(),screens:z.array(screenSchema).min(1).max(10).optional(),appName:copy.default('Your app'),templates:z.array(z.string().min(1).max(40)).min(1).max(8).default(['minimal']),profile:z.enum(profileNames).default('iphone-portrait'),locale:z.string().regex(/^[a-zA-Z]{2,8}(?:-[a-zA-Z0-9]{1,8})*$/).default('en-US'),direction:z.enum(['ltr','rtl']).optional(),accent:z.string().regex(/^#[\da-fA-F]{6}$/).optional(),fontPaths:z.array(path).min(1).max(8).optional(),iconPath:path.optional(),outputDirectory:path}).strict();
 export type Recipe=z.infer<typeof recipeSchema>;
 type Screen=z.infer<typeof screenSchema>;
 type Box={x:number;y:number;width:number;height:number};
@@ -121,7 +121,7 @@ export async function generateSet(input:unknown){
 }
 const boxSchema=z.object({x:z.number().finite().nonnegative(),y:z.number().finite().nonnegative(),width:z.number().finite().positive(),height:z.number().finite().positive()});
 const digest=z.string().regex(/^[a-f0-9]{64}$/);
-const entrySchema=z.object({file:z.string().max(512),sha256:digest,template:z.string(),locale:z.string(),profile:z.enum(['iphone-portrait','iphone-landscape','ipad-portrait','ipad-landscape']),width:z.number(),height:z.number(),sources:z.array(z.object({sha256:digest,width:z.number().positive(),height:z.number().positive(),placement:boxSchema})).min(1).max(3),texts:z.array(z.object({text:z.string(),lines:z.array(z.string()),bounds:boxSchema,size:z.number().positive(),contrast:z.number().min(1).max(21),fontHashes:z.array(digest).min(1)})).min(1).max(3),warnings:z.array(z.string())});
+const entrySchema=z.object({file:z.string().max(512),sha256:digest,template:z.string(),locale:z.string(),profile:z.enum(profileNames),width:z.number(),height:z.number(),sources:z.array(z.object({sha256:digest,width:z.number().positive(),height:z.number().positive(),placement:boxSchema})).min(1).max(3),texts:z.array(z.object({text:z.string(),lines:z.array(z.string()),bounds:boxSchema,size:z.number().positive(),contrast:z.number().min(1).max(21),fontHashes:z.array(digest).min(1)})).min(1).max(3),warnings:z.array(z.string())});
 async function readManifest(dir:string){const parsed=JSON.parse((await boundedFile(join(dir,'screenshot-set.json'),2*1024*1024)).toString());return z.object({schemaVersion:z.literal(1),renderDate:z.string(),renderer:z.string(),profileSource:z.unknown(),recipe:recipeSchema,entries:z.array(entrySchema).min(1).max(80),preview:z.literal('preview.png'),previewHash:digest}).parse(parsed);}
 async function confinedFile(dir:string,file:string){if(isAbsolute(file)||file.includes('\\')||file.split('/').some(p=>!p||p==='.'||p==='..'))throw Error('Unsafe manifest path.');const full=resolve(dir,file);if(relative(resolve(dir),full).startsWith('..'))throw Error('Unsafe manifest path.');let cursor=resolve(dir);for(const part of file.split('/')){cursor=join(cursor,part);if((await lstat(cursor)).isSymbolicLink())throw Error('Symlinks are not allowed in sets.');}return full;}
 export async function inspectSet(directory:string){

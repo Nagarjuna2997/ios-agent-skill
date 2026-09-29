@@ -1370,6 +1370,10 @@ Package analysisSocketProvides an npm package analysis page for ios-agent-mcp wi
 
 Project discoveryLibHuntIndexes the project, related alternatives and mentions, including the maintainer’s DEV and Show HN posts.Visit LibHunt (opens in a new tab)
 
+Directory · indexGlamaLists the MCP server with its tool schemas and a source-repository link.Visit Glama (opens in a new tab)
+
+Directory · indexEnterprise DNAIndexes the repository in its MCP server directory with installation information.Visit Enterprise DNA (opens in a new tab)
+
 Article · maintainer-authoredDEV CommunityThe maintainer explains the Swift, Xcode and simulator toolbox and asks for feedback.Visit DEV Community (opens in a new tab)
 
 Official project pageGitHubSource code, issues and releases maintained by the project.Visit GitHub (opens in a new tab)
@@ -62071,7 +62075,11 @@ Release notes← Home
 Installation
  ·
 npm package
-September 29, 2026 · repository v3.6.4 · npm publication deferred
+September 29, 2026 · source update · npm 2.8.0 publication pending
+Apple environment and optional AI providers
+Inspect installed SDKs and simulators, select an optional text-generation provider, and keep local-only privacy as the default. Cloud access and fallback require explicit settings. Private handoff files and saved advisory role proposals preserve context; they do not autonomously edit apps or claim test success.
+Screenshot Studio adds verified Mac, Apple TV, Vision Pro and Watch pixel profiles. Xcode 27-only APIs and Duo poses remain unverified on our Xcode 26.6 machine.
+Commands, privacy settings and current limitations →September 29, 2026 · repository v3.6.4 · npm publication deferred
 App Store Screenshot Studio
 Turn existing captures into localized screenshot sets with eight reusable layouts, neutral device frames, contact sheets and validated PNG exports. Nine new tools bring the source server to 56 tools; npm remains 2.7.2 with 40.
 Copy and translations are supplied. Rendering is offline. Dimension and geometry checks do not imply Apple approval.

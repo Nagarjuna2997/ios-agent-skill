@@ -112,3 +112,10 @@ Coverage counts describe documentation, not compiled integrations. Download coun
 https://www.producthunt.com/products/ios-agent-mcp?launch=ios-agent-mcp
 
 Backend integration guidance: [choose a service and review auth, data and security boundaries](docs/backend/overview.md).
+
+## Optional provider commands (source update)
+
+Use `ios-agent-mcp environment` to inspect the actual Xcode/SDK/simulator inventory.
+`ios-agent-mcp ai models` and `ai doctor` inspect the dated catalog and account/local availability.
+Text generation defaults to on-device Apple models; cloud providers and fallback require explicit configuration.
+[Provider setup, handoff, simulator CLI and limits](docs/ai/providers.md). These commands do not replace the coding client or claim autonomous app completion.

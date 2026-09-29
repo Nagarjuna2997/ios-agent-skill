@@ -6,6 +6,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+## [3.7.0] -- 2026-09-29
+
+### Added -- 3.7.0
+
+- Prepared ios-agent-mcp 2.8.0: optional OpenAI Responses, Anthropic Messages, Gemini text adapters and compiled local Apple Foundation Models helper. Local-only defaults, explicit cloud allowlists, bounded retries and optional quota fallback.
+- Dated model catalog plus account discovery, conservative retired-model handling and actionable sanitized failure categories.
+- Private configuration backups, hashed handoff files and resumable advisory role proposals. Roles do not execute app edits, builds or releases.
+- Apple family/version helpers and installed Xcode/Swift/SDK/simulator discovery; validated simulator CLI operations and current-state capture matrix.
+- Additional Mac, TV, Vision and Watch screenshot profiles. Explicit authoritative-source freshness report command.
+
+### Limitations -- 3.7.0
+
+- This is a bounded implementation, not completion of every modernization phase. Text-only provider requests; no streaming, cloud tool execution, autonomous coding collaboration, PCC/Core AI/MLX adapters, Duo pose automation or new video/log streaming.
+- Local SDK is Xcode 26.6; 27-only APIs and real Duo behavior remain unverified. Cloud calls are mocked in tests; account access and paid inference are not claimed. npm publication pending authentication and final checks.
+
+
+### Evidence -- 3.7.0
+
+- 403 MCP tests, 67 CLI tests, 16 simulator tests, 12 AppleRecipes Swift tests and 16 website tests pass. Discovery validates 236 pages.
+- Apple on-device availability confirmed on this Mac. Provider transport tests use mocks; no paid cloud inference was used. Package inspection includes 191 files with provider/platform runtime and no private configuration files.
+
 ## [3.6.4] -- 2026-09-29
 
 ### Added -- 3.6.4

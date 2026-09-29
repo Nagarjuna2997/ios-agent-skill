@@ -1,0 +1,8 @@
+import { z } from 'zod';
+import { readFile,writeFile,rename,lstat } from 'node:fs/promises';
+import { randomUUID } from 'node:crypto';
+const provider=z.enum(['apple','openai','anthropic','gemini']);
+export const configSchema=z.object({schemaVersion:z.literal(1).default(1),provider:z.union([provider,z.literal('auto')]).default('apple'),model:z.string().regex(/^(auto|[a-zA-Z0-9._-]+)$/).default('auto'),allowFallback:z.boolean().default(false),allowedCloudProviders:z.array(z.enum(['openai','anthropic','gemini'])).default([]),fallbackOrder:z.array(provider).min(1).max(4).default(['apple','openai','anthropic','gemini']),privacy:z.enum(['local-only','cloud-permitted']).default('local-only'),maxRetries:z.number().int().min(0).max(2).default(1)}).strict();
+export type AIConfig=z.infer<typeof configSchema>;
+export async function loadConfig(path:string):Promise<AIConfig>{try{const stat=await lstat(path);if(stat.isSymbolicLink()||!stat.isFile()||stat.size>16384)throw Error('Unsafe AI configuration file.');return configSchema.parse(JSON.parse(await readFile(path,'utf8')));}catch(e){if((e as NodeJS.ErrnoException).code==='ENOENT')return configSchema.parse({});throw e;}}
+export async function saveConfig(path:string,config:unknown){const value=configSchema.parse(config);try{const stat=await lstat(path);if(stat.isSymbolicLink()||!stat.isFile())throw Error('Unsafe AI configuration file.');await writeFile(`${path}.backup-${randomUUID()}`,await readFile(path),{flag:'wx',mode:0o600});}catch(e){if((e as NodeJS.ErrnoException).code!=='ENOENT')throw e;}const temp=path+'.'+randomUUID();await writeFile(temp,JSON.stringify(value,null,2)+'\n',{flag:'wx',mode:0o600});await rename(temp,path);return value;}

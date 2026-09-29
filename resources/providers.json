@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "checked": "2026-09-29",
+  "policy": "Dated references, not account access or automatic migration. Update requests generate a review report; they never modify compatibility data.",
+  "sources": [
+    {"provider":"apple","category":"platforms","url":"https://developer.apple.com/documentation/updates"},
+    {"provider":"apple","category":"models","url":"https://developer.apple.com/documentation/foundationmodels"},
+    {"provider":"apple","category":"screenshots","url":"https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications"},
+    {"provider":"openai","category":"models","url":"https://developers.openai.com/api/docs/models"},
+    {"provider":"anthropic","category":"models","url":"https://platform.claude.com/docs/en/models/overview"},
+    {"provider":"anthropic","category":"lifecycle","url":"https://platform.claude.com/docs/en/about-claude/model-deprecations"},
+    {"provider":"gemini","category":"models","url":"https://ai.google.dev/gemini-api/docs/models"},
+    {"provider":"gemini","category":"lifecycle","url":"https://ai.google.dev/gemini-api/docs/deprecations"}
+  ]
+}

@@ -355,3 +355,10 @@ The backend guides include login examples, not configured login services. Each a
 ## Screenshot Studio (GitHub source only)
 
 The source server includes nine local screenshot-composition tools and `screenshots` CLI commands. Capture stays in the existing simulator tools. Supply real images and factual copy; compare layouts, localize supplied text and export checked PNGs. No upload or Apple approval is implied. npm 2.7.2 does not include this feature. [Workflow, templates and limits](../docs/screenshots/README.md).
+
+## Optional AI and environment commands
+
+`ios-agent-mcp environment` discovers actual installed Apple tooling.
+`ios-agent-mcp ai models|doctor|config|ask` provides optional text-provider workflows.
+Defaults: local Apple model, no cloud permission, no fallback. Cloud access requires API credentials and explicit provider allowlisting; existing MCP client use needs none.
+See [provider setup and limitations](https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/ai/providers.md).
