@@ -351,3 +351,7 @@ or submission is performed. See the [Phase 1 workflow and limitations](https://g
 [Color guide](https://nagarjuna2997.github.io/ios-agent-skill/guides/design-palette-generation.html) · [Backend guides](https://nagarjuna2997.github.io/ios-agent-skill/guides/backend-overview.html)
 
 The backend guides include login examples, not configured login services. Each app needs its own provider setup. Live sign-in, external SDK compilation and hosted-policy validation remain unverified. The full MCP suite passes 308 tests; no benchmark improvement is claimed.
+
+## Screenshot Studio (GitHub source only)
+
+The source server includes nine local screenshot-composition tools and `screenshots` CLI commands. Capture stays in the existing simulator tools. Supply real images and factual copy; compare layouts, localize supplied text and export checked PNGs. No upload or Apple approval is implied. npm 2.7.2 does not include this feature. [Workflow, templates and limits](../docs/screenshots/README.md).

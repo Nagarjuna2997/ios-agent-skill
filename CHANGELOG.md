@@ -6,6 +6,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+## [3.6.4] -- 2026-09-29
+
+### Added -- 3.6.4
+
+- Added nine offline screenshot-composition MCP tools and unified `screenshots` CLI commands. Existing capture tools remain unchanged.
+- Eight reusable layouts, four dated pixel profiles, supplied localization, programmatic neutral frames, glyph-aware wrapping, contact sheets and validated new-directory exports.
+- Added Reading List English/Spanish example recipes and Screenshot Studio documentation/website page. Source MCP tool count: 47 → 56. npm publication is deferred.
+
+### Evidence -- 3.6.4
+
+- MCP suite: 380 passing tests, including 20 renderer regressions and a new protocol/schema check. Existing CLI: 67 passing tests; simulator runtime: 16.
+- Rendered and checked 30 Reading List PNGs: five states × three layouts × English/Spanish. Inspected both contact sheets.
+
+### Limitations -- 3.6.4
+
+- Supplied translations and local fonts required; mixed-direction RTL copy is rejected. Neutral frames are not Apple artwork. Checks do not imply App Review approval. npm remains 2.7.2.
+
 ## [3.6.3] -- 2026-09-29
 
 GitHub source release only. npm remains **ios-agent-mcp 2.7.2**; no package published. Source package version 2.7.3 is reserved for the next npm release.

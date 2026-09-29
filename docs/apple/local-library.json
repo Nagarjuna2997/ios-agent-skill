@@ -3208,6 +3208,13 @@
       "hash": "613dd1c886fe647f7807e56feb12e2c82053ec5e500269149cb2fe8b7d2b960b"
     },
     {
+      "path": "docs/screenshots/README.md",
+      "title": "App Store Screenshot Studio",
+      "kind": "guide",
+      "characters": 8859,
+      "hash": "c98abb8561ebae0d0951fa6fd513fef1bbebedad504203d794015c12f281865a"
+    },
+    {
       "path": "docs/security/README.md",
       "title": "Security, Authentication, and Privacy",
       "kind": "guide",
@@ -4130,6 +4137,34 @@
       "kind": "source",
       "characters": 2210,
       "hash": "5c2aa8e0bca39b4d5226e1bfe146467070d7e37882e6dc50aa79241a924bcb1e"
+    },
+    {
+      "path": "samples/ScreenshotStudio/es-ES.json",
+      "title": "es-ES.json",
+      "kind": "source",
+      "characters": 498,
+      "hash": "6c81a47165f76e822522724f75f7b478b9736355cb33e3e5971b1db80d06e171"
+    },
+    {
+      "path": "samples/ScreenshotStudio/README.md",
+      "title": "Reading List screenshot composition example",
+      "kind": "guide",
+      "characters": 1170,
+      "hash": "a1cfa8f7d809ba2af5a7743433ec8dcc01170996646e18ed5c0e08665c51934e"
+    },
+    {
+      "path": "samples/ScreenshotStudio/recipe.json",
+      "title": "recipe.json",
+      "kind": "source",
+      "characters": 922,
+      "hash": "fd190911daf29370ca7dfbf0c432f21ea4b42d4c1c9782c0236942b816985994"
+    },
+    {
+      "path": "samples/ScreenshotStudio/VERIFICATION.md",
+      "title": "Screenshot Studio implementation record",
+      "kind": "guide",
+      "characters": 5889,
+      "hash": "33a8a671a88e7e7888ff6ccdddfc9440d1dfb15b83207ac6a8094562c9e8c2c7"
     },
     {
       "path": "samples/SkillPatterns/Package.swift",

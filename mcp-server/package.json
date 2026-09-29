@@ -43,13 +43,19 @@
     "@modelcontextprotocol/sdk": "^1.30.0",
     "@nagarjuna2002/ios-agent": "0.3.0",
     "@nagarjuna2002/ios-simulator-mcp": "0.2.0",
+    "@resvg/resvg-js": "2.6.2",
     "fast-xml-parser": "5.11.1",
+    "fontkit": "2.0.4",
+    "jpeg-js": "0.4.4",
     "plist": "5.0.0",
+    "pngjs": "7.0.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
+    "@types/fontkit": "2.0.8",
     "@types/node": "^22.0.0",
+    "@types/pngjs": "6.0.5",
     "typescript": "^5.6.0"
   },
   "repository": {

@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { registerScreenshotTools } from './screenshots/tools.js';
 import { reviewLaunchScreens } from './analyzers/launch-screen.js';
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
@@ -169,6 +170,7 @@ async function scanAndRender(
 }
 
 registerIntegrationTools(server);
+registerScreenshotTools(server);
 
 server.registerTool('review_backend_integration', {
   title: 'Review iOS backend integration',

@@ -1018,5 +1018,9 @@
   "integrations.html": {
     "title": "Apple system integrations for iOS agents",
     "description": "Preview Swift components and check permissions for Calendar, Photos, Contacts, Maps and six other Apple integrations."
+  },
+  "screenshot-studio.html": {
+    "title": "App Store Screenshot Studio — iOS Agent Skill",
+    "description": "Create local App Store screenshot sets from real captures. Compare layouts, supply translations and export checked PNGs without a hosted design tool."
   }
 }

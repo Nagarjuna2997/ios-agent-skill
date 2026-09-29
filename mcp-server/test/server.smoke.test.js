@@ -100,11 +100,20 @@ describe("mcp server", () => {
       "check_apple_capabilities",
       "check_apple_permissions",
       "check_availability_guards",
+      "export_screenshot_set",
       "generate_color_system",
+      "generate_screenshot_set",
+      "generate_screenshot_variants",
+      "get_screenshot_template",
       "get_system_integration",
+      "inspect_screenshot_set",
       "lint_skill",
+      "list_screenshot_templates",
       "list_system_integrations",
+      "localize_screenshot_set",
+      "preview_screenshot_set",
       "recommend_system_integrations",
+      "render_app_store_screenshot",
       "review_app_intents",
       "review_backend_integration",
       "review_color_system",
@@ -323,4 +332,15 @@ describe("project root resolution", () => {
     const { projectRootFrom } = await import("../dist/resources.js");
     assert.equal(projectRootFrom([], { PWD: "/tmp/cwd" }), "/tmp/cwd");
   });
+});
+
+
+test("Screenshot Studio schemas route safely through MCP", async () => {
+  const list=await client.callTool({name:'list_screenshot_templates',arguments:{}});
+  assert.equal(JSON.parse(list.content[0].text).templates.length,8);
+  const template=await client.callTool({name:'get_screenshot_template',arguments:{template:'minimal'}});
+  assert.equal(JSON.parse(template.content[0].text).layout,'hero');
+  assert.equal((await client.callTool({name:'get_screenshot_template',arguments:{template:'unknown'}})).isError,true);
+  assert.equal((await client.callTool({name:'render_app_store_screenshot',arguments:{recipe:{outputDirectory:'/tmp/not-created'}}})).isError,true);
+  assert.equal((await client.callTool({name:'export_screenshot_set',arguments:{directory:'/not-present'}})).isError,true);
 });

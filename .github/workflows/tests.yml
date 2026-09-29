@@ -85,7 +85,9 @@ jobs:
         run: node --test ../services/private-feedback/server.test.mjs
 
       - name: Integration website matches registry
-        run: node ../scripts/render-integrations.mjs --check
+        run: |
+          node ../scripts/render-integrations.mjs --check
+          node ../scripts/render-screenshot-studio.mjs --check
 
       - name: Manifest is valid
         run: |

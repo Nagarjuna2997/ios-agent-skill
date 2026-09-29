@@ -42,6 +42,7 @@ jobs:
           npm ci --prefix mcp-server --ignore-scripts
           npm run build --prefix mcp-server
           node scripts/render-integrations.mjs
+          node scripts/render-screenshot-studio.mjs
       - name: Verify community section
         run: python3 scripts/render-community.py --check
       - name: Refresh total npm downloads

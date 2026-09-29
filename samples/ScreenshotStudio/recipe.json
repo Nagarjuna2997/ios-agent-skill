@@ -1,0 +1,13 @@
+{
+  "appName": "Reading List",
+  "templates": ["minimal", "dark-premium", "gradient"],
+  "profile": "iphone-portrait",
+  "locale": "en-US",
+  "screens": [
+    {"image":"site/evidence/series/reading-list/empty.png","headline":"Start your reading list","subtitle":"Add your first book","badge":"Your library"},
+    {"image":"site/evidence/series/reading-list/add.png","headline":"Add a book","subtitle":"Enter its title and author","badge":"Book details"},
+    {"image":"site/evidence/series/reading-list/library.png","headline":"Keep books together","subtitle":"Browse your saved reading list","badge":"Library"},
+    {"image":"site/evidence/series/reading-list/detail.png","headline":"See the details","subtitle":"Open a saved book","badge":"Book details"},
+    {"image":"site/evidence/series/reading-list/search-empty.png","headline":"Search your library","subtitle":"An empty result stays clear","badge":"Search"}
+  ]
+}

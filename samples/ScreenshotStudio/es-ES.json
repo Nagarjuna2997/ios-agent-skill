@@ -1,0 +1,7 @@
+[
+  {"headline":"Empieza tu lista","subtitle":"Añade tu primer libro","badge":"Tu biblioteca"},
+  {"headline":"Añade un libro","subtitle":"Escribe el título y el autor","badge":"Detalles del libro"},
+  {"headline":"Tus libros juntos","subtitle":"Explora tu lista de lectura","badge":"Biblioteca"},
+  {"headline":"Consulta los detalles","subtitle":"Abre un libro guardado","badge":"Detalles"},
+  {"headline":"Busca en tu biblioteca","subtitle":"Los resultados vacíos son claros","badge":"Buscar"}
+]

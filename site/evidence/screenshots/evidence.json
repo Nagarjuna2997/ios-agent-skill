@@ -1,0 +1,2322 @@
+{
+  "generatedAt": "2026-09-29T08:36:41.014Z",
+  "sample": "ReadingList repository simulator captures; supplied English and Spanish copy",
+  "sets": [
+    {
+      "locale": "en-US",
+      "renderer": "resvg-js@2.6.2; fontkit@2.0.4; pngjs@7.0.0",
+      "profileSource": {
+        "checked": "2026-09-29",
+        "url": "https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications",
+        "note": "Accepted pixel profiles, not a determination of which device classes your app must supply. Recheck Apple before submission."
+      },
+      "entries": [
+        {
+          "file": "en-US/minimal/iphone-portrait/01.png",
+          "sha256": "a8de8fe8c9880f694134110f1343d80c903fdab9b08c70f175a992212b4d083b",
+          "template": "minimal",
+          "locale": "en-US",
+          "profile": "iphone-portrait",
+          "width": 1260,
+          "height": 2736,
+          "sources": [
+            {
+              "sha256": "dd5c4e33f8202d77a68a1857b05ddae26c3c6d1e8612c904e2867265611c4ee2",
+              "width": 1206,
+              "height": 2622,
+              "placement": {
+                "x": 276.86553775743715,
+                "y": 1024.32,
+                "width": 706.2689244851257,
+                "height": 1535.5199999999998
+              }
+            }
+          ],
+          "texts": [
+            {
+              "text": "Start your reading list",
+              "lines": [
+                "Start your reading list"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 150.48,
+                "width": 1096,
+                "height": 126.10000000000001
+              },
+              "size": 97,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Add your first book",
+              "lines": [
+                "Add your first book"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 295.9,
+                "width": 1096,
+                "height": 59.800000000000004
+              },
+              "size": 46,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Your library",
+              "lines": [
+                "Your library"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 375.02,
+                "width": 1096,
+                "height": 48.1
+              },
+              "size": 37,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            }
+          ],
+          "warnings": []
+        },
+        {
+          "file": "en-US/minimal/iphone-portrait/02.png",
+          "sha256": "8dbc14f1d0e500324b0885bed2e20d91e39f2e614f12612723d12c633f178e28",
+          "template": "minimal",
+          "locale": "en-US",
+          "profile": "iphone-portrait",
+          "width": 1260,
+          "height": 2736,
+          "sources": [
+            {
+              "sha256": "bbc662953a3e7792c32180876b58292f05ca0768fa366ffb385903884184ebf5",
+              "width": 1206,
+              "height": 2622,
+              "placement": {
+                "x": 276.86553775743715,
+                "y": 1024.32,
+                "width": 706.2689244851257,
+                "height": 1535.5199999999998
+              }
+            }
+          ],
+          "texts": [
+            {
+              "text": "Add a book",
+              "lines": [
+                "Add a book"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 150.48,
+                "width": 1096,
+                "height": 126.10000000000001
+              },
+              "size": 97,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Enter its title and author",
+              "lines": [
+                "Enter its title and author"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 295.9,
+                "width": 1096,
+                "height": 59.800000000000004
+              },
+              "size": 46,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Book details",
+              "lines": [
+                "Book details"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 375.02,
+                "width": 1096,
+                "height": 48.1
+              },
+              "size": 37,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            }
+          ],
+          "warnings": []
+        },
+        {
+          "file": "en-US/minimal/iphone-portrait/03.png",
+          "sha256": "2394636594ea9cf0439d9c8b4c3291c57a333bbe39ce9a2acb6f511ce6e69319",
+          "template": "minimal",
+          "locale": "en-US",
+          "profile": "iphone-portrait",
+          "width": 1260,
+          "height": 2736,
+          "sources": [
+            {
+              "sha256": "4462cb585cb1ce27b5ea81b529e2d1e9d6eb86659fb160918d0d19186cb58f63",
+              "width": 1206,
+              "height": 2622,
+              "placement": {
+                "x": 276.86553775743715,
+                "y": 1024.32,
+                "width": 706.2689244851257,
+                "height": 1535.5199999999998
+              }
+            }
+          ],
+          "texts": [
+            {
+              "text": "Keep books together",
+              "lines": [
+                "Keep books together"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 150.48,
+                "width": 1096,
+                "height": 126.10000000000001
+              },
+              "size": 97,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Browse your saved reading list",
+              "lines": [
+                "Browse your saved reading list"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 295.9,
+                "width": 1096,
+                "height": 59.800000000000004
+              },
+              "size": 46,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Library",
+              "lines": [
+                "Library"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 375.02,
+                "width": 1096,
+                "height": 48.1
+              },
+              "size": 37,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            }
+          ],
+          "warnings": []
+        },
+        {
+          "file": "en-US/minimal/iphone-portrait/04.png",
+          "sha256": "5eab5d6626f32d26162795a6bd6846e3681a5742a027c86071acbeab3dd42909",
+          "template": "minimal",
+          "locale": "en-US",
+          "profile": "iphone-portrait",
+          "width": 1260,
+          "height": 2736,
+          "sources": [
+            {
+              "sha256": "54b8355c623eecb156e9cb5f9be9f1573dc571e434aae764c37621ec56abde41",
+              "width": 1206,
+              "height": 2622,
+              "placement": {
+                "x": 276.86553775743715,
+                "y": 1024.32,
+                "width": 706.2689244851257,
+                "height": 1535.5199999999998
+              }
+            }
+          ],
+          "texts": [
+            {
+              "text": "See the details",
+              "lines": [
+                "See the details"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 150.48,
+                "width": 1096,
+                "height": 126.10000000000001
+              },
+              "size": 97,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Open a saved book",
+              "lines": [
+                "Open a saved book"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 295.9,
+                "width": 1096,
+                "height": 59.800000000000004
+              },
+              "size": 46,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Book details",
+              "lines": [
+                "Book details"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 375.02,
+                "width": 1096,
+                "height": 48.1
+              },
+              "size": 37,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            }
+          ],
+          "warnings": []
+        },
+        {
+          "file": "en-US/minimal/iphone-portrait/05.png",
+          "sha256": "2ea0b2917463d268e0c23331e68915539941de9d2ac75c49e10388d0ce85d988",
+          "template": "minimal",
+          "locale": "en-US",
+          "profile": "iphone-portrait",
+          "width": 1260,
+          "height": 2736,
+          "sources": [
+            {
+              "sha256": "fa92adaad9257cdf78339a9e0d92d43feb88fd649ccb40ce58b10a5266079bbe",
+              "width": 1206,
+              "height": 2622,
+              "placement": {
+                "x": 276.86553775743715,
+                "y": 1024.32,
+                "width": 706.2689244851257,
+                "height": 1535.5199999999998
+              }
+            }
+          ],
+          "texts": [
+            {
+              "text": "Search your library",
+              "lines": [
+                "Search your library"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 150.48,
+                "width": 1096,
+                "height": 126.10000000000001
+              },
+              "size": 97,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "An empty result stays clear",
+              "lines": [
+                "An empty result stays clear"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 295.9,
+                "width": 1096,
+                "height": 59.800000000000004
+              },
+              "size": 46,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Search",
+              "lines": [
+                "Search"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 375.02,
+                "width": 1096,
+                "height": 48.1
+              },
+              "size": 37,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            }
+          ],
+          "warnings": []
+        },
+        {
+          "file": "en-US/dark-premium/iphone-portrait/01.png",
+          "sha256": "22624a8c264d5a0a221f56dae0797bfd51515d9f2b28123bc5f30525299e1c08",
+          "template": "dark-premium",
+          "locale": "en-US",
+          "profile": "iphone-portrait",
+          "width": 1260,
+          "height": 2736,
+          "sources": [
+            {
+              "sha256": "dd5c4e33f8202d77a68a1857b05ddae26c3c6d1e8612c904e2867265611c4ee2",
+              "width": 1206,
+              "height": 2622,
+              "placement": {
+                "x": 327.249885583524,
+                "y": 1079.04,
+                "width": 681.100228832952,
+                "height": 1480.8000000000002
+              }
+            }
+          ],
+          "texts": [
+            {
+              "text": "Start your reading list",
+              "lines": [
+                "Start your reading list"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 218.88,
+                "width": 970.2,
+                "height": 126.10000000000001
+              },
+              "size": 97,
+              "contrast": 15.920460812750253,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Add your first book",
+              "lines": [
+                "Add your first book"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 364.3,
+                "width": 970.2,
+                "height": 59.800000000000004
+              },
+              "size": 46,
+              "contrast": 15.920460812750253,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Your library",
+              "lines": [
+                "Your library"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 443.42,
+                "width": 970.2,
+                "height": 48.1
+              },
+              "size": 37,
+              "contrast": 15.920460812750253,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            }
+          ],
+          "warnings": []
+        },
+        {
+          "file": "en-US/dark-premium/iphone-portrait/02.png",
+          "sha256": "47b055ed4401664dd9fef9e646bc73e0100106c03e0fe1e89c301d78dd4c06f7",
+          "template": "dark-premium",
+          "locale": "en-US",
+          "profile": "iphone-portrait",
+          "width": 1260,
+          "height": 2736,
+          "sources": [
+            {
+              "sha256": "bbc662953a3e7792c32180876b58292f05ca0768fa366ffb385903884184ebf5",
+              "width": 1206,
+              "height": 2622,
+              "placement": {
+                "x": 327.249885583524,
+                "y": 1079.04,
+                "width": 681.100228832952,
+                "height": 1480.8000000000002
+              }
+            }
+          ],
+          "texts": [
+            {
+              "text": "Add a book",
+              "lines": [
+                "Add a book"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 218.88,
+                "width": 970.2,
+                "height": 126.10000000000001
+              },
+              "size": 97,
+              "contrast": 15.920460812750253,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Enter its title and author",
+              "lines": [
+                "Enter its title and author"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 364.3,
+                "width": 970.2,
+                "height": 59.800000000000004
+              },
+              "size": 46,
+              "contrast": 15.920460812750253,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Book details",
+              "lines": [
+                "Book details"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 443.42,
+                "width": 970.2,
+                "height": 48.1
+              },
+              "size": 37,
+              "contrast": 15.920460812750253,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            }
+          ],
+          "warnings": []
+        },
+        {
+          "file": "en-US/dark-premium/iphone-portrait/03.png",
+          "sha256": "3b8972e5a0a2835b91ae26bec59842d51cf5e5eee58653ff663f088f32c3a4c3",
+          "template": "dark-premium",
+          "locale": "en-US",
+          "profile": "iphone-portrait",
+          "width": 1260,
+          "height": 2736,
+          "sources": [
+            {
+              "sha256": "4462cb585cb1ce27b5ea81b529e2d1e9d6eb86659fb160918d0d19186cb58f63",
+              "width": 1206,
+              "height": 2622,
+              "placement": {
+                "x": 327.249885583524,
+                "y": 1079.04,
+                "width": 681.100228832952,
+                "height": 1480.8000000000002
+              }
+            }
+          ],
+          "texts": [
+            {
+              "text": "Keep books together",
+              "lines": [
+                "Keep books together"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 218.88,
+                "width": 970.2,
+                "height": 126.10000000000001
+              },
+              "size": 97,
+              "contrast": 15.920460812750253,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Browse your saved reading list",
+              "lines": [
+                "Browse your saved reading list"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 364.3,
+                "width": 970.2,
+                "height": 59.800000000000004
+              },
+              "size": 46,
+              "contrast": 15.920460812750253,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Library",
+              "lines": [
+                "Library"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 443.42,
+                "width": 970.2,
+                "height": 48.1
+              },
+              "size": 37,
+              "contrast": 15.920460812750253,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            }
+          ],
+          "warnings": []
+        },
+        {
+          "file": "en-US/dark-premium/iphone-portrait/04.png",
+          "sha256": "b353f5dc899e0c7addd8f026d104d8708c38cc6fd7192f16bcb35505485696a2",
+          "template": "dark-premium",
+          "locale": "en-US",
+          "profile": "iphone-portrait",
+          "width": 1260,
+          "height": 2736,
+          "sources": [
+            {
+              "sha256": "54b8355c623eecb156e9cb5f9be9f1573dc571e434aae764c37621ec56abde41",
+              "width": 1206,
+              "height": 2622,
+              "placement": {
+                "x": 327.249885583524,
+                "y": 1079.04,
+                "width": 681.100228832952,
+                "height": 1480.8000000000002
+              }
+            }
+          ],
+          "texts": [
+            {
+              "text": "See the details",
+              "lines": [
+                "See the details"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 218.88,
+                "width": 970.2,
+                "height": 126.10000000000001
+              },
+              "size": 97,
+              "contrast": 15.920460812750253,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Open a saved book",
+              "lines": [
+                "Open a saved book"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 364.3,
+                "width": 970.2,
+                "height": 59.800000000000004
+              },
+              "size": 46,
+              "contrast": 15.920460812750253,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Book details",
+              "lines": [
+                "Book details"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 443.42,
+                "width": 970.2,
+                "height": 48.1
+              },
+              "size": 37,
+              "contrast": 15.920460812750253,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            }
+          ],
+          "warnings": []
+        },
+        {
+          "file": "en-US/dark-premium/iphone-portrait/05.png",
+          "sha256": "3206fc1f5acce57ed1855ee01980f60cae900bc46e6a236099aae86a145db0b8",
+          "template": "dark-premium",
+          "locale": "en-US",
+          "profile": "iphone-portrait",
+          "width": 1260,
+          "height": 2736,
+          "sources": [
+            {
+              "sha256": "fa92adaad9257cdf78339a9e0d92d43feb88fd649ccb40ce58b10a5266079bbe",
+              "width": 1206,
+              "height": 2622,
+              "placement": {
+                "x": 327.249885583524,
+                "y": 1079.04,
+                "width": 681.100228832952,
+                "height": 1480.8000000000002
+              }
+            }
+          ],
+          "texts": [
+            {
+              "text": "Search your library",
+              "lines": [
+                "Search your library"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 218.88,
+                "width": 970.2,
+                "height": 126.10000000000001
+              },
+              "size": 97,
+              "contrast": 15.920460812750253,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "An empty result stays clear",
+              "lines": [
+                "An empty result stays clear"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 364.3,
+                "width": 970.2,
+                "height": 59.800000000000004
+              },
+              "size": 46,
+              "contrast": 15.920460812750253,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Search",
+              "lines": [
+                "Search"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 443.42,
+                "width": 970.2,
+                "height": 48.1
+              },
+              "size": 37,
+              "contrast": 15.920460812750253,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            }
+          ],
+          "warnings": []
+        },
+        {
+          "file": "en-US/gradient/iphone-portrait/01.png",
+          "sha256": "4c284444fa1c9c98b7756a9e0f654a4b3679edf4d63d9addf76beae1553c8f37",
+          "template": "gradient",
+          "locale": "en-US",
+          "profile": "iphone-portrait",
+          "width": 1260,
+          "height": 2736,
+          "sources": [
+            {
+              "sha256": "dd5c4e33f8202d77a68a1857b05ddae26c3c6d1e8612c904e2867265611c4ee2",
+              "width": 1206,
+              "height": 2622,
+              "placement": {
+                "x": 276.8264073226545,
+                "y": 1147.44,
+                "width": 643.3471853546911,
+                "height": 1398.7199999999998
+              }
+            }
+          ],
+          "texts": [
+            {
+              "text": "Start your reading list",
+              "lines": [
+                "Start your reading list"
+              ],
+              "bounds": {
+                "x": 126,
+                "y": 205.2,
+                "width": 1008,
+                "height": 126.10000000000001
+              },
+              "size": 97,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Add your first book",
+              "lines": [
+                "Add your first book"
+              ],
+              "bounds": {
+                "x": 126,
+                "y": 350.62,
+                "width": 1008,
+                "height": 59.800000000000004
+              },
+              "size": 46,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Your library",
+              "lines": [
+                "Your library"
+              ],
+              "bounds": {
+                "x": 126,
+                "y": 429.74,
+                "width": 1008,
+                "height": 48.1
+              },
+              "size": 37,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            }
+          ],
+          "warnings": []
+        },
+        {
+          "file": "en-US/gradient/iphone-portrait/02.png",
+          "sha256": "5830a73e80d7b467a6d760d7600a17475940c62806967a7c7ec0a87b7dd6d04f",
+          "template": "gradient",
+          "locale": "en-US",
+          "profile": "iphone-portrait",
+          "width": 1260,
+          "height": 2736,
+          "sources": [
+            {
+              "sha256": "bbc662953a3e7792c32180876b58292f05ca0768fa366ffb385903884184ebf5",
+              "width": 1206,
+              "height": 2622,
+              "placement": {
+                "x": 276.8264073226545,
+                "y": 1147.44,
+                "width": 643.3471853546911,
+                "height": 1398.7199999999998
+              }
+            }
+          ],
+          "texts": [
+            {
+              "text": "Add a book",
+              "lines": [
+                "Add a book"
+              ],
+              "bounds": {
+                "x": 126,
+                "y": 205.2,
+                "width": 1008,
+                "height": 126.10000000000001
+              },
+              "size": 97,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Enter its title and author",
+              "lines": [
+                "Enter its title and author"
+              ],
+              "bounds": {
+                "x": 126,
+                "y": 350.62,
+                "width": 1008,
+                "height": 59.800000000000004
+              },
+              "size": 46,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Book details",
+              "lines": [
+                "Book details"
+              ],
+              "bounds": {
+                "x": 126,
+                "y": 429.74,
+                "width": 1008,
+                "height": 48.1
+              },
+              "size": 37,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            }
+          ],
+          "warnings": []
+        },
+        {
+          "file": "en-US/gradient/iphone-portrait/03.png",
+          "sha256": "f3ba1f2d5fc59040fe32b9dbfbef42ffbfe6404b7502500bd00a1bbe8b860407",
+          "template": "gradient",
+          "locale": "en-US",
+          "profile": "iphone-portrait",
+          "width": 1260,
+          "height": 2736,
+          "sources": [
+            {
+              "sha256": "4462cb585cb1ce27b5ea81b529e2d1e9d6eb86659fb160918d0d19186cb58f63",
+              "width": 1206,
+              "height": 2622,
+              "placement": {
+                "x": 276.8264073226545,
+                "y": 1147.44,
+                "width": 643.3471853546911,
+                "height": 1398.7199999999998
+              }
+            }
+          ],
+          "texts": [
+            {
+              "text": "Keep books together",
+              "lines": [
+                "Keep books together"
+              ],
+              "bounds": {
+                "x": 126,
+                "y": 205.2,
+                "width": 1008,
+                "height": 126.10000000000001
+              },
+              "size": 97,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Browse your saved reading list",
+              "lines": [
+                "Browse your saved reading list"
+              ],
+              "bounds": {
+                "x": 126,
+                "y": 350.62,
+                "width": 1008,
+                "height": 59.800000000000004
+              },
+              "size": 46,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Library",
+              "lines": [
+                "Library"
+              ],
+              "bounds": {
+                "x": 126,
+                "y": 429.74,
+                "width": 1008,
+                "height": 48.1
+              },
+              "size": 37,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            }
+          ],
+          "warnings": []
+        },
+        {
+          "file": "en-US/gradient/iphone-portrait/04.png",
+          "sha256": "d1ffab31e0f08828717760b353749a884f15648b1c7bec649e075dcda3ae7c28",
+          "template": "gradient",
+          "locale": "en-US",
+          "profile": "iphone-portrait",
+          "width": 1260,
+          "height": 2736,
+          "sources": [
+            {
+              "sha256": "54b8355c623eecb156e9cb5f9be9f1573dc571e434aae764c37621ec56abde41",
+              "width": 1206,
+              "height": 2622,
+              "placement": {
+                "x": 276.8264073226545,
+                "y": 1147.44,
+                "width": 643.3471853546911,
+                "height": 1398.7199999999998
+              }
+            }
+          ],
+          "texts": [
+            {
+              "text": "See the details",
+              "lines": [
+                "See the details"
+              ],
+              "bounds": {
+                "x": 126,
+                "y": 205.2,
+                "width": 1008,
+                "height": 126.10000000000001
+              },
+              "size": 97,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Open a saved book",
+              "lines": [
+                "Open a saved book"
+              ],
+              "bounds": {
+                "x": 126,
+                "y": 350.62,
+                "width": 1008,
+                "height": 59.800000000000004
+              },
+              "size": 46,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Book details",
+              "lines": [
+                "Book details"
+              ],
+              "bounds": {
+                "x": 126,
+                "y": 429.74,
+                "width": 1008,
+                "height": 48.1
+              },
+              "size": 37,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            }
+          ],
+          "warnings": []
+        },
+        {
+          "file": "en-US/gradient/iphone-portrait/05.png",
+          "sha256": "a3b41f4b3dc6d1c84583c8732b9b552eb5595eb1ccdde2c7bac6d02dfbea6c44",
+          "template": "gradient",
+          "locale": "en-US",
+          "profile": "iphone-portrait",
+          "width": 1260,
+          "height": 2736,
+          "sources": [
+            {
+              "sha256": "fa92adaad9257cdf78339a9e0d92d43feb88fd649ccb40ce58b10a5266079bbe",
+              "width": 1206,
+              "height": 2622,
+              "placement": {
+                "x": 276.8264073226545,
+                "y": 1147.44,
+                "width": 643.3471853546911,
+                "height": 1398.7199999999998
+              }
+            }
+          ],
+          "texts": [
+            {
+              "text": "Search your library",
+              "lines": [
+                "Search your library"
+              ],
+              "bounds": {
+                "x": 126,
+                "y": 205.2,
+                "width": 1008,
+                "height": 126.10000000000001
+              },
+              "size": 97,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "An empty result stays clear",
+              "lines": [
+                "An empty result stays clear"
+              ],
+              "bounds": {
+                "x": 126,
+                "y": 350.62,
+                "width": 1008,
+                "height": 59.800000000000004
+              },
+              "size": 46,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Search",
+              "lines": [
+                "Search"
+              ],
+              "bounds": {
+                "x": 126,
+                "y": 429.74,
+                "width": 1008,
+                "height": 48.1
+              },
+              "size": 37,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            }
+          ],
+          "warnings": []
+        }
+      ],
+      "validation": {
+        "passed": true,
+        "checked": 15,
+        "errors": [],
+        "warnings": [],
+        "scope": "PNG dimensions, hashes and recorded rendering geometry. Not a pixel-level UI review, authenticated evidence or Apple approval."
+      }
+    },
+    {
+      "locale": "es-ES",
+      "renderer": "resvg-js@2.6.2; fontkit@2.0.4; pngjs@7.0.0",
+      "profileSource": {
+        "checked": "2026-09-29",
+        "url": "https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications",
+        "note": "Accepted pixel profiles, not a determination of which device classes your app must supply. Recheck Apple before submission."
+      },
+      "entries": [
+        {
+          "file": "es-ES/minimal/iphone-portrait/01.png",
+          "sha256": "99bb3847871e612824f8ff573d3e47ff3d394866e900554cd940467c4d538528",
+          "template": "minimal",
+          "locale": "es-ES",
+          "profile": "iphone-portrait",
+          "width": 1260,
+          "height": 2736,
+          "sources": [
+            {
+              "sha256": "dd5c4e33f8202d77a68a1857b05ddae26c3c6d1e8612c904e2867265611c4ee2",
+              "width": 1206,
+              "height": 2622,
+              "placement": {
+                "x": 276.86553775743715,
+                "y": 1024.32,
+                "width": 706.2689244851257,
+                "height": 1535.5199999999998
+              }
+            }
+          ],
+          "texts": [
+            {
+              "text": "Empieza tu lista",
+              "lines": [
+                "Empieza tu lista"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 150.48,
+                "width": 1096,
+                "height": 126.10000000000001
+              },
+              "size": 97,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Añade tu primer libro",
+              "lines": [
+                "Añade tu primer libro"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 295.9,
+                "width": 1096,
+                "height": 59.800000000000004
+              },
+              "size": 46,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Tu biblioteca",
+              "lines": [
+                "Tu biblioteca"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 375.02,
+                "width": 1096,
+                "height": 48.1
+              },
+              "size": 37,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            }
+          ],
+          "warnings": []
+        },
+        {
+          "file": "es-ES/minimal/iphone-portrait/02.png",
+          "sha256": "988bb7fe6b553e0aaa3d82c327c6fd3b0044addc280a850e906b2c4ebcbc7a5a",
+          "template": "minimal",
+          "locale": "es-ES",
+          "profile": "iphone-portrait",
+          "width": 1260,
+          "height": 2736,
+          "sources": [
+            {
+              "sha256": "bbc662953a3e7792c32180876b58292f05ca0768fa366ffb385903884184ebf5",
+              "width": 1206,
+              "height": 2622,
+              "placement": {
+                "x": 276.86553775743715,
+                "y": 1024.32,
+                "width": 706.2689244851257,
+                "height": 1535.5199999999998
+              }
+            }
+          ],
+          "texts": [
+            {
+              "text": "Añade un libro",
+              "lines": [
+                "Añade un libro"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 150.48,
+                "width": 1096,
+                "height": 126.10000000000001
+              },
+              "size": 97,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Escribe el título y el autor",
+              "lines": [
+                "Escribe el título y el autor"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 295.9,
+                "width": 1096,
+                "height": 59.800000000000004
+              },
+              "size": 46,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Detalles del libro",
+              "lines": [
+                "Detalles del libro"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 375.02,
+                "width": 1096,
+                "height": 48.1
+              },
+              "size": 37,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            }
+          ],
+          "warnings": []
+        },
+        {
+          "file": "es-ES/minimal/iphone-portrait/03.png",
+          "sha256": "aa8f79641946a652fdd5c8bb92225bb1c97fdd0c360caf27542f6715347fe64f",
+          "template": "minimal",
+          "locale": "es-ES",
+          "profile": "iphone-portrait",
+          "width": 1260,
+          "height": 2736,
+          "sources": [
+            {
+              "sha256": "4462cb585cb1ce27b5ea81b529e2d1e9d6eb86659fb160918d0d19186cb58f63",
+              "width": 1206,
+              "height": 2622,
+              "placement": {
+                "x": 276.86553775743715,
+                "y": 1024.32,
+                "width": 706.2689244851257,
+                "height": 1535.5199999999998
+              }
+            }
+          ],
+          "texts": [
+            {
+              "text": "Tus libros juntos",
+              "lines": [
+                "Tus libros juntos"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 150.48,
+                "width": 1096,
+                "height": 126.10000000000001
+              },
+              "size": 97,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Explora tu lista de lectura",
+              "lines": [
+                "Explora tu lista de lectura"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 295.9,
+                "width": 1096,
+                "height": 59.800000000000004
+              },
+              "size": 46,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Biblioteca",
+              "lines": [
+                "Biblioteca"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 375.02,
+                "width": 1096,
+                "height": 48.1
+              },
+              "size": 37,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            }
+          ],
+          "warnings": []
+        },
+        {
+          "file": "es-ES/minimal/iphone-portrait/04.png",
+          "sha256": "d1d7139e39d2fb23ad2738dc0cebe1fabb1646ac32330125a0b1af983849fc45",
+          "template": "minimal",
+          "locale": "es-ES",
+          "profile": "iphone-portrait",
+          "width": 1260,
+          "height": 2736,
+          "sources": [
+            {
+              "sha256": "54b8355c623eecb156e9cb5f9be9f1573dc571e434aae764c37621ec56abde41",
+              "width": 1206,
+              "height": 2622,
+              "placement": {
+                "x": 276.86553775743715,
+                "y": 1024.32,
+                "width": 706.2689244851257,
+                "height": 1535.5199999999998
+              }
+            }
+          ],
+          "texts": [
+            {
+              "text": "Consulta los detalles",
+              "lines": [
+                "Consulta los detalles"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 150.48,
+                "width": 1096,
+                "height": 126.10000000000001
+              },
+              "size": 97,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Abre un libro guardado",
+              "lines": [
+                "Abre un libro guardado"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 295.9,
+                "width": 1096,
+                "height": 59.800000000000004
+              },
+              "size": 46,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Detalles",
+              "lines": [
+                "Detalles"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 375.02,
+                "width": 1096,
+                "height": 48.1
+              },
+              "size": 37,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            }
+          ],
+          "warnings": []
+        },
+        {
+          "file": "es-ES/minimal/iphone-portrait/05.png",
+          "sha256": "513fd3c93a80e3a36b957b4d4b80d1fa33af392016295ffcb061bb7f9d3000f0",
+          "template": "minimal",
+          "locale": "es-ES",
+          "profile": "iphone-portrait",
+          "width": 1260,
+          "height": 2736,
+          "sources": [
+            {
+              "sha256": "fa92adaad9257cdf78339a9e0d92d43feb88fd649ccb40ce58b10a5266079bbe",
+              "width": 1206,
+              "height": 2622,
+              "placement": {
+                "x": 276.86553775743715,
+                "y": 1024.32,
+                "width": 706.2689244851257,
+                "height": 1535.5199999999998
+              }
+            }
+          ],
+          "texts": [
+            {
+              "text": "Busca en tu biblioteca",
+              "lines": [
+                "Busca en tu biblioteca"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 150.48,
+                "width": 1096,
+                "height": 126.10000000000001
+              },
+              "size": 97,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Los resultados vacíos son claros",
+              "lines": [
+                "Los resultados vacíos son claros"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 295.9,
+                "width": 1096,
+                "height": 59.800000000000004
+              },
+              "size": 46,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Buscar",
+              "lines": [
+                "Buscar"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 375.02,
+                "width": 1096,
+                "height": 48.1
+              },
+              "size": 37,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            }
+          ],
+          "warnings": []
+        },
+        {
+          "file": "es-ES/dark-premium/iphone-portrait/01.png",
+          "sha256": "de54750e4513cce712cbb6d8418ff35cd407bb3959779c2d6a795b6c92c34649",
+          "template": "dark-premium",
+          "locale": "es-ES",
+          "profile": "iphone-portrait",
+          "width": 1260,
+          "height": 2736,
+          "sources": [
+            {
+              "sha256": "dd5c4e33f8202d77a68a1857b05ddae26c3c6d1e8612c904e2867265611c4ee2",
+              "width": 1206,
+              "height": 2622,
+              "placement": {
+                "x": 327.249885583524,
+                "y": 1079.04,
+                "width": 681.100228832952,
+                "height": 1480.8000000000002
+              }
+            }
+          ],
+          "texts": [
+            {
+              "text": "Empieza tu lista",
+              "lines": [
+                "Empieza tu lista"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 218.88,
+                "width": 970.2,
+                "height": 126.10000000000001
+              },
+              "size": 97,
+              "contrast": 15.920460812750253,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Añade tu primer libro",
+              "lines": [
+                "Añade tu primer libro"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 364.3,
+                "width": 970.2,
+                "height": 59.800000000000004
+              },
+              "size": 46,
+              "contrast": 15.920460812750253,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Tu biblioteca",
+              "lines": [
+                "Tu biblioteca"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 443.42,
+                "width": 970.2,
+                "height": 48.1
+              },
+              "size": 37,
+              "contrast": 15.920460812750253,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            }
+          ],
+          "warnings": []
+        },
+        {
+          "file": "es-ES/dark-premium/iphone-portrait/02.png",
+          "sha256": "759faf2206fdafae017a2409e4ad00a763eb4dfdd2f59b597cbdbf7f669691f5",
+          "template": "dark-premium",
+          "locale": "es-ES",
+          "profile": "iphone-portrait",
+          "width": 1260,
+          "height": 2736,
+          "sources": [
+            {
+              "sha256": "bbc662953a3e7792c32180876b58292f05ca0768fa366ffb385903884184ebf5",
+              "width": 1206,
+              "height": 2622,
+              "placement": {
+                "x": 327.249885583524,
+                "y": 1079.04,
+                "width": 681.100228832952,
+                "height": 1480.8000000000002
+              }
+            }
+          ],
+          "texts": [
+            {
+              "text": "Añade un libro",
+              "lines": [
+                "Añade un libro"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 218.88,
+                "width": 970.2,
+                "height": 126.10000000000001
+              },
+              "size": 97,
+              "contrast": 15.920460812750253,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Escribe el título y el autor",
+              "lines": [
+                "Escribe el título y el autor"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 364.3,
+                "width": 970.2,
+                "height": 59.800000000000004
+              },
+              "size": 46,
+              "contrast": 15.920460812750253,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Detalles del libro",
+              "lines": [
+                "Detalles del libro"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 443.42,
+                "width": 970.2,
+                "height": 48.1
+              },
+              "size": 37,
+              "contrast": 15.920460812750253,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            }
+          ],
+          "warnings": []
+        },
+        {
+          "file": "es-ES/dark-premium/iphone-portrait/03.png",
+          "sha256": "88301bbe347a164ab96d08de62657df301cc1b8db3011f488d58df3542fee8c0",
+          "template": "dark-premium",
+          "locale": "es-ES",
+          "profile": "iphone-portrait",
+          "width": 1260,
+          "height": 2736,
+          "sources": [
+            {
+              "sha256": "4462cb585cb1ce27b5ea81b529e2d1e9d6eb86659fb160918d0d19186cb58f63",
+              "width": 1206,
+              "height": 2622,
+              "placement": {
+                "x": 327.249885583524,
+                "y": 1079.04,
+                "width": 681.100228832952,
+                "height": 1480.8000000000002
+              }
+            }
+          ],
+          "texts": [
+            {
+              "text": "Tus libros juntos",
+              "lines": [
+                "Tus libros juntos"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 218.88,
+                "width": 970.2,
+                "height": 126.10000000000001
+              },
+              "size": 97,
+              "contrast": 15.920460812750253,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Explora tu lista de lectura",
+              "lines": [
+                "Explora tu lista de lectura"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 364.3,
+                "width": 970.2,
+                "height": 59.800000000000004
+              },
+              "size": 46,
+              "contrast": 15.920460812750253,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Biblioteca",
+              "lines": [
+                "Biblioteca"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 443.42,
+                "width": 970.2,
+                "height": 48.1
+              },
+              "size": 37,
+              "contrast": 15.920460812750253,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            }
+          ],
+          "warnings": []
+        },
+        {
+          "file": "es-ES/dark-premium/iphone-portrait/04.png",
+          "sha256": "7d8d9081aad11f937c1dd66d2e2bd3fab6228f470196c9167a38310e42332e5f",
+          "template": "dark-premium",
+          "locale": "es-ES",
+          "profile": "iphone-portrait",
+          "width": 1260,
+          "height": 2736,
+          "sources": [
+            {
+              "sha256": "54b8355c623eecb156e9cb5f9be9f1573dc571e434aae764c37621ec56abde41",
+              "width": 1206,
+              "height": 2622,
+              "placement": {
+                "x": 327.249885583524,
+                "y": 1079.04,
+                "width": 681.100228832952,
+                "height": 1480.8000000000002
+              }
+            }
+          ],
+          "texts": [
+            {
+              "text": "Consulta los detalles",
+              "lines": [
+                "Consulta los detalles"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 218.88,
+                "width": 970.2,
+                "height": 126.10000000000001
+              },
+              "size": 97,
+              "contrast": 15.920460812750253,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Abre un libro guardado",
+              "lines": [
+                "Abre un libro guardado"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 364.3,
+                "width": 970.2,
+                "height": 59.800000000000004
+              },
+              "size": 46,
+              "contrast": 15.920460812750253,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Detalles",
+              "lines": [
+                "Detalles"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 443.42,
+                "width": 970.2,
+                "height": 48.1
+              },
+              "size": 37,
+              "contrast": 15.920460812750253,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            }
+          ],
+          "warnings": []
+        },
+        {
+          "file": "es-ES/dark-premium/iphone-portrait/05.png",
+          "sha256": "a34c6d3d1bc2ee148f341600b3c749d07b299cd8b8a56c5f9c64afba403d4e73",
+          "template": "dark-premium",
+          "locale": "es-ES",
+          "profile": "iphone-portrait",
+          "width": 1260,
+          "height": 2736,
+          "sources": [
+            {
+              "sha256": "fa92adaad9257cdf78339a9e0d92d43feb88fd649ccb40ce58b10a5266079bbe",
+              "width": 1206,
+              "height": 2622,
+              "placement": {
+                "x": 327.249885583524,
+                "y": 1079.04,
+                "width": 681.100228832952,
+                "height": 1480.8000000000002
+              }
+            }
+          ],
+          "texts": [
+            {
+              "text": "Busca en tu biblioteca",
+              "lines": [
+                "Busca en tu biblioteca"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 218.88,
+                "width": 970.2,
+                "height": 126.10000000000001
+              },
+              "size": 97,
+              "contrast": 15.920460812750253,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Los resultados vacíos son claros",
+              "lines": [
+                "Los resultados vacíos son claros"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 364.3,
+                "width": 970.2,
+                "height": 59.800000000000004
+              },
+              "size": 46,
+              "contrast": 15.920460812750253,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Buscar",
+              "lines": [
+                "Buscar"
+              ],
+              "bounds": {
+                "x": 82,
+                "y": 443.42,
+                "width": 970.2,
+                "height": 48.1
+              },
+              "size": 37,
+              "contrast": 15.920460812750253,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            }
+          ],
+          "warnings": []
+        },
+        {
+          "file": "es-ES/gradient/iphone-portrait/01.png",
+          "sha256": "314e374e97168ff325b2bb55cf6e98bd92eb903aba367efb2f83a84804fae175",
+          "template": "gradient",
+          "locale": "es-ES",
+          "profile": "iphone-portrait",
+          "width": 1260,
+          "height": 2736,
+          "sources": [
+            {
+              "sha256": "dd5c4e33f8202d77a68a1857b05ddae26c3c6d1e8612c904e2867265611c4ee2",
+              "width": 1206,
+              "height": 2622,
+              "placement": {
+                "x": 276.8264073226545,
+                "y": 1147.44,
+                "width": 643.3471853546911,
+                "height": 1398.7199999999998
+              }
+            }
+          ],
+          "texts": [
+            {
+              "text": "Empieza tu lista",
+              "lines": [
+                "Empieza tu lista"
+              ],
+              "bounds": {
+                "x": 126,
+                "y": 205.2,
+                "width": 1008,
+                "height": 126.10000000000001
+              },
+              "size": 97,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Añade tu primer libro",
+              "lines": [
+                "Añade tu primer libro"
+              ],
+              "bounds": {
+                "x": 126,
+                "y": 350.62,
+                "width": 1008,
+                "height": 59.800000000000004
+              },
+              "size": 46,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Tu biblioteca",
+              "lines": [
+                "Tu biblioteca"
+              ],
+              "bounds": {
+                "x": 126,
+                "y": 429.74,
+                "width": 1008,
+                "height": 48.1
+              },
+              "size": 37,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            }
+          ],
+          "warnings": []
+        },
+        {
+          "file": "es-ES/gradient/iphone-portrait/02.png",
+          "sha256": "fba3589aaa6b35c415fba326bede9f552755ec39060baf854a0dab9eec22b747",
+          "template": "gradient",
+          "locale": "es-ES",
+          "profile": "iphone-portrait",
+          "width": 1260,
+          "height": 2736,
+          "sources": [
+            {
+              "sha256": "bbc662953a3e7792c32180876b58292f05ca0768fa366ffb385903884184ebf5",
+              "width": 1206,
+              "height": 2622,
+              "placement": {
+                "x": 276.8264073226545,
+                "y": 1147.44,
+                "width": 643.3471853546911,
+                "height": 1398.7199999999998
+              }
+            }
+          ],
+          "texts": [
+            {
+              "text": "Añade un libro",
+              "lines": [
+                "Añade un libro"
+              ],
+              "bounds": {
+                "x": 126,
+                "y": 205.2,
+                "width": 1008,
+                "height": 126.10000000000001
+              },
+              "size": 97,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Escribe el título y el autor",
+              "lines": [
+                "Escribe el título y el autor"
+              ],
+              "bounds": {
+                "x": 126,
+                "y": 350.62,
+                "width": 1008,
+                "height": 59.800000000000004
+              },
+              "size": 46,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Detalles del libro",
+              "lines": [
+                "Detalles del libro"
+              ],
+              "bounds": {
+                "x": 126,
+                "y": 429.74,
+                "width": 1008,
+                "height": 48.1
+              },
+              "size": 37,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            }
+          ],
+          "warnings": []
+        },
+        {
+          "file": "es-ES/gradient/iphone-portrait/03.png",
+          "sha256": "84a54a0bcd6a203a887cb63c875bc2a769f36a09345ae30f8fe485ffbda41819",
+          "template": "gradient",
+          "locale": "es-ES",
+          "profile": "iphone-portrait",
+          "width": 1260,
+          "height": 2736,
+          "sources": [
+            {
+              "sha256": "4462cb585cb1ce27b5ea81b529e2d1e9d6eb86659fb160918d0d19186cb58f63",
+              "width": 1206,
+              "height": 2622,
+              "placement": {
+                "x": 276.8264073226545,
+                "y": 1147.44,
+                "width": 643.3471853546911,
+                "height": 1398.7199999999998
+              }
+            }
+          ],
+          "texts": [
+            {
+              "text": "Tus libros juntos",
+              "lines": [
+                "Tus libros juntos"
+              ],
+              "bounds": {
+                "x": 126,
+                "y": 205.2,
+                "width": 1008,
+                "height": 126.10000000000001
+              },
+              "size": 97,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Explora tu lista de lectura",
+              "lines": [
+                "Explora tu lista de lectura"
+              ],
+              "bounds": {
+                "x": 126,
+                "y": 350.62,
+                "width": 1008,
+                "height": 59.800000000000004
+              },
+              "size": 46,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Biblioteca",
+              "lines": [
+                "Biblioteca"
+              ],
+              "bounds": {
+                "x": 126,
+                "y": 429.74,
+                "width": 1008,
+                "height": 48.1
+              },
+              "size": 37,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            }
+          ],
+          "warnings": []
+        },
+        {
+          "file": "es-ES/gradient/iphone-portrait/04.png",
+          "sha256": "a7540ce335f62293e90258eb498454eaac71b22fbd6838d2d10f166ab9a31610",
+          "template": "gradient",
+          "locale": "es-ES",
+          "profile": "iphone-portrait",
+          "width": 1260,
+          "height": 2736,
+          "sources": [
+            {
+              "sha256": "54b8355c623eecb156e9cb5f9be9f1573dc571e434aae764c37621ec56abde41",
+              "width": 1206,
+              "height": 2622,
+              "placement": {
+                "x": 276.8264073226545,
+                "y": 1147.44,
+                "width": 643.3471853546911,
+                "height": 1398.7199999999998
+              }
+            }
+          ],
+          "texts": [
+            {
+              "text": "Consulta los detalles",
+              "lines": [
+                "Consulta los detalles"
+              ],
+              "bounds": {
+                "x": 126,
+                "y": 205.2,
+                "width": 1008,
+                "height": 126.10000000000001
+              },
+              "size": 97,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Abre un libro guardado",
+              "lines": [
+                "Abre un libro guardado"
+              ],
+              "bounds": {
+                "x": 126,
+                "y": 350.62,
+                "width": 1008,
+                "height": 59.800000000000004
+              },
+              "size": 46,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Detalles",
+              "lines": [
+                "Detalles"
+              ],
+              "bounds": {
+                "x": 126,
+                "y": 429.74,
+                "width": 1008,
+                "height": 48.1
+              },
+              "size": 37,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            }
+          ],
+          "warnings": []
+        },
+        {
+          "file": "es-ES/gradient/iphone-portrait/05.png",
+          "sha256": "70696f54804ada2d41cd0893b517acb88ea39c2af3e70c304c28e93d2e948e57",
+          "template": "gradient",
+          "locale": "es-ES",
+          "profile": "iphone-portrait",
+          "width": 1260,
+          "height": 2736,
+          "sources": [
+            {
+              "sha256": "fa92adaad9257cdf78339a9e0d92d43feb88fd649ccb40ce58b10a5266079bbe",
+              "width": 1206,
+              "height": 2622,
+              "placement": {
+                "x": 276.8264073226545,
+                "y": 1147.44,
+                "width": 643.3471853546911,
+                "height": 1398.7199999999998
+              }
+            }
+          ],
+          "texts": [
+            {
+              "text": "Busca en tu biblioteca",
+              "lines": [
+                "Busca en tu biblioteca"
+              ],
+              "bounds": {
+                "x": 126,
+                "y": 205.2,
+                "width": 1008,
+                "height": 126.10000000000001
+              },
+              "size": 97,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Los resultados vacíos son claros",
+              "lines": [
+                "Los resultados vacíos son claros"
+              ],
+              "bounds": {
+                "x": 126,
+                "y": 350.62,
+                "width": 1008,
+                "height": 59.800000000000004
+              },
+              "size": 46,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            },
+            {
+              "text": "Buscar",
+              "lines": [
+                "Buscar"
+              ],
+              "bounds": {
+                "x": 126,
+                "y": 429.74,
+                "width": 1008,
+                "height": 48.1
+              },
+              "size": 37,
+              "contrast": 16.268480224545662,
+              "fontHashes": [
+                "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+              ]
+            }
+          ],
+          "warnings": []
+        }
+      ],
+      "validation": {
+        "passed": true,
+        "checked": 15,
+        "errors": [],
+        "warnings": [],
+        "scope": "PNG dimensions, hashes and recorded rendering geometry. Not a pixel-level UI review, authenticated evidence or Apple approval."
+      }
+    }
+  ]
+}

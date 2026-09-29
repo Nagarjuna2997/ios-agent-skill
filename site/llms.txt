@@ -12,6 +12,7 @@ Give your coding agent the Apple references, Swift source and local tools it nee
 - [Apple development guide library](https://nagarjuna2997.github.io/ios-agent-skill/library.html)
 - [Site map](https://nagarjuna2997.github.io/ios-agent-skill/pages.html)
 - [Release notes — iOS Agent Skill](https://nagarjuna2997.github.io/ios-agent-skill/releases.html)
+- [App Store Screenshot Studio — iOS Agent Skill](https://nagarjuna2997.github.io/ios-agent-skill/screenshot-studio.html)
 - [From first prompt to shipped app: guided Swift series](https://nagarjuna2997.github.io/ios-agent-skill/series.html)
 
 ## Install guides

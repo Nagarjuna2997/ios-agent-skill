@@ -224,6 +224,42 @@
     {
       "name": "recommend_system_integrations",
       "summary": "Use this when adding or reviewing Apple integrations. Suggest verification of integrations already evidenced in source. Does not recommend unrelated features or infer product requirements."
+    },
+    {
+      "name": "list_screenshot_templates",
+      "summary": "Use this before creating local App Store screenshot sets. List structurally distinct layouts and dated output profiles. No network, capture, upload or Apple approval."
+    },
+    {
+      "name": "get_screenshot_template",
+      "summary": "Use this to choose a Screenshot Studio layout. Inspect text positions, device placement, background, callouts and safe-region requirements before rendering."
+    },
+    {
+      "name": "generate_screenshot_set",
+      "summary": "Use this to render supplied PNG/JPEG captures offline into NEW local directories with neutral frames, supplied copy, hashed metadata and a gallery. Does not capture or upload. Single-image tool requires one screen and template; variants requires multiple templates."
+    },
+    {
+      "name": "generate_screenshot_variants",
+      "summary": "Use this to render supplied PNG/JPEG captures offline into NEW local directories with neutral frames, supplied copy, hashed metadata and a gallery. Does not capture or upload. Single-image tool requires one screen and template; variants requires multiple templates."
+    },
+    {
+      "name": "render_app_store_screenshot",
+      "summary": "Use this to render supplied PNG/JPEG captures offline into NEW local directories with neutral frames, supplied copy, hashed metadata and a gallery. Does not capture or upload. Single-image tool requires one screen and template; variants requires multiple templates."
+    },
+    {
+      "name": "inspect_screenshot_set",
+      "summary": "Use this before sharing/exporting a local screenshot set. Verify dimensions, RGB PNG format, hashes, recorded bounds, text contrast and duplicate sources. This is not Apple approval or a complete design review."
+    },
+    {
+      "name": "preview_screenshot_set",
+      "summary": "Use this to locate the generated local contact sheet and HTML gallery after validating a screenshot set. Returns local paths only; does not open a browser or upload."
+    },
+    {
+      "name": "export_screenshot_set",
+      "summary": "Use this after visually reviewing a local set. Copy validated PNG files and export metadata to a NEW directory, refusing invalid or modified outputs. No upload or automatic App Store submission."
+    },
+    {
+      "name": "localize_screenshot_set",
+      "summary": "Use this to render a new locale from supplied translated copy, preserving screen order and templates. No hosted translation. Font coverage and overflow must pass; existing sets are never overwritten."
     }
   ],
   "resources": [
