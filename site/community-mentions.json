@@ -200,6 +200,16 @@
       "url": "https://enterprisedna.co/directories/mcp/nagarjuna2997-ios-agent-skill/",
       "verifiedOn": "2026-09-29",
       "evidence": "Opened exact repository listing. Page identifies itself as indexed from awesome-mcp-servers-punkpeye and enriched automatically; its assessments are not independently verified."
+    },
+    {
+      "id": "cult-of-claude",
+      "platform": "Cult of Claude",
+      "kind": "directory",
+      "category": "Agent directory · index",
+      "description": "Indexes the repository’s 3D Experience Designer agent with its source and installation instructions.",
+      "url": "https://cultofclaude.com/agents/nagarjuna2997-ios-agent-skill-3d-experience-designer/",
+      "verifiedOn": "2026-09-29",
+      "evidence": "Opened agent page: Source identifies Nagarjuna2997/ios-agent-skill; installation references its .claude/agents/3d-experience-designer.md. Directory entry, not independent testing or endorsement."
     }
   ]
 }
