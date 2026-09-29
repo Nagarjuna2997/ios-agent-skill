@@ -61712,7 +61712,7 @@ Keep your favorite AI. Give it a focused toolkit for the work of building an App
 
 11Apple system integrations (GitHub source)Preview and review Calendar, Reminders, Contacts, Photos, Camera, Maps, Files, Sharing, Shortcuts and Notifications with permission and capability evidence.
 
-Your agent implements the app and verifies the result. Local simulator tools require a Mac with Xcode. The features above are available in ios-agent-mcp 2.7.2.
+Your agent implements the app and verifies the result. Local simulator tools require a Mac with Xcode. The features above are available in ios-agent-mcp 2.8.0.
 What changed in 2.7.2 →
 One package. Your choice.
 Meet your agent’s
@@ -61861,7 +61861,7 @@ https://nagarjuna2997.github.io/ios-agent-skill/integrations.html
 
 Apple system integrations
 Focused Swift previews and permission checks for the services your app uses.
-GitHub source release only. npm 2.7.2 does not include these seven new tools yet.
+Included in npm 2.8.0.
 ← Home
  ·
 Client setup
@@ -62075,7 +62075,7 @@ Release notes← Home
 Installation
  ·
 npm package
-September 29, 2026 · source update · npm 2.8.0 publication pending
+September 29, 2026 · repository v3.7.0 · npm 2.8.0
 Apple environment and optional AI providers
 Inspect installed SDKs and simulators, select an optional text-generation provider, and keep local-only privacy as the default. Cloud access and fallback require explicit settings. Private handoff files and saved advisory role proposals preserve context; they do not autonomously edit apps or claim test success.
 Screenshot Studio adds verified Mac, Apple TV, Vision Pro and Watch pixel profiles. Xcode 27-only APIs and Duo poses remain unverified on our Xcode 26.6 machine.
@@ -62139,7 +62139,7 @@ https://nagarjuna2997.github.io/ios-agent-skill/screenshot-studio.html
 Client setup
 App Store Screenshot Studio
 Turn simulator captures into polished App Store screenshot sets.
-GitHub source only. npm 2.7.2 does not include these tools yet. Your images stay local.
+Included in npm 2.8.0. Your images stay local.
 Choose a layout, supply factual copy, compare variants and export PNGs after validation and a visual review. Keep using the existing simulator tools or your UI-test capture workflow.
 Real captures. Three design directions.
 Five Reading List simulator states rendered in minimal, dark-premium and gradient layouts. Each row is a variant; screen order is preserved. These are marketing compositions of existing captures.
@@ -62155,7 +62155,7 @@ npm run build --prefix mcp-server
 node mcp-server/dist/unified.js screenshots variants --config recipe.json --output ./new-set
 node mcp-server/dist/unified.js screenshots inspect --set ./new-set
 node mcp-server/dist/unified.js screenshots export --set ./new-set --output ./export
-For MCP, connect your client to the source-built unified server. Ask it to use
+For MCP, connect your client to ios-agent-mcp@latest. Ask it to use
 list_screenshot_templates
 , then
 generate_screenshot_variants
@@ -62171,7 +62171,7 @@ full-bleedLarge contained screenshot with an opaque safe text panel.
 comparisonTwo explicitly supplied screenshots with equal visual weight.
 multi-deviceTwo or three supplied screenshots in individual neutral frames.
 Profiles and honest limits
-iphone-portrait: 1260 × 2736iphone-landscape: 2736 × 1260ipad-portrait: 2064 × 2752ipad-landscape: 2752 × 2064
+iphone-portrait: 1260 × 2736iphone-landscape: 2736 × 1260ipad-portrait: 2064 × 2752ipad-landscape: 2752 × 2064mac: 2880 × 1800apple-tv: 3840 × 2160vision-pro: 3840 × 2160watch-ultra: 422 × 514
 Pixel profiles checked 2026-09-29 against
 Apple’s screenshot specifications
 . Recheck requirements for your app before submission. Passing checks is not Apple approval.
