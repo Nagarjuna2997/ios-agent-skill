@@ -12,6 +12,16 @@
       "evidence": "Maintainer post links the exact repository; independent reader comments were visible."
     },
     {
+      "id": "claude-ai-agents-ios",
+      "platform": "claude-ai-agents-ios",
+      "kind": "resource",
+      "category": "Third-party integration",
+      "description": "Documents ios-agent-skill as optional MCP tooling for Swift analysis and simulator workflows, with setup instructions.",
+      "url": "https://github.com/apexbymanish/claude-ai-agents-ios",
+      "verifiedOn": "2026-09-29",
+      "evidence": "README Optional tooling section links this exact repository and documents ios-agent-mcp configuration and optional simulator tooling. This verifies documented integration, not production usage; its package details reflect an older version."
+    },
+    {
       "id": "kimi-skills",
       "platform": "Kimi",
       "kind": "resource",
@@ -20,6 +30,16 @@
       "url": "https://www.kimi.ai/resources/software-skills-for-agents",
       "verifiedOn": "2026-09-16",
       "evidence": "Exact repository appears in the open-source skills table; not a partnership claim."
+    },
+    {
+      "id": "punkpeye-awesome-mcp",
+      "platform": "Awesome MCP Servers · GitHub",
+      "kind": "directory",
+      "category": "Curated GitHub list",
+      "description": "Lists ios-agent-skill for Swift reviews, local Apple references, app scaffolding and simulator tools.",
+      "url": "https://github.com/punkpeye/awesome-mcp-servers",
+      "verifiedOn": "2026-09-29",
+      "evidence": "The main README contains a direct Nagarjuna2997/ios-agent-skill entry with a Glama badge and description of Swift reviews, Apple references, scaffolding and macOS simulator tools. Separate from the mcpservers.org profile."
     },
     {
       "id": "skillworks",
