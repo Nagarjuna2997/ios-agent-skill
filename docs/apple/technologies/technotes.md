@@ -6,7 +6,7 @@ Load this when a task names **Technotes** or one of the API topics below.
 
 Apple categories: Developer Tools.
 
-[Apple documentation](https://developer.apple.com/documentation/technotes) · Source checked: 2026-09-16.
+[Apple documentation](https://developer.apple.com/documentation/technotes) · Source checked: 2026-09-29.
 
 Apple’s short description (excerpt):
 
@@ -22,6 +22,7 @@ Apple’s directory does not supply platform availability for this entry. It may
 
 ### Latest
 
+- [TN3137: On Mac keychain APIs and implementations](https://developer.apple.com/documentation/technotes/tn3137-on-mac-keychains)
 - [TN3189: Managing Mail background traffic load](https://developer.apple.com/documentation/technotes/tn3189-managing-mail-background-traffic-load)
 - [TN3213: Moving from Multipeer Connectivity to Network framework](https://developer.apple.com/documentation/technotes/tn3213-moving-from-multipeer-connectivity-to-network-framework)
 - [TN3210: Optimizing your app for iPhone Mirroring](https://developer.apple.com/documentation/technotes/tn3210-optimizing-your-app-for-iphone-mirroring)
@@ -77,7 +78,6 @@ Apple’s directory does not supply platform availability for this entry. It may
 - [TN3147: Migrating to the latest notarization tool](https://developer.apple.com/documentation/technotes/tn3147-migrating-to-the-latest-notarization-tool)
 - [TN3145: HDR video metadata](https://developer.apple.com/documentation/technotes/tn3145-hdr-video-metadata)
 - [TN3133: Packaging a Metal renderer](https://developer.apple.com/documentation/technotes/tn3133-packaging-a-renderer)
-- [TN3137: On Mac keychain APIs and implementations](https://developer.apple.com/documentation/technotes/tn3137-on-mac-keychains)
 - [TN3136: AVAudioConverter - performing sample rate conversions](https://developer.apple.com/documentation/technotes/tn3136-avaudioconverter-performing-sample-rate-conversions)
 - [TN3135: Low-level networking on watchOS](https://developer.apple.com/documentation/technotes/tn3135-low-level-networking-on-watchos)
 - [TN3128: Starting SharePlay without an existing FaceTime call](https://developer.apple.com/documentation/technotes/tn3128-starting-shareplay-without-an-existing-facetime-call)

@@ -6,7 +6,7 @@ Load this when a task names **Image I/O** or one of the API topics below.
 
 Apple categories: Graphics and Games.
 
-[Apple documentation](https://developer.apple.com/documentation/imageio) · Source checked: 2026-09-16.
+[Apple documentation](https://developer.apple.com/documentation/imageio) · Source checked: 2026-09-29.
 
 Apple’s short description (excerpt):
 
@@ -128,7 +128,6 @@ These are landing-page values, not availability guarantees for every member. Che
 - [kCGImagePropertyPVREncoder](https://developer.apple.com/documentation/imageio/kcgimagepropertypvrencoder)
 - [kCGImageProviderPreferredTileHeight](https://developer.apple.com/documentation/imageio/kcgimageproviderpreferredtileheight)
 - [kCGImageProviderPreferredTileWidth](https://developer.apple.com/documentation/imageio/kcgimageproviderpreferredtilewidth)
-- [kCGImageSourceAllowableTypes](https://developer.apple.com/documentation/imageio/kcgimagesourceallowabletypes)
 - [kCGImageSourceGenerateImageSpecificLumaScaling](https://developer.apple.com/documentation/imageio/kcgimagesourcegenerateimagespecificlumascaling)
 - [kCGImageSourcePrioritizeQuality](https://developer.apple.com/documentation/imageio/kcgimagesourceprioritizequality)
 

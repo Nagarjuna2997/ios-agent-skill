@@ -6,7 +6,7 @@ Load this when a task names **SCSIControllerDriverKit** or one of the API topics
 
 Apple categories: System.
 
-[Apple documentation](https://developer.apple.com/documentation/scsicontrollerdriverkit) · Source checked: 2026-09-16.
+[Apple documentation](https://developer.apple.com/documentation/scsicontrollerdriverkit) · Source checked: 2026-09-29.
 
 Apple’s short description (excerpt):
 
@@ -28,22 +28,22 @@ Documentation language identifiers: occ.
 
 These are landing-page values, not availability guarantees for every member. Check the selected symbol and the installed SDK.
 
-### Essentials
+### Entitlements
 
+- [com.apple.developer.driverkit](https://developer.apple.com/documentation/bundleresources/entitlements/com.apple.developer.driverkit)
 - [com.apple.developer.driverkit.family.scsicontroller](https://developer.apple.com/documentation/bundleresources/entitlements/com.apple.developer.driverkit.family.scsicontroller)
 
 ### Samples
 
 - [DriverKit sample code](https://developer.apple.com/documentation/driverkit/driverkit-sample-code)
 
-### Driver Interfaces
+### Driver interfaces
 
 - [IOUserSCSIParallelInterfaceController](https://developer.apple.com/documentation/scsicontrollerdriverkit/iouserscsiparallelinterfacecontroller)
 
 ### Macros
 
 - [Macros](https://developer.apple.com/documentation/scsicontrollerdriverkit/scsicontrollerdriverkit-macros)
-- [kMaxBundledParallelTasks](https://developer.apple.com/documentation/scsicontrollerdriverkit/kmaxbundledparalleltasks)
 
 ## Anti-Patterns
 

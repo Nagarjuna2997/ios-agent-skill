@@ -6,7 +6,7 @@ Load this when a task names **macOS Release Notes** or one of the API topics bel
 
 Apple categories: Release Notes.
 
-[Apple documentation](https://developer.apple.com/documentation/macos-release-notes) · Source checked: 2026-09-16.
+[Apple documentation](https://developer.apple.com/documentation/macos-release-notes) · Source checked: 2026-09-29.
 
 Apple’s short description (excerpt):
 
@@ -22,7 +22,7 @@ Apple’s directory does not supply platform availability for this entry. It may
 
 ### macOS 27
 
-- [macOS 27.2 Golden Gate Beta Release Notes](https://developer.apple.com/documentation/macos-release-notes/macos-27_2-release-notes)
+- [macOS 27.2 Golden Gate Beta 2 Release Notes](https://developer.apple.com/documentation/macos-release-notes/macos-27_2-release-notes)
 - [macOS 27 Golden Gate Release Notes](https://developer.apple.com/documentation/macos-release-notes/macos-27-release-notes)
 
 ### macOS 26

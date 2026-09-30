@@ -6,11 +6,11 @@ Load this when a task names **StoreKit Test** or one of the API topics below.
 
 Apple categories: Developer Tools.
 
-[Apple documentation](https://developer.apple.com/documentation/storekittest) · Source checked: 2026-09-16.
+[Apple documentation](https://developer.apple.com/documentation/storekittest) · Source checked: 2026-09-29.
 
 Apple’s short description (excerpt):
 
-> Create and automate tests in Xcode for your app’s subscription and in-app purchase transactions, and SKAdNetwork implementations.
+> Create and automate tests in Xcode for your app’s subscription and Apple In-App Purchase transactions, and SKAdNetwork implementations.
 
 ## Pattern
 

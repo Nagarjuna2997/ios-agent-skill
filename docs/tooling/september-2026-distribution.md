@@ -2,7 +2,7 @@
 
 ## Context
 
-Apple sources checked 2026-09-21. Keep beta runtime behavior, TestFlight eligibility,
+Apple sources rechecked 2026-09-29. Keep beta runtime behavior, TestFlight eligibility,
 App Store distribution and API version numbers separate.
 
 ## Pattern
@@ -55,3 +55,15 @@ just because a resource name looks similar.
 Do not fabricate endpoint payloads, make account/API calls while updating knowledge,
 or describe static guidance as an App Review/compliance guarantee. This update does
 not add authenticated App Store Connect API execution.
+
+## September 23–28 follow-up
+
+[Apple's App Store Connect notes](https://developer.apple.com/help/app-store-connect/release-notes/) now permit the listed Xcode 27.2 beta 2 SDK builds for internal and external TestFlight testing (September 28). App Store Connect 3.3 and TestFlight 4.4.0 add iPhone landscape and eligible iPhone Mirroring resizing; those are companion-app changes, not new permissions in a developer's app. Production eligibility remains a separate check.
+
+### App Store Connect API 4.5
+
+[Version 4.5](https://developer.apple.com/documentation/appstoreconnectapi/app-store-connect-api-4-5-release-notes) adds aggregated performance data, organization-subscription market/seat metadata, Game Center score/player moderation, and additional Korean age-rating overrides. App-tag territory relationships and associated endpoints are deprecated; territory-related values are no longer accepted by the documented query parameters. Inspect the current schema before changing generated clients. This repository does not perform these account operations.
+
+### ATT signature update
+
+The current [App Tracking Transparency landing page](https://developer.apple.com/documentation/apptrackingtransparency) links `requestTrackingAuthorization(preferExpandedInterface:additionalInformationAction:completionHandler:)`. Its previously indexed `usingExpandedInterface:` documentation URL returns 404 in this audit. Treat this as a documentation/signature migration lead; validate availability and the precise declaration with the selected SDK before rewriting code. A failed old URL alone does not prove binary API removal.

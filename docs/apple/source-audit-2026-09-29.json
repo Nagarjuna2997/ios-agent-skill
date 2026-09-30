@@ -1,0 +1,1791 @@
+{
+  "checkedAt": "2026-09-29",
+  "baselineCommit": "6b1fb452745d72fef73e9e3910220be2eef82e49",
+  "scope": "405 technology landing pages; all delisted topic URLs checked separately. No exhaustive symbol-body or SDK compatibility audit.",
+  "directoryAdded": [],
+  "directoryRemoved": [],
+  "changedPages": [
+    {
+      "name": "Advanced Commerce API",
+      "url": "https://developer.apple.com/documentation/advancedcommerceapi",
+      "deprecatedBefore": false,
+      "deprecatedNow": false,
+      "addedTopics": [],
+      "delistedTopics": []
+    },
+    {
+      "name": "App Store Server API",
+      "url": "https://developer.apple.com/documentation/appstoreserverapi",
+      "deprecatedBefore": false,
+      "deprecatedNow": false,
+      "addedTopics": [
+        {
+          "title": "Get Customer Groups",
+          "url": "https://developer.apple.com/documentation/appstoreserverapi/get-customer-groups"
+        },
+        {
+          "title": "Get Group Members",
+          "url": "https://developer.apple.com/documentation/appstoreserverapi/get-group-members"
+        },
+        {
+          "title": "GetCustomerGroupsResponse",
+          "url": "https://developer.apple.com/documentation/appstoreserverapi/getcustomergroupsresponse"
+        },
+        {
+          "title": "GetGroupMembersResponse",
+          "url": "https://developer.apple.com/documentation/appstoreserverapi/getgroupmembersresponse"
+        }
+      ],
+      "delistedTopics": []
+    },
+    {
+      "name": "App Tracking Transparency",
+      "url": "https://developer.apple.com/documentation/apptrackingtransparency",
+      "deprecatedBefore": false,
+      "deprecatedNow": false,
+      "addedTopics": [
+        {
+          "title": "requestTrackingAuthorization(preferExpandedInterface:additionalInformationAction:completionHandler:)",
+          "url": "https://developer.apple.com/documentation/apptrackingtransparency/attrackingmanager/requesttrackingauthorization(preferexpandedinterface:additionalinformationaction:completionhandler:)"
+        }
+      ],
+      "delistedTopics": [
+        {
+          "title": "requestTrackingAuthorization(usingExpandedInterface:additionalInformationAction:completionHandler:)",
+          "url": "https://developer.apple.com/documentation/apptrackingtransparency/attrackingmanager/requesttrackingauthorization(usingexpandedinterface:additionalinformationaction:completionhandler:)"
+        }
+      ]
+    },
+    {
+      "name": "Apple Ads",
+      "url": "https://developer.apple.com/documentation/apple_ads",
+      "deprecatedBefore": false,
+      "deprecatedNow": true,
+      "addedTopics": [],
+      "delistedTopics": []
+    },
+    {
+      "name": "Background Assets",
+      "url": "https://developer.apple.com/documentation/backgroundassets",
+      "deprecatedBefore": false,
+      "deprecatedNow": false,
+      "addedTopics": [
+        {
+          "title": "SizeCalculationMethod",
+          "url": "https://developer.apple.com/documentation/backgroundassets/sizecalculationmethod"
+        }
+      ],
+      "delistedTopics": []
+    },
+    {
+      "name": "Compute Graph",
+      "url": "https://developer.apple.com/documentation/computegraph",
+      "deprecatedBefore": false,
+      "deprecatedNow": false,
+      "addedTopics": [
+        {
+          "title": "ComputeGraphSimulation.SimulationRate",
+          "url": "https://developer.apple.com/documentation/computegraph/computegraphsimulation/simulationrate-swift.struct"
+        },
+        {
+          "title": "ComputeNodeGraph.Assembly",
+          "url": "https://developer.apple.com/documentation/computegraph/computenodegraph/assembly"
+        },
+        {
+          "title": "ComputeNodeGraph.Library",
+          "url": "https://developer.apple.com/documentation/computegraph/computenodegraph/library"
+        },
+        {
+          "title": "ComputeNodeGraph.LibraryReference",
+          "url": "https://developer.apple.com/documentation/computegraph/computenodegraph/libraryreference"
+        },
+        {
+          "title": "ComputeNodeGraph.NodeDefinition",
+          "url": "https://developer.apple.com/documentation/computegraph/computenodegraph/nodedefinition"
+        },
+        {
+          "title": "ComputeNodeGraph.Pipelines",
+          "url": "https://developer.apple.com/documentation/computegraph/computenodegraph/pipelines"
+        },
+        {
+          "title": "ComputeNodeGraph.PipelinesDescriptor",
+          "url": "https://developer.apple.com/documentation/computegraph/computenodegraph/pipelinesdescriptor"
+        },
+        {
+          "title": "ComputeNodeGraph.SamplerSettings",
+          "url": "https://developer.apple.com/documentation/computegraph/computenodegraph/samplersettings"
+        },
+        {
+          "title": "ComputeNodeGraph.StructureLayout",
+          "url": "https://developer.apple.com/documentation/computegraph/computenodegraph/structurelayout"
+        },
+        {
+          "title": "ComputeNodeGraph.SwizzleChannels",
+          "url": "https://developer.apple.com/documentation/computegraph/computenodegraph/swizzlechannels"
+        },
+        {
+          "title": "ComputeNodeGraph.Topology",
+          "url": "https://developer.apple.com/documentation/computegraph/computenodegraph/topology"
+        }
+      ],
+      "delistedTopics": []
+    },
+    {
+      "name": "Core Location",
+      "url": "https://developer.apple.com/documentation/corelocation",
+      "deprecatedBefore": false,
+      "deprecatedNow": false,
+      "addedTopics": [],
+      "delistedTopics": []
+    },
+    {
+      "name": "Core Motion",
+      "url": "https://developer.apple.com/documentation/coremotion",
+      "deprecatedBefore": false,
+      "deprecatedNow": false,
+      "addedTopics": [],
+      "delistedTopics": []
+    },
+    {
+      "name": "Image I/O",
+      "url": "https://developer.apple.com/documentation/imageio",
+      "deprecatedBefore": false,
+      "deprecatedNow": false,
+      "addedTopics": [],
+      "delistedTopics": [
+        {
+          "title": "kCGImageSourceAllowableTypes",
+          "url": "https://developer.apple.com/documentation/imageio/kcgimagesourceallowabletypes"
+        }
+      ]
+    },
+    {
+      "name": "iOS & iPadOS Release Notes",
+      "url": "https://developer.apple.com/documentation/ios-ipados-release-notes",
+      "deprecatedBefore": false,
+      "deprecatedNow": false,
+      "addedTopics": [],
+      "delistedTopics": []
+    },
+    {
+      "name": "macOS Release Notes",
+      "url": "https://developer.apple.com/documentation/macos-release-notes",
+      "deprecatedBefore": false,
+      "deprecatedNow": false,
+      "addedTopics": [],
+      "delistedTopics": []
+    },
+    {
+      "name": "Nearby Interaction",
+      "url": "https://developer.apple.com/documentation/nearbyinteraction",
+      "deprecatedBefore": false,
+      "deprecatedNow": false,
+      "addedTopics": [],
+      "delistedTopics": [
+        {
+          "title": "NSNearbyInteractionAllowOnceUsageDescription",
+          "url": "https://developer.apple.com/documentation/bundleresources/information-property-list/nsnearbyinteractionallowonceusagedescription"
+        },
+        {
+          "title": "NSNearbyInteractionUsageDescription",
+          "url": "https://developer.apple.com/documentation/bundleresources/information-property-list/nsnearbyinteractionusagedescription"
+        },
+        {
+          "title": "NIAlgorithmConvergenceStatus",
+          "url": "https://developer.apple.com/documentation/nearbyinteraction/nialgorithmconvergencestatus-2fnve"
+        },
+        {
+          "title": "NIError.Code",
+          "url": "https://developer.apple.com/documentation/nearbyinteraction/nierror/code"
+        },
+        {
+          "title": "NIMotionActivityState",
+          "url": "https://developer.apple.com/documentation/nearbyinteraction/nimotionactivitystate"
+        }
+      ]
+    },
+    {
+      "name": "Safari Release Notes",
+      "url": "https://developer.apple.com/documentation/safari-release-notes",
+      "deprecatedBefore": false,
+      "deprecatedNow": false,
+      "addedTopics": [
+        {
+          "title": "Safari 27.2 Beta Release Notes",
+          "url": "https://developer.apple.com/documentation/safari-release-notes/safari-27_2-release-notes"
+        }
+      ],
+      "delistedTopics": []
+    },
+    {
+      "name": "Sample Code Library",
+      "url": "https://developer.apple.com/documentation/samplecode",
+      "deprecatedBefore": false,
+      "deprecatedNow": false,
+      "addedTopics": [
+        {
+          "title": "Supporting device rotation in your camera app",
+          "url": "https://developer.apple.com/documentation/avfoundation/supporting-device-rotation-in-your-camera-app"
+        },
+        {
+          "title": "Supporting custom media formats and decoders",
+          "url": "https://developer.apple.com/documentation/mediaextension/supporting-custom-media-formats-and-decoders"
+        },
+        {
+          "title": "Rendering Gaussian splats with RealityKit",
+          "url": "https://developer.apple.com/documentation/visionos/working-with-gaussian-splats-with-realitykit"
+        }
+      ],
+      "delistedTopics": []
+    },
+    {
+      "name": "SCSIControllerDriverKit",
+      "url": "https://developer.apple.com/documentation/scsicontrollerdriverkit",
+      "deprecatedBefore": false,
+      "deprecatedNow": false,
+      "addedTopics": [
+        {
+          "title": "com.apple.developer.driverkit",
+          "url": "https://developer.apple.com/documentation/bundleresources/entitlements/com.apple.developer.driverkit"
+        }
+      ],
+      "delistedTopics": [
+        {
+          "title": "kMaxBundledParallelTasks",
+          "url": "https://developer.apple.com/documentation/scsicontrollerdriverkit/kmaxbundledparalleltasks"
+        }
+      ]
+    },
+    {
+      "name": "SCSIPeripheralsDriverKit",
+      "url": "https://developer.apple.com/documentation/scsiperipheralsdriverkit",
+      "deprecatedBefore": false,
+      "deprecatedNow": false,
+      "addedTopics": [
+        {
+          "title": "com.apple.developer.driverkit",
+          "url": "https://developer.apple.com/documentation/bundleresources/entitlements/com.apple.developer.driverkit"
+        },
+        {
+          "title": "com.apple.developer.driverkit.family.scsicontroller",
+          "url": "https://developer.apple.com/documentation/bundleresources/entitlements/com.apple.developer.driverkit.family.scsicontroller"
+        }
+      ],
+      "delistedTopics": [
+        {
+          "title": "SCSIPeripheralsDriverKit Data Types",
+          "url": "https://developer.apple.com/documentation/scsiperipheralsdriverkit/scsiperipheralsdriverkit-data-types"
+        },
+        {
+          "title": "SCSIPeripheralsDriverKit Enumerations",
+          "url": "https://developer.apple.com/documentation/scsiperipheralsdriverkit/scsiperipheralsdriverkit-enumerations"
+        }
+      ]
+    },
+    {
+      "name": "StoreKit",
+      "url": "https://developer.apple.com/documentation/storekit",
+      "deprecatedBefore": false,
+      "deprecatedNow": false,
+      "addedTopics": [
+        {
+          "title": "Using StoreKit in Unity",
+          "url": "https://developer.apple.com/documentation/storekit/using-storekit-in-unity"
+        }
+      ],
+      "delistedTopics": []
+    },
+    {
+      "name": "StoreKit Test",
+      "url": "https://developer.apple.com/documentation/storekittest",
+      "deprecatedBefore": false,
+      "deprecatedNow": false,
+      "addedTopics": [],
+      "delistedTopics": []
+    },
+    {
+      "name": "Swift",
+      "url": "https://developer.apple.com/documentation/swift",
+      "deprecatedBefore": false,
+      "deprecatedNow": false,
+      "addedTopics": [],
+      "delistedTopics": [
+        {
+          "title": "Iterable",
+          "url": "https://developer.apple.com/documentation/swift/iterable"
+        }
+      ]
+    },
+    {
+      "name": "Technotes",
+      "url": "https://developer.apple.com/documentation/technotes",
+      "deprecatedBefore": false,
+      "deprecatedNow": false,
+      "addedTopics": [],
+      "delistedTopics": []
+    },
+    {
+      "name": "tvOS Release Notes",
+      "url": "https://developer.apple.com/documentation/tvos-release-notes",
+      "deprecatedBefore": false,
+      "deprecatedNow": false,
+      "addedTopics": [],
+      "delistedTopics": []
+    },
+    {
+      "name": "UIKit",
+      "url": "https://developer.apple.com/documentation/uikit",
+      "deprecatedBefore": false,
+      "deprecatedNow": false,
+      "addedTopics": [],
+      "delistedTopics": [
+        {
+          "title": "Preview(_:traits:arguments:body:)",
+          "url": "https://developer.apple.com/documentation/uikit/preview(_:traits:arguments:body:)-6gm4c"
+        },
+        {
+          "title": "Preview(_:traits:arguments:body:)",
+          "url": "https://developer.apple.com/documentation/uikit/preview(_:traits:arguments:body:)-7cbjv"
+        },
+        {
+          "title": "UIConfigurationTextAttributesTransformer",
+          "url": "https://developer.apple.com/documentation/uikit/uiconfigurationtextattributestransformer-swift.struct"
+        },
+        {
+          "title": "UITextGrammarCheckingType",
+          "url": "https://developer.apple.com/documentation/uikit/uitextgrammarcheckingtype"
+        },
+        {
+          "title": "UITraitBridgedEnvironmentKey",
+          "url": "https://developer.apple.com/documentation/uikit/uitraitbridgedenvironmentkey"
+        },
+        {
+          "title": "UITraitNavigationTitleAlignment",
+          "url": "https://developer.apple.com/documentation/uikit/uitraitnavigationtitlealignment-swift.struct"
+        },
+        {
+          "title": "UITraitSystemPrefersReducedResourceUsage",
+          "url": "https://developer.apple.com/documentation/uikit/uitraitsystemprefersreducedresourceusage-swift.struct"
+        }
+      ]
+    },
+    {
+      "name": "visionOS Release Notes",
+      "url": "https://developer.apple.com/documentation/visionos-release-notes",
+      "deprecatedBefore": false,
+      "deprecatedNow": false,
+      "addedTopics": [],
+      "delistedTopics": []
+    },
+    {
+      "name": "watchOS Release Notes",
+      "url": "https://developer.apple.com/documentation/watchos-release-notes",
+      "deprecatedBefore": false,
+      "deprecatedNow": false,
+      "addedTopics": [],
+      "delistedTopics": []
+    },
+    {
+      "name": "Xcode Release Notes",
+      "url": "https://developer.apple.com/documentation/xcode-release-notes",
+      "deprecatedBefore": false,
+      "deprecatedNow": false,
+      "addedTopics": [
+        {
+          "title": "Xcode 27.1 Beta Release Notes",
+          "url": "https://developer.apple.com/documentation/xcode-release-notes/xcode-27_1-release-notes"
+        }
+      ],
+      "delistedTopics": []
+    }
+  ],
+  "delistedTopicChecks": [
+    {
+      "url": "https://developer.apple.com/documentation/apptrackingtransparency/attrackingmanager/requesttrackingauthorization(usingexpandedinterface:additionalinformationaction:completionhandler:)",
+      "status": "http-error",
+      "httpStatus": 404,
+      "interpretation": "Fetch failure is not proof of SDK removal."
+    },
+    {
+      "url": "https://developer.apple.com/documentation/bundleresources/information-property-list/nsnearbyinteractionallowonceusagedescription",
+      "status": "available",
+      "sha256": "6fb02ab4f00567b92aaefdf99b2e8cd509a82e68ee9f1f77c8586d629ad7bccd",
+      "metadata": {
+        "availableLanguages": [
+          "de-DE",
+          "en-US",
+          "es-419",
+          "fr-FR",
+          "it-IT",
+          "ja-JP",
+          "ko-KR",
+          "pt-BR",
+          "zh-CN"
+        ],
+        "externalID": "plist:Information_Property_List.NSNearbyInteractionAllowOnceUsageDescription",
+        "modules": [
+          {
+            "name": "Bundle Resources"
+          }
+        ],
+        "navigatorTitle": [
+          {
+            "kind": "identifier",
+            "text": "NSNearbyInteractionAllowOnceUsageDescription"
+          }
+        ],
+        "platforms": [
+          {
+            "beta": false,
+            "deprecated": false,
+            "deprecatedAt": "15.0",
+            "introducedAt": "14.0",
+            "name": "iOS",
+            "unavailable": false
+          },
+          {
+            "beta": false,
+            "deprecated": false,
+            "deprecatedAt": "15.0",
+            "introducedAt": "14.0",
+            "name": "iPadOS",
+            "unavailable": false
+          }
+        ],
+        "role": "symbol",
+        "roleHeading": "Property List Key",
+        "symbolKind": "typealias",
+        "title": "NSNearbyInteractionAllowOnceUsageDescription"
+      }
+    },
+    {
+      "url": "https://developer.apple.com/documentation/bundleresources/information-property-list/nsnearbyinteractionusagedescription",
+      "status": "available",
+      "sha256": "d7329199ea89e8a582ec68f1bb93536fa774cfa16c5966a42a5b7ca04a6ee216",
+      "metadata": {
+        "availableLanguages": [
+          "de-DE",
+          "en-US",
+          "es-419",
+          "fr-FR",
+          "it-IT",
+          "ja-JP",
+          "ko-KR",
+          "pt-BR",
+          "zh-CN"
+        ],
+        "externalID": "plist:Information_Property_List.NSNearbyInteractionUsageDescription",
+        "modules": [
+          {
+            "name": "Bundle Resources"
+          }
+        ],
+        "navigatorTitle": [
+          {
+            "kind": "identifier",
+            "text": "NSNearbyInteractionUsageDescription"
+          }
+        ],
+        "platforms": [
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "15.0",
+            "name": "iOS",
+            "unavailable": false
+          },
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "15.0",
+            "name": "iPadOS",
+            "unavailable": false
+          },
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "8.0",
+            "name": "watchOS",
+            "unavailable": false
+          }
+        ],
+        "role": "symbol",
+        "roleHeading": "Property List Key",
+        "symbolKind": "typealias",
+        "title": "NSNearbyInteractionUsageDescription"
+      }
+    },
+    {
+      "url": "https://developer.apple.com/documentation/imageio/kcgimagesourceallowabletypes",
+      "status": "available",
+      "sha256": "df90ab6b7339077fced2bc37034d00399465eb40693b0def93832a6486532f1b",
+      "metadata": {
+        "availableLanguages": [
+          "de-DE",
+          "en-US",
+          "es-419",
+          "fr-FR",
+          "it-IT",
+          "ja-JP",
+          "ko-KR",
+          "pt-BR",
+          "zh-CN"
+        ],
+        "externalID": "c:@kCGImageSourceAllowableTypes",
+        "fragments": [
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "text",
+            "text": " "
+          },
+          {
+            "kind": "identifier",
+            "text": "kCGImageSourceAllowableTypes"
+          },
+          {
+            "kind": "text",
+            "text": ": "
+          },
+          {
+            "kind": "typeIdentifier",
+            "preciseIdentifier": "c:@T@CFStringRef",
+            "text": "CFString"
+          }
+        ],
+        "modules": [
+          {
+            "name": "Image I/O"
+          }
+        ],
+        "navigatorTitle": [
+          {
+            "kind": "identifier",
+            "text": "kCGImageSourceAllowableTypes"
+          }
+        ],
+        "platforms": [
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "27.0",
+            "name": "iOS",
+            "unavailable": false
+          },
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "27.0",
+            "name": "iPadOS",
+            "unavailable": false
+          },
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "27.0",
+            "name": "Mac Catalyst",
+            "unavailable": false
+          },
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "27.0",
+            "name": "macOS",
+            "unavailable": false
+          },
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "27.0",
+            "name": "tvOS",
+            "unavailable": false
+          },
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "27.0",
+            "name": "visionOS",
+            "unavailable": false
+          },
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "27.0",
+            "name": "watchOS",
+            "unavailable": false
+          }
+        ],
+        "role": "symbol",
+        "roleHeading": "Global Variable",
+        "symbolKind": "var",
+        "title": "kCGImageSourceAllowableTypes"
+      }
+    },
+    {
+      "url": "https://developer.apple.com/documentation/nearbyinteraction/nialgorithmconvergencestatus-2fnve",
+      "status": "available",
+      "sha256": "6c9bbd8d78d3276a2e5b1222d6463336fc745e2fc621c1345f16a9ef5ea2b8e7",
+      "metadata": {
+        "availableLanguages": [
+          "de-DE",
+          "en-US",
+          "es-419",
+          "fr-FR",
+          "it-IT",
+          "ja-JP",
+          "ko-KR",
+          "pt-BR",
+          "zh-CN"
+        ],
+        "externalID": "s:17NearbyInteraction28NIAlgorithmConvergenceStatusO",
+        "fragments": [
+          {
+            "kind": "keyword",
+            "text": "enum"
+          },
+          {
+            "kind": "text",
+            "text": " "
+          },
+          {
+            "kind": "identifier",
+            "text": "NIAlgorithmConvergenceStatus"
+          }
+        ],
+        "modules": [
+          {
+            "name": "Nearby Interaction"
+          }
+        ],
+        "navigatorTitle": [
+          {
+            "kind": "identifier",
+            "text": "NIAlgorithmConvergenceStatus"
+          }
+        ],
+        "platforms": [
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "16.0",
+            "name": "iOS",
+            "unavailable": false
+          },
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "16.0",
+            "name": "iPadOS",
+            "unavailable": false
+          },
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "16.0",
+            "name": "Mac Catalyst",
+            "unavailable": false
+          },
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "9.0",
+            "name": "watchOS",
+            "unavailable": false
+          }
+        ],
+        "role": "symbol",
+        "roleHeading": "Enumeration",
+        "symbolKind": "enum",
+        "title": "NIAlgorithmConvergenceStatus"
+      }
+    },
+    {
+      "url": "https://developer.apple.com/documentation/nearbyinteraction/nierror/code",
+      "status": "available",
+      "sha256": "1f702ff476524578657a7b2a940bdb112cec028e506e55dde713cf9a255515f4",
+      "metadata": {
+        "availableLanguages": [
+          "de-DE",
+          "en-US",
+          "es-419",
+          "fr-FR",
+          "it-IT",
+          "ja-JP",
+          "ko-KR",
+          "pt-BR",
+          "zh-CN"
+        ],
+        "externalID": "c:@E@NIErrorCode",
+        "fragments": [
+          {
+            "kind": "keyword",
+            "text": "enum"
+          },
+          {
+            "kind": "text",
+            "text": " "
+          },
+          {
+            "kind": "identifier",
+            "text": "Code"
+          }
+        ],
+        "modules": [
+          {
+            "name": "Nearby Interaction"
+          }
+        ],
+        "navigatorTitle": [
+          {
+            "kind": "identifier",
+            "text": "Code"
+          }
+        ],
+        "platforms": [
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "14.0",
+            "name": "iOS",
+            "unavailable": false
+          },
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "14.0",
+            "name": "iPadOS",
+            "unavailable": false
+          },
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "14.0",
+            "name": "Mac Catalyst",
+            "unavailable": false
+          },
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "7.3",
+            "name": "watchOS",
+            "unavailable": false
+          }
+        ],
+        "role": "symbol",
+        "roleHeading": "Enumeration",
+        "symbolKind": "enum",
+        "title": "NIError.Code"
+      }
+    },
+    {
+      "url": "https://developer.apple.com/documentation/nearbyinteraction/nimotionactivitystate",
+      "status": "available",
+      "sha256": "7706872605024e26d6088c03794090287639eb111867a7ddd0c08628f88b9606",
+      "metadata": {
+        "availableLanguages": [
+          "de-DE",
+          "en-US",
+          "es-419",
+          "fr-FR",
+          "it-IT",
+          "ja-JP",
+          "ko-KR",
+          "pt-BR",
+          "zh-CN"
+        ],
+        "externalID": "c:@E@NIMotionActivityState",
+        "fragments": [
+          {
+            "kind": "keyword",
+            "text": "enum"
+          },
+          {
+            "kind": "text",
+            "text": " "
+          },
+          {
+            "kind": "identifier",
+            "text": "NIMotionActivityState"
+          }
+        ],
+        "modules": [
+          {
+            "name": "Nearby Interaction"
+          }
+        ],
+        "navigatorTitle": [
+          {
+            "kind": "identifier",
+            "text": "NIMotionActivityState"
+          }
+        ],
+        "platforms": [
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "15.0",
+            "name": "iOS",
+            "unavailable": false
+          },
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "15.0",
+            "name": "iPadOS",
+            "unavailable": false
+          },
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "15.0",
+            "name": "Mac Catalyst",
+            "unavailable": false
+          }
+        ],
+        "role": "symbol",
+        "roleHeading": "Enumeration",
+        "symbolKind": "enum",
+        "title": "NIMotionActivityState"
+      }
+    },
+    {
+      "url": "https://developer.apple.com/documentation/scsicontrollerdriverkit/kmaxbundledparalleltasks",
+      "status": "available",
+      "sha256": "0a1773413196ccf5bb2aef22165e519c7c189de62cfd957c01057a0a6fcc1d4c",
+      "metadata": {
+        "availableLanguages": [
+          "de-DE",
+          "en-US",
+          "es-419",
+          "fr-FR",
+          "it-IT",
+          "ja-JP",
+          "ko-KR",
+          "pt-BR",
+          "zh-CN"
+        ],
+        "externalID": "c:@macro@kMaxBundledParallelTasks",
+        "fragments": [
+          {
+            "kind": "identifier",
+            "text": "kMaxBundledParallelTasks"
+          }
+        ],
+        "modules": [
+          {
+            "name": "SCSIControllerDriverKit"
+          }
+        ],
+        "navigatorTitle": [
+          {
+            "kind": "identifier",
+            "text": "kMaxBundledParallelTasks"
+          }
+        ],
+        "platforms": [
+          {
+            "beta": false,
+            "name": "DriverKit"
+          }
+        ],
+        "role": "symbol",
+        "roleHeading": "Macro",
+        "symbolKind": "macro",
+        "title": "kMaxBundledParallelTasks"
+      }
+    },
+    {
+      "url": "https://developer.apple.com/documentation/scsiperipheralsdriverkit/scsiperipheralsdriverkit-data-types",
+      "status": "http-error",
+      "httpStatus": 404,
+      "interpretation": "Fetch failure is not proof of SDK removal."
+    },
+    {
+      "url": "https://developer.apple.com/documentation/scsiperipheralsdriverkit/scsiperipheralsdriverkit-enumerations",
+      "status": "http-error",
+      "httpStatus": 404,
+      "interpretation": "Fetch failure is not proof of SDK removal."
+    },
+    {
+      "url": "https://developer.apple.com/documentation/swift/iterable",
+      "status": "available",
+      "sha256": "a87e82cba3eac9070fa8a9fcf609449f81e5a6644a137a8e98f5dd6155ec140b",
+      "metadata": {
+        "availableLanguages": [
+          "de-DE",
+          "en-US",
+          "es-419",
+          "fr-FR",
+          "it-IT",
+          "ja-JP",
+          "ko-KR",
+          "pt-BR",
+          "zh-CN"
+        ],
+        "externalID": "s:s8IterableP",
+        "fragments": [
+          {
+            "kind": "keyword",
+            "text": "protocol"
+          },
+          {
+            "kind": "text",
+            "text": " "
+          },
+          {
+            "kind": "identifier",
+            "text": "Iterable"
+          }
+        ],
+        "modules": [
+          {
+            "name": "Swift"
+          }
+        ],
+        "navigatorTitle": [
+          {
+            "kind": "identifier",
+            "text": "Iterable"
+          }
+        ],
+        "platforms": [
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "27.0",
+            "name": "iOS",
+            "unavailable": false
+          },
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "27.0",
+            "name": "iPadOS",
+            "unavailable": false
+          },
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "27.0",
+            "name": "Mac Catalyst",
+            "unavailable": false
+          },
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "27.0",
+            "name": "macOS",
+            "unavailable": false
+          },
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "27.0",
+            "name": "tvOS",
+            "unavailable": false
+          },
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "27.0",
+            "name": "visionOS",
+            "unavailable": false
+          },
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "27.0",
+            "name": "watchOS",
+            "unavailable": false
+          }
+        ],
+        "role": "symbol",
+        "roleHeading": "Protocol",
+        "symbolKind": "protocol",
+        "title": "Iterable"
+      }
+    },
+    {
+      "url": "https://developer.apple.com/documentation/uikit/preview(_:traits:arguments:body:)-6gm4c",
+      "status": "available",
+      "sha256": "508bc77e1b488d3a6e06bc3f6a20ecadfe6713cc94ed50b0ec64524922ae905e",
+      "metadata": {
+        "availableLanguages": [
+          "de-DE",
+          "en-US",
+          "es-419",
+          "fr-FR",
+          "it-IT",
+          "ja-JP",
+          "ko-KR",
+          "pt-BR",
+          "zh-CN"
+        ],
+        "externalID": "s:5UIKit7Preview_6traits9arguments4bodyySSSg_21DeveloperToolsSupport0B5TraitVyAgBV10ViewTraitsOGdSayxGSo6UIViewCxScMYcctclufm",
+        "fragments": [
+          {
+            "kind": "keyword",
+            "text": "macro"
+          },
+          {
+            "kind": "text",
+            "text": " "
+          },
+          {
+            "kind": "identifier",
+            "text": "Preview"
+          },
+          {
+            "kind": "text",
+            "text": "<"
+          },
+          {
+            "kind": "genericParameter",
+            "text": "T"
+          },
+          {
+            "kind": "text",
+            "text": ">("
+          },
+          {
+            "kind": "typeIdentifier",
+            "preciseIdentifier": "s:SS",
+            "text": "String"
+          },
+          {
+            "kind": "text",
+            "text": "?, "
+          },
+          {
+            "kind": "externalParam",
+            "text": "traits"
+          },
+          {
+            "kind": "text",
+            "text": ": "
+          },
+          {
+            "kind": "typeIdentifier",
+            "preciseIdentifier": "s:21DeveloperToolsSupport12PreviewTraitV",
+            "text": "PreviewTrait"
+          },
+          {
+            "kind": "text",
+            "text": "<"
+          },
+          {
+            "kind": "typeIdentifier",
+            "preciseIdentifier": "s:21DeveloperToolsSupport7PreviewV",
+            "text": "Preview"
+          },
+          {
+            "kind": "text",
+            "text": "."
+          },
+          {
+            "kind": "typeIdentifier",
+            "preciseIdentifier": "s:21DeveloperToolsSupport7PreviewV10ViewTraitsO",
+            "text": "ViewTraits"
+          },
+          {
+            "kind": "text",
+            "text": ">..., "
+          },
+          {
+            "kind": "externalParam",
+            "text": "arguments"
+          },
+          {
+            "kind": "text",
+            "text": ": ["
+          },
+          {
+            "kind": "typeIdentifier",
+            "text": "T"
+          },
+          {
+            "kind": "text",
+            "text": "], "
+          },
+          {
+            "kind": "externalParam",
+            "text": "body"
+          },
+          {
+            "kind": "text",
+            "text": ": ("
+          },
+          {
+            "kind": "typeIdentifier",
+            "text": "T"
+          },
+          {
+            "kind": "text",
+            "text": ") -> "
+          },
+          {
+            "kind": "typeIdentifier",
+            "preciseIdentifier": "c:objc(cs)UIView",
+            "text": "UIView"
+          },
+          {
+            "kind": "text",
+            "text": ")"
+          }
+        ],
+        "modules": [
+          {
+            "name": "UIKit"
+          }
+        ],
+        "platforms": [
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "26.0",
+            "name": "iOS",
+            "unavailable": false
+          },
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "26.0",
+            "name": "iPadOS",
+            "unavailable": false
+          },
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "26.0",
+            "name": "Mac Catalyst",
+            "unavailable": false
+          },
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "26.0",
+            "name": "tvOS",
+            "unavailable": false
+          },
+          {
+            "beta": false,
+            "deprecated": false,
+            "name": "visionOS",
+            "unavailable": false
+          }
+        ],
+        "role": "symbol",
+        "roleHeading": "Macro",
+        "symbolKind": "macro",
+        "title": "Preview(_:traits:arguments:body:)"
+      }
+    },
+    {
+      "url": "https://developer.apple.com/documentation/uikit/preview(_:traits:arguments:body:)-7cbjv",
+      "status": "available",
+      "sha256": "f6b9411dc7800d7c7a637eec67c7b2ce4affa2e49ee1fe59161d734bd3add8cf",
+      "metadata": {
+        "availableLanguages": [
+          "de-DE",
+          "en-US",
+          "es-419",
+          "fr-FR",
+          "it-IT",
+          "ja-JP",
+          "ko-KR",
+          "pt-BR",
+          "zh-CN"
+        ],
+        "externalID": "s:5UIKit7Preview_6traits9arguments4bodyySSSg_21DeveloperToolsSupport0B5TraitVyAgBV10ViewTraitsOGdSayxGSo16UIViewControllerCxScMYcctclufm",
+        "fragments": [
+          {
+            "kind": "keyword",
+            "text": "macro"
+          },
+          {
+            "kind": "text",
+            "text": " "
+          },
+          {
+            "kind": "identifier",
+            "text": "Preview"
+          },
+          {
+            "kind": "text",
+            "text": "<"
+          },
+          {
+            "kind": "genericParameter",
+            "text": "T"
+          },
+          {
+            "kind": "text",
+            "text": ">("
+          },
+          {
+            "kind": "typeIdentifier",
+            "preciseIdentifier": "s:SS",
+            "text": "String"
+          },
+          {
+            "kind": "text",
+            "text": "?, "
+          },
+          {
+            "kind": "externalParam",
+            "text": "traits"
+          },
+          {
+            "kind": "text",
+            "text": ": "
+          },
+          {
+            "kind": "typeIdentifier",
+            "preciseIdentifier": "s:21DeveloperToolsSupport12PreviewTraitV",
+            "text": "PreviewTrait"
+          },
+          {
+            "kind": "text",
+            "text": "<"
+          },
+          {
+            "kind": "typeIdentifier",
+            "preciseIdentifier": "s:21DeveloperToolsSupport7PreviewV",
+            "text": "Preview"
+          },
+          {
+            "kind": "text",
+            "text": "."
+          },
+          {
+            "kind": "typeIdentifier",
+            "preciseIdentifier": "s:21DeveloperToolsSupport7PreviewV10ViewTraitsO",
+            "text": "ViewTraits"
+          },
+          {
+            "kind": "text",
+            "text": ">..., "
+          },
+          {
+            "kind": "externalParam",
+            "text": "arguments"
+          },
+          {
+            "kind": "text",
+            "text": ": ["
+          },
+          {
+            "kind": "typeIdentifier",
+            "text": "T"
+          },
+          {
+            "kind": "text",
+            "text": "], "
+          },
+          {
+            "kind": "externalParam",
+            "text": "body"
+          },
+          {
+            "kind": "text",
+            "text": ": ("
+          },
+          {
+            "kind": "typeIdentifier",
+            "text": "T"
+          },
+          {
+            "kind": "text",
+            "text": ") -> "
+          },
+          {
+            "kind": "typeIdentifier",
+            "preciseIdentifier": "c:objc(cs)UIViewController",
+            "text": "UIViewController"
+          },
+          {
+            "kind": "text",
+            "text": ")"
+          }
+        ],
+        "modules": [
+          {
+            "name": "UIKit"
+          }
+        ],
+        "platforms": [
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "26.0",
+            "name": "iOS",
+            "unavailable": false
+          },
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "26.0",
+            "name": "iPadOS",
+            "unavailable": false
+          },
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "26.0",
+            "name": "Mac Catalyst",
+            "unavailable": false
+          },
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "26.0",
+            "name": "tvOS",
+            "unavailable": false
+          },
+          {
+            "beta": false,
+            "deprecated": false,
+            "name": "visionOS",
+            "unavailable": false
+          }
+        ],
+        "role": "symbol",
+        "roleHeading": "Macro",
+        "symbolKind": "macro",
+        "title": "Preview(_:traits:arguments:body:)"
+      }
+    },
+    {
+      "url": "https://developer.apple.com/documentation/uikit/uiconfigurationtextattributestransformer-swift.struct",
+      "status": "available",
+      "sha256": "b1a5a907556b506821415fd68daf005636093fd13ed1db38e795bd5800ce87e9",
+      "metadata": {
+        "availableLanguages": [
+          "de-DE",
+          "en-US",
+          "es-419",
+          "fr-FR",
+          "it-IT",
+          "ja-JP",
+          "ko-KR",
+          "pt-BR",
+          "zh-CN"
+        ],
+        "externalID": "s:5UIKit40UIConfigurationTextAttributesTransformerV",
+        "fragments": [
+          {
+            "kind": "keyword",
+            "text": "struct"
+          },
+          {
+            "kind": "text",
+            "text": " "
+          },
+          {
+            "kind": "identifier",
+            "text": "UIConfigurationTextAttributesTransformer"
+          }
+        ],
+        "modules": [
+          {
+            "name": "UIKit"
+          }
+        ],
+        "navigatorTitle": [
+          {
+            "kind": "identifier",
+            "text": "UIConfigurationTextAttributesTransformer"
+          }
+        ],
+        "platforms": [
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "15.0",
+            "name": "iOS",
+            "unavailable": false
+          },
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "15.0",
+            "name": "iPadOS",
+            "unavailable": false
+          },
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "15.0",
+            "name": "Mac Catalyst",
+            "unavailable": false
+          },
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "15.0",
+            "name": "tvOS",
+            "unavailable": false
+          },
+          {
+            "beta": false,
+            "deprecated": false,
+            "name": "visionOS",
+            "unavailable": false
+          }
+        ],
+        "role": "symbol",
+        "roleHeading": "Structure",
+        "symbolKind": "struct",
+        "title": "UIConfigurationTextAttributesTransformer"
+      }
+    },
+    {
+      "url": "https://developer.apple.com/documentation/uikit/uitextgrammarcheckingtype",
+      "status": "available",
+      "sha256": "3b5336e31cf3e22649a9f1225e3ef5ef9cba1b6d81b4d6c6c42d446e95afd130",
+      "metadata": {
+        "availableLanguages": [
+          "de-DE",
+          "en-US",
+          "es-419",
+          "fr-FR",
+          "it-IT",
+          "ja-JP",
+          "ko-KR",
+          "pt-BR",
+          "zh-CN"
+        ],
+        "externalID": "c:@E@UITextGrammarCheckingType",
+        "fragments": [
+          {
+            "kind": "keyword",
+            "text": "enum"
+          },
+          {
+            "kind": "text",
+            "text": " "
+          },
+          {
+            "kind": "identifier",
+            "text": "UITextGrammarCheckingType"
+          }
+        ],
+        "modules": [
+          {
+            "name": "UIKit"
+          }
+        ],
+        "navigatorTitle": [
+          {
+            "kind": "identifier",
+            "text": "UITextGrammarCheckingType"
+          }
+        ],
+        "platforms": [
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "27.0",
+            "name": "iOS",
+            "unavailable": false
+          },
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "27.0",
+            "name": "iPadOS",
+            "unavailable": false
+          },
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "27.0",
+            "name": "Mac Catalyst",
+            "unavailable": false
+          },
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "27.0",
+            "name": "tvOS",
+            "unavailable": false
+          },
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "27.0",
+            "name": "visionOS",
+            "unavailable": false
+          },
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "27.0",
+            "name": "watchOS",
+            "unavailable": false
+          }
+        ],
+        "role": "symbol",
+        "roleHeading": "Enumeration",
+        "symbolKind": "enum",
+        "title": "UITextGrammarCheckingType"
+      }
+    },
+    {
+      "url": "https://developer.apple.com/documentation/uikit/uitraitbridgedenvironmentkey",
+      "status": "available",
+      "sha256": "c6ade53a586f5371a809f517d808ff5ddeec904c6ee722c194b9aad59e616768",
+      "metadata": {
+        "availableLanguages": [
+          "de-DE",
+          "en-US",
+          "es-419",
+          "fr-FR",
+          "it-IT",
+          "ja-JP",
+          "ko-KR",
+          "pt-BR",
+          "zh-CN"
+        ],
+        "externalID": "s:5UIKit28UITraitBridgedEnvironmentKeyP",
+        "fragments": [
+          {
+            "kind": "keyword",
+            "text": "protocol"
+          },
+          {
+            "kind": "text",
+            "text": " "
+          },
+          {
+            "kind": "identifier",
+            "text": "UITraitBridgedEnvironmentKey"
+          }
+        ],
+        "modules": [
+          {
+            "name": "UIKit"
+          }
+        ],
+        "navigatorTitle": [
+          {
+            "kind": "identifier",
+            "text": "UITraitBridgedEnvironmentKey"
+          }
+        ],
+        "platforms": [
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "17.0",
+            "name": "iOS",
+            "unavailable": false
+          },
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "17.0",
+            "name": "iPadOS",
+            "unavailable": false
+          },
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "17.0",
+            "name": "Mac Catalyst",
+            "unavailable": false
+          },
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "17.0",
+            "name": "tvOS",
+            "unavailable": false
+          },
+          {
+            "beta": false,
+            "deprecated": false,
+            "name": "visionOS",
+            "unavailable": false
+          }
+        ],
+        "role": "symbol",
+        "roleHeading": "Protocol",
+        "symbolKind": "protocol",
+        "title": "UITraitBridgedEnvironmentKey"
+      }
+    },
+    {
+      "url": "https://developer.apple.com/documentation/uikit/uitraitnavigationtitlealignment-swift.struct",
+      "status": "available",
+      "sha256": "f8f1f7eb6c6cc3b03f9415bc913710f1e18c06a6d70d14fcafc35cad5869c538",
+      "metadata": {
+        "availableLanguages": [
+          "de-DE",
+          "en-US",
+          "es-419",
+          "fr-FR",
+          "it-IT",
+          "ja-JP",
+          "ko-KR",
+          "pt-BR",
+          "zh-CN"
+        ],
+        "externalID": "s:5UIKit31UITraitNavigationTitleAlignmentV",
+        "fragments": [
+          {
+            "kind": "keyword",
+            "text": "struct"
+          },
+          {
+            "kind": "text",
+            "text": " "
+          },
+          {
+            "kind": "identifier",
+            "text": "UITraitNavigationTitleAlignment"
+          }
+        ],
+        "modules": [
+          {
+            "name": "UIKit"
+          }
+        ],
+        "navigatorTitle": [
+          {
+            "kind": "identifier",
+            "text": "UITraitNavigationTitleAlignment"
+          }
+        ],
+        "platforms": [
+          {
+            "beta": true,
+            "deprecated": false,
+            "introducedAt": "27.2",
+            "name": "iOS",
+            "unavailable": false
+          },
+          {
+            "beta": true,
+            "deprecated": false,
+            "introducedAt": "27.2",
+            "name": "iPadOS",
+            "unavailable": false
+          },
+          {
+            "beta": true,
+            "deprecated": false,
+            "introducedAt": "27.2",
+            "name": "Mac Catalyst",
+            "unavailable": false
+          },
+          {
+            "beta": true,
+            "deprecated": false,
+            "introducedAt": "27.2",
+            "name": "tvOS",
+            "unavailable": false
+          },
+          {
+            "beta": true,
+            "deprecated": false,
+            "introducedAt": "27.2",
+            "name": "visionOS",
+            "unavailable": false
+          }
+        ],
+        "role": "symbol",
+        "roleHeading": "Structure",
+        "symbolKind": "struct",
+        "title": "UITraitNavigationTitleAlignment"
+      }
+    },
+    {
+      "url": "https://developer.apple.com/documentation/uikit/uitraitsystemprefersreducedresourceusage-swift.struct",
+      "status": "available",
+      "sha256": "380f675c07008ee1bfe81ebacc0013d1e3a859aa84bab89aa602b664a1c665d5",
+      "metadata": {
+        "availableLanguages": [
+          "de-DE",
+          "en-US",
+          "es-419",
+          "fr-FR",
+          "it-IT",
+          "ja-JP",
+          "ko-KR",
+          "pt-BR",
+          "zh-CN"
+        ],
+        "externalID": "s:5UIKit40UITraitSystemPrefersReducedResourceUsageV",
+        "fragments": [
+          {
+            "kind": "keyword",
+            "text": "struct"
+          },
+          {
+            "kind": "text",
+            "text": " "
+          },
+          {
+            "kind": "identifier",
+            "text": "UITraitSystemPrefersReducedResourceUsage"
+          }
+        ],
+        "modules": [
+          {
+            "name": "UIKit"
+          }
+        ],
+        "navigatorTitle": [
+          {
+            "kind": "identifier",
+            "text": "UITraitSystemPrefersReducedResourceUsage"
+          }
+        ],
+        "platforms": [
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "27.0",
+            "name": "iOS",
+            "unavailable": false
+          },
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "27.0",
+            "name": "iPadOS",
+            "unavailable": false
+          },
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "27.0",
+            "name": "Mac Catalyst",
+            "unavailable": false
+          },
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "27.0",
+            "name": "tvOS",
+            "unavailable": false
+          },
+          {
+            "beta": false,
+            "deprecated": false,
+            "introducedAt": "27.0",
+            "name": "visionOS",
+            "unavailable": false
+          }
+        ],
+        "role": "symbol",
+        "roleHeading": "Structure",
+        "symbolKind": "struct",
+        "title": "UITraitSystemPrefersReducedResourceUsage"
+      }
+    }
+  ]
+}

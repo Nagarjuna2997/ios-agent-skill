@@ -6,7 +6,7 @@ Load this when a task names **Sample Code Library** or one of the API topics bel
 
 Apple categories: Sample Code.
 
-[Apple documentation](https://developer.apple.com/documentation/samplecode) · Source checked: 2026-09-16.
+[Apple documentation](https://developer.apple.com/documentation/samplecode) · Source checked: 2026-09-29.
 
 Apple’s short description (excerpt):
 
@@ -60,6 +60,7 @@ Apple’s directory does not supply platform availability for this entry. It may
 - [Training a neural network to render irradiance in real time](https://developer.apple.com/documentation/metal/training-a-neural-network-to-render-irradiance-in-real-time)
 - [Wishlist: Planning travel in a SwiftUI app](https://developer.apple.com/documentation/swiftui/wishlist-planning-travel-in-a-swiftui-app)
 - [Working with content from your Mac app using Spatial Preview](https://developer.apple.com/documentation/spatialpreview/working-with-content-from-your-mac-app-using-spatial-preview)
+- [Rendering Gaussian splats with RealityKit](https://developer.apple.com/documentation/visionos/working-with-gaussian-splats-with-realitykit)
 
 ### Accelerate
 
@@ -297,6 +298,7 @@ Apple’s directory does not supply platform availability for this entry. It may
 - [Streaming depth data from the TrueDepth camera](https://developer.apple.com/documentation/avfoundation/streaming-depth-data-from-the-truedepth-camera)
 - [Supporting Continuity Camera in your macOS app](https://developer.apple.com/documentation/avfoundation/supporting-continuity-camera-in-your-macos-app)
 - [Supporting coordinated media playback](https://developer.apple.com/documentation/avfoundation/supporting-coordinated-media-playback)
+- [Supporting device rotation in your camera app](https://developer.apple.com/documentation/avfoundation/supporting-device-rotation-in-your-camera-app)
 - [Supporting remote interactions in tvOS](https://developer.apple.com/documentation/avfoundation/supporting-remote-interactions-in-tvos)
 - [Using AVFoundation to play and persist HTTP live streams](https://developer.apple.com/documentation/avfoundation/using-avfoundation-to-play-and-persist-http-live-streams)
 - [Using HEVC video with alpha](https://developer.apple.com/documentation/avfoundation/using-hevc-video-with-alpha)
@@ -469,6 +471,7 @@ Apple’s directory does not supply platform availability for this entry. It may
 - [Recording and Streaming Your macOS App](https://developer.apple.com/documentation/replaykit/recording-and-streaming-your-macos-app)
 - [Selecting Photos and Videos in iOS](https://developer.apple.com/documentation/photokit/selecting-photos-and-videos-in-ios)
 - [Structuring recognized text on a document](https://developer.apple.com/documentation/visionkit/structuring-recognized-text-on-a-document)
+- [Supporting custom media formats and decoders](https://developer.apple.com/documentation/mediaextension/supporting-custom-media-formats-and-decoders)
 
 ### RealityKit and Reality Composer Pro
 
@@ -507,7 +510,7 @@ Apple’s directory does not supply platform availability for this entry. It may
 
 - [Determining service entitlement on the server](https://developer.apple.com/documentation/storekit/determining-service-entitlement-on-the-server)
 - [Generating a Promotional Offer Signature on the Server](https://developer.apple.com/documentation/storekit/generating-a-promotional-offer-signature-on-the-server)
-- [Offering, completing, and restoring in-app purchases](https://developer.apple.com/documentation/storekit/offering-completing-and-restoring-in-app-purchases)
+- [Offering, completing, and restoring Apple In-App Purchases](https://developer.apple.com/documentation/storekit/offering-completing-and-restoring-in-app-purchases)
 - [Offering media for sale in your app](https://developer.apple.com/documentation/storekit/offering-media-for-sale-in-your-app)
 - [Requesting App Store reviews](https://developer.apple.com/documentation/storekit/requesting-app-store-reviews)
 - [Testing and validating ad impression signatures and postbacks for SKAdNetwork](https://developer.apple.com/documentation/storekittest/testing-and-validating-ad-impression-signatures-and-postbacks-for-skadnetwork)

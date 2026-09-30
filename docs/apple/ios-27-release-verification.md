@@ -1,11 +1,11 @@
 # iOS 27 release verification
 
-Checked **2026-09-16**. Release status is distinct from this repository’s compilation and runtime evidence.
+Original verification **2026-09-16**; follow-up **2026-09-29**. Release status is distinct from this repository’s compilation and runtime evidence.
 
 | Item | Primary evidence | Repository verification |
 |---|---|---|
 | iOS 27.0 | [Apple release: September 14, build 24A437](https://developer.apple.com/news/releases/?id=09142026a) | Released; no local iOS 27 simulator test |
-| Xcode 27 / Swift 6.4 | [Released September 14](https://support.apple.com/en-us/149040), [SDK notes](https://developer.apple.com/documentation/xcode-release-notes/xcode-27-release-notes) | Local host remains Xcode 26.6 / Swift 6.3.3 |
+| Xcode 27 / Swift 6.4 | [Released September 14](https://support.apple.com/en-us/149040), [SDK notes](https://developer.apple.com/documentation/xcode-release-notes/xcode-27-release-notes) | Original tests: Xcode 26.6 / Swift 6.3.3. September 29 inspection: Xcode 27.0 / 27A266a; prior results are not reruns |
 | Core AI and Evaluations | [Core AI](https://developer.apple.com/documentation/coreai), [Evaluations](https://developer.apple.com/documentation/evaluations) platform metadata identifies 27.0 without beta flags | Documentation reviewed; Xcode 27 compilation pending |
 | App Intents | [Framework updates](https://developer.apple.com/documentation/updates/appintents), [OS release notes](https://developer.apple.com/documentation/ios-ipados-release-notes/ios-ipados-27-release-notes) | Static reviewer tests; no live Siri acceptance test |
 | Foundation Models | [Framework updates](https://developer.apple.com/documentation/updates/foundationmodels) | AppleRecipes tool compiles with Xcode 26.6; deterministic tests, not live model generation |
@@ -40,3 +40,7 @@ The technology directory and update-page topic maps were fetched again on 2026-0
 Do not remove generic guidance about beta SDKs, TestFlight, or `.provisional` notification permissions: those are unrelated to the iOS 27 release-status correction. Historical changelog descriptions remain historical.
 
 The Xcode 27 agent setup, Core AI execution, third-party Foundation Models adapters, and real Siri behavior still require their respective toolchain, provider and device tests. No new API keys are required for the shipped static checks or deterministic sample tests.
+
+## September 29 audit
+
+The [source-change audit](source-audit-2026-09-29.md) refreshes all 405 technology landing pages and checks delisted topic URLs independently. The release-note directory now has 98 pages and 949 topic links. Read the updated [Xcode beta 2](../tooling/xcode-27-2.md), [Device Hub](../tooling/device-hub.md) and [distribution](../tooling/september-2026-distribution.md) guidance. These dated checks supersede stale current-state wording above; historical evidence and release records remain intact. No account credentials or private developer resources were copied.

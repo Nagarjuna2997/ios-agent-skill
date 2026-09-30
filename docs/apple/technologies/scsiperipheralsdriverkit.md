@@ -6,7 +6,7 @@ Load this when a task names **SCSIPeripheralsDriverKit** or one of the API topic
 
 Apple categories: System.
 
-[Apple documentation](https://developer.apple.com/documentation/scsiperipheralsdriverkit) · Source checked: 2026-09-16.
+[Apple documentation](https://developer.apple.com/documentation/scsiperipheralsdriverkit) · Source checked: 2026-09-29.
 
 Apple’s short description (excerpt):
 
@@ -28,23 +28,20 @@ Documentation language identifiers: occ.
 
 These are landing-page values, not availability guarantees for every member. Check the selected symbol and the installed SDK.
 
+### Entitlements
+
+- [com.apple.developer.driverkit](https://developer.apple.com/documentation/bundleresources/entitlements/com.apple.developer.driverkit)
+- [com.apple.developer.driverkit.family.scsicontroller](https://developer.apple.com/documentation/bundleresources/entitlements/com.apple.developer.driverkit.family.scsicontroller)
+
 ### Driver interfaces
 
 - [IOUserSCSIPeripheralDeviceType00](https://developer.apple.com/documentation/scsiperipheralsdriverkit/iouserscsiperipheraldevicetype00)
 - [IOUserSCSIPeripheralDeviceType05](https://developer.apple.com/documentation/scsiperipheralsdriverkit/iouserscsiperipheraldevicetype05)
+- [IOUserSCSIPeripheralDeviceType07](https://developer.apple.com/documentation/scsiperipheralsdriverkit/iouserscsiperipheraldevicetype07)
 
 ### Device commands
 
 - [SCSI commands](https://developer.apple.com/documentation/scsiperipheralsdriverkit/scsi-commands)
-
-### Classes
-
-- [IOUserSCSIPeripheralDeviceType07](https://developer.apple.com/documentation/scsiperipheralsdriverkit/iouserscsiperipheraldevicetype07)
-
-### Reference
-
-- [SCSIPeripheralsDriverKit Enumerations](https://developer.apple.com/documentation/scsiperipheralsdriverkit/scsiperipheralsdriverkit-enumerations)
-- [SCSIPeripheralsDriverKit Data Types](https://developer.apple.com/documentation/scsiperipheralsdriverkit/scsiperipheralsdriverkit-data-types)
 
 ## Anti-Patterns
 

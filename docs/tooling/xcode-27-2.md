@@ -2,7 +2,7 @@
 
 ## Context
 
-Checked 2026-09-21 against [Apple’s release notes](https://developer.apple.com/documentation/xcode-release-notes/xcode-27_2-release-notes) and [project-format guide](https://developer.apple.com/documentation/xcode/updating-your-xcode-project-configuration-file-format). This is beta documentation, not a local Xcode 27.2 execution result.
+Rechecked 2026-09-29 (beta 2) against [Apple’s release notes](https://developer.apple.com/documentation/xcode-release-notes/xcode-27_2-release-notes) and [project-format guide](https://developer.apple.com/documentation/xcode/updating-your-xcode-project-configuration-file-format). This is beta documentation, not a local Xcode 27.2 execution result.
 
 ## Pattern
 
@@ -37,5 +37,11 @@ See `docs/platforms/iphone-duo.md` and `docs/tooling/device-hub.md`.
 ## Verification
 
 Synthetic regression tests cover discovery, malformed JSON, unsupported JSON roots,
-workspace selection and coexisting formats. The verification host has Xcode 26.6;
+workspace selection and coexisting formats. The earlier verification used Xcode 26.6; Xcode 27.0 is now installed, but
 real JSON project builds and Xcode 27.2 preview sessions remain unverified.
+
+## Beta 2 follow-up
+
+Apple adds `GetCodeCoverage` to its coding-assistant MCP tools. Discover its installed schema before requesting the latest test coverage, optionally scoped to a target or file. This is Apple's tool, not a new ios-agent-mcp tool. The preview override picker also gains alternative-display selection.
+
+Known issues include temporary black Duo captures after boot, simulator-clone permissions, and reinstalled runtimes remaining unavailable. Avoid diagnosing those immediately as app defects. Apple's service-restart workaround is disruptive; obtain authorization before interrupting active simulators. For iOS 27.1-specific APIs in Catalyst, Apple recommends platform compilation conditionals. The non-iOS SDKs incorrectly advertising deployment target 27.1 need extra scrutiny. None of these beta 2 behaviors was exercised on the local Xcode 27.0 installation.

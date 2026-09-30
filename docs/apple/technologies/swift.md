@@ -6,7 +6,7 @@ Load this when a task names **Swift** or one of the API topics below.
 
 Apple categories: App Frameworks.
 
-[Apple documentation](https://developer.apple.com/documentation/swift) · Source checked: 2026-09-16.
+[Apple documentation](https://developer.apple.com/documentation/swift) · Source checked: 2026-09-29.
 
 Apple’s short description (excerpt):
 
@@ -88,10 +88,6 @@ These are landing-page values, not availability guarantees for every member. Che
 
 - [Mixing Languages in an Xcode project](https://developer.apple.com/documentation/swift/mixinglanguagesinanxcodeproject)
 - [Calling APIs Across Language Boundaries](https://developer.apple.com/documentation/swift/callingapisacrosslanguageboundaries)
-
-### Protocols
-
-- [Iterable](https://developer.apple.com/documentation/swift/iterable)
 
 ## Anti-Patterns
 

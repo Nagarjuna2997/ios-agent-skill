@@ -191,11 +191,8 @@ actually varies by device.
 - [ ] VoiceOver reaches every control with a meaningful label.
 - [ ] A reported bug was reproduced on its exact configuration before fixing.
 
-## Xcode 27.2 beta input caveat
+## Xcode 27.2 beta 2: input fixes and remaining limitations
 
-Checked 2026-09-21: Apple reports ignored keyboard/mouse input for Simulator OS
-versions earlier than iOS 18, tvOS 18, watchOS 11 and visionOS 2. Separate this
-Device Hub limitation from app hit-testing bugs. Reproduce on a supported runtime
-before changing UI code. Apple also notes physical devices can retain hardware
-keyboard mode for up to two minutes after disconnecting; wait for it to clear.
-[Apple release notes](https://developer.apple.com/documentation/xcode-release-notes/xcode-27_2-release-notes).
+Checked September 29, 2026 against [Apple’s notes](https://developer.apple.com/documentation/xcode-release-notes/xcode-27_2-release-notes). The earlier beta's ignored keyboard/mouse input on older simulators is now listed as resolved, including iOS 17 input support. Hardware-keyboard state lingering after disconnection and input stopping after inactivity are also listed as fixed. Do not keep recommending these as current beta 2 defects.
+
+Remaining documented limitations include inaccessible Duo screen content through VoiceOver/Accessibility Inspector, a nonfunctional Simulate Memory Warning command, and a possible quit when selecting a Vision Pro simulator without its runtime. Install the matching runtime or remove that stale device entry. A modifier-key item says “Fixed” inside Known Issues; preserve that ambiguity rather than declaring it resolved. These are upstream notes, not locally reproduced results.

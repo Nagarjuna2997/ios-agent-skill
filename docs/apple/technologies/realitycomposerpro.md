@@ -6,7 +6,7 @@ Load this when a task names **Reality Composer Pro** or one of the API topics be
 
 Apple categories: Developer Tools.
 
-[Apple documentation](https://developer.apple.com/documentation/realitycomposerpro) · Source checked: 2026-09-16.
+[Apple documentation](https://developer.apple.com/documentation/realitycomposerpro) · Source checked: 2026-09-29.
 
 Apple’s short description (excerpt):
 

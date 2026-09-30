@@ -6,7 +6,11 @@ Load this when a task names **Apple Ads** or one of the API topics below.
 
 Apple categories: Media.
 
-[Apple documentation](https://developer.apple.com/documentation/apple_ads) · Source checked: 2026-09-16.
+[Apple documentation](https://developer.apple.com/documentation/apple_ads) · Source checked: 2026-09-29.
+
+Apple’s short description (excerpt):
+
+> Drive app discovery by creating and managing campaigns with the Apple Ads Campaign Management API.
 
 ## Pattern
 
@@ -15,6 +19,8 @@ Use the topic map below to select the API for the requested feature. Follow the 
 Documented modules: `Apple Ads`.
 
 Documentation language identifiers: data.
+
+**Apple marks this technology as deprecated.** Read the migration/replacement guidance before selecting it for new work.
 
 ### Availability from the landing page
 

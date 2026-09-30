@@ -6,7 +6,7 @@ Load this when a task names **Background Assets** or one of the API topics below
 
 Apple categories: App Services.
 
-[Apple documentation](https://developer.apple.com/documentation/backgroundassets) · Source checked: 2026-09-16.
+[Apple documentation](https://developer.apple.com/documentation/backgroundassets) · Source checked: 2026-09-29.
 
 Apple’s short description (excerpt):
 
@@ -77,6 +77,10 @@ These are landing-page values, not availability guarantees for every member. Che
 - [BAErrorDomain](https://developer.apple.com/documentation/backgroundassets/baerrordomain)
 - [BAErrorCode](https://developer.apple.com/documentation/backgroundassets/baerrorcode)
 - [AssetPackManager.LocalAvailabilityError](https://developer.apple.com/documentation/backgroundassets/assetpackmanager/localavailabilityerror)
+
+### Enumerations
+
+- [SizeCalculationMethod](https://developer.apple.com/documentation/backgroundassets/sizecalculationmethod) — beta
 
 ## Anti-Patterns
 

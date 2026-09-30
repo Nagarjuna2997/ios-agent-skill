@@ -6,11 +6,11 @@ Load this when a task names **Advanced Commerce API** or one of the API topics b
 
 Apple categories: App Services.
 
-[Apple documentation](https://developer.apple.com/documentation/advancedcommerceapi) · Source checked: 2026-09-16.
+[Apple documentation](https://developer.apple.com/documentation/advancedcommerceapi) · Source checked: 2026-09-29.
 
 Apple’s short description (excerpt):
 
-> Support In-App Purchases through the App Store for exceptionally large catalogs of custom one-time purchases, subscriptions, and subscriptions with optional add-ons.
+> Support Apple In-App Purchases through the App Store for exceptionally large catalogs of custom one-time purchases, subscriptions, and subscriptions with optional add-ons.
 
 ## Pattern
 
@@ -42,7 +42,7 @@ These are landing-page values, not availability guarantees for every member. Che
 ### Generic product IDs and SKUs
 
 - [Setting up generic product identifiers](https://developer.apple.com/documentation/advancedcommerceapi/setting-up-generic-product-identifiers)
-- [Creating SKUs for your In-App Purchases](https://developer.apple.com/documentation/advancedcommerceapi/creating-your-purchases)
+- [Creating SKUs for your Apple In-App Purchases](https://developer.apple.com/documentation/advancedcommerceapi/creating-your-purchases)
 - [Creating SKUs for the Mini Apps Partner Program](https://developer.apple.com/documentation/advancedcommerceapi/creating-skus-for-the-mini-app-partner-program)
 
 ### Tax codes and pricing

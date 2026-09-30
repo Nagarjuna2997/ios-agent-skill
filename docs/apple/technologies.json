@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-09-16",
+  "checkedAt": "2026-09-29",
   "source": "https://developer.apple.com/tutorials/data/documentation/technologies.json",
   "directoryURL": "https://developer.apple.com/documentation/technologies",
   "sourceCount": 405,
@@ -2760,7 +2760,7 @@
       "languages": [
         "data"
       ],
-      "summary": "Support In-App Purchases through the App Store for exceptionally large catalogs of custom one-time purchases, subscriptions, and subscriptions with optional add-ons.",
+      "summary": "Support Apple In-App Purchases through the App Store for exceptionally large catalogs of custom one-time purchases, subscriptions, and subscriptions with optional add-ons.",
       "modules": [
         "Advanced Commerce API"
       ],
@@ -2827,7 +2827,7 @@
               "beta": false
             },
             {
-              "title": "Creating SKUs for your In-App Purchases",
+              "title": "Creating SKUs for your Apple In-App Purchases",
               "url": "https://developer.apple.com/documentation/advancedcommerceapi/creating-your-purchases",
               "deprecated": false,
               "beta": false
@@ -5527,6 +5527,35 @@
           ]
         },
         {
+          "title": "Multiseat purchases",
+          "links": [
+            {
+              "title": "Get Customer Groups",
+              "url": "https://developer.apple.com/documentation/appstoreserverapi/get-customer-groups",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "GetCustomerGroupsResponse",
+              "url": "https://developer.apple.com/documentation/appstoreserverapi/getcustomergroupsresponse",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "Get Group Members",
+              "url": "https://developer.apple.com/documentation/appstoreserverapi/get-group-members",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "GetGroupMembersResponse",
+              "url": "https://developer.apple.com/documentation/appstoreserverapi/getgroupmembersresponse",
+              "deprecated": false,
+              "beta": false
+            }
+          ]
+        },
+        {
           "title": "App Account Token",
           "links": [
             {
@@ -6013,8 +6042,8 @@
               "beta": false
             },
             {
-              "title": "requestTrackingAuthorization(usingExpandedInterface:additionalInformationAction:completionHandler:)",
-              "url": "https://developer.apple.com/documentation/apptrackingtransparency/attrackingmanager/requesttrackingauthorization(usingexpandedinterface:additionalinformationaction:completionhandler:)",
+              "title": "requestTrackingAuthorization(preferExpandedInterface:additionalInformationAction:completionHandler:)",
+              "url": "https://developer.apple.com/documentation/apptrackingtransparency/attrackingmanager/requesttrackingauthorization(preferexpandedinterface:additionalinformationaction:completionhandler:)",
               "deprecated": false,
               "beta": true
             },
@@ -6346,7 +6375,7 @@
       "languages": [
         "data"
       ],
-      "summary": "",
+      "summary": "Drive app discovery by creating and managing campaigns with the Apple Ads Campaign Management API.",
       "modules": [
         "Apple Ads"
       ],
@@ -6357,7 +6386,7 @@
           "name": "Apple Ads"
         }
       ],
-      "deprecated": false,
+      "deprecated": true,
       "sourceKind": "docc",
       "verifiedURL": "https://developer.apple.com/documentation/apple_ads",
       "guides": [],
@@ -13281,6 +13310,17 @@
               "beta": false
             }
           ]
+        },
+        {
+          "title": "Enumerations",
+          "links": [
+            {
+              "title": "SizeCalculationMethod",
+              "url": "https://developer.apple.com/documentation/backgroundassets/sizecalculationmethod",
+              "deprecated": false,
+              "beta": true
+            }
+          ]
         }
       ]
     },
@@ -19041,88 +19081,47 @@
       "guide": "docs/apple/technologies/computegraph.md",
       "topics": [
         {
-          "title": "Simulation objects",
+          "title": "Graph definition and assembly",
           "links": [
             {
-              "title": "ComputeGraphSimulation",
-              "url": "https://developer.apple.com/documentation/computegraph/computegraphsimulation",
-              "deprecated": false,
-              "beta": false
-            }
-          ]
-        },
-        {
-          "title": "Built-in nodes",
-          "links": [
-            {
-              "title": "element",
-              "url": "https://developer.apple.com/documentation/computegraph/element",
+              "title": "ComputeNodeGraph",
+              "url": "https://developer.apple.com/documentation/computegraph/computenodegraph",
               "deprecated": false,
               "beta": false
             },
             {
-              "title": "emitter",
-              "url": "https://developer.apple.com/documentation/computegraph/emitter",
+              "title": "ComputeNodeGraph.Assembly",
+              "url": "https://developer.apple.com/documentation/computegraph/computenodegraph/assembly",
               "deprecated": false,
               "beta": false
             },
             {
-              "title": "force",
-              "url": "https://developer.apple.com/documentation/computegraph/force",
+              "title": "ComputeNodeGraph.Pipelines",
+              "url": "https://developer.apple.com/documentation/computegraph/computenodegraph/pipelines",
               "deprecated": false,
               "beta": false
             },
             {
-              "title": "initialize",
-              "url": "https://developer.apple.com/documentation/computegraph/initialize",
+              "title": "ComputeNodeGraph.PipelinesDescriptor",
+              "url": "https://developer.apple.com/documentation/computegraph/computenodegraph/pipelinesdescriptor",
               "deprecated": false,
               "beta": false
             },
             {
-              "title": "output",
-              "url": "https://developer.apple.com/documentation/computegraph/output",
+              "title": "ComputeNodeGraph.NodeDefinition",
+              "url": "https://developer.apple.com/documentation/computegraph/computenodegraph/nodedefinition",
               "deprecated": false,
               "beta": false
             },
             {
-              "title": "module",
-              "url": "https://developer.apple.com/documentation/computegraph/module",
+              "title": "ComputeNodeGraph.Library",
+              "url": "https://developer.apple.com/documentation/computegraph/computenodegraph/library",
               "deprecated": false,
               "beta": false
             },
             {
-              "title": "graph",
-              "url": "https://developer.apple.com/documentation/computegraph/graph",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "group",
-              "url": "https://developer.apple.com/documentation/computegraph/group",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "texture",
-              "url": "https://developer.apple.com/documentation/computegraph/texture",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "random",
-              "url": "https://developer.apple.com/documentation/computegraph/random",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "matrix4x4f",
-              "url": "https://developer.apple.com/documentation/computegraph/matrix4x4f",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "matrix4x4h",
-              "url": "https://developer.apple.com/documentation/computegraph/matrix4x4h",
+              "title": "ComputeNodeGraph.LibraryReference",
+              "url": "https://developer.apple.com/documentation/computegraph/computenodegraph/libraryreference",
               "deprecated": false,
               "beta": false
             }
@@ -19158,8 +19157,150 @@
           ]
         },
         {
-          "title": "Elements and particles",
+          "title": "Simulation-stage nodes",
           "links": [
+            {
+              "title": "element",
+              "url": "https://developer.apple.com/documentation/computegraph/element",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "emitter",
+              "url": "https://developer.apple.com/documentation/computegraph/emitter",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "initialize",
+              "url": "https://developer.apple.com/documentation/computegraph/initialize",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "module",
+              "url": "https://developer.apple.com/documentation/computegraph/module",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "output",
+              "url": "https://developer.apple.com/documentation/computegraph/output",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "force",
+              "url": "https://developer.apple.com/documentation/computegraph/force",
+              "deprecated": false,
+              "beta": false
+            }
+          ]
+        },
+        {
+          "title": "Utility nodes",
+          "links": [
+            {
+              "title": "graph",
+              "url": "https://developer.apple.com/documentation/computegraph/graph",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "group",
+              "url": "https://developer.apple.com/documentation/computegraph/group",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "texture",
+              "url": "https://developer.apple.com/documentation/computegraph/texture",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "random",
+              "url": "https://developer.apple.com/documentation/computegraph/random",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "matrix4x4f",
+              "url": "https://developer.apple.com/documentation/computegraph/matrix4x4f",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "matrix4x4h",
+              "url": "https://developer.apple.com/documentation/computegraph/matrix4x4h",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "viewpoint",
+              "url": "https://developer.apple.com/documentation/computegraph/viewpoint-swift.func",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "element_integrate",
+              "url": "https://developer.apple.com/documentation/computegraph/element_integrate",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "texture_sample",
+              "url": "https://developer.apple.com/documentation/computegraph/texture_sample",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "texture_sample1d",
+              "url": "https://developer.apple.com/documentation/computegraph/texture_sample1d",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "orient_to_velocity",
+              "url": "https://developer.apple.com/documentation/computegraph/orient_to_velocity",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "gridDebugCells",
+              "url": "https://developer.apple.com/documentation/computegraph/griddebugcells",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "gridFromPoints",
+              "url": "https://developer.apple.com/documentation/computegraph/gridfrompoints",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "spawn_demo",
+              "url": "https://developer.apple.com/documentation/computegraph/spawn_demo",
+              "deprecated": false,
+              "beta": false
+            }
+          ]
+        },
+        {
+          "title": "Running a simulation",
+          "links": [
+            {
+              "title": "ComputeGraphSimulation",
+              "url": "https://developer.apple.com/documentation/computegraph/computegraphsimulation",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "ElementSpawnParameters",
+              "url": "https://developer.apple.com/documentation/computegraph/elementspawnparameters",
+              "deprecated": false,
+              "beta": false
+            },
             {
               "title": "ElementGrouping",
               "url": "https://developer.apple.com/documentation/computegraph/elementgrouping",
@@ -19167,8 +19308,8 @@
               "beta": false
             },
             {
-              "title": "ElementSpawnParameters",
-              "url": "https://developer.apple.com/documentation/computegraph/elementspawnparameters",
+              "title": "ComputeGraphSimulation.SimulationRate",
+              "url": "https://developer.apple.com/documentation/computegraph/computegraphsimulation/simulationrate-swift.struct",
               "deprecated": false,
               "beta": false
             },
@@ -19184,6 +19325,18 @@
           "title": "Graph resources",
           "links": [
             {
+              "title": "ComputeNodeGraph.SamplerSettings",
+              "url": "https://developer.apple.com/documentation/computegraph/computenodegraph/samplersettings",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "ComputeNodeGraph.SwizzleChannels",
+              "url": "https://developer.apple.com/documentation/computegraph/computenodegraph/swizzlechannels",
+              "deprecated": false,
+              "beta": false
+            },
+            {
               "title": "AddressSpace",
               "url": "https://developer.apple.com/documentation/computegraph/addressspace",
               "deprecated": false,
@@ -19195,8 +19348,20 @@
           "title": "Geometry and simulation inputs",
           "links": [
             {
+              "title": "ComputeNodeGraph.Topology",
+              "url": "https://developer.apple.com/documentation/computegraph/computenodegraph/topology",
+              "deprecated": false,
+              "beta": false
+            },
+            {
               "title": "CoordinateSpace",
               "url": "https://developer.apple.com/documentation/computegraph/coordinatespace",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "ComputeNodeGraph.StructureLayout",
+              "url": "https://developer.apple.com/documentation/computegraph/computenodegraph/structurelayout",
               "deprecated": false,
               "beta": false
             },
@@ -19221,25 +19386,8 @@
           ]
         },
         {
-          "title": "Structures",
-          "links": [
-            {
-              "title": "ComputeNodeGraph",
-              "url": "https://developer.apple.com/documentation/computegraph/computenodegraph",
-              "deprecated": false,
-              "beta": false
-            }
-          ]
-        },
-        {
           "title": "Functions",
           "links": [
-            {
-              "title": "element_integrate",
-              "url": "https://developer.apple.com/documentation/computegraph/element_integrate",
-              "deprecated": false,
-              "beta": false
-            },
             {
               "title": "filteredLinesFromNeighbors",
               "url": "https://developer.apple.com/documentation/computegraph/filteredlinesfromneighbors",
@@ -19247,50 +19395,8 @@
               "beta": false
             },
             {
-              "title": "gridDebugCells",
-              "url": "https://developer.apple.com/documentation/computegraph/griddebugcells",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "gridFromPoints",
-              "url": "https://developer.apple.com/documentation/computegraph/gridfrompoints",
-              "deprecated": false,
-              "beta": false
-            },
-            {
               "title": "linesFromNeighbors",
               "url": "https://developer.apple.com/documentation/computegraph/linesfromneighbors",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "orient_to_velocity",
-              "url": "https://developer.apple.com/documentation/computegraph/orient_to_velocity",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "spawn_demo",
-              "url": "https://developer.apple.com/documentation/computegraph/spawn_demo",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "texture_sample",
-              "url": "https://developer.apple.com/documentation/computegraph/texture_sample",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "texture_sample1d",
-              "url": "https://developer.apple.com/documentation/computegraph/texture_sample1d",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "viewpoint",
-              "url": "https://developer.apple.com/documentation/computegraph/viewpoint-swift.func",
               "deprecated": false,
               "beta": false
             }
@@ -23701,6 +23807,12 @@
               "url": "https://developer.apple.com/documentation/corelocation/clheading",
               "deprecated": false,
               "beta": false
+            },
+            {
+              "title": "CLBodyIdentifiable",
+              "url": "https://developer.apple.com/documentation/corelocation/clbodyidentifiable",
+              "deprecated": false,
+              "beta": false
             }
           ]
         },
@@ -23814,17 +23926,6 @@
             {
               "title": "Core Location Functions",
               "url": "https://developer.apple.com/documentation/corelocation/core-location-functions",
-              "deprecated": false,
-              "beta": false
-            }
-          ]
-        },
-        {
-          "title": "Protocols",
-          "links": [
-            {
-              "title": "CLBodyIdentifiable",
-              "url": "https://developer.apple.com/documentation/corelocation/clbodyidentifiable",
               "deprecated": false,
               "beta": false
             }
@@ -25285,6 +25386,12 @@
               "url": "https://developer.apple.com/documentation/coremotion/cmheadphonemotionmanager",
               "deprecated": false,
               "beta": false
+            },
+            {
+              "title": "CMBodyIdentifiable",
+              "url": "https://developer.apple.com/documentation/coremotion/cmbodyidentifiable",
+              "deprecated": false,
+              "beta": false
             }
           ]
         },
@@ -25600,17 +25707,6 @@
             {
               "title": "CMRecordedDeviceMotion",
               "url": "https://developer.apple.com/documentation/coremotion/cmrecordeddevicemotion",
-              "deprecated": false,
-              "beta": false
-            }
-          ]
-        },
-        {
-          "title": "Protocols",
-          "links": [
-            {
-              "title": "CMBodyIdentifiable",
-              "url": "https://developer.apple.com/documentation/coremotion/cmbodyidentifiable",
               "deprecated": false,
               "beta": false
             }
@@ -43164,12 +43260,6 @@
               "beta": false
             },
             {
-              "title": "kCGImageSourceAllowableTypes",
-              "url": "https://developer.apple.com/documentation/imageio/kcgimagesourceallowabletypes",
-              "deprecated": false,
-              "beta": false
-            },
-            {
               "title": "kCGImageSourceGenerateImageSpecificLumaScaling",
               "url": "https://developer.apple.com/documentation/imageio/kcgimagesourcegenerateimagespecificlumascaling",
               "deprecated": false,
@@ -44525,7 +44615,7 @@
           "title": "iOS & iPadOS 27",
           "links": [
             {
-              "title": "iOS & iPadOS 27.2 Beta Release Notes",
+              "title": "iOS & iPadOS 27.2 Beta 2 Release Notes",
               "url": "https://developer.apple.com/documentation/ios-ipados-release-notes/ios-ipados-27_2-release-notes",
               "deprecated": false,
               "beta": false
@@ -47616,7 +47706,7 @@
           "title": "macOS 27",
           "links": [
             {
-              "title": "macOS 27.2 Golden Gate Beta Release Notes",
+              "title": "macOS 27.2 Golden Gate Beta 2 Release Notes",
               "url": "https://developer.apple.com/documentation/macos-release-notes/macos-27_2-release-notes",
               "deprecated": false,
               "beta": false
@@ -58588,11 +58678,88 @@
       "guide": "docs/frameworks/extended-apple-frameworks.md",
       "topics": [
         {
-          "title": "Setup",
+          "title": "Articles",
           "links": [
+            {
+              "title": "Algorithm Convergence Status",
+              "url": "https://developer.apple.com/documentation/nearbyinteraction/algorithm-convergence-status",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "Discovering peers with Multipeer Connectivity",
+              "url": "https://developer.apple.com/documentation/nearbyinteraction/discovering-peers-with-multipeer-connectivity",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "Downlink time difference of arrival ranging",
+              "url": "https://developer.apple.com/documentation/nearbyinteraction/dl-tdoa-ranging",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "Extending advanced direction finding and ranging",
+              "url": "https://developer.apple.com/documentation/nearbyinteraction/extending-advanced-direction-finding-and-ranging",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "Finding devices with precision",
+              "url": "https://developer.apple.com/documentation/nearbyinteraction/finding-devices-with-precision",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "Implementing interactions between users in close proximity",
+              "url": "https://developer.apple.com/documentation/nearbyinteraction/implementing-interactions-between-users-in-close-proximity",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "Implementing proximity-based interactions between a phone and watch",
+              "url": "https://developer.apple.com/documentation/nearbyinteraction/implementing-proximity-based-interactions-between-a-phone-and-watch",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "Implementing spatial interactions with third-party accessories",
+              "url": "https://developer.apple.com/documentation/nearbyinteraction/implementing-spatial-interactions-with-third-party-accessories",
+              "deprecated": false,
+              "beta": false
+            },
             {
               "title": "Initiating and maintaining a session",
               "url": "https://developer.apple.com/documentation/nearbyinteraction/initiating-and-maintaining-a-session",
+              "deprecated": false,
+              "beta": false
+            }
+          ]
+        },
+        {
+          "title": "Classes",
+          "links": [
+            {
+              "title": "NIAlgorithmConvergence",
+              "url": "https://developer.apple.com/documentation/nearbyinteraction/nialgorithmconvergence",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "NINearbyAccessoryConfiguration",
+              "url": "https://developer.apple.com/documentation/nearbyinteraction/ninearbyaccessoryconfiguration",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "NINearbyObject",
+              "url": "https://developer.apple.com/documentation/nearbyinteraction/ninearbyobject",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "NINearbyPeerConfiguration",
+              "url": "https://developer.apple.com/documentation/nearbyinteraction/ninearbypeerconfiguration",
               "deprecated": false,
               "beta": false
             },
@@ -58605,88 +58772,8 @@
           ]
         },
         {
-          "title": "Authorization",
+          "title": "Protocols",
           "links": [
-            {
-              "title": "NSNearbyInteractionUsageDescription",
-              "url": "https://developer.apple.com/documentation/bundleresources/information-property-list/nsnearbyinteractionusagedescription",
-              "deprecated": false,
-              "beta": false
-            }
-          ]
-        },
-        {
-          "title": "Phone interaction",
-          "links": [
-            {
-              "title": "Implementing interactions between users in close proximity",
-              "url": "https://developer.apple.com/documentation/nearbyinteraction/implementing-interactions-between-users-in-close-proximity",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "Discovering peers with Multipeer Connectivity",
-              "url": "https://developer.apple.com/documentation/nearbyinteraction/discovering-peers-with-multipeer-connectivity",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "Extending advanced direction finding and ranging",
-              "url": "https://developer.apple.com/documentation/nearbyinteraction/extending-advanced-direction-finding-and-ranging",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "NINearbyPeerConfiguration",
-              "url": "https://developer.apple.com/documentation/nearbyinteraction/ninearbypeerconfiguration",
-              "deprecated": false,
-              "beta": false
-            }
-          ]
-        },
-        {
-          "title": "Watch interaction",
-          "links": [
-            {
-              "title": "Implementing proximity-based interactions between a phone and watch",
-              "url": "https://developer.apple.com/documentation/nearbyinteraction/implementing-proximity-based-interactions-between-a-phone-and-watch",
-              "deprecated": false,
-              "beta": false
-            }
-          ]
-        },
-        {
-          "title": "Third-party accessories",
-          "links": [
-            {
-              "title": "Implementing spatial interactions with third-party accessories",
-              "url": "https://developer.apple.com/documentation/nearbyinteraction/implementing-spatial-interactions-with-third-party-accessories",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "NINearbyAccessoryConfiguration",
-              "url": "https://developer.apple.com/documentation/nearbyinteraction/ninearbyaccessoryconfiguration",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "NIMotionActivityState",
-              "url": "https://developer.apple.com/documentation/nearbyinteraction/nimotionactivitystate",
-              "deprecated": false,
-              "beta": false
-            }
-          ]
-        },
-        {
-          "title": "Periodic updates",
-          "links": [
-            {
-              "title": "NINearbyObject",
-              "url": "https://developer.apple.com/documentation/nearbyinteraction/ninearbyobject",
-              "deprecated": false,
-              "beta": false
-            },
             {
               "title": "NISessionDelegate",
               "url": "https://developer.apple.com/documentation/nearbyinteraction/nisessiondelegate",
@@ -58696,75 +58783,23 @@
           ]
         },
         {
-          "title": "Camera assistance",
-          "links": [
-            {
-              "title": "Finding devices with precision",
-              "url": "https://developer.apple.com/documentation/nearbyinteraction/finding-devices-with-precision",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "NIAlgorithmConvergence",
-              "url": "https://developer.apple.com/documentation/nearbyinteraction/nialgorithmconvergence",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "NIAlgorithmConvergenceStatus",
-              "url": "https://developer.apple.com/documentation/nearbyinteraction/nialgorithmconvergencestatus-2fnve",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "Algorithm Convergence Status",
-              "url": "https://developer.apple.com/documentation/nearbyinteraction/algorithm-convergence-status",
-              "deprecated": false,
-              "beta": false
-            }
-          ]
-        },
-        {
-          "title": "DL-TDOA ranging",
-          "links": [
-            {
-              "title": "Downlink time difference of arrival ranging",
-              "url": "https://developer.apple.com/documentation/nearbyinteraction/dl-tdoa-ranging",
-              "deprecated": false,
-              "beta": false
-            }
-          ]
-        },
-        {
-          "title": "Errors",
+          "title": "Structures",
           "links": [
             {
               "title": "NIError",
               "url": "https://developer.apple.com/documentation/nearbyinteraction/nierror",
               "deprecated": false,
               "beta": false
-            },
-            {
-              "title": "NIError.Code",
-              "url": "https://developer.apple.com/documentation/nearbyinteraction/nierror/code",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "NIErrorDomain",
-              "url": "https://developer.apple.com/documentation/nearbyinteraction/nierrordomain",
-              "deprecated": false,
-              "beta": false
             }
           ]
         },
         {
-          "title": "Deprecated",
+          "title": "Variables",
           "links": [
             {
-              "title": "NSNearbyInteractionAllowOnceUsageDescription",
-              "url": "https://developer.apple.com/documentation/bundleresources/information-property-list/nsnearbyinteractionallowonceusagedescription",
-              "deprecated": true,
+              "title": "NIErrorDomain",
+              "url": "https://developer.apple.com/documentation/nearbyinteraction/nierrordomain",
+              "deprecated": false,
               "beta": false
             }
           ]
@@ -67423,6 +67458,12 @@
           "title": "Version 27",
           "links": [
             {
+              "title": "Safari 27.2 Beta Release Notes",
+              "url": "https://developer.apple.com/documentation/safari-release-notes/safari-27_2-release-notes",
+              "deprecated": false,
+              "beta": false
+            },
+            {
               "title": "Safari 27 Release Notes",
               "url": "https://developer.apple.com/documentation/safari-release-notes/safari-27-release-notes",
               "deprecated": false,
@@ -68374,6 +68415,12 @@
             {
               "title": "Working with content from your Mac app using Spatial Preview",
               "url": "https://developer.apple.com/documentation/spatialpreview/working-with-content-from-your-mac-app-using-spatial-preview",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "Rendering Gaussian splats with RealityKit",
+              "url": "https://developer.apple.com/documentation/visionos/working-with-gaussian-splats-with-realitykit",
               "deprecated": false,
               "beta": false
             }
@@ -69670,6 +69717,12 @@
               "beta": false
             },
             {
+              "title": "Supporting device rotation in your camera app",
+              "url": "https://developer.apple.com/documentation/avfoundation/supporting-device-rotation-in-your-camera-app",
+              "deprecated": false,
+              "beta": false
+            },
+            {
               "title": "Supporting remote interactions in tvOS",
               "url": "https://developer.apple.com/documentation/avfoundation/supporting-remote-interactions-in-tvos",
               "deprecated": false,
@@ -70596,6 +70649,12 @@
               "url": "https://developer.apple.com/documentation/visionkit/structuring-recognized-text-on-a-document",
               "deprecated": false,
               "beta": false
+            },
+            {
+              "title": "Supporting custom media formats and decoders",
+              "url": "https://developer.apple.com/documentation/mediaextension/supporting-custom-media-formats-and-decoders",
+              "deprecated": false,
+              "beta": false
             }
           ]
         },
@@ -70800,7 +70859,7 @@
               "beta": false
             },
             {
-              "title": "Offering, completing, and restoring in-app purchases",
+              "title": "Offering, completing, and restoring Apple In-App Purchases",
               "url": "https://developer.apple.com/documentation/storekit/offering-completing-and-restoring-in-app-purchases",
               "deprecated": false,
               "beta": false
@@ -73216,8 +73275,14 @@
       "guide": "docs/apple/technologies/scsicontrollerdriverkit.md",
       "topics": [
         {
-          "title": "Essentials",
+          "title": "Entitlements",
           "links": [
+            {
+              "title": "com.apple.developer.driverkit",
+              "url": "https://developer.apple.com/documentation/bundleresources/entitlements/com.apple.developer.driverkit",
+              "deprecated": false,
+              "beta": false
+            },
             {
               "title": "com.apple.developer.driverkit.family.scsicontroller",
               "url": "https://developer.apple.com/documentation/bundleresources/entitlements/com.apple.developer.driverkit.family.scsicontroller",
@@ -73238,7 +73303,7 @@
           ]
         },
         {
-          "title": "Driver Interfaces",
+          "title": "Driver interfaces",
           "links": [
             {
               "title": "IOUserSCSIParallelInterfaceController",
@@ -73254,12 +73319,6 @@
             {
               "title": "Macros",
               "url": "https://developer.apple.com/documentation/scsicontrollerdriverkit/scsicontrollerdriverkit-macros",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "kMaxBundledParallelTasks",
-              "url": "https://developer.apple.com/documentation/scsicontrollerdriverkit/kmaxbundledparalleltasks",
               "deprecated": false,
               "beta": false
             }
@@ -73295,6 +73354,23 @@
       "guide": "docs/apple/technologies/scsiperipheralsdriverkit.md",
       "topics": [
         {
+          "title": "Entitlements",
+          "links": [
+            {
+              "title": "com.apple.developer.driverkit",
+              "url": "https://developer.apple.com/documentation/bundleresources/entitlements/com.apple.developer.driverkit",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "com.apple.developer.driverkit.family.scsicontroller",
+              "url": "https://developer.apple.com/documentation/bundleresources/entitlements/com.apple.developer.driverkit.family.scsicontroller",
+              "deprecated": false,
+              "beta": false
+            }
+          ]
+        },
+        {
           "title": "Driver interfaces",
           "links": [
             {
@@ -73308,23 +73384,7 @@
               "url": "https://developer.apple.com/documentation/scsiperipheralsdriverkit/iouserscsiperipheraldevicetype05",
               "deprecated": false,
               "beta": false
-            }
-          ]
-        },
-        {
-          "title": "Device commands",
-          "links": [
-            {
-              "title": "SCSI commands",
-              "url": "https://developer.apple.com/documentation/scsiperipheralsdriverkit/scsi-commands",
-              "deprecated": false,
-              "beta": false
-            }
-          ]
-        },
-        {
-          "title": "Classes",
-          "links": [
+            },
             {
               "title": "IOUserSCSIPeripheralDeviceType07",
               "url": "https://developer.apple.com/documentation/scsiperipheralsdriverkit/iouserscsiperipheraldevicetype07",
@@ -73334,17 +73394,11 @@
           ]
         },
         {
-          "title": "Reference",
+          "title": "Device commands",
           "links": [
             {
-              "title": "SCSIPeripheralsDriverKit Enumerations",
-              "url": "https://developer.apple.com/documentation/scsiperipheralsdriverkit/scsiperipheralsdriverkit-enumerations",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "SCSIPeripheralsDriverKit Data Types",
-              "url": "https://developer.apple.com/documentation/scsiperipheralsdriverkit/scsiperipheralsdriverkit-data-types",
+              "title": "SCSI commands",
+              "url": "https://developer.apple.com/documentation/scsiperipheralsdriverkit/scsi-commands",
               "deprecated": false,
               "beta": false
             }
@@ -78496,7 +78550,7 @@
         "occ",
         "swift"
       ],
-      "summary": "Support In-App Purchases and interactions with the App Store.",
+      "summary": "Support Apple In-App Purchases and interactions with the App Store.",
       "modules": [
         "StoreKit"
       ],
@@ -78546,10 +78600,10 @@
       "guide": "docs/frameworks/storekit.md",
       "topics": [
         {
-          "title": "In-App Purchase",
+          "title": "Apple In-App Purchase",
           "links": [
             {
-              "title": "In-App Purchase",
+              "title": "Apple In-App Purchase",
               "url": "https://developer.apple.com/documentation/storekit/in-app-purchase",
               "deprecated": false,
               "beta": false
@@ -78561,7 +78615,7 @@
               "beta": false
             },
             {
-              "title": "Getting started with In-App Purchase using StoreKit views",
+              "title": "Getting started with Apple In-App Purchase using StoreKit views",
               "url": "https://developer.apple.com/documentation/storekit/getting-started-with-in-app-purchases-using-storekit-views",
               "deprecated": false,
               "beta": false
@@ -78734,6 +78788,12 @@
               "url": "https://developer.apple.com/documentation/storekit/supporting-subscription-offer-codes-in-your-app",
               "deprecated": false,
               "beta": false
+            },
+            {
+              "title": "Using StoreKit in Unity",
+              "url": "https://developer.apple.com/documentation/storekit/using-storekit-in-unity",
+              "deprecated": false,
+              "beta": false
             }
           ]
         },
@@ -78761,7 +78821,7 @@
         "occ",
         "swift"
       ],
-      "summary": "Create and automate tests in Xcode for your app’s subscription and in-app purchase transactions, and SKAdNetwork implementations.",
+      "summary": "Create and automate tests in Xcode for your app’s subscription and Apple In-App Purchase transactions, and SKAdNetwork implementations.",
       "modules": [
         "StoreKit Test"
       ],
@@ -79312,17 +79372,6 @@
             {
               "title": "Calling APIs Across Language Boundaries",
               "url": "https://developer.apple.com/documentation/swift/callingapisacrosslanguageboundaries",
-              "deprecated": false,
-              "beta": false
-            }
-          ]
-        },
-        {
-          "title": "Protocols",
-          "links": [
-            {
-              "title": "Iterable",
-              "url": "https://developer.apple.com/documentation/swift/iterable",
               "deprecated": false,
               "beta": false
             }
@@ -82784,6 +82833,12 @@
           "title": "Latest",
           "links": [
             {
+              "title": "TN3137: On Mac keychain APIs and implementations",
+              "url": "https://developer.apple.com/documentation/technotes/tn3137-on-mac-keychains",
+              "deprecated": false,
+              "beta": false
+            },
+            {
               "title": "TN3189: Managing Mail background traffic load",
               "url": "https://developer.apple.com/documentation/technotes/tn3189-managing-mail-background-traffic-load",
               "deprecated": false,
@@ -83110,12 +83165,6 @@
             {
               "title": "TN3133: Packaging a Metal renderer",
               "url": "https://developer.apple.com/documentation/technotes/tn3133-packaging-a-renderer",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "TN3137: On Mac keychain APIs and implementations",
-              "url": "https://developer.apple.com/documentation/technotes/tn3137-on-mac-keychains",
               "deprecated": false,
               "beta": false
             },
@@ -85297,7 +85346,7 @@
           "title": "tvOS 27",
           "links": [
             {
-              "title": "tvOS 27.2 Beta Release Notes",
+              "title": "tvOS 27.2 Beta 2 Release Notes",
               "url": "https://developer.apple.com/documentation/tvos-release-notes/tvos-27_2-release-notes",
               "deprecated": false,
               "beta": false
@@ -86133,68 +86182,6 @@
             {
               "title": "UIKit Functions",
               "url": "https://developer.apple.com/documentation/uikit/uikit-functions",
-              "deprecated": false,
-              "beta": false
-            }
-          ]
-        },
-        {
-          "title": "Protocols",
-          "links": [
-            {
-              "title": "UITraitBridgedEnvironmentKey",
-              "url": "https://developer.apple.com/documentation/uikit/uitraitbridgedenvironmentkey",
-              "deprecated": false,
-              "beta": false
-            }
-          ]
-        },
-        {
-          "title": "Structures",
-          "links": [
-            {
-              "title": "UIConfigurationTextAttributesTransformer",
-              "url": "https://developer.apple.com/documentation/uikit/uiconfigurationtextattributestransformer-swift.struct",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "UITraitNavigationTitleAlignment",
-              "url": "https://developer.apple.com/documentation/uikit/uitraitnavigationtitlealignment-swift.struct",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "UITraitSystemPrefersReducedResourceUsage",
-              "url": "https://developer.apple.com/documentation/uikit/uitraitsystemprefersreducedresourceusage-swift.struct",
-              "deprecated": false,
-              "beta": false
-            }
-          ]
-        },
-        {
-          "title": "Macros",
-          "links": [
-            {
-              "title": "Preview(_:traits:arguments:body:)",
-              "url": "https://developer.apple.com/documentation/uikit/preview(_:traits:arguments:body:)-6gm4c",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "Preview(_:traits:arguments:body:)",
-              "url": "https://developer.apple.com/documentation/uikit/preview(_:traits:arguments:body:)-7cbjv",
-              "deprecated": false,
-              "beta": false
-            }
-          ]
-        },
-        {
-          "title": "Enumerations",
-          "links": [
-            {
-              "title": "UITextGrammarCheckingType",
-              "url": "https://developer.apple.com/documentation/uikit/uitextgrammarcheckingtype",
               "deprecated": false,
               "beta": false
             }
@@ -90186,7 +90173,7 @@
           "title": "visionOS 27",
           "links": [
             {
-              "title": "visionOS 27.2 Beta Release Notes",
+              "title": "visionOS 27.2 Beta 2 Release Notes",
               "url": "https://developer.apple.com/documentation/visionos-release-notes/visionos-27_2-release-notes",
               "deprecated": false,
               "beta": false
@@ -91730,7 +91717,7 @@
           "title": "watchOS 27",
           "links": [
             {
-              "title": "watchOS 27.2 Beta Release Notes",
+              "title": "watchOS 27.2 Beta 2 Release Notes",
               "url": "https://developer.apple.com/documentation/watchos-release-notes/watchos-27_2-release-notes",
               "deprecated": false,
               "beta": false
@@ -97822,8 +97809,14 @@
           "title": "Xcode 27",
           "links": [
             {
-              "title": "Xcode 27.2 Beta Release Notes",
+              "title": "Xcode 27.2 Beta 2 Release Notes",
               "url": "https://developer.apple.com/documentation/xcode-release-notes/xcode-27_2-release-notes",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "Xcode 27.1 Beta Release Notes",
+              "url": "https://developer.apple.com/documentation/xcode-release-notes/xcode-27_1-release-notes",
               "deprecated": false,
               "beta": false
             },
