@@ -1,7 +1,7 @@
 {
   "name": "ios-agent-mcp",
   "version": "2.9.0",
-  "description": "MCP server for modern iOS/Swift development \u2014 concurrency isolation, architecture boundaries, SwiftUI, and App Store readiness analysis",
+  "description": "MCP server for modern iOS/Swift development — concurrency isolation, architecture boundaries, SwiftUI, and App Store readiness analysis",
   "license": "MIT",
   "type": "module",
   "bin": {
@@ -41,7 +41,7 @@
   ],
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
-    "@nagarjuna2002/ios-agent": "0.3.0",
+    "@nagarjuna2002/ios-agent": "0.4.0",
     "@nagarjuna2002/ios-simulator-mcp": "0.2.0",
     "@resvg/resvg-js": "2.6.2",
     "fast-xml-parser": "5.11.1",

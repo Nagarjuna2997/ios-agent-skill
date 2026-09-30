@@ -62510,7 +62510,7 @@ Release notes← Home
 Installation
  ·
 npm package
-September 30, 2026 · repository v3.8.1 · npm publication pending
+September 30, 2026 · repository v3.8.1 · npm 2.9.0
 Local Apple Developer Documentation Grounding
 Use the Apple documentation installed with Xcode through its official MCP documentation tool. Inspect installed versions, retrieve bounded API evidence and consult SDK declarations when documentation access is unavailable. No Apple archive is bundled. Dynamic Xcode tool discovery and a doctor command now expose setup and capability evidence without opening or modifying a project.
 Shared agent instructions and the bounded build-repair loop consult documentation for supported public API errors. Retrieval helps review availability; it does not replace compiling and testing. Bridge access requires Xcode approval, offline behavior is controlled by Xcode, and symbol-level SDK diffs remain unsupported.

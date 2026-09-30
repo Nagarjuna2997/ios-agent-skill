@@ -20,7 +20,7 @@ the skills package or a separately configured MCP connection. See the
 claude mcp add ios-agent -- npx -y ios-agent-mcp@latest
 ```
 
-The 2.8.0 server exposes 56 tools, including the existing 40-tool set, seven Apple system-integration tools and nine Screenshot Studio tools. Optional AI/provider and environment workflows are additional CLI commands. App scaffolding and simulator packages install automatically as dependencies; no separate installation or MCP connection is needed. Remove the separate knowledge/simulator connections if you previously configured them to avoid duplicate tools.
+The 2.9.0 server exposes 67 tools, including the existing 40-tool set, seven Apple system-integration tools and nine Screenshot Studio tools. Optional AI/provider and environment workflows are additional CLI commands. App scaffolding and simulator packages install automatically as dependencies; no separate installation or MCP connection is needed. Remove the separate knowledge/simulator connections if you previously configured them to avoid duplicate tools.
 
 Create a starter directly:
 
@@ -365,6 +365,6 @@ See [provider setup and limitations](https://github.com/Nagarjuna2997/ios-agent-
 
 ## Local Apple documentation
 
-Source version 2.9.0 exposes 67 tools; npm publication is pending. Build the checkout to try these commands now. Use `xcode-mcp tools` for discovered Xcode schemas and `doctor xcode` for setup diagnostics.
+npm version 2.9.0 exposes 67 tools and includes the updated CLI dependency. Use `xcode-mcp tools` for discovered Xcode schemas and `doctor xcode` for setup diagnostics.
 
 Use `ios-agent-mcp docs status` and `ios-agent-mcp docs symbol SwiftUI.NavigationStack` for version-aware documentation grounding. The adapter prefers Xcode MCP DocumentationSearch, then bounded SDK evidence. Apple’s archive is never bundled. Bridge authorization is required; retrieval is not automatic code validation. [Setup, tools and limitations](https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-local-apple-documentation.html).

@@ -13,14 +13,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Extended the existing documentation adapter with dynamic Xcode MCP metadata/tool discovery, schema-aware documentation tool selection and preservation of unknown tools.
 - Added `xcode_mcp_status`, `xcode_mcp_tools`, `xcode-mcp status|tools`, `doctor xcode` and framework-filtered CLI inventory.
 - Reused the existing grounding service, fallback order, bounded cache and repair integration; no second documentation backend or archive copy.
-- Prepared npm 2.9.0 remains unpublished because npm authentication is expired. Live documentation calls still require Xcode approval; a successful handshake is not authorization.
+- npm 2.9.0 and companion CLI 0.4.0 published September 30 after authentication; the main package depends on the updated CLI. Live documentation calls still require Xcode approval; a successful handshake is not authorization.
 
 
 ## [3.8.0] -- 2026-09-30
 
 ### Added -- 3.8.0
 
-- Prepared ios-agent-mcp 2.9.0 and companion CLI 0.4.0; publication status must be checked separately.
+- ios-agent-mcp 2.9.0 and companion CLI 0.4.0 published September 30, 2026.
 - Added nine model-independent Apple documentation tools, version-aware Xcode/SDK discovery, official DocumentationSearch adapter and bounded SDK fallback.
 - Added docs CLI commands and bounded, public-symbol-only documentation grounding in the existing repair loop; evidence hashes and retry limits unchanged.
 - Apple documentation archives are not redistributed. Cache is bounded in-memory only. Online fallback requires explicit opt-in.
