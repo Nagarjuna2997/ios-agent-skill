@@ -463,6 +463,30 @@
       "execution": {
         "taskSupport": "forbidden"
       }
+    },
+    {
+      "name": "xcode_mcp_status",
+      "description": "Discover Xcode MCP bridge, handshake and capabilities; discovery does not prove authorization. Use before generating Apple API code.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "xcode_mcp_tools",
+      "description": "Discover actual Xcode tools, schemas, resources and prompts with category hints; unknown tools remain visible. Use before generating Apple API code.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
     }
   ],
   "resources": [

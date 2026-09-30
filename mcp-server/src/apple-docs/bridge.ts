@@ -1,24 +1,20 @@
-import {Client} from '@modelcontextprotocol/sdk/client/index.js';
-import {StdioClientTransport} from '@modelcontextprotocol/sdk/client/stdio.js';
+import {withBridge,inspectClient,documentationTool,type BridgeFactory} from './registry.js';
 import {z} from 'zod';
 export const Document=z.object({title:z.string(),uri:z.string(),contents:z.string(),kind:z.string(),score:z.number()});
 export type Doc=z.infer<typeof Document>;
 export interface Backend {search(query:string,framework?:string):Promise<Doc[]>}
 export function normalize(value:unknown):Doc[]{const parsed=z.object({documents:z.array(Document).max(1000)}).parse(value);return parsed.documents.slice(0,5).map(d=>({...d,contents:d.contents.slice(0,2400)}));}
 export class XcodeBackend implements Backend {
- constructor(private developer?:string){}
- async search(query:string,framework?:string){
- const client=new Client({name:'ios-agent-apple-docs',version:'1.0.0'});
- try{
- await client.connect(new StdioClientTransport({command:'/usr/bin/xcrun',args:['mcpbridge'],stderr:'pipe',env:{...Object.fromEntries(Object.entries(process.env).filter((x):x is [string,string]=>x[1]!==undefined)),...(this.developer?{DEVELOPER_DIR:this.developer}:{})}}),{timeout:15000});
- const tools=await client.listTools({}, {timeout:15000});const tool=tools.tools.find(t=>t.name==='DocumentationSearch');
+ constructor(private developer?:string,private factory?:BridgeFactory){}
+ async search(query:string,framework?:string){return withBridge(this.developer,async client=>{
+ const registry=await inspectClient(client);const tool=documentationTool(registry.tools);
  if(!tool)throw Error('documentation_tool_unavailable');
- const r=await client.callTool({name:tool.name,arguments:{query,...(framework?{frameworks:[framework]}:{})}},undefined,{timeout:20000});
+ const supportsFrameworks=Boolean(tool.inputSchema.properties?.frameworks);
+ const r=await client.callTool({name:tool.name,arguments:{query,...(framework&&supportsFrameworks?{frameworks:[framework]}:{})}},undefined,{timeout:20000});
  if(r.isError)throw Error('xcode_documentation_denied_or_failed');
  if(r.structuredContent)return normalize(r.structuredContent);
  const content=r.content as {type:string;text?:string}[];
  for(const c of content)if(c.type==='text'&&c.text){try{return normalize(JSON.parse(c.text));}catch{}}
  throw Error('malformed_documentation_response');
- }finally{await client.close();}
- }
+ },this.factory);}
 }

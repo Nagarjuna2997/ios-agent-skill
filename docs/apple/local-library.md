@@ -498,7 +498,7 @@ Search offline with `node scripts/query-library.mjs search "SwiftData"`. Read a 
 | [docs/tooling/ios-simulator-mcp.md](../../docs/tooling/ios-simulator-mcp.md) | guide | 7719 |
 | [docs/tooling/issue-reporting.md](../../docs/tooling/issue-reporting.md) | guide | 5432 |
 | [docs/tooling/launch-screen-review.md](../../docs/tooling/launch-screen-review.md) | guide | 6420 |
-| [docs/tooling/local-apple-documentation.md](../../docs/tooling/local-apple-documentation.md) | guide | 5585 |
+| [docs/tooling/local-apple-documentation.md](../../docs/tooling/local-apple-documentation.md) | guide | 7570 |
 | [docs/tooling/local-release-package.md](../../docs/tooling/local-release-package.md) | guide | 10506 |
 | [docs/tooling/offline-source-library.md](../../docs/tooling/offline-source-library.md) | guide | 4736 |
 | [docs/tooling/project-scaffolding.md](../../docs/tooling/project-scaffolding.md) | guide | 18060 |

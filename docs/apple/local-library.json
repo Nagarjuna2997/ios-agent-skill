@@ -3435,8 +3435,8 @@
       "path": "docs/tooling/local-apple-documentation.md",
       "title": "Local Apple Developer Documentation Grounding",
       "kind": "guide",
-      "characters": 5585,
-      "hash": "dfa55b24417cca9500c254f0b0418e9467716af3ca38adaface0dd222c9b6fe7"
+      "characters": 7570,
+      "hash": "b7937ccbe5cf47fff4c0ddd783fad915c0bb19e82f27c6a0edf302a460e9bde5"
     },
     {
       "path": "docs/tooling/local-release-package.md",

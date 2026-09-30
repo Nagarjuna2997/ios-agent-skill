@@ -122,6 +122,8 @@ Text generation defaults to on-device Apple models; cloud providers and fallback
 
 ## Local Apple documentation
 
-Source version 2.9.0 exposes 65 tools; npm publication is pending. Build the checkout to try these commands now.
+Install the archive in Xcode → Settings → Components → Developer Documentation. Read it through Window → Developer Documentation (Shift–Command–0 with standard key bindings). This integration uses `xcrun mcpbridge`; the archive stays managed by Xcode.
+
+Source version 2.9.0 exposes 67 tools; npm publication is pending. Build the checkout to try these commands now. Use `xcode-mcp tools` for discovered Xcode schemas and `doctor xcode` for setup diagnostics.
 
 Use `ios-agent-mcp docs status` and `ios-agent-mcp docs symbol SwiftUI.NavigationStack` for version-aware documentation grounding. The adapter prefers Xcode MCP DocumentationSearch, then bounded SDK evidence. Apple’s archive is never bundled. Bridge authorization is required; retrieval is not automatic code validation. [Setup, tools and limitations](https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-local-apple-documentation.html).

@@ -60,3 +60,25 @@ Up to 100 successful query results are cached in process memory, with at most fi
 Portable tests use synthetic installations and mocked documentation responses. A local macOS smoke test must separately verify bridge authorization and returned documentation. An unavailable backend is not a passing retrieval test.
 
 Official setup: [Giving external agents access to Xcode](https://developer.apple.com/documentation/xcode/giving-external-agents-access-to-xcode).
+
+## Xcode MCP registry and doctor
+
+```sh
+xcrun --find mcpbridge
+xcode-select -p
+xcodebuild -version
+node mcp-server/dist/unified.js xcode-mcp status
+node mcp-server/dist/unified.js xcode-mcp tools
+node mcp-server/dist/unified.js doctor xcode
+node mcp-server/dist/unified.js docs framework SwiftUI
+```
+
+The companion CLI accepts `ios-agent xcode-mcp status`, `ios-agent xcode-mcp tools`, and `ios-agent doctor xcode` when the matching unified package is installed. MCP clients can call `xcode_mcp_status` and `xcode_mcp_tools`.
+
+The registry initializes a stdio MCP client, captures server metadata/capabilities, paginates tool discovery, and requests resources/prompts only when advertised. Unknown tools remain in the raw metadata with an unknown category. Categories are hints, not permission grants. Optional resource/prompt discovery failures do not prevent documentation retrieval.
+
+Documentation tool selection uses the discovered description/name and compatible query schema, not a fixed tool name. A future incompatible schema produces an unavailable result and fallback; arbitrary project/build tools are never invoked by this read-only adapter. Results still require the supported documentation document shape. Discovery is refreshed per connection; tool availability can change as Xcode starts or a workspace opens.
+
+The doctor checks bridge location, initialization, catalog discovery, installed SDKs/documentation and simulator runtimes. It does not open projects, change settings or approve itself. Xcode settings labels vary by release; look under Intelligence for Xcode Tools / MCP external-agent access. Use Window > Developer Documentation (Shift–Command–0 in standard Xcode key bindings) to inspect documentation directly.
+
+The memory cache is shared by callers of the same MCP server process, not between separate CLI processes. Clients may share the bounded result in their task context; there is no new cross-provider persistence or autonomous provider dispatch.

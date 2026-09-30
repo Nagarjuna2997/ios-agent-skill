@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { run } from "./commands.js";
 
-if (process.argv[2] === 'docs') {
+if (['docs','xcode-mcp'].includes(process.argv[2]??'') || (process.argv[2]==='doctor'&&process.argv[3]==='xcode')) {
   // The unified package owns the documentation backend; never fetch/install implicitly.
   const {spawn} = await import('node:child_process');
   const child = spawn('ios-agent-mcp', process.argv.slice(2), {stdio:'inherit'});

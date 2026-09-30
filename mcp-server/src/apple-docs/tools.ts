@@ -1,8 +1,11 @@
+import {xcodeRegistry,xcodeStatus} from './registry.js';
 import {McpServer} from '@modelcontextprotocol/sdk/server/mcp.js';
 import {docsService,requestSchema} from './service.js';
 export function registerAppleDocs(server:McpServer){
  const output=(value:unknown)=>({content:[{type:'text' as const,text:JSON.stringify(value)}]});
  for(const [name,description,action] of [
+ ['xcode_mcp_status','Discover Xcode MCP bridge, handshake and capabilities; discovery does not prove authorization.',()=>xcodeStatus()],
+ ['xcode_mcp_tools','Discover actual Xcode tools, schemas, resources and prompts with category hints; unknown tools remain visible.',()=>xcodeRegistry()],
  ['apple_docs_status','Discover installed Xcode, SDKs and local Apple documentation; does not prove bridge authorization.',()=>docsService.status()],
  ['apple_docs_frameworks','List frameworks present in installed SDKs, grouped by SDK.',()=>docsService.frameworks()],
  ['apple_docs_platform_support','Inspect dynamically installed SDK/platform inventory; not API availability.',()=>docsService.status()],

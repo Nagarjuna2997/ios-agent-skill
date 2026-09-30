@@ -10,7 +10,7 @@ test('single connection exposes reviews, knowledge, simulator and safe app creat
  const client=new Client({name:'test',version:'1'});
  try {
   await client.connect(new StdioClientTransport({command:process.execPath,args:['dist/unified.js','--project',root],env:{...process.env,HOME:root,USERPROFILE:root}}));
-  const {tools}=await client.listTools();assert.equal(tools.length,65);assert.equal(new Set(tools.map(t=>t.name)).size,65);
+  const {tools}=await client.listTools();assert.equal(tools.length,67);assert.equal(new Set(tools.map(t=>t.name)).size,67);
   for(const name of ['review_backend_integration','generate_color_system','review_color_system','analyze_swift_project','search_local_references','simulator_list','create_app'])assert.ok(tools.some(t=>t.name===name));
   for (const name of ['list_system_integrations','get_system_integration','recommend_system_integrations','scaffold_system_integration','review_system_integrations','check_apple_permissions','check_apple_capabilities']) {
    const tool=tools.find(t=>t.name===name);assert.ok(tool);assert.equal(tool.annotations.readOnlyHint,true);

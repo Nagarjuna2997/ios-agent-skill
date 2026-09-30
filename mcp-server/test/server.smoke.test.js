@@ -136,6 +136,8 @@ describe("mcp server", () => {
       "review_swiftui",
       "review_system_integrations",
       "scaffold_system_integration",
+      "xcode_mcp_status",
+      "xcode_mcp_tools",
     ]);
   });
 
