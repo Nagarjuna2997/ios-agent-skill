@@ -1022,5 +1022,13 @@
   "screenshot-studio.html": {
     "title": "App Store Screenshot Studio — iOS Agent Skill",
     "description": "Create local App Store screenshot sets from real captures. Compare layouts, supply translations and export checked PNGs without a hosted design tool."
+  },
+  "guides/design-apple-design-resources.html": {
+    "title": "Apple design resources and iOS/iPadOS 27",
+    "description": "Repository guidance for Apple design resources and iOS/iPadOS 27. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/tooling-xcode-documentation-resources.html": {
+    "title": "Installed Xcode documentation resources",
+    "description": "Repository guidance for Installed Xcode documentation resources. Examples, decisions, and verification limits from the maintained source guide."
   }
 }

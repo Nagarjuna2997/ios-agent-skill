@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-09-21",
+  "checkedAt": "2026-09-29",
   "source": "https://developer.apple.com/documentation/updates",
   "entries": [
     {
@@ -43,6 +43,11 @@
       "url": "https://developer.apple.com/documentation/appstoreconnectapi/app-store-connect-api-release-notes",
       "summary": "Learn about new features and updates in the App Store Connect API.",
       "topics": [
+        {
+          "title": "App Store Connect API 4.5 release notes",
+          "url": "https://developer.apple.com/documentation/appstoreconnectapi/app-store-connect-api-4-5-release-notes",
+          "section": "Versions"
+        },
         {
           "title": "App Store Connect API 4.4.1 release notes",
           "url": "https://developer.apple.com/documentation/appstoreconnectapi/app-store-connect-api-4-4-1-release-notes",
@@ -399,7 +404,7 @@
       "summary": "Learn about changes to the iOS & iPadOS SDK.",
       "topics": [
         {
-          "title": "iOS & iPadOS 27.2 Beta Release Notes",
+          "title": "iOS & iPadOS 27.2 Beta 2 Release Notes",
           "url": "https://developer.apple.com/documentation/ios-ipados-release-notes/ios-ipados-27_2-release-notes",
           "section": "iOS & iPadOS 27"
         },
@@ -734,7 +739,7 @@
       "summary": "Learn about changes to the macOS SDK.",
       "topics": [
         {
-          "title": "macOS 27.2 Golden Gate Beta Release Notes",
+          "title": "macOS 27.2 Golden Gate Beta 2 Release Notes",
           "url": "https://developer.apple.com/documentation/macos-release-notes/macos-27_2-release-notes",
           "section": "macOS 27"
         },
@@ -1129,6 +1134,11 @@
       "summary": "Learn about changes for Safari and Safari View Controller for iOS, iPadOS, macOS, and in visionOS; WKWebView for iOS, iPadOS, macOS, watchOS, and in visionOS; …",
       "topics": [
         {
+          "title": "Safari 27.2 Beta Release Notes",
+          "url": "https://developer.apple.com/documentation/safari-release-notes/safari-27_2-release-notes",
+          "section": "Version 27"
+        },
+        {
           "title": "Safari 27 Release Notes",
           "url": "https://developer.apple.com/documentation/safari-release-notes/safari-27-release-notes",
           "section": "Version 27"
@@ -1437,7 +1447,7 @@
       "summary": "Learn about changes to the tvOS SDK.",
       "topics": [
         {
-          "title": "tvOS 27.2 Beta Release Notes",
+          "title": "tvOS 27.2 Beta 2 Release Notes",
           "url": "https://developer.apple.com/documentation/tvos-release-notes/tvos-27_2-release-notes",
           "section": "tvOS 27"
         },
@@ -2246,7 +2256,7 @@
       "summary": "Learn about changes to the visionOS SDK.",
       "topics": [
         {
-          "title": "visionOS 27.2 Beta Release Notes",
+          "title": "visionOS 27.2 Beta 2 Release Notes",
           "url": "https://developer.apple.com/documentation/visionos-release-notes/visionos-27_2-release-notes",
           "section": "visionOS 27"
         },
@@ -2359,7 +2369,7 @@
       "summary": "Learn about changes to the watchOS SDK.",
       "topics": [
         {
-          "title": "watchOS 27.2 Beta Release Notes",
+          "title": "watchOS 27.2 Beta 2 Release Notes",
           "url": "https://developer.apple.com/documentation/watchos-release-notes/watchos-27_2-release-notes",
           "section": "watchOS 27"
         },
@@ -5015,7 +5025,7 @@
       "summary": "Learn about changes to Xcode.",
       "topics": [
         {
-          "title": "Xcode 27.2 Beta Release Notes",
+          "title": "Xcode 27.2 Beta 2 Release Notes",
           "url": "https://developer.apple.com/documentation/xcode-release-notes/xcode-27_2-release-notes",
           "section": "Xcode 27"
         },

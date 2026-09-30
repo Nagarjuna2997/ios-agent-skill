@@ -1636,5 +1636,31 @@
       "REST clients with URLSession",
       "Authorized server and local state"
     ]
+  },
+  "docs/design/apple-design-resources.md": {
+    "flow": [
+      "Verify resource provenance",
+      "Inspect accessible Figma node",
+      "Map semantic tokens",
+      "Build and verify appearances"
+    ],
+    "architecture": [
+      "Apple UI kit or supplied design",
+      "Project token mapping",
+      "Native controls and asset catalog"
+    ]
+  },
+  "docs/tooling/xcode-documentation-resources.md": {
+    "flow": [
+      "Inspect installed version",
+      "Select relevant Apple source",
+      "Verify with installed SDK",
+      "Update guide and reference index"
+    ],
+    "architecture": [
+      "Apple-managed local documentation",
+      "Original repository guides",
+      "Bounded local-reference tools"
+    ]
   }
 }

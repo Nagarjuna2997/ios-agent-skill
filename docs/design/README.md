@@ -70,3 +70,7 @@ Why: density and reading length break.
 ## Palette tooling
 
 Use [palette generation](palette-generation.md) to produce a four-appearance token preview compatible with the existing assets CLI. Use [color accessibility](color-accessibility.md) to interpret measured pairs. Only write or merge a catalog when requested; retain system semantics when custom colors add no value.
+
+## Apple UI kits and source verification
+
+Use [Apple design resources](apple-design-resources.md) for the iOS/iPadOS 27 kit, app icon template, supplied Figma reference, verification limits and token-to-catalog workflow.

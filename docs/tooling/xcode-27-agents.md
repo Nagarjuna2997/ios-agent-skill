@@ -223,3 +223,7 @@ Apple also supports agent plug-ins through Intelligence settings → Plug-ins. T
 ## September 21 follow-up
 
 See `docs/tooling/xcode-27-2.md` for the newly checked beta APIs and tooling limitations.
+
+## Installed documentation snapshot
+
+The [September 29 documentation inspection](xcode-documentation-resources.md) records Xcode 27.0 and Apple’s local documentation asset. Earlier session evidence above remains historical; the new installation alone does not verify an IDE agent or MCP documentation query.

@@ -1,6 +1,6 @@
 # Apple Updates and Release Notes
 
-Source snapshot: 2026-09-21. **98 update/release-note landing pages** fetched from Apple, with **947 unique-within-page topic links**.
+Source snapshot: 2026-09-29. **98 update/release-note landing pages** fetched from Apple, with **949 unique-within-page topic links**.
 
 ## Context
 
@@ -18,7 +18,7 @@ Match the app’s installed SDK, deployment target, and affected framework to th
 | AdAttributionKit Updates | [Open](https://developer.apple.com/documentation/updates/adattributionkit) | 0 |
 | App Clips updates | [Open](https://developer.apple.com/documentation/updates/appclips) | 0 |
 | App Intents updates | [Open](https://developer.apple.com/documentation/updates/appintents) | 0 |
-| App Store Connect API Release Notes | [Open](https://developer.apple.com/documentation/appstoreconnectapi/app-store-connect-api-release-notes) | 30 |
+| App Store Connect API Release Notes | [Open](https://developer.apple.com/documentation/appstoreconnectapi/app-store-connect-api-release-notes) | 31 |
 | AppKit updates | [Open](https://developer.apple.com/documentation/updates/appkit) | 0 |
 | Apple Intelligence updates | [Open](https://developer.apple.com/documentation/updates/apple-intelligence) | 0 |
 | Apple Pencil updates | [Open](https://developer.apple.com/documentation/updates/applepencil) | 0 |
@@ -70,7 +70,7 @@ Match the app’s installed SDK, deployment target, and affected framework to th
 | PhotoKit updates | [Open](https://developer.apple.com/documentation/updates/photokit) | 0 |
 | ProximityReader updates | [Open](https://developer.apple.com/documentation/updates/proximityreader) | 0 |
 | RealityKit updates | [Open](https://developer.apple.com/documentation/updates/realitykit) | 0 |
-| Safari Release Notes | [Open](https://developer.apple.com/documentation/safari-release-notes) | 41 |
+| Safari Release Notes | [Open](https://developer.apple.com/documentation/safari-release-notes) | 42 |
 | SafariServices updates | [Open](https://developer.apple.com/documentation/updates/safariservices) | 0 |
 | ScreenCaptureKit updates | [Open](https://developer.apple.com/documentation/updates/screencapturekit) | 0 |
 | Security updates | [Open](https://developer.apple.com/documentation/updates/security) | 0 |

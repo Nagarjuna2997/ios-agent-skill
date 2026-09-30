@@ -1,0 +1,64 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Repository guidance for Apple design resources and iOS/iPadOS 27. Examples, decisions, and verification limits from the maintained source guide."><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/design-apple-design-resources.html"><meta property="og:title" content="Apple design resources and iOS/iPadOS 27"><meta property="og:description" content="Repository guidance for Apple design resources and iOS/iPadOS 27. Examples, decisions, and verification limits from the maintained source guide."><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/design-apple-design-resources.html"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css?v=guide-visuals-3"><link rel="stylesheet" href="../navigation.css?v=2"><script src="../appearance.js?v=2" defer=""></script><title>Apple design resources and iOS/iPadOS 27</title><meta property="og:type" content="article"><meta property="og:site_name" content="iOS Agent Skill"><meta name="twitter:title" content="Apple design resources and iOS/iPadOS 27"><meta name="twitter:description" content="Repository guidance for Apple design resources and iOS/iPadOS 27. Examples, decisions, and verification limits from the maintained source guide."><meta name="twitter:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/design-apple-design-resources.html"><meta name="robots" content="index,follow"><link rel="alternate" type="application/atom+xml" href="/ios-agent-skill/feed.xml" title="iOS Agent Skill"><script id="site-discovery-schema" type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Apple design resources and iOS/iPadOS 27","image":"https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg","datePublished":"2026-09-16T20:25:44-05:00","dateModified":"2026-09-22T02:02:02-05:00","author":{"@type":"Person","name":"Nagarjuna"},"mainEntityOfPage":"https://nagarjuna2997.github.io/ios-agent-skill/guides/design-apple-design-resources.html","url":"https://nagarjuna2997.github.io/ios-agent-skill/guides/design-apple-design-resources.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../series.html">Guided series</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a><!-- release-link:start --><a class="release-link" href="../releases.html">What’s new <span aria-hidden="true">↗</span></a><!-- release-link:end --></div><button class="appearance-toggle" type="button" aria-label="Use dark appearance" aria-pressed="false"><span aria-hidden="true">☾</span><span class="appearance-label">Dark mode</span></button></nav><main id="main"><div class="article-back"><a class="btn secondary" href="../library.html">← Back to all frameworks &amp; guides</a><a class="btn secondary" href="../blog.html">All articles →</a></div><article class="blog-article"><header class="page-intro"><p class="eyebrow">Design · Reference guide</p><h1>Apple design resources and iOS/iPadOS 27</h1><p class="lead">Repository guidance for Apple design resources and iOS/iPadOS 27. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/design/apple-design-resources.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><p><a href="#visual-overview">Visual overview: workflow and architecture</a></p><div class="toc">
+<ul>
+<li><a href="#verified-resources">Verified resources</a></li>
+<li><a href="#design-to-project-workflow">Design-to-project workflow</a></li>
+<li><a href="#free-alternative">Free alternative</a></li>
+<li><a href="#refresh-procedure">Refresh procedure</a></li>
+</ul>
+</div>
+</aside><section class="guide-visuals" aria-labelledby="visual-overview"><h2 id="visual-overview">Visual overview</h2>
+<p>Use the workflow to follow the task, and the architecture map to separate responsibilities. These are conceptual maps; the guide below defines implementation details and verification limits.</p>
+<figure class="guide-flow"><figcaption><span class="guide-visual-kicker">01 / Workflow</span>From intent to a checked result</figcaption><ol role="list"><li><span class="guide-step-number" aria-hidden="true">1</span><span>Verify resource provenance</span><span class="guide-flow-arrow" aria-hidden="true">↓</span></li><li><span class="guide-step-number" aria-hidden="true">2</span><span>Inspect accessible Figma node</span><span class="guide-flow-arrow" aria-hidden="true">↓</span></li><li><span class="guide-step-number" aria-hidden="true">3</span><span>Map semantic tokens</span><span class="guide-flow-arrow" aria-hidden="true">↓</span></li><li><span class="guide-step-number" aria-hidden="true">4</span><span>Build and verify appearances</span></li></ol></figure>
+<figure class="guide-architecture"><figcaption><span class="guide-visual-kicker">02 / Architecture</span>Responsibility boundaries</figcaption><ol role="list"><li><span class="guide-boundary-label">Boundary 1</span><strong>Apple UI kit or supplied design</strong></li><li><span class="guide-boundary-label">Boundary 2</span><strong>Project token mapping</strong></li><li><span class="guide-boundary-label">Boundary 3</span><strong>Native controls and asset catalog</strong></li></ol><p class="guide-visual-note">Connected responsibilities, not a required class hierarchy or an execution trace.</p></figure></section><p>Verified source links: September 29, 2026. Use this guide when selecting Apple UI kits, inspecting a Figma frame, or converting design variables to this repository's asset tokens.</p>
+<h2 id="verified-resources">Verified resources</h2>
+<table>
+<thead>
+<tr>
+<th>Resource</th>
+<th>Source</th>
+<th>Verification scope</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Apple Design Resources</td>
+<td>https://developer.apple.com/design/resources/</td>
+<td>Apple lists the iOS/iPadOS 27 UI kit and app icon template.</td>
+</tr>
+<tr>
+<td>iOS/iPadOS 27 UI kit</td>
+<td>https://www.figma.com/community/file/1651309003795292092/ios-and-ipados-27</td>
+<td>Destination linked by Apple; component contents not inspected.</td>
+</tr>
+<tr>
+<td>iOS/iPadOS/watchOS 27 app icon template</td>
+<td>https://www.figma.com/community/file/1645923469870515372/app-icon-template-ios-ipados-and-watchos-27</td>
+<td>Destination linked by Apple; template contents not inspected.</td>
+</tr>
+<tr>
+<td>Project-supplied Figma reference</td>
+<td>https://www.figma.com/design/IvXuPG2VvzutOnfvKHXYOh/iOS-and-iPadOS-27--Community-?node-id=507-24683</td>
+<td>File key <code>IvXuPG2VvzutOnfvKHXYOh</code>, node <code>507:24683</code>. Figma denied design-context access during this pass. Ownership, version and component contents remain unverified.</td>
+</tr>
+</tbody>
+</table>
+<p>The project-supplied file is a separate URL from Apple's Community resource. Do not describe it as an inspected official kit or infer its provenance from its title. Apple’s resource page also links platform kits, fonts, SF Symbols, Icon Composer and device bezels; follow their individual source and usage terms. Repository MIT licensing does not relicense external resources.</p>
+<h2 id="design-to-project-workflow">Design-to-project workflow</h2>
+<pre><code class="language-text">Apple source / accessible Figma node
+  -&gt; inspect component variants and variables
+  -&gt; map semantic roles to project tokens
+  -&gt; preview light, dark and high-contrast assets
+  -&gt; generate Assets.xcassets with the existing CLI
+  -&gt; build in Xcode and verify Dynamic Type / VoiceOver / resizing
+</code></pre>
+<ol>
+<li>Open the exact component or frame. Read design context and inspect its screenshot before implementing. If access is denied, report the limitation; do not invent measurements, variable values or exports.</li>
+<li>Prefer native SwiftUI/UIKit controls for system behavior. A UI-kit visual does not establish an API's availability or runtime behavior.</li>
+<li>Map colors and typography into <a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/design/design-tokens.md">design tokens</a> and the <a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/design/color-system.md">color system</a>. Preserve semantic roles and all appearance variants instead of scattering literal values.</li>
+<li>Use the existing <a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/design/asset-generation.md">asset generation workflow</a> for project catalogs and <a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/design/icon-composer.md">Icon Composer guidance</a> for separately editable icon layers. A Figma template alone is not a validated native <code>.icon</code> bundle.</li>
+<li>Verify the result with the installed SDK, screenshots, accessibility sizes, dark mode and resizable iPad layouts. Keep untested behaviors explicit.</li>
+</ol>
+<h2 id="free-alternative">Free alternative</h2>
+<p>Figma is optional. Start from the repository's semantic tokens, native SwiftUI/UIKit controls and asset CLI. Build and inspect in Xcode Simulator on a Mac with Xcode. This workflow needs no paid design service or Figma access; see <a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/design/asset-generation.md">asset generation</a>. Read Apple's online HIG for platform guidance.</p>
+<h2 id="refresh-procedure">Refresh procedure</h2>
+<p>Reopen Apple's resource page, record which kit links changed, and inspect only the components needed for the requested app. Preserve source provenance and per-resource dates. Do not mark all framework guides current because a design-kit version changed. For installed API documentation, see <a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/tooling/xcode-documentation-resources.md">Xcode documentation resources</a>.</p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><!-- discovery-nav:start --><div role="navigation" aria-label="Site discovery"><a href="../">Home</a> · <a href="../install.html">Install</a> · <a href="../community.html">Community</a> · <a href="../blog.html">Blog</a> · <a href="../docs-index.html">Docs index</a> · <a href="../pages.html">Site map</a> · <a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a> · <a href="https://www.npmjs.com/package/ios-agent-mcp">npm</a></div><!-- discovery-nav:end --></footer></div></body></html>

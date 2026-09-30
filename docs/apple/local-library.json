@@ -2414,7 +2414,7 @@
       "title": "Apple Updates and Release Notes",
       "kind": "guide",
       "characters": 11109,
-      "hash": "d9eaada780468f03037144a2e4e80d6a60fb1b9f96da2c7028513decc93185fa"
+      "hash": "80d0ab6a3f2e0d37b1ddb735453e8150e0a4251acc4aa0283ef47ce901821970"
     },
     {
       "path": "docs/backend/app-architectures.md",
@@ -2536,6 +2536,13 @@
       "hash": "d5f5106fd60a225ae12c3206e789b4c527adf142717ea06d1fd43474c0eb2d93"
     },
     {
+      "path": "docs/design/apple-design-resources.md",
+      "title": "Apple design resources and iOS/iPadOS 27",
+      "kind": "guide",
+      "characters": 3512,
+      "hash": "5dacdbc4857251aa49d1f9b9ffa2b2d1b4fd6e1334fc12c58afb175a7ce7a8c0"
+    },
+    {
       "path": "docs/design/asset-generation.md",
       "title": "Generate real asset catalogs",
       "kind": "guide",
@@ -2616,8 +2623,8 @@
       "path": "docs/design/README.md",
       "title": "Professional UI/UX System",
       "kind": "guide",
-      "characters": 2992,
-      "hash": "87e7d97bc0b7a72cca972fa410c89a5c8a0d0ec25dc2db40d717054f3d7ec1dd"
+      "characters": 3214,
+      "hash": "077b1e690e2d744fd753578aaad3b458c489006fe20030446bfdc905b3a0c143"
     },
     {
       "path": "docs/design/stunning-ui-patterns.md",
@@ -3456,8 +3463,15 @@
       "path": "docs/tooling/xcode-27-agents.md",
       "title": "Xcode 27 Coding Agents",
       "kind": "guide",
-      "characters": 10013,
-      "hash": "323ca584b551b6a5c9c5b41578376d607776a45b781cce6150096de8dea1cd9e"
+      "characters": 10322,
+      "hash": "8b6c402a81ae06208c84de80d257be56c97f409ffb959027a59160a755f6c6d4"
+    },
+    {
+      "path": "docs/tooling/xcode-documentation-resources.md",
+      "title": "Installed Xcode documentation resources",
+      "kind": "guide",
+      "characters": 3150,
+      "hash": "4b060ba25c822d0b90f93ec617fad5394a7f73a87e8498a0448c242f18c3ec9f"
     },
     {
       "path": "docs/tooling/xcode-memory-debugging.md",
