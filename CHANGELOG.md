@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+## [3.8.0] -- 2026-09-30
+
+### Added -- 3.8.0
+
+- Prepared ios-agent-mcp 2.9.0 and companion CLI 0.4.0; publication status must be checked separately.
+- Added nine model-independent Apple documentation tools, version-aware Xcode/SDK discovery, official DocumentationSearch adapter and bounded SDK fallback.
+- Added docs CLI commands and bounded, public-symbol-only documentation grounding in the existing repair loop; evidence hashes and retry limits unchanged.
+- Apple documentation archives are not redistributed. Cache is bounded in-memory only. Online fallback requires explicit opt-in.
+- Availability, examples and related symbols are focused searches, not structured symbol resolvers. SDK diff compares inventories only. Live bridge retrieval requires Xcode approval; no automatic validation or offline bridge claim.
+
+
 ## [3.7.0] -- 2026-09-29
 
 ### Added -- 3.7.0

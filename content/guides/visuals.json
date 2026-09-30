@@ -1662,5 +1662,18 @@
       "Original repository guides",
       "Bounded local-reference tools"
     ]
+  },
+  "docs/tooling/local-apple-documentation.md": {
+    "flow": [
+      "Discover active Xcode and SDKs",
+      "Query official DocumentationSearch",
+      "Fall back to SDK evidence when needed",
+      "Compile and verify the selected API"
+    ],
+    "architecture": [
+      "Model-independent MCP / CLI",
+      "Version-keyed bounded memory cache",
+      "Xcode bridge and SDK excerpts \u2014 no archive copying"
+    ]
   }
 }

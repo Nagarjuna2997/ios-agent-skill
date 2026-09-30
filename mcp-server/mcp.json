@@ -1,7 +1,7 @@
 {
   "name": "ios-agent-mcp",
   "displayName": "iOS Agent",
-  "version": "2.8.0",
+  "version": "2.9.0",
   "description": "Unified iOS development tools: Swift reviews, Apple source retrieval, app scaffolding and Xcode simulator workflows.",
   "author": "Nagarjuna Reddy",
   "license": "MIT",
@@ -260,6 +260,209 @@
     {
       "name": "localize_screenshot_set",
       "summary": "Use this to render a new locale from supplied translated copy, preserving screen order and templates. No hosted translation. Font coverage and overflow must pass; existing sets are never overwritten."
+    },
+    {
+      "name": "apple_docs_status",
+      "description": "Discover installed Xcode, SDKs and local Apple documentation; does not prove bridge authorization.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "apple_docs_frameworks",
+      "description": "List frameworks present in installed SDKs, grouped by SDK.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "apple_docs_platform_support",
+      "description": "Inspect dynamically installed SDK/platform inventory; not API availability.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "apple_docs_sdk_diff",
+      "description": "Compare installed Xcode SDK inventories; not a symbol-level API diff.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "apple_docs_search",
+      "description": "Retrieve bounded Apple documentation evidence for search. Use before uncertain Apple API generation or repair. Search-based, not exact semantic validation. Falls back to installed SDK declarations; online requires explicit opt-in. Never send app code, diagnostics or personal data in query.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240,
+            "pattern": "^[\\w .:+()\\-]+$"
+          },
+          "framework": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$"
+          },
+          "online": {
+            "type": "boolean",
+            "default": false
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "apple_docs_lookup_symbol",
+      "description": "Retrieve bounded Apple documentation evidence for lookup_symbol. Use before uncertain Apple API generation or repair. Search-based, not exact semantic validation. Falls back to installed SDK declarations; online requires explicit opt-in. Never send app code, diagnostics or personal data in query.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240,
+            "pattern": "^[\\w .:+()\\-]+$"
+          },
+          "framework": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$"
+          },
+          "online": {
+            "type": "boolean",
+            "default": false
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "apple_docs_availability",
+      "description": "Retrieve bounded Apple documentation evidence for availability. Use before uncertain Apple API generation or repair. Search-based, not exact semantic validation. Falls back to installed SDK declarations; online requires explicit opt-in. Never send app code, diagnostics or personal data in query.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240,
+            "pattern": "^[\\w .:+()\\-]+$"
+          },
+          "framework": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$"
+          },
+          "online": {
+            "type": "boolean",
+            "default": false
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "apple_docs_related_symbols",
+      "description": "Retrieve bounded Apple documentation evidence for related_symbols. Use before uncertain Apple API generation or repair. Search-based, not exact semantic validation. Falls back to installed SDK declarations; online requires explicit opt-in. Never send app code, diagnostics or personal data in query.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240,
+            "pattern": "^[\\w .:+()\\-]+$"
+          },
+          "framework": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$"
+          },
+          "online": {
+            "type": "boolean",
+            "default": false
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "apple_docs_examples",
+      "description": "Retrieve bounded Apple documentation evidence for examples. Use before uncertain Apple API generation or repair. Search-based, not exact semantic validation. Falls back to installed SDK declarations; online requires explicit opt-in. Never send app code, diagnostics or personal data in query.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240,
+            "pattern": "^[\\w .:+()\\-]+$"
+          },
+          "framework": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$"
+          },
+          "online": {
+            "type": "boolean",
+            "default": false
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
     }
   ],
   "resources": [

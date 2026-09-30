@@ -96,6 +96,16 @@ describe("mcp server", () => {
     const names = tools.map((t) => t.name).sort();
     assert.deepEqual(names, [
       "analyze_swift_project",
+      "apple_docs_availability",
+      "apple_docs_examples",
+      "apple_docs_frameworks",
+      "apple_docs_lookup_symbol",
+      "apple_docs_platform_support",
+      "apple_docs_related_symbols",
+      "apple_docs_sdk_diff",
+      "apple_docs_search",
+      "apple_docs_status",
+
       "audit_app_store_readiness",
       "check_apple_capabilities",
       "check_apple_permissions",
@@ -184,6 +194,7 @@ describe("mcp server", () => {
   test("the project overview reports architecture with its evidence", async () => {
     const result = await client.callTool({
       name: "analyze_swift_project",
+
       arguments: { path: fixture },
     });
     const project = result.structuredContent?.project;

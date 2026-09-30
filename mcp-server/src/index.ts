@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { registerAppleDocs } from './apple-docs/tools.js';
 import { registerScreenshotTools } from './screenshots/tools.js';
 import { reviewLaunchScreens } from './analyzers/launch-screen.js';
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
@@ -170,6 +171,7 @@ async function scanAndRender(
 }
 
 registerIntegrationTools(server);
+registerAppleDocs(server);
 registerScreenshotTools(server);
 
 server.registerTool('review_backend_integration', {

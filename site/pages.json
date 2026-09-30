@@ -1030,5 +1030,9 @@
   "guides/tooling-xcode-documentation-resources.html": {
     "title": "Installed Xcode documentation resources",
     "description": "Repository guidance for Installed Xcode documentation resources. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/tooling-local-apple-documentation.html": {
+    "title": "Local Apple Developer Documentation Grounding",
+    "description": "Repository guidance for Local Apple Developer Documentation Grounding. Examples, decisions, and verification limits from the maintained source guide."
   }
 }

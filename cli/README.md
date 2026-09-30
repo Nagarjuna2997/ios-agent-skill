@@ -175,3 +175,7 @@ Optional `--icon-layers IconLayers --icon-background "#2457DB"` renders the orde
 SVG layers. Existing catalogs are never overwritten. See
 [the schema and free workflow](../docs/design/asset-generation.md). Native `.icon`
 authoring still uses Apple Icon Composer.
+
+## Local Apple documentation
+
+Use `ios-agent-mcp docs status` and `ios-agent-mcp docs symbol SwiftUI.NavigationStack` for version-aware documentation grounding. The adapter prefers Xcode MCP DocumentationSearch, then bounded SDK evidence. Apple’s archive is never bundled. Bridge authorization is required; retrieval is not automatic code validation. [Setup, tools and limitations](https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-local-apple-documentation.html).

@@ -44910,6 +44910,7 @@ All guidesOn this pageVisual overview: workflow and architecture
 Context
 Pattern
 Anti-Patterns
+Local Apple documentation
 
 Visual overview
 
@@ -45015,6 +45016,16 @@ OpenAI MCP server guidance
 ,
 plugin submission
 . A public directory submission needs a stable HTTPS endpoint and publisher verification; a skills-only plugin bundle is also supported.
+
+Local Apple documentation
+
+Use
+ios-agent-mcp docs status
+ and
+ios-agent-mcp docs symbol SwiftUI.NavigationStack
+ for version-aware documentation grounding. The adapter prefers Xcode MCP DocumentationSearch, then bounded SDK evidence. Apple’s archive is never bundled. Bridge authorization is required; retrieval is not automatic code validation.
+Setup, tools and limitations
+.
 
 ---
 
@@ -59242,6 +59253,127 @@ project-level finding is based on local evidence, not a claim that Apple tested 
 
 ---
 
+# Local Apple Developer Documentation Grounding
+https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-local-apple-documentation.html
+
+← Back to all frameworks & guides
+All articles →Tooling · Reference guideLocal Apple Developer Documentation GroundingRepository guidance for Local Apple Developer Documentation Grounding. Examples, decisions, and verification limits from the maintained source guide.Read or improve the source
+ ·
+All guidesOn this pageVisual overview: workflow and architecture
+
+Setup
+Architecture and source priority
+Tools and evidence limits
+Automatic grounding and repair
+Offline use and privacy
+Verification
+
+Visual overview
+
+Use the workflow to follow the task, and the architecture map to separate responsibilities. These are conceptual maps; the guide below defines implementation details and verification limits.
+
+01 / WorkflowFrom intent to a checked result1
+Discover active Xcode and SDKs
+↓2
+Query official DocumentationSearch
+↓3
+Fall back to SDK evidence when needed
+↓4
+Compile and verify the selected API
+
+02 / ArchitectureResponsibility boundariesBoundary 1
+Model-independent MCP / CLIBoundary 2
+Version-keyed bounded memory cacheBoundary 3
+Xcode bridge and SDK excerpts — no archive copyingConnected responsibilities, not a required class hierarchy or an execution trace.
+The documentation adapter uses the Developer Documentation managed by your installed Xcode through Apple's official
+xcrun mcpbridge
+ interface. It never copies Apple's documentation archive into this repository or npm. It does not parse Apple's private vector database.
+
+Setup
+
+Install Developer Documentation in Xcode Settings > Components. Enable external agents in Xcode Settings > Intelligence, open a sample workspace, and approve the connecting agent. Discovering tools does not prove authorization: Xcode may expose
+DocumentationSearch
+ but reject calls until workspace access is approved.
+
+npx ios-agent-mcp@latest docs status
+npx ios-agent-mcp@latest docs search NavigationStack
+npx ios-agent-mcp@latest docs symbol SwiftUI.NavigationStack
+npx ios-agent-mcp@latest docs availability SwiftUI.NavigationStack
+npx ios-agent-mcp@latest docs frameworks
+npx ios-agent-mcp@latest docs diff
+
+These commands require a package version containing this feature; a checkout can run
+node mcp-server/dist/unified.js docs status
+ after building. The companion
+ios-agent docs
+ command forwards to an already installed
+ios-agent-mcp
+; it never installs software automatically.
+
+Architecture and source priority
+
+Agent / CLI / build-repair loop
+  -> version-aware documentation service
+  -> Xcode MCP DocumentationSearch
+  -> installed SDK declarations when local search is unavailable
+  -> optional Apple online symbol page
+  -> unavailable (model knowledge must remain labelled unverified)
+
+Discovery examines the active developer directory, standard application directories and Apple documentation asset containers. Set
+DEVELOPER_DIR
+ for a nonstandard Xcode installation and
+IOS_AGENT_APPLE_DOCS_ROOT
+ for a nonstandard asset root. Multiple Xcode installations retain their SDK inventories. New SDK families are not restricted to a fixed platform list. The service does not change xcode-select or download components. Archive metadata paths are implementation details; discovery failure is reported, not interpreted as proof that Xcode has no documentation.
+
+Xcode documentation build identifiers may be unknown when installed metadata omits them. Catalog build candidates are reported separately and are not asserted to identify the installed asset. The inventory fingerprint includes asset metadata, directory timestamps, catalog candidates and Xcode/SDK versions. Results identify the selected Xcode; the bridge does not prove which asset supplied each excerpt. The documentation version list is detected inventory, not a per-result attribution guarantee.
+
+Tools and evidence limits
+
+apple_docs_status
+: installation inventory; bridge access requires a query.
+apple_docs_search
+: bounded documentation search.
+apple_docs_lookup_symbol
+,
+apple_docs_availability
+,
+apple_docs_related_symbols
+,
+apple_docs_examples
+: focused documentation searches, not separate native Xcode tools or exact symbol resolvers.
+apple_docs_frameworks
+: framework inventory grouped by installed SDK.
+apple_docs_platform_support
+: installed platform/SDK inventory, not API support certification.
+apple_docs_sdk_diff
+: compares Xcode/SDK inventories; symbol-level API diff is not implemented.
+
+Availability and deprecation are evidence in excerpts, not inferred from an SDK number. SDK fallback may match a reference rather than a declaration and is labelled accordingly. Retrieval does not automatically validate generated code: compile and test against the chosen SDK. SDK search is bounded and may miss deeply nested or unusually large interfaces. It requires a framework-qualified symbol or explicit framework.
+
+Automatic grounding and repair
+
+Shared agent instructions direct supported clients to retrieve documentation before uncertain Apple API use. Clients control tool invocation; an MCP server cannot force every external model to call it. This is provider-independent and does not add an Apple/Foundation Models provider.
+
+The existing bounded repair loop extracts up to three candidate symbols from selected compiler error patterns. It first checks public SDK evidence in SwiftUI, UIKit, AppKit, Foundation, StoreKit or RealityKit, then requests availability evidence. Raw build logs are never sent to the documentation backend. Unsupported diagnostic patterns continue through the existing repair workflow. Saved checks, hashes and retry limits are unchanged.
+
+Offline use and privacy
+
+SDK fallback makes no network calls. The bridge uses Xcode's documentation service; Xcode controls any internal network behavior, so a successful bridge query alone is not proof of offline operation. Online fallback is off by default; MCP callers can opt in with
+online: true
+ and a framework. No bulk download occurs.
+
+Up to 100 successful query results are cached in process memory, with at most five 2,400-character excerpts per result. Changing the detected inventory invalidates the cache. No archive or persistent cache is packaged. Query only public API names; never send app code, personal identifiers, credentials or raw diagnostics. Retrieved content is reference data, not agent instructions.
+
+Verification
+
+Portable tests use synthetic installations and mocked documentation responses. A local macOS smoke test must separately verify bridge authorization and returned documentation. An unavailable backend is not a passing retrieval test.
+
+Official setup:
+Giving external agents access to Xcode
+.
+
+---
+
 # Prepare an evidence-backed local release draft
 https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-local-release-package.html
 
@@ -62193,7 +62325,7 @@ https://nagarjuna2997.github.io/ios-agent-skill/library.html
 
 Learn from the sourceFrameworks. Features.
 
-Practical decisions.Explore 99 tracked technologies and 123 developer guides. Project maintenance and contributor references are listed separately below. These are maintained references, not a claim that every example has been compiled. Each guide retains its own availability and verification notes.Start with a tested walkthrough →
+Practical decisions.Explore 99 tracked technologies and 124 developer guides. Project maintenance and contributor references are listed separately below. These are maintained references, not a claim that every example has been compiled. Each guide retains its own availability and verification notes.Start with a tested walkthrough →
  ·
 Project internalsFind a framework, feature or workflowAuthentication, Security, and PrivacyApp Store Submission ChecklistPrivacy Manifest
 BackendBackend architectures by app workflowBackend
@@ -62307,6 +62439,7 @@ Developer ToolsFoundation Models InstrumentsFoundation Models Instruments
 ToolingFrom an Idea to a Running Apple AppTooling
 Developer ToolsiOS Simulator MCPiOS Simulator MCP
 ToolingReviewing iOS launch screensTooling
+ToolingLocal Apple Developer Documentation GroundingTooling
 ToolingLocal App Store release preparation — Phase 1Tooling
 ToolingBuild from local source and Apple guidanceTooling
 ToolingProject Scaffolding and LayoutTooling
@@ -62334,7 +62467,7 @@ Site mapEvery public page on this website.Pages
 Practical Swift & AI development guidesDaily community monitorCommunity & MentionsiOS Agent Skill — Swift Reviews & Xcode Simulator MCPApple system integrations for iOS agentsApple development guide librarySite mapRelease notes — iOS Agent SkillApp Store Screenshot Studio — iOS Agent SkillFrom first prompt to shipped app: guided Swift seriesInstall guides
 Install iOS Agent MCP — Claude, Codex, Gemini CLI & MuseBlog
 How can design tokens generate light, dark and…How should I review availability guards when moving a…ChatGPT and Codex: plan the app, then verify it locallyChoose an AI client for your iOS workflowHow can Claude Code hooks protect generated files and…Claude Code: turn a Swift finding into a tested patchGemini CLI: connect once and review one iOS featureGenerate light and dark asset catalogs without a paid…Which Muse Code MCP settings actually work with a local…Muse Code: what our integration actually verifiesReview AI-generated Swift before you trust itHow can I catch Swift concurrency review findings before…SwiftUI: review state transitions before polishing the…Five checks for an AI-built SwiftUI appDocs
-Documentation indexBackend architectures by app workflowAppwrite for Apple clientsAuthentication and session boundariesAWS Amplify in a Swift appChoosing an iOS backendCloudKit as an Apple-native backendFirebase for iOSGraphQL and Apollo iOSBackend services for Swift appsBackend privacy and account lifecycleREST clients with URLSessionBackend authorization and client secretsSupabase for Swift appsRealtime connections on iOSApp Store Submission ChecklistApple design resources and iOS/iPadOS 27Generate real asset catalogsDerive a usable seed from brand color evidenceValidate color relationships, not just swatchesiOS Color System -- Complete Guide for Stunning SwiftUI UIsDark and increased-contrast app colorsDesign Tokens, Adaptive Color, and Liquid GlassiOS Font Catalog — Ultimate ReferenceLayer-by-Layer Icons with Icon ComposerInteraction StandardsAdopting Liquid GlassGenerate an iOS palette from a briefProfessional UI/UX SystemStunning UI Patterns -- Complete SwiftUI Pattern LibraryThird-Party Animation IntegrationiOS Typography System -- Complete Guide for Stunning…ActivityKit & Live ActivitiesApp ClipsApp IntentsApple IntelligenceARKit -- Complete Guide for Augmented Reality on iOS and…AuthenticationServicesAVFoundationBackgroundTasksCloudKitCore AI -- Custom On-Device AI Models on Apple SiliconCore DataCoreLocationCore Spotlight RAG -- Private App-Local Retrieval for…CryptoKitSwiftData and Core Data ConcurrencyDevice Integrity (DeviceCheck & App Attest)Extended Apple FrameworksFoundation ModelsFoundation FrameworkCoreBluetoothCoreMotionCoreNFCHealthKitHomeKit and MatterLocalAuthenticationMapKitMetal -- GPU Rendering, Compute, and Performance-Critical…CoreML -- Complete Guide for On-Device Machine LearningNaturalLanguage Framework -- Complete Guide for Text…Sound AnalysisSpeech Framework -- Complete Guide for Speech Recognition…TranslationVision Framework -- Complete Guide for Image Analysis and…Network.frameworkNetworkingOSLog & MetricKitPhotosUI & AVKitRealityKit -- Complete Guide for 3D Rendering, AR, and…SceneKit -- Legacy 3D Scenes, Animation, and AR RenderingContacts FrameworkEventKitPassKit & FinanceKitWeatherKitStoreKit 2Swift ChartsSwiftDataTipKitUserNotificationsVisionKitWidgetKitMCP Usage ExamplesInstalling the iOS Agent MCP ServerApple Knowledge MCPOfficial MCP Registry publicationMCP Tool ReferencevNext MCP Analysis ToolsDynamic Workflows and Large-Scale JobsHooks — Deterministic EnforcementLoopsMain Agent RouterSubagentsVerification and the Evidence ContractiOS Platform GuidemacOS Platform GuidetvOS Platform GuidevisionOS Platform GuidewatchOS Platform GuideSwiftUI AnimationsSwiftUI and UIKit arrangement viewsRouting, Deep Links, and State RestorationSwiftUI GesturesSwiftUI iOS 27 InteractionsSwiftUI Layout SystemSwiftUI NavigationSwiftUI State and Data FlowSwiftUI Views and ControlsEvaluations -- Testing Intelligence-Powered FeaturesApp-building loop (preview)App Description WorkflowDevice HubFoundation Models `fm` CLIFoundation Models InstrumentsFrom an Idea to a Running Apple AppiOS Simulator MCPAI-assisted issue previewsReview iOS launch-screen configurationPrepare an evidence-backed local release draftBuild from local source and Apple guidanceProject Scaffolding and LayoutSeptember 2026 distribution and runtime update notesVisual Iteration LoopXcode 27.2 beta: project format and preview toolingXcode 27 Coding AgentsInstalled Xcode documentation resourcesXcode Memory DebuggingUIKit EssentialsNative vs. Web Animation and 3DWhat "vibe coding" a Swift app actually means, and what…What you need before an AI can build you an iOS app: Mac,…Choosing a coding agent for iOS in 2026: Claude Code,…Your first hour: install Xcode, run the simulator, build…How coding agents read a project: AGENTS.md, CLAUDE.md,…Skills, plugins, MCP servers, hooks: the four words…Build a SwiftUI to-do app with Claude Code: the brief,…Compare the same to-do app task in Codex without changing…Prepare an Antigravity app-building trial and identify…Prepare a Muse app-building trial beyond tool discoveryWriting an app brief an agent can build from: ten…Generating an Xcode project the agent can edit: XcodeGen…Running and seeing your app: simulator boot, install,…What to do when the build fails: reading Xcode errors…Review Swift 6 settings and actor isolation before…Getting an agent to run checks: hooks, Stop conditions…Making the agent prove it: screenshots as evidence, not…Reviewing agent output before you commit: a focused…Git for vibe coders: branches per prompt, checkpoints,…Keeping the agent inside your design: tokens, no…SwiftUI prompt practice: 25 scoped exercises and…When a SwiftUI agent task fails: ten failure categories…Local persistence contracts: Reading List JSON storage…Localization with an agent: what to check before it…Search, filtering and empty states that pass…Networking and Codable with an agent: the concurrency…Navigation in SwiftUI: what agents get wrong with…Adding widgets with App Intents: a timeline and…Designing Siri actions with App Intents and testable…On-device AI: Foundation Models readiness and fallback…Notifications, background tasks and the permissions…Deep links and universal links, and using them for…App icons in 2026: Liquid Glass, Icon Composer, and…Color systems that survive dark mode and high contrast,…Typography in SwiftUI that respects Dynamic Type: rules…Motion and haptics: what to ask an agent for, and what…Making an agent-built app look intentional, not templatedPreparing repeatable simulator captures for App Store…From Figma to SwiftUI with an agent: variables to tokens…Swift Testing vs XCTest: what to have the agent generate…UI tests an agent can write and maintainAccessibility review of an agent-built app: the checks…Performance: hangs, launch time and the patterns agents…Memory: retain cycles agents create in closures and CombineSecurity review of an agent-built app: keychain, ATS,…Static review vs the compiler: what heuristics catch and…App Store readiness: the checks before you upload an…Privacy manifests, permissions strings and the things…Preparing for TestFlight: signing, builds and account…Investigating App Review feedback without guessing the…Versioning, changelogs and release notes the agent can…CI for an iOS repo with agent-written code: what to run…Subagents for iOS: splitting review, build and design…Preparing to verify Xcode 27 agents with external skillsKeeping up with Apple: refreshing references after each…Planning a safe Swift 6 and iOS 27 migrationCoordinating parallel coding work with isolated checkoutsWriting your own review rule for a Swift codebaseWriting your own skill for a Swift project: SKILL.md…Building a Claude Code plugin from a skillBuilding a Codex plugin from the same skillCross-client packaging: verified Muse scope and an…Verifying a skill across clients: the client verification…Measuring whether a skill helps: a paired benchmark…Ask for the finding, not the fix: why review-first…When the agent says "done", run the tests yourself onceSmall prompts, one screen at a time, commit between eachKeep signing and account changes separate from code repairsReading agent transcripts: the three phrases that mean it…Turn every failure into a rule: how findings become reviewsVerify Muse observer behavior before recommending itCodex worktrees for parallel screensTreat background builds as running work, not completed…Claude Code plan mode before any multi-file Swift changeAsk the agent to search local Apple references before the…Ask about actor ownership before adding MainActorWhat to put in .gitignore for agent-built Xcode projects"Show me the screenshot" as a standing instructionPin your Xcode version in AGENTS.md and stop the agent…One deep link per screen makes every screenshot automatableKeep design tokens in one file and tell the agent it's…Review the XcodeGen spec before regenerating the projectUse `#available` audits before every beta upgradeHooks beat reminders: enforce, don't request
+Documentation indexBackend architectures by app workflowAppwrite for Apple clientsAuthentication and session boundariesAWS Amplify in a Swift appChoosing an iOS backendCloudKit as an Apple-native backendFirebase for iOSGraphQL and Apollo iOSBackend services for Swift appsBackend privacy and account lifecycleREST clients with URLSessionBackend authorization and client secretsSupabase for Swift appsRealtime connections on iOSApp Store Submission ChecklistApple design resources and iOS/iPadOS 27Generate real asset catalogsDerive a usable seed from brand color evidenceValidate color relationships, not just swatchesiOS Color System -- Complete Guide for Stunning SwiftUI UIsDark and increased-contrast app colorsDesign Tokens, Adaptive Color, and Liquid GlassiOS Font Catalog — Ultimate ReferenceLayer-by-Layer Icons with Icon ComposerInteraction StandardsAdopting Liquid GlassGenerate an iOS palette from a briefProfessional UI/UX SystemStunning UI Patterns -- Complete SwiftUI Pattern LibraryThird-Party Animation IntegrationiOS Typography System -- Complete Guide for Stunning…ActivityKit & Live ActivitiesApp ClipsApp IntentsApple IntelligenceARKit -- Complete Guide for Augmented Reality on iOS and…AuthenticationServicesAVFoundationBackgroundTasksCloudKitCore AI -- Custom On-Device AI Models on Apple SiliconCore DataCoreLocationCore Spotlight RAG -- Private App-Local Retrieval for…CryptoKitSwiftData and Core Data ConcurrencyDevice Integrity (DeviceCheck & App Attest)Extended Apple FrameworksFoundation ModelsFoundation FrameworkCoreBluetoothCoreMotionCoreNFCHealthKitHomeKit and MatterLocalAuthenticationMapKitMetal -- GPU Rendering, Compute, and Performance-Critical…CoreML -- Complete Guide for On-Device Machine LearningNaturalLanguage Framework -- Complete Guide for Text…Sound AnalysisSpeech Framework -- Complete Guide for Speech Recognition…TranslationVision Framework -- Complete Guide for Image Analysis and…Network.frameworkNetworkingOSLog & MetricKitPhotosUI & AVKitRealityKit -- Complete Guide for 3D Rendering, AR, and…SceneKit -- Legacy 3D Scenes, Animation, and AR RenderingContacts FrameworkEventKitPassKit & FinanceKitWeatherKitStoreKit 2Swift ChartsSwiftDataTipKitUserNotificationsVisionKitWidgetKitMCP Usage ExamplesInstalling the iOS Agent MCP ServerApple Knowledge MCPOfficial MCP Registry publicationMCP Tool ReferencevNext MCP Analysis ToolsDynamic Workflows and Large-Scale JobsHooks — Deterministic EnforcementLoopsMain Agent RouterSubagentsVerification and the Evidence ContractiOS Platform GuidemacOS Platform GuidetvOS Platform GuidevisionOS Platform GuidewatchOS Platform GuideSwiftUI AnimationsSwiftUI and UIKit arrangement viewsRouting, Deep Links, and State RestorationSwiftUI GesturesSwiftUI iOS 27 InteractionsSwiftUI Layout SystemSwiftUI NavigationSwiftUI State and Data FlowSwiftUI Views and ControlsEvaluations -- Testing Intelligence-Powered FeaturesApp-building loop (preview)App Description WorkflowDevice HubFoundation Models `fm` CLIFoundation Models InstrumentsFrom an Idea to a Running Apple AppiOS Simulator MCPAI-assisted issue previewsReview iOS launch-screen configurationLocal Apple Developer Documentation GroundingPrepare an evidence-backed local release draftBuild from local source and Apple guidanceProject Scaffolding and LayoutSeptember 2026 distribution and runtime update notesVisual Iteration LoopXcode 27.2 beta: project format and preview toolingXcode 27 Coding AgentsInstalled Xcode documentation resourcesXcode Memory DebuggingUIKit EssentialsNative vs. Web Animation and 3DWhat "vibe coding" a Swift app actually means, and what…What you need before an AI can build you an iOS app: Mac,…Choosing a coding agent for iOS in 2026: Claude Code,…Your first hour: install Xcode, run the simulator, build…How coding agents read a project: AGENTS.md, CLAUDE.md,…Skills, plugins, MCP servers, hooks: the four words…Build a SwiftUI to-do app with Claude Code: the brief,…Compare the same to-do app task in Codex without changing…Prepare an Antigravity app-building trial and identify…Prepare a Muse app-building trial beyond tool discoveryWriting an app brief an agent can build from: ten…Generating an Xcode project the agent can edit: XcodeGen…Running and seeing your app: simulator boot, install,…What to do when the build fails: reading Xcode errors…Review Swift 6 settings and actor isolation before…Getting an agent to run checks: hooks, Stop conditions…Making the agent prove it: screenshots as evidence, not…Reviewing agent output before you commit: a focused…Git for vibe coders: branches per prompt, checkpoints,…Keeping the agent inside your design: tokens, no…SwiftUI prompt practice: 25 scoped exercises and…When a SwiftUI agent task fails: ten failure categories…Local persistence contracts: Reading List JSON storage…Localization with an agent: what to check before it…Search, filtering and empty states that pass…Networking and Codable with an agent: the concurrency…Navigation in SwiftUI: what agents get wrong with…Adding widgets with App Intents: a timeline and…Designing Siri actions with App Intents and testable…On-device AI: Foundation Models readiness and fallback…Notifications, background tasks and the permissions…Deep links and universal links, and using them for…App icons in 2026: Liquid Glass, Icon Composer, and…Color systems that survive dark mode and high contrast,…Typography in SwiftUI that respects Dynamic Type: rules…Motion and haptics: what to ask an agent for, and what…Making an agent-built app look intentional, not templatedPreparing repeatable simulator captures for App Store…From Figma to SwiftUI with an agent: variables to tokens…Swift Testing vs XCTest: what to have the agent generate…UI tests an agent can write and maintainAccessibility review of an agent-built app: the checks…Performance: hangs, launch time and the patterns agents…Memory: retain cycles agents create in closures and CombineSecurity review of an agent-built app: keychain, ATS,…Static review vs the compiler: what heuristics catch and…App Store readiness: the checks before you upload an…Privacy manifests, permissions strings and the things…Preparing for TestFlight: signing, builds and account…Investigating App Review feedback without guessing the…Versioning, changelogs and release notes the agent can…CI for an iOS repo with agent-written code: what to run…Subagents for iOS: splitting review, build and design…Preparing to verify Xcode 27 agents with external skillsKeeping up with Apple: refreshing references after each…Planning a safe Swift 6 and iOS 27 migrationCoordinating parallel coding work with isolated checkoutsWriting your own review rule for a Swift codebaseWriting your own skill for a Swift project: SKILL.md…Building a Claude Code plugin from a skillBuilding a Codex plugin from the same skillCross-client packaging: verified Muse scope and an…Verifying a skill across clients: the client verification…Measuring whether a skill helps: a paired benchmark…Ask for the finding, not the fix: why review-first…When the agent says "done", run the tests yourself onceSmall prompts, one screen at a time, commit between eachKeep signing and account changes separate from code repairsReading agent transcripts: the three phrases that mean it…Turn every failure into a rule: how findings become reviewsVerify Muse observer behavior before recommending itCodex worktrees for parallel screensTreat background builds as running work, not completed…Claude Code plan mode before any multi-file Swift changeAsk the agent to search local Apple references before the…Ask about actor ownership before adding MainActorWhat to put in .gitignore for agent-built Xcode projects"Show me the screenshot" as a standing instructionPin your Xcode version in AGENTS.md and stop the agent…One deep link per screen makes every screenshot automatableKeep design tokens in one file and tell the agent it's…Review the XcodeGen spec before regenerating the projectUse `#available` audits before every beta upgradeHooks beat reminders: enforce, don't request
 
 ---
 
@@ -62346,7 +62479,11 @@ Release notes← Home
 Installation
  ·
 npm package
-September 29, 2026 · repository v3.7.0 · npm 2.8.0
+September 30, 2026 · repository v3.8.0 · npm publication pending
+Local Apple Developer Documentation Grounding
+Use the Apple documentation installed with Xcode through its official MCP documentation tool. Inspect installed versions, retrieve bounded API evidence and consult SDK declarations when documentation access is unavailable. No Apple archive is bundled.
+Shared agent instructions and the bounded build-repair loop consult documentation for supported public API errors. Retrieval helps review availability; it does not replace compiling and testing. Bridge access requires Xcode approval, offline behavior is controlled by Xcode, and symbol-level SDK diffs remain unsupported.
+Setup, commands and verification limits →September 29, 2026 · repository v3.7.0 · npm 2.8.0
 Apple environment and optional AI providers
 Inspect installed SDKs and simulators, select an optional text-generation provider, and keep local-only privacy as the default. Cloud access and fallback require explicit settings. Private handoff files and saved advisory role proposals preserve context; they do not autonomously edit apps or claim test success.
 Screenshot Studio adds verified Mac, Apple TV, Vision Pro and Watch pixel profiles. Xcode 27-only APIs and Duo poses remain unverified on our Xcode 26.6 machine.

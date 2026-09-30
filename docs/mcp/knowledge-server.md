@@ -45,3 +45,7 @@ Read `docs/tooling/offline-source-library.md` for offline search, source reuse, 
 - Describing catalog snapshots as live Apple updates.
 
 Sources: [OpenAI MCP server guidance](https://developers.openai.com/plugins/build/mcp-server), [plugin submission](https://developers.openai.com/plugins/deploy/submission). A public directory submission needs a stable HTTPS endpoint and publisher verification; a skills-only plugin bundle is also supported.
+
+## Local Apple documentation
+
+Use `ios-agent-mcp docs status` and `ios-agent-mcp docs symbol SwiftUI.NavigationStack` for version-aware documentation grounding. The adapter prefers Xcode MCP DocumentationSearch, then bounded SDK evidence. Apple’s archive is never bundled. Bridge authorization is required; retrieval is not automatic code validation. [Setup, tools and limitations](https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-local-apple-documentation.html).

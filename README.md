@@ -119,3 +119,9 @@ Use `ios-agent-mcp environment` to inspect the actual Xcode/SDK/simulator invent
 `ios-agent-mcp ai models` and `ai doctor` inspect the dated catalog and account/local availability.
 Text generation defaults to on-device Apple models; cloud providers and fallback require explicit configuration.
 [Provider setup, handoff, simulator CLI and limits](docs/ai/providers.md). These commands do not replace the coding client or claim autonomous app completion.
+
+## Local Apple documentation
+
+Source version 2.9.0 exposes 65 tools; npm publication is pending. Build the checkout to try these commands now.
+
+Use `ios-agent-mcp docs status` and `ios-agent-mcp docs symbol SwiftUI.NavigationStack` for version-aware documentation grounding. The adapter prefers Xcode MCP DocumentationSearch, then bounded SDK evidence. Apple’s archive is never bundled. Bridge authorization is required; retrieval is not automatic code validation. [Setup, tools and limitations](https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-local-apple-documentation.html).

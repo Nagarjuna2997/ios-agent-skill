@@ -362,3 +362,9 @@ The source server includes nine local screenshot-composition tools and `screensh
 `ios-agent-mcp ai models|doctor|config|ask` provides optional text-provider workflows.
 Defaults: local Apple model, no cloud permission, no fallback. Cloud access requires API credentials and explicit provider allowlisting; existing MCP client use needs none.
 See [provider setup and limitations](https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/ai/providers.md).
+
+## Local Apple documentation
+
+Source version 2.9.0 exposes 65 tools; npm publication is pending. Build the checkout to try these commands now.
+
+Use `ios-agent-mcp docs status` and `ios-agent-mcp docs symbol SwiftUI.NavigationStack` for version-aware documentation grounding. The adapter prefers Xcode MCP DocumentationSearch, then bounded SDK evidence. Apple’s archive is never bundled. Bridge authorization is required; retrieval is not automatic code validation. [Setup, tools and limitations](https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-local-apple-documentation.html).

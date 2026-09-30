@@ -3092,8 +3092,8 @@
       "path": "docs/mcp/knowledge-server.md",
       "title": "Apple Knowledge MCP",
       "kind": "guide",
-      "characters": 3028,
-      "hash": "66f7876ddd35cafd10226b4442369ca249953b6f4420dc71baa38bee95c0fad5"
+      "characters": 3507,
+      "hash": "74c31e2247e716032bab5a575ae70662a15942f0c82a2da1189e3dad4eebe383"
     },
     {
       "path": "docs/mcp/registry.md",
@@ -3430,6 +3430,13 @@
       "kind": "guide",
       "characters": 6420,
       "hash": "bd527e58f14362d2687a1d38515ad4a98f042fddd2982a8b9f0693bcce06b049"
+    },
+    {
+      "path": "docs/tooling/local-apple-documentation.md",
+      "title": "Local Apple Developer Documentation Grounding",
+      "kind": "guide",
+      "characters": 5585,
+      "hash": "dfa55b24417cca9500c254f0b0418e9467716af3ca38adaface0dd222c9b6fe7"
     },
     {
       "path": "docs/tooling/local-release-package.md",
