@@ -55,3 +55,7 @@ List the artwork files, layer ordering, appearance variants checked, native docu
 - A tiny detailed logo that loses its identity at home-screen size.
 - A generic starter icon described as finished brand artwork.
 - Claiming a native `.icon` file was verified without opening it in Icon Composer.
+
+## Included editable template
+
+The repository now includes an [original app icon layer pack](../../templates/app-icon/README.md), with Default/Dark/Mono studies, a local interactive preview and manifests accepted by the existing assets CLI. Use the files directly without Figma. The generated catalog is iOS-only; native layered icons and watchOS need the separate Icon Composer/Xcode verification described in the pack.

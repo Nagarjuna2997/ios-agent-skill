@@ -37,3 +37,7 @@ Figma is optional. Start from the repository's semantic tokens, native SwiftUI/U
 ## Refresh procedure
 
 Reopen Apple's resource page, record which kit links changed, and inspect only the components needed for the requested app. Preserve source provenance and per-resource dates. Do not mark all framework guides current because a design-kit version changed. For installed API documentation, see [Xcode documentation resources](../tooling/xcode-documentation-resources.md).
+
+## Included editable template
+
+The repository now includes an [original app icon layer pack](../../templates/app-icon/README.md), with Default/Dark/Mono studies, a local interactive preview and manifests accepted by the existing assets CLI. Use the files directly without Figma. The generated catalog is iOS-only; native layered icons and watchOS need the separate Icon Composer/Xcode verification described in the pack.

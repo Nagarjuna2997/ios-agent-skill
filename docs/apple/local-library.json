@@ -2553,8 +2553,8 @@
       "path": "docs/design/apple-design-resources.md",
       "title": "Apple design resources and iOS/iPadOS 27",
       "kind": "guide",
-      "characters": 3512,
-      "hash": "5dacdbc4857251aa49d1f9b9ffa2b2d1b4fd6e1334fc12c58afb175a7ce7a8c0"
+      "characters": 3934,
+      "hash": "de771819861ff914b222a549e779809bb25902e717d849c11de901e869351143"
     },
     {
       "path": "docs/design/asset-generation.md",
@@ -2609,8 +2609,8 @@
       "path": "docs/design/icon-composer.md",
       "title": "Layer-by-Layer Icons with Icon Composer",
       "kind": "guide",
-      "characters": 3924,
-      "hash": "1c4aaa7873913f6c623c054a3f6d70e0ca9e6037bd660fffae9a4d2388b4aa76"
+      "characters": 4346,
+      "hash": "1d084c4ff5aca355182a4454104368dc862ebd779e75dd6f488c88984c8ef761"
     },
     {
       "path": "docs/design/interaction-standards.md",
@@ -4396,6 +4396,104 @@
       "kind": "source",
       "characters": 5895,
       "hash": "f1657d88457a62462db582468b7f6aca28daeb2d856d14a78ebe0f529592cf91"
+    },
+    {
+      "path": "templates/app-icon/dark/accent.svg",
+      "title": "accent.svg",
+      "kind": "source",
+      "characters": 147,
+      "hash": "3c7bf70deb2317b9c12b8d05f870f483dc29eb4c974654624ae91668eab7b854"
+    },
+    {
+      "path": "templates/app-icon/dark/background.svg",
+      "title": "background.svg",
+      "kind": "source",
+      "characters": 147,
+      "hash": "692f1458b0d954fa3053080aa7c2f2d247bb054f2f70569db33ac218f55e1915"
+    },
+    {
+      "path": "templates/app-icon/dark/manifest.json",
+      "title": "manifest.json",
+      "kind": "source",
+      "characters": 225,
+      "hash": "e5cae159c5aebc895f342f6027e15fa20a58bd7d5950a4ce6ec4c614c29e5943"
+    },
+    {
+      "path": "templates/app-icon/dark/symbol.svg",
+      "title": "symbol.svg",
+      "kind": "source",
+      "characters": 258,
+      "hash": "887c3e420381a8ebc815c451a7557eeb989c933edb39da89df6a56e1545a1348"
+    },
+    {
+      "path": "templates/app-icon/default/accent.svg",
+      "title": "accent.svg",
+      "kind": "source",
+      "characters": 147,
+      "hash": "3c7bf70deb2317b9c12b8d05f870f483dc29eb4c974654624ae91668eab7b854"
+    },
+    {
+      "path": "templates/app-icon/default/background.svg",
+      "title": "background.svg",
+      "kind": "source",
+      "characters": 147,
+      "hash": "9fdb900d58bf508ef416e143d7170db87b588dc9df31cf346539e7b192473128"
+    },
+    {
+      "path": "templates/app-icon/default/manifest.json",
+      "title": "manifest.json",
+      "kind": "source",
+      "characters": 225,
+      "hash": "e5cae159c5aebc895f342f6027e15fa20a58bd7d5950a4ce6ec4c614c29e5943"
+    },
+    {
+      "path": "templates/app-icon/default/symbol.svg",
+      "title": "symbol.svg",
+      "kind": "source",
+      "characters": 258,
+      "hash": "1882388dbf3a56897b1422eb92c5650b4fa73779c08b27426e42222df12a7e3a"
+    },
+    {
+      "path": "templates/app-icon/mono/accent.svg",
+      "title": "accent.svg",
+      "kind": "source",
+      "characters": 147,
+      "hash": "d09a7f16f085c18e6c3d4646c044084ed9e1e9584463ccc458251115ba57e0f3"
+    },
+    {
+      "path": "templates/app-icon/mono/background.svg",
+      "title": "background.svg",
+      "kind": "source",
+      "characters": 147,
+      "hash": "205a098573467ef80c5ee6e288dcc460905b0e7c2bb6795468983b0046377cf3"
+    },
+    {
+      "path": "templates/app-icon/mono/manifest.json",
+      "title": "manifest.json",
+      "kind": "source",
+      "characters": 225,
+      "hash": "e5cae159c5aebc895f342f6027e15fa20a58bd7d5950a4ce6ec4c614c29e5943"
+    },
+    {
+      "path": "templates/app-icon/mono/symbol.svg",
+      "title": "symbol.svg",
+      "kind": "source",
+      "characters": 258,
+      "hash": "13c2e0f4320a3b156a1a46e8173b06d75e43a67689d38eca81a3ac1e35f235e5"
+    },
+    {
+      "path": "templates/app-icon/README.md",
+      "title": "Editable app icon template",
+      "kind": "guide",
+      "characters": 2978,
+      "hash": "24abb6ac1720ef0648b087999521034472e19090d4fffc9146dfc060bb01df4c"
+    },
+    {
+      "path": "templates/app-icon/tokens.json",
+      "title": "tokens.json",
+      "kind": "source",
+      "characters": 190,
+      "hash": "04b52f2a42b247abb84d461340eef466da0291f57b5d8b30db26358745d28960"
     },
     {
       "path": "templates/ci-cd/github-actions.yml",

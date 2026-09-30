@@ -1,0 +1,14 @@
+{
+  "format": "ios-agent-svg-layer-starter",
+  "version": 1,
+  "canvas": {
+    "width": 1024,
+    "height": 1024
+  },
+  "layers": [
+    "background.svg",
+    "symbol.svg",
+    "accent.svg"
+  ],
+  "nativeIconCreated": false
+}
