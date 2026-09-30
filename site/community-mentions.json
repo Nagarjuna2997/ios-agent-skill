@@ -210,6 +210,16 @@
       "url": "https://cultofclaude.com/agents/nagarjuna2997-ios-agent-skill-3d-experience-designer/",
       "verifiedOn": "2026-09-29",
       "evidence": "Opened agent page: Source identifies Nagarjuna2997/ios-agent-skill; installation references its .claude/agents/3d-experience-designer.md. Directory entry, not independent testing or endorsement."
+    },
+    {
+      "id": "allthingspm",
+      "platform": "AllthingsPM",
+      "kind": "directory",
+      "category": "MCP directory · index",
+      "description": "Lists the MCP server with its Swift review, local-reference and simulator workflow summary and a source link.",
+      "url": "https://www.allthingspm.app/resources/mcp-servers/io-github-nagarjuna2997-ios-agent-skill",
+      "verifiedOn": "2026-09-30",
+      "evidence": "Direct HTTPS fetch returned 200; rendered fallback content names Nagarjuna2997 and links the exact GitHub repository. Directory listing, not an endorsement. Web search extraction failed; direct page verification succeeded."
     }
   ]
 }
