@@ -22,6 +22,16 @@ defaults:
     shell: bash
 
 jobs:
+  local-studio:
+    name: Local studio regression tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node --test studio/test/*.test.mjs
+
   site-discovery:
     name: Website discovery and metadata
     runs-on: ubuntu-latest

@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="studio-token" content="__TOKEN__" />
+    <title>iOS Agent Studio</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <aside class="sidebar">
+      <a class="brand" href="/"
+        ><span class="mark">✳</span> Studio<span class="beta">LOCAL</span></a
+      ><button id="new" class="new">＋ New project</button
+      ><span class="eyebrow">YOUR WORKSPACE</span>
+      <nav id="projects" aria-label="Projects"></nav>
+      <div class="sidebar-bottom">
+        <span class="status-dot"></span> On your Mac
+        <p>Your source. Your next idea.</p>
+        <button id="theme" aria-label="Switch color theme">◐ Appearance</button>
+      </div>
+    </aside>
+    <main>
+      <header>
+        <div>
+          <span class="crumb">Workspace /</span>
+          <strong id="title">A little idea. A real app.</strong>
+        </div>
+        <div class="header-actions">
+          <button id="export" hidden>Export ZIP ↓</button
+          ><button id="reveal" hidden>Project files ↗</button
+          ><button id="xcode" hidden>Open in Xcode ↗</button>
+        </div>
+      </header>
+      <section id="welcome">
+        <div class="intro">
+          <div class="pill">SWIFTUI · BUILT ON YOUR MAC</div>
+          <h1>What will you<br /><em>bring to life?</em></h1>
+          <p>
+            Make something that belongs on your home screen.<br />Start with an
+            idea. Keep the source. See the evidence.
+          </p>
+        </div>
+        <form id="create">
+          <label for="name">Name your project</label
+          ><input
+            id="name"
+            maxlength="60"
+            placeholder="Chapter One"
+            required
+          /><label for="provider">Coding client</label
+          ><select id="provider">
+            <option value="codex">Codex</option>
+            <option value="claude">Claude Code</option></select
+          ><label for="brief">What are we building?</label
+          ><textarea
+            id="brief"
+            rows="4"
+            placeholder="A calm reading list with saved books, search and a way to track what I’ve finished…"
+            required
+            maxlength="10000"
+          ></textarea>
+          <div class="composer-bottom">
+            <span>Reading-list foundation</span
+            ><button type="submit" class="primary">
+              Create workspace <span>↗</span>
+            </button>
+          </div>
+        </form>
+        <div class="ideas">
+          <button id="demo">↳ Try the reading-list idea</button
+          ><span>Build, test, and preview with Xcode.</span>
+        </div>
+        <div class="onboarding">
+          <article>
+            <b>01</b>
+            <h3>Make a plan</h3>
+            <p>Review the screens and behaviors before code changes.</p>
+          </article>
+          <article>
+            <b>02</b>
+            <h3>See it take shape</h3>
+            <p>Swift source, real builds, and simulator screenshots.</p>
+          </article>
+          <article>
+            <b>03</b>
+            <h3>Make it yours</h3>
+            <p>Refine in chat. Open your editable project in Xcode.</p>
+          </article>
+        </div>
+        <p class="privacy">
+          Your brief and Swift files are sent to your selected coding client
+          when you plan or edit. Projects and build evidence are saved on this
+          Mac.
+        </p>
+      </section>
+      <section id="workspace" hidden>
+        <div class="conversation">
+          <div class="section-top">
+            <span class="eyebrow">LET’S BUILD</span
+            ><span id="state" class="pill">Draft</span>
+          </div>
+          <div id="messages" aria-live="polite"></div>
+          <details id="plan" class="plan" hidden></details>
+          <div id="notice" role="status" hidden></div>
+          <div id="error" role="alert" hidden></div>
+          <div class="workflow-actions">
+            <button id="plan-button">Plan app</button
+            ><button id="build" class="primary">Build plan ↗</button
+            ><button id="restore" hidden>Undo changes</button
+            ><button id="verify">Check starter</button
+            ><button id="stop" hidden>Stop</button>
+          </div>
+          <form id="refine">
+            <label for="change">Your next change</label
+            ><textarea
+              id="change"
+              rows="3"
+              placeholder="Make the empty state feel warmer and use an indigo accent…"
+              maxlength="10000"
+              required
+            ></textarea>
+            <div class="composer-bottom">
+              <span>Changes → build → acceptance tests</span
+              ><button type="submit" class="primary">Make changes ↑</button>
+            </div>
+          </form>
+          <p class="fine">
+            First preview: reading-list foundation. Build success covers the
+            starter’s tests; additional features need their own acceptance
+            checks.
+          </p>
+        </div>
+        <div class="preview">
+          <div class="preview-toolbar">
+            <span>SIMULATOR PREVIEW</span
+            ><select id="screen" aria-label="Preview screen">
+              <option value="library">Library</option>
+              <option value="empty">Empty state</option>
+              <option value="add">Add book</option>
+              <option value="detail">Book details</option>
+              <option value="search-empty">No results</option>
+              <option value="error">Error state</option>
+            </select>
+          </div>
+          <div class="stage">
+            <div class="orb orb-one"></div>
+            <div class="orb orb-two"></div>
+            <div class="phone">
+              <img id="capture" alt="Verified simulator capture" hidden />
+              <div id="placeholder">
+                <span class="app-icon">▤</span>
+                <h2>A place for<br />your next idea.</h2>
+                <p>
+                  Your actual simulator screenshot<br />will appear after
+                  verification.
+                </p>
+                <span class="preview-label">PREVIEW NOT GENERATED</span>
+              </div>
+            </div>
+          </div>
+          <div id="evidence" class="evidence">No build evidence yet.</div>
+          <details>
+            <summary>Build activity <span>↗</span></summary>
+            <div id="events"></div>
+            <pre id="logs">No build output yet.</pre>
+          </details>
+        </div>
+      </section>
+      <footer id="health">Checking your local tools…</footer>
+    </main>
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>
