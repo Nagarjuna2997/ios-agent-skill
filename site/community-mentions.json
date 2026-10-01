@@ -220,6 +220,16 @@
       "url": "https://www.allthingspm.app/resources/mcp-servers/io-github-nagarjuna2997-ios-agent-skill",
       "verifiedOn": "2026-09-30",
       "evidence": "Direct HTTPS fetch returned 200; rendered fallback content names Nagarjuna2997 and links the exact GitHub repository. Directory listing, not an endorsement. Web search extraction failed; direct page verification succeeded."
+    },
+    {
+      "id": "skills-directory",
+      "platform": "Skills Directory",
+      "kind": "directory",
+      "category": "Skill directory · automated analysis",
+      "description": "Indexes the skill with installation instructions and an automated analysis of its files.",
+      "url": "https://www.skillsdirectory.com/skills/nagarjuna2997-ios-agent-skill",
+      "verifiedOn": "2026-10-01",
+      "evidence": "Direct HTTPS fetch returned 200 and names Nagarjuna2997/ios-agent-skill in its install command and project metadata. Web search extraction could not open the page; direct HTML verification succeeded. Automated directory analysis is not an endorsement or independent security guarantee."
     }
   ]
 }
