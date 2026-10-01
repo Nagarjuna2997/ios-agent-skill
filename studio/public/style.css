@@ -734,3 +734,24 @@ body.dark {
   line-height: 1.6;
   overflow-wrap: anywhere;
 }
+
+#template,
+#provider {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+  margin-bottom: 20px;
+  font-size: 14px;
+  padding: 11px;
+}
+.plan ol {
+  padding-left: 22px;
+  font-size: 12px;
+  line-height: 1.8;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.plan details {
+  margin-top: 10px;
+}

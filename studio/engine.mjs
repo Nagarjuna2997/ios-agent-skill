@@ -1,3 +1,11 @@
+import {
+  createCustom,
+  customContract,
+  customFingerprint,
+  executeCustom,
+  recoverCustom,
+  restoreCustom,
+} from "./custom.mjs";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { createHash, randomUUID } from "node:crypto";
@@ -217,6 +225,7 @@ export class Studio {
   async init() {
     await fs.mkdir(this.root, { recursive: true });
     for (const p of await this.list()) {
+      if (p.template === "custom") await recoverCustom(this, p);
       if (p.busy) {
         p.busy = false;
         p.status = "interrupted";
@@ -246,7 +255,9 @@ export class Studio {
     p.updated = new Date().toISOString();
     await atomic(path.join(this.dir(p.id), "state.json"), p);
   }
-  async create(name, brief, provider = "codex") {
+  async create(name, brief, provider = "codex", template = "reading-list") {
+    if (!["custom", "reading-list"].includes(template))
+      throw Error("Unknown project foundation");
     if (
       typeof name !== "string" ||
       !name.trim() ||
@@ -261,6 +272,8 @@ export class Studio {
     const id = randomUUID(),
       dir = this.dir(id);
     await fs.mkdir(dir);
+    if (template === "custom")
+      return createCustom(this, id, name, brief, provider);
     await fs.cp(
       path.join(this.repo, "samples/ReadingList"),
       path.join(dir, "project"),
@@ -325,6 +338,8 @@ export class Studio {
     await this.save(p);
   }
   async fingerprint(id) {
+    if ((await this.get(id)).template === "custom")
+      return customFingerprint(path.join(this.dir(id), "project"));
     const base = path.join(this.dir(id), "project");
     let text = await this.contract(id);
     for (const f of ["App/ReadingListApp.swift", "App/ReadingStore.swift"]) {
@@ -336,6 +351,12 @@ export class Studio {
   }
   async contract(id) {
     const base = path.join(this.dir(id), "project");
+    try {
+      await fs.lstat(path.join(base, ".studio-custom.json"));
+      return customContract(base);
+    } catch (e) {
+      if (e.code !== "ENOENT") throw e;
+    }
     let value = "";
     for (const file of [
       "verify.py",
@@ -366,6 +387,7 @@ export class Studio {
   }
   async restoreUnlocked(id) {
     const p = await this.get(id);
+    if (p.template === "custom") return restoreCustom(this, p);
     if (!p.lastRevision) throw Error("No previous revision.");
     if (!/^\d+$/.test(p.lastRevision)) throw Error("Invalid revision");
     const dir = path.join(this.dir(id), "revisions", p.lastRevision);
@@ -511,7 +533,10 @@ export class Studio {
           : {
               plan: "Plan my app",
               build: "Build this plan",
-              verify: "Run the reading-list acceptance checks",
+              verify:
+                p.template === "custom"
+                  ? "Run the planned app checks"
+                  : "Run the reading-list acceptance checks",
             }[kind],
     });
     try {
@@ -541,6 +566,8 @@ export class Studio {
     this.jobs.get(id)?.abort();
   }
   async execute(p, kind, message, signal, attempt = 0) {
+    if (p.template === "custom")
+      return executeCustom(this, p, kind, message, signal, attempt);
     if (signal.aborted) throw Error("Cancelled");
     const project = path.join(this.dir(p.id), "project");
     if (p.contractHash && p.contractHash !== (await this.contract(p.id)))
@@ -704,13 +731,12 @@ export class Studio {
     );
   }
   async screenshot(id, name) {
-    if (
-      !["empty", "add", "library", "detail", "search-empty", "error"].includes(
-        name,
-      )
-    )
-      throw Error("Unknown screenshot");
     const p = await this.get(id);
+    const names =
+      p.template === "custom"
+        ? (p.plan?.journeys ?? []).map((j) => j.screen)
+        : ["empty", "add", "library", "detail", "search-empty", "error"];
+    if (!names.includes(name)) throw Error("Unknown screenshot");
     if (!p.evidence || p.evidence.sourceHash !== (await this.fingerprint(id)))
       throw Error("Preview is stale. Verify again.");
     const b = await fs.readFile(

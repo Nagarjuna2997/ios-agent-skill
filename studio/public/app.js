@@ -85,15 +85,49 @@ async function refresh() {
       ul.append(...items.map((x) => el("li", x)));
       $("plan").append(el("h3", title), ul);
     }
+    if (p.plan.journeys) {
+      $("plan").append(el("h3", "Automated journeys · fixed before coding"));
+      for (const j of p.plan.journeys) {
+        const d = el("details", "");
+        d.append(el("summary", j.name));
+        const steps = el("ol", "");
+        steps.append(
+          ...j.steps.map((s) =>
+            el(
+              "li",
+              s.action +
+                (s.target ? " · " + s.target : "") +
+                (s.value ? " → " + s.value : ""),
+            ),
+          ),
+        );
+        d.append(steps);
+        $("plan").append(d);
+      }
+      if (p.plan.manualCriteria.length)
+        $("plan").append(
+          el(
+            "p",
+            "Manual review: " +
+              p.plan.manualCriteria.map((i) => p.plan.criteria[i]).join(" · "),
+          ),
+        );
+    }
   }
   $("error").hidden = !p.error;
   if (p.error) $("error").textContent = p.error;
   $("restore").hidden = !p.lastRevision;
   $("restore").disabled = p.busy;
   $("export").disabled = p.busy;
-  $("plan-button").disabled = p.busy;
+  $("plan-button").disabled = p.busy || (p.template === "custom" && !!p.plan);
+  $("verify").textContent =
+    p.template === "custom" ? "Run app checks" : "Check starter";
+  $("scope-note").textContent =
+    p.template === "custom"
+      ? "App-specific UI journeys are frozen before code generation. Manual criteria and behavior outside those journeys need review."
+      : "Reading-list acceptance suite. Additional plan criteria need separate review.";
   $("build").disabled = p.busy || !p.plan;
-  $("verify").disabled = p.busy;
+  $("verify").disabled = p.busy || (p.template === "custom" && !p.plan);
   $("refine").querySelector("button").disabled = p.busy || !p.plan;
   $("stop").hidden = !p.busy;
   $("events").replaceChildren(
@@ -103,6 +137,27 @@ async function refresh() {
         el("div", new Date(e.time).toLocaleTimeString() + " · " + e.text),
       ),
   );
+  const options =
+    p.template === "custom"
+      ? (p.plan?.journeys ?? []).map((j) => [j.screen, j.name])
+      : [
+          ["library", "Library"],
+          ["empty", "Empty state"],
+          ["add", "Add book"],
+          ["detail", "Book details"],
+          ["search-empty", "No results"],
+          ["error", "Error state"],
+        ];
+  const oldScreen = $("screen").value;
+  $("screen").replaceChildren(
+    ...options.map(([value, label]) => {
+      const o = el("option", label);
+      o.value = value;
+      return o;
+    }),
+  );
+  if (options.some(([v]) => v === oldScreen)) $("screen").value = oldScreen;
+  $("screen").disabled = !p.evidence;
   if (p.evidence) {
     $("evidence").textContent =
       "Verified " +
@@ -174,6 +229,7 @@ $("create").onsubmit = async (e) => {
       name: $("name").value,
       brief: $("brief").value,
       provider: $("provider").value,
+      template: $("template").value,
     });
     await load(p.id);
   } catch (e) {
@@ -195,6 +251,7 @@ $("new").onclick = () => {
   list().catch(error);
 };
 $("demo").onclick = () => {
+  $("template").value = "reading-list";
   $("name").value = "Chapter One";
   $("brief").value =
     "A calm reading-list app. Save books with a title and author, search my library, mark books finished, and keep everything on device. Make empty states welcoming and errors understandable. Use a warm, minimal SwiftUI design.";
@@ -280,4 +337,12 @@ $("export").onclick = async () => {
   } catch (e) {
     error(e);
   }
+};
+
+$("habit-demo").onclick = () => {
+  $("template").value = "custom";
+  $("name").value = "Pocket Habits";
+  $("brief").value =
+    "Build a calm offline habit tracker. Add a habit with a name, see all habits, mark a habit completed today and undo completion. A Progress tab shows completed versus total habits. Persist habits and completion across launches. Use native SwiftUI tabs, a sage accent, accessible controls and friendly empty states. No accounts or network.";
+  $("name").focus();
 };

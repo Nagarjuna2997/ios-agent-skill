@@ -46,29 +46,34 @@
           ><input
             id="name"
             maxlength="60"
-            placeholder="Chapter One"
+            placeholder="Pocket Habits"
             required
           /><label for="provider">Coding client</label
           ><select id="provider">
             <option value="codex">Codex</option>
             <option value="claude">Claude Code</option></select
+          ><label for="template">Starting point</label
+          ><select id="template">
+            <option value="custom">Your own app idea</option>
+            <option value="reading-list">Reading-list starter</option></select
           ><label for="brief">What are we building?</label
           ><textarea
             id="brief"
             rows="4"
-            placeholder="A calm reading list with saved books, search and a way to track what I’ve finished…"
+            placeholder="A habit tracker with daily check-ins, an overview of my progress and saved routines…"
             required
             maxlength="10000"
           ></textarea>
           <div class="composer-bottom">
-            <span>Reading-list foundation</span
+            <span>Your idea → native SwiftUI</span
             ><button type="submit" class="primary">
               Create workspace <span>↗</span>
             </button>
           </div>
         </form>
         <div class="ideas">
-          <button id="demo">↳ Try the reading-list idea</button
+          <button id="habit-demo">↳ Habit tracker</button
+          ><button id="demo">↳ Reading list</button
           ><span>Build, test, and preview with Xcode.</span>
         </div>
         <div class="onboarding">
@@ -125,10 +130,9 @@
               ><button type="submit" class="primary">Make changes ↑</button>
             </div>
           </form>
-          <p class="fine">
-            First preview: reading-list foundation. Build success covers the
-            starter’s tests; additional features need their own acceptance
-            checks.
+          <p class="fine" id="scope-note">
+            Small offline SwiftUI apps. Review the planned tests; untested
+            behavior needs your review.
           </p>
         </div>
         <div class="preview">

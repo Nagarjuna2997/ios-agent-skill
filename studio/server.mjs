@@ -134,7 +134,12 @@ export async function serve({
       if (parts[1] === "projects" && !parts[2])
         return send(
           201,
-          await studio.create(body.name, body.brief, body.provider),
+          await studio.create(
+            body.name,
+            body.brief,
+            body.provider,
+            body.template,
+          ),
         );
       if (parts[1] === "projects" && parts[2]) {
         const id = parts[2];
@@ -160,7 +165,12 @@ export async function serve({
         }
         if (parts[3] === "xcode") {
           await run("open", [
-            path.join(studio.dir(id), "project/ReadingList.xcodeproj"),
+            path.join(
+              studio.dir(id),
+              (await studio.get(id)).template === "custom"
+                ? "project/AppProject.xcodeproj"
+                : "project/ReadingList.xcodeproj",
+            ),
           ]);
           return send(200, { ok: true });
         }
