@@ -1,0 +1,39 @@
+{
+  "id": "camera-capture",
+  "name": "Camera photo capture",
+  "category": "media-camera",
+  "description": "Takes a photo with the system camera interface, with a clear message where no camera exists (such as the Simulator) and a library fallback.",
+  "default": false,
+  "appleNative": true,
+  "alternatives": [
+    "photos-picker"
+  ],
+  "requires": {
+    "infoPlist": {
+      "NSCameraUsageDescription": "The camera is used to take photos you add in the app."
+    }
+  },
+  "cost": {
+    "model": "free",
+    "note": "Apple frameworks only",
+    "amounts": []
+  },
+  "minOS": "17.0",
+  "docs": [
+    "docs/frameworks/avfoundation.md"
+  ],
+  "usage": "Present `CameraCaptureButton(image: $photo)`; it shows the system camera in a full-screen cover and returns a `UIImage`. Where `CameraCapture.isAvailable` is false (Simulator, some iPads) it is disabled with an explanation; offer photos-picker as the alternative. Rewrite `NSCameraUsageDescription` for the app. For a custom camera UI (scanning, filters), build on AVCaptureSession instead.",
+  "platforms": [
+    "iOS"
+  ],
+  "status": "untested",
+  "statusNote": "Swift compiled on a Mac in the combined compile check (see compileCheck); the module's own verify run has not passed yet: `ios-agent-mcp capabilities verify camera-capture` on a Mac with XcodeGen.",
+  "compileCheck": {
+    "date": "2026-10-02",
+    "xcode": "27.0",
+    "destination": "iPhone 18 Pro Simulator",
+    "swiftLanguageMode": "6",
+    "result": "passed",
+    "scope": "Template Swift and the verify usage file compiled with every other module in one app target (scripts/capability-compile-check.mjs, clean build in Xcode). Not covered: the XcodeGen project, entitlements, the widget extension target and runtime behavior."
+  }
+}

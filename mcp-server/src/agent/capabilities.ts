@@ -107,6 +107,23 @@ export const ManifestSchema = z
     docs: z.array(z.string()).default([]),
     /** Instructions for code generation: the types the template provides and how to wire them into screens. */
     usage: z.string().min(1).max(2000),
+    /**
+     * Evidence that the template Swift compiled on a Mac, separate from `status`:
+     * a compile check builds every module's sources together in one app target,
+     * while `verified` needs the module's own verify run (XcodeGen project,
+     * entitlements, extension targets). Written by hand only from a real build.
+     */
+    compileCheck: z
+      .object({
+        date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+        xcode: z.string().min(1),
+        destination: z.string().min(1),
+        swiftLanguageMode: z.string().min(1),
+        result: z.enum(["passed", "failed"]),
+        scope: z.string().min(1),
+      })
+      .strict()
+      .optional(),
     /** Folder (under the app sources) that receives template/. */
     destination: z.string().regex(/^[A-Za-z][A-Za-z0-9/]*$/).optional(),
   })

@@ -1,0 +1,46 @@
+{
+  "id": "cloudkit-database",
+  "name": "CloudKit database",
+  "category": "backend",
+  "description": "Stores records in the user's private iCloud database with CloudKit, mapping records to Sendable value types and reporting iCloud account problems clearly.",
+  "default": true,
+  "appleNative": true,
+  "alternatives": [
+    "supabase-backend",
+    "firebase-firestore",
+    "rest-api-client"
+  ],
+  "cost": {
+    "model": "subscription",
+    "note": "Needs a paid Apple Developer Program membership for the iCloud container; CloudKit usage within Apple's free allowance has no extra charge",
+    "amounts": [
+      {
+        "label": "Apple Developer Program membership (needed to distribute; not needed for simulator builds)",
+        "usd": 99,
+        "period": "year",
+        "verified": true,
+        "checkedOn": "2026-10-02",
+        "source": "https://developer.apple.com/support/compare-memberships/"
+      }
+    ]
+  },
+  "minOS": "17.0",
+  "docs": [
+    "docs/frameworks/cloudkit.md",
+    "docs/backend/cloudkit.md"
+  ],
+  "usage": "Make each stored type conform to `CloudRecordConvertible` (a `recordType`, `init?(record:)` and `fill(_:)`). Use `CloudKitStore.privateDatabase()` (an `any CloudStore`) to `save`, `fetchAll` and `delete`, and call `accountProblem()` first to show why sync is unavailable (signed out, restricted). Use `PreviewCloudStore` in previews. For SwiftData models, prefer swiftdata-cloudkit-sync instead.",
+  "platforms": [
+    "iOS"
+  ],
+  "status": "untested",
+  "statusNote": "Swift compiled on a Mac in the combined compile check (see compileCheck); the module's own verify run has not passed yet: `ios-agent-mcp capabilities verify cloudkit-database` on a Mac with XcodeGen.",
+  "compileCheck": {
+    "date": "2026-10-02",
+    "xcode": "27.0",
+    "destination": "iPhone 18 Pro Simulator",
+    "swiftLanguageMode": "6",
+    "result": "passed",
+    "scope": "Template Swift and the verify usage file compiled with every other module in one app target (scripts/capability-compile-check.mjs, clean build in Xcode). Not covered: the XcodeGen project, entitlements, the widget extension target and runtime behavior."
+  }
+}

@@ -16,7 +16,12 @@ rmSync(target, { recursive: true, force: true });
 mkdirSync(target, { recursive: true });
 cpSync(source, target, {
   recursive: true,
-  filter: (path) => !path.endsWith(".ts") && !path.endsWith("tsconfig.json") && !path.includes(`${join("capabilities", "node_modules")}`),
+  // _evidence holds build screenshots for the repository docs; the package does not need them.
+  filter: (path) =>
+    !path.endsWith(".ts") &&
+    !path.endsWith("tsconfig.json") &&
+    !path.includes(`${join("capabilities", "node_modules")}`) &&
+    !path.includes(`${join("capabilities", "_evidence")}`),
 });
 const tsc = createRequire(import.meta.url).resolve("typescript/bin/tsc");
 execFileSync(process.execPath, [tsc, "-p", join(source, "tsconfig.json")], { stdio: "inherit" });

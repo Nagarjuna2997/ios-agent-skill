@@ -15,8 +15,9 @@ enum BackgroundRefresh {
         }
     }
 
-    /// Runs the work and schedules the next refresh, whatever the outcome.
-    static func run(_ work: () async throws -> Void) async {
+    /// Runs the work and schedules the next refresh, whatever the outcome. The work runs on
+    /// the caller's actor, so a closure that touches main-actor state is not sent elsewhere.
+    static func run(isolation: isolated (any Actor)? = #isolation, _ work: () async throws -> Void) async {
         defer { schedule() }
         try? await work()
     }

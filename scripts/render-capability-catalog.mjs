@@ -36,6 +36,11 @@ for (const entry of catalog) for (const doc of entry.docs) if (!existsSync(join(
 const status = (entry) => modules.get(entry.id)?.status ?? "planned";
 const counts = { verified: 0, untested: 0, blocked: 0, planned: 0 };
 for (const entry of catalog) counts[status(entry)]++;
+const compiled = (entry) => {
+  const check = modules.get(entry.id)?.compileCheck;
+  return check?.result === "passed" ? `Xcode ${check.xcode}, ${check.date}` : "no";
+};
+const compiledCount = [...modules.values()].filter((m) => m.compileCheck?.result === "passed").length;
 const priorities = ["P0", "P1", "P2", "P3"];
 const categories = [...new Set(catalog.map((e) => e.category))];
 
@@ -54,6 +59,8 @@ const lines = [
   "- `blocked`: the module cannot work in the current setup; see its manifest note.",
   "- `planned`: listed for planning and cost estimates only; the agent reports it as not built.",
   "",
+  `Compiled: ${compiledCount} modules passed the combined compile check (every module's Swift and usage file built together in one app target on a Mac; see [README.md](README.md#compile-check)). That is evidence the code compiles, not a verified module: the per-module verify also covers the XcodeGen project, entitlements and extension targets.`,
+  "",
   "Cost models describe how a service charges, not prices. No price in this catalog is claimed as current; module manifests carry an amount only when it was confirmed on the vendor page, with the date.",
   "",
   "| Priority | Entries | Modules |",
@@ -63,12 +70,12 @@ const lines = [
 ];
 for (const category of categories) {
   const entries = catalog.filter((e) => e.category === category).sort((a, b) => priorities.indexOf(a.priority) - priorities.indexOf(b.priority) || a.id.localeCompare(b.id));
-  lines.push(`## ${category}`, "", "| Capability | Id | Kind | Cost model | You provide | Docs | Priority | Status |", "|---|---|---|---|---|---|---|---|");
+  lines.push(`## ${category}`, "", "| Capability | Id | Kind | Cost model | You provide | Docs | Priority | Status | Compiled |", "|---|---|---|---|---|---|---|---|---|");
   for (const e of entries) {
     const kind = `${e.appleNative ? "Apple" : "third-party"}${e.defaultInCategory ? ", default" : ""}`;
     const docs = e.docs.map((d) => `[${d.split("/").pop().replace(/\.md$/, "")}](../${d})`).join(", ");
     const name = modules.has(e.id) ? `[${esc(e.name)}](${e.id}/recipe.md)` : esc(e.name);
-    lines.push(`| ${name} | \`${e.id}\` | ${kind} | ${e.cost.model}: ${esc(e.cost.note)} | ${e.credentials.length ? e.credentials.map((c) => `\`${c}\``).join(", ") : "nothing"} | ${docs} | ${e.priority} | ${status(e)} |`);
+    lines.push(`| ${name} | \`${e.id}\` | ${kind} | ${e.cost.model}: ${esc(e.cost.note)} | ${e.credentials.length ? e.credentials.map((c) => `\`${c}\``).join(", ") : "nothing"} | ${docs} | ${e.priority} | ${status(e)} | ${compiled(e)} |`);
   }
   lines.push("");
 }
@@ -80,6 +87,7 @@ const summary = [
   "|---|---|",
   `| Verified on a Mac | ${counts.verified} |`,
   `| Module exists, not yet verified on a Mac | ${counts.untested} |`,
+  `| ...of which the Swift compiled on a Mac (combined compile check) | ${compiledCount} |`,
   `| Blocked | ${counts.blocked} |`,
   `| Listed for planning only | ${counts.planned} |`,
   "",

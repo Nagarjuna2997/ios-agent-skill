@@ -21,14 +21,13 @@ struct PhotoPickerField: View {
                     .clipShape(.rect(cornerRadius: 16))
                     .accessibilityLabel(Text("Selected photo"))
             }
-            PhotosPicker(selection: $selection, matching: .images, photoLibrary: .shared()) {
-                if isLoading {
-                    ProgressView()
-                } else {
-                    Label(title, systemImage: "photo.on.rectangle")
-                }
+            if isLoading {
+                ProgressView()
+            } else {
+                // The title initializer avoids a label closure, which is Sendable and
+                // cannot read this view's main-actor state.
+                PhotosPicker(title, selection: $selection, matching: .images, photoLibrary: .shared())
             }
-            .disabled(isLoading)
             if let errorMessage {
                 Text(errorMessage)
                     .font(.footnote)

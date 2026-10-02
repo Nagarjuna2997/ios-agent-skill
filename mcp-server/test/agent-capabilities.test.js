@@ -187,7 +187,11 @@ describe("applying every module", () => {
     const info = target.info.properties;
     assert.deepEqual(info.CFBundleURLTypes, [{ CFBundleURLName: "com.example.foodrun", CFBundleURLSchemes: ["foodrun"] }]);
     assert.deepEqual(info.BGTaskSchedulerPermittedIdentifiers, ["com.example.foodrun.refresh"]);
-    assert.deepEqual(info.UIBackgroundModes, ["fetch"]);
+    // Array values from several modules are merged, not overwritten.
+    assert.deepEqual([...info.UIBackgroundModes].sort(), ["fetch", "remote-notification"]);
+    assert.deepEqual(target.entitlements.properties["com.apple.developer.icloud-container-identifiers"], ["iCloud.com.example.foodrun"]);
+    assert.deepEqual(target.entitlements.properties["com.apple.developer.icloud-services"], ["CloudKit"]);
+    assert.equal(target.entitlements.properties["aps-environment"], "development");
     for (const usage of ["NSLocationWhenInUseUsageDescription", "NSFaceIDUsageDescription"]) assert.ok(info[usage]?.length > 10, usage);
     const base = await readFile(join(root, "Config", "Base.xcconfig"), "utf8");
     assert.match(base, /^SWIFT_EMIT_LOC_STRINGS = YES$/m);
@@ -278,6 +282,30 @@ describe("widget extension", () => {
       const capability = { manifest: { id: "probe", name: "Probe", status: "untested", minOS: "17.0", requires: { infoPlist: {}, entitlements: {}, buildSettings: {}, packages: [], capabilities: [] }, credentialsNeeded: [], cost: { model: "free", note: "", amounts: [] } }, dir, templateFiles: [], applyModule: probe };
       await assert.rejects(applyCapabilities(newAppSpec({ name: "Probe" }), [capability], writer), message);
     }
+  });
+});
+
+describe("compile check project", () => {
+  test("writes one synchronized app target with every module and usage file", async (t) => {
+    const { execFile } = await import("node:child_process");
+    const { promisify } = await import("node:util");
+    const out = await mkdtemp(join(tmpdir(), "capcheck-"));
+    t.after(() => rm(out, { recursive: true, force: true }));
+    const script = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "scripts", "capability-compile-check.mjs");
+    const { stdout } = await promisify(execFile)(process.execPath, [script, "--out", join(out, "CapCheck")]);
+    assert.match(stdout, /Wrote .*CapCheck\.xcodeproj/);
+    const pbx = await readFile(join(out, "CapCheck", "CapCheck.xcodeproj", "project.pbxproj"), "utf8");
+    assert.match(pbx, /objectVersion = 77;/);
+    assert.match(pbx, /isa = PBXFileSystemSynchronizedRootGroup; path = CapCheck;/);
+    assert.match(pbx, /repositoryURL = "https:\/\/github\.com\/airbnb\/lottie-spm\.git"/);
+    assert.match(pbx, /INFOPLIST_KEY_NSCameraUsageDescription = "/);
+    assert.match(pbx, /IPHONEOS_DEPLOYMENT_TARGET = 18\.0;/);
+    // Braces balance, a cheap structural check for the plist-style file.
+    assert.equal((pbx.match(/{/g) ?? []).length, (pbx.match(/}/g) ?? []).length);
+    const ids = [...(await loadCapabilities(capabilitiesDir())).keys()];
+    const usage = await readdir(join(out, "CapCheck", "CapCheck", "Verify"));
+    assert.ok(usage.length >= ids.length - 1, `${usage.length} usage files for ${ids.length} modules`);
+    for (const file of usage) assert.doesNotMatch(await readFile(join(out, "CapCheck", "CapCheck", "Verify", file), "utf8"), /struct VerifyUsage[:\s]/);
   });
 });
 
