@@ -12,8 +12,8 @@
       "path": "checklists/performance.md",
       "title": "Performance Checklist",
       "kind": "guide",
-      "characters": 13784,
-      "hash": "5313a5c1f2943b52e9b780daf60d15a59df28e628bd72366393653c22281bce1"
+      "characters": 13965,
+      "hash": "257564a7ed49f61d521fc9b0042d019bd2ea2df38afc621c627de4e7415bbd8a"
     },
     {
       "path": "checklists/security.md",
@@ -26,8 +26,8 @@
       "path": "checklists/testing.md",
       "title": "Testing Checklist",
       "kind": "guide",
-      "characters": 22167,
-      "hash": "9058ef0f6f278f41739e06e7c3117915f6aae14a6d2e9255ce710139ef6d4bc8"
+      "characters": 22008,
+      "hash": "aba8f6de4f6a665ff5a410a62a0972155414c37e8378c13ab271bdd29ab30f37"
     },
     {
       "path": "docs/agent-engineering-guide.md",
@@ -2616,8 +2616,8 @@
       "path": "docs/design/interaction-standards.md",
       "title": "Interaction Standards",
       "kind": "guide",
-      "characters": 39001,
-      "hash": "7c172bf56bb1c80cdce8283c2e6c3b7e1fb630a3739417cc9f156d642e1df388"
+      "characters": 39308,
+      "hash": "e61c4656ac40b1c677f978c874edb40cbbb9bffd1568918c40fece3be9c75ef9"
     },
     {
       "path": "docs/design/liquid-glass-adoption.md",
@@ -2687,7 +2687,7 @@
       "title": "Accessibility",
       "kind": "guide",
       "characters": 22057,
-      "hash": "018beb81713a7489d53150ec397289046845b142ba557eba1e9d2f13abbce621"
+      "hash": "82ae35f29445cf1b309687d4943099df09687ac8f1280fdf0a8ec0aafa2bc91a"
     },
     {
       "path": "docs/frameworks/activitykit.md",
@@ -2854,8 +2854,8 @@
       "path": "docs/frameworks/hardware/core-nfc.md",
       "title": "CoreNFC",
       "kind": "guide",
-      "characters": 20833,
-      "hash": "773a6974c7d990da2acae8568eba6de06ccf248e8e16805b425129481bb427f8"
+      "characters": 20843,
+      "hash": "e5c358566a7ba4a63abcd5ed63a51e069ad2ccba0c8d6ad12deb0fbf0b71232e"
     },
     {
       "path": "docs/frameworks/hardware/healthkit.md",
@@ -2889,8 +2889,8 @@
       "path": "docs/frameworks/metal.md",
       "title": "Metal -- GPU Rendering, Compute, and Performance-Critical Graphics",
       "kind": "guide",
-      "characters": 12461,
-      "hash": "78832d834415dd4fa63dc4f339bab8f9f0366a74a03809e645271c28feae82bb"
+      "characters": 12530,
+      "hash": "55e360a1463f4b28806a7f28f5f2d30d2ad621e5ac71e80b2a1e51aba5a973a9"
     },
     {
       "path": "docs/frameworks/ml/coreml.md",
@@ -3016,7 +3016,7 @@
       "title": "StoreKit 2",
       "kind": "guide",
       "characters": 21326,
-      "hash": "6308af0b439a4c3c19db09b64b4ddb72302b2cfe11f2a0f73d4f1dd5dd84a2d5"
+      "hash": "aa2033ba7b2188f03488e949c3d6e79ff6a70d7b781e179bfa305add8803d0e5"
     },
     {
       "path": "docs/frameworks/swift-charts.md",
@@ -3288,8 +3288,8 @@
       "path": "docs/swiftui/animations.md",
       "title": "SwiftUI Animations",
       "kind": "guide",
-      "characters": 36927,
-      "hash": "391f51d89792d3ef948ff05bbcaa8e000f7d78f20dd316a307f68c3d292bde18"
+      "characters": 37067,
+      "hash": "7c6bbc208bf7aa4631da06fab4e304ba117f8036428902a92377266341f0ea9e"
     },
     {
       "path": "docs/swiftui/arrangement-views.md",
@@ -3505,8 +3505,8 @@
       "path": "docs/uikit/animations.md",
       "title": "UIKit Animations",
       "kind": "guide",
-      "characters": 34682,
-      "hash": "309fcdd3149fff5ec5d466a136b333d5fb4cfa9f9487887d30e9d500007b2b71"
+      "characters": 34691,
+      "hash": "234cc6f362bfb0571159a4635f835ace52391c24f5d2fcd1e7bb0baa1f83e822"
     },
     {
       "path": "docs/uikit/uikit-essentials.md",
@@ -3589,8 +3589,8 @@
       "path": "patterns/error-handling.md",
       "title": "Error Handling Patterns",
       "kind": "guide",
-      "characters": 18325,
-      "hash": "7b755d85b4a8770dc535613cea1f392dc9d1d76d487669e2a3efb9168d0674be"
+      "characters": 18335,
+      "hash": "4d5303983fc26634d42688540d9ea67edd4675570d7600cd64de34afef6abea4"
     },
     {
       "path": "patterns/metal/README.md",

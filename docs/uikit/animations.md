@@ -1063,6 +1063,6 @@ class ProgressDemoViewController: UIViewController {
 2. **Use `.beginFromCurrentState`** to smoothly interrupt and blend in-flight animations.
 3. **Set `isRemovedOnCompletion = false`** and `fillMode = .forwards` only when necessary -- it prevents the system from cleaning up resources.
 4. **Avoid animating `bounds`** or `frame` directly -- use `transform` for scale and translation, which bypasses layout.
-5. **Use `shouldRasterize`** on layers with complex compositing (`layer.shouldRasterize = true`, `layer.rasterizationScale = UIScreen.main.scale`).
+5. **Use `shouldRasterize`** on layers with complex compositing (`layer.shouldRasterize = true`, `layer.rasterizationScale = traitCollection.displayScale`).
 6. **Offload heavy drawing** to background threads with `CALayer.drawsAsynchronously = true`.
 7. **Profile with Core Animation Instrument** to detect offscreen rendering, blending, and dropped frames.

@@ -9,9 +9,9 @@ Search offline with `node scripts/query-library.mjs search "SwiftData"`. Read a 
 | File | Kind | Characters |
 |---|---|---:|
 | [checklists/app-store-submission.md](../../checklists/app-store-submission.md) | guide | 9565 |
-| [checklists/performance.md](../../checklists/performance.md) | guide | 13784 |
+| [checklists/performance.md](../../checklists/performance.md) | guide | 13965 |
 | [checklists/security.md](../../checklists/security.md) | guide | 17952 |
-| [checklists/testing.md](../../checklists/testing.md) | guide | 22167 |
+| [checklists/testing.md](../../checklists/testing.md) | guide | 22008 |
 | [docs/agent-engineering-guide.md](../../docs/agent-engineering-guide.md) | guide | 63362 |
 | [docs/ai-setup-guide.md](../../docs/ai-setup-guide.md) | guide | 2581 |
 | [docs/ai/machine-learning-brain.md](../../docs/ai/machine-learning-brain.md) | guide | 20714 |
@@ -381,7 +381,7 @@ Search offline with `node scripts/query-library.mjs search "SwiftData"`. Read a 
 | [docs/design/design-tokens.md](../../docs/design/design-tokens.md) | guide | 22658 |
 | [docs/design/fonts-catalog.md](../../docs/design/fonts-catalog.md) | guide | 89896 |
 | [docs/design/icon-composer.md](../../docs/design/icon-composer.md) | guide | 4346 |
-| [docs/design/interaction-standards.md](../../docs/design/interaction-standards.md) | guide | 39001 |
+| [docs/design/interaction-standards.md](../../docs/design/interaction-standards.md) | guide | 39308 |
 | [docs/design/liquid-glass-adoption.md](../../docs/design/liquid-glass-adoption.md) | guide | 13562 |
 | [docs/design/palette-generation.md](../../docs/design/palette-generation.md) | guide | 6158 |
 | [docs/design/README.md](../../docs/design/README.md) | guide | 3214 |
@@ -415,12 +415,12 @@ Search offline with `node scripts/query-library.mjs search "SwiftData"`. Read a 
 | [docs/frameworks/foundation.md](../../docs/frameworks/foundation.md) | guide | 10444 |
 | [docs/frameworks/hardware/core-bluetooth.md](../../docs/frameworks/hardware/core-bluetooth.md) | guide | 22853 |
 | [docs/frameworks/hardware/core-motion.md](../../docs/frameworks/hardware/core-motion.md) | guide | 20266 |
-| [docs/frameworks/hardware/core-nfc.md](../../docs/frameworks/hardware/core-nfc.md) | guide | 20833 |
+| [docs/frameworks/hardware/core-nfc.md](../../docs/frameworks/hardware/core-nfc.md) | guide | 20843 |
 | [docs/frameworks/hardware/healthkit.md](../../docs/frameworks/hardware/healthkit.md) | guide | 25620 |
 | [docs/frameworks/hardware/homekit.md](../../docs/frameworks/hardware/homekit.md) | guide | 23695 |
 | [docs/frameworks/local-authentication.md](../../docs/frameworks/local-authentication.md) | guide | 19479 |
 | [docs/frameworks/mapkit.md](../../docs/frameworks/mapkit.md) | guide | 16221 |
-| [docs/frameworks/metal.md](../../docs/frameworks/metal.md) | guide | 12461 |
+| [docs/frameworks/metal.md](../../docs/frameworks/metal.md) | guide | 12530 |
 | [docs/frameworks/ml/coreml.md](../../docs/frameworks/ml/coreml.md) | guide | 18827 |
 | [docs/frameworks/ml/natural-language.md](../../docs/frameworks/ml/natural-language.md) | guide | 19883 |
 | [docs/frameworks/ml/on-device-ai.md](../../docs/frameworks/ml/on-device-ai.md) | guide | 22611 |
@@ -477,7 +477,7 @@ Search offline with `node scripts/query-library.mjs search "SwiftData"`. Read a 
 | [docs/swift/swift-concurrency.md](../../docs/swift/swift-concurrency.md) | guide | 37669 |
 | [docs/swift/swift-language.md](../../docs/swift/swift-language.md) | guide | 20946 |
 | [docs/swift/swift-standard-library.md](../../docs/swift/swift-standard-library.md) | guide | 20666 |
-| [docs/swiftui/animations.md](../../docs/swiftui/animations.md) | guide | 36927 |
+| [docs/swiftui/animations.md](../../docs/swiftui/animations.md) | guide | 37067 |
 | [docs/swiftui/arrangement-views.md](../../docs/swiftui/arrangement-views.md) | guide | 2749 |
 | [docs/swiftui/deep-linking-and-routing.md](../../docs/swiftui/deep-linking-and-routing.md) | guide | 17650 |
 | [docs/swiftui/gestures.md](../../docs/swiftui/gestures.md) | guide | 20146 |
@@ -508,7 +508,7 @@ Search offline with `node scripts/query-library.mjs search "SwiftData"`. Read a 
 | [docs/tooling/xcode-27-agents.md](../../docs/tooling/xcode-27-agents.md) | guide | 10322 |
 | [docs/tooling/xcode-documentation-resources.md](../../docs/tooling/xcode-documentation-resources.md) | guide | 3150 |
 | [docs/tooling/xcode-memory-debugging.md](../../docs/tooling/xcode-memory-debugging.md) | guide | 5286 |
-| [docs/uikit/animations.md](../../docs/uikit/animations.md) | guide | 34682 |
+| [docs/uikit/animations.md](../../docs/uikit/animations.md) | guide | 34691 |
 | [docs/uikit/uikit-essentials.md](../../docs/uikit/uikit-essentials.md) | guide | 13079 |
 | [docs/uikit/uikit-swiftui-interop.md](../../docs/uikit/uikit-swiftui-interop.md) | guide | 11023 |
 | [docs/web/native-vs-web-animation.md](../../docs/web/native-vs-web-animation.md) | guide | 3374 |
@@ -520,7 +520,7 @@ Search offline with `node scripts/query-library.mjs search "SwiftData"`. Read a 
 | [patterns/animation/README.md](../../patterns/animation/README.md) | guide | 834 |
 | [patterns/clean-architecture.md](../../patterns/clean-architecture.md) | guide | 30312 |
 | [patterns/coordinator.md](../../patterns/coordinator.md) | guide | 12183 |
-| [patterns/error-handling.md](../../patterns/error-handling.md) | guide | 18325 |
+| [patterns/error-handling.md](../../patterns/error-handling.md) | guide | 18335 |
 | [patterns/metal/README.md](../../patterns/metal/README.md) | guide | 629 |
 | [patterns/motion/README.md](../../patterns/motion/README.md) | guide | 1236 |
 | [patterns/motion/splash-screens.md](../../patterns/motion/splash-screens.md) | guide | 3934 |

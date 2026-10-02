@@ -632,7 +632,7 @@ struct NFCReaderWriterView: View {
             TextField("https://example.com", text: $writeURL)
                 .textFieldStyle(.roundedBorder)
                 .keyboardType(.URL)
-                .autocapitalization(.none)
+                .textInputAutocapitalization(.never)
                 .padding(.horizontal)
 
             Button {

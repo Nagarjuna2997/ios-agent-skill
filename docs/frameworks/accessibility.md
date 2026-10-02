@@ -218,7 +218,7 @@ struct ColorAccessibilityView: View {
 
             // Adjust for increased contrast setting
             Text("Status")
-                .foregroundColor(contrast == .increased ? .red : .orange)
+                .foregroundStyle(contrast == .increased ? .red : .orange)
 
             // Photos and images that should not be inverted when Smart Invert is on
             Image("photo")

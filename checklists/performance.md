@@ -165,11 +165,14 @@ ScrollView {
 
 ```swift
 extension UIImage {
-    /// Downsample to the target point size, respecting screen scale.
+    /// Downsample to the target point size at the display scale of the view
+    /// that shows it: pass `@Environment(\.displayScale)` from SwiftUI or
+    /// `traitCollection.displayScale` from UIKit. `UIScreen.main` is
+    /// deprecated and wrong on external displays.
     static func downsample(
         at url: URL,
         to pointSize: CGSize,
-        scale: CGFloat = UIScreen.main.scale
+        scale: CGFloat
     ) -> UIImage? {
         let maxDimension = max(pointSize.width, pointSize.height) * scale
         let options: [CFString: Any] = [

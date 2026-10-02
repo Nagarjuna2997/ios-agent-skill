@@ -552,7 +552,7 @@ struct LoginView: View {
                 )
                 .textContentType(.emailAddress)
                 .keyboardType(.emailAddress)
-                .autocapitalization(.none)
+                .textInputAutocapitalization(.never)
                 .onChange(of: viewModel.email) { _, _ in
                     _ = viewModel.validateEmail()
                 }

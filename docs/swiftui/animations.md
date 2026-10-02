@@ -699,7 +699,8 @@ struct VisualEffectGallery: View {
                         .visualEffect { content, proxy in
                             let frame = proxy.frame(in: .scrollView(axis: .horizontal))
                             let midX = frame.midX
-                            let screenMidX = UIScreen.main.bounds.width / 2
+                            // Visible width of the scroll view (iOS 17+); UIScreen.main is deprecated.
+                            let screenMidX = (proxy.bounds(of: .scrollView(axis: .horizontal))?.width ?? 0) / 2
                             let distance = abs(midX - screenMidX)
                             let maxDistance: CGFloat = 300
                             let normalizedDistance = min(distance / maxDistance, 1.0)

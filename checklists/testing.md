@@ -387,7 +387,6 @@ final class ProfileViewSnapshotTests: XCTestCase {
             .environment(\.colorScheme, .light)
 
         let controller = UIHostingController(rootView: view)
-        controller.view.frame = UIScreen.main.bounds
 
         assertSnapshot(of: controller, as: .image(on: .iPhone13))
     }
@@ -397,7 +396,6 @@ final class ProfileViewSnapshotTests: XCTestCase {
             .environment(\.colorScheme, .dark)
 
         let controller = UIHostingController(rootView: view)
-        controller.view.frame = UIScreen.main.bounds
 
         assertSnapshot(of: controller, as: .image(on: .iPhone13))
     }
@@ -407,7 +405,6 @@ final class ProfileViewSnapshotTests: XCTestCase {
             .environment(\.sizeCategory, .accessibilityExtraLarge)
 
         let controller = UIHostingController(rootView: view)
-        controller.view.frame = UIScreen.main.bounds
 
         assertSnapshot(of: controller, as: .image(on: .iPhone13))
     }

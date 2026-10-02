@@ -412,7 +412,7 @@ struct PaywallView: View {
 
             if let error = errorMessage {
                 Text(error)
-                    .foregroundColor(.red)
+                    .foregroundStyle(.red)
                     .font(.caption)
             }
 
@@ -450,7 +450,7 @@ struct ProductCard: View {
                 .font(.headline)
             Text(product.description)
                 .font(.subheadline)
-                .foregroundColor(.secondary)
+                .foregroundStyle(.secondary)
 
             HStack {
                 Text(product.displayPrice)
@@ -458,7 +458,7 @@ struct ProductCard: View {
                 if let subscription = product.subscription {
                     Text("/ \(subscription.subscriptionPeriod.debugDescription)")
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundStyle(.secondary)
                 }
                 Spacer()
                 Button("Subscribe", action: onPurchase)

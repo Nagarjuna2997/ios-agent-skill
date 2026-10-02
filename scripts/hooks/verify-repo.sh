@@ -50,6 +50,12 @@ if ! VERSION_OUT="$(python3 scripts/check-manifest-versions.py 2>&1)"; then
   FAILURES+=("Manifest versions:\n$VERSION_OUT")
 fi
 
+# 2c. Guide samples do not teach deprecated SwiftUI/UIKit APIs unless they are
+# labelled as counter-examples.
+if ! DEPRECATED_OUT="$(python3 scripts/check-deprecated-apis.py 2>&1)"; then
+  FAILURES+=("Deprecated APIs in guides:\n$DEPRECATED_OUT")
+fi
+
 # 3. Every referenced documentation path exists.
 if ! PATH_OUT="$(python3 - <<'PY' 2>&1
 import os, re, sys

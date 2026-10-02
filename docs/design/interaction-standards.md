@@ -619,22 +619,27 @@ enum ViewState<T> {
 ```swift
 // MARK: - Shimmer Modifier
 struct ShimmerModifier: ViewModifier {
-    @State private var phase: CGFloat = 0
+    // -1 starts the highlight one full width to the left; 1 ends it one width
+    // to the right. Sizing from the content, not UIScreen.main (deprecated),
+    // keeps the sweep correct in split view and on external displays.
+    @State private var phase: CGFloat = -1
 
     func body(content: Content) -> some View {
         content
             .overlay(
-                LinearGradient(
-                    colors: [.clear, .white.opacity(0.4), .clear],
-                    startPoint: .leading,
-                    endPoint: .trailing
-                )
-                .offset(x: phase)
+                GeometryReader { proxy in
+                    LinearGradient(
+                        colors: [.clear, .white.opacity(0.4), .clear],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                    .offset(x: phase * proxy.size.width)
+                }
                 .mask(content)
             )
             .onAppear {
                 withAnimation(.easeInOut(duration: 1.2).repeatForever(autoreverses: false)) {
-                    phase = UIScreen.main.bounds.width
+                    phase = 1
                 }
             }
     }

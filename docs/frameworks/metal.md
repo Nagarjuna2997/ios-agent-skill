@@ -227,7 +227,7 @@ import MetalKit
 let loader = MTKTextureLoader(device: device)
 let texture = try loader.newTexture(
     name: "albedo",
-    scaleFactor: UIScreen.main.scale,
+    scaleFactor: view.traitCollection.displayScale, // the MTKView drawing it; UIScreen.main is deprecated
     bundle: .main,
     options: [
         .textureUsage: MTLTextureUsage.shaderRead.rawValue,
