@@ -258,6 +258,12 @@ if ! DIRECTORY_OUT="$(python3 scripts/sync-apple-technologies.py --check 2>&1)";
   FAILURES+=("Full Apple directory:\n$DIRECTORY_OUT")
 fi
 
+# 11. The local source index matches the guides it indexes. CI checks this; the
+# hook did not, so a guide edit passed locally and failed remotely.
+if ! INDEX_OUT="$(node scripts/index-local-library.mjs --check 2>&1)"; then
+  FAILURES+=("Local source index:\n$INDEX_OUT")
+fi
+
 if ! SITE_OUT="$(python3 scripts/render-site.py --check 2>&1)"; then
   FAILURES+=("Site feature sync:\n$SITE_OUT")
 fi

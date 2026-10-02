@@ -388,7 +388,7 @@ Search offline with `node scripts/query-library.mjs search "SwiftData"`. Read a 
 | [docs/design/stunning-ui-patterns.md](../../docs/design/stunning-ui-patterns.md) | guide | 66267 |
 | [docs/design/third-party-animations.md](../../docs/design/third-party-animations.md) | guide | 13366 |
 | [docs/design/typography-system.md](../../docs/design/typography-system.md) | guide | 24786 |
-| [docs/development.md](../../docs/development.md) | guide | 1204 |
+| [docs/development.md](../../docs/development.md) | guide | 1579 |
 | [docs/evidence-and-scope.md](../../docs/evidence-and-scope.md) | guide | 4918 |
 | [docs/frameworks/accelerate.md](../../docs/frameworks/accelerate.md) | guide | 21359 |
 | [docs/frameworks/accessibility.md](../../docs/frameworks/accessibility.md) | guide | 22057 |
