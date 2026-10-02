@@ -64,6 +64,9 @@ Measured on Linux (Ubuntu 24.04, Node 22.22, Python 3.12). No Swift toolchain, X
 
 - `install.sh` was already idempotent and refused unsafe targets. Added `IOS_AGENT_SKILL_REPO_URL` (defaulting to the GitHub URL) so tests can use a local bare remote, and explicit messages when clone or update fails. Six hermetic tests cover help/usage errors, instruction-only clients, default targets, idempotent re-runs and fast-forward updates, refusal of dirty/other-branch/other-origin/non-checkout/symlink targets, missing git and an unreachable remote. A mutation check (removing the clone-failure message) fails the suite. The new CI job runs them on Ubuntu and macOS; only the Linux run happened here.
 
+- Added a macOS CI job for `samples/ColorSystem`, whose README documents `swift test` but which no workflow ran. It could not be run here (no Swift). Its three tests were checked statically against `palette.json` (35 light keys, matching keys across four appearances, distinct dark values, opaque uppercase sRGB hex), and `ColorPreview.swift` is behind `#if canImport(UIKit)`, so a macOS host build excludes it. If this job is red on the first push, revert commit "ci: run the ColorSystem sample tests on macOS".
+- `samples/ScreenshotStudio` has no Swift package, and `studio/templates/LivePreviewTests.swift` is a UI-test template that needs an app target, so neither got a CI job.
+
 ## Commits
 
 | Commit | Description |

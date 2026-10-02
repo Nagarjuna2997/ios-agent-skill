@@ -347,6 +347,14 @@ jobs:
       - name: Compile Apple adapters and run synthetic transport tests
         run: swift test --package-path samples/BackendPatterns
 
+  color-system-sample:
+    name: Color system sample package tests
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate the bundled palette JSON and appearance contract
+        run: swift test --package-path samples/ColorSystem
+
   system-integration-swift:
     name: Compile system integration demo
     runs-on: macos-latest
