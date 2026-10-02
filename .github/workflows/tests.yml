@@ -32,6 +32,35 @@ jobs:
           node-version: "22"
       - run: node --test studio/test/*.test.mjs
 
+  local-studio-macos:
+    name: Local studio on macOS (tests, tool PATH, launcher compile)
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Regression tests
+        run: node --test studio/test/*.test.mjs
+      - name: Login-shell PATH resolution
+        run: |
+          node --input-type=module -e '
+            import { loginShellPath, resolveToolPath } from "./studio/environment.mjs";
+            const shell = await loginShellPath();
+            if (!shell.split(":").includes("/usr/bin")) throw new Error("login shell lookup failed: " + JSON.stringify(shell));
+            const value = await resolveToolPath();
+            const dirs = value.split(":");
+            if (!dirs.includes("/usr/bin")) throw new Error("PATH missing /usr/bin: " + value);
+            if (dirs.some((d) => !d.startsWith("/"))) throw new Error("relative PATH entry: " + value);
+            console.log("OK -", dirs.length, "PATH entries");
+          '
+      - name: Mac launcher compiles
+        run: |
+          xcrun swiftc -parse-as-library studio/distribution/Launcher.swift \
+            -o "$RUNNER_TEMP/StudioLauncher" -framework AppKit \
+            -target "$(uname -m)-apple-macos14.0"
+          test -x "$RUNNER_TEMP/StudioLauncher"
+
   site-discovery:
     name: Website discovery and metadata
     runs-on: ubuntu-latest

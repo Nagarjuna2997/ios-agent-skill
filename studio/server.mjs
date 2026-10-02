@@ -7,6 +7,7 @@ import os from "node:os";
 import { fileURLToPath } from "node:url";
 import { randomBytes } from "node:crypto";
 import { Studio, run } from "./engine.mjs";
+import { resolveToolPath } from "./environment.mjs";
 const here = path.dirname(fileURLToPath(import.meta.url));
 export async function serve({
   port = 8844,
@@ -219,6 +220,9 @@ export async function serve({
   return { server, studio, live, origin };
 }
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  // Finder and the Mac launcher start Studio with a minimal PATH; use the
+  // login shell PATH so installed Codex/Claude CLIs and Xcode tools resolve.
+  if (process.platform === "darwin") process.env.PATH = await resolveToolPath();
   const app = await serve({
     port: Number(process.env.STUDIO_PORT || 8844),
     ...(process.env.STUDIO_HOME ? { root: process.env.STUDIO_HOME } : {}),
