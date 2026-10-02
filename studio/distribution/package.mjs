@@ -1,0 +1,33 @@
+import { promises as fs } from 'node:fs';
+import path from 'node:path';
+import os from 'node:os';
+import { execFileSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
+const repo=path.resolve(import.meta.dirname,'../..');
+const output=path.resolve(process.argv[2]??path.join(repo,'../studio-distribution'));
+if(process.platform!=='darwin')throw Error('Package on macOS with Xcode.');
+await fs.mkdir(output,{recursive:true});
+const stage=await fs.mkdtemp(path.join(os.tmpdir(),'studio-bundle-'));
+const app=path.join(stage,'iOS Agent Studio.app'),contents=path.join(app,'Contents'),resources=path.join(contents,'Resources');
+await fs.mkdir(path.join(contents,'MacOS'),{recursive:true});await fs.mkdir(path.join(resources,'bin'),{recursive:true});
+const bundledRepo=path.join(resources,'repo');await fs.mkdir(bundledRepo,{recursive:true});
+await fs.cp(path.join(repo,'studio'),path.join(bundledRepo,'studio'),{recursive:true,filter:f=>!f.split(path.sep).some(p=>['test','distribution','.DS_Store'].includes(p))});
+await fs.cp(path.join(repo,'samples/ReadingList'),path.join(bundledRepo,'samples/ReadingList'),{recursive:true,filter:f=>!f.split(path.sep).some(p=>['.build','.ios-agent','xcuserdata','.DS_Store'].includes(p))});
+await fs.copyFile(path.join(repo,'LICENSE'),path.join(bundledRepo,'LICENSE'));
+const libraries=execFileSync('otool',['-L',process.execPath],{encoding:'utf8'});
+if(libraries.split('\n').filter(l=>l.startsWith('\t')).some(l=>!l.trim().startsWith('/usr/lib/')&&!l.trim().startsWith('/System/Library/')))throw Error('Node runtime has non-system dependencies; use a standalone official Node runtime.');
+await fs.copyFile(process.execPath,path.join(resources,'bin/node'));await fs.chmod(path.join(resources,'bin/node'),0o755);
+const license=await fetch(`https://raw.githubusercontent.com/nodejs/node/${process.version}/LICENSE`);if(!license.ok)throw Error('Cannot retrieve matching Node license; distribution stopped.');
+await fs.writeFile(path.join(resources,'NODE-LICENSE.txt'),await license.text());
+await fs.writeFile(path.join(contents,'Info.plist'),`<?xml version="1.0"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>CFBundleName</key><string>iOS Agent Studio</string><key>CFBundleIdentifier</key><string>org.iosagent.studio.preview</string><key>CFBundleExecutable</key><string>Studio</string><key>CFBundlePackageType</key><string>APPL</string><key>CFBundleShortVersionString</key><string>0.1</string><key>CFBundleVersion</key><string>1</string><key>LSMinimumSystemVersion</key><string>14.0</string><key>NSHighResolutionCapable</key><true/></dict></plist>`);
+execFileSync('xcrun',['swiftc','-parse-as-library',path.join(repo,'studio/distribution/Launcher.swift'),'-o',path.join(contents,'MacOS/Studio'),'-framework','AppKit','-target',`${process.arch==='arm64'?'arm64':'x86_64'}-apple-macos14.0`],{stdio:'inherit'});
+// Strip copied Finder metadata from this newly generated bundle only.
+execFileSync('xattr',['-cr',app]);
+execFileSync('codesign',['--force','--deep','--sign','-',app],{stdio:'inherit'});
+execFileSync('codesign',['--verify','--deep','--strict',app],{stdio:'inherit'});
+const zip=path.join(output,'iOS-Agent-Studio-Mac-preview.zip');execFileSync('ditto',['-c','-k','--norsrc','--keepParent',app,zip]);
+const sha=createHash('sha256').update(await fs.readFile(zip)).digest('hex');await fs.writeFile(zip+'.sha256',sha+'  '+path.basename(zip)+'\n');
+await fs.writeFile(path.join(output,'INSTALL.txt'),'iOS Agent Studio — local Mac preview\n\nExtract the ZIP and move iOS Agent Studio.app to Applications. Xcode with an iOS Simulator and a signed-in Codex or Claude Code CLI are required. Node is bundled. Open the app, then use the browser workspace. Projects stay in ~/Library/Application Support/iOS Agent Studio. This preview is ad-hoc signed, NOT Developer ID signed or notarized. Downloaded copies may be blocked by Gatekeeper; do not disable macOS security. A signed/notarized public release remains pending.\n\nQuit Studio to stop a server it started. If another Studio server was already running, it is reused and left running.\n');
+// Remove the temporary staging bundle; the ZIP is the deliverable.
+await fs.rm(stage,{recursive:true,force:true});
+console.log(JSON.stringify({zip,sha256:sha,runtime:process.version,architecture:process.arch},null,2));

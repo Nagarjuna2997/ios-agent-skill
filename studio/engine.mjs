@@ -255,7 +255,8 @@ export class Studio {
     p.updated = new Date().toISOString();
     await atomic(path.join(this.dir(p.id), "state.json"), p);
   }
-  async create(name, brief, provider = "codex", template = "reading-list") {
+  async create(name, brief, provider = "codex", template = "reading-list", backend = "none") {
+    if (!["none", "local"].includes(backend) || (backend === "local" && template !== "custom")) throw Error("Backend requires a custom project");
     if (!["custom", "reading-list"].includes(template))
       throw Error("Unknown project foundation");
     if (
@@ -273,7 +274,7 @@ export class Studio {
       dir = this.dir(id);
     await fs.mkdir(dir);
     if (template === "custom")
-      return createCustom(this, id, name, brief, provider);
+      return createCustom(this, id, name, brief, provider, backend);
     await fs.cp(
       path.join(this.repo, "samples/ReadingList"),
       path.join(dir, "project"),
@@ -425,7 +426,7 @@ export class Studio {
             .some((x) => [".build", ".ios-agent", "xcuserdata"].includes(x)),
       });
       const zip = path.join(staging, "project.zip");
-      await this.runner("ditto", ["-c", "-k", "--keepParent", target, zip]);
+      await this.runner("ditto", ["-c", "-k", "--norsrc", "--keepParent", target, zip]);
       if (before !== (await this.fingerprint(id)))
         throw Error("Source changed during export. Export again.");
       return await fs.readFile(zip);

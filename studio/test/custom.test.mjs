@@ -350,3 +350,9 @@ test("custom source changing during a test run cannot receive evidence", async (
   assert.equal(state.evidence, null);
   assert.match(state.error, /changed during verification/);
 });
+
+test('one invalid planner response is corrected before the contract is frozen',async t=>{
+ let calls=0;const s=await setup(t,async()=>JSON.stringify({result:JSON.stringify(++calls===1?{...plan(),manualCriteria:[],journeys:plan().journeys.slice(0,1)}:plan())}));
+ const p=await s.create('Counter','Counter','claude','custom');await s.action(p.id,'plan');await finish(s);
+ assert.equal(calls,2);assert.equal((await s.get(p.id)).status,'planned');
+});

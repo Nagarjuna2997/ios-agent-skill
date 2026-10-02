@@ -1,3 +1,5 @@
+import { LocalBackend } from "./backend.mjs";
+import { LivePreview } from "./live.mjs";
 import http from "node:http";
 import { promises as fs } from "node:fs";
 import path from "node:path";
@@ -16,6 +18,8 @@ export async function serve({
 } = {}) {
   const studio = new Studio(root, repo);
   await studio.init();
+  studio.backend = new LocalBackend(root);
+  const live = new LivePreview(studio);
   const token = randomBytes(32).toString("hex");
   let origin;
   const server = http.createServer(async (req, res) => {
@@ -37,6 +41,24 @@ export async function serve({
         return send(403, { error: "Invalid origin" });
       const u = new URL(req.url, origin);
       const parts = u.pathname.split("/").filter(Boolean);
+      const readBody = async (limit) => { const chunks=[];let size=0;for await(const b of req){size+=b.length;if(size>limit)throw Error("Request too large");chunks.push(b);}return Buffer.concat(chunks); };
+      if (u.pathname === "/_studio" && req.method === "GET") return send(200, {product:"iOS Agent Studio",protocol:1});
+      if (parts[0] === "driver") {
+        if (!live.authorize(parts[1], req.headers["x-preview-token"])) return send(403,{error:"Preview authorization failed"});
+        if (parts[2] === "command" && req.method === "GET") return send(200,live.command());
+        if (parts[2] === "frame" && req.method === "POST") { live.frame(await readBody(8000000),req.headers["x-command-completed"],req.headers["x-input-error"]); return send(200,{ok:true}); }
+        return send(404,{error:"Unknown preview route"});
+      }
+      if (parts[0] === "backend") {
+        const p=await studio.get(parts[1]);
+        if(p.backend!=="local" || !await studio.backend.authorized(p.id,req.headers.authorization?.replace(/^Bearer /,""))) return send(403,{error:"Backend authorization failed"});
+        const ns=req.headers["x-workspace"];
+        if(parts[2]!=="records")return send(404,{error:"Not found"});
+        if(req.method==="GET"&&!parts[3]) return send(200,await studio.backend.records(p.id,ns));
+        if(req.method==="PUT"&&parts[3]) {const body=JSON.parse((await readBody(64000)).toString());return send(200,await studio.backend.mutate(p.id,ns,parts[3],body.fields));}
+        if(req.method==="DELETE"&&parts[3]) {await studio.backend.mutate(p.id,ns,parts[3],null);res.writeHead(204);return res.end();}
+        return send(405,{error:"Method not allowed"});
+      }
       if (parts[0] !== "api") {
         const files = {
           "/": "index.html",
@@ -61,6 +83,10 @@ export async function serve({
       if (req.headers["x-studio-token"] !== token)
         return send(403, { error: "Reload Studio to reconnect." });
       if (req.method === "GET") {
+        if(parts[1]==="live") {
+          if(parts[2]==="frame") {if(!live.session?.frame)return send(404,{error:"No live frame"});return send(200,live.session.frame,"image/png");}
+          return send(200,live.status());
+        }
         if (parts[1] === "projects" && !parts[2])
           return send(200, await studio.list());
         if (parts[1] === "health") {
@@ -99,6 +125,7 @@ export async function serve({
           });
         }
         if (parts[1] === "projects" && parts[2]) {
+          if(parts[3]==="backend") { const p=await studio.get(parts[2]);return send(200,{enabled:p.backend==="local",records:p.backend==="local"?await studio.backend.records(p.id,"preview"):[]}); }
           if (parts[3] === "screen")
             return send(
               200,
@@ -139,11 +166,15 @@ export async function serve({
             body.brief,
             body.provider,
             body.template,
+            body.backend,
           ),
         );
       if (parts[1] === "projects" && parts[2]) {
         const id = parts[2];
         await studio.get(id);
+        if(parts[3]==="live-start")return send(202,await live.start(id));
+        if(parts[3]==="live-stop"){if(live.session?.project!==id)throw Error("Wrong live project");return send(200,await live.stop());}
+        if(parts[3]==="live-input")return send(202,live.input(id,body));
         if (parts[3] === "restore") return send(200, await studio.restore(id));
         if (parts[3] === "export") {
           const archive = await studio.exportProject(id);
@@ -184,7 +215,8 @@ export async function serve({
   });
   await new Promise((resolve) => server.listen(port, "127.0.0.1", resolve));
   origin = `http://127.0.0.1:${server.address().port}`;
-  return { server, studio, origin };
+  studio.origin = origin;
+  return { server, studio, live, origin };
 }
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const app = await serve({
@@ -197,6 +229,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   for (const s of ["SIGINT", "SIGTERM"])
     process.on(s, async () => {
       for (const id of app.studio.jobs.keys()) app.studio.cancel(id);
+      await app.live.stop();
       app.server.close();
       while (app.studio.jobs.size) await new Promise((r) => setTimeout(r, 50));
       process.exit();

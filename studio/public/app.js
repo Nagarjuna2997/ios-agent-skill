@@ -63,6 +63,8 @@ async function refresh() {
     return;
   }
   current = p;
+  $("backend-panel").hidden = p.backend !== "local";
+  $("live-start").disabled = p.busy || !p.evidence || p.template !== "custom";
   $("title").textContent = p.name;
   $("state").textContent = p.status;
   $("messages").replaceChildren(
@@ -164,7 +166,7 @@ async function refresh() {
       new Date(p.evidence.date).toLocaleString() +
       ". " +
       p.evidence.scope;
-    await screenshot();
+    if (!liveActive) await screenshot();
   } else {
     $("capture").hidden = true;
     $("placeholder").hidden = false;
@@ -230,6 +232,7 @@ $("create").onsubmit = async (e) => {
       brief: $("brief").value,
       provider: $("provider").value,
       template: $("template").value,
+      backend: $("backend").value,
     });
     await load(p.id);
   } catch (e) {
@@ -252,6 +255,7 @@ $("new").onclick = () => {
 };
 $("demo").onclick = () => {
   $("template").value = "reading-list";
+  $("backend").value = "none";
   $("name").value = "Chapter One";
   $("brief").value =
     "A calm reading-list app. Save books with a title and author, search my library, mark books finished, and keep everything on device. Make empty states welcoming and errors understandable. Use a warm, minimal SwiftUI design.";
@@ -346,3 +350,33 @@ $("habit-demo").onclick = () => {
     "Build a calm offline habit tracker. Add a habit with a name, see all habits, mark a habit completed today and undo completion. A Progress tab shows completed versus total habits. Persist habits and completion across launches. Use native SwiftUI tabs, a sage accent, accessible controls and friendly empty states. No accounts or network.";
   $("name").focus();
 };
+
+let liveWasRunning=false,liveActive=false,livePolling=false,liveFrame=0,liveProject=null,pointerStart=null;
+$("template").onchange=()=>{ $("backend").disabled=$("template").value!=="custom";if($("backend").disabled)$("backend").value="none"; };
+$("live-start").onclick=async()=>{try{await api(`projects/${selected}/live-start`,{});liveProject=selected;liveFrame=0;await pollLive();}catch(e){error(e);}};
+$("live-stop").onclick=async()=>{try{await api(`projects/${liveProject}/live-stop`,{});await pollLive();}catch(e){error(e);}};
+async function liveCommand(command){try{await api(`projects/${selected}/live-input`,command);}catch(e){error(e);}}
+$("live-input").onsubmit=e=>{e.preventDefault();liveCommand({action:"type",text:$("live-text").value});$("live-text").value="";};
+$("live-return").onclick=()=>liveCommand({action:"type",text:"\n"});
+$("live-relaunch").onclick=()=>liveCommand({action:"relaunch"});
+$("capture").onpointerdown=e=>{if(!liveActive)return;const r=e.currentTarget.getBoundingClientRect();pointerStart={x:(e.clientX-r.left)/r.width,y:(e.clientY-r.top)/r.height};e.currentTarget.setPointerCapture(e.pointerId);e.preventDefault();};
+$("capture").onpointerup=e=>{if(!liveActive||!pointerStart)return;const r=e.currentTarget.getBoundingClientRect();const endX=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width)),endY=Math.max(0,Math.min(1,(e.clientY-r.top)/r.height));const start=pointerStart;pointerStart=null;liveCommand(Math.hypot(start.x-endX,start.y-endY)>0.035?{action:"swipe",...start,endX,endY}:{action:"tap",...start});};
+async function pollLive(){
+ if(livePolling)return;livePolling=true;
+ try{
+ const s=await api("live"),was=liveActive;
+ liveProject=s.project??null;liveActive=s.project===selected&&s.state==="ready";
+ const running=["starting","ready","stopping"].includes(s.state);
+ $("live-stop").hidden=!running;$("live-start").disabled=running||!current?.evidence||current?.template!=="custom";
+ $("live-status").textContent=running?`${s.state} · ${s.device??"simulator"} · input ${s.completed??0}/${s.queued??0}${s.inputError?" · "+s.inputError:""}`:(s.error||"Captures are saved test evidence.");
+ $("live-input").hidden=!liveActive;$("capture").classList.toggle("interactive",liveActive);$("screen").disabled=running||!current?.evidence;
+ if(running)$("refine").querySelector("button").disabled=true;
+ for(const id of ["build","verify","plan-button","restore","export"])if(running)$(id).disabled=true;
+ if(liveActive){$("evidence").textContent="LIVE · Tap or drag the simulator image. This is interactive development, not acceptance evidence.";
+ if(s.frame!==liveFrame){const project=selected;const response=await fetch("/api/live/frame",{headers:{"X-Studio-Token":token}});if(response.ok){const blob=await response.blob();if(project===selected&&liveActive){if(imageURL)URL.revokeObjectURL(imageURL);imageURL=URL.createObjectURL(blob);$("capture").src=imageURL;$("capture").alt="Live interactive simulator";$("capture").hidden=false;$("placeholder").hidden=true;liveFrame=s.frame;lastImage="";}}}}
+ else if(liveWasRunning&&!running){current=null;await refresh();}
+ liveWasRunning=running;
+ }catch(e){$("live-status").textContent=e.message;}finally{livePolling=false;}
+}
+setInterval(pollLive,1200);
+$("backend-refresh").onclick=async()=>{try{const data=await api(`projects/${selected}/backend`);$("backend-records").textContent=JSON.stringify(data.records,null,2);}catch(e){error(e);}};

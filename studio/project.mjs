@@ -233,6 +233,8 @@ export function acceptanceSwift(plan) {
         (j, i) => `func testJourney${i + 1}() throws {
 continueAfterFailure = false
 let app = XCUIApplication()
+for key in ["STUDIO_BACKEND_URL", "STUDIO_BACKEND_TOKEN"] { app.launchEnvironment[key] = ProcessInfo.processInfo.environment[key] }
+if let namespace = ProcessInfo.processInfo.environment["STUDIO_BACKEND_NAMESPACE"] { app.launchEnvironment["STUDIO_BACKEND_NAMESPACE"] = namespace + "-journey${i+1}" }
 app.launchArguments = ["--studio-reset", "--studio-testing"]
 app.launch()
 ${j.steps

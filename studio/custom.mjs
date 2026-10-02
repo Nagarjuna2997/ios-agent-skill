@@ -1,3 +1,4 @@
+import { backendGuide } from "./backend.mjs";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { createHash } from "node:crypto";
@@ -225,7 +226,7 @@ async function transaction(studio, p, changes, update) {
     throw e;
   }
 }
-export async function createCustom(studio, id, name, brief, provider) {
+export async function createCustom(studio, id, name, brief, provider, backend = "none") {
   const base = path.join(studio.dir(id), "project");
   await fs.mkdir(path.join(base, "App"), { recursive: true });
   const bundle = "com.example.app" + id.replaceAll("-", "");
@@ -267,6 +268,7 @@ export async function createCustom(studio, id, name, brief, provider) {
     brief,
     provider,
     template: "custom",
+    backend,
     bundle,
     contractHash: await customContract(base),
     status: "draft",
@@ -314,7 +316,7 @@ export async function restoreCustom(studio, p) {
   return p;
 }
 const planInstructions = `Plan a small offline native SwiftUI iOS app from the user's brief, not a reading-list template. Return only JSON:
-{"summary":"scope and assumptions","screens":["screen"],"criteria":["specific testable behavior"],"manualCriteria":[0],"journeys":[{"name":"a user journey","criteria":[1],"steps":[{"action":"tap","role":"button","target":"unique-accessibility-id"},{"action":"type","role":"textField","target":"id","value":"sample"},{"action":"exists","role":"text","target":"visible result"}]}]}
+{"summary":"scope and assumptions","screens":["screen"],"criteria":["manual visual review","specific testable behavior"],"manualCriteria":[0],"journeys":[{"name":"a user journey","criteria":[1],"steps":[{"action":"tap","role":"button","target":"unique-accessibility-id"},{"action":"type","role":"textField","target":"id","value":"sample"},{"action":"exists","role":"text","target":"visible result"}]}]}
 Create 2–5 meaningful journeys covering create/edit/navigation and persistence by relaunch where relevant. Each journey starts with fresh data via --studio-reset; relaunch does NOT reset. Actions: tap, type (appends to field), exists, absent, text (exact label equality, needs value), relaunch (no other fields). Roles: button, textField, secureTextField, text, any. Targets match accessibility identifier or label exactly. Use stable accessibility identifiers for controls. Make assertions about visible outcomes, not just button existence. Avoid gestures, timing-dependent timers, system alerts, unsupported UI automation, and keychain/permissions. No network, accounts, services, payments or third-party dependencies. If requested, explicitly mark those as unimplemented manual scope rather than pretend. Each criterion must be covered by a journey or listed by zero-based index in manualCriteria. Tests are generated and frozen before implementation; do not invent unavailable features. Keep UI journeys short and actions reachable without scrolling. No markdown.`;
 export async function executeCustom(
   studio,
@@ -337,13 +339,15 @@ export async function executeCustom(
         "This project’s test plan is frozen. Start another workspace for a different acceptance contract.",
       );
     const before = await customFingerprint(base);
-    const plan = validateCustomPlan(
-      await studio.client(
-        planInstructions + "\nName: " + p.name + "\nBrief: " + p.brief,
-        signal,
-        p.provider,
-      ),
-    );
+    const prompt = planInstructions + (p.backend === "local" ? "\nOverride offline-only storage: use a local REST backend for all data, no login or paid services. Journeys must verify server data persists across relaunch. " : "") + "\nName: " + p.name + "\nBrief: " + p.brief;
+    let answer = await studio.client(prompt, signal, p.provider);
+    let plan;
+    try { plan = validateCustomPlan(answer); }
+    catch (error) {
+      await studio.log(p, "Plan validation failed: " + error.message + ". Requesting one corrected plan before freezing any tests.");
+      answer = await studio.client(prompt + "\nYour previous plan was invalid: " + error.message + "\nPrevious plan: " + JSON.stringify(answer) + "\nReturn the complete corrected JSON plan. Every zero-based criterion index must appear in journeys.criteria or manualCriteria.", signal, p.provider);
+      plan = validateCustomPlan(answer);
+    }
     if (signal.aborted) throw Error("Cancelled");
     if (before !== (await customFingerprint(base)))
       throw Error("Source changed while planning. Try again.");
@@ -378,7 +382,7 @@ export async function executeCustom(
       "Generating your app’s Swift files. Project configuration and planned acceptance tests remain protected.",
     );
     const answer = await studio.client(
-      `Build the user's offline SwiftUI iOS app. Swift 6, iOS 17+. Return only JSON {"summary":"changes","files":[{"path":"App/AppMain.swift","content":"full source"},{"path":"App/Views/HomeView.swift","content":"full source"}],"delete":["App/Obsolete.swift"]}. Files merge with existing source; explicitly delete obsolete files. You may create up to 24 Swift files in App/ subfolders. Keep exactly one @main entry point. For a small change use {"summary":"changes","edits":[{"path":"App/file.swift","before":"unique exact text","after":"replacement"}]} instead. Do not modify tests or project settings. No packages, network, signing, backend, shell execution or personal branding. Use native SwiftUI navigation, semantic colors, Dynamic Type, accessibility identifiers from frozen journeys. MainActor observable models. On --studio-reset remove only this app's own persisted data before rendering; on --studio-testing still run REAL app functionality, never fake test-only screens/data. Preserve data when relaunched without --studio-reset. Separate models, store, theme and screens into focused files. Handle errors visibly. Implement the user brief, not only the test labels. Review checks must exercise real behavior.\nName: ${p.name}\nBrief: ${p.brief}\nFrozen plan: ${JSON.stringify(p.plan)}\nChange: ${message || "Implement this complete small app with a polished, domain-specific SwiftUI design."}\nExisting source: ${JSON.stringify(sources)}`,
+      `Build the user's SwiftUI iOS app. Swift 6, iOS 17+. Return only JSON {"summary":"changes","files":[{"path":"App/AppMain.swift","content":"full source"},{"path":"App/Views/HomeView.swift","content":"full source"}],"delete":["App/Obsolete.swift"]}. Files merge with existing source; explicitly delete obsolete files. You may create up to 24 Swift files in App/ subfolders. Keep exactly one @main entry point. For a small change use {"summary":"changes","edits":[{"path":"App/file.swift","before":"unique exact text","after":"replacement"}]} instead. Do not modify tests or project settings. ${p.backend === "local" ? "Use only the configured local REST backend. No other network services." : "No network or backend."} No packages, signing, shell execution or personal branding. Use native SwiftUI navigation, semantic colors, Dynamic Type, accessibility identifiers from frozen journeys. MainActor observable models. On --studio-reset remove only this app's own persisted data before rendering; on --studio-testing still run REAL app functionality, never fake test-only screens/data. Preserve data when relaunched without --studio-reset. Separate models, store, theme and screens into focused files. Handle errors visibly. Implement the user brief, not only the test labels. Review checks must exercise real behavior.\nName: ${p.name}\nBrief: ${p.brief}\nFrozen plan: ${JSON.stringify(p.plan)}\nChange: ${message || "Implement this complete small app with a polished, domain-specific SwiftUI design."}\n${p.backend === "local" ? backendGuide : ""}\nExisting source: ${JSON.stringify(sources)}`,
       signal,
       p.provider,
     );
@@ -433,18 +437,22 @@ export async function executeCustom(
   await studio.save(p);
   const testedHash = await customFingerprint(base);
   let writes = Promise.resolve();
+  const backendEnv = p.backend === "local" ? await studio.backend.environment(p.id, studio.origin, "test-" + Date.now()) : {};
+  const redact = s => s.replaceAll(backendEnv.TEST_RUNNER_STUDIO_BACKEND_TOKEN ?? "__no_backend_token__", "[redacted]");
   try {
     await studio.runner("python3", ["verify.py"], {
       cwd: base,
       signal,
       timeout: 1200000,
+      env: backendEnv,
       onText: (s) => {
-        writes = writes.then(() => fs.appendFile(logFile, s));
+        writes = writes.then(() => fs.appendFile(logFile, redact(s)));
       },
     });
     await writes;
   } catch (e) {
     await writes;
+    e.message = redact(e.message);
     if (kind !== "verify" && attempt < 1 && !signal.aborted) {
       await studio.log(
         p,

@@ -56,7 +56,7 @@
           ><select id="template">
             <option value="custom">Your own app idea</option>
             <option value="reading-list">Reading-list starter</option></select
-          ><label for="brief">What are we building?</label
+          ><label for="backend">Data storage</label><select id="backend"><option value="none">On-device storage</option><option value="local">Local REST backend · development</option></select><label for="brief">What are we building?</label
           ><textarea
             id="brief"
             rows="4"
@@ -136,6 +136,7 @@
           </p>
         </div>
         <div class="preview">
+          <div class="live-actions"><button id="live-start">▶ Live simulator</button><button id="live-stop" hidden>Stop preview</button><span id="live-status">Captures are saved test evidence.</span></div>
           <div class="preview-toolbar">
             <span>SIMULATOR PREVIEW</span
             ><select id="screen" aria-label="Preview screen">
@@ -163,6 +164,8 @@
               </div>
             </div>
           </div>
+          <form id="live-input" hidden><label for="live-text">Type into the focused simulator field</label><input id="live-text" maxlength="500" autocomplete="off" placeholder="Tap a field in the preview first"/><button>Send text</button><button type="button" id="live-return">Return ↵</button><button type="button" id="live-relaunch">Relaunch</button></form>
+          <details id="backend-panel" hidden><summary>Development backend data</summary><button id="backend-refresh">Refresh records</button><pre id="backend-records">Preview namespace only. Automated tests use isolated datasets.</pre></details>
           <div id="evidence" class="evidence">No build evidence yet.</div>
           <details>
             <summary>Build activity <span>↗</span></summary>
