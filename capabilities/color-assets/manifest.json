@@ -1,0 +1,27 @@
+{
+  "id": "color-assets",
+  "name": "Brand colors (asset catalog)",
+  "category": "assets",
+  "description": "Semantic brand colors in the asset catalog with light and dark variants, derived from one hue until the real palette is supplied, and typed accessors.",
+  "default": true,
+  "appleNative": true,
+  "alternatives": [
+    "appearance-settings"
+  ],
+  "cost": {
+    "model": "free",
+    "note": "No cost",
+    "amounts": []
+  },
+  "minOS": "17.0",
+  "docs": [
+    "docs/design/palette-generation.md",
+    "docs/design/asset-generation.md"
+  ],
+  "usage": "Use `AppColor.primary` for tint and primary buttons (set `.tint(AppColor.primary)` at the root), `AppColor.onPrimary` for text on it, `AppColor.secondary` for accents and `AppColor.surface` for cards. Use system semantic colors (`.primary`, `.secondary`, `.background`) for text and standard backgrounds.",
+  "platforms": [
+    "iOS"
+  ],
+  "status": "untested",
+  "statusNote": "Not yet built on a Mac; run `ios-agent-mcp capabilities verify color-assets` on a Mac with Xcode."
+}

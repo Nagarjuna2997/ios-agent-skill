@@ -1,0 +1,26 @@
+{
+  "id": "app-intents-shortcuts",
+  "name": "Siri and Shortcuts (App Intents)",
+  "category": "sharing-deep-links",
+  "description": "An App Intent that opens the app at a chosen screen, exposed as an App Shortcut so it works in Siri, Spotlight and the Shortcuts app without setup.",
+  "default": false,
+  "appleNative": true,
+  "alternatives": [
+    "deep-links"
+  ],
+  "cost": {
+    "model": "free",
+    "note": "Apple frameworks only",
+    "amounts": []
+  },
+  "minOS": "17.0",
+  "docs": [
+    "docs/frameworks/app-intents.md"
+  ],
+  "usage": "Edit `AppScreen` cases to the app's top-level screens (ids should match the screen ids in the plan). Observe `IntentNavigation.shared.requested` in the root view and switch to that screen, then set it back to nil. Add more intents for real actions (for example reorder the last order) following the same pattern.",
+  "platforms": [
+    "iOS"
+  ],
+  "status": "untested",
+  "statusNote": "Not yet built on a Mac; run `ios-agent-mcp capabilities verify app-intents-shortcuts` on a Mac with Xcode."
+}

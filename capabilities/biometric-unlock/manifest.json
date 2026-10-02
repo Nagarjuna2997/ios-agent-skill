@@ -1,0 +1,32 @@
+{
+  "id": "biometric-unlock",
+  "name": "Face ID / Touch ID lock",
+  "category": "authentication",
+  "description": "Locks sensitive content behind Face ID, Touch ID or the device passcode with LocalAuthentication, re-locking when the app goes to the background.",
+  "default": false,
+  "appleNative": true,
+  "alternatives": [
+    "passkeys",
+    "sign-in-with-apple"
+  ],
+  "requires": {
+    "infoPlist": {
+      "NSFaceIDUsageDescription": "Face ID keeps your information private."
+    }
+  },
+  "cost": {
+    "model": "free",
+    "note": "Apple frameworks only",
+    "amounts": []
+  },
+  "minOS": "17.0",
+  "docs": [
+    "docs/frameworks/local-authentication.md"
+  ],
+  "usage": "Wrap a screen with `.biometricLock(isEnabled: settings.lockEnabled)`; it shows `LockedView` until the user authenticates and locks again when the scene leaves the foreground. Inject `any BiometricAuthenticating` for tests (`PreviewBiometricAuthenticator`). This protects content on the device; it is not account sign-in. Rewrite `NSFaceIDUsageDescription` for the app.",
+  "platforms": [
+    "iOS"
+  ],
+  "status": "untested",
+  "statusNote": "Not yet built on a Mac; run `ios-agent-mcp capabilities verify biometric-unlock` on a Mac with Xcode."
+}

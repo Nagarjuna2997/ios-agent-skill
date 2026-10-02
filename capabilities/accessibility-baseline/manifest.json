@@ -1,0 +1,25 @@
+{
+  "id": "accessibility-baseline",
+  "name": "Accessibility baseline",
+  "category": "accessibility",
+  "description": "Helpers that make the common accessibility requirements easy: 44 point tap targets, Reduce Motion aware animation, and scaled spacing for Dynamic Type.",
+  "default": true,
+  "appleNative": true,
+  "alternatives": [],
+  "cost": {
+    "model": "free",
+    "note": "Apple frameworks only",
+    "amounts": []
+  },
+  "minOS": "17.0",
+  "docs": [
+    "docs/frameworks/accessibility.md",
+    "docs/design/color-accessibility.md"
+  ],
+  "usage": "Use `.minimumTapTarget()` on small icon buttons, `.motionAwareAnimation(.spring, value: x)` instead of `.animation` for decorative motion, and `@ScaledMetric` spacing via `ScaledSpacing`. Give icon-only buttons a text label (`Label` or `.accessibilityLabel`). Mark section titles with `.accessibilityAddTraits(.isHeader)`.",
+  "platforms": [
+    "iOS"
+  ],
+  "status": "untested",
+  "statusNote": "Not yet built on a Mac; run `ios-agent-mcp capabilities verify accessibility-baseline` on a Mac with Xcode."
+}

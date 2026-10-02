@@ -141,7 +141,9 @@ describe("applying every module", () => {
     const work = await mkdtemp(join(tmpdir(), "apply-all-"));
     t.after(() => rm(work, { recursive: true, force: true }));
     const root = join(work, "FoodRun");
-    const ids = [...(await loadCapabilities(capabilitiesDir())).keys()].sort();
+    const all = await loadCapabilities(capabilitiesDir());
+    const ids = [...all.keys()].sort();
+    const clientKeys = [...new Set([...all.values()].flatMap((c) => c.manifest.credentialsNeeded.filter((k) => k.kind === "client").map((k) => k.key)))].sort();
     const created = await createProject({ projectDir: root, name: "FoodRun", bundleId: "com.example.foodrun", capabilities: ids }, new ProcessRunner({ ...process.env, ...env }));
 
     assert.equal(created.generated, true, created.generateError);
@@ -149,7 +151,8 @@ describe("applying every module", () => {
     assert.deepEqual(created.capabilities.applied.map((a) => a.id).sort(), ids);
     // RealityKit's RealityView camera API raises the floor to iOS 18.
     assert.equal(created.deploymentTarget, "18.0");
-    assert.deepEqual(created.missingSecrets.sort(), ["SUPABASE_ANON_KEY", "SUPABASE_URL"]);
+    assert.ok(clientKeys.includes("SUPABASE_URL"));
+    assert.deepEqual(created.missingSecrets.sort(), clientKeys);
 
     const yml = YAML.parse(await readFile(join(root, "project.yml"), "utf8"));
     const target = yml.targets.FoodRun;
@@ -181,6 +184,25 @@ describe("applying every module", () => {
     assert.deepEqual(target.entitlements.properties["com.apple.security.application-groups"], group);
     assert.deepEqual(widgets.entitlements.properties["com.apple.security.application-groups"], group);
     assert.equal(target.info.properties.NSSupportsLiveActivities, true);
+    const info = target.info.properties;
+    assert.deepEqual(info.CFBundleURLTypes, [{ CFBundleURLName: "com.example.foodrun", CFBundleURLSchemes: ["foodrun"] }]);
+    assert.deepEqual(info.BGTaskSchedulerPermittedIdentifiers, ["com.example.foodrun.refresh"]);
+    assert.deepEqual(info.UIBackgroundModes, ["fetch"]);
+    for (const usage of ["NSLocationWhenInUseUsageDescription", "NSFaceIDUsageDescription"]) assert.ok(info[usage]?.length > 10, usage);
+    const base = await readFile(join(root, "Config", "Base.xcconfig"), "utf8");
+    assert.match(base, /^SWIFT_EMIT_LOC_STRINGS = YES$/m);
+    assert.match(base, /^OTHER_LDFLAGS = \$\(inherited\) -weak_framework FoundationModels$/m);
+    const { contrast } = await import("../data/capabilities/_sdk/brand.js");
+    const colorsetHex = async (name) => {
+      const set = JSON.parse(await readFile(join(root, "FoodRun", "Resources", "Assets.xcassets", `${name}.colorset`, "Contents.json"), "utf8"));
+      return set.colors.map(({ color: { components: c } }) => "#" + [c.red, c.green, c.blue].map((v) => Math.round(Number(v) * 255).toString(16).padStart(2, "0")).join(""));
+    };
+    const [onLight, onDark] = await colorsetHex("BrandOnPrimary");
+    for (const name of ["BrandPrimary", "BrandSecondary"]) {
+      const [light, dark] = await colorsetHex(name);
+      assert.ok(contrast(light, onLight) >= 4.5, `${name} light ${light} on ${onLight}`);
+      assert.ok(contrast(dark, onDark) >= 4.5, `${name} dark ${dark} on ${onDark}`);
+    }
     const bundle = await readFile(join(root, "FoodRunWidgets", "FoodRunWidgetsBundle.swift"), "utf8");
     assert.match(bundle, /@main\s+struct FoodRunWidgetsBundle: WidgetBundle/);
     assert.match(bundle, /SummaryWidget\(\)\n\s+ProgressLiveActivity\(\)|ProgressLiveActivity\(\)\n\s+SummaryWidget\(\)/);
@@ -201,6 +223,9 @@ describe("applying every module", () => {
       "Resources/Assets.xcassets/AppIcon.appiconset/Contents.json",
       "Resources/Assets.xcassets/LaunchBackground.colorset/Contents.json",
       "Resources/Assets.xcassets/LaunchLogo.imageset/LaunchLogo@3x.png",
+      "Resources/PrivacyInfo.xcprivacy",
+      "Resources/Localization/Localizable.xcstrings",
+      "Resources/Assets.xcassets/BrandPrimary.colorset/Contents.json",
     ]) {
       assert.ok(files.includes(expected), `${expected} was written`);
     }
@@ -222,6 +247,17 @@ describe("applying every module", () => {
     // Applying again is a no-op for capabilities already in the spec.
     const spec = JSON.parse(await readFile(join(root, ".ios-agent", "spec.json"), "utf8"));
     assert.deepEqual([...spec.capabilities].sort(), ids);
+  });
+});
+
+describe("brand colors", () => {
+  test("primary and secondary reach 4.5:1 against their text color for every hue", async () => {
+    const { readable, contrast } = await import("../data/capabilities/_sdk/brand.js");
+    for (let hue = 0; hue < 360; hue++) {
+      assert.ok(contrast(readable(hue, 70, 45, "#FFFFFF", "darker"), "#FFFFFF") >= 4.5, `light primary ${hue}`);
+      assert.ok(contrast(readable(hue, 75, 62, "#111111", "lighter"), "#111111") >= 4.5, `dark primary ${hue}`);
+    }
+    assert.equal(contrast("#FFFFFF", "#000000"), 21);
   });
 });
 

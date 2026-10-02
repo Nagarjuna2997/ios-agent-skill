@@ -1,0 +1,28 @@
+{
+  "id": "privacy-manifest",
+  "name": "Privacy manifest",
+  "category": "security",
+  "description": "Adds PrivacyInfo.xcprivacy declaring no tracking and the app's own UserDefaults use, as a starting point to complete before App Store submission.",
+  "default": false,
+  "appleNative": true,
+  "alternatives": [
+    "keychain-storage"
+  ],
+  "destination": "Resources",
+  "cost": {
+    "model": "free",
+    "note": "Apple requirement, no cost",
+    "amounts": []
+  },
+  "minOS": "17.0",
+  "docs": [
+    "docs/backend/privacy.md",
+    "docs/design/interaction-standards.md"
+  ],
+  "usage": "Edit `Resources/PrivacyInfo.xcprivacy` when the app collects data (add `NSPrivacyCollectedDataTypes`) or uses another required-reason API (file timestamps, disk space, system boot time, active keyboards). Third-party SDKs ship their own manifests. Keep `NSPrivacyTracking` false unless the app tracks across apps with consent.",
+  "platforms": [
+    "iOS"
+  ],
+  "status": "untested",
+  "statusNote": "Not yet built on a Mac; run `ios-agent-mcp capabilities verify privacy-manifest` on a Mac with Xcode."
+}

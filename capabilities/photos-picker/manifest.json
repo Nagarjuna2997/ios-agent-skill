@@ -1,0 +1,26 @@
+{
+  "id": "photos-picker",
+  "name": "Photo picker",
+  "category": "media-camera",
+  "description": "Lets the user choose a photo with the system PhotosPicker (no library permission needed) and loads it as an image with loading and error states.",
+  "default": true,
+  "appleNative": true,
+  "alternatives": [
+    "camera-capture"
+  ],
+  "cost": {
+    "model": "free",
+    "note": "Apple frameworks only",
+    "amounts": []
+  },
+  "minOS": "17.0",
+  "docs": [
+    "docs/frameworks/photosui.md"
+  ],
+  "usage": "Use `PhotoPickerField(title:image:)` with a `@State var image: UIImage?` binding for a single photo (avatar, item photo). It shows the picker, a loading state and errors. To store the photo, keep the JPEG data from `image.jpegData(compressionQuality:)` in the model (SwiftData `@Attribute(.externalStorage)`).",
+  "platforms": [
+    "iOS"
+  ],
+  "status": "untested",
+  "statusNote": "Not yet built on a Mac; run `ios-agent-mcp capabilities verify photos-picker` on a Mac with Xcode."
+}

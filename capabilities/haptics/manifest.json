@@ -1,0 +1,24 @@
+{
+  "id": "haptics",
+  "name": "Haptic feedback",
+  "category": "device-hardware",
+  "description": "Consistent haptic feedback with SwiftUI's sensoryFeedback for success, failure, selection and impacts, with a user setting to turn it off.",
+  "default": true,
+  "appleNative": true,
+  "alternatives": [],
+  "cost": {
+    "model": "free",
+    "note": "Apple frameworks only",
+    "amounts": []
+  },
+  "minOS": "17.0",
+  "docs": [
+    "docs/design/interaction-standards.md"
+  ],
+  "usage": "Attach `.appFeedback(.success, trigger: value)` to the view whose state change should be felt (an order placed, an item added). Use `.selection` for pickers and toggles, `.success`/`.error` for outcomes, `.impact` for physical actions. `HapticsToggle()` adds a settings row; the preference is stored under `HapticsPreference.storageKey`.",
+  "platforms": [
+    "iOS"
+  ],
+  "status": "untested",
+  "statusNote": "Not yet built on a Mac; run `ios-agent-mcp capabilities verify haptics` on a Mac with Xcode."
+}

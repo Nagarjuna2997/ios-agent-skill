@@ -1,0 +1,31 @@
+{
+  "id": "location-services",
+  "name": "Location (when in use)",
+  "category": "maps-location",
+  "description": "Asks for when-in-use location permission and returns the current position with Core Location's async updates, with clear denied and unavailable states.",
+  "default": false,
+  "appleNative": true,
+  "alternatives": [
+    "mapkit-map"
+  ],
+  "requires": {
+    "infoPlist": {
+      "NSLocationWhenInUseUsageDescription": "Your location is used to show what is near you."
+    }
+  },
+  "cost": {
+    "model": "free",
+    "note": "Apple frameworks only",
+    "amounts": []
+  },
+  "minOS": "17.0",
+  "docs": [
+    "docs/frameworks/core-location.md"
+  ],
+  "usage": "Inject `any LocationProviding` (the live `LocationService` or `PreviewLocationProvider`). Call `try await currentLocation()` when the user asks for something nearby, not at launch; it requests permission the first time. Handle `LocationError.denied` by showing `LocationDeniedView`, which links to Settings. Rewrite `NSLocationWhenInUseUsageDescription` in the spec to say exactly why this app needs location.",
+  "platforms": [
+    "iOS"
+  ],
+  "status": "untested",
+  "statusNote": "Not yet built on a Mac; run `ios-agent-mcp capabilities verify location-services` on a Mac with Xcode."
+}

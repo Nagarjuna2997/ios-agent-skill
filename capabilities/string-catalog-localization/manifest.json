@@ -1,0 +1,31 @@
+{
+  "id": "string-catalog-localization",
+  "name": "String Catalog localization",
+  "category": "localization",
+  "description": "Sets the project up for localization with a String Catalog: string extraction on, a Localizable.xcstrings with a plural example, and helpers for formatted values.",
+  "default": true,
+  "appleNative": true,
+  "alternatives": [],
+  "destination": "Resources/Localization",
+  "requires": {
+    "buildSettings": {
+      "SWIFT_EMIT_LOC_STRINGS": "YES",
+      "LOCALIZATION_PREFERS_STRING_CATALOGS": "YES"
+    }
+  },
+  "cost": {
+    "model": "free",
+    "note": "Apple tooling; translation itself may be paid",
+    "amounts": []
+  },
+  "minOS": "17.0",
+  "docs": [
+    "docs/swiftui/views-and-controls.md"
+  ],
+  "usage": "Write user-facing text as string literals in SwiftUI (`Text(\"Welcome\")`) or `String(localized:)`; Xcode extracts them into `Localizable.xcstrings` on build. Use interpolation for counts so plural rules apply (`Text(\"\\(count) items\")`). Format numbers, dates and currency with `.formatted(...)`, never by string concatenation. Add languages in the catalog editor in Xcode.",
+  "platforms": [
+    "iOS"
+  ],
+  "status": "untested",
+  "statusNote": "Not yet built on a Mac; run `ios-agent-mcp capabilities verify string-catalog-localization` on a Mac with Xcode."
+}

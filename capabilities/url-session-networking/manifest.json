@@ -1,0 +1,27 @@
+{
+  "id": "url-session-networking",
+  "name": "HTTP client (URLSession)",
+  "category": "networking",
+  "description": "A small typed HTTP client on URLSession: requests that name their response type, JSON coding, status checks, typed errors and a stub client for previews.",
+  "default": true,
+  "appleNative": true,
+  "alternatives": [
+    "rest-api-client"
+  ],
+  "cost": {
+    "model": "free",
+    "note": "Apple frameworks only",
+    "amounts": []
+  },
+  "minOS": "17.0",
+  "docs": [
+    "docs/frameworks/networking.md",
+    "docs/backend/rest.md"
+  ],
+  "usage": "Describe each endpoint as `APIRequest<Response>` (`.get(\"restaurants\")`, `try .post(\"orders\", body: newOrder)`). Call `try await client.send(request)` from a view model through `any APIClient`. Use `URLSessionAPIClient(baseURL:)` in the app and `StubAPIClient` in previews and tests. Errors are `APIError` with user-presentable descriptions; cancellation is rethrown unchanged.",
+  "platforms": [
+    "iOS"
+  ],
+  "status": "untested",
+  "statusNote": "Not yet built on a Mac; run `ios-agent-mcp capabilities verify url-session-networking` on a Mac with Xcode."
+}

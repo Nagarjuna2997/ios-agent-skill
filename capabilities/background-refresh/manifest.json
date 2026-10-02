@@ -1,0 +1,26 @@
+{
+  "id": "background-refresh",
+  "name": "Background app refresh",
+  "category": "background",
+  "description": "Refreshes data in the background with BackgroundTasks through SwiftUI's backgroundTask scene modifier, rescheduling after each run.",
+  "default": true,
+  "appleNative": true,
+  "alternatives": [
+    "push-notifications"
+  ],
+  "cost": {
+    "model": "free",
+    "note": "Apple frameworks only",
+    "amounts": []
+  },
+  "minOS": "17.0",
+  "docs": [
+    "docs/frameworks/background-tasks.md"
+  ],
+  "usage": "In the App, add `.backgroundTask(.appRefresh(BackgroundRefresh.identifier)) { await BackgroundRefresh.run { try await model.refresh() } }` to the WindowGroup scene, and call `BackgroundRefresh.schedule()` when the app moves to the background (`scenePhase == .background`). The system decides when to run it; never rely on exact timing.",
+  "platforms": [
+    "iOS"
+  ],
+  "status": "untested",
+  "statusNote": "Not yet built on a Mac; run `ios-agent-mcp capabilities verify background-refresh` on a Mac with Xcode."
+}

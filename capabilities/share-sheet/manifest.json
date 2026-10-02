@@ -1,0 +1,27 @@
+{
+  "id": "share-sheet",
+  "name": "Share sheet",
+  "category": "sharing-deep-links",
+  "description": "Shares text, links and images with the system share sheet through SwiftUI ShareLink and a Transferable item type.",
+  "default": false,
+  "appleNative": true,
+  "alternatives": [
+    "deep-links",
+    "universal-links"
+  ],
+  "cost": {
+    "model": "free",
+    "note": "Apple frameworks only",
+    "amounts": []
+  },
+  "minOS": "17.0",
+  "docs": [
+    "docs/integrations/README.md"
+  ],
+  "usage": "For a link, use `ShareLink(item: url, subject: Text(...), message: Text(...))` directly. For app content, build a `SharedItem(title:text:url:)` and use `ShareItemButton(item:)`, which shares it with a preview title. Share a deep link (see deep-links) so recipients open the same screen.",
+  "platforms": [
+    "iOS"
+  ],
+  "status": "untested",
+  "statusNote": "Not yet built on a Mac; run `ios-agent-mcp capabilities verify share-sheet` on a Mac with Xcode."
+}

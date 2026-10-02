@@ -1,0 +1,27 @@
+{
+  "id": "deep-links",
+  "name": "Deep links (URL scheme)",
+  "category": "sharing-deep-links",
+  "description": "Opens a specific screen from a custom URL scheme (app-name://screen/id) through one router that parses links into typed routes.",
+  "default": true,
+  "appleNative": true,
+  "alternatives": [
+    "universal-links",
+    "share-sheet"
+  ],
+  "cost": {
+    "model": "free",
+    "note": "Apple frameworks only",
+    "amounts": []
+  },
+  "minOS": "17.0",
+  "docs": [
+    "docs/swiftui/deep-linking-and-routing.md"
+  ],
+  "usage": "Create one `DeepLinkRouter` at the app root and attach `.onOpenURL { router.open($0) }`. Observe `router.pending` in the root view: switch to the tab or push the screen for `.screen(name)` or `.item(screen:id:)`, then call `router.consume()`. Build links to share with `DeepLink.item(screen: \"orders\", id: order.id).url`. The scheme is the lowercased app name.",
+  "platforms": [
+    "iOS"
+  ],
+  "status": "untested",
+  "statusNote": "Not yet built on a Mac; run `ios-agent-mcp capabilities verify deep-links` on a Mac with Xcode."
+}

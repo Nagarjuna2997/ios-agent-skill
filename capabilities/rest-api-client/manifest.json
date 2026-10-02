@@ -1,0 +1,42 @@
+{
+  "id": "rest-api-client",
+  "name": "Your REST API",
+  "category": "backend",
+  "description": "Connects the HTTP client to your own server: the base URL comes from .env through the xcconfig, and the app shows a configuration message until it is set.",
+  "default": false,
+  "appleNative": true,
+  "alternatives": [
+    "supabase-backend",
+    "firebase-firestore",
+    "cloudkit-database"
+  ],
+  "requires": {
+    "capabilities": [
+      "url-session-networking"
+    ]
+  },
+  "credentialsNeeded": [
+    {
+      "key": "API_BASE_URL",
+      "description": "Base URL of your API, for example https://api.example.com/v1",
+      "whereToGet": "Your server or hosting provider",
+      "kind": "client"
+    }
+  ],
+  "cost": {
+    "model": "usage-based",
+    "note": "The client is free; hosting your API is billed by your provider",
+    "amounts": []
+  },
+  "minOS": "17.0",
+  "docs": [
+    "docs/backend/rest.md",
+    "docs/frameworks/networking.md"
+  ],
+  "usage": "Create the client once at the composition root with `APIConfiguration.makeClient()`, which returns nil until API_BASE_URL is set in .env (show `APINotConfiguredView` in that case, or a `StubAPIClient` with sample data). Pass it down as `any APIClient`. Never put server secrets in the app; authenticate users and let the server hold its keys.",
+  "platforms": [
+    "iOS"
+  ],
+  "status": "untested",
+  "statusNote": "Not yet built on a Mac; run `ios-agent-mcp capabilities verify rest-api-client` on a Mac with Xcode."
+}

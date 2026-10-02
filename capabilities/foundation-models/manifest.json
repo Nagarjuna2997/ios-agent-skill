@@ -1,0 +1,29 @@
+{
+  "id": "foundation-models",
+  "name": "On-device AI (Foundation Models)",
+  "category": "ai-ml",
+  "description": "Text generation and structured output with Apple's on-device language model, behind an availability check so the feature hides itself on unsupported devices.",
+  "default": true,
+  "appleNative": true,
+  "alternatives": [],
+  "requires": {
+    "buildSettings": {
+      "OTHER_LDFLAGS": "$(inherited) -weak_framework FoundationModels"
+    }
+  },
+  "cost": {
+    "model": "free",
+    "note": "On-device; no API key or per-request cost",
+    "amounts": []
+  },
+  "minOS": "17.0",
+  "docs": [
+    "docs/frameworks/foundation-models.md"
+  ],
+  "usage": "Show AI features only when `OnDeviceAI.isAvailable` is true (iOS 26 or later with Apple Intelligence enabled). Use `OnDeviceAI.respond(to:instructions:)` for one-shot text, or create a `LanguageModelSession` inside an `if #available(iOS 26.0, *)` block for multi-turn or `@Generable` structured output. Keep prompts short and never send personal data elsewhere; the model runs on device.",
+  "platforms": [
+    "iOS"
+  ],
+  "status": "untested",
+  "statusNote": "Not yet built on a Mac; run `ios-agent-mcp capabilities verify foundation-models` on a Mac with Xcode."
+}
