@@ -28,7 +28,7 @@
       "defaultInCategory": false,
       "cost": {
         "model": "free",
-        "note": "SwiftUI searchable; written by the agent without a module"
+        "note": "Apple frameworks only"
       },
       "credentials": [],
       "docs": [

@@ -1,0 +1,34 @@
+{
+  "id": "sf-symbols",
+  "name": "SF Symbols",
+  "category": "assets",
+  "description": "SF Symbols with a fallback when a symbol is missing on the running OS, accessible labels, and Reduce Motion aware symbol effects.",
+  "default": false,
+  "appleNative": true,
+  "alternatives": [
+    "app-icon"
+  ],
+  "cost": {
+    "model": "free",
+    "note": "Apple frameworks only; check the SF Symbols license for use outside Apple platforms",
+    "amounts": []
+  },
+  "minOS": "17.0",
+  "docs": [
+    "docs/design/apple-design-resources.md"
+  ],
+  "usage": "Use `Image(systemName:)` or `Label(_:systemImage:)` for symbols that exist on the deployment target. For symbols added in later OS versions use `SymbolImage(\"name\", fallback: \"older.name\")`, which shows the fallback instead of an empty image. Give icon-only buttons a text label. Animate with `.symbolBounce(trigger:)`, which does nothing under Reduce Motion.",
+  "platforms": [
+    "iOS"
+  ],
+  "status": "untested",
+  "statusNote": "Swift compiled on a Mac in the combined compile check (see compileCheck); the module's own verify run has not passed yet: `ios-agent-mcp capabilities verify sf-symbols` on a Mac.",
+  "compileCheck": {
+    "date": "2026-10-02",
+    "xcode": "27.0",
+    "destination": "iPhone 18 Pro Simulator",
+    "swiftLanguageMode": "6",
+    "result": "passed",
+    "scope": "Template Swift and the verify usage file compiled with every other module in one app target (scripts/capability-compile-check.mjs), as an incremental Xcode build after a clean build of the other 39 modules. Not covered: the XcodeGen project, entitlements and runtime behavior."
+  }
+}

@@ -71,6 +71,10 @@ Recorded runs, 2026-10-02. Both were clean builds with Xcode 27.0 for the iPhone
 - 33 modules, 69 Swift files: build succeeded with one warning, from the prebuilt Lottie binary.
 - 39 modules, 81 Swift files, adding the Supabase and RevenueCat packages: build succeeded with the same single warning. Before that, two earlier builds failed or warned. One module was missing `import Foundation`. In another, a usage file named `AuthorizationController` without importing AuthenticationServices. Both were fixed.
 
+- 41 modules, adding `search` and `sf-symbols`: an incremental build on top of the clean 39-module build succeeded with the same warning, plus Xcode's project-level "Update to recommended settings".
+
 ![Xcode build log for 33 modules: Build succeeded](_evidence/compile-check-2026-10-02.jpg)
 
 ![Xcode build log for 39 modules: Build succeeded](_evidence/compile-check-2026-10-02-39-modules.jpg)
+
+![Xcode build log for 41 modules: Build succeeded](_evidence/compile-check-2026-10-02-41-modules.jpg)
