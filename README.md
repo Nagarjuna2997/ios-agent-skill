@@ -1,5 +1,65 @@
 # iOS Agent Skill
 
+## iOS app agent
+
+`/ios-build "<what you want>"` asks Claude Code to plan an iOS app, write its SwiftUI code and Xcode project, apply capability modules (sign-in, storage, payments, maps and more), then build, run and screenshot it in the iOS Simulator, ending with a report of what needs your accounts or money. As of 2026-10-02 this is unreleased, on the `agent/overnight` branch. Three apps it planned and wrote built on the first build with Xcode 27.0 and ran in the simulator. Its own build-and-fix loop has not yet run end to end on a Mac.
+
+### Quickstart
+
+From a checkout (the `build` command is not published to npm yet):
+
+```bash
+cd mcp-server && npm ci && npm run build
+claude mcp add ios-agent -- node "$PWD/dist/unified.js"
+node dist/unified.js install-command --global
+```
+
+Then, in any Claude Code session on a Mac with Xcode 16 or later:
+
+```text
+/ios-build "A habit tracker with a list, a detail screen, and settings with dark mode toggle"
+```
+
+XcodeGen is optional: without it, the agent writes a folder-synchronized Xcode project itself. The steps are described in [docs/tooling/ios-build-agent.md](docs/tooling/ios-build-agent.md). This quickstart has not been run in a Claude Code session on a Mac yet.
+
+### Examples
+
+| Habit tracker | Notes with search | Three-tab feed |
+|---|---|---|
+| ![Habit tracker settings](examples/agent/habit-tracker/screenshots/03-settings.jpg) | ![Notes list](examples/agent/notes-app/screenshots/01-notes-list.jpg) | ![Home feed](examples/agent/three-tab-app/screenshots/01-home.jpg) |
+
+Plans, generated sources, run reports and what was and was not exercised: [examples/agent](examples/agent/README.md).
+
+### Capabilities
+
+Every capability is a folder in [capabilities/](capabilities/README.md) with a manifest, recipe, Swift template, apply hook and verify hook. The catalog lists the wider landscape for planning and cost estimates. The counts below are generated from the manifests.
+
+<!-- capability-summary:start -->
+| Status | Capabilities |
+|---|---|
+| Verified on a Mac | 0 |
+| Module exists, not yet verified on a Mac | 33 |
+| ...of which the Swift compiled on a Mac (combined compile check) | 33 |
+| Blocked | 0 |
+| Listed for planning only | 128 |
+
+161 catalog entries in 30 categories; generated from [capabilities/CATALOG.md](capabilities/CATALOG.md).
+<!-- capability-summary:end -->
+
+### Needs your accounts
+
+The agent builds and runs everything in the simulator without accounts. Capabilities that need a service declare the keys in their manifest. Client keys, such as a publishable key, go in the project's gitignored `.env` file and reach the app through a generated xcconfig. Until they are set, the keys are `REPLACE_ME` placeholders, so the app still builds and shows a configuration message. Server secrets are never put in the app. PLAN.md lists what each run needs and the cost model of each service. Running on a device, using TestFlight or publishing needs your Apple Developer Program membership.
+
+### Not yet
+
+- No capability is `verified`: no module has passed its own verify run on a Mac. All modules compiled together once (see [the compile check](capabilities/README.md#compile-check)).
+- The agent's automated loop (`xcodebuild` errors fed back to the model, `simctl` launch and screenshots per screen) is covered by tests against fake tools, not by a real run.
+- The widget extension target from the built-in project writer has not been built in Xcode.
+- The food-delivery composite example, taps and scrolling during screenshots, and device builds are not done.
+
+## Knowledge base
+
+
 **Give your coding agent the Apple references, Swift source and local tools it needs to build and review an iOS app.**
 
 [![iOS Agent Skill website preview](site/assets/readme-hero.jpg)](https://nagarjuna2997.github.io/ios-agent-skill/)

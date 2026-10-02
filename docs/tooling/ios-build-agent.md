@@ -4,13 +4,19 @@
 
 ## Status
 
-The agent's tools, loop, capability system and reports are implemented and covered by tests that run against fake `xcodebuild`, `xcrun simctl` and `xcodegen` executables. As of this writing it has **not been run against a real Xcode installation**: the development session that built it had no macOS toolchain. Treat the first run on a Mac as the acceptance test, and every capability module is `untested` until `ios-agent-mcp capabilities verify` passes on a Mac.
+The agent's tools, loop, capability system and reports are covered by tests against fake `xcodebuild`, `xcrun simctl` and `xcodegen` executables. On 2026-10-02 the following ran for real:
+
+- The planning and code generation halves ran with headless Claude Code for three example requests.
+- The resulting projects, written by the built-in project writer, built on the first build with Xcode 27.0 and ran on the iPhone 18 Pro Simulator. See [examples/agent](../../examples/agent/README.md).
+- Every capability module's Swift compiled together in one app target. See the [compile check](../../capabilities/README.md#compile-check).
+
+The automated build-and-fix loop has not yet run against a real `xcodebuild`, and neither have the `simctl` launch and screenshot steps. No capability module has passed its own verify run, so every module is `untested`. Treat the first `/ios-build` run on a Mac as the acceptance test.
 
 ## What a run does
 
-1. **Preflight** checks Node, Xcode, the iOS Simulator SDK, an available simulator and XcodeGen, and prints the install command for anything missing.
+1. **Preflight** checks Node, Xcode, the iOS Simulator SDK and an available simulator, and prints the install command for anything missing. XcodeGen is optional.
 2. **Plan** turns the description into screens, navigation, a data model and a capability list, then writes `PLAN.md` before any code: default choice and alternatives for each capability, cost model, credentials the user must provide, whether it is built fully or with placeholder keys, and a budget from the capability manifests.
-3. **Project** creates an XcodeGen `project.yml` from `.ios-agent/spec.json`, `Config/Base.xcconfig`, a gitignored `Config/Secrets.xcconfig` generated from the gitignored `.env`, and starter sources.
+3. **Project** creates an XcodeGen `project.yml` from `.ios-agent/spec.json`, `Config/Base.xcconfig`, a gitignored `Config/Secrets.xcconfig` generated from the gitignored `.env`, and starter sources. XcodeGen generates the `.xcodeproj` when it is installed. Otherwise the built-in writer renders the same spec into a folder-synchronized project that needs Xcode 16 or later; that project includes the app target, packages, Info.plist, entitlements, a shared scheme and the WidgetKit extension. Set `IOS_AGENT_PROJECT_GENERATOR=xcodegen` or `builtin` to force one writer.
 4. **Capabilities** are applied in dependency order: Info.plist keys, entitlements, Swift packages, build settings, credentials and template files.
 5. **Code**: the model writes SwiftUI under `<AppName>/`. The root view honors `-ios-agent-screen <id>` so each top-level screen can be opened for a screenshot.
 6. **Build and fix**: `xcodebuild` errors come back as `{file, line, column, message}`; the model fixes them; at most 8 attempts and 25 minutes per run.

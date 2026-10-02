@@ -6,7 +6,31 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
-Version 3.8.2 is prepared in the skill manifests; no tag, GitHub Release or npm package has been published for it. The npm package stays at 2.9.0 because its runtime source did not change.
+Version 3.9.0 (skill manifests) and `ios-agent-mcp` 2.10.0 (npm package files) are prepared on the `agent/overnight` branch. Nothing has been tagged, released or published. The 3.8.2 notes below were prepared earlier and have not been released either. Install paths still pin the published `ios-agent-mcp@2.9.0`.
+
+### Added -- 3.9.0
+
+- iOS app agent: the `/ios-build "<description>"` Claude Code command (`.claude/commands/ios-build.md`, installed with `ios-agent-mcp install-command`) and the `ios-agent-mcp build` CLI. Both plan an app, create the project, apply capabilities, write SwiftUI code, build with structured errors and up to 8 fix attempts, run in the simulator, take screenshots and write `RUN_REPORT.md`. The CLI also has `--resume`, `--refine`, `--plan-only` and `preflight`. The CLI uses headless Claude Code (`claude -p`) as the model.
+- MCP tools: `ios_preflight`, `ios_capabilities`, `ios_plan`, `ios_create_project`, `ios_add_capabilities`, `ios_write_files`, `ios_add_package`, `ios_build`, `ios_run`, `ios_screenshot`, `ios_logs`, `ios_progress`, `ios_report`.
+- `PLAN.md` before any code: screens, data model, capabilities with alternatives, cost model and credentials, and a budget built from the module manifests. Run state lives in `.ios-agent/state.json`, and a progress log is kept.
+- Capability system in `capabilities/`. Each module has a manifest, recipe, template, apply hook and verify hook. A loader rejects inconsistent modules and `verified` without a verification record. A resolver handles category defaults and dependencies. `ios-agent-mcp capabilities verify` builds one module into a minimal app.
+- `capabilities/catalog.json`: 161 capabilities in 30 categories with cost models, credentials, docs and priority. `capabilities/CATALOG.md` and the README capability summary are generated from it by `scripts/render-capability-catalog.mjs` and checked in CI.
+- 33 capability modules, all `untested`. P0: launch screen, app icon, Sign in with Apple, email and password auth (Supabase REST), Keychain storage, SwiftData, appearance settings, Swift Charts dashboard, MapKit map, StoreKit 2 paywall, local notifications, Lottie animation, RealityKit 3D view. P1: Home Screen widget, Live Activity, location, photo picker, camera capture, haptics, share sheet, deep links, URLSession HTTP client, REST API configuration, Face ID lock, privacy manifest, accessibility baseline, String Catalog localization, brand colors, Foundation Models, background refresh, App Intents shortcuts, CloudKit database, SwiftData iCloud sync.
+- Generated apps can include a WidgetKit extension target (`ApplyContext.addWidget`), shared by widgets and Live Activities.
+- Credentials model: client keys come from a gitignored `.env` through a generated, gitignored `Config/Secrets.xcconfig` and Info.plist, with `REPLACE_ME` placeholders until they are set. Server secrets are only listed in `.env.example`.
+- Built-in Xcode project writer (`mcp-server/src/agent/xcodeproj.ts`): without XcodeGen, the spec is rendered into a folder-synchronized project. The project has the app target, packages, Info.plist, entitlements, a shared scheme with the StoreKit configuration, and the widget extension. `IOS_AGENT_PROJECT_GENERATOR` selects the writer explicitly.
+- `scripts/capability-compile-check.mjs` builds every module's Swift in one app target. A clean build with Xcode 27.0 for the iPhone 18 Pro Simulator in Swift 6 mode passed for 33 modules on 2026-10-02. Manifests record this in `compileCheck`.
+- `examples/agent`: three apps the agent planned and wrote: a habit tracker, a notes app and a three-tab app. They built on the first build with Xcode 27.0 and ran in the simulator, and the folder includes the screenshots. The agent's own `xcodebuild` loop was not part of those runs.
+- MCP tests: 444 to 488.
+
+### Changed -- 3.9.0
+
+- XcodeGen is optional; preflight no longer blocks on it.
+- The markdown link check skips the gitignored `mcp-server/data/` build output.
+
+### Fixed -- 3.9.0
+
+- Found by building on Xcode 27.0: three capability templates had Swift 6 concurrency errors or warnings (background refresh, photo picker, camera availability). The accessibility module told the model to put a `DynamicProperty` in `@State`, which caused SwiftUI runtime warnings in a generated app. The SwiftData template now turns CloudKit sync off explicitly, so an iCloud entitlement added by another module cannot start syncing models that break CloudKit's rules.
 
 ### Added -- 3.8.2
 
