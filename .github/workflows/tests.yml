@@ -158,6 +158,9 @@ jobs:
       - name: Manifest matches registered tools
         run: node scripts/check-tool-manifest.mjs
 
+      - name: Tool reference lists every registered tool
+        run: node scripts/render-tool-index.mjs --check
+
   cli:
     name: CLI builds and tests
     runs-on: ${{ matrix.os }}

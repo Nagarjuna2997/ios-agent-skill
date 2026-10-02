@@ -16,6 +16,7 @@ Working copy: a fresh clone of `main` at `0e5cb39`. All commits are authored as 
 | 7 | External markdown link check; fix confirmed dead links | S | done, no dead links found in the verifiable set |
 | 8 | MCP server: 15 of 67 registered tools are never exercised by a test; add at least one test per tool | M | done |
 | 9 | `install.sh`: add a hermetic test (local remote, idempotent re-run, refusal cases) | S | done |
+| 11 | `docs/mcp/tools.md` is described as the full tool reference but documented 22 of 67 tools; generate a complete index from a live `tools/list` and check it in CI | S | done |
 | 10 | CHANGELOG Unreleased, version bump, final log | S | pending |
 
 ## Baseline (before any change in this run)
