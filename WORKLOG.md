@@ -17,6 +17,8 @@ Working copy: a fresh clone of `main` at `0e5cb39`. All commits are authored as 
 | 8 | MCP server: 15 of 67 registered tools are never exercised by a test; add at least one test per tool | M | done |
 | 9 | `install.sh`: add a hermetic test (local remote, idempotent re-run, refusal cases) | S | done |
 | 11 | `docs/mcp/tools.md` is described as the full tool reference but documented 22 of 67 tools; generate a complete index from a live `tools/list` and check it in CI | S | done |
+| 12 | `docs/mcp/knowledge-server.md` pinned 2.4.0, cited eleven analyzer tools and 96 update pages; checked the published 2.9.0 knowledge binary (8 tools, HTTP `/health`) and the 98-entry bundle | XS | done |
+| 13 | Copilot adapter described its pinned 2.7.0 server as 35 tools; the published 2.7.0 lists 36 (it omitted `prepare_issue_report`) | XS | done |
 | 10 | CHANGELOG Unreleased, version bump, final log | S | pending |
 
 ## Baseline (before any change in this run)

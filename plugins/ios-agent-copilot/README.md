@@ -8,7 +8,7 @@ A self-contained SwiftUI implementation/verification skill and one unified MCP c
 copilot plugin install Nagarjuna2997/ios-agent-skill:plugins/ios-agent-copilot
 ```
 
-Requires Node.js 20+. Simulator tools require macOS/Xcode. The connection exposes 35 tools: 12 read-only Swift reviews, 8 reference tools, 14 simulator tools and app scaffolding. It includes write and simulator operations; it is not a read-only server. Plugin installation configures MCP automatically; do not add a second connection. Pass absolute app paths to tools. The skill alone does not provide Xcode or a hosted simulator.
+Requires Node.js 20+. Simulator tools require macOS/Xcode. The pinned 2.7.0 connection exposes 36 tools: 12 read-only Swift reviews, 8 reference tools, 14 simulator tools, app scaffolding and a local issue-report preview. It includes write and simulator operations; it is not a read-only server. Plugin installation configures MCP automatically; do not add a second connection. Pass absolute app paths to tools. The skill alone does not provide Xcode or a hosted simulator.
 
 Example: ask Copilot to implement a reading list with persistence and search, test failed writes, then verify add/finish/relaunch/search and inspect simulator screenshots. See the [working source sample](../../samples/ReadingList/README.md).
 
