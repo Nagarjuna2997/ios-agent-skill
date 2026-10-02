@@ -40,6 +40,8 @@ export interface RunState {
   startedAt: string;
   updatedAt: string;
   deadlineAt: string;
+  /** Minutes allowed per cycle, counted from the cycle's first build. */
+  wallClockMinutes?: number;
   stage: Stage;
   status: "running" | "complete" | "failed" | "stopped";
   maxBuildAttempts: number;
@@ -69,6 +71,7 @@ export function newRunState(input: { description: string; projectDir: string; ma
     startedAt: now.toISOString(),
     updatedAt: now.toISOString(),
     deadlineAt: new Date(now.getTime() + minutes * 60_000).toISOString(),
+    wallClockMinutes: minutes,
     stage: "preflight",
     status: "running",
     maxBuildAttempts: input.maxBuildAttempts ?? DEFAULT_MAX_BUILD_ATTEMPTS,
@@ -116,10 +119,23 @@ export function attemptsThisCycle(state: RunState): number {
   return state.builds.filter((b) => b.cycle === state.cycle).length;
 }
 
+/**
+ * Start a fresh attempt budget and deadline, for a refinement or a resumed run.
+ * The previous cycles' builds stay in the history.
+ */
+export function startCycle(state: RunState, options: { change?: string; minutes?: number; now?: Date } = {}): void {
+  const now = options.now ?? new Date();
+  if (state.builds.some((b) => b.cycle === state.cycle)) state.cycle += 1;
+  state.status = "running";
+  delete state.failure;
+  state.deadlineAt = new Date(now.getTime() + (options.minutes ?? state.wallClockMinutes ?? DEFAULT_WALL_CLOCK_MINUTES) * 60_000).toISOString();
+  if (options.change) state.refinements.push({ at: now.toISOString(), change: options.change });
+}
+
 /** Throws a user-facing error when another build would exceed the caps. */
 export function assertCanBuild(state: RunState, now = new Date()): void {
   if (attemptsThisCycle(state) >= state.maxBuildAttempts) {
-    throw new Error(`Build attempt cap reached (${state.maxBuildAttempts} this run). Write RUN_REPORT.md with ios_report and stop; a refinement starts a new cycle.`);
+    throw new Error(`Build attempt cap reached (${state.maxBuildAttempts} this run). Write RUN_REPORT.md with ios_report and stop; a refinement (ios_build with newCycle) starts a new budget.`);
   }
   if (now.getTime() > Date.parse(state.deadlineAt)) {
     throw new Error(`Wall-clock cap reached (deadline ${state.deadlineAt}). Write RUN_REPORT.md with ios_report and stop.`);

@@ -58,7 +58,8 @@ export function validAppName(name: string) {
 export function appPlan(name: string, brief: string) {
   if (!validAppName(name)) throw new Error('Use a Swift-safe app name.');
   return { name, brief, status:'Implementation brief, not an app already built',
-    scaffold: { executable:'npx', args:['-y','@nagarjuna2002/ios-agent@0.2.0','new',name,'--brief',brief,'--xcodegen'] },
+    agent: 'To have the build agent plan, write, build and screenshot the app instead, use ios_create_project and the /ios-build command.',
+    scaffold: { executable:'npx', args:['-y','@nagarjuna2002/ios-agent@0.4.0','new',name,'--brief',brief,'--xcodegen'] },
     phases: ['Turn the brief into screens, user flows, data models, and acceptance criteria.',
       'Use scaffold executable/args as an argument array; never interpolate the brief into a shell command.',
       'Implement the app with injected services, preview data, persistent state and explicit errors.',

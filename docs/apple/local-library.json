@@ -33,8 +33,8 @@
       "path": "docs/agent-engineering-guide.md",
       "title": "Apple engineering rules and detailed reference routes",
       "kind": "guide",
-      "characters": 63362,
-      "hash": "9bbecef4d6cbd553553ed45e75222746efc8bc52a7c58c06ac92caf6474f82f1"
+      "characters": 63573,
+      "hash": "82199f1bda41084c6863bc49bb6f96c87c4d3b8d9dd44e98c441d3776c05a061"
     },
     {
       "path": "docs/ai-setup-guide.md",
@@ -2672,8 +2672,8 @@
       "path": "docs/evidence-and-scope.md",
       "title": "Evidence, sources and scope",
       "kind": "guide",
-      "characters": 4918,
-      "hash": "b1e6db3fbe8c583a8d8b78e80c03525c0777f08fca529926a67dd007b88d42cc"
+      "characters": 5416,
+      "hash": "dd00abc6af8793bbe8cde78f3cdc1d9a28a6db82adf71423937de551375b4387"
     },
     {
       "path": "docs/frameworks/accelerate.md",
@@ -3071,8 +3071,8 @@
       "path": "docs/integrations/README.md",
       "title": "Apple System Integrations",
       "kind": "guide",
-      "characters": 7749,
-      "hash": "e491079bf9cf406fc4493e621a4039949d1d1c04fb0d0c715fdc373dc93304b4"
+      "characters": 7543,
+      "hash": "1dc85cf83e1903fa48115aa954963898d1be85494f1fecfb5cab00b5e2697863"
     },
     {
       "path": "docs/mcp/examples.md",
@@ -3085,8 +3085,8 @@
       "path": "docs/mcp/installation.md",
       "title": "Installing the iOS Agent MCP Server",
       "kind": "guide",
-      "characters": 15047,
-      "hash": "94d980d847032f65218f5e5ec2429a31fab61f2833ee44eeec09cae9d7111158"
+      "characters": 15233,
+      "hash": "5a12fb1f4997f40a22ec09f2bb181c616f2c2c42152b6ee000c745bd9af8f670"
     },
     {
       "path": "docs/mcp/knowledge-server.md",
@@ -3372,15 +3372,15 @@
       "path": "docs/tooling/app-building-loop.md",
       "title": "App-building loop (preview)",
       "kind": "guide",
-      "characters": 5090,
-      "hash": "44c08b3e8612b754db830c3509f48af762570fbcb30882e35a5b65b5fc16d334"
+      "characters": 5303,
+      "hash": "6adeb15ca1f49c3f79b2d32daf7d0e6a263883aba1664096e003b5bde45ca85b"
     },
     {
       "path": "docs/tooling/app-description-workflow.md",
       "title": "App Description Workflow",
       "kind": "guide",
-      "characters": 6693,
-      "hash": "98276a44060cc2b577f743da91b8dd6a7a45d6ed1e1dd0a9daccc4811a24c454"
+      "characters": 6965,
+      "hash": "2fa29d5b252a2ecef5650cb9ebcb3520f41655ad9202cd302a5d00483abde949"
     },
     {
       "path": "docs/tooling/device-hub.md",
@@ -3407,15 +3407,15 @@
       "path": "docs/tooling/idea-to-app.md",
       "title": "From an Idea to a Running Apple App",
       "kind": "guide",
-      "characters": 2879,
-      "hash": "b9fe2c76e8818f34e1521d820dd4793a151c336718c69115358822bf2df20073"
+      "characters": 4036,
+      "hash": "44ef5bc7b08bf030296a188c510517d627a43f9d54cc1344b0502fc819f6f690"
     },
     {
       "path": "docs/tooling/ios-build-agent.md",
       "title": "iOS build agent",
       "kind": "guide",
-      "characters": 6419,
-      "hash": "12b5a08e6de1e780b01f0bca1fea934de5b34f441be8d9d11a075b50e21bf26f"
+      "characters": 7177,
+      "hash": "335d23dbc250f7e3084db31e79733b8623fe56544c88fb21946f21f63de69c4d"
     },
     {
       "path": "docs/tooling/ios-simulator-mcp.md",
@@ -3491,8 +3491,8 @@
       "path": "docs/tooling/xcode-27-agents.md",
       "title": "Xcode 27 Coding Agents",
       "kind": "guide",
-      "characters": 10322,
-      "hash": "8b6c402a81ae06208c84de80d257be56c97f409ffb959027a59160a755f6c6d4"
+      "characters": 10425,
+      "hash": "9a8d647d8d18f3103d9d292e6401a47e9307986ebae5d0f26ddad4a4bdade25a"
     },
     {
       "path": "docs/tooling/xcode-documentation-resources.md",
@@ -4177,15 +4177,15 @@
       "path": "samples/ReadingList/UITests/ReadingListUITests.swift",
       "title": "ReadingListUITests.swift",
       "kind": "source",
-      "characters": 2112,
-      "hash": "7b6d450c9605ca10312c8d38b80fb8cf9c287ea4cc1f6cd38b90fddb7a402a0e"
+      "characters": 3570,
+      "hash": "7b6f032ced8bf2f2306ec9514341fc026af8af62d642c384af6ff03a0342781c"
     },
     {
       "path": "samples/ReadingList/verify.py",
-      "title": "verify.py",
+      "title": "Pick the same simulator on every run: a booted iPhone first, then the newest iOS runtime,",
       "kind": "source",
-      "characters": 2210,
-      "hash": "5c2aa8e0bca39b4d5226e1bfe146467070d7e37882e6dc50aa79241a924bcb1e"
+      "characters": 3152,
+      "hash": "7db384a66aa6d36ee8be61bf74c4cef60dc7942877fa70adc68b9e34ed448094"
     },
     {
       "path": "samples/ScreenshotStudio/es-ES.json",

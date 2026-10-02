@@ -63,7 +63,8 @@ export interface VerifyContext {
   /**
    * Create a minimal SwiftUI app, apply this capability (and its dependencies),
    * add the given extra source files under the app folder, and build it for
-   * the iOS Simulator. Blocked when Xcode or XcodeGen is not available.
+   * the iOS Simulator. Blocked when Xcode or a simulator is not available.
+   * XcodeGen is used when installed; otherwise the built-in project writer.
    */
   buildMinimalApp(extraFiles?: Record<string, string>): Promise<VerifyOutcome>;
 }

@@ -1,5 +1,9 @@
 # Roadmap
 
+## Prepared, not yet published
+
+- `/ios-build` agent (npm 2.10.0): one sentence to a planned, coded, built and screenshotted app, with 41 capability modules marked `untested` until each module's own verify run passes. Remaining acceptance test: a full `/ios-build` run on a Mac, where the agent's own `xcodebuild` loop and simulator screenshots run end to end. See [docs/tooling/ios-build-agent.md](docs/tooling/ios-build-agent.md).
+
 ## Available
 
 - One MCP installation for reviews, local references, app scaffolding and simulator tools.

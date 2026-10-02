@@ -54,9 +54,10 @@ ios-agent-mcp preflight
 ios-agent-mcp capabilities list | verify <id...>|--all [--write CAPABILITIES_DIR] [--keep]
 ios-agent-mcp install-command [--global | --project DIR]
 
-build plans the app (PLAN.md), creates an XcodeGen project, applies capabilities, writes SwiftUI with headless Claude Code (claude -p),
-builds and fixes errors (capped), launches in the simulator, screenshots each top-level screen and writes RUN_REPORT.md.
-Requires macOS, Xcode, an iOS simulator, XcodeGen and a signed-in Claude Code CLI.`;
+build plans the app (PLAN.md), creates the Xcode project (XcodeGen when installed, otherwise the built-in writer),
+applies capabilities, writes SwiftUI with headless Claude Code (claude -p), builds and fixes errors (capped),
+launches in the simulator, screenshots each top-level screen and writes RUN_REPORT.md.
+Requires macOS, Xcode 16 or later, an iOS simulator and a signed-in Claude Code CLI. XcodeGen is optional.`;
 
 export async function buildCLI(args: string[]): Promise<number> {
   const { positional, flags } = parse(args);
@@ -140,7 +141,10 @@ export async function installCommandCLI(args: string[]): Promise<number> {
   const target = join(base, "commands", "ios-build.md");
   await mkdir(dirname(target), { recursive: true });
   await copyFile(source, target);
-  console.log(`Installed /ios-build at ${target}. The command uses the ios-agent MCP server: claude mcp add ios-agent -- npx -y ios-agent-mcp@latest`);
+  // Point at the server that is running now: a checkout build, or the npm package that was invoked.
+  const server = join(here, "..", "unified.js");
+  const connect = server.includes(`${"_npx"}`) ? "npx -y ios-agent-mcp@latest" : `node ${JSON.stringify(server)}`;
+  console.log(`Installed /ios-build at ${target}. The command uses the ios-agent MCP server (2.10.0 or later): claude mcp add ios-agent -- ${connect}`);
   return 0;
 }
 

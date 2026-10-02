@@ -8,7 +8,7 @@ Xcode 27 has coding agents built in, powered by a model of your choice. This
 document covers what they are good at, what they are not, and how the discipline
 in `docs/orchestration/` applies inside Xcode.
 
-> **Verification status (2026-09-16):** Xcode 27 is released. The local verification host has Xcode 26.6, so in-editor agent connection, menu paths and delegated reviewer behavior remain untested. CLI MCP tests do not establish Xcode integration.
+> **Verification status (2026-10-02):** Xcode 27 is released and the verification host now has Xcode 27.0. The in-editor agent connection, menu paths and delegated reviewer behavior have still not been tested there. CLI MCP tests do not establish Xcode integration.
 
 ---
 
@@ -218,7 +218,7 @@ Apple documents separate [in-Xcode agent environments](https://developer.apple.c
 
 Apple also supports agent plug-ins through Intelligence settings → Plug-ins. This repository does not claim its existing client ZIPs have passed Xcode’s plug-in import. No Xcode-only artifact is published without that check.
 
-**Current result:** local stdio MCP tests pass. The above **Xcode 27 session remains untested** because the verification host has Xcode 26.6. No global agent configuration was changed during this documentation pass. Apple’s own external-tools server (`mcpbridge`/`mcp-server`) is a separate integration; do not confuse it with this project’s `ios-agent` server.
+**Current result:** local stdio MCP tests pass. The above **Xcode 27 session remains untested**: on September 16 the verification host had Xcode 26.6, and the in-editor session has not been run since Xcode 27.0 was installed. No global agent configuration was changed during this documentation pass. Apple’s own external-tools server (`mcpbridge`/`mcp-server`) is a separate integration; do not confuse it with this project’s `ios-agent` server.
 
 ## September 21 follow-up
 

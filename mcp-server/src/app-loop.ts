@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs";
 import { groundRepair } from './apple-docs/repair.js';
 import { spawn } from "node:child_process";
 import { createHash } from "node:crypto";
@@ -301,14 +302,19 @@ export async function appLoop(argv: string[]) {
     const i = argv.indexOf(flag);
     return i < 0 ? undefined : argv[i + 1];
   };
+  if (action !== "init" && action !== "resume" && action !== "status") {
+    throw Error("Usage: ios-agent-mcp loop init|resume|status --project PATH (see docs/tooling/app-building-loop.md). For a new app from a description, use ios-agent-mcp build.");
+  }
   const root = resolve(value("--project") ?? process.cwd());
   const directory = join(root, ".ios-agent", "loop");
-  await mkdir(directory, { recursive: true });
   const statePath = join(directory, "state.json");
   if (action === "status") {
+    // Reading status never creates folders in the project.
+    if (!existsSync(statePath)) throw Error(`No loop in ${root}. Start one with: ios-agent-mcp loop init --project ${root} --brief BRIEF.md --checks checks.json`);
     console.log(await readFile(statePath, "utf8"));
     return;
   }
+  await mkdir(directory, { recursive: true });
   const lockPath = join(directory, "lock");
   let lock;
   try {

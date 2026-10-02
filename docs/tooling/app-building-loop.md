@@ -1,5 +1,7 @@
 # App-building loop (preview)
 
+> This loop drives an existing project until your own acceptance checks pass. To create a new app from one sentence, use the [`/ios-build` agent](ios-build-agent.md) instead. [Choose a workflow](idea-to-app.md).
+
 One client first: the local Claude Code CLI plans and edits; `ios-agent-mcp loop` runs your acceptance commands and records progress. This is a CLI workflow alongside the unified MCP server, not an additional MCP tool or a guarantee of autonomous app creation.
 
 ## Try the complete reading-list demo

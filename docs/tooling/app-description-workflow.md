@@ -1,5 +1,7 @@
 # App Description Workflow
 
+> To have an agent build the app from the description (plan, code, build, simulator screenshots), use the [`/ios-build` agent](ios-build-agent.md). This page covers shaping the description itself: screens, flows and visual direction. [Choose a workflow](idea-to-app.md).
+
 ## Context
 
 Use this when the user describes an app in natural language and expects the AI

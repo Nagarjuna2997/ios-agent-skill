@@ -48,7 +48,7 @@ export default defineVerify((ctx) => ctx.buildMinimalApp({ "Views/VerifyUsage.sw
 
 The apply context (`capabilities/_sdk/index.ts`) can set Info.plist keys, entitlements, build settings and packages; set the app icon; exclude files from the app target; set the scheme's StoreKit configuration; render SVG to PNG; write files under the app sources; and add a widget with `addWidget`. The first `addWidget` call creates one WidgetKit extension target, `<AppName>Widgets`, embedded in the app; every widget and Live Activity joins its generated `WidgetBundle`. Widget files stay in the capability's template folder: `sources` lists folders compiled into the extension, and `extensionOnly` folders are also excluded from the app target, so code shared by both targets lives in a folder listed only in `sources`.
 
-`buildMinimalApp` creates a minimal SwiftUI app, applies the capability with its dependencies, adds the given files and builds for the iOS Simulator. It returns `blocked` when Xcode, a simulator or XcodeGen is missing. `mcp-server` compiles these files when it builds (`mcp-server/scripts/bundle-capabilities.mjs`).
+`buildMinimalApp` creates a minimal SwiftUI app, applies the capability with its dependencies, adds the given files and builds for the iOS Simulator. It returns `blocked` when Xcode or a simulator is missing. It uses XcodeGen when installed and the built-in project writer otherwise. `mcp-server` compiles these files when it builds (`mcp-server/scripts/bundle-capabilities.mjs`).
 
 ## Status
 
@@ -56,7 +56,7 @@ The apply context (`capabilities/_sdk/index.ts`) can set Info.plist keys, entitl
 
 ## Compile check
 
-`verify` builds one module at a time and needs XcodeGen. The compile check is a faster, coarser test: `scripts/capability-compile-check.mjs` writes a project named CapCheck with every module applied and every module's usage file, all in one app target. The project uses a folder-synchronized group, so it opens in Xcode 16 or later without XcodeGen.
+`verify` builds one module at a time, with its entitlements and widget target. The compile check is a faster, coarser test: `scripts/capability-compile-check.mjs` writes a project named CapCheck with every module applied and every module's usage file, all in one app target. The project uses a folder-synchronized group, so it opens in Xcode 16 or later without XcodeGen.
 
 ```bash
 (cd mcp-server && npm run build)
@@ -64,7 +64,7 @@ node scripts/capability-compile-check.mjs --out ~/CapCheck
 open ~/CapCheck/CapCheck.xcodeproj    # then Product > Build
 ```
 
-A manifest's `compileCheck` block records a real build of that project: the date, Xcode version, destination, Swift language mode and result. It is written by hand after a build, and never from a fake toolchain. A passing compile check shows that the module's Swift compiles alongside every other module. It does not cover the XcodeGen project, entitlements, the widget extension target or runtime behavior, so `status` stays `untested` until the module's own verify run passes.
+A manifest's `compileCheck` block records a real build of that project: the date, Xcode version, destination, Swift language mode and result. It is written by hand after a build, and never from a fake toolchain. A passing compile check shows that the module's Swift compiles alongside every other module. It does not cover each module's own project, entitlements, the widget extension target or runtime behavior, so `status` stays `untested` until the module's own verify run passes.
 
 Recorded runs, 2026-10-02. Both were clean builds with Xcode 27.0 for the iPhone 18 Pro Simulator in Swift 6 language mode:
 

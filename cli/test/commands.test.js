@@ -125,6 +125,46 @@ test("clean never touches App/", () => {
   assert.deepEqual(fs.readdirSync(path.join(layout.app, "Safe")).sort(), before);
 });
 
+test("clean --help and clean -h print help and delete nothing", () => {
+  for (const flag of ["--help", "-h"]) {
+    const parent = tempDir();
+    const { layout } = scaffoldProject({ name: "Helpful", parentDir: parent });
+    fs.mkdirSync(layout.cache, { recursive: true });
+
+    const { io, out } = capture(layout.root);
+    assert.equal(run(["clean", flag], io), EXIT_OK);
+    assert.ok(fs.existsSync(layout.cache), `${flag} must not delete`);
+    assert.match(out.join("\n"), /USAGE/);
+  }
+});
+
+test("clean rejects unknown options and deletes nothing", () => {
+  const parent = tempDir();
+  const { layout } = scaffoldProject({ name: "Typo", parentDir: parent });
+  fs.mkdirSync(layout.cache, { recursive: true });
+
+  for (const argv of [["clean", "--dryrun"], ["clean", "everything"]]) {
+    const { io, err } = capture(layout.root);
+    assert.equal(run(argv, io), EXIT_USAGE);
+    assert.match(err.join("\n"), /Nothing was deleted/);
+    assert.ok(fs.existsSync(layout.cache));
+  }
+});
+
+test("clean refuses a build-agent project and keeps its run history", () => {
+  const parent = tempDir();
+  const { layout } = scaffoldProject({ name: "Agent", parentDir: parent });
+  fs.writeFileSync(path.join(layout.internal, "spec.json"), "{}");
+  fs.writeFileSync(layout.state, "{\"cycle\":1}");
+  fs.mkdirSync(layout.logs, { recursive: true });
+
+  const { io, err } = capture(layout.root);
+  assert.equal(run(["clean"], io), EXIT_USAGE);
+  assert.match(err.join("\n"), /build-agent project/);
+  assert.ok(fs.existsSync(layout.state));
+  assert.ok(fs.existsSync(layout.logs));
+});
+
 // MARK: doctor
 
 test("doctor passes on a fresh scaffold", () => {

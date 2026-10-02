@@ -14,7 +14,7 @@ Create a starter directly:
 npx -y ios-agent-mcp@latest new MyApp --brief "A reading list with local storage" --xcodegen
 ```
 
-Requires Node.js 20+. Simulator operations require macOS and Xcode; XcodeGen is required to generate an Xcode project from the starter specification. The agent implements app features using the starter, source tools and verification tools. One install is not autonomous app generation. The default connection now includes tools that write files and operate the simulator; review and reference tools remain read-only.
+Requires Node.js 20+. Simulator operations require macOS and Xcode. `new` writes a starter only: XcodeGen turns its `project.yml` into an Xcode project. To have an agent plan, write, build and screenshot a whole app from one sentence, use the [`/ios-build` agent](../tooling/ios-build-agent.md) (2.10.0, from a checkout until it is on npm); it needs Xcode 16 or later and treats XcodeGen as optional. The default connection includes tools that write files and operate the simulator; review and reference tools remain read-only.
 
 **Load this when:** setting up `ios-agent-mcp` in Claude Code, Claude Desktop,
 ChatGPT/Codex, Gemini, or another MCP-capable client.
@@ -245,7 +245,7 @@ Review and local-reference tools read files. App creation writes a new starter; 
 
 ## Xcode 27
 
-Use the [in-Xcode agent setup](../tooling/xcode-27-agents.md#connect-this-server-inside-xcode-27). Xcode uses its own agent configuration directories. This setup is documented from Apple’s released guidance; runtime acceptance remains unverified on the current Xcode 26.6 host.
+Use the [in-Xcode agent setup](../tooling/xcode-27-agents.md#connect-this-server-inside-xcode-27). Xcode uses its own agent configuration directories. This setup is documented from Apple’s released guidance; The verification host now has Xcode 27.0, but the in-Xcode agent connection has not been tested there, so runtime acceptance remains unverified.
 
 ## Muse Code
 

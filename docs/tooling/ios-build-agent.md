@@ -19,22 +19,29 @@ The automated build-and-fix loop has not yet run against a real `xcodebuild`, an
 3. **Project** creates an XcodeGen `project.yml` from `.ios-agent/spec.json`, `Config/Base.xcconfig`, a gitignored `Config/Secrets.xcconfig` generated from the gitignored `.env`, and starter sources. XcodeGen generates the `.xcodeproj` when it is installed. Otherwise the built-in writer renders the same spec into a folder-synchronized project that needs Xcode 16 or later; that project includes the app target, packages, Info.plist, entitlements, a shared scheme and the WidgetKit extension. Set `IOS_AGENT_PROJECT_GENERATOR=xcodegen` or `builtin` to force one writer.
 4. **Capabilities** are applied in dependency order: Info.plist keys, entitlements, Swift packages, build settings, credentials and template files.
 5. **Code**: the model writes SwiftUI under `<AppName>/`. The root view honors `-ios-agent-screen <id>` so each top-level screen can be opened for a screenshot.
-6. **Build and fix**: `xcodebuild` errors come back as `{file, line, column, message}`; the model fixes them; at most 8 attempts and 25 minutes per run.
+6. **Build and fix**: `xcodebuild` errors come back as `{file, line, column, message}`; the model fixes them; at most 8 attempts and 25 minutes per cycle, with the clock starting at the cycle's first build. Each refinement starts a new cycle (`ios_build` with `newCycle: true`), and earlier builds stay in the history.
 7. **Run**: the newest installed iOS runtime's iPhone (or a booted one) is used; the app is installed, launched once per top-level screen and screenshotted.
 8. **Report**: `RUN_REPORT.md` lists the result, screenshots, capabilities (applied, status, awaiting credentials), builds, what needs the user's accounts or money, next steps and the progress log.
 
 Every external command is logged to `.ios-agent/tool-log.jsonl` (commands and exit codes, not output). Run state lives in `.ios-agent/state.json`, so runs resume.
 
-## Entry points
+## Install
 
-In Claude Code, with the MCP server connected:
+The agent tools ship in `ios-agent-mcp` 2.10.0. That version is prepared in this repository but not yet on npm (npm has 2.9.0, which does not include them), so build the server from a checkout. On a Mac with Node 20 or later and Xcode 16 or later:
 
 ```bash
-claude mcp add ios-agent -- npx -y ios-agent-mcp@latest
-npx -y ios-agent-mcp@latest install-command --global
+git clone https://github.com/Nagarjuna2997/ios-agent-skill.git
+cd ios-agent-skill/mcp-server
+npm ci && npm run build
+claude mcp add ios-agent -- node "$PWD/dist/unified.js"
+node dist/unified.js install-command --global
 ```
 
-Then in any session:
+`install-command` copies `/ios-build` into `~/.claude/commands/` and prints the `claude mcp add` line for the server you ran it from. XcodeGen is optional.
+
+## Entry points
+
+In any Claude Code session with the server connected:
 
 ```text
 /ios-build "A habit tracker with a list, a detail screen, and settings with a dark mode toggle"
@@ -44,7 +51,7 @@ Then in any session:
 
 The command file is `.claude/commands/ios-build.md`; Claude Code itself writes the Swift and calls the tools.
 
-From a terminal, the same loop uses headless Claude Code (`claude -p`, tools disabled; the agent writes every file):
+From a terminal, the same loop uses headless Claude Code (`claude -p`, tools disabled; the agent writes every file). From the checkout, `ios-agent-mcp` below is `node mcp-server/dist/unified.js`:
 
 ```bash
 ios-agent-mcp preflight

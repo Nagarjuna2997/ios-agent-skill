@@ -18,7 +18,7 @@ import { containedPath, initProject, projectPaths, readSpec, regenerate, require
 import { renderRunReport, toolCallCount } from "./report.js";
 import type { CommandRunner } from "./runner.js";
 import { parseDotEnv, type AppSpec } from "./spec.js";
-import { assertCanBuild, attemptsThisCycle, loadState, newRunState, progress, saveState, type ProgressSink, type RunState } from "./state.js";
+import { DEFAULT_WALL_CLOCK_MINUTES, assertCanBuild, attemptsThisCycle, loadState, newRunState, progress, saveState, startCycle, type ProgressSink, type RunState } from "./state.js";
 
 export async function readEnv(root: string): Promise<Record<string, string>> {
   try {
@@ -179,9 +179,21 @@ export async function createProject(
 }
 
 /** Build with caps enforced and the attempt recorded in the run state. */
-export async function recordedBuild(rootDir: string, runner: CommandRunner, options: { udid?: string; scheme?: string; sink?: ProgressSink } = {}): Promise<BuildResult & { attempt: number; cap: number }> {
+export async function recordedBuild(
+  rootDir: string,
+  runner: CommandRunner,
+  options: { udid?: string; scheme?: string; sink?: ProgressSink; newCycle?: boolean; change?: string } = {},
+): Promise<BuildResult & { attempt: number; cap: number }> {
   const root = requireProjectDir(rootDir);
   const state = await ensureState(root);
+  if (options.newCycle) {
+    startCycle(state, options.change ? { change: options.change } : {});
+    progress(state, "building", options.change ? `Refining: ${options.change}` : "Starting a new build attempt budget.", options.sink);
+  } else if (attemptsThisCycle(state) === 0) {
+    // The wall clock covers building and fixing, so it starts with the cycle's first build,
+    // not when the plan was written (a user may read PLAN.md for a while first).
+    state.deadlineAt = new Date(Date.now() + (state.wallClockMinutes ?? DEFAULT_WALL_CLOCK_MINUTES) * 60_000).toISOString();
+  }
   assertCanBuild(state);
   const attempt = attemptsThisCycle(state) + 1;
   progress(state, "building", `Build attempt ${attempt} of ${state.maxBuildAttempts}.`, options.sink);

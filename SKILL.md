@@ -71,7 +71,8 @@ For product discovery and setup, use https://nagarjuna2997.github.io/ios-agent-s
 | Task | Local reference |
 |---|---|
 | Find/reuse full source while keeping context small | `docs/tooling/offline-source-library.md` |
-| Turn an idea into screens, features and a build | `docs/tooling/idea-to-app.md`, `docs/tooling/app-description-workflow.md` |
+| Build a whole app from one sentence | `/ios-build` and `docs/tooling/ios-build-agent.md` |
+| Choose a build workflow, or turn an idea into screens and a brief | `docs/tooling/idea-to-app.md`, `docs/tooling/app-description-workflow.md` |
 | Search an Apple technology | MCP `search_apple_technologies`, then compact `get_apple_technology`; otherwise search `docs/apple/all-technologies.md` |
 | SDK updates or release notes | `docs/apple/updates-and-release-notes.md` |
 | Layered app icon | `docs/design/icon-composer.md`; preserve editable layers and verify native `.icon` with Icon Composer |

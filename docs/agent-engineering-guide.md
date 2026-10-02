@@ -31,7 +31,8 @@ For implementation, search the local source library before browsing or loading a
 
 | Trigger | Load |
 |---------|------|
-| Build a complete app from an idea, client setup or plugin installation | `docs/tooling/idea-to-app.md`, `docs/mcp/installation.md` |
+| Build a complete app from one sentence | `/ios-build`, `docs/tooling/ios-build-agent.md` |
+| Choose a build workflow, client setup or plugin installation | `docs/tooling/idea-to-app.md`, `docs/mcp/installation.md` |
 | Apple updates, SDK release notes, known issues or resolved issues | `docs/apple/updates-and-release-notes.md`, `docs/apple/updates.json` |
 | App icons, Icon Composer, layered artwork or Liquid Glass icon variants | `docs/design/icon-composer.md`; produce separately editable layers and verify native `.icon` in the actual tool |
 | Any new screen or view | `docs/swiftui/views-and-controls.md`, `docs/design/design-tokens.md` |
@@ -241,7 +242,7 @@ Use Xcode's **Swift Concurrency instrument** to measure actor contention rather 
 
 ## Creating source and Xcode projects
 
-Use the existing Xcode project when one is available. For a new app, the CLI creates Swift source and can optionally generate an XcodeGen project specification with `--xcodegen`. Run XcodeGen to create the project, then build it with the installed Xcode SDK. See `docs/tooling/idea-to-app.md` and `docs/tooling/project-scaffolding.md`.
+Use the existing Xcode project when one is available. For a new app, the build agent's `ios_create_project` writes the Xcode project itself (XcodeGen when installed, otherwise a built-in writer that needs Xcode 16 or later); see `docs/tooling/ios-build-agent.md`. The starter CLI (`new --xcodegen`) writes Swift source and an XcodeGen specification; run XcodeGen to create that project. See `docs/tooling/idea-to-app.md` and `docs/tooling/project-scaffolding.md`.
 
 Do not require the user to create a project manually when the supported scaffolding path is available. If project generation or Xcode is unavailable, provide the source and exact remaining setup steps, and label the build unverified. A generated project does not implement every feature in an app brief.
 

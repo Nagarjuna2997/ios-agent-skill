@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
-Version 3.9.0 (skill manifests) and `ios-agent-mcp` 2.10.0 (npm package files) are prepared on the `agent/overnight` branch. Nothing has been tagged, released or published. The 3.8.2 notes below were prepared earlier and have not been released either. Install paths still pin the published `ios-agent-mcp@2.9.0`.
+Version 3.9.0 (skill manifests), `ios-agent-mcp` 2.10.0 and `@nagarjuna2002/ios-agent` 0.4.1 (npm package files) are prepared on `main`. Nothing has been tagged, released or published. The 3.8.2 notes below were prepared earlier and have not been released either. Install paths still pin the published `ios-agent-mcp@2.9.0`.
 
 ### Added -- 3.9.0
 
@@ -21,15 +21,28 @@ Version 3.9.0 (skill manifests) and `ios-agent-mcp` 2.10.0 (npm package files) a
 - Built-in Xcode project writer (`mcp-server/src/agent/xcodeproj.ts`): without XcodeGen, the spec is rendered into a folder-synchronized project. The project has the app target, packages, Info.plist, entitlements, a shared scheme with the StoreKit configuration, and the widget extension. `IOS_AGENT_PROJECT_GENERATOR` selects the writer explicitly.
 - `scripts/capability-compile-check.mjs` builds every module's Swift in one app target. Clean builds with Xcode 27.0 for the iPhone 18 Pro Simulator in Swift 6 mode passed on 2026-10-02: first for 33 modules, then for all 39 (81 Swift files, including the Supabase and RevenueCat packages), then an incremental build adding the last 2. Manifests record this in `compileCheck`.
 - `examples/agent`: four apps the agent planned and wrote: a habit tracker, a notes app, a three-tab app and a food-delivery composite with 20 modules and a widget extension. They built on the first build with Xcode 27.0 and ran in the simulator, and the folder includes the screenshots. The agent's own `xcodebuild` loop was not part of those runs.
-- MCP tests: 444 to 488.
+- MCP tests: 444 to 492. CLI tests: 70 to 73.
 
 ### Changed -- 3.9.0
 
+- **One workflow chooser instead of three overlapping guides.** `docs/tooling/idea-to-app.md` is now the page that picks between `/ios-build` (a whole app from a sentence), `new` (a starter and a brief) and `loop` (an existing project and your own checks). The app-description and app-building-loop guides open with a pointer to it, and `SKILL.md` (with its mirrors), the engineering guide and both builder plugin skills route "build an app" to the agent first.
+- **Stale claims replaced.** `mcp-server/README.md` said Version 2.8.0, that XcodeGen was required and that one install "is not autonomous app generation"; it now describes 2.10.0, the 80 tools (counted from a live `tools/list`) and when to use each entry point. The installation guide, capability docs and verify SDK no longer say XcodeGen is required. The Xcode 27 agent pages said the host had Xcode 26.6; it now has Xcode 27.0, and they say the in-editor session is still untested. The integrations guide still said its tools were not on npm, though they shipped in 2.8.0. The evidence page and ROADMAP now list the agent, with what was and was not verified.
+- CONTRIBUTING explains how to add a capability module.
 - README is one page again: the agent leads, a "Which workflow to use" table separates `/ios-build` (new app from a description), `loop` (an existing project and your own acceptance tests) and `new` (starter only), and the duplicated introduction and tool-count lines are gone. The website feature cards and release notes include the agent.
 - XcodeGen is optional; preflight no longer blocks on it.
 - The markdown link check skips the gitignored `mcp-server/data/` build output.
 
 ### Fixed -- 3.9.0
+
+Found in a full audit of the repository after the agent landed. Each item says what was wrong and why it was replaced.
+
+- **Build budget ran out before the first build (MCP).** The 25-minute clock started when the plan was written, so a user who read PLAN.md for a while could find `ios_build` refusing before any build. Through MCP there was also no way to start a new budget for a refinement: after 8 attempts the project could never be built again. The clock now starts at a cycle's first build, and `ios_build` takes `newCycle` and `change` to start a refinement with its own budget; earlier builds stay in the history and the change is listed in the report. Tests cover both.
+- **`ios-agent clean --help` deleted files (CLI 0.4.1).** Only a bare `help` printed help, so `clean --help` and `clean -h` fell through and deleted `.ios-agent/` entries. A typo such as `clean --dryrun` also ran a real clean. Every command now prints help for `--help` or `-h` and runs nothing, and `clean` rejects unknown options. `clean` also refuses a build-agent project, because its `state.json` and `logs/` hold the agent's budget and build history and are not disposable.
+- **`--help` ran commands (`ios-agent-mcp`).** `install-command --help` installed the command file and `preflight --help` ran the checks. Only `build` has its own help now; every other command prints the general help for `--help`.
+- **`loop` side effects.** `loop status` on a folder without a loop created `.ios-agent/loop/` before failing, and an unknown action (for example `loop build`) was treated as `init`. Status now explains how to start a loop and creates nothing; unknown actions are rejected with a pointer to `ios-agent-mcp build`.
+- **Outdated pins and wording.** `plan_ios_app` and the idea-to-app guide pinned `@nagarjuna2002/ios-agent@0.2.0`; they now pin 0.4.0, which was checked to run `new --brief --xcodegen`. Capability verification reported "XcodeGen failed" even when the built-in writer was used; it now says "Project generation failed". `install-command` printed `npx -y ios-agent-mcp@latest`, which is 2.9.0 and has no agent tools; it now prints the server it was run from.
+- **Reading List UI test failed intermittently on CI.** It typed into text fields while the add-book sheet was still presenting, and it read `exists` once right after a tap or a search. It also cleared the search with a button whose label differs between iOS versions. The test now waits for keyboard focus and for each expected state, and deletes the query with the keyboard. `verify.py` picks the same simulator on every machine: a booted iPhone first, then the newest iOS runtime. It also exports the screenshots when a test fails, and CI uploads them. Not yet run on a Mac in this session: the next CI run is the check.
+- **`/ios-build` told users to install the wrong version and required XcodeGen.** The command and the agent guide pointed at `ios-agent-mcp@latest` (2.9.0, without the agent tools) and said builds wait for XcodeGen. They now give the checkout install until 2.10.0 is published, treat XcodeGen as optional, and document `newCycle` for refinements.
 
 - The StoreKit module's usage now steers physical goods to Apple Pay; the composite example had used StoreKit for food orders.
 - A RevenueCat template missing `import Foundation`, and a passkeys usage file missing `import AuthenticationServices`, both found by the compile check.

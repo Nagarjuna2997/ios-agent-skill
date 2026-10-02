@@ -10,7 +10,7 @@ Connect app features to Apple's user-controlled services with focused Swift prev
 4. Call `check_apple_permissions`, `check_apple_capabilities`, or `review_system_integrations`. Supply the effective selected-target `infoPlist` and `entitlements` paths relative to the app root when known.
 5. Build and test cancellation, denied/restricted/limited access, success and unavailable-device behavior. Simulator tests are not device verification.
 
-The source server adds seven tools (40 → 47). Existing clients continue using the same stdio connection. Build the checkout with `npm ci && npm run build` inside mcp-server and configure the client to execute `node /absolute/checkout/mcp-server/dist/unified.js`. Do not expect the new tools from npm until the next package release.
+These seven tools shipped in npm 2.8.0 and are in every later version. Existing clients keep using the same stdio connection.
 
 ## Supported workflows
 

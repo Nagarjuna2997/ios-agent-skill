@@ -6,7 +6,7 @@
 
 [Watch the website walkthrough](site/assets/readme-walkthrough.gif) · [Explore the website](https://nagarjuna2997.github.io/ios-agent-skill/)
 
-Describe an app in one sentence and the `/ios-build` agent plans it, writes the SwiftUI code and Xcode project, then builds and runs it in the simulator ([what has been verified](#not-yet)). For an existing project, the same package gives your coding agent reviews, local Apple references and simulator tools to check its work.
+Describe an app in one sentence and the `/ios-build` agent plans it, writes the SwiftUI code and Xcode project, then builds and runs it in the simulator ([what has been verified](#not-yet), [example apps on the website](https://nagarjuna2997.github.io/ios-agent-skill/agent.html)). For an existing project, the same package gives your coding agent reviews, local Apple references and simulator tools to check its work.
 
 [![Tests](https://github.com/Nagarjuna2997/ios-agent-skill/actions/workflows/tests.yml/badge.svg)](https://github.com/Nagarjuna2997/ios-agent-skill/actions/workflows/tests.yml)
 [![Docs](https://github.com/Nagarjuna2997/ios-agent-skill/actions/workflows/docs-consistency.yml/badge.svg)](https://github.com/Nagarjuna2997/ios-agent-skill/actions/workflows/docs-consistency.yml)
@@ -132,7 +132,7 @@ The [Reading List demo](samples/ReadingList/README.md) has persistence, search, 
   <img src="examples/reading-list/library.png" alt="Reading List running in the simulator" width="260">
 </a>
 
-npm 2.9.0 exposes 67 tools, including seven [Apple system integration tools](docs/integrations/README.md) and nine [Screenshot Studio tools](docs/screenshots/README.md). Static reviews are heuristics, not compiler diagnostics. The Apple directory is a reference map, not Apple's proprietary framework source or proof of 405 working integrations. Token savings have not been benchmarked. [Build-loop verification limits](docs/tooling/app-building-loop.md).
+npm 2.9.0 exposes 67 tools; 2.10.0, prepared here and not yet on npm, adds the 13 build-agent tools for 80. They include seven [Apple system integration tools](docs/integrations/README.md) and nine [Screenshot Studio tools](docs/screenshots/README.md). Static reviews are heuristics, not compiler diagnostics. The Apple directory is a reference map, not Apple's proprietary framework source or proof of 405 working integrations. Token savings have not been benchmarked. [Build-loop verification limits](docs/tooling/app-building-loop.md).
 
 ## Why use this alongside Xcode?
 
@@ -155,7 +155,7 @@ Included as an experimental tool in 2.7.1: optional `private_feedback` keeps app
 | Claude | Local MCP and source skill; your Claude client supplies the coding agent. |
 | ChatGPT / Codex | Codex local MCP; ChatGPT skills package or a separately configured HTTPS/private-tunnel MCP connection. Availability depends on account/workspace policy. |
 | Gemini CLI | Extension configuration and local MCP connection verified. |
-| Muse Code | Skill discovery, 36-tool MCP discovery and a Stop hook verified; model sessions and observer behavior remain unverified. |
+| Muse Code | Skill discovery, MCP discovery (the 36-tool 2.7.0 server) and a Stop hook verified; model sessions and observer behavior remain unverified. |
 
 The project focuses on these four families. For another client, [open a client-support request](https://github.com/Nagarjuna2997/ios-agent-skill/issues/new?template=client_support.md) or add a 👍 to an existing request. Votes inform priorities alongside feasibility and testing; they do not guarantee delivery. Existing experimental adapters are not actively maintained.
 

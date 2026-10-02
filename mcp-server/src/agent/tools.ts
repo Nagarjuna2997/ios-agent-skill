@@ -235,13 +235,19 @@ export function registerAgentTools(server: McpServer, runners: RunnerFactory = d
     {
       title: "Build the app",
       description:
-        "Use this after writing code to build for the iOS Simulator with xcodebuild. Returns {success, errors:[{file,line,column,message}], warnings, durationMs}, never the raw log. Enforces the per-run attempt cap (8) and wall-clock cap (25 min).",
-      inputSchema: { projectDir, scheme: z.string().optional(), udid: z.string().optional() },
+        "Use this after writing code to build for the iOS Simulator with xcodebuild. Returns {success, errors:[{file,line,column,message}], warnings, durationMs}, never the raw log. Enforces 8 attempts and 25 minutes per cycle; the clock starts at the cycle's first build. Pass newCycle (and change) on the first build of a refinement or a resumed run to start a fresh budget.",
+      inputSchema: {
+        projectDir,
+        scheme: z.string().optional(),
+        udid: z.string().optional(),
+        newCycle: z.boolean().optional().describe("Start a new attempt budget and deadline (refinement or resume)."),
+        change: z.string().max(500).optional().describe("The refinement being applied, recorded in RUN_REPORT.md."),
+      },
       annotations: writes,
     },
-    async ({ projectDir: dir, scheme, udid }) => {
+    async ({ projectDir: dir, scheme, udid, newCycle, change }) => {
       try {
-        const result = await recordedBuild(dir, runners(dir), { ...(scheme ? { scheme } : {}), ...(udid ? { udid } : {}) });
+        const result = await recordedBuild(dir, runners(dir), { ...(scheme ? { scheme } : {}), ...(udid ? { udid } : {}), ...(newCycle ? { newCycle } : {}), ...(change ? { change } : {}) });
         return ok(result);
       } catch (error) {
         return fail(error);

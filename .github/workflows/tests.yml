@@ -336,7 +336,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: reading-list-evidence
-          path: samples/ReadingList/.ios-agent/evidence/*.png
+          path: |
+            samples/ReadingList/.ios-agent/evidence/*.png
+            samples/ReadingList/.ios-agent/export/*.png
           if-no-files-found: warn
 
   backend-patterns:

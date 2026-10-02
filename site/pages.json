@@ -1,4 +1,8 @@
 {
+  "agent.html": {
+    "title": "Build an iOS app from one sentence",
+    "description": "The /ios-build agent plans an iOS app, writes the SwiftUI code, builds it, fixes errors and screenshots every screen in the Simulator."
+  },
   "blog.html": {
     "title": "Practical Swift & AI development guides",
     "description": "Tips for reviewing Swift, verifying a SwiftUI app in Simulator and connecting an AI coding client."
@@ -481,7 +485,7 @@
   },
   "index.html": {
     "title": "iOS Agent Skill — Swift Reviews & Xcode Simulator MCP",
-    "description": "Local Swift source, Apple guides, Swift review tools, asset generation and Xcode simulator workflows for Claude, ChatGPT/Codex, Gemini CLI and Muse."
+    "description": "Build an iOS app from one sentence with the /ios-build agent, plus Swift reviews, Apple guides and Simulator tools for Claude, Codex, Gemini and Muse."
   },
   "install.html": {
     "title": "Install iOS Agent MCP — Claude, Codex, Gemini CLI & Muse",
@@ -921,7 +925,7 @@
   },
   "releases.html": {
     "title": "Release notes — iOS Agent Skill",
-    "description": "What changed in ios-agent-mcp 2.7.2: semantic colors, backend integration reviews, local guides and verification limits."
+    "description": "What's new: the /ios-build agent, an audit of fixes and replacements, and earlier ios-agent-mcp releases with their verification limits."
   },
   "guides/tooling-launch-screen-review.html": {
     "title": "Review iOS launch-screen configuration",

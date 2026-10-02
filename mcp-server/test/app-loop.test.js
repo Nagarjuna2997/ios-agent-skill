@@ -250,3 +250,22 @@ test("artifact outputs cannot alter fingerprinted source paths", async () => {
     await rm(root, { recursive: true, force: true });
   }
 });
+
+test("loop status without a run explains how to start one and creates nothing", async () => {
+  const root = await mkdtemp(join(tmpdir(), "app-loop-empty-"));
+  try {
+    await assert.rejects(run(root, "status"), (error) => /No loop in/.test(error.stderr));
+    const { readdir } = await import("node:fs/promises");
+    assert.deepEqual(await readdir(root), []);
+    await assert.rejects(run(root, "build"), (error) => /ios-agent-mcp build/.test(error.stderr));
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("--help after a subcommand prints help instead of running it", async () => {
+  const { stdout } = await exec(process.execPath, [binary, "loop", "--help"]);
+  assert.match(stdout, /build/);
+  const build = await exec(process.execPath, [binary, "build", "--help"]);
+  assert.match(build.stdout, /XcodeGen/);
+});

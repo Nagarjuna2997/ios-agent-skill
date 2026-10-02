@@ -217,6 +217,13 @@ export function run(argv: string[], io: IO = defaultIO): number {
     return EXIT_USAGE;
   }
 
+  // `<command> --help` prints help and runs nothing. Before this check,
+  // `clean --help` fell through to commandClean and deleted files.
+  if (args.flags.has("help") || args.positionals.includes("-h")) {
+    io.out(helpText());
+    return EXIT_OK;
+  }
+
   try {
     return spec.run(args, io);
   } catch (error) {
@@ -398,8 +405,27 @@ function commandInfo(args: ParsedArgs, io: IO): number {
  * confirm — the guarantee is structural rather than a promise in the help text.
  */
 function commandClean(args: ParsedArgs, io: IO): number {
+  const allowed = new Set(["dry-run", "json", "project"]);
+  const unknown = [...args.flags, ...args.values.keys()].filter((flag) => !allowed.has(flag));
+  if (unknown.length > 0 || args.positionals.length > 0) {
+    const named = [...unknown.map((flag) => `--${flag}`), ...args.positionals];
+    io.err(`Unknown argument for clean: ${named.join(", ")}. Nothing was deleted.`);
+    return EXIT_USAGE;
+  }
+
   const discovery = requireProject(args, io);
   if (!discovery) return EXIT_USAGE;
+
+  // A build-agent project keeps its plan, budget and build history in
+  // state.json and logs/. Those are not disposable: deleting them resets the
+  // agent's attempt budget and loses the run report's evidence.
+  if (fs.existsSync(path.join(discovery.layout.internal, "spec.json"))) {
+    io.err(
+      `${discovery.layout.root} is a build-agent project (${INTERNAL_DIR}/spec.json exists). ` +
+        "Its state and logs are the agent's run history, so clean leaves them alone. Nothing was deleted.",
+    );
+    return EXIT_USAGE;
+  }
 
   const dryRun = args.flags.has("dry-run");
   const removed: string[] = [];

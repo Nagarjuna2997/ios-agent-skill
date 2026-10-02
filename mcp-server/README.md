@@ -2,33 +2,42 @@
 
 [Explore the website](https://nagarjuna2997.github.io/ios-agent-skill/) · [Choose your AI and install](https://nagarjuna2997.github.io/ios-agent-skill/install.html)
 
-## Version 2.8.0
+## Version 2.10.0: build an app from one sentence
 
-Adds semantic color generation/review, backend integration review and local guides for eight backend families. Existing launch-screen checks and local release drafts remain included. See [release notes](https://nagarjuna2997.github.io/ios-agent-skill/releases.html) for scope and evidence.
+2.10.0 is prepared in the repository and not yet on npm; npm has 2.9.0. Until it is published, build the server from a checkout (steps below).
 
-Includes real appearance-aware color catalogs and offline SVG-layer app icons,
-Muse Code setup with verified MCP discovery, and refreshed public Apple references
-through September 21, 2026, with explicit beta and runtime-verification limits.
-The CLI is included automatically. User accounts, signing profiles and credentials
-are not package resources. Gemini CLI uses the repository extension; ChatGPT uses
-the skills package or a separately configured MCP connection. See the
-[client setup guide](https://nagarjuna2997.github.io/ios-agent-skill/install.html).
+2.10.0 adds the `/ios-build` agent. Describe an app in one sentence and it plans the screens and capabilities, writes PLAN.md with a budget, creates the Xcode project, writes the SwiftUI code, builds and fixes errors (at most 8 attempts and 25 minutes per cycle), launches the app in the iOS Simulator, screenshots each screen and writes RUN_REPORT.md. Thirteen `ios_*` tools drive it, and 41 capability modules supply sign-in, payments, maps, charts, widgets and more. Every module is marked `untested` until its own verify run passes on a Mac. [How the agent works and what has been verified](https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/tooling/ios-build-agent.md).
+
+Earlier releases added color generation and review, backend integration review, Apple system integrations, Screenshot Studio, layered app icons and dated Apple references. See the [release notes](https://nagarjuna2997.github.io/ios-agent-skill/releases.html) for scope and evidence. User accounts, signing profiles and credentials are not package resources. Gemini CLI uses the repository extension; ChatGPT uses the skills package or a separately configured MCP connection. See the [client setup guide](https://nagarjuna2997.github.io/ios-agent-skill/install.html).
 
 ## One install, one MCP connection
+
+Published version (2.9.0, without the build agent):
 
 ```bash
 claude mcp add ios-agent -- npx -y ios-agent-mcp@latest
 ```
 
-The 2.9.0 server exposes 67 tools, including the existing 40-tool set, seven Apple system-integration tools and nine Screenshot Studio tools. Optional AI/provider and environment workflows are additional CLI commands. App scaffolding and simulator packages install automatically as dependencies; no separate installation or MCP connection is needed. Remove the separate knowledge/simulator connections if you previously configured them to avoid duplicate tools.
-
-Create a starter directly:
+With the build agent (2.10.0, from a checkout):
 
 ```bash
-npx -y ios-agent-mcp@latest new MyApp --brief "A reading list with local storage" --xcodegen
+git clone https://github.com/Nagarjuna2997/ios-agent-skill.git
+cd ios-agent-skill/mcp-server && npm ci && npm run build
+claude mcp add ios-agent -- node "$PWD/dist/unified.js"
+node dist/unified.js install-command --global
 ```
 
-Requires Node.js 20+. Simulator operations require macOS and Xcode; XcodeGen is required to generate an Xcode project from the starter specification. The agent implements app features using the starter, source tools and verification tools. One install is not autonomous app generation. The default connection now includes tools that write files and operate the simulator; review and reference tools remain read-only.
+The 2.10.0 server exposes 80 tools: the 67 tools of 2.9.0 plus the 13 build-agent tools. Optional AI/provider and environment workflows are additional CLI commands. App scaffolding and simulator packages install automatically as dependencies; no separate installation or MCP connection is needed. Remove the separate knowledge/simulator connections if you previously configured them to avoid duplicate tools.
+
+Which entry point to use:
+
+| You want | Use |
+|---|---|
+| A whole app from a sentence, built and screenshotted | `/ios-build "<description>"` in Claude Code, or `ios-agent-mcp build "<description>"` |
+| An editable starter and a brief, then build it yourself | `ios-agent-mcp new MyApp --brief "..." --xcodegen` |
+| An existing project driven until your own checks pass | `ios-agent-mcp loop init --project PATH ...` |
+
+Requires Node.js 20 or later. Building and simulator operations require macOS and Xcode 16 or later. XcodeGen is optional: without it the built-in writer creates a folder-synchronized Xcode project. The default connection includes tools that write files and operate the simulator; review and reference tools remain read-only.
 
 [Website and quick start](https://nagarjuna2997.github.io/ios-agent-skill/) · [GitHub source](https://github.com/Nagarjuna2997/ios-agent-skill)
 
@@ -365,6 +374,6 @@ See [provider setup and limitations](https://github.com/Nagarjuna2997/ios-agent-
 
 ## Local Apple documentation
 
-npm version 2.9.0 exposes 67 tools and includes the updated CLI dependency. Use `xcode-mcp tools` for discovered Xcode schemas and `doctor xcode` for setup diagnostics.
+npm version 2.9.0 exposes 67 tools (2.10.0 adds the 13 build-agent tools, 80 in all) and includes the updated CLI dependency. Use `xcode-mcp tools` for discovered Xcode schemas and `doctor xcode` for setup diagnostics.
 
 Use `ios-agent-mcp docs status` and `ios-agent-mcp docs symbol SwiftUI.NavigationStack` for version-aware documentation grounding. The adapter prefers Xcode MCP DocumentationSearch, then bounded SDK evidence. Apple’s archive is never bundled. Bridge authorization is required; retrieval is not automatic code validation. [Setup, tools and limitations](https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-local-apple-documentation.html).

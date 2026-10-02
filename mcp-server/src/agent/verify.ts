@@ -58,7 +58,7 @@ async function buildMinimalApp(capability: LoadedCapability, all: Map<string, Lo
       await writeProjectFiles(root, Object.entries(extraFiles).map(([path, content]) => ({ path: `${next.name}/${path}`, content })), runner);
     }
     const regen = await regenerate(root, next, runner);
-    if (!regen.generated) return { status: "failed", reason: `XcodeGen failed: ${regen.reason}`, ...(toolchain ? { toolchain } : {}) };
+    if (!regen.generated) return { status: "failed", reason: `Project generation failed: ${regen.reason}`, ...(toolchain ? { toolchain } : {}) };
     const build = await buildProject(root, runner, { attempt: 1 });
     return build.success
       ? { status: "verified", ...(toolchain ? { toolchain } : {}) }

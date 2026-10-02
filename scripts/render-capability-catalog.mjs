@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-// Render capabilities/CATALOG.md (and the README capability summary) from
+// Render capabilities/CATALOG.md (plus the README capability summary and the
+// module table on site/agent.html) from
 // capabilities/catalog.json and the module manifests, so status counts and the
 // landscape cannot drift from what actually exists.
 //
@@ -99,6 +100,24 @@ const readmePath = join(root, "README.md");
 const readme = readFileSync(readmePath, "utf8");
 const marker = /<!-- capability-summary:start -->[\s\S]*?<!-- capability-summary:end -->/;
 const nextReadme = marker.test(readme) ? readme.replace(marker, summary) : readme;
+// The website's agent page lists the modules with the same status data.
+const html = (text) => String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+const moduleRows = [...modules.values()]
+  .sort((a, b) => a.category.localeCompare(b.category) || a.name.localeCompare(b.name))
+  .map((m) => `<tr><td>${html(m.name)}</td><td>${html(m.category)}</td><td>${m.appleNative ? "Apple" : "third-party"}${m.default ? ", default" : ""}</td><td>${(m.credentialsNeeded ?? []).length ? m.credentialsNeeded.map((c) => `<code>${html(c.key)}</code>`).join(", ") : "nothing"}</td><td>${html(m.status)}</td><td>${m.compileCheck?.result === "passed" ? "yes" : "no"}</td></tr>`);
+const siteRegion = [
+  "<!-- capability-modules:start -->",
+  `<p>${modules.size} modules the agent can apply, from ${catalog.length} capabilities it can plan for. <strong>${counts.verified} verified</strong>, <strong>${counts.untested} untested</strong>: a module is verified only after its own build check passes on a Mac. ${compiledCount} compiled together in one app. Generated from the module manifests.</p>`,
+  '<div class="table-scroll"><table><thead><tr><th>Module</th><th>Category</th><th>Kind</th><th>You provide</th><th>Status</th><th>Compiled</th></tr></thead><tbody>',
+  ...moduleRows,
+  "</tbody></table></div>",
+  '<p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/capabilities/CATALOG.md">Full catalog with cost models →</a></p>',
+  "<!-- capability-modules:end -->",
+].join("\n");
+const sitePath = join(root, "site", "agent.html");
+const site = existsSync(sitePath) ? readFileSync(sitePath, "utf8") : "";
+const siteMarker = /<!-- capability-modules:start -->[\s\S]*?<!-- capability-modules:end -->/;
+const nextSite = siteMarker.test(site) ? site.replace(siteMarker, siteRegion) : site;
 const catalogPath = join(dir, "CATALOG.md");
 const current = existsSync(catalogPath) ? readFileSync(catalogPath, "utf8") : "";
 
@@ -107,8 +126,8 @@ if (process.argv.includes("--check")) {
     console.error(`Capability catalog problems:\n${problems.join("\n")}`);
     process.exit(1);
   }
-  if (current !== catalogMarkdown || nextReadme !== readme) {
-    console.error("capabilities/CATALOG.md or the README capability summary is stale. Run: node scripts/render-capability-catalog.mjs");
+  if (current !== catalogMarkdown || nextReadme !== readme || nextSite !== site) {
+    console.error("capabilities/CATALOG.md, the README capability summary or site/agent.html is stale. Run: node scripts/render-capability-catalog.mjs");
     process.exit(1);
   }
   console.log(`OK - ${catalog.length} catalog entries, ${modules.size} modules (${counts.verified} verified, ${counts.untested} untested, ${counts.blocked} blocked)`);
@@ -116,5 +135,6 @@ if (process.argv.includes("--check")) {
   if (problems.length) console.warn(`Warnings:\n${problems.join("\n")}`);
   writeFileSync(catalogPath, catalogMarkdown);
   writeFileSync(readmePath, nextReadme);
+  if (site) writeFileSync(sitePath, nextSite);
   console.log(`Wrote CATALOG.md: ${catalog.length} entries, ${modules.size} modules`);
 }

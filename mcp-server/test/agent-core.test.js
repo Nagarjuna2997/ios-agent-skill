@@ -280,6 +280,27 @@ describe("project workflow against fake Xcode", () => {
     await assert.rejects(recordedBuild(root, runner), /Wall-clock cap/);
   });
 
+  test("the wall clock starts at a cycle's first build, and newCycle starts a new budget", async (t) => {
+    const { root, runner } = await setup(t);
+    await createProject({ projectDir: root, name: "Habits" }, runner);
+    const planned = await loadState(root);
+    // Time spent reading PLAN.md before the first build must not use up the budget.
+    planned.deadlineAt = new Date(Date.now() - 1000).toISOString();
+    planned.maxBuildAttempts = 1;
+    await saveState(root, planned);
+    await recordedBuild(root, runner);
+    await assert.rejects(recordedBuild(root, runner), /attempt cap reached \(1/);
+
+    const refined = await recordedBuild(root, runner, { newCycle: true, change: "Add a streak counter" });
+    assert.equal(refined.attempt, 1);
+    const after = await loadState(root);
+    assert.equal(after.cycle, 2);
+    assert.equal(after.status, "running");
+    assert.deepEqual(after.refinements.map((r) => r.change), ["Add a streak counter"]);
+    assert.ok(Date.parse(after.deadlineAt) > Date.now());
+    assert.equal(after.builds.length, 2, "earlier cycles stay in the history");
+  });
+
   test("boots the newest iPhone when none is booted and reports XcodeGen failures", async (t) => {
     const { root, runner, fake } = await setup(t, "no-booted");
     await createProject({ projectDir: root, name: "Habits" }, runner);

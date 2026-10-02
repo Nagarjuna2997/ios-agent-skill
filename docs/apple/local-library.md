@@ -12,7 +12,7 @@ Search offline with `node scripts/query-library.mjs search "SwiftData"`. Read a 
 | [checklists/performance.md](../../checklists/performance.md) | guide | 13965 |
 | [checklists/security.md](../../checklists/security.md) | guide | 17952 |
 | [checklists/testing.md](../../checklists/testing.md) | guide | 22008 |
-| [docs/agent-engineering-guide.md](../../docs/agent-engineering-guide.md) | guide | 63362 |
+| [docs/agent-engineering-guide.md](../../docs/agent-engineering-guide.md) | guide | 63573 |
 | [docs/ai-setup-guide.md](../../docs/ai-setup-guide.md) | guide | 2581 |
 | [docs/ai/machine-learning-brain.md](../../docs/ai/machine-learning-brain.md) | guide | 20714 |
 | [docs/ai/providers.md](../../docs/ai/providers.md) | guide | 6011 |
@@ -389,7 +389,7 @@ Search offline with `node scripts/query-library.mjs search "SwiftData"`. Read a 
 | [docs/design/third-party-animations.md](../../docs/design/third-party-animations.md) | guide | 13366 |
 | [docs/design/typography-system.md](../../docs/design/typography-system.md) | guide | 24786 |
 | [docs/development.md](../../docs/development.md) | guide | 1579 |
-| [docs/evidence-and-scope.md](../../docs/evidence-and-scope.md) | guide | 4918 |
+| [docs/evidence-and-scope.md](../../docs/evidence-and-scope.md) | guide | 5416 |
 | [docs/frameworks/accelerate.md](../../docs/frameworks/accelerate.md) | guide | 21359 |
 | [docs/frameworks/accessibility.md](../../docs/frameworks/accessibility.md) | guide | 22057 |
 | [docs/frameworks/activitykit.md](../../docs/frameworks/activitykit.md) | guide | 22210 |
@@ -446,9 +446,9 @@ Search offline with `node scripts/query-library.mjs search "SwiftData"`. Read a 
 | [docs/frameworks/visionkit.md](../../docs/frameworks/visionkit.md) | guide | 3464 |
 | [docs/frameworks/widgetkit.md](../../docs/frameworks/widgetkit.md) | guide | 28424 |
 | [docs/graphics/README.md](../../docs/graphics/README.md) | guide | 2319 |
-| [docs/integrations/README.md](../../docs/integrations/README.md) | guide | 7749 |
+| [docs/integrations/README.md](../../docs/integrations/README.md) | guide | 7543 |
 | [docs/mcp/examples.md](../../docs/mcp/examples.md) | guide | 12256 |
-| [docs/mcp/installation.md](../../docs/mcp/installation.md) | guide | 15047 |
+| [docs/mcp/installation.md](../../docs/mcp/installation.md) | guide | 15233 |
 | [docs/mcp/knowledge-server.md](../../docs/mcp/knowledge-server.md) | guide | 3540 |
 | [docs/mcp/registry.md](../../docs/mcp/registry.md) | guide | 983 |
 | [docs/mcp/tools.md](../../docs/mcp/tools.md) | guide | 23955 |
@@ -489,13 +489,13 @@ Search offline with `node scripts/query-library.mjs search "SwiftData"`. Read a 
 | [docs/testing/evaluations.md](../../docs/testing/evaluations.md) | guide | 5617 |
 | [docs/testing/mocking-strategy.md](../../docs/testing/mocking-strategy.md) | guide | 18553 |
 | [docs/testing/xcuiautomation.md](../../docs/testing/xcuiautomation.md) | guide | 2414 |
-| [docs/tooling/app-building-loop.md](../../docs/tooling/app-building-loop.md) | guide | 5090 |
-| [docs/tooling/app-description-workflow.md](../../docs/tooling/app-description-workflow.md) | guide | 6693 |
+| [docs/tooling/app-building-loop.md](../../docs/tooling/app-building-loop.md) | guide | 5303 |
+| [docs/tooling/app-description-workflow.md](../../docs/tooling/app-description-workflow.md) | guide | 6965 |
 | [docs/tooling/device-hub.md](../../docs/tooling/device-hub.md) | guide | 8029 |
 | [docs/tooling/fm-cli.md](../../docs/tooling/fm-cli.md) | guide | 2447 |
 | [docs/tooling/foundation-models-instruments.md](../../docs/tooling/foundation-models-instruments.md) | guide | 3378 |
-| [docs/tooling/idea-to-app.md](../../docs/tooling/idea-to-app.md) | guide | 2879 |
-| [docs/tooling/ios-build-agent.md](../../docs/tooling/ios-build-agent.md) | guide | 6419 |
+| [docs/tooling/idea-to-app.md](../../docs/tooling/idea-to-app.md) | guide | 4036 |
+| [docs/tooling/ios-build-agent.md](../../docs/tooling/ios-build-agent.md) | guide | 7177 |
 | [docs/tooling/ios-simulator-mcp.md](../../docs/tooling/ios-simulator-mcp.md) | guide | 7719 |
 | [docs/tooling/issue-reporting.md](../../docs/tooling/issue-reporting.md) | guide | 5432 |
 | [docs/tooling/launch-screen-review.md](../../docs/tooling/launch-screen-review.md) | guide | 6420 |
@@ -506,7 +506,7 @@ Search offline with `node scripts/query-library.mjs search "SwiftData"`. Read a 
 | [docs/tooling/september-2026-distribution.md](../../docs/tooling/september-2026-distribution.md) | guide | 4820 |
 | [docs/tooling/visual-iteration-loop.md](../../docs/tooling/visual-iteration-loop.md) | guide | 3160 |
 | [docs/tooling/xcode-27-2.md](../../docs/tooling/xcode-27-2.md) | guide | 3221 |
-| [docs/tooling/xcode-27-agents.md](../../docs/tooling/xcode-27-agents.md) | guide | 10322 |
+| [docs/tooling/xcode-27-agents.md](../../docs/tooling/xcode-27-agents.md) | guide | 10425 |
 | [docs/tooling/xcode-documentation-resources.md](../../docs/tooling/xcode-documentation-resources.md) | guide | 3150 |
 | [docs/tooling/xcode-memory-debugging.md](../../docs/tooling/xcode-memory-debugging.md) | guide | 5286 |
 | [docs/uikit/animations.md](../../docs/uikit/animations.md) | guide | 34691 |
@@ -604,8 +604,8 @@ Search offline with `node scripts/query-library.mjs search "SwiftData"`. Read a 
 | [samples/ReadingList/ReadingList.xcodeproj/xcshareddata/xcschemes/ReadingList.xcscheme](../../samples/ReadingList/ReadingList.xcodeproj/xcshareddata/xcschemes/ReadingList.xcscheme) | source | 4350 |
 | [samples/ReadingList/README.md](../../samples/ReadingList/README.md) | guide | 1776 |
 | [samples/ReadingList/Tests/ReadingStoreTests.swift](../../samples/ReadingList/Tests/ReadingStoreTests.swift) | source | 2145 |
-| [samples/ReadingList/UITests/ReadingListUITests.swift](../../samples/ReadingList/UITests/ReadingListUITests.swift) | source | 2112 |
-| [samples/ReadingList/verify.py](../../samples/ReadingList/verify.py) | source | 2210 |
+| [samples/ReadingList/UITests/ReadingListUITests.swift](../../samples/ReadingList/UITests/ReadingListUITests.swift) | source | 3570 |
+| [samples/ReadingList/verify.py](../../samples/ReadingList/verify.py) | source | 3152 |
 | [samples/ScreenshotStudio/es-ES.json](../../samples/ScreenshotStudio/es-ES.json) | source | 498 |
 | [samples/ScreenshotStudio/README.md](../../samples/ScreenshotStudio/README.md) | guide | 1170 |
 | [samples/ScreenshotStudio/recipe.json](../../samples/ScreenshotStudio/recipe.json) | source | 922 |

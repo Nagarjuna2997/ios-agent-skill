@@ -55,6 +55,7 @@ This status is about implementation and evidence, not promises made in conversat
 | Work | Status |
 |---|---|
 | Unified reviews, local references, app starter, simulator build/launch/screenshots | Published in npm 2.9.0; 67 tools listed by the published package, including local issue previews. |
+| `/ios-build` agent: plan, project, code, build-and-fix, simulator screenshots, run report; 41 capability modules | Prepared for npm 2.10.0, not published. Four example apps were planned and coded by the agent and then built and run in Xcode 27.0 by hand; the agent's own `xcodebuild` loop on a Mac is not yet exercised. All 41 modules compile together in one app (Xcode 27.0, Swift 6); every module stays `untested` until its own verify run passes. See [examples](../examples/agent/README.md). |
 | Real asset catalogs and offline SVG-layer PNG icon | CLI 0.3.0 and consolidated MCP 2.7.0 published; asset generation tested. |
 | Muse setup; Gemini CLI setup | Muse discovery/Stop hook and Gemini connection verified; no complete app-generation claim. |
 | Claude repair adapter | Real bounded repair passed; full generated-app run and model planning still unverified. |

@@ -79,6 +79,18 @@ The `docs-consistency` GitHub Actions workflow fails any PR whose mirrors are st
 
 To support a new AI entry point, add its path to the `MIRRORS` array in `scripts/sync-mirrors.sh` and re-run the script — do not add another `cp` line anywhere else.
 
+## Adding a capability module
+
+Each capability the build agent can add to an app (a sign-in provider, payments, maps, a widget, and so on) is one folder under `capabilities/`, with the contract described in [capabilities/README.md](capabilities/README.md). Add a folder; do not special-case the capability in the agent.
+
+1. Write `manifest.json`, `recipe.md`, `template/`, `apply.ts` and `verify.ts`. Start with `"status": "untested"`.
+2. Run `cd mcp-server && npm run build && npm test`. The loader validates every manifest.
+3. Add or update the entry in `capabilities/catalog.json`, then regenerate the catalog page with `node scripts/render-capability-catalog.mjs`.
+4. On a Mac, run `node scripts/capability-compile-check.mjs --out ~/CapCheck` and build that project. Record a passing build in the manifest's `compileCheck` block only after it has actually passed.
+5. Mark the module `verified` only through `ios-agent-mcp capabilities verify <id> --write ./capabilities`, which writes the evidence file.
+
+Never mark a module verified, or claim a cost amount, that was not checked.
+
 ## Publishing
 
 Pushing a `v*` tag runs `.github/workflows/release.yml`. The workflow creates
