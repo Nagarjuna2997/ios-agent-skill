@@ -1,8 +1,22 @@
 # iOS Agent Skill
 
-## iOS app agent
+**Give your coding agent the Apple references, Swift source and local tools it needs to build and review an iOS app.**
 
-`/ios-build "<what you want>"` asks Claude Code to plan an iOS app, write its SwiftUI code and Xcode project, apply capability modules (sign-in, storage, payments, maps and more), then build, run and screenshot it in the iOS Simulator, ending with a report of what needs your accounts or money. As of 2026-10-02 this is unreleased, on the `agent/overnight` branch. Four apps it planned and wrote built on the first build with Xcode 27.0 and ran in the simulator. One of them is a food-delivery app with 20 capability modules and a widget extension. Its own build-and-fix loop has not yet run end to end on a Mac.
+[![iOS Agent Skill website preview](site/assets/readme-hero.jpg)](https://nagarjuna2997.github.io/ios-agent-skill/)
+
+[Watch the website walkthrough](site/assets/readme-walkthrough.gif) · [Explore the website](https://nagarjuna2997.github.io/ios-agent-skill/)
+
+Describe an app in one sentence and the `/ios-build` agent plans it, writes the SwiftUI code and Xcode project, then builds and runs it in the simulator ([what has been verified](#not-yet)). For an existing project, the same package gives your coding agent reviews, local Apple references and simulator tools to check its work.
+
+[![Tests](https://github.com/Nagarjuna2997/ios-agent-skill/actions/workflows/tests.yml/badge.svg)](https://github.com/Nagarjuna2997/ios-agent-skill/actions/workflows/tests.yml)
+[![Docs](https://github.com/Nagarjuna2997/ios-agent-skill/actions/workflows/docs-consistency.yml/badge.svg)](https://github.com/Nagarjuna2997/ios-agent-skill/actions/workflows/docs-consistency.yml)
+[![npm total downloads](https://img.shields.io/endpoint?url=https%3A%2F%2Fnagarjuna2997.github.io%2Fios-agent-skill%2Fnpm-downloads.json)](https://nagarjuna2997.github.io/ios-agent-skill/npm-downloads-details.json)
+
+[Explore the website](https://nagarjuna2997.github.io/ios-agent-skill/) · [Client setup guides](https://nagarjuna2997.github.io/ios-agent-skill/install.html) · [npm](https://www.npmjs.com/package/ios-agent-mcp) · [Release notes](CHANGELOG.md)
+
+## Build an app from one sentence
+
+`/ios-build "<what you want>"` asks Claude Code to plan an iOS app, write its SwiftUI code and Xcode project, apply capability modules (sign-in, storage, payments, maps and more), then build, run and screenshot it in the iOS Simulator, ending with a report of what needs your accounts or money. As of 2026-10-02 it is on `main` but not yet in the published npm package. Four apps it planned and wrote built on the first build with Xcode 27.0 and ran in the simulator. One of them is a food-delivery app with 20 capability modules and a widget extension. Its own build-and-fix loop has not yet run end to end on a Mac.
 
 ### Quickstart
 
@@ -56,22 +70,14 @@ The agent builds and runs everything in the simulator without accounts. Capabili
 - The agent's automated loop (`xcodebuild` errors fed back to the model, `simctl` launch and screenshots per screen) is covered by tests against fake tools, not by a real run.
 - Taps and scrolling during the agent's own screenshots, and device builds, are not done. In the food-delivery example the StoreKit purchase and the Live Activity were not exercised.
 
-## Knowledge base
+## Which workflow to use
 
-
-**Give your coding agent the Apple references, Swift source and local tools it needs to build and review an iOS app.**
-
-[![iOS Agent Skill website preview](site/assets/readme-hero.jpg)](https://nagarjuna2997.github.io/ios-agent-skill/)
-
-[Watch the website walkthrough](site/assets/readme-walkthrough.gif) · [Explore the website](https://nagarjuna2997.github.io/ios-agent-skill/)
-
-Use it to turn an app idea into an editable starter, improve an existing Swift project, and check the result with Xcode and the simulator. Your agent writes the app; this repository supplies reusable implementation guidance and tools to inspect its work.
-
-[![Tests](https://github.com/Nagarjuna2997/ios-agent-skill/actions/workflows/tests.yml/badge.svg)](https://github.com/Nagarjuna2997/ios-agent-skill/actions/workflows/tests.yml)
-[![Docs](https://github.com/Nagarjuna2997/ios-agent-skill/actions/workflows/docs-consistency.yml/badge.svg)](https://github.com/Nagarjuna2997/ios-agent-skill/actions/workflows/docs-consistency.yml)
-[![npm total downloads](https://img.shields.io/endpoint?url=https%3A%2F%2Fnagarjuna2997.github.io%2Fios-agent-skill%2Fnpm-downloads.json)](https://nagarjuna2997.github.io/ios-agent-skill/npm-downloads-details.json)
-
-[Explore the website](https://nagarjuna2997.github.io/ios-agent-skill/) · [Client setup guides](https://nagarjuna2997.github.io/ios-agent-skill/install.html) · [npm](https://www.npmjs.com/package/ios-agent-mcp) · [Release notes](CHANGELOG.md)
+| You want to | Use | Notes |
+|---|---|---|
+| Build a new app from a description | `/ios-build "<description>"` in Claude Code, or `ios-agent-mcp build` | Plans, writes, builds, runs and screenshots; see [above](#build-an-app-from-one-sentence). |
+| Make an existing project pass your own acceptance tests | `ios-agent-mcp loop` | Runs the checks you write and asks Claude to repair failures; see [the app-building loop](docs/tooling/app-building-loop.md) and the [Reading List demo](samples/ReadingList/README.md). |
+| Get an editable starter only | `ios-agent-mcp new MyApp` | A starting point with a brief, not a finished app. |
+| Review or extend code you already have | The MCP tools below | File-located reviews, local references, assets and simulator checks. |
 
 ## Start with one connection
 
@@ -94,6 +100,7 @@ For an existing app, provide its absolute project path and ask for a focused rev
 <!-- product-features:start -->
 | Feature | What you get |
 |---|---|
+| Build an app from a sentence | The ios-build agent plans screens, data and capabilities, writes SwiftUI and the Xcode project, then builds, runs and screenshots the app in the simulator. On main, not yet in the npm package. |
 | Start an app | An editable Swift starter, implementation brief and optional XcodeGen specification. |
 | Reuse Apple knowledge | Search local Swift source and guides in bounded sections, plus a dated directory of Apple technologies and release notes. |
 | Review Swift code | File-located findings for concurrency, architecture, SwiftUI, availability, security, performance and App Intents. |
@@ -115,11 +122,11 @@ Create a starter directly:
 npx -y ios-agent-mcp@latest new MyApp --brief "A reading list with local storage" --xcodegen
 ```
 
-XcodeGen is needed to generate the Xcode project. The starter is not a finished app. Generated app ownership and branding belong to the user.
+The starter is not a finished app: `--xcodegen` writes a `project.yml` that XcodeGen turns into a project. For a complete app from a description, use `/ios-build`. Generated app ownership and branding belong to the user.
 
 ## See the evidence
 
-The [Reading List demo](samples/ReadingList/README.md) has persistence, search, simulator acceptance tests and captured screens.
+The [Reading List demo](samples/ReadingList/README.md) has persistence, search, simulator acceptance tests and captured screens. The four apps the `/ios-build` agent planned and wrote, with their plans, run reports and simulator screenshots, are in [examples/agent](examples/agent/README.md).
 
 <a href="examples/reading-list/library.png">
   <img src="examples/reading-list/library.png" alt="Reading List running in the simulator" width="260">
@@ -181,6 +188,6 @@ Text generation defaults to on-device Apple models; cloud providers and fallback
 
 Install the archive in Xcode → Settings → Components → Developer Documentation. Read it through Window → Developer Documentation (Shift–Command–0 with standard key bindings). This integration uses `xcrun mcpbridge`; the archive stays managed by Xcode.
 
-npm version 2.9.0 exposes 67 tools and includes the updated CLI dependency. Use `xcode-mcp tools` for discovered Xcode schemas and `doctor xcode` for setup diagnostics.
+Use `xcode-mcp tools` for discovered Xcode schemas and `doctor xcode` for setup diagnostics.
 
 Use `ios-agent-mcp docs status` and `ios-agent-mcp docs symbol SwiftUI.NavigationStack` for version-aware documentation grounding. The adapter prefers Xcode MCP DocumentationSearch, then bounded SDK evidence. Apple’s archive is never bundled. Bridge authorization is required; retrieval is not automatic code validation. [Setup, tools and limitations](https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-local-apple-documentation.html).

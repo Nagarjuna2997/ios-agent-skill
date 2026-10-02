@@ -25,6 +25,7 @@ Version 3.9.0 (skill manifests) and `ios-agent-mcp` 2.10.0 (npm package files) a
 
 ### Changed -- 3.9.0
 
+- README is one page again: the agent leads, a "Which workflow to use" table separates `/ios-build` (new app from a description), `loop` (an existing project and your own acceptance tests) and `new` (starter only), and the duplicated introduction and tool-count lines are gone. The website feature cards and release notes include the agent.
 - XcodeGen is optional; preflight no longer blocks on it.
 - The markdown link check skips the gitignored `mcp-server/data/` build output.
 
