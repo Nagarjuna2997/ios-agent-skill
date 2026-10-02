@@ -9,7 +9,7 @@ Working copy: a fresh clone of `main` at `0e5cb39`. All commits are authored as 
 | 1 | Studio: resolve CLI tools from the login-shell PATH on macOS (commit prepared before this run) | S | done (`72f6e50`) |
 | 2 | Sync stale skill version `3.5.0` in `skill.json`, `gemini-extension.json` and both Codex `plugin.json` files with `SKILL.md`/CHANGELOG `3.8.1`; add a check so they cannot drift again | S | done |
 | 2b | Active client manifests pin `ios-agent-mcp@2.7.0` (Gemini extension, Codex plugin `.mcp.json`, builder skill commands) although 2.9.0 is published (`npm view`); update after verifying the published 2.9.0 artifact, and extend the check to pins | S | done |
-| 3 | Issue #12 follow-up: add the issue's exact reproduction and remaining formatter true positives as regression tests (the fix itself is already on `main`) | XS | pending |
+| 3 | Issue #12 follow-up: add the issue's exact reproduction and remaining formatter true positives as regression tests (the fix itself is already on `main`) | XS | done |
 | 4 | Remove the stray bare ProductHunt URL from README (owner preference: promotion through owned channels only) | XS | pending |
 | 5 | CONTRIBUTING "Swift 5.9+" modern-first wording contradicts the toolchain the skill targets (Swift 6.4 / Xcode 27, deployment floor iOS 17) | XS | pending |
 | 6 | Deprecated SwiftUI/UIKit APIs in guide prose and samples (`NavigationView`, `.foregroundColor`, `UIScreen.main`, two-parameter `onChange`, `UIApplication.shared.windows`, `.autocapitalization`, `.cornerRadius`, `PreviewProvider`); fix unlabelled uses and add a regression check | M | pending |

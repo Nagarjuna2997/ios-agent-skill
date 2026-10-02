@@ -291,6 +291,58 @@ describe("performance", () => {
     });
   }
 
+  // Issue #12: the exact reproduction, plus other Codable/serialization types
+  // whose names resemble formatters.
+  test("issue #12 reproduction and other codecs produce no formatter advice", () => {
+    const sources = [
+      file("Sources/Settings.swift", [
+        "import Foundation",
+        "struct Settings: Codable { let notifications: Bool }",
+        "func decodeSettings(_ data: Data) throws -> Settings {",
+        "    try JSONDecoder().decode(Settings.self, from: data)",
+        "}",
+      ]),
+      file("Sources/Store.swift", [
+        "import Foundation",
+        "func encode(_ value: [String: Int]) throws -> Data {",
+        "    let plist = try PropertyListEncoder().encode(value)",
+        "    _ = try PropertyListDecoder().decode([String: Int].self, from: plist)",
+        "    return try JSONSerialization.data(withJSONObject: value)",
+        "}",
+      ]),
+      view(["        Text(String(decoding: try! JSONEncoder().encode(1), as: UTF8.self))"]),
+    ];
+    for (const source of sources) {
+      assert.deepEqual(
+        rules(analyzePerformance(source)).filter((rule) => rule.startsWith("formatter-")),
+        [],
+        source.path,
+      );
+    }
+  });
+
+  for (const formatter of [
+    "DateFormatter",
+    "NumberFormatter",
+    "ISO8601DateFormatter",
+    "DateComponentsFormatter",
+  ]) {
+    test(`still flags ${formatter} allocated inline and inside body`, () => {
+      const outside = analyzePerformance(
+        file("Sources/Format.swift", [
+          "import Foundation",
+          "func label(_ value: Date) -> String {",
+          `    let formatter = ${formatter}()`,
+          "    return String(describing: formatter)",
+          "}",
+        ]),
+      );
+      assert.equal(severityOf(outside, "formatter-allocated-repeatedly"), "minor");
+      const inside = analyzePerformance(view([`        Text(String(describing: ${formatter}()))`]));
+      assert.equal(severityOf(inside, "formatter-allocated-in-body"), "serious");
+    });
+  }
+
   test("flags a formatter allocated inside body", () => {
     const found = analyzePerformance(view(["        Text(DateFormatter().string(from: date))"]));
     assert.equal(severityOf(found, "formatter-allocated-in-body"), "serious");
