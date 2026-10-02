@@ -18,7 +18,8 @@
 | 1 Core loop | after Phase 0 | 03:14 (`90f5096`) | loop tested against fake tools; real examples came later in Phase 2d |
 | 2 Capability system and catalog | 03:14 | 12:22 (`ee9504f`) | includes the 04:36–11:46 pause; compile check 04:10–04:30, examples 11:47–12:22 |
 | 3 Planning, cost, progress UX | implemented in Phase 1 (`90f5096`) | 12:22 | budget dedupe fix `913da10`; the real runs exercised PLAN.md, progress lines and preflight |
-| 4 README and handoff | 12:03 | 12:40 | README, CHANGELOG, version 3.9.0 / 2.10.0, this log |
+| 4 README and handoff | 12:03 | 12:24 | README, CHANGELOG, version 3.9.0 / 2.10.0, this log |
+| Loop | 12:24 | 12:42 | 8 more modules (41 in total), each compiled in Xcode; StoreKit usage now steers physical goods to Apple Pay |
 
 ### Results
 
@@ -44,6 +45,10 @@
 | `96603fb` | docs: README opens with the agent; CHANGELOG; versions 3.9.0 / 2.10.0 |
 | `913da10` | fix(agent): budget counts a shared cost once |
 | `ee9504f` | docs(examples): food-delivery composite built and run on Xcode 27 |
+| `9a1f180` | docs(worklog): Run 2 results, judgment calls and owner steps |
+| `658323e` | feat(capabilities): Apple Pay, passkeys, universal links, push notifications, Supabase database, RevenueCat; all 39 modules compiled |
+| `63cc6b5` | feat(capabilities): searchable lists and SF Symbols |
+| (this commit) | docs(worklog): final commit list and handoff locations |
 
 ### Judgment calls
 
@@ -75,8 +80,8 @@
 
 ### Needs the owner
 
-1. Delete the `.git/_to_delete` folder in `/private/tmp/ios-agent-apple-resources-20260929`. It holds git lock files that the session could not remove.
-2. Review `agent/overnight` in that Mac repository, which was fetched from the bundle. Then push it, or merge into `main`, yourself.
+1. The earlier Mac checkout at `/private/tmp/ios-agent-apple-resources-20260929` was empty by midday; macOS clears `/private/tmp`. The branch is now in a fresh clone at `~/Documents/Codex/2026-09-10/https-github-com-nagarjuna2997-ios-agent/work/autonomous-run/ios-agent-skill-overnight`, on branch `agent/overnight`. The full history is also in `ios-agent-skill-overnight-full.bundle` in the same folder. Add the GitHub remote there (`git remote add origin https://github.com/Nagarjuna2997/ios-agent-skill.git`), review, then push or merge yourself.
+2. Delete `work/autonomous-run/_to_delete/`, which holds a failed clone that the session could not remove. Delete the scratch folders `capcheck`, `capcheck-repo`, `capcheck2`, `runs` and the `*.tgz` transfer archives in `work/autonomous-run/` when you no longer need them.
 3. On the Mac, in Terminal: `cd mcp-server && npm ci && npm run build`, then `node dist/unified.js build "A habit tracker with a list, a detail screen, and settings with dark mode toggle" --out ~/habit-tracker`. This is the first run of the agent's own build-and-fix loop and `simctl` screenshots. Then `node dist/unified.js capabilities verify --all --write ../capabilities` to mark modules `verified`.
 4. In Claude Code: `node mcp-server/dist/unified.js install-command --global`, add the MCP server, and try `/ios-build`. This path has not been run in a Claude Code session.
 5. Credentials for full examples: a Supabase project (`SUPABASE_URL`, `SUPABASE_ANON_KEY`) for email sign-in, and your API's `API_BASE_URL`. Sign in with Apple, iCloud containers, App Groups and push notifications on a device need an Apple Developer Program membership.
