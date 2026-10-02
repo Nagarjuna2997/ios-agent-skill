@@ -6,8 +6,8 @@
 
 The agent's tools, loop, capability system and reports are covered by tests against fake `xcodebuild`, `xcrun simctl` and `xcodegen` executables. On 2026-10-02 the following ran for real:
 
-- The planning and code generation halves ran with headless Claude Code for three example requests.
-- The resulting projects, written by the built-in project writer, built on the first build with Xcode 27.0 and ran on the iPhone 18 Pro Simulator. See [examples/agent](../../examples/agent/README.md).
+- The planning and code generation halves ran with headless Claude Code for four example requests, including a food-delivery app with 20 capability modules.
+- The resulting projects, written by the built-in project writer, built on the first build with Xcode 27.0 and ran on the iPhone 18 Pro Simulator, including a WidgetKit extension target. See [examples/agent](../../examples/agent/README.md).
 - Every capability module's Swift compiled together in one app target. See the [compile check](../../capabilities/README.md#compile-check).
 
 The automated build-and-fix loop has not yet run against a real `xcodebuild`, and neither have the `simctl` launch and screenshot steps. No capability module has passed its own verify run, so every module is `untested`. Treat the first `/ios-build` run on a Mac as the acceptance test.

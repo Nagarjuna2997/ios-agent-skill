@@ -1,0 +1,358 @@
+{
+  "appName": "FoodDash",
+  "displayName": "FoodDash",
+  "summary": "A food delivery app where users sign in with Apple or email, browse nearby restaurants on a list or map, build a cart, and pay at checkout using StoreKit. After ordering, they follow progress with a Live Activity on the Lock Screen and Dynamic Island, and review past orders on a dashboard.",
+  "navigation": "tabs",
+  "screens": [
+    {
+      "id": "splash",
+      "title": "Splash",
+      "purpose": "Animated logo shown at launch before entering the app.",
+      "topLevel": false,
+      "capabilities": [
+        "launch-screen",
+        "accessibility-baseline"
+      ]
+    },
+    {
+      "id": "sign-in",
+      "title": "Sign In",
+      "purpose": "Sign in with Apple or with email and password, or create an account.",
+      "topLevel": false,
+      "capabilities": [
+        "sign-in-with-apple",
+        "email-password-auth",
+        "keychain-storage"
+      ]
+    },
+    {
+      "id": "restaurants",
+      "title": "Restaurants",
+      "purpose": "Browse restaurants as a list or on a map and open a menu.",
+      "topLevel": true,
+      "capabilities": [
+        "mapkit-map",
+        "location-services",
+        "url-session-networking"
+      ]
+    },
+    {
+      "id": "restaurant-menu",
+      "title": "Menu",
+      "purpose": "Show a restaurant's dishes and add items to the cart.",
+      "topLevel": false,
+      "capabilities": [
+        "url-session-networking"
+      ]
+    },
+    {
+      "id": "cart",
+      "title": "Cart",
+      "purpose": "Review items, change quantities and proceed to checkout.",
+      "topLevel": true,
+      "capabilities": [
+        "swiftdata"
+      ]
+    },
+    {
+      "id": "checkout",
+      "title": "Checkout",
+      "purpose": "Confirm the order total and delivery address, then pay with StoreKit.",
+      "topLevel": false,
+      "capabilities": [
+        "storekit2-paywall",
+        "haptics"
+      ]
+    },
+    {
+      "id": "order-status",
+      "title": "Order Status",
+      "purpose": "Track the current order's progress, mirrored in a Live Activity.",
+      "topLevel": true,
+      "capabilities": [
+        "live-activity",
+        "local-notifications",
+        "websocket-realtime"
+      ]
+    },
+    {
+      "id": "dashboard",
+      "title": "Past Orders",
+      "purpose": "Dashboard of past orders with spending stats and a history list.",
+      "topLevel": true,
+      "capabilities": [
+        "swift-charts-dashboard",
+        "swiftdata"
+      ]
+    },
+    {
+      "id": "account",
+      "title": "Account",
+      "purpose": "Profile, appearance setting and sign out.",
+      "topLevel": true,
+      "capabilities": [
+        "appearance-settings",
+        "sign-in-with-apple",
+        "email-password-auth"
+      ]
+    }
+  ],
+  "models": [
+    {
+      "name": "Restaurant",
+      "persisted": false,
+      "fields": [
+        {
+          "name": "id",
+          "type": "String",
+          "optional": false
+        },
+        {
+          "name": "name",
+          "type": "String",
+          "optional": false
+        },
+        {
+          "name": "cuisine",
+          "type": "String",
+          "optional": false
+        },
+        {
+          "name": "latitude",
+          "type": "Double",
+          "optional": false
+        },
+        {
+          "name": "longitude",
+          "type": "Double",
+          "optional": false
+        },
+        {
+          "name": "rating",
+          "type": "Double",
+          "optional": true
+        },
+        {
+          "name": "imageURL",
+          "type": "URL",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "name": "MenuItem",
+      "persisted": false,
+      "fields": [
+        {
+          "name": "id",
+          "type": "String",
+          "optional": false
+        },
+        {
+          "name": "restaurantId",
+          "type": "String",
+          "optional": false
+        },
+        {
+          "name": "name",
+          "type": "String",
+          "optional": false
+        },
+        {
+          "name": "details",
+          "type": "String",
+          "optional": true
+        },
+        {
+          "name": "priceCents",
+          "type": "Int",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "CartItem",
+      "persisted": true,
+      "fields": [
+        {
+          "name": "id",
+          "type": "UUID",
+          "optional": false
+        },
+        {
+          "name": "menuItemId",
+          "type": "String",
+          "optional": false
+        },
+        {
+          "name": "restaurantId",
+          "type": "String",
+          "optional": false
+        },
+        {
+          "name": "name",
+          "type": "String",
+          "optional": false
+        },
+        {
+          "name": "priceCents",
+          "type": "Int",
+          "optional": false
+        },
+        {
+          "name": "quantity",
+          "type": "Int",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "Order",
+      "persisted": true,
+      "fields": [
+        {
+          "name": "id",
+          "type": "UUID",
+          "optional": false
+        },
+        {
+          "name": "restaurantName",
+          "type": "String",
+          "optional": false
+        },
+        {
+          "name": "totalCents",
+          "type": "Int",
+          "optional": false
+        },
+        {
+          "name": "placedAt",
+          "type": "Date",
+          "optional": false
+        },
+        {
+          "name": "status",
+          "type": "String",
+          "optional": false
+        },
+        {
+          "name": "itemSummary",
+          "type": "String",
+          "optional": false
+        },
+        {
+          "name": "transactionId",
+          "type": "String",
+          "optional": true
+        }
+      ]
+    }
+  ],
+  "capabilities": [
+    {
+      "id": "launch-screen",
+      "reason": "Launch screen and animated logo splash into the app."
+    },
+    {
+      "id": "lottie-animation",
+      "reason": "Optional richer logo animation on the splash screen."
+    },
+    {
+      "id": "accessibility-baseline",
+      "reason": "44 pt tap targets, Reduce Motion aware animation and Dynamic Type spacing."
+    },
+    {
+      "id": "sign-in-with-apple",
+      "reason": "Sign in with Apple is required alongside the email option."
+    },
+    {
+      "id": "email-password-auth",
+      "reason": "Email and password sign up and sign in."
+    },
+    {
+      "id": "keychain-storage",
+      "reason": "Stores the session securely on the device."
+    },
+    {
+      "id": "mapkit-map",
+      "reason": "Shows restaurants as markers on a map."
+    },
+    {
+      "id": "location-services",
+      "reason": "Sorts restaurants by distance from the user's current location."
+    },
+    {
+      "id": "url-session-networking",
+      "reason": "Loads restaurants and menus and submits orders."
+    },
+    {
+      "id": "rest-api-client",
+      "reason": "Points the app at the restaurant and order server once its address is supplied."
+    },
+    {
+      "id": "swiftdata",
+      "reason": "Keeps the cart and order history across relaunches."
+    },
+    {
+      "id": "storekit2-paywall",
+      "reason": "Closest module for StoreKit purchases at checkout (not a subscription; needs adapting)."
+    },
+    {
+      "id": "live-activity",
+      "reason": "Shows delivery progress on the Lock Screen and Dynamic Island."
+    },
+    {
+      "id": "local-notifications",
+      "reason": "Alerts the user when the order status changes."
+    },
+    {
+      "id": "websocket-realtime",
+      "reason": "Live order status updates from the server (no built module yet)."
+    },
+    {
+      "id": "swift-charts-dashboard",
+      "reason": "Spending stats and trends on the past orders dashboard."
+    },
+    {
+      "id": "haptics",
+      "reason": "Feedback on add to cart and successful payment."
+    },
+    {
+      "id": "appearance-settings",
+      "reason": "Light, dark or system appearance choice."
+    },
+    {
+      "id": "app-icon",
+      "reason": "Provides the app icon."
+    },
+    {
+      "id": "color-assets",
+      "reason": "Brand colors with light and dark variants."
+    },
+    {
+      "id": "privacy-manifest",
+      "reason": "Required privacy declarations before App Store submission."
+    }
+  ],
+  "features": [
+    "Animated logo splash",
+    "Sign in with Apple and email/password",
+    "Restaurant list with map toggle and distance sorting",
+    "Restaurant menus",
+    "Persistent cart with quantity editing",
+    "StoreKit checkout",
+    "Live Activity order tracking on Lock Screen and Dynamic Island",
+    "Order status change notifications",
+    "Past orders dashboard with spending charts",
+    "Light/dark appearance setting"
+  ],
+  "assumptions": [
+    "StoreKit 2 is used for checkout because it was requested; real food orders normally require Apple Pay or a card processor under App Store rules, so this should be reviewed before release.",
+    "A server of your own supplies restaurants, menus and order status; sample data is used until its address is set.",
+    "Live order status is simulated locally until a real-time server is connected.",
+    "Sign in with Apple and email accounts are both available and the session is kept in the Keychain.",
+    "Cart and order history are stored on the device only, with no iCloud sync.",
+    "The Account screen is the fifth top-level tab; the splash, sign-in, menu and checkout screens are not tabs.",
+    "Delivery is to a single saved address entered at checkout."
+  ]
+}

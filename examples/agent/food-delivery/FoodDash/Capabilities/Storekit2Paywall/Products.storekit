@@ -1,0 +1,68 @@
+{
+  "identifier": "8A1F2C3D",
+  "nonRenewingSubscriptions": [],
+  "products": [],
+  "settings": {
+    "_applicationInternalID": "6400000000",
+    "_developerTeamID": "",
+    "_failTransactionsEnabled": false,
+    "_locale": "en_US",
+    "_storefront": "USA",
+    "_storeKitErrors": []
+  },
+  "subscriptionGroups": [
+    {
+      "id": "21000001",
+      "localizations": [],
+      "name": "Premium",
+      "subscriptions": [
+        {
+          "adHocOffers": [],
+          "codeOffers": [],
+          "displayPrice": "4.99",
+          "familyShareable": false,
+          "groupNumber": 1,
+          "internalID": "6400000001",
+          "introductoryOffer": null,
+          "localizations": [
+            {
+              "description": "Premium features, billed monthly",
+              "displayName": "Premium Monthly",
+              "locale": "en_US"
+            }
+          ],
+          "productID": "com.example.fooddash.premium.monthly",
+          "recurringSubscriptionPeriod": "P1M",
+          "referenceName": "Premium Monthly",
+          "subscriptionGroupID": "21000001",
+          "type": "RecurringSubscription"
+        },
+        {
+          "adHocOffers": [],
+          "codeOffers": [],
+          "displayPrice": "39.99",
+          "familyShareable": false,
+          "groupNumber": 2,
+          "internalID": "6400000002",
+          "introductoryOffer": null,
+          "localizations": [
+            {
+              "description": "Premium features, billed yearly",
+              "displayName": "Premium Yearly",
+              "locale": "en_US"
+            }
+          ],
+          "productID": "com.example.fooddash.premium.yearly",
+          "recurringSubscriptionPeriod": "P1Y",
+          "referenceName": "Premium Yearly",
+          "subscriptionGroupID": "21000001",
+          "type": "RecurringSubscription"
+        }
+      ]
+    }
+  ],
+  "version": {
+    "major": 3,
+    "minor": 0
+  }
+}

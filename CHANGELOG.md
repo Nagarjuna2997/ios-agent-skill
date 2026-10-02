@@ -20,7 +20,7 @@ Version 3.9.0 (skill manifests) and `ios-agent-mcp` 2.10.0 (npm package files) a
 - Credentials model: client keys come from a gitignored `.env` through a generated, gitignored `Config/Secrets.xcconfig` and Info.plist, with `REPLACE_ME` placeholders until they are set. Server secrets are only listed in `.env.example`.
 - Built-in Xcode project writer (`mcp-server/src/agent/xcodeproj.ts`): without XcodeGen, the spec is rendered into a folder-synchronized project. The project has the app target, packages, Info.plist, entitlements, a shared scheme with the StoreKit configuration, and the widget extension. `IOS_AGENT_PROJECT_GENERATOR` selects the writer explicitly.
 - `scripts/capability-compile-check.mjs` builds every module's Swift in one app target. A clean build with Xcode 27.0 for the iPhone 18 Pro Simulator in Swift 6 mode passed for 33 modules on 2026-10-02. Manifests record this in `compileCheck`.
-- `examples/agent`: three apps the agent planned and wrote: a habit tracker, a notes app and a three-tab app. They built on the first build with Xcode 27.0 and ran in the simulator, and the folder includes the screenshots. The agent's own `xcodebuild` loop was not part of those runs.
+- `examples/agent`: four apps the agent planned and wrote: a habit tracker, a notes app, a three-tab app and a food-delivery composite with 20 modules and a widget extension. They built on the first build with Xcode 27.0 and ran in the simulator, and the folder includes the screenshots. The agent's own `xcodebuild` loop was not part of those runs.
 - MCP tests: 444 to 488.
 
 ### Changed -- 3.9.0
@@ -30,6 +30,7 @@ Version 3.9.0 (skill manifests) and `ios-agent-mcp` 2.10.0 (npm package files) a
 
 ### Fixed -- 3.9.0
 
+- PLAN.md budgets counted a cost twice when two capabilities needed the same item, for example the Apple Developer Program membership.
 - Found by building on Xcode 27.0: three capability templates had Swift 6 concurrency errors or warnings (background refresh, photo picker, camera availability). The accessibility module told the model to put a `DynamicProperty` in `@State`, which caused SwiftUI runtime warnings in a generated app. The SwiftData template now turns CloudKit sync off explicitly, so an iCloud entitlement added by another module cannot start syncing models that break CloudKit's rules.
 
 ### Added -- 3.8.2

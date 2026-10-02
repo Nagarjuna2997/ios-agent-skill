@@ -2,7 +2,7 @@
 
 ## iOS app agent
 
-`/ios-build "<what you want>"` asks Claude Code to plan an iOS app, write its SwiftUI code and Xcode project, apply capability modules (sign-in, storage, payments, maps and more), then build, run and screenshot it in the iOS Simulator, ending with a report of what needs your accounts or money. As of 2026-10-02 this is unreleased, on the `agent/overnight` branch. Three apps it planned and wrote built on the first build with Xcode 27.0 and ran in the simulator. Its own build-and-fix loop has not yet run end to end on a Mac.
+`/ios-build "<what you want>"` asks Claude Code to plan an iOS app, write its SwiftUI code and Xcode project, apply capability modules (sign-in, storage, payments, maps and more), then build, run and screenshot it in the iOS Simulator, ending with a report of what needs your accounts or money. As of 2026-10-02 this is unreleased, on the `agent/overnight` branch. Four apps it planned and wrote built on the first build with Xcode 27.0 and ran in the simulator. One of them is a food-delivery app with 20 capability modules and a widget extension. Its own build-and-fix loop has not yet run end to end on a Mac.
 
 ### Quickstart
 
@@ -24,9 +24,9 @@ XcodeGen is optional: without it, the agent writes a folder-synchronized Xcode p
 
 ### Examples
 
-| Habit tracker | Notes with search | Three-tab feed |
-|---|---|---|
-| ![Habit tracker settings](examples/agent/habit-tracker/screenshots/03-settings.jpg) | ![Notes list](examples/agent/notes-app/screenshots/01-notes-list.jpg) | ![Home feed](examples/agent/three-tab-app/screenshots/01-home.jpg) |
+| Habit tracker | Notes with search | Three-tab feed | Food delivery |
+|---|---|---|---|
+| ![Habit tracker settings](examples/agent/habit-tracker/screenshots/03-settings.jpg) | ![Notes list](examples/agent/notes-app/screenshots/01-notes-list.jpg) | ![Home feed](examples/agent/three-tab-app/screenshots/01-home.jpg) | ![Restaurant map](examples/agent/food-delivery/screenshots/04-restaurant-map.jpg) |
 
 Plans, generated sources, run reports and what was and was not exercised: [examples/agent](examples/agent/README.md).
 
@@ -54,8 +54,7 @@ The agent builds and runs everything in the simulator without accounts. Capabili
 
 - No capability is `verified`: no module has passed its own verify run on a Mac. All modules compiled together once (see [the compile check](capabilities/README.md#compile-check)).
 - The agent's automated loop (`xcodebuild` errors fed back to the model, `simctl` launch and screenshots per screen) is covered by tests against fake tools, not by a real run.
-- The widget extension target from the built-in project writer has not been built in Xcode.
-- The food-delivery composite example, taps and scrolling during screenshots, and device builds are not done.
+- Taps and scrolling during the agent's own screenshots, and device builds, are not done. In the food-delivery example the StoreKit purchase and the Live Activity were not exercised.
 
 ## Knowledge base
 

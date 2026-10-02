@@ -1,0 +1,4 @@
+{"at":"2026-10-02T17:00:41.165Z","command":"xcodebuild","args":["-version"],"exitCode":null,"durationMs":4,"timedOut":false,"spawnError":"spawn xcodebuild ENOENT"}
+{"at":"2026-10-02T17:00:41.168Z","command":"xcodegen","args":["--version"],"exitCode":null,"durationMs":2,"timedOut":false,"spawnError":"spawn xcodegen ENOENT"}
+{"at":"2026-10-02T17:00:58.901Z","command":"xcodegen","args":["generate","--spec","project.yml","--project","."],"cwd":"/home/claude/runs/food-delivery","exitCode":null,"durationMs":3,"timedOut":false,"spawnError":"spawn xcodegen ENOENT"}
+{"at":"2026-10-02T17:05:49.792Z","command":"xcodegen","args":["generate","--spec","project.yml","--project","."],"cwd":"/home/claude/runs/food-delivery","exitCode":null,"durationMs":3,"timedOut":false,"spawnError":"spawn xcodegen ENOENT"}

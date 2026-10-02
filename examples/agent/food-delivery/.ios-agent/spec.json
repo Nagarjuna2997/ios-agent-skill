@@ -1,0 +1,102 @@
+{
+  "version": 1,
+  "name": "FoodDash",
+  "displayName": "FoodDash",
+  "bundleId": "com.example.fooddash",
+  "deploymentTarget": "17.0",
+  "swiftVersion": "6.0",
+  "entitlements": {
+    "com.apple.developer.applesignin": [
+      "Default"
+    ]
+  },
+  "infoPlist": {
+    "UILaunchScreen": {
+      "UIColorName": "LaunchBackground",
+      "UIImageName": "LaunchLogo",
+      "UIImageRespectsSafeAreaInsets": true
+    },
+    "NSLocationWhenInUseUsageDescription": "Your location is used to show what is near you.",
+    "NSSupportsLiveActivities": true
+  },
+  "packages": [
+    {
+      "name": "lottie-spm",
+      "url": "https://github.com/airbnb/lottie-spm.git",
+      "version": {
+        "from": "4.5.0"
+      },
+      "products": [
+        "Lottie"
+      ]
+    }
+  ],
+  "buildSettings": {},
+  "secrets": [
+    {
+      "key": "SUPABASE_URL",
+      "description": "Your Supabase project URL (https://<project>.supabase.co)",
+      "whereToGet": "https://supabase.com/dashboard: Project Settings > API",
+      "kind": "client",
+      "capability": "email-password-auth"
+    },
+    {
+      "key": "SUPABASE_ANON_KEY",
+      "description": "Your project's anon (public) key; protect data with row-level security",
+      "whereToGet": "https://supabase.com/dashboard: Project Settings > API",
+      "kind": "client",
+      "capability": "email-password-auth"
+    },
+    {
+      "key": "API_BASE_URL",
+      "description": "Base URL of your API, for example https://api.example.com/v1",
+      "whereToGet": "Your server or hosting provider",
+      "kind": "client",
+      "capability": "rest-api-client"
+    }
+  ],
+  "capabilities": [
+    "launch-screen",
+    "lottie-animation",
+    "accessibility-baseline",
+    "keychain-storage",
+    "sign-in-with-apple",
+    "email-password-auth",
+    "mapkit-map",
+    "location-services",
+    "url-session-networking",
+    "rest-api-client",
+    "swiftdata",
+    "storekit2-paywall",
+    "live-activity",
+    "local-notifications",
+    "swift-charts-dashboard",
+    "haptics",
+    "appearance-settings",
+    "app-icon",
+    "color-assets",
+    "privacy-manifest"
+  ],
+  "sourceExcludes": [
+    "Capabilities/Storekit2Paywall/Products.storekit",
+    "Capabilities/LiveActivity/Widget/**",
+    "Resources/IconLayers/**"
+  ],
+  "storeKitConfiguration": "FoodDash/Capabilities/Storekit2Paywall/Products.storekit",
+  "extensions": [
+    {
+      "name": "FoodDashWidgets",
+      "kind": "widgetkit",
+      "bundleIdSuffix": "widgets",
+      "widgets": [
+        "ProgressLiveActivity()"
+      ],
+      "sources": [
+        "Capabilities/LiveActivity/Shared",
+        "Capabilities/LiveActivity/Widget"
+      ],
+      "entitlements": {}
+    }
+  ],
+  "appIconName": "AppIcon"
+}
