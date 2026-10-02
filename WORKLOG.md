@@ -19,7 +19,7 @@
 | 2 Capability system and catalog | 03:14 | 12:22 (`ee9504f`) | includes the 04:36–11:46 pause; compile check 04:10–04:30, examples 11:47–12:22 |
 | 3 Planning, cost, progress UX | implemented in Phase 1 (`90f5096`) | 12:22 | budget dedupe fix `913da10`; the real runs exercised PLAN.md, progress lines and preflight |
 | 4 README and handoff | 12:03 | 12:24 | README, CHANGELOG, version 3.9.0 / 2.10.0, this log |
-| Loop | 12:24 | 12:42 | 8 more modules (41 in total), each compiled in Xcode; StoreKit usage now steers physical goods to Apple Pay |
+| Loop | 12:24 | 12:45 | 8 more modules (41 in total), each compiled in Xcode; StoreKit usage now steers physical goods to Apple Pay |
 
 ### Results
 
@@ -68,7 +68,7 @@
 - Swift 6: `BackgroundRefresh.run` sent a non-Sendable closure. It now uses `isolation: isolated (any Actor)? = #isolation`.
 - Swift 6: the `PhotosPicker` label closure read main-actor state. The title initializer is used instead.
 - Swift 6: `UIImagePickerController.isSourceTypeAvailable` was called from a nonisolated context. `CameraCapture` is now `@MainActor`.
-- Runtime: a `DynamicProperty` stored in `@State` caused "Accessing Environment's value outside of being installed on a View" in two generated apps. The module guidance is fixed.
+- Runtime: a `DynamicProperty` stored in `@State` caused "Accessing Environment's value outside of being installed on a View" in two generated apps. The module guidance is fixed. A rerun of the three-tab request at 12:42 followed the new guidance, built on the first build and showed no runtime issues.
 - Budget: the Apple Developer Program fee was counted twice in the composite PLAN.md.
 - The SwiftData template now sets `cloudKitDatabase: .none`. Otherwise an iCloud entitlement from another module would start syncing models that do not meet CloudKit's rules. This was found by reading, while adding the sync module.
 - Observed on the Mac: `device_commit_files` once delivered a stale archive under a reused file name. Later transfers used new names and were checked on the Mac side.

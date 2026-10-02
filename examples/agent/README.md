@@ -61,7 +61,7 @@ What these show about the composite:
 
 ## Found by running
 
-- **TabFeed runtime issue.** Xcode reported repeated SwiftUI runtime warnings: "Accessing Environment's value outside of being installed on a View". The generated views stored `ScaledSpacing` in `@State`. The accessibility-baseline module's own documentation had told the model to do that. A `DynamicProperty` inside `@State` is never installed, so its `@ScaledMetric` values do not scale. The module now says to store it directly on the view (`private let spacing = ScaledSpacing()`). The example is left as generated.
+- **TabFeed runtime issue.** Xcode reported repeated SwiftUI runtime warnings: "Accessing Environment's value outside of being installed on a View". The generated views stored `ScaledSpacing` in `@State`. The accessibility-baseline module's own documentation had told the model to do that. A `DynamicProperty` inside `@State` is never installed, so its `@ScaledMetric` values do not scale. The module now says to store it directly on the view (`private let spacing = ScaledSpacing()`). The example is left as generated. A fresh run of the same request at 12:42 produced `private let spacing = ScaledSpacing()` in every view. It built on the first build, and Xcode showed no runtime issues while the Home tab was open.
 - **Input not tested.** Text typed from the Mac keyboard did not reach the simulator during this session, and the dark mode toggle did not respond to a click. So adding a habit, saving a note and switching appearance were not exercised. Those screenshots show empty states.
 
 ## Reproduce
