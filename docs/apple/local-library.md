@@ -389,7 +389,7 @@ Search offline with `node scripts/query-library.mjs search "SwiftData"`. Read a 
 | [docs/design/third-party-animations.md](../../docs/design/third-party-animations.md) | guide | 13366 |
 | [docs/design/typography-system.md](../../docs/design/typography-system.md) | guide | 24786 |
 | [docs/development.md](../../docs/development.md) | guide | 1204 |
-| [docs/evidence-and-scope.md](../../docs/evidence-and-scope.md) | guide | 4886 |
+| [docs/evidence-and-scope.md](../../docs/evidence-and-scope.md) | guide | 4918 |
 | [docs/frameworks/accelerate.md](../../docs/frameworks/accelerate.md) | guide | 21359 |
 | [docs/frameworks/accessibility.md](../../docs/frameworks/accessibility.md) | guide | 22057 |
 | [docs/frameworks/activitykit.md](../../docs/frameworks/activitykit.md) | guide | 22210 |
@@ -448,7 +448,7 @@ Search offline with `node scripts/query-library.mjs search "SwiftData"`. Read a 
 | [docs/graphics/README.md](../../docs/graphics/README.md) | guide | 2319 |
 | [docs/integrations/README.md](../../docs/integrations/README.md) | guide | 7749 |
 | [docs/mcp/examples.md](../../docs/mcp/examples.md) | guide | 12256 |
-| [docs/mcp/installation.md](../../docs/mcp/installation.md) | guide | 14810 |
+| [docs/mcp/installation.md](../../docs/mcp/installation.md) | guide | 15047 |
 | [docs/mcp/knowledge-server.md](../../docs/mcp/knowledge-server.md) | guide | 3507 |
 | [docs/mcp/registry.md](../../docs/mcp/registry.md) | guide | 983 |
 | [docs/mcp/tools.md](../../docs/mcp/tools.md) | guide | 14574 |

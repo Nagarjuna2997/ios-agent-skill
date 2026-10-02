@@ -8,7 +8,7 @@ Working copy: a fresh clone of `main` at `0e5cb39`. All commits are authored as 
 |---|---|---|---|
 | 1 | Studio: resolve CLI tools from the login-shell PATH on macOS (commit prepared before this run) | S | done (`72f6e50`) |
 | 2 | Sync stale skill version `3.5.0` in `skill.json`, `gemini-extension.json` and both Codex `plugin.json` files with `SKILL.md`/CHANGELOG `3.8.1`; add a check so they cannot drift again | S | done |
-| 2b | Active client manifests pin `ios-agent-mcp@2.7.0` (Gemini extension, Codex plugin `.mcp.json`, builder skill commands) although 2.9.0 is published (`npm view`); update after verifying the published 2.9.0 artifact, and extend the check to pins | S | pending |
+| 2b | Active client manifests pin `ios-agent-mcp@2.7.0` (Gemini extension, Codex plugin `.mcp.json`, builder skill commands) although 2.9.0 is published (`npm view`); update after verifying the published 2.9.0 artifact, and extend the check to pins | S | done |
 | 3 | Issue #12 follow-up: add the issue's exact reproduction and remaining formatter true positives as regression tests (the fix itself is already on `main`) | XS | pending |
 | 4 | Remove the stray bare ProductHunt URL from README (owner preference: promotion through owned channels only) | XS | pending |
 | 5 | CONTRIBUTING "Swift 5.9+" modern-first wording contradicts the toolchain the skill targets (Swift 6.4 / Xcode 27, deployment floor iOS 17) | XS | pending |
@@ -47,6 +47,8 @@ Measured on Linux (Ubuntu 24.04, Node 22.22, Python 3.12). No Swift toolchain, X
 - Issue #14 (v2 diagnostic benchmark): 30 fixtures, harness and contracts already exist. The documented remaining gate is proof of an isolated agent filesystem boundary (container or macOS VM), which cannot be provisioned here.
 
 ## Judgment calls
+
+- `ios-agent-mcp` pins: moved the Gemini extension, the Codex plugin `.mcp.json` and both builder skills from 2.7.0 to 2.9.0, the version `npm view` reports as latest. Verified the published 2.9.0 tarball answers `initialize`, lists 67 tools and runs `new … --brief … --xcodegen`; Gemini CLI 0.62.0 `extensions validate` passed. `gemini mcp list` reported the server as Disconnected on a cold npx cache and then Disabled, so the docs do not claim a Gemini connection to 2.9.0. The unmaintained Copilot adapter (`plugins/ios-agent-copilot`, still 2.7.0 with a 35-tool description) was left unchanged because README describes experimental adapters as not maintained and its tool description would need a separate audit. Dated blog/series evidence keeps the version it tested.
 
 - No push credentials are available in this environment (the git proxy refuses this repository, and committing through the browser was blocked by the session's safety policy). Commits are made locally on `main` and saved after each commit as a git bundle in the owner's local `work/autonomous-run/` folder, so nothing is lost. Pushing is listed under manual actions.
 - Issue comments cannot be posted for the same reason; the intended comment text is recorded below instead.

@@ -2672,8 +2672,8 @@
       "path": "docs/evidence-and-scope.md",
       "title": "Evidence, sources and scope",
       "kind": "guide",
-      "characters": 4886,
-      "hash": "1bd50f704a6551db2761f86d7e76b5474558abddbbcccb5230de32e1d92896b6"
+      "characters": 4918,
+      "hash": "b1e6db3fbe8c583a8d8b78e80c03525c0777f08fca529926a67dd007b88d42cc"
     },
     {
       "path": "docs/frameworks/accelerate.md",
@@ -3085,8 +3085,8 @@
       "path": "docs/mcp/installation.md",
       "title": "Installing the iOS Agent MCP Server",
       "kind": "guide",
-      "characters": 14810,
-      "hash": "5b564187d3c445b34ebe3860703ccdbcee6a83b6bdf3e1cd379aae24e2e95a4a"
+      "characters": 15047,
+      "hash": "94d980d847032f65218f5e5ec2429a31fab61f2833ee44eeec09cae9d7111158"
     },
     {
       "path": "docs/mcp/knowledge-server.md",

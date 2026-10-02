@@ -6,7 +6,8 @@ version. skill.json, the Gemini extension manifest and the Codex plugin
 manifests are hand-maintained copies; they silently stayed at 3.5.0 through
 three releases because nothing compared them. The npm package version
 (mcp-server/package.json) is a separate number and is checked by
-mcp-server/scripts/sync-version.mjs.
+mcp-server/scripts/sync-version.mjs. Active install paths must also pin one
+ios-agent-mcp release that is not newer than mcp-server/package.json.
 
     python3 scripts/check-manifest-versions.py
 """
@@ -22,6 +23,17 @@ SKILL_MANIFESTS = [
     "plugins/ios-agent-skill/.codex-plugin/plugin.json",
     "plugins/ios-agent-chatgpt/.codex-plugin/plugin.json",
 ]
+
+
+# Active install paths that pin a published ios-agent-mcp release. Dated
+# evidence (blog posts, verification records) keeps the version it tested.
+PINNED_FILES = [
+    "gemini-extension.json",
+    "plugins/ios-agent-skill/.mcp.json",
+    "plugins/ios-agent-skill/skills/ios-builder/SKILL.md",
+    "plugins/ios-agent-chatgpt/skills/ios-builder/SKILL.md",
+]
+PIN = re.compile(r"ios-agent-mcp@(\d+\.\d+\.\d+)")
 
 
 def skill_version() -> str:
@@ -64,12 +76,29 @@ def main() -> int:
             "nor a later version with notes under ## [Unreleased]"
         )
 
+    pins = {}
+    for relative in PINNED_FILES:
+        found = set(PIN.findall((ROOT / relative).read_text(encoding="utf-8")))
+        if not found:
+            problems.append(f"{relative}: no ios-agent-mcp@<version> pin found")
+        for version in found:
+            pins.setdefault(version, []).append(relative)
+    package = json.loads((ROOT / "mcp-server/package.json").read_text(encoding="utf-8"))["version"]
+    if len(pins) > 1:
+        detail = "; ".join(f"{v}: {', '.join(files)}" for v, files in sorted(pins.items()))
+        problems.append(f"Install paths pin different ios-agent-mcp versions ({detail})")
+    for version in pins:
+        if parse(version) > parse(package):
+            problems.append(f"ios-agent-mcp@{version} is newer than mcp-server/package.json ({package})")
+
     if problems:
         print("Manifest versions disagree:")
         print("\n".join(problems))
-        print("Fix: set every manifest to the SKILL.md version.")
+        print("Fix: set every manifest to the SKILL.md version and pin one published ios-agent-mcp release.")
         return 1
-    print(f"OK - {len(SKILL_MANIFESTS)} manifests match skill version {expected}")
+    pinned = ", ".join(sorted(pins))
+    print(f"OK - {len(SKILL_MANIFESTS)} manifests match skill version {expected}; "
+          f"{len(PINNED_FILES)} install paths pin ios-agent-mcp@{pinned}")
     return 0
 
 

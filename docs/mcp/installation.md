@@ -6,7 +6,7 @@
 claude mcp add ios-agent -- npx -y ios-agent-mcp@latest
 ```
 
-The default server exposes 36 tools in 2.7.0: 12 review/metadata tools, 8 Apple reference tools, 14 simulator tools, `create_app`, and the local `prepare_issue_report` tool. App scaffolding and simulator packages install automatically as dependencies; no separate installation or MCP connection is needed. Remove the separate knowledge/simulator connections if you previously configured them to avoid duplicate tools.
+The published 2.9.0 server exposes 67 tools, including review/metadata, Apple reference and documentation, simulator, app scaffolding and the local `prepare_issue_report` tools. App scaffolding and simulator packages install automatically as dependencies; no separate installation or MCP connection is needed. Remove the separate knowledge/simulator connections if you previously configured them to avoid duplicate tools.
 
 Create a starter directly:
 
@@ -75,7 +75,7 @@ The optional [knowledge MCP server](knowledge-server.md) supports Streamable HTT
 
 ## Gemini CLI
 
-Gemini CLI 0.49.0 validated the extension manifest and connected to the 2.7.0 server release candidate in an isolated project. A real model-driven app-building session remains unverified.
+Gemini CLI 0.49.0 validated the extension manifest and connected to the 2.7.0 server release candidate in an isolated project. The manifest now pins 2.9.0: on October 2, 2026, Gemini CLI 0.62.0 validated it on Linux and the pinned command started the published 2.9.0 server, which answered `initialize` and listed 67 tools. A Gemini CLI connection to 2.9.0 and a real model-driven app-building session remain unverified.
 
 ```bash
 gemini mcp add ios-agent -- npx -y ios-agent-mcp@latest
