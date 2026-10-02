@@ -46,6 +46,8 @@ import { defineVerify } from "../_sdk/index.js";
 export default defineVerify((ctx) => ctx.buildMinimalApp({ "Views/VerifyUsage.swift": "..." }));
 ```
 
+The apply context (`capabilities/_sdk/index.ts`) can set Info.plist keys, entitlements, build settings and packages; set the app icon; exclude files from the app target; set the scheme's StoreKit configuration; render SVG to PNG; write files under the app sources; and add a widget with `addWidget`. The first `addWidget` call creates one WidgetKit extension target, `<AppName>Widgets`, embedded in the app; every widget and Live Activity joins its generated `WidgetBundle`. Widget files stay in the capability's template folder: `sources` lists folders compiled into the extension, and `extensionOnly` folders are also excluded from the app target, so code shared by both targets lives in a folder listed only in `sources`.
+
 `buildMinimalApp` creates a minimal SwiftUI app, applies the capability with its dependencies, adds the given files and builds for the iOS Simulator. It returns `blocked` when Xcode, a simulator or XcodeGen is missing. `mcp-server` compiles these files when it builds (`mcp-server/scripts/bundle-capabilities.mjs`).
 
 ## Status

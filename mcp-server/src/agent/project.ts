@@ -15,6 +15,7 @@ import {
   renderEnvExample,
   renderProjectYml,
   renderSecretsXcconfig,
+  renderWidgetBundle,
   type AppSpec,
   type PackageDependency,
 } from "./spec.js";
@@ -120,6 +121,9 @@ export async function regenerate(root: string, spec: AppSpec, runner: CommandRun
   const paths = projectPaths(root, spec.name);
   await atomicWrite(paths.projectYml, renderProjectYml(spec));
   await atomicWrite(join(root, "Config", "Base.xcconfig"), renderBaseXcconfig(spec));
+  for (const ext of spec.extensions ?? []) {
+    if (ext.kind === "widgetkit") await atomicWrite(join(root, ext.name, `${ext.name}Bundle.swift`), renderWidgetBundle(ext));
+  }
   let env: Record<string, string> = {};
   try {
     env = parseDotEnv(await readFile(join(root, ".env"), "utf8"));

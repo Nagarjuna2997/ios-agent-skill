@@ -304,6 +304,14 @@ export interface ApplyContext {
   excludeFromBuild(pattern: string): void;
   /** Use this StoreKit configuration (path relative to the sources folder) when running from Xcode. */
   setStoreKitConfiguration(path: string): void;
+  /**
+   * Add a widget or Live Activity to the app's WidgetKit extension (target
+   * `<AppName>Widgets`, created on first use). `widget` is the Swift expression
+   * listed in the generated WidgetBundle, such as "OrderStatusLiveActivity()".
+   * `sources` (relative to the sources folder) are compiled into the extension;
+   * `extensionOnly` paths are also kept out of the app target.
+   */
+  addWidget(options: { widget: string; sources: string[]; extensionOnly?: string[]; entitlements?: Record<string, unknown> }): void;
   /** Render SVG markup to PNG at the given width with resvg (no network, no system fonts). */
   renderPng(svg: string, width: number): Uint8Array;
   /**
@@ -417,6 +425,24 @@ export async function applyCapabilities(
           },
           setStoreKitConfiguration: (path) => {
             next.storeKitConfiguration = `${next.name}/${path}`;
+          },
+          addWidget: ({ widget, sources, extensionOnly = [], entitlements = {} }) => {
+            if (!/^[A-Z][A-Za-z0-9]*\(\)$/.test(widget)) throw new CapabilityError(`${owner} widget must be a type initializer such as "StatusWidget()", got ${JSON.stringify(widget)}.`);
+            for (const path of [...sources, ...extensionOnly]) {
+              if (!path || path.startsWith("/") || path.split("/").some((part) => part === ".." || part === "")) throw new CapabilityError(`${owner} widget source ${JSON.stringify(path)} must be a relative path inside the sources folder.`);
+            }
+            const name = `${next.name}Widgets`;
+            const extensions = next.extensions ?? [];
+            let ext = extensions.find((e) => e.name === name);
+            if (!ext) {
+              ext = { name, kind: "widgetkit", bundleIdSuffix: "widgets", widgets: [], sources: [], entitlements: {} };
+              extensions.push(ext);
+            }
+            if (!ext.widgets.includes(widget)) ext.widgets.push(widget);
+            ext.sources = [...new Set([...ext.sources, ...sources, ...extensionOnly])];
+            for (const [k, v] of Object.entries(entitlements)) mergeValue(ext.entitlements, k, v, owner, `${name} entitlements`);
+            next.extensions = extensions;
+            next.sourceExcludes = [...new Set([...(next.sourceExcludes ?? []), ...extensionOnly.map((p) => (/\.[A-Za-z0-9]+$/.test(p) ? p : `${p}/**`))])];
           },
           appIconSet: async (layers, background) => {
             const icon = (await import("@nagarjuna2002/ios-agent/dist/icon.js")) as { iconCatalogFiles(layers: string[], background: string): Record<string, string | Uint8Array> };
