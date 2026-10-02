@@ -1,0 +1,26 @@
+{
+  "id": "home-screen-widget",
+  "name": "Home Screen widget",
+  "category": "widgets",
+  "description": "A small and medium Home Screen widget in a WidgetKit extension that shows a snapshot the app publishes through a shared App Group.",
+  "default": true,
+  "appleNative": true,
+  "alternatives": [
+    "live-activity"
+  ],
+  "cost": {
+    "model": "free",
+    "note": "Apple frameworks only; App Groups need a developer account for device builds",
+    "amounts": []
+  },
+  "minOS": "17.0",
+  "docs": [
+    "docs/frameworks/widgetkit.md"
+  ],
+  "usage": "From the app, publish what the widget should show with `WidgetSnapshotStore.publish(WidgetSnapshot(title:value:detail:))` whenever the underlying data changes; it saves to the App Group and reloads the widget timeline. The widget shows the latest snapshot, or a placeholder until the app has published one. Edit `SummaryWidgetView` in `Capabilities/HomeScreenWidget/Widget/` for the design.",
+  "platforms": [
+    "iOS"
+  ],
+  "status": "untested",
+  "statusNote": "Not yet built on a Mac; run `ios-agent-mcp capabilities verify home-screen-widget` on a Mac with Xcode."
+}

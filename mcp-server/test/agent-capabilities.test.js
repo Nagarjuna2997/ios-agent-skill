@@ -158,10 +158,32 @@ describe("applying every module", () => {
     assert.deepEqual(target.info.properties.UILaunchScreen, { UIColorName: "LaunchBackground", UIImageName: "LaunchLogo", UIImageRespectsSafeAreaInsets: true });
     assert.equal(target.info.properties.SUPABASE_URL, "$(SUPABASE_URL)");
     assert.equal(target.settings.base.ASSETCATALOG_COMPILER_APPICON_NAME, "AppIcon");
-    assert.deepEqual(target.sources[0].excludes.sort(), ["Capabilities/Storekit2Paywall/Products.storekit", "Resources/IconLayers/**"]);
+    for (const excluded of ["Capabilities/Storekit2Paywall/Products.storekit", "Resources/IconLayers/**"]) assert.ok(target.sources[0].excludes.includes(excluded), excluded);
     assert.deepEqual(yml.packages["lottie-spm"], { url: "https://github.com/airbnb/lottie-spm.git", from: "4.5.0" });
     assert.ok(target.dependencies.some((d) => d.package === "lottie-spm" && d.product === "Lottie"));
     assert.equal(yml.schemes.FoodRun.run.storeKitConfiguration, "FoodRun/Capabilities/Storekit2Paywall/Products.storekit");
+
+    // Widgets and Live Activities share one WidgetKit extension, embedded in the app.
+    assert.ok(target.dependencies.some((d) => d.target === "FoodRunWidgets"));
+    const widgets = yml.targets.FoodRunWidgets;
+    assert.equal(widgets.type, "app-extension");
+    assert.equal(widgets.settings.base.PRODUCT_BUNDLE_IDENTIFIER, "com.example.foodrun.widgets");
+    assert.equal(widgets.info.properties.NSExtension.NSExtensionPointIdentifier, "com.apple.widgetkit-extension");
+    assert.deepEqual(widgets.sources.map((s) => s.path).sort(), [
+      "FoodRun/Capabilities/HomeScreenWidget/Shared",
+      "FoodRun/Capabilities/HomeScreenWidget/Widget",
+      "FoodRun/Capabilities/LiveActivity/Shared",
+      "FoodRun/Capabilities/LiveActivity/Widget",
+      "FoodRunWidgets",
+    ]);
+    for (const extensionOnly of ["Capabilities/HomeScreenWidget/Widget/**", "Capabilities/LiveActivity/Widget/**"]) assert.ok(target.sources[0].excludes.includes(extensionOnly));
+    const group = ["group.com.example.foodrun"];
+    assert.deepEqual(target.entitlements.properties["com.apple.security.application-groups"], group);
+    assert.deepEqual(widgets.entitlements.properties["com.apple.security.application-groups"], group);
+    assert.equal(target.info.properties.NSSupportsLiveActivities, true);
+    const bundle = await readFile(join(root, "FoodRunWidgets", "FoodRunWidgetsBundle.swift"), "utf8");
+    assert.match(bundle, /@main\s+struct FoodRunWidgetsBundle: WidgetBundle/);
+    assert.match(bundle, /SummaryWidget\(\)\n\s+ProgressLiveActivity\(\)|ProgressLiveActivity\(\)\n\s+SummaryWidget\(\)/);
 
     // Secrets stay out of tracked files: placeholders in the gitignored xcconfig, instructions in .env.example.
     assert.match(await readFile(join(root, "Config", "Secrets.xcconfig"), "utf8"), /^SUPABASE_URL = REPLACE_ME$/m);
@@ -200,6 +222,26 @@ describe("applying every module", () => {
     // Applying again is a no-op for capabilities already in the spec.
     const spec = JSON.parse(await readFile(join(root, ".ios-agent", "spec.json"), "utf8"));
     assert.deepEqual([...spec.capabilities].sort(), ids);
+  });
+});
+
+describe("widget extension", () => {
+  test("addWidget rejects unsafe paths and non-initializer widget names", async (t) => {
+    const dir = await copyModules(t);
+    const { applyCapabilities } = await import("../dist/agent/capabilities.js");
+    const { newAppSpec } = await import("../dist/agent/spec.js");
+    const writer = { writeSourceFile: async () => "written" };
+    // Each probe gets its own file: ES modules are cached by URL.
+    for (const [index, [body, message]] of [
+      ['ctx.addWidget({ widget: "Foo", sources: [] })', /type initializer/],
+      ['ctx.addWidget({ widget: "Foo()", sources: ["../Elsewhere"] })', /relative path inside the sources folder/],
+      ['ctx.addWidget({ widget: "Foo()", sources: ["/abs"] })', /relative path inside the sources folder/],
+    ].entries()) {
+      const probe = join(dir, `probe-${index}.js`);
+      await writeFile(probe, `export default (ctx) => { ${body}; };`);
+      const capability = { manifest: { id: "probe", name: "Probe", status: "untested", minOS: "17.0", requires: { infoPlist: {}, entitlements: {}, buildSettings: {}, packages: [], capabilities: [] }, credentialsNeeded: [], cost: { model: "free", note: "", amounts: [] } }, dir, templateFiles: [], applyModule: probe };
+      await assert.rejects(applyCapabilities(newAppSpec({ name: "Probe" }), [capability], writer), message);
+    }
   });
 });
 

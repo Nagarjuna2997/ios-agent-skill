@@ -1,0 +1,33 @@
+{
+  "id": "live-activity",
+  "name": "Live Activity",
+  "category": "widgets",
+  "description": "A progress Live Activity on the Lock Screen and in the Dynamic Island (for orders, trips or timers), started, updated and ended from the app.",
+  "default": false,
+  "appleNative": true,
+  "alternatives": [
+    "home-screen-widget",
+    "push-notifications"
+  ],
+  "requires": {
+    "infoPlist": {
+      "NSSupportsLiveActivities": true
+    }
+  },
+  "cost": {
+    "model": "free",
+    "note": "Apple frameworks only; server-driven updates need push notifications and a backend",
+    "amounts": []
+  },
+  "minOS": "17.0",
+  "docs": [
+    "docs/frameworks/activitykit.md",
+    "docs/frameworks/widgetkit.md"
+  ],
+  "usage": "Hold one `LiveActivityController` (it is `@Observable`) at the composition root, inject it as `any LiveActivityControlling`. Call `start(title:subtitle:steps:)` with the step names (for example Placed, Preparing, On the way, Delivered), `advance(to:eta:)` as the step changes, and `end()` when done. Rename `ProgressActivityAttributes` fields to fit the app. Updates are local; remote updates need push notifications.",
+  "platforms": [
+    "iOS"
+  ],
+  "status": "untested",
+  "statusNote": "Not yet built on a Mac; run `ios-agent-mcp capabilities verify live-activity` on a Mac with Xcode."
+}
