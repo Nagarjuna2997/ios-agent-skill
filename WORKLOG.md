@@ -1,50 +1,86 @@
 # Autonomous work log
 
-## Run 2 — iOS build agent (branch `agent/overnight`, started 02:40 CDT, 2026-10-02)
+## Run 2 — iOS build agent (branch `agent/overnight`, 2026-10-02, 02:40–12:40 CDT)
 
-### Environment facts (decide everything below)
+### Environment facts
 
-- This session runs in a Linux cloud container (x86_64, Ubuntu 24.04, Node 22.22, Python 3.12) with a clone of the repository. The owner's Mac is reachable only through a file bridge into a Linux VM (no Xcode, no Swift). Driving macOS Terminal through computer use was refused: the Claude app has no macOS Screen Recording permission, and the owner could not grant it.
-- Therefore `xcodebuild`, `xcrun simctl`, XcodeGen and the iOS Simulator cannot be run in this session. Swift is not installable either (Docker Hub, download.swift.org and apt have no route or package).
-- Headless Claude Code (`claude -p`, 2.1.287) is authenticated here, so the language-model half of the agent (planning, code generation, error repair prompts) can be exercised for real.
-- Consequence for the brief: the Phase 1 definition of done (three apps built, launched and screenshotted) and every capability `verify` cannot pass tonight. Everything is built so that it runs on a Mac with Xcode, unit-tested here against fake `xcodebuild`/`xcrun`/`xcodegen` executables, and every capability is `status: untested`. No example screenshots or RUN_REPORT files from a fake toolchain are presented as real runs.
-- Persistence: there is no push. After each checkpoint the branch is written as a git bundle into the owner's `work/autonomous-run/` folder and fetched into the Mac's local repository as branch `agent/overnight` (main and its worktree are not touched).
+- The session runs in a Linux cloud container (Node 22.22, Python 3.12) with a clone of the repository. Headless Claude Code (`claude -p`, 2.1.287) is authenticated there, so the agent's planning and code generation ran for real.
+- The owner's Mac is reached in two ways. A file bridge into a Linux VM is used for copying files and git. Computer use, enabled at about 04:05 after the owner granted permission, gives Finder and Device Hub (the Xcode 27 simulator app) with full input, and Xcode with clicks only. Terminal is also limited to clicks, so `xcodebuild`, `xcrun simctl` and XcodeGen were never run from a shell. All builds went through Xcode's Product menu.
+- Mac toolchain observed: Xcode 27.0 (welcome window), the iPhone 18 Pro Simulator on iOS 27.0, and Swift 6 language mode.
+- Work paused from about 04:36 to 11:46 while a permission prompt (Device Hub access) waited for the owner.
+- Persistence: there is no push. The branch is written as a git bundle to `work/autonomous-run/agent-overnight.bundle` on the Mac and fetched into the local repository there.
 
 ### Clock
 
-| Phase | Start | End |
-|---|---|---|
-| 0 Orient | 02:40 | not logged (before Phase 1) |
-| 1 Core loop | after Phase 0 | 03:14 (`90f5096`) |
-| 2 Capability system and catalog | 03:14 | |
+| Phase | Start | End | Note |
+|---|---|---|---|
+| 0 Orient | 02:40 | before 03:14 | end not logged |
+| 1 Core loop | after Phase 0 | 03:14 (`90f5096`) | loop tested against fake tools; real examples came later in Phase 2d |
+| 2 Capability system and catalog | 03:14 | 12:22 (`ee9504f`) | includes the 04:36–11:46 pause; compile check 04:10–04:30, examples 11:47–12:22 |
+| 3 Planning, cost, progress UX | implemented in Phase 1 (`90f5096`) | 12:22 | budget dedupe fix `913da10`; the real runs exercised PLAN.md, progress lines and preflight |
+| 4 README and handoff | 12:03 | 12:40 | README, CHANGELOG, version 3.9.0 / 2.10.0, this log |
 
-### Backlog
+### Results
 
-| # | Phase | Item | Size | Status |
-|---|---|---|---|---|
-| A1 | 1 | Agent toolchain layer: command runner with per-call log, toolchain detection, preflight with install commands | S | done (`90f5096`) |
-| A2 | 1 | Project layer: app spec, XcodeGen `project.yml` renderer, create/write-files/add-package with out-dir containment, xcconfig + gitignored `.env` secrets | M | done (`90f5096`) |
-| A3 | 1 | Build layer: `xcodebuild` invocation and structured error/warning parser; run/screenshot/logs via `simctl` with dynamic simulator choice | M | done (`90f5096`) |
-| A4 | 1 | MCP tools `ios_create_project`, `ios_write_files`, `ios_add_package`, `ios_build`, `ios_run`, `ios_screenshot`, `ios_logs` (+ `ios_preflight`), schemas, unit tests, fake-toolchain integration tests | M | done (`90f5096`) |
-| A5 | 1 | Loop orchestrator: plan → create → capabilities → generate → build/fix (max 8) → run → screenshots → RUN_REPORT.md; wall-clock cap, attempt cap, state.json, progress lines | M | done (`90f5096`) |
-| A6 | 1 | Entry points: `/ios-build` slash command; `ios-agent-mcp build` CLI with a headless-Claude brain | S | done (`90f5096`); CLI uses `claude -p`, untested against Xcode |
-| B1 | 2 | Capability contract (manifest schema, recipe, template, apply.ts, verify.ts), loader/validator, resolver with dependencies and defaults | M | done |
-| B2 | 2 | `capabilities/catalog.json` landscape and generated `CATALOG.md` | M | done |
-| B3 | 2 | P0 capability modules, then P1/P2 as time allows (all `untested`) | L | P0 done (13 modules, all untested) |
-| C1 | 3 | PLAN.md with capability choices, credentials and budget; progress lines; resume; refine; preflight | M | pending |
-| D1 | 4 | README first screen, generated capability table, CHANGELOG, minor version bump, final log | M | pending |
+- MCP server tests: 432 at the start of Run 1, 444 at the start of Run 2, 489 at the end, all passing. Docs Consistency (22 checks) and `scripts/hooks/verify-repo.sh` pass at every commit. The `mcp-server` CI job (10 checks) passed at `96603fb`.
+- Capabilities: 161 catalog entries in 30 categories. There are 33 modules: 0 verified, 33 untested, 0 blocked, 128 planned-only. All 33 passed the combined compile check: a clean build with Xcode 27.0 for the iPhone 18 Pro Simulator in Swift 6 mode, 69 Swift files, one warning from the prebuilt Lottie binary.
+- Examples (`examples/agent`): habit tracker, notes app, three-tab app and the food-delivery composite. Each was planned and written by `ios-agent-mcp build` in the cloud session, which stopped at its toolchain gate. Each was then built in Xcode with no errors on the first build and run in the simulator, with screenshots. The composite has 20 modules, the Lottie package and the WidgetKit extension target from the built-in project writer. The agent's own `xcodebuild` fix loop and `simctl` screenshot steps did not run against real tools.
 
-### Judgment calls (Run 2)
+### Commits (Run 2)
 
-- **No example apps committed.** The three Phase 1 examples and the food-delivery composite need Xcode to build, launch and screenshot. A run against the fake toolchain would produce a RUN_REPORT and PNGs that look real but prove nothing, so none are committed. The examples are listed under "needs the owner" with exact commands.
-- **CLI name.** The terminal entry point is `ios-agent-mcp build`, not a new `ios-agent` binary: `cli/` is a separate published package that `mcp-server` depends on, and adding the agent there would invert that dependency. The brain is headless Claude Code (`claude -p`, tools disabled) instead of a new Agent SDK dependency, because it is already installed and authenticated wherever `/ios-build` would run.
-- **Capability build check is per module, on a Mac.** `ios-agent-mcp capabilities verify` builds a module into a minimal app with its `VerifyUsage.swift`; only a passing run writes `verification.json` and flips the status to `verified`. The loader refuses `status: verified` without that file, so a hand edit cannot claim it.
-- **Costs.** Catalog entries carry a cost model and a note, never a price. A module manifest carries an amount only when it was read on the vendor page this session (Apple Developer Program, 99 USD/year, checked 2026-10-02). The Supabase pricing page was not fetched, so `email-password-auth` has no amount.
-- **Defaults.** Each category's default is Apple-native where Apple has a framework (Sign in with Apple, SwiftData, StoreKit 2, MapKit, Swift Charts, RealityKit, UserNotifications, Keychain). Third-party modules (Supabase email auth, Lottie) are alternatives. Lottie is not the animation default; the default (`swiftui-animations`) is still catalog-only, so requesting the category `animation` reports it as not built.
-- **iOS floor.** The generated app's deployment target is iOS 17.0, raised to the highest `minOS` of the applied modules. `realitykit-3d` needs iOS 18 (`RealityView` camera API) and says so in its usage text.
-- **Lottie package version** `from: 4.5.0` of `lottie-spm` is taken from memory of the package's releases, not checked online this session; the first Mac verify run resolves it.
-- **Link check scope.** The markdown link check now skips `mcp-server/data/` (gitignored build output holding a copy of `capabilities/`, whose relative links only resolve in the source tree). It was failing locally after `npm run build`; CI never builds before that step.
-- **Swift not type-checked.** No Swift compiler can be installed here, so the module Swift is reviewed against the local guides (for example RealityKit section 16, StoreKit, Swift Charts) but never compiled. Every module stays `untested`.
+| Commit | Summary |
+|---|---|
+| `56492ec` | docs: record unreleased 3.8.2 changes and bump skill manifests (end of Run 1) |
+| `90f5096` | feat(agent): agent loop, 13 MCP tools, `/ios-build` command, PLAN.md, RUN_REPORT.md, resume, refine, preflight |
+| `c26fe88` | ci: markdown link check skips gitignored `mcp-server/data` |
+| `61c7b0c` | feat(capabilities): capability system, catalog, 13 P0 modules |
+| `ff9abe6` | feat(agent): WidgetKit extension target from `addWidget` |
+| `5e4835b` | feat(capabilities): Home Screen widget and Live Activity modules |
+| `d0a1a1f` | feat(capabilities): 15 P1 modules, contrast-checked brand colors |
+| `8283830` | feat(capabilities): combined compile check on Xcode 27.0, `compileCheck` evidence, 3 more modules, fixes found by the build |
+| `42df61c` | feat(agent): built-in Xcode project writer; XcodeGen optional |
+| `4d2d723` | fix(capabilities): `ScaledSpacing` stored directly on views (runtime warnings in a generated app) |
+| `3453dea` | docs(examples): three agent-generated apps built and run on Xcode 27 |
+| `96603fb` | docs: README opens with the agent; CHANGELOG; versions 3.9.0 / 2.10.0 |
+| `913da10` | fix(agent): budget counts a shared cost once |
+| `ee9504f` | docs(examples): food-delivery composite built and run on Xcode 27 |
+
+### Judgment calls
+
+- **Examples are real but split across two machines.** Plan and code came from the agent in the cloud. The build and run happened in Xcode on the Mac by clicking. The examples README says this plainly, and the original RUN_REPORT.md files, which say `failed (toolchain missing)`, are kept unchanged. No fake-toolchain output is presented as a run.
+- **Compile evidence is not `verified`.** A new manifest field, `compileCheck`, records the combined build. `status` stays `untested` because `verify` (one module per minimal app, through the agent's own `xcodebuild` path) never ran. A GUI build of each module's minimal app was not substituted for it.
+- **Built-in project writer instead of the templates fallback.** Without a shell on the Mac, XcodeGen could not run. The brief allowed a fallback, so the spec is rendered into a folder-synchronized `.xcodeproj` (objectVersion 77) with membership exceptions for build excludes and the extension. XcodeGen stays the first choice when installed. This is what made the four examples buildable.
+- **Scheme edit for the composite screenshots.** The tabs sit behind sign-in, and typed text did not reach the simulator. So `-ios-agent-screen restaurants`, the agent's own launch argument, was added to the shared scheme of the Mac copy only.
+- **StoreKit for physical goods.** The composite request asked for StoreKit at checkout, and the agent obliged with a note that the module "needs adapting". The examples README records that App Review requires a payment method other than in-app purchase for physical goods.
+- **CLI name.** `ios-agent-mcp build`, not a new `ios-agent` binary: `cli/` is a separate published package that `mcp-server` depends on. The brain is headless Claude Code instead of a new Agent SDK dependency.
+- **Costs.** Only the Apple Developer Program amount (99 USD per year, read on Apple's page on 2026-10-02) is recorded as an amount. Every other entry has a cost model and a note, never a price.
+- **Defaults.** Apple-native defaults per category. Lottie is an alternative; the animation default (`swiftui-animations`) is still catalog-only.
+- **Lottie version.** `lottie-spm` is pinned `from: 4.5.0`. Xcode resolved it to 4.6.1 on the Mac.
+- **Version bump.** Skill 3.8.2 to 3.9.0 and `ios-agent-mcp` 2.9.0 to 2.10.0, both in files only. Install paths keep the published 2.9.0 pin, because 2.10.0 does not exist on npm.
+
+### Found by running (fixed)
+
+- Swift 6: `BackgroundRefresh.run` sent a non-Sendable closure. It now uses `isolation: isolated (any Actor)? = #isolation`.
+- Swift 6: the `PhotosPicker` label closure read main-actor state. The title initializer is used instead.
+- Swift 6: `UIImagePickerController.isSourceTypeAvailable` was called from a nonisolated context. `CameraCapture` is now `@MainActor`.
+- Runtime: a `DynamicProperty` stored in `@State` caused "Accessing Environment's value outside of being installed on a View" in two generated apps. The module guidance is fixed.
+- Budget: the Apple Developer Program fee was counted twice in the composite PLAN.md.
+- The SwiftData template now sets `cloudKitDatabase: .none`. Otherwise an iCloud entitlement from another module would start syncing models that do not meet CloudKit's rules. This was found by reading, while adding the sync module.
+- Observed on the Mac: `device_commit_files` once delivered a stale archive under a reused file name. Later transfers used new names and were checked on the Mac side.
+
+### Tried and not kept
+
+- Typing into the simulator and toggling a SwiftUI `Toggle` by click both failed. The screens that need input show empty states.
+- The CapCheck compile project was first built with a throwaway Python generator. It was replaced by `scripts/capability-compile-check.mjs`, which a second clean build confirmed.
+
+### Needs the owner
+
+1. Delete the `.git/_to_delete` folder in `/private/tmp/ios-agent-apple-resources-20260929`. It holds git lock files that the session could not remove.
+2. Review `agent/overnight` in that Mac repository, which was fetched from the bundle. Then push it, or merge into `main`, yourself.
+3. On the Mac, in Terminal: `cd mcp-server && npm ci && npm run build`, then `node dist/unified.js build "A habit tracker with a list, a detail screen, and settings with dark mode toggle" --out ~/habit-tracker`. This is the first run of the agent's own build-and-fix loop and `simctl` screenshots. Then `node dist/unified.js capabilities verify --all --write ../capabilities` to mark modules `verified`.
+4. In Claude Code: `node mcp-server/dist/unified.js install-command --global`, add the MCP server, and try `/ios-build`. This path has not been run in a Claude Code session.
+5. Credentials for full examples: a Supabase project (`SUPABASE_URL`, `SUPABASE_ANON_KEY`) for email sign-in, and your API's `API_BASE_URL`. Sign in with Apple, iCloud containers, App Groups and push notifications on a device need an Apple Developer Program membership.
+6. Publishing: `npm publish` of `ios-agent-mcp` 2.10.0, a `v3.9.0` tag and a GitHub Release, all after review. Then move the install-path pins from 2.9.0 to 2.10.0.
 
 # Run 1 — maintenance (2026-10-02, 01:50–02:40 CDT)
 
