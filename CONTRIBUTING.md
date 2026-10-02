@@ -13,7 +13,7 @@ Thanks for your interest! This skill is community-maintained and PRs are welcome
 ## Ground rules
 
 1. **Code must compile.** Every Swift snippet in this repo is checked in as code an iOS engineer can paste into Xcode and run. No pseudo-code, no `// ...` placeholders that hide work.
-2. **Modern-first.** Default to the latest stable APIs (Swift 5.9+, iOS 17+, SwiftUI, SwiftData, the Observation framework). Older APIs only when targeting earlier OS versions, and label them clearly.
+2. **Modern-first.** Default to the latest stable APIs: SwiftUI, SwiftData, the Observation framework and Swift 6 strict concurrency. The skill is written against Swift 6.4, Xcode 27 and the iOS 27 SDK (see `SKILL.md` frontmatter); generated code must still support the iOS 17 / Swift 5.9 deployment floor. Use APIs newer than that floor behind availability checks, and label older APIs clearly.
 3. **Match the house style.** Docs use sentence-case headings, fenced code blocks with the `swift` language tag, and short prose between examples. Keep tables for comparisons, not for prose.
 4. **Don't bloat.** A doc should be long because the surface area is large, not because it repeats itself. Prefer linking to peer docs over duplicating content.
 5. **Update the README** if you add a new top-level file or doc the user should discover.
@@ -92,7 +92,7 @@ file. Use `npm login` locally, then publish from the package directory with
 ### House rules for `SKILL.md` itself
 
 - Frontmatter must stay valid YAML with `name` and `description` present. The `description` is what agents match on to decide whether to load the skill, so it should name concrete triggers (frameworks, task types), not adjectives.
-- Bump `version` on any behavioral change to the rules.
+- Bump `version` on any behavioral change to the rules, and set the same version in `skill.json`, `gemini-extension.json` and both `.codex-plugin/plugin.json` manifests. `python3 scripts/check-manifest-versions.py` (run by CI and the verify hook) fails when they disagree.
 - Every documentation file referenced in the index must exist. CI checks this.
 - New docs follow **Context → Pattern → Anti-Patterns**: state the trigger, show complete compiling Swift, then show the `// WRONG` forms with the failure each one causes. The anti-pattern block is not optional — it is the part that stops an agent from emitting plausible-but-wrong boilerplate.
 

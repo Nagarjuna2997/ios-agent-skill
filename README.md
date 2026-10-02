@@ -109,8 +109,6 @@ Coverage counts describe documentation, not compiled integrations. Download coun
 
 [Contributing](CONTRIBUTING.md) · [Development](docs/development.md) · [Security](SECURITY.md) · [Roadmap](ROADMAP.md) · [MIT license](LICENSE)
 
-https://www.producthunt.com/products/ios-agent-mcp?launch=ios-agent-mcp
-
 Backend integration guidance: [choose a service and review auth, data and security boundaries](docs/backend/overview.md).
 
 ## Optional provider commands

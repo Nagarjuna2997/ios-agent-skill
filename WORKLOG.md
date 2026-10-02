@@ -10,8 +10,8 @@ Working copy: a fresh clone of `main` at `0e5cb39`. All commits are authored as 
 | 2 | Sync stale skill version `3.5.0` in `skill.json`, `gemini-extension.json` and both Codex `plugin.json` files with `SKILL.md`/CHANGELOG `3.8.1`; add a check so they cannot drift again | S | done |
 | 2b | Active client manifests pin `ios-agent-mcp@2.7.0` (Gemini extension, Codex plugin `.mcp.json`, builder skill commands) although 2.9.0 is published (`npm view`); update after verifying the published 2.9.0 artifact, and extend the check to pins | S | done |
 | 3 | Issue #12 follow-up: add the issue's exact reproduction and remaining formatter true positives as regression tests (the fix itself is already on `main`) | XS | done |
-| 4 | Remove the stray bare ProductHunt URL from README (owner preference: promotion through owned channels only) | XS | pending |
-| 5 | CONTRIBUTING "Swift 5.9+" modern-first wording contradicts the toolchain the skill targets (Swift 6.4 / Xcode 27, deployment floor iOS 17) | XS | pending |
+| 4 | Remove the stray bare ProductHunt URL from README (owner preference: promotion through owned channels only) | XS | done |
+| 5 | CONTRIBUTING "Swift 5.9+" modern-first wording contradicts the toolchain the skill targets (Swift 6.4 / Xcode 27, deployment floor iOS 17) | XS | done |
 | 6 | Deprecated SwiftUI/UIKit APIs in guide prose and samples (`NavigationView`, `.foregroundColor`, `UIScreen.main`, two-parameter `onChange`, `UIApplication.shared.windows`, `.autocapitalization`, `.cornerRadius`, `PreviewProvider`); fix unlabelled uses and add a regression check | M | pending |
 | 7 | External markdown link check; fix confirmed dead links | S | pending |
 | 8 | MCP server: 15 of 67 registered tools are never exercised by a test; add at least one test per tool | M | pending |
@@ -52,6 +52,8 @@ Measured on Linux (Ubuntu 24.04, Node 22.22, Python 3.12). No Swift toolchain, X
 
 - No push credentials are available in this environment (the git proxy refuses this repository, and committing through the browser was blocked by the session's safety policy). Commits are made locally on `main` and saved after each commit as a git bundle in the owner's local `work/autonomous-run/` folder, so nothing is lost. Pushing is listed under manual actions.
 - Issue comments cannot be posted for the same reason; the intended comment text is recorded below instead.
+
+- README contained a bare ProductHunt URL with no surrounding text between the footer links and the backend section. It was removed because the owner promotes only through owned channels. The ProductHunt entry on the community-monitor page was kept: it is a listings monitor, not promotion.
 
 ## Commits
 
