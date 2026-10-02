@@ -254,6 +254,18 @@ describe("applying every module", () => {
   });
 });
 
+describe("budget", () => {
+  test("a membership needed by several capabilities is counted once", async () => {
+    const { budget } = await import("../dist/agent/plan.js");
+    const loaded = await loadCapabilities(sourceDir);
+    const money = budget(resolveCapabilities(["sign-in-with-apple", "storekit2-paywall"], loaded));
+    const membership = money.lines.filter((l) => /Apple Developer Program/.test(l.label));
+    assert.equal(membership.length, 1);
+    assert.equal(membership[0].capability, "sign-in-with-apple, storekit2-paywall");
+    assert.equal(money.yearlyUsd, 99);
+  });
+});
+
 describe("brand colors", () => {
   test("primary and secondary reach 4.5:1 against their text color for every hue", async () => {
     const { readable, contrast } = await import("../data/capabilities/_sdk/brand.js");

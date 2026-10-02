@@ -126,6 +126,12 @@ export function budget(resolution: Resolution, catalog: CatalogEntry[] = []): Bu
       continue;
     }
     for (const amount of manifest.cost.amounts) {
+      // One membership or plan needed by several capabilities is paid once.
+      const shared = result.lines.find((l) => l.label === amount.label && l.usd === amount.usd && l.period === amount.period);
+      if (shared) {
+        shared.capability = `${shared.capability}, ${manifest.id}`;
+        continue;
+      }
       result.lines.push({
         capability: manifest.id,
         label: amount.label,
