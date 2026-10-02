@@ -6,6 +6,35 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+Version 3.8.2 is prepared in the skill manifests; no tag, GitHub Release or npm package has been published for it. The npm package stays at 2.9.0 because its runtime source did not change.
+
+### Added -- 3.8.2
+
+- `scripts/check-manifest-versions.py`: `skill.json`, `gemini-extension.json` and both Codex plugin manifests must carry the `SKILL.md` version, and the active install paths must share one `ios-agent-mcp` pin that is not newer than `mcp-server/package.json`. Runs in Docs Consistency and the verify hook.
+- `scripts/check-deprecated-apis.py`: flags `NavigationView`, `foregroundColor`, `UIScreen.main`, `UIApplication.shared.windows`, `autocapitalization`, `edgesIgnoringSafeArea`, `navigationBarTitle`, `accentColor`, the one-parameter `onChange` closure and `PreviewProvider` in Swift fences unless the sample is labelled as wrong, deprecated or legacy.
+- `mcp-server/test/tool-coverage.test.js`: the 15 tools that no test called (Xcode/simulator tools, `get_apple_updates`, `plan_app_icon`, `get_reference_outline`) now run through the unified server against fake `xcrun`/`xcodebuild`/`xcode-select`/`open` executables, and a test fails when any registered tool is not named in a test. MCP tests: 432 to 444.
+- `mcp-server/scripts/render-tool-index.mjs` generates an index of all 67 registered tools in `docs/mcp/tools.md` from a live `tools/list` call; the MCP CI job checks it.
+- `scripts/tests/test_install.py`: hermetic `install.sh` tests with a local bare remote and temporary HOME, run on Ubuntu and macOS in a new Tests job.
+- CI now runs the community page renderer tests and `swift test` for `samples/ColorSystem` (the latter not yet observed passing; see WORKLOG.md).
+- Issue #12 regression tests: the issue's exact `JSONDecoder` reproduction, property-list codecs and `JSONSerialization` produce no formatter advice, while the four formatter types are still flagged.
+
+### Changed -- 3.8.2
+
+- Studio resolves the login shell `PATH` on macOS at startup (5-second limit, own process group, no stdin), so CLIs installed through nvm, Homebrew or an npm prefix are found when Studio is opened from the Mac launcher or Finder.
+- The Gemini extension, the Codex plugin MCP configuration and both builder skills pin `ios-agent-mcp@2.9.0` instead of 2.7.0. The published 2.9.0 package was checked to list 67 tools and run `new`; Gemini CLI 0.62.0 validated the manifest. A Gemini session against 2.9.0 is not verified.
+- `install.sh` explains clone and update failures and accepts `IOS_AGENT_SKILL_REPO_URL` (default unchanged).
+- The verify hook also checks the local source index, which CI already enforced.
+- CONTRIBUTING describes the Swift 6.4 / Xcode 27 toolchain with the iOS 17 / Swift 5.9 floor and the manifest-version rule; `docs/development.md` lists the new checks.
+
+### Fixed -- 3.8.2
+
+- `skill.json`, `gemini-extension.json` and both Codex plugin manifests said 3.5.0 while `SKILL.md` was 3.8.1.
+- Guide samples used deprecated APIs: `UIScreen.main` (7), `foregroundColor` (4) and `autocapitalization` (2), plus a `UIScreen.main` recommendation in UIKit animation prose. These Swift edits were not compiled here.
+- `docs/mcp/installation.md`, `docs/evidence-and-scope.md` and `docs/mcp/knowledge-server.md` described 2.7.0 or 2.4.0 tool counts and pins; the knowledge guide said 96 update pages (the bundle has 98).
+- The Copilot adapter described its pinned 2.7.0 server as 35 tools; the published 2.7.0 lists 36.
+- ROADMAP called the implemented v2 fixtures a proposal and named Xcode 26.6 as the local host.
+- Removed a bare ProductHunt URL from the README footer.
+
 ## [3.8.1] -- 2026-09-30
 
 ### Added -- 3.8.1
