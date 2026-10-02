@@ -20,7 +20,8 @@ These are acceptance gates, not shipped-feature claims. Finish and publish evide
 for one gate before broadening the tool inventory.
 
 1. **Reproducible paired evaluation.** Start from the [existing 20-microtask
-   harness](benchmarks/README.md) and the [30-task v2 proposal](benchmarks/v2/PLAN.md).
+   harness](benchmarks/README.md) and the [30-task v2 fixtures](benchmarks/v2/README.md)
+   (fixture validation implemented; scored runs wait for a proven isolated agent boundary).
    The separate [launch-screen suite](benchmarks/launch-screen/README.md) has twelve
    implemented fixtures, but no paired agent results yet. Freeze starting projects,
    model versions, retry budgets and independent acceptance checks for both conditions. Report compile success, test success and Swift 6
@@ -49,7 +50,7 @@ for one gate before broadening the tool inventory.
 
 ## Next verification gates
 
-- Xcode 27 compilation and in-editor MCP/agent acceptance; current local host is Xcode 26.6.
+- Xcode 27 compilation of the repository samples and in-editor MCP/agent acceptance. The local host now has Xcode 27.0 (27A266a), see [Xcode documentation resources](docs/tooling/xcode-documentation-resources.md); sample compilation against it has not been recorded.
 - Live Foundation Models generation and provider routing, Core AI model execution and real Siri behavior.
 - Muse Code model-directed tool use and verification observer; MCP discovery and a Stop hook are verified.
 - Full app-generation acceptance across clients; do not generalize the bounded Claude repair check into a complete app-building claim.
