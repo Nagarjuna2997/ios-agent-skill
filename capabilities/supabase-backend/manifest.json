@@ -1,0 +1,65 @@
+{
+  "id": "supabase-backend",
+  "name": "Supabase database (supabase-swift)",
+  "category": "backend",
+  "description": "Reads and writes Postgres tables through the official supabase-swift client, with Codable rows, row-level security assumed, and a configuration message until keys are set.",
+  "default": false,
+  "appleNative": false,
+  "alternatives": [
+    "cloudkit-database",
+    "firebase-firestore",
+    "rest-api-client"
+  ],
+  "requires": {
+    "packages": [
+      {
+        "name": "supabase-swift",
+        "url": "https://github.com/supabase/supabase-swift.git",
+        "version": {
+          "from": "2.0.0"
+        },
+        "products": [
+          "Supabase"
+        ]
+      }
+    ]
+  },
+  "credentialsNeeded": [
+    {
+      "key": "SUPABASE_URL",
+      "description": "Your Supabase project URL (https://<project>.supabase.co)",
+      "whereToGet": "https://supabase.com/dashboard: Project Settings > API",
+      "kind": "client"
+    },
+    {
+      "key": "SUPABASE_ANON_KEY",
+      "description": "Your project's anon (public) key; protect data with row-level security",
+      "whereToGet": "https://supabase.com/dashboard: Project Settings > API",
+      "kind": "client"
+    }
+  ],
+  "cost": {
+    "model": "usage-based",
+    "note": "Supabase has a free tier and paid plans; check current limits on its pricing page",
+    "link": "https://supabase.com/pricing",
+    "amounts": []
+  },
+  "minOS": "17.0",
+  "docs": [
+    "docs/backend/supabase.md"
+  ],
+  "usage": "Create `SupabaseConfiguration.makeClient()` once at the composition root (nil until keys are set; show `SupabaseNotConfiguredView`). For each table define a `Codable & Sendable` row type and use `SupabaseTable<Row>(client:name:)` with `fetchAll()`, `insert(_:)`. Enable row-level security on every table; the anon key is public. Never put the service-role key in the app.",
+  "platforms": [
+    "iOS"
+  ],
+  "status": "untested",
+  "statusNote": "Swift compiled on a Mac in the combined compile check (see compileCheck); the module's own verify run has not passed yet: `ios-agent-mcp capabilities verify supabase-backend` on a Mac.",
+  "compileCheck": {
+    "date": "2026-10-02",
+    "xcode": "27.0",
+    "destination": "iPhone 18 Pro Simulator",
+    "swiftLanguageMode": "6",
+    "result": "passed",
+    "scope": "Template Swift and the verify usage file compiled with every other module in one app target (scripts/capability-compile-check.mjs, clean build in Xcode). Not covered: the XcodeGen project, entitlements, the widget extension target and runtime behavior."
+  }
+}

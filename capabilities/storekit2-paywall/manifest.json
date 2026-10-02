@@ -34,12 +34,12 @@
     "docs/frameworks/storekit.md",
     "docs/apple/technologies/storekittest.md"
   ],
-  "usage": "Create `StoreModel(productIDs: StoreProducts.all, service: StoreKitPurchaseService())` at the composition root. Present `PaywallView(model:features:)` (features is a list of short strings). Gate premium features on `model.isPremium`. Attach `.task { await model.load() }` and `.task { await model.listenForTransactions() }` once near the root. Digital goods must use StoreKit, never Apple Pay or Stripe.",
+  "usage": "Create `StoreModel(productIDs: StoreProducts.all, service: StoreKitPurchaseService())` at the composition root. Present `PaywallView(model:features:)` (features is a list of short strings). Gate premium features on `model.isPremium`. Attach `.task { await model.load() }` and `.task { await model.listenForTransactions() }` once near the root. Only for digital goods and subscriptions used in the app; those must use StoreKit, never Apple Pay or Stripe. Physical goods and services used outside the app (food, rides, merchandise, tickets) must not use StoreKit: choose apple-pay and say why in the plan.",
   "platforms": [
     "iOS"
   ],
   "status": "untested",
-  "statusNote": "Swift compiled on a Mac in the combined compile check (see compileCheck); the module's own verify run has not passed yet: `ios-agent-mcp capabilities verify storekit2-paywall` on a Mac with XcodeGen.",
+  "statusNote": "Swift compiled on a Mac in the combined compile check (see compileCheck); the module's own verify run has not passed yet: `ios-agent-mcp capabilities verify storekit2-paywall` on a Mac.",
   "compileCheck": {
     "date": "2026-10-02",
     "xcode": "27.0",

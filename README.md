@@ -38,10 +38,10 @@ Every capability is a folder in [capabilities/](capabilities/README.md) with a m
 | Status | Capabilities |
 |---|---|
 | Verified on a Mac | 0 |
-| Module exists, not yet verified on a Mac | 33 |
-| ...of which the Swift compiled on a Mac (combined compile check) | 33 |
+| Module exists, not yet verified on a Mac | 39 |
+| ...of which the Swift compiled on a Mac (combined compile check) | 39 |
 | Blocked | 0 |
-| Listed for planning only | 128 |
+| Listed for planning only | 122 |
 
 161 catalog entries in 30 categories; generated from [capabilities/CATALOG.md](capabilities/CATALOG.md).
 <!-- capability-summary:end -->

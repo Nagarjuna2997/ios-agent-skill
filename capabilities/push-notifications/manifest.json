@@ -1,0 +1,65 @@
+{
+  "id": "push-notifications",
+  "name": "Push notifications (APNs)",
+  "category": "notifications",
+  "description": "Asks for notification permission, registers with APNs and exposes the device token to send to your server; your server sends pushes with an APNs key.",
+  "default": false,
+  "appleNative": true,
+  "alternatives": [
+    "local-notifications",
+    "firebase-messaging",
+    "onesignal"
+  ],
+  "requires": {
+    "entitlements": {
+      "aps-environment": "development"
+    }
+  },
+  "credentialsNeeded": [
+    {
+      "key": "APNS_KEY_ID",
+      "description": "Key ID of your APNs authentication key (.p8)",
+      "whereToGet": "https://developer.apple.com/account/resources/authkeys/list",
+      "kind": "server"
+    },
+    {
+      "key": "APNS_TEAM_ID",
+      "description": "Your Apple Developer team ID",
+      "whereToGet": "https://developer.apple.com/account (Membership details)",
+      "kind": "server"
+    }
+  ],
+  "cost": {
+    "model": "subscription",
+    "note": "Apple Developer Program membership needed for device builds and distribution; simulator builds are free; APNs itself has no per-message fee; your server sends the pushes",
+    "amounts": [
+      {
+        "label": "Apple Developer Program membership (needed to distribute; not needed for simulator builds)",
+        "usd": 99,
+        "period": "year",
+        "verified": true,
+        "checkedOn": "2026-10-02",
+        "source": "https://developer.apple.com/support/compare-memberships/"
+      }
+    ]
+  },
+  "minOS": "17.0",
+  "docs": [
+    "docs/frameworks/usernotifications.md",
+    "docs/apple/technologies/pushkit.md"
+  ],
+  "usage": "Add `@UIApplicationDelegateAdaptor(PushAppDelegate.self) private var pushDelegate` to the App struct. Call `await PushRegistration.shared.requestAndRegister()` after the user opts in (not at launch). Observe `PushRegistration.shared.deviceToken` (hex string) and send it to your server, which sends notifications through APNs with the server-only key. The simulator can receive test pushes with `xcrun simctl push`.",
+  "platforms": [
+    "iOS"
+  ],
+  "status": "untested",
+  "statusNote": "Swift compiled on a Mac in the combined compile check (see compileCheck); the module's own verify run has not passed yet: `ios-agent-mcp capabilities verify push-notifications` on a Mac.",
+  "compileCheck": {
+    "date": "2026-10-02",
+    "xcode": "27.0",
+    "destination": "iPhone 18 Pro Simulator",
+    "swiftLanguageMode": "6",
+    "result": "passed",
+    "scope": "Template Swift and the verify usage file compiled with every other module in one app target (scripts/capability-compile-check.mjs, clean build in Xcode). Not covered: the XcodeGen project, entitlements, the widget extension target and runtime behavior."
+  }
+}

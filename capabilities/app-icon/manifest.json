@@ -23,7 +23,7 @@
     "iOS"
   ],
   "status": "untested",
-  "statusNote": "Swift compiled on a Mac in the combined compile check (see compileCheck); the module's own verify run has not passed yet: `ios-agent-mcp capabilities verify app-icon` on a Mac with XcodeGen.",
+  "statusNote": "Swift compiled on a Mac in the combined compile check (see compileCheck); the module's own verify run has not passed yet: `ios-agent-mcp capabilities verify app-icon` on a Mac.",
   "compileCheck": {
     "date": "2026-10-02",
     "xcode": "27.0",

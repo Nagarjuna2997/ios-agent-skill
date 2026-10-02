@@ -66,6 +66,11 @@ open ~/CapCheck/CapCheck.xcodeproj    # then Product > Build
 
 A manifest's `compileCheck` block records a real build of that project: the date, Xcode version, destination, Swift language mode and result. It is written by hand after a build, and never from a fake toolchain. A passing compile check shows that the module's Swift compiles alongside every other module. It does not cover the XcodeGen project, entitlements, the widget extension target or runtime behavior, so `status` stays `untested` until the module's own verify run passes.
 
-Last recorded run, 2026-10-02: a clean build with Xcode 27.0 for the iPhone 18 Pro Simulator in Swift 6 language mode. The CapCheck project contained 33 modules and 69 Swift files, and the build succeeded with one warning, which came from the prebuilt Lottie binary.
+Recorded runs, 2026-10-02. Both were clean builds with Xcode 27.0 for the iPhone 18 Pro Simulator in Swift 6 language mode:
 
-![Xcode build log: Build succeeded](_evidence/compile-check-2026-10-02.jpg)
+- 33 modules, 69 Swift files: build succeeded with one warning, from the prebuilt Lottie binary.
+- 39 modules, 81 Swift files, adding the Supabase and RevenueCat packages: build succeeded with the same single warning. Before that, two earlier builds failed or warned. One module was missing `import Foundation`. In another, a usage file named `AuthorizationController` without importing AuthenticationServices. Both were fixed.
+
+![Xcode build log for 33 modules: Build succeeded](_evidence/compile-check-2026-10-02.jpg)
+
+![Xcode build log for 39 modules: Build succeeded](_evidence/compile-check-2026-10-02-39-modules.jpg)

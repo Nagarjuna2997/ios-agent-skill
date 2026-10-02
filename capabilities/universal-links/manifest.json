@@ -1,0 +1,62 @@
+{
+  "id": "universal-links",
+  "name": "Universal links",
+  "category": "sharing-deep-links",
+  "description": "Opens app screens from https links on your domain (applinks), routed through the same typed DeepLink router as the custom URL scheme.",
+  "default": false,
+  "appleNative": true,
+  "alternatives": [
+    "deep-links",
+    "share-sheet"
+  ],
+  "requires": {
+    "capabilities": [
+      "deep-links"
+    ],
+    "entitlements": {
+      "com.apple.developer.associated-domains": [
+        "applinks:$(ASSOCIATED_DOMAIN)"
+      ]
+    }
+  },
+  "credentialsNeeded": [
+    {
+      "key": "ASSOCIATED_DOMAIN",
+      "description": "Your domain (for example example.com) that serves apple-app-site-association",
+      "whereToGet": "A domain you control; host /.well-known/apple-app-site-association with an applinks entry for this app",
+      "kind": "client"
+    }
+  ],
+  "cost": {
+    "model": "subscription",
+    "note": "Apple Developer Program membership needed for device builds and distribution; simulator builds are free; needs a domain you control",
+    "amounts": [
+      {
+        "label": "Apple Developer Program membership (needed to distribute; not needed for simulator builds)",
+        "usd": 99,
+        "period": "year",
+        "verified": true,
+        "checkedOn": "2026-10-02",
+        "source": "https://developer.apple.com/support/compare-memberships/"
+      }
+    ]
+  },
+  "minOS": "17.0",
+  "docs": [
+    "docs/swiftui/deep-linking-and-routing.md"
+  ],
+  "usage": "Keep `.onOpenURL { router.open($0) }` from deep-links and replace it with `.onOpenURL { router.open(UniversalLink.normalize($0) ?? $0) }` so https://<domain>/<screen>/<id> becomes the same DeepLink as the custom scheme. Share links with `UniversalLink.url(for: .item(screen: \"orders\", id: id))`, which falls back to the custom scheme until ASSOCIATED_DOMAIN is set.",
+  "platforms": [
+    "iOS"
+  ],
+  "status": "untested",
+  "statusNote": "Swift compiled on a Mac in the combined compile check (see compileCheck); the module's own verify run has not passed yet: `ios-agent-mcp capabilities verify universal-links` on a Mac.",
+  "compileCheck": {
+    "date": "2026-10-02",
+    "xcode": "27.0",
+    "destination": "iPhone 18 Pro Simulator",
+    "swiftLanguageMode": "6",
+    "result": "passed",
+    "scope": "Template Swift and the verify usage file compiled with every other module in one app target (scripts/capability-compile-check.mjs, clean build in Xcode). Not covered: the XcodeGen project, entitlements, the widget extension target and runtime behavior."
+  }
+}

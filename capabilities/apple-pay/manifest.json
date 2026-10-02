@@ -1,0 +1,59 @@
+{
+  "id": "apple-pay",
+  "name": "Apple Pay checkout",
+  "category": "payments",
+  "description": "Pays for physical goods and services with Apple Pay through a payment processor, using SwiftUI's PayWithApplePayButton with a configuration message until a merchant ID is set.",
+  "default": false,
+  "appleNative": true,
+  "alternatives": [
+    "stripe-payments",
+    "storekit2-paywall"
+  ],
+  "requires": {
+    "entitlements": {
+      "com.apple.developer.in-app-payments": [
+        "$(APPLE_PAY_MERCHANT_ID)"
+      ]
+    }
+  },
+  "credentialsNeeded": [
+    {
+      "key": "APPLE_PAY_MERCHANT_ID",
+      "description": "Your Apple Pay merchant identifier, for example merchant.com.example.app",
+      "whereToGet": "https://developer.apple.com/account/resources/identifiers/list/merchant (Apple Developer Program membership)",
+      "kind": "client"
+    }
+  ],
+  "cost": {
+    "model": "usage-based",
+    "note": "No Apple fee for Apple Pay; your payment processor charges per transaction; a merchant ID needs an Apple Developer Program membership",
+    "amounts": [
+      {
+        "label": "Apple Developer Program membership (needed to distribute; not needed for simulator builds)",
+        "usd": 99,
+        "period": "year",
+        "verified": true,
+        "checkedOn": "2026-10-02",
+        "source": "https://developer.apple.com/support/compare-memberships/"
+      }
+    ]
+  },
+  "minOS": "17.0",
+  "docs": [
+    "docs/frameworks/services/passkit.md"
+  ],
+  "usage": "Use for physical goods and services (food, rides, merchandise). Show `ApplePayCheckoutButton(lines:merchantName:onAuthorize:)` with `PaymentLine(label:amount:)` items; the last line is the total. In `onAuthorize(payment, complete)`, send `payment.token.paymentData` to your server and payment processor, then call `complete(true)` or `complete(false)`. Until APPLE_PAY_MERCHANT_ID is set it shows a configuration message. Never charge cards from the app itself.",
+  "platforms": [
+    "iOS"
+  ],
+  "status": "untested",
+  "statusNote": "Swift compiled on a Mac in the combined compile check (see compileCheck); the module's own verify run has not passed yet: `ios-agent-mcp capabilities verify apple-pay` on a Mac.",
+  "compileCheck": {
+    "date": "2026-10-02",
+    "xcode": "27.0",
+    "destination": "iPhone 18 Pro Simulator",
+    "swiftLanguageMode": "6",
+    "result": "passed",
+    "scope": "Template Swift and the verify usage file compiled with every other module in one app target (scripts/capability-compile-check.mjs, clean build in Xcode). Not covered: the XcodeGen project, entitlements, the widget extension target and runtime behavior."
+  }
+}

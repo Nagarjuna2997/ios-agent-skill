@@ -1,0 +1,59 @@
+{
+  "id": "passkeys",
+  "name": "Passkeys",
+  "category": "authentication",
+  "description": "Registers and signs in with passkeys through SwiftUI's authorization controller, returning the credential data your server verifies.",
+  "default": false,
+  "appleNative": true,
+  "alternatives": [
+    "sign-in-with-apple",
+    "email-password-auth"
+  ],
+  "requires": {
+    "entitlements": {
+      "com.apple.developer.associated-domains": [
+        "webcredentials:$(ASSOCIATED_DOMAIN)"
+      ]
+    }
+  },
+  "credentialsNeeded": [
+    {
+      "key": "ASSOCIATED_DOMAIN",
+      "description": "Your domain (for example example.com) that serves apple-app-site-association and acts as the relying party",
+      "whereToGet": "A domain you control; host /.well-known/apple-app-site-association with a webcredentials entry for this app",
+      "kind": "client"
+    }
+  ],
+  "cost": {
+    "model": "subscription",
+    "note": "Apple Developer Program membership needed for device builds and distribution; simulator builds are free; needs your relying-party server and domain",
+    "amounts": [
+      {
+        "label": "Apple Developer Program membership (needed to distribute; not needed for simulator builds)",
+        "usd": 99,
+        "period": "year",
+        "verified": true,
+        "checkedOn": "2026-10-02",
+        "source": "https://developer.apple.com/support/compare-memberships/"
+      }
+    ]
+  },
+  "minOS": "17.0",
+  "docs": [
+    "docs/frameworks/authentication-services.md"
+  ],
+  "usage": "In that view's file, `import AuthenticationServices` (Swift 6 requires the import where `AuthorizationController` is named) and read `@Environment(\\.authorizationController) private var authorizationController` in the view that starts sign-in. Get a challenge (and for registration a user ID) from your server, then call `try await PasskeyService.fromBundle()?.register(userName:userID:challenge:using: authorizationController)` or `.signIn(challenge:using:)` and send the returned `PasskeyCredential` to your server to verify. Handle `PasskeyError.notConfigured` until ASSOCIATED_DOMAIN is set. Passkeys need a server; there is no local-only mode.",
+  "platforms": [
+    "iOS"
+  ],
+  "status": "untested",
+  "statusNote": "Swift compiled on a Mac in the combined compile check (see compileCheck); the module's own verify run has not passed yet: `ios-agent-mcp capabilities verify passkeys` on a Mac.",
+  "compileCheck": {
+    "date": "2026-10-02",
+    "xcode": "27.0",
+    "destination": "iPhone 18 Pro Simulator",
+    "swiftLanguageMode": "6",
+    "result": "passed",
+    "scope": "Template Swift and the verify usage file compiled with every other module in one app target (scripts/capability-compile-check.mjs, clean build in Xcode). Not covered: the XcodeGen project, entitlements, the widget extension target and runtime behavior."
+  }
+}
