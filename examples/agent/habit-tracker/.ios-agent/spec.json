@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "name": "HabitTracker",
+  "displayName": "Habit Tracker",
+  "bundleId": "com.example.habittracker",
+  "deploymentTarget": "17.0",
+  "swiftVersion": "6.0",
+  "entitlements": {},
+  "infoPlist": {},
+  "packages": [],
+  "buildSettings": {},
+  "secrets": [],
+  "capabilities": [
+    "swiftdata",
+    "appearance-settings",
+    "accessibility-baseline",
+    "haptics",
+    "color-assets",
+    "app-icon"
+  ],
+  "sourceExcludes": [
+    "Resources/IconLayers/**"
+  ],
+  "appIconName": "AppIcon"
+}

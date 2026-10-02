@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "name": "TabFeed",
+  "displayName": "Tab Feed",
+  "bundleId": "com.example.tabfeed",
+  "deploymentTarget": "17.0",
+  "swiftVersion": "6.0",
+  "entitlements": {},
+  "infoPlist": {
+    "UILaunchScreen": {
+      "UIColorName": "LaunchBackground",
+      "UIImageName": "LaunchLogo",
+      "UIImageRespectsSafeAreaInsets": true
+    }
+  },
+  "packages": [],
+  "buildSettings": {},
+  "secrets": [],
+  "capabilities": [
+    "swiftdata",
+    "accessibility-baseline",
+    "color-assets",
+    "appearance-settings",
+    "photos-picker",
+    "share-sheet",
+    "app-icon",
+    "launch-screen"
+  ],
+  "sourceExcludes": [
+    "Resources/IconLayers/**"
+  ],
+  "appIconName": "AppIcon"
+}

@@ -1,0 +1,120 @@
+{
+  "appName": "HabitTracker",
+  "displayName": "Habit Tracker",
+  "summary": "A simple habit tracker that shows your habits in a list, lets you open any habit to see its details and streak, and mark it done each day. A settings screen lets you switch dark mode on or off. Habits are saved on your device so they remain after you close the app.",
+  "navigation": "stack",
+  "screens": [
+    {
+      "id": "habit-list",
+      "title": "Habits",
+      "purpose": "Shows all habits with today's completion status and lets you add a new habit.",
+      "topLevel": true,
+      "capabilities": [
+        "swiftdata",
+        "accessibility-baseline",
+        "haptics"
+      ]
+    },
+    {
+      "id": "habit-detail",
+      "title": "Habit Detail",
+      "purpose": "Shows one habit's name, notes, current streak and completion history, with options to edit or delete it.",
+      "topLevel": false,
+      "capabilities": [
+        "swiftdata",
+        "accessibility-baseline",
+        "haptics"
+      ]
+    },
+    {
+      "id": "settings",
+      "title": "Settings",
+      "purpose": "Lets you turn dark mode on or off and control haptic feedback.",
+      "topLevel": false,
+      "capabilities": [
+        "appearance-settings",
+        "haptics",
+        "accessibility-baseline"
+      ]
+    }
+  ],
+  "models": [
+    {
+      "name": "Habit",
+      "persisted": true,
+      "fields": [
+        {
+          "name": "id",
+          "type": "UUID",
+          "optional": false
+        },
+        {
+          "name": "name",
+          "type": "String",
+          "optional": false
+        },
+        {
+          "name": "notes",
+          "type": "String",
+          "optional": true
+        },
+        {
+          "name": "createdAt",
+          "type": "Date",
+          "optional": false
+        },
+        {
+          "name": "completedDates",
+          "type": "[Date]",
+          "optional": false
+        }
+      ]
+    }
+  ],
+  "capabilities": [
+    {
+      "id": "swiftdata",
+      "reason": "Habits and their completion history must survive app relaunch."
+    },
+    {
+      "id": "appearance-settings",
+      "reason": "Provides the stored dark mode toggle in Settings, applied at the app root."
+    },
+    {
+      "id": "accessibility-baseline",
+      "reason": "Ensures 44 point tap targets, Dynamic Type friendly spacing and Reduce Motion support for checking off habits."
+    },
+    {
+      "id": "haptics",
+      "reason": "Gives tactile feedback when a habit is marked done, with a setting to turn it off."
+    },
+    {
+      "id": "color-assets",
+      "reason": "Semantic colors with light and dark variants so the app looks right in both appearances."
+    },
+    {
+      "id": "app-icon",
+      "reason": "The app needs an icon for the Home Screen."
+    },
+    {
+      "id": "sf-symbols",
+      "reason": "Icons for checkmarks, streaks and settings use SF Symbols."
+    }
+  ],
+  "features": [
+    "Add, edit and delete habits",
+    "List of habits with a today checkmark",
+    "Habit detail screen with current streak and completion history",
+    "Tap to mark a habit done or not done for today",
+    "Settings screen with dark mode toggle",
+    "Haptic feedback toggle",
+    "Data saved on device"
+  ],
+  "assumptions": [
+    "Navigation is a single stack: the list is the home screen, detail is pushed on tap, and settings opens from a toolbar button.",
+    "Habits are daily; no custom schedules or weekly goals.",
+    "No reminders, accounts or cloud sync were requested, so none are included.",
+    "Dark mode is a simple on/off toggle that overrides the system setting.",
+    "Streak is calculated from completed dates rather than stored."
+  ]
+}

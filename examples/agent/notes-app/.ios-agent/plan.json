@@ -1,0 +1,122 @@
+{
+  "appName": "QuickNotes",
+  "displayName": "Quick Notes",
+  "summary": "A simple notes app that saves your notes on the device so they are still there after you close the app. You can search all notes by title or text and write new notes or edit existing ones on a dedicated compose screen.",
+  "navigation": "stack",
+  "screens": [
+    {
+      "id": "notes-list",
+      "title": "Notes",
+      "purpose": "Browse all notes, newest first, with a search field to filter them.",
+      "topLevel": true,
+      "capabilities": [
+        "swiftdata",
+        "search",
+        "accessibility-baseline"
+      ]
+    },
+    {
+      "id": "compose-note",
+      "title": "Compose",
+      "purpose": "Write a new note or edit an existing one with a title and body.",
+      "topLevel": false,
+      "capabilities": [
+        "swiftdata",
+        "haptics",
+        "accessibility-baseline"
+      ]
+    },
+    {
+      "id": "note-detail",
+      "title": "Note",
+      "purpose": "Read a single note and jump to editing or deleting it.",
+      "topLevel": false,
+      "capabilities": [
+        "swiftdata",
+        "share-sheet"
+      ]
+    }
+  ],
+  "models": [
+    {
+      "name": "Note",
+      "persisted": true,
+      "fields": [
+        {
+          "name": "id",
+          "type": "UUID",
+          "optional": false
+        },
+        {
+          "name": "title",
+          "type": "String",
+          "optional": false
+        },
+        {
+          "name": "body",
+          "type": "String",
+          "optional": false
+        },
+        {
+          "name": "createdAt",
+          "type": "Date",
+          "optional": false
+        },
+        {
+          "name": "updatedAt",
+          "type": "Date",
+          "optional": false
+        }
+      ]
+    }
+  ],
+  "capabilities": [
+    {
+      "id": "swiftdata",
+      "reason": "Notes must be saved on the device and survive relaunching the app."
+    },
+    {
+      "id": "search",
+      "reason": "Users need to find notes quickly by searching titles and body text."
+    },
+    {
+      "id": "accessibility-baseline",
+      "reason": "Provides large tap targets, Dynamic Type friendly spacing and Reduce Motion support for the list and compose screens."
+    },
+    {
+      "id": "haptics",
+      "reason": "Gives light feedback when a note is saved or deleted."
+    },
+    {
+      "id": "share-sheet",
+      "reason": "Lets users send a note's text to other apps through the system share sheet."
+    },
+    {
+      "id": "app-icon",
+      "reason": "The app needs an icon for the Home Screen."
+    },
+    {
+      "id": "color-assets",
+      "reason": "Gives the app consistent light and dark mode colors."
+    }
+  ],
+  "features": [
+    "Create, edit and delete notes",
+    "Notes saved on device with SwiftData",
+    "Search notes by title and body",
+    "Dedicated compose screen with title and body fields",
+    "Notes sorted by most recently updated",
+    "Swipe to delete from the list",
+    "Share a note as text",
+    "Empty state when there are no notes or no search results",
+    "Light and dark mode support"
+  ],
+  "assumptions": [
+    "Notes are plain text only, with no images, attachments or formatting.",
+    "Data stays on this device only; there is no iCloud sync or account.",
+    "Navigation is a single stack starting at the notes list, so there are no tabs.",
+    "Deletion is immediate from swipe or the detail screen, with no recently-deleted folder.",
+    "Search is a simple case-insensitive match on title and body.",
+    "The app targets iPhone with iOS 17.0 as the minimum version."
+  ]
+}

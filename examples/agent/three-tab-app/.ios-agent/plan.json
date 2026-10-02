@@ -1,0 +1,177 @@
+{
+  "appName": "TabFeed",
+  "displayName": "Tab Feed",
+  "summary": "A three-tab app with a Home feed of cards, a Search tab for finding cards, and a Profile tab for the user's details and preferences. Cards and profile data are stored on the device so they remain after relaunch.",
+  "navigation": "tabs",
+  "screens": [
+    {
+      "id": "home-feed",
+      "title": "Home",
+      "purpose": "Scrollable feed of cards.",
+      "topLevel": true,
+      "capabilities": [
+        "swiftdata",
+        "accessibility-baseline",
+        "sf-symbols"
+      ]
+    },
+    {
+      "id": "search",
+      "title": "Search",
+      "purpose": "Search cards by text and see matching results.",
+      "topLevel": true,
+      "capabilities": [
+        "search",
+        "swiftdata"
+      ]
+    },
+    {
+      "id": "profile",
+      "title": "Profile",
+      "purpose": "Shows the user's name, avatar and app preferences.",
+      "topLevel": true,
+      "capabilities": [
+        "swiftdata",
+        "appearance-settings",
+        "photos-picker"
+      ]
+    },
+    {
+      "id": "card-detail",
+      "title": "Card",
+      "purpose": "Full view of a single card opened from Home or Search.",
+      "topLevel": false,
+      "capabilities": [
+        "share-sheet"
+      ]
+    }
+  ],
+  "models": [
+    {
+      "name": "FeedCard",
+      "persisted": true,
+      "fields": [
+        {
+          "name": "id",
+          "type": "UUID",
+          "optional": false
+        },
+        {
+          "name": "title",
+          "type": "String",
+          "optional": false
+        },
+        {
+          "name": "subtitle",
+          "type": "String",
+          "optional": true
+        },
+        {
+          "name": "body",
+          "type": "String",
+          "optional": false
+        },
+        {
+          "name": "imageName",
+          "type": "String",
+          "optional": true
+        },
+        {
+          "name": "createdAt",
+          "type": "Date",
+          "optional": false
+        },
+        {
+          "name": "isFavorite",
+          "type": "Bool",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "UserProfile",
+      "persisted": true,
+      "fields": [
+        {
+          "name": "id",
+          "type": "UUID",
+          "optional": false
+        },
+        {
+          "name": "displayName",
+          "type": "String",
+          "optional": false
+        },
+        {
+          "name": "bio",
+          "type": "String",
+          "optional": true
+        },
+        {
+          "name": "avatarData",
+          "type": "Data",
+          "optional": true
+        }
+      ]
+    }
+  ],
+  "capabilities": [
+    {
+      "id": "swiftdata",
+      "reason": "Keeps cards and the profile on the device across relaunches."
+    },
+    {
+      "id": "search",
+      "reason": "The Search tab needs a searchable text field with results."
+    },
+    {
+      "id": "accessibility-baseline",
+      "reason": "Provides 44 point tap targets, Dynamic Type spacing and Reduce Motion support across all tabs."
+    },
+    {
+      "id": "sf-symbols",
+      "reason": "Tab bar and card icons use SF Symbols."
+    },
+    {
+      "id": "color-assets",
+      "reason": "Card and background colors need light and dark variants."
+    },
+    {
+      "id": "appearance-settings",
+      "reason": "Profile offers a System/Light/Dark choice."
+    },
+    {
+      "id": "photos-picker",
+      "reason": "Lets the user choose a profile photo without library permission."
+    },
+    {
+      "id": "share-sheet",
+      "reason": "Lets the user share a card from its detail screen."
+    },
+    {
+      "id": "app-icon",
+      "reason": "The app needs a home screen icon."
+    },
+    {
+      "id": "launch-screen",
+      "reason": "Provides a branded launch screen."
+    }
+  ],
+  "features": [
+    "Tab bar with Home, Search and Profile",
+    "Home feed of scrollable cards",
+    "Tap a card to open its detail",
+    "Mark cards as favorites",
+    "Search cards by title and body",
+    "Editable profile with name, bio and photo",
+    "System, Light or Dark appearance setting",
+    "Share a card",
+    "Sample cards on first launch"
+  ],
+  "assumptions": [
+    "No sign-in or server is needed, so all content is local with sample cards.",
+    "Search filters the on-device cards only.",
+    "The feed content is placeholder until the user supplies real content.",
+    "Only one profile exists on the device."
+  ]
+}

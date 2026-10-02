@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "name": "QuickNotes",
+  "displayName": "Quick Notes",
+  "bundleId": "com.example.quicknotes",
+  "deploymentTarget": "17.0",
+  "swiftVersion": "6.0",
+  "entitlements": {},
+  "infoPlist": {},
+  "packages": [],
+  "buildSettings": {},
+  "secrets": [],
+  "capabilities": [
+    "swiftdata",
+    "accessibility-baseline",
+    "haptics",
+    "share-sheet",
+    "app-icon",
+    "color-assets"
+  ],
+  "sourceExcludes": [
+    "Resources/IconLayers/**"
+  ],
+  "appIconName": "AppIcon"
+}

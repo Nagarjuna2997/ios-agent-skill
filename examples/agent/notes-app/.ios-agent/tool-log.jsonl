@@ -1,0 +1,4 @@
+{"at":"2026-10-02T16:54:03.886Z","command":"xcodebuild","args":["-version"],"exitCode":null,"durationMs":5,"timedOut":false,"spawnError":"spawn xcodebuild ENOENT"}
+{"at":"2026-10-02T16:54:03.892Z","command":"xcodegen","args":["--version"],"exitCode":null,"durationMs":3,"timedOut":false,"spawnError":"spawn xcodegen ENOENT"}
+{"at":"2026-10-02T16:54:14.350Z","command":"xcodegen","args":["generate","--spec","project.yml","--project","."],"cwd":"/home/claude/runs/notes-app","exitCode":null,"durationMs":7,"timedOut":false,"spawnError":"spawn xcodegen ENOENT"}
+{"at":"2026-10-02T16:55:28.564Z","command":"xcodegen","args":["generate","--spec","project.yml","--project","."],"cwd":"/home/claude/runs/notes-app","exitCode":null,"durationMs":3,"timedOut":false,"spawnError":"spawn xcodegen ENOENT"}

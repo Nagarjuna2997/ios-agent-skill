@@ -1,0 +1,4 @@
+{"at":"2026-10-02T16:54:03.830Z","command":"xcodebuild","args":["-version"],"exitCode":null,"durationMs":5,"timedOut":false,"spawnError":"spawn xcodebuild ENOENT"}
+{"at":"2026-10-02T16:54:03.848Z","command":"xcodegen","args":["--version"],"exitCode":null,"durationMs":12,"timedOut":false,"spawnError":"spawn xcodegen ENOENT"}
+{"at":"2026-10-02T16:54:14.781Z","command":"xcodegen","args":["generate","--spec","project.yml","--project","."],"cwd":"/home/claude/runs/three-tab-app","exitCode":null,"durationMs":4,"timedOut":false,"spawnError":"spawn xcodegen ENOENT"}
+{"at":"2026-10-02T16:55:28.528Z","command":"xcodegen","args":["generate","--spec","project.yml","--project","."],"cwd":"/home/claude/runs/three-tab-app","exitCode":null,"durationMs":3,"timedOut":false,"spawnError":"spawn xcodegen ENOENT"}
