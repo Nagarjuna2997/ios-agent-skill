@@ -29,7 +29,7 @@ export interface VerificationRecord extends VerifyOutcome {
 async function buildMinimalApp(capability: LoadedCapability, all: Map<string, LoadedCapability>, runner: CommandRunner, extraFiles: Record<string, string>, keep: boolean): Promise<VerifyOutcome> {
   const check = await preflight(runner);
   const toolchain = check.toolchain.xcode ? `Xcode ${check.toolchain.xcode.version}${check.toolchain.xcode.build ? ` (${check.toolchain.xcode.build})` : ""}` : undefined;
-  const blocking = check.checks.filter((c) => !c.ok && ["xcode", "simulator-sdk", "simulator", "xcodegen"].includes(c.id));
+  const blocking = check.checks.filter((c) => !c.ok && ["xcode", "simulator-sdk", "simulator"].includes(c.id));
   if (blocking.length) {
     return {
       status: "blocked",

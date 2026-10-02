@@ -158,7 +158,10 @@ test("without Xcode the run still plans and writes code, then reports what is mi
   assert.match(result.state.failure, /toolchain missing: .*xcode/);
   assert.equal(result.state.builds.length, 0);
   assert.ok(existsSync(join(projectDir, "HabitTracker", "Views", "RootView.swift")));
-  assert.match(await readFile(join(projectDir, "RUN_REPORT.md"), "utf8"), /Missing: .*brew install xcodegen/);
+  const report = await readFile(join(projectDir, "RUN_REPORT.md"), "utf8");
+  assert.match(report, /Missing: .*Mac App Store/);
+  // Without XcodeGen the built-in writer still produces the Xcode project.
+  assert.ok(existsSync(join(projectDir, "HabitTracker.xcodeproj", "project.pbxproj")));
 });
 
 test("model output parsing tolerates fences and preambles but not malformed files", () => {

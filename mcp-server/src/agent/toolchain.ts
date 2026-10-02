@@ -153,9 +153,11 @@ export async function preflight(runner: CommandRunner): Promise<Preflight> {
     },
     {
       id: "xcodegen",
-      ok: Boolean(toolchain.xcodegen),
-      detail: toolchain.xcodegen ? `XcodeGen ${toolchain.xcodegen}` : "xcodegen is not on PATH.",
-      ...(toolchain.xcodegen ? {} : { fix: "Install XcodeGen: `brew install xcodegen` (or `mint install yonaskolb/XcodeGen`)." }),
+      // Optional: without XcodeGen the built-in writer generates a folder-synchronized project.
+      ok: true,
+      detail: toolchain.xcodegen
+        ? `XcodeGen ${toolchain.xcodegen}`
+        : "XcodeGen is not on PATH; projects are written by the built-in generator (needs Xcode 16 or later). Optional: `brew install xcodegen`.",
     },
   ];
   return { ok: checks.every((c) => c.ok), toolchain, checks };

@@ -231,7 +231,7 @@ export async function runAgent(options: LoopOptions): Promise<LoopResult> {
   };
   const missing = check.checks.filter((c) => !c.ok);
   // Builds need the Apple tools themselves; the platform line is informational.
-  const blocking = missing.filter((c) => ["xcode", "simulator-sdk", "simulator", "xcodegen"].includes(c.id));
+  const blocking = missing.filter((c) => ["xcode", "simulator-sdk", "simulator"].includes(c.id));
   progress(state, "preflight", missing.length ? `Missing: ${missing.map((c) => `${c.id} (${c.fix ?? c.detail})`).join("; ")}` : `Toolchain ready: ${state.toolchain.xcode}, ${state.toolchain.simulator}.`, sink);
   await saveState(root, state);
 

@@ -70,7 +70,9 @@ describe("toolchain detection", () => {
     assert.equal(without.ok, false);
     const missing = Object.fromEntries(without.checks.map((c) => [c.id, c]));
     assert.match(missing.xcode.fix, /Mac App Store/);
-    assert.match(missing.xcodegen.fix, /brew install xcodegen/);
+    // XcodeGen is optional: the built-in project writer takes over.
+    assert.equal(missing.xcodegen.ok, true);
+    assert.match(missing.xcodegen.detail, /built-in generator/);
     assert.match(missing.simulator.fix, /Devices and Simulators/);
   });
 });

@@ -6,6 +6,7 @@ import { existsSync } from "node:fs";
 import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
 import { z } from "zod";
 import { commandFailed, type CommandRunner } from "./runner.js";
+import { renderXcodeProject } from "./xcodeproj.js";
 import {
   GITIGNORE,
   PackageSchema,
@@ -111,6 +112,8 @@ export async function writeSpec(root: string, spec: AppSpec): Promise<void> {
 
 export interface RegenerateResult {
   generated: boolean;
+  /** Which writer produced the .xcodeproj: XcodeGen, or the built-in folder-synchronized writer. */
+  generator: "xcodegen" | "builtin";
   xcodeproj: string;
   missingSecrets: string[];
   reason?: string;
@@ -134,11 +137,20 @@ export async function regenerate(root: string, spec: AppSpec, runner: CommandRun
   await atomicWrite(join(root, "Config", "Secrets.xcconfig"), secrets.text);
   await atomicWrite(join(root, ".env.example"), renderEnvExample(spec));
   if (!existsSync(join(root, ".gitignore"))) await atomicWrite(join(root, ".gitignore"), GITIGNORE);
-  const result = await runner.run("xcodegen", ["generate", "--spec", "project.yml", "--project", "."], { cwd: root, timeoutMs: 120_000 });
-  if (result.exitCode !== 0) {
-    return { generated: false, xcodeproj: paths.xcodeproj, missingSecrets: secrets.missing, reason: commandFailed(result) };
+  // XcodeGen renders project.yml when it is installed. Without it (or with
+  // IOS_AGENT_PROJECT_GENERATOR=builtin) the built-in writer renders the same
+  // spec into a folder-synchronized project, so XcodeGen is optional.
+  const choice = process.env.IOS_AGENT_PROJECT_GENERATOR;
+  if (choice !== "builtin") {
+    const result = await runner.run("xcodegen", ["generate", "--spec", "project.yml", "--project", "."], { cwd: root, timeoutMs: 120_000 });
+    if (result.exitCode === 0) return { generated: true, generator: "xcodegen", xcodeproj: paths.xcodeproj, missingSecrets: secrets.missing };
+    if (!result.spawnError || choice === "xcodegen") {
+      return { generated: false, generator: "xcodegen", xcodeproj: paths.xcodeproj, missingSecrets: secrets.missing, reason: commandFailed(result) };
+    }
   }
-  return { generated: true, xcodeproj: paths.xcodeproj, missingSecrets: secrets.missing };
+  const project = await renderXcodeProject(root, spec);
+  for (const [path, content] of Object.entries(project.files)) await atomicWrite(join(root, path), content);
+  return { generated: true, generator: "builtin", xcodeproj: paths.xcodeproj, missingSecrets: secrets.missing };
 }
 
 const STARTER = (name: string): Record<string, string> => ({
