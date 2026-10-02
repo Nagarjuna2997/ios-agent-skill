@@ -32,7 +32,8 @@ async function list() {
   const projects = await api("projects");
   $("projects").replaceChildren(
     ...projects.map((p) => {
-      const b = el("button", "▧  " + p.name, p.id === selected ? "active" : "");
+      const b = el("button", p.name, p.id === selected ? "active" : "");
+      b.setAttribute("aria-current", p.id === selected ? "true" : "false");
       b.onclick = () => load(p.id).catch(error);
       return b;
     }),
@@ -59,7 +60,7 @@ async function refresh() {
   const p = await api("projects/" + id);
   if (id !== selected) return;
   if (current?.id === p.id && current.updated === p.updated) {
-    if (document.querySelector(".preview details").open) await refreshLog(id);
+    if ($("activity").open) await refreshLog(id);
     return;
   }
   current = p;
@@ -175,7 +176,7 @@ async function refresh() {
       : "No current build evidence. Run checks to generate a preview.";
     lastImage = "";
   }
-  if (document.querySelector(".preview details").open) await refreshLog(id);
+  if ($("activity").open) await refreshLog(id);
 }
 async function refreshLog(id) {
   const data = await api(`projects/${id}/log`);
@@ -280,19 +281,27 @@ $("screen").onchange = () => {
 };
 for (const name of ["reveal", "xcode"])
   $(name).onclick = () => api(`projects/${selected}/${name}`, {}).catch(error);
+// Appearance: same behavior as the website toggle (system default, saved preference).
+const systemDark = matchMedia("(prefers-color-scheme: dark)");
+let appearance = null;
+try { appearance = localStorage.getItem("studio-theme"); } catch {}
+function renderAppearance() {
+  const dark = appearance === "dark" || (appearance !== "light" && systemDark.matches);
+  document.documentElement.dataset.appearance = dark ? "dark" : "light";
+  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", dark ? "#101113" : "#f5f5f7");
+  const t = $("theme");
+  t.setAttribute("aria-pressed", String(dark));
+  t.setAttribute("aria-label", dark ? "Use light appearance" : "Use dark appearance");
+  t.querySelector("span[aria-hidden]").textContent = dark ? "☀" : "☾";
+  t.querySelector(".appearance-label").textContent = dark ? "Light mode" : "Dark mode";
+}
 $("theme").onclick = () => {
-  document.body.classList.toggle("dark");
-  localStorage.setItem(
-    "studio-theme",
-    document.body.classList.contains("dark") ? "dark" : "light",
-  );
+  appearance = document.documentElement.dataset.appearance === "dark" ? "light" : "dark";
+  try { localStorage.setItem("studio-theme", appearance); } catch {}
+  renderAppearance();
 };
-if (
-  localStorage.getItem("studio-theme") === "dark" ||
-  (!localStorage.getItem("studio-theme") &&
-    matchMedia("(prefers-color-scheme: dark)").matches)
-)
-  document.body.classList.add("dark");
+systemDark.addEventListener("change", () => { if (!appearance) renderAppearance(); });
+renderAppearance();
 list().catch((e) => {
   $("health").textContent = e.message;
 });

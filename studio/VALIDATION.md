@@ -125,3 +125,9 @@ The ZIP was rebuilt after the source changes above and extracted to a fresh fold
 With no Studio server running and port 8844 free, opening the app started the bundled Node 24.15 runtime on the bundled `server.mjs`; `/_studio` answered within about three seconds, `launcher.log` recorded the server banner, and the API listed all four saved workspaces (Studio Notes, Pocket Habits and two Chapter One workspaces) with their prior statuses intact. The health check reported Xcode 27.0, Claude Code and an available iPhone simulator, and no Codex CLI. Quitting the app through AppleScript terminated the server it had started and released the port. Existing-server reuse had already been verified in the earlier session.
 
 A stale launcher process from an earlier packaging run (still running from a since-deleted staging folder, owning no server) was found and quit during this check.
+
+### Studio interface restyle — 2026-10-01
+
+The browser interface was restyled to share the project website’s design system (light and dark tokens, system typography, floating frosted header, pill buttons, rounded cards). The workspace is now a chat column on the left beside the live simulator on the right, and saved projects appear as chips under the header on every screen. Element ids were kept, so the existing app logic and the 41 regression tests were unchanged and still pass.
+
+Checked in Chrome against the running server: welcome and workspace screens in light and dark, the Studio Notes workspace with its verified capture, chat bubbles, plan summary, workflow buttons, composer, backend panel and build activity. At 390px (headless Chrome with device emulation) the document scroll width equalled the viewport on both screens; the only elements beyond the edge belong to the intentionally scrollable project switcher and header action row. No console errors were logged.
