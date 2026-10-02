@@ -20,6 +20,7 @@ const END = "<!-- tool-index:end -->";
 
 // Ordered groups: the first matching rule wins. Guides are relative to docs/mcp/.
 const GROUPS = [
+  { name: "iOS build agent", guide: "../tooling/ios-build-agent.md", test: (n) => /^ios_/.test(n) },
   { name: "Source reviews", guide: "#choosing-a-tool", test: (n) => /^(review_|analyze_|check_availability|audit_|lint_skill)/.test(n) && !/system_integrations|color_system|backend/.test(n) },
   { name: "Color and backend", guide: "../backend/overview.md", test: (n) => /color_system|backend_integration/.test(n) },
   { name: "Apple system integrations", guide: "../integrations/README.md", test: (n) => /system_integration|apple_permissions|apple_capabilities/.test(n) },

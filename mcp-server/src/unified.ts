@@ -17,7 +17,7 @@ const require = createRequire(import.meta.url);
 const args = process.argv.slice(2);
 const cli = () => require.resolve('@nagarjuna2002/ios-agent/dist/index.js');
 if (args.includes('--version')) console.log(VERSION);
-else if (args.includes('--help')) console.log(`ios-agent-mcp ${VERSION}\nOne MCP connection: Swift reviews, Apple references, app creation and simulator tools.\nRequires Node 20+. Simulator operations require macOS/Xcode.\nUsage: ios-agent-mcp [--project PATH]\n       ios-agent-mcp new MyApp --brief "Your idea" --xcodegen\n       ios-agent-mcp loop init --project PATH --brief BRIEF.md --checks checks.json\n       ios-agent-mcp loop resume --project PATH\n       ios-agent-mcp loop status --project PATH\n       ios-agent-mcp apple analyze|prepare --project PATH [--target NAME] [--configuration Release] [--json]\n       ios-agent-mcp ai models|doctor|config|ask|handoff|collaborate\n       ios-agent-mcp environment\n       ios-agent-mcp xcode-mcp status|tools\n       ios-agent-mcp doctor xcode\n       ios-agent-mcp docs status|search QUERY|symbol Framework.Symbol|availability Framework.Symbol|frameworks|diff\n       ios-agent-mcp simulator open UDID\n       ios-agent-mcp screenshots list|generate|variants|preview|inspect|export|localize\nThe starter requires your coding agent to implement the app features.`);
+else if (args.includes('--help')) console.log(`ios-agent-mcp ${VERSION}\nOne MCP connection: Swift reviews, Apple references, app creation and simulator tools.\nRequires Node 20+. Simulator operations require macOS/Xcode.\nUsage: ios-agent-mcp [--project PATH]\n       ios-agent-mcp build "<app description>" [--out DIR] | --resume --out DIR | --refine "<change>" --out DIR\n       ios-agent-mcp preflight | capabilities list|verify | install-command [--global]\n       ios-agent-mcp new MyApp --brief "Your idea" --xcodegen\n       ios-agent-mcp loop init --project PATH --brief BRIEF.md --checks checks.json\n       ios-agent-mcp loop resume --project PATH\n       ios-agent-mcp loop status --project PATH\n       ios-agent-mcp apple analyze|prepare --project PATH [--target NAME] [--configuration Release] [--json]\n       ios-agent-mcp ai models|doctor|config|ask|handoff|collaborate\n       ios-agent-mcp environment\n       ios-agent-mcp xcode-mcp status|tools\n       ios-agent-mcp doctor xcode\n       ios-agent-mcp docs status|search QUERY|symbol Framework.Symbol|availability Framework.Symbol|frameworks|diff\n       ios-agent-mcp simulator open UDID\n       ios-agent-mcp screenshots list|generate|variants|preview|inspect|export|localize\nThe starter requires your coding agent to implement the app features.`);
 else if (args[0] === 'xcode-mcp' || (args[0]==='doctor'&&args[1]==='xcode')) { try { await (await import('./apple-docs/registry.js')).xcodeCLI(args[0]==='doctor'?['doctor']:args.slice(1)); } catch { console.error('Xcode MCP inspection failed.');process.exitCode=1; } }
 else if (args[0] === 'docs') { try { await (await import('./apple-docs/service.js')).docsCLI(args.slice(1)); } catch { console.error('Documentation request failed. Use docs status or docs search QUERY.');process.exitCode=1; } }
 else if (args[0] === 'simulator') { try { await (await import('./platforms/simulator.js')).simulatorCLI(args.slice(1)); } catch { console.error('Simulator operation failed. Check exact UDID, runtime, app/output paths and installed CLI support.');process.exitCode=1; } }
@@ -30,6 +30,15 @@ else if (args[0] === 'screenshots') {
 }
 else if (args[0] === 'apple') {
   try { await (await import('./release/package.js')).appleCLI(args.slice(1)); } catch { console.error('Local Apple analysis failed. Check selection, file access and package integrity. No external action performed.');process.exitCode=1; }
+}
+else if (['build','preflight','capabilities','install-command'].includes(args[0] ?? '')) {
+  try {
+    const agent = await import('./agent/cli.js');
+    process.exitCode = args[0] === 'build' ? await agent.buildCLI(args.slice(1))
+      : args[0] === 'preflight' ? await agent.preflightCLI()
+      : args[0] === 'capabilities' ? await agent.capabilitiesCLI(args.slice(1))
+      : await agent.installCommandCLI(args.slice(1));
+  } catch(error) { console.error(error instanceof Error?error.message:String(error));process.exitCode=1; }
 }
 else if (args[0] === 'loop') {
   try { await (await import('./app-loop.js')).appLoop(args.slice(1)); } catch(error) { console.error(error instanceof Error?error.message:String(error));process.exitCode=1; }

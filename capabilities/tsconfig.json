@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "Node16",
+    "moduleResolution": "Node16",
+    "lib": ["ES2022"],
+    "rootDir": ".",
+    "outDir": "../mcp-server/data/capabilities",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "skipLibCheck": true,
+    "types": ["node"],
+    "typeRoots": ["../mcp-server/node_modules/@types"]
+  },
+  "include": ["**/*.ts"]
+}

@@ -351,6 +351,9 @@ jobs:
           allowed = {"./SKILL.md"}
           allowed.update(glob.glob("./plugins/*/skills/*/SKILL.md"))
           allowed.update(glob.glob("./.claude/agents/*.md"))
+          # Claude Code slash commands (and their bundled copy) use frontmatter for description and arguments.
+          allowed.update(glob.glob("./.claude/commands/*.md"))
+          allowed.update(glob.glob("./mcp-server/data/commands/*.md"))
           allowed.update(glob.glob("./.github/ISSUE_TEMPLATE/*.md"))
           allowed.update(glob.glob("./.github/*.md"))
           # Website Markdown uses front matter validated by site discovery CI.

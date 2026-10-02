@@ -487,6 +487,571 @@
       "execution": {
         "taskSupport": "forbidden"
       }
+    },
+    {
+      "name": "ios_preflight",
+      "title": "Check the Mac before building",
+      "description": "Use before building an app with the iOS build agent: checks macOS, Node, Xcode, the iOS Simulator SDK, an available simulator and XcodeGen, and gives the install command for anything missing.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "ios_capabilities",
+      "title": "Search app capabilities",
+      "description": "Use when planning an app to find capability modules (sign-in, payments, maps, charts, launch screen, ...) with status, cost model and required credentials, plus catalog entries that have no module yet. recipeFor returns implementation guidance for one id.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "app-structure",
+              "authentication",
+              "backend",
+              "persistence",
+              "payments",
+              "maps-location",
+              "media-camera",
+              "notifications",
+              "launch-screen",
+              "app-icon",
+              "assets",
+              "animation",
+              "3d-ar",
+              "charts",
+              "networking",
+              "ai-ml",
+              "analytics",
+              "localization",
+              "accessibility",
+              "widgets",
+              "app-clips",
+              "sharing-deep-links",
+              "background",
+              "security",
+              "distribution",
+              "health-fitness",
+              "device-hardware",
+              "web-content",
+              "communication",
+              "productivity"
+            ]
+          },
+          "includeCatalog": {
+            "type": "boolean",
+            "default": true
+          },
+          "recipeFor": {
+            "type": "string",
+            "maxLength": 60
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "ios_plan",
+      "title": "Write the build plan",
+      "description": "Use this first for a new app, before any code: validates the plan (screens, navigation, models, capabilities), resolves capabilities to modules with defaults and dependencies, and writes PLAN.md with costs, credentials and what will be built. Screen ids are kebab-case; capability ids come from ios_capabilities.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "projectDir": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Absolute path of the app's project folder. Every file the agent writes stays inside it."
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000,
+            "description": "The user's request, verbatim."
+          },
+          "plan": {
+            "type": "object",
+            "additionalProperties": {},
+            "description": "Plan JSON: appName, displayName, summary, navigation (tabs|stack|split), screens[{id,title,purpose,topLevel,capabilities}], models[{name,persisted,fields[{name,type,optional}]}], capabilities[{id,reason}], features[], assumptions[]."
+          }
+        },
+        "required": [
+          "projectDir",
+          "description",
+          "plan"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "ios_create_project",
+      "title": "Create the Xcode project",
+      "description": "Use this after ios_plan to create the SwiftUI app project (XcodeGen project.yml, Config xcconfigs, gitignored .env secrets, starter sources) and apply capabilities in dependency order. Returns paths, scheme, files and each capability's usage notes for code generation.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "projectDir": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Absolute path of the app's project folder. Every file the agent writes stays inside it."
+          },
+          "name": {
+            "type": "string",
+            "description": "UpperCamelCase Swift identifier, e.g. HabitTracker"
+          },
+          "bundleId": {
+            "type": "string"
+          },
+          "displayName": {
+            "type": "string",
+            "maxLength": 30
+          },
+          "deploymentTarget": {
+            "type": "string",
+            "description": "iOS version, default 17.0; raised automatically for capabilities that need more."
+          },
+          "capabilities": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "default": []
+          }
+        },
+        "required": [
+          "projectDir",
+          "name"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "ios_add_capabilities",
+      "title": "Add capabilities to the project",
+      "description": "Use when a refinement needs another capability: applies more capability modules (with their dependencies) to an existing project and regenerates the Xcode project.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "projectDir": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Absolute path of the app's project folder. Every file the agent writes stays inside it."
+          },
+          "capabilities": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1
+          }
+        },
+        "required": [
+          "projectDir",
+          "capabilities"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "ios_write_files",
+      "title": "Write app source files",
+      "description": "Use this to write or delete the app's Swift and resource files under <AppName>/ in the project. Adding or removing files regenerates the Xcode project. Paths are relative to the project folder; nothing outside it can be written.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "projectDir": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Absolute path of the app's project folder. Every file the agent writes stays inside it."
+          },
+          "files": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "description": "e.g. HabitTracker/Views/HabitListView.swift"
+                },
+                "content": {
+                  "type": "string"
+                },
+                "encoding": {
+                  "type": "string",
+                  "enum": [
+                    "utf8",
+                    "base64"
+                  ],
+                  "default": "utf8"
+                },
+                "delete": {
+                  "type": "boolean",
+                  "default": false
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            },
+            "minItems": 1,
+            "maxItems": 200
+          }
+        },
+        "required": [
+          "projectDir",
+          "files"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "ios_add_package",
+      "title": "Add a Swift package",
+      "description": "Use when the app needs a Swift package that no Apple framework covers: adds a Swift Package Manager dependency to project.yml and regenerates the Xcode project.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "projectDir": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Absolute path of the app's project folder. Every file the agent writes stays inside it."
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "version": {
+            "type": "string",
+            "pattern": "^\\d+\\.\\d+\\.\\d+$",
+            "description": "Minimum version (up to next major)."
+          },
+          "products": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1
+          },
+          "name": {
+            "type": "string",
+            "description": "Package name; defaults to the repository name."
+          }
+        },
+        "required": [
+          "projectDir",
+          "url",
+          "version",
+          "products"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "ios_build",
+      "title": "Build the app",
+      "description": "Use this after writing code to build for the iOS Simulator with xcodebuild. Returns {success, errors:[{file,line,column,message}], warnings, durationMs}, never the raw log. Enforces the per-run attempt cap (8) and wall-clock cap (25 min).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "projectDir": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Absolute path of the app's project folder. Every file the agent writes stays inside it."
+          },
+          "scheme": {
+            "type": "string"
+          },
+          "udid": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "projectDir"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "ios_run",
+      "title": "Run the app in the simulator",
+      "description": "Use this after a successful ios_build to boot a simulator if needed (newest installed iOS runtime unless a UDID is given), install the app and launch it. screen opens that screen via -ios-agent-screen.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "projectDir": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Absolute path of the app's project folder. Every file the agent writes stays inside it."
+          },
+          "udid": {
+            "type": "string"
+          },
+          "screen": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]{0,39}$"
+          }
+        },
+        "required": [
+          "projectDir"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "ios_screenshot",
+      "title": "Screenshot the simulator",
+      "description": "Use this after ios_run to save a PNG of the simulator screen under .ios-agent/screenshots/<name>.png and record it for RUN_REPORT.md.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "projectDir": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Absolute path of the app's project folder. Every file the agent writes stays inside it."
+          },
+          "udid": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "waitSeconds": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 10,
+            "default": 2
+          }
+        },
+        "required": [
+          "projectDir",
+          "udid",
+          "name"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "ios_logs",
+      "title": "Read app logs",
+      "description": "Use when the app crashes or misbehaves after launch: returns recent log lines from the running app in the simulator (unified logging, at most 500 lines).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "projectDir": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Absolute path of the app's project folder. Every file the agent writes stays inside it."
+          },
+          "udid": {
+            "type": "string"
+          },
+          "seconds": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 600,
+            "default": 30
+          }
+        },
+        "required": [
+          "projectDir",
+          "udid"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "ios_progress",
+      "title": "Record a progress line",
+      "description": "Use this at every stage of an /ios-build run to record the stage and the short status line shown to the user, so RUN_REPORT.md contains the same progress log.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "projectDir": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Absolute path of the app's project folder. Every file the agent writes stays inside it."
+          },
+          "stage": {
+            "type": "string",
+            "enum": [
+              "preflight",
+              "planning",
+              "creating",
+              "capabilities",
+              "generating",
+              "building",
+              "fixing",
+              "launching",
+              "screenshots",
+              "reporting",
+              "complete",
+              "failed",
+              "stopped"
+            ]
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          }
+        },
+        "required": [
+          "projectDir",
+          "stage",
+          "message"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "ios_report",
+      "title": "Write the run report",
+      "description": "Use this to finish every /ios-build run: writes RUN_REPORT.md from the run state with result, screenshots, capabilities (applied, status, awaiting credentials), builds, what needs the user's accounts or money, next steps and the progress log.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "projectDir": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Absolute path of the app's project folder. Every file the agent writes stays inside it."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "complete",
+              "failed",
+              "stopped"
+            ]
+          },
+          "failure": {
+            "type": "string",
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "projectDir"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
     }
   ],
   "resources": [

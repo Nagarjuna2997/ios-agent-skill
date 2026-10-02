@@ -3106,8 +3106,8 @@
       "path": "docs/mcp/tools.md",
       "title": "MCP Tool Reference",
       "kind": "guide",
-      "characters": 23026,
-      "hash": "fe355b9d99bb3bb18fa4000bc1dd18e238df517a328e094faaa6bc7d8019aba3"
+      "characters": 23955,
+      "hash": "29937361b19c206f3f50fa3e4b00daade1880be895ace2717e78ab752b7080cb"
     },
     {
       "path": "docs/mcp/vnext-analysis-tools.md",
@@ -3409,6 +3409,13 @@
       "kind": "guide",
       "characters": 2879,
       "hash": "b9fe2c76e8818f34e1521d820dd4793a151c336718c69115358822bf2df20073"
+    },
+    {
+      "path": "docs/tooling/ios-build-agent.md",
+      "title": "iOS build agent",
+      "kind": "guide",
+      "characters": 5381,
+      "hash": "69f4382103b011baf4c1a1fa195a23cbec3092a555bfc53e2c666a875f32fb93"
     },
     {
       "path": "docs/tooling/ios-simulator-mcp.md",
