@@ -1034,5 +1034,9 @@
   "guides/tooling-local-apple-documentation.html": {
     "title": "Local Apple Developer Documentation Grounding",
     "description": "Repository guidance for Local Apple Developer Documentation Grounding. Examples, decisions, and verification limits from the maintained source guide."
+  },
+  "guides/tooling-ios-build-agent.html": {
+    "title": "iOS Build Agent",
+    "description": "Repository guidance for the iOS build agent: plan, capability modules, build and fix, simulator screenshots, and what has and has not been verified."
   }
 }

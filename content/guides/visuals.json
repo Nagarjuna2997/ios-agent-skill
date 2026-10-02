@@ -1675,5 +1675,18 @@
       "Version-keyed bounded memory cache",
       "Xcode bridge and SDK excerpts \u2014 no archive copying"
     ]
+  },
+  "docs/tooling/ios-build-agent.md": {
+    "flow": [
+      "Plan screens, data and capabilities",
+      "Create the project and apply capabilities",
+      "Build and fix with capped attempts",
+      "Run, screenshot and report"
+    ],
+    "architecture": [
+      "Description and PLAN.md",
+      "Capability modules and Xcode project",
+      "Simulator evidence and RUN_REPORT.md"
+    ]
   }
 }
