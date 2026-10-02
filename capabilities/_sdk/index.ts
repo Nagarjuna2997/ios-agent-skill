@@ -23,6 +23,14 @@ export interface ApplyContext {
   addBuildSetting(key: string, value: string): void;
   addPackage(pkg: PackageDependency): void;
   setAppIcon(name: string): void;
+  /** Keep files matching this glob (relative to the sources folder) out of the build and the app bundle. */
+  excludeFromBuild(pattern: string): void;
+  /** Use this StoreKit configuration (path relative to the sources folder) when running from Xcode. */
+  setStoreKitConfiguration(path: string): void;
+  /** Render SVG markup to PNG at the given width with resvg (no network, no system fonts). */
+  renderPng(svg: string, width: number): Uint8Array;
+  /** Composite square SVG layers over an opaque #RRGGBB background into AppIcon.appiconset files (keys relative to the asset catalog). */
+  appIconSet(layers: string[], background: string): Promise<Record<string, string | Uint8Array>>;
   /** Write a file relative to the app sources folder; existing different files are kept. */
   writeFile(path: string, content: string | Uint8Array): Promise<void>;
   note(message: string): void;

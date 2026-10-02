@@ -1,0 +1,51 @@
+{
+  "id": "sign-in-with-apple",
+  "name": "Sign in with Apple",
+  "category": "authentication",
+  "description": "Sign in with Apple button, credential handling, session persistence in the Keychain and a revocation check on launch.",
+  "default": true,
+  "appleNative": true,
+  "alternatives": [
+    "email-password-auth",
+    "passkeys",
+    "google-sign-in",
+    "firebase-auth",
+    "supabase-auth-sdk"
+  ],
+  "requires": {
+    "capabilities": [
+      "keychain-storage"
+    ],
+    "entitlements": {
+      "com.apple.developer.applesignin": [
+        "Default"
+      ]
+    }
+  },
+  "cost": {
+    "model": "subscription",
+    "note": "Free to build and run in the simulator; the Sign in with Apple capability on a device and App Store distribution need an Apple Developer Program membership",
+    "link": "https://developer.apple.com/support/compare-memberships/",
+    "amounts": [
+      {
+        "label": "Apple Developer Program membership (needed to distribute; not needed for simulator builds)",
+        "usd": 99,
+        "period": "year",
+        "verified": true,
+        "checkedOn": "2026-10-02",
+        "source": "https://developer.apple.com/support/compare-memberships/"
+      }
+    ]
+  },
+  "minOS": "17.0",
+  "docs": [
+    "docs/frameworks/authentication-services.md",
+    "docs/apple/technologies/signinwithapple.md"
+  ],
+  "usage": "Create one `AppleSignInModel(store: KeychainStore())` at the composition root and pass it down. Call `await model.restore()` in a `.task` at launch. Show `AppleSignInView(model:)` while `model.state` is `.signedOut` or `.failed`, and the app when it is `.signedIn(account)` (account.displayName and account.email may be nil after the first sign-in). Offer `model.signOut()` in Settings. Previews use `AppleSignInModel(store: InMemorySecureStore())`.",
+  "platforms": [
+    "iOS"
+  ],
+  "status": "untested",
+  "statusNote": "Not yet built on a Mac; run `ios-agent-mcp capabilities verify sign-in-with-apple` on a Mac with Xcode."
+}

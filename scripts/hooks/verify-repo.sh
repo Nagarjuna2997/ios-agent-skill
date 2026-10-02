@@ -56,6 +56,11 @@ if ! DEPRECATED_OUT="$(python3 scripts/check-deprecated-apis.py 2>&1)"; then
   FAILURES+=("Deprecated APIs in guides:\n$DEPRECATED_OUT")
 fi
 
+# 2d. The capability catalog, module manifests and README summary agree.
+if ! CATALOG_CAP_OUT="$(node scripts/render-capability-catalog.mjs --check 2>&1)"; then
+  FAILURES+=("Capability catalog:\n$CATALOG_CAP_OUT")
+fi
+
 # 3. Every referenced documentation path exists.
 if ! PATH_OUT="$(python3 - <<'PY' 2>&1
 import os, re, sys

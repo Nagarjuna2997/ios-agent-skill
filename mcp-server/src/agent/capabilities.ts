@@ -13,6 +13,7 @@ import { readdir, readFile, stat } from "node:fs/promises";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { z } from "zod";
+import { Resvg } from "@resvg/resvg-js";
 import { PackageSchema, SecretSchema, maxOS, type AppSpec, type PackageDependency } from "./spec.js";
 
 export const CATEGORIES = [
@@ -299,6 +300,18 @@ export interface ApplyContext {
   addBuildSetting(key: string, value: string): void;
   addPackage(pkg: PackageDependency): void;
   setAppIcon(name: string): void;
+  /** Keep files matching this glob (relative to the sources folder) out of the build and the app bundle. */
+  excludeFromBuild(pattern: string): void;
+  /** Use this StoreKit configuration (path relative to the sources folder) when running from Xcode. */
+  setStoreKitConfiguration(path: string): void;
+  /** Render SVG markup to PNG at the given width with resvg (no network, no system fonts). */
+  renderPng(svg: string, width: number): Uint8Array;
+  /**
+   * Composite square SVG layers (back to front) over an opaque background into
+   * an AppIcon.appiconset: an opaque 1024 px RGB PNG and its Contents.json.
+   * Keys are relative to the asset catalog.
+   */
+  appIconSet(layers: string[], background: string): Promise<Record<string, string | Uint8Array>>;
   /** Write a file relative to the app sources folder (e.g. "Resources/Assets.xcassets/AppIcon.appiconset/Contents.json"). */
   writeFile(path: string, content: string | Uint8Array): Promise<void>;
   note(message: string): void;
@@ -399,6 +412,17 @@ export async function applyCapabilities(
           setAppIcon: (name) => {
             next.appIconName = name;
           },
+          excludeFromBuild: (pattern) => {
+            next.sourceExcludes = [...new Set([...(next.sourceExcludes ?? []), pattern])];
+          },
+          setStoreKitConfiguration: (path) => {
+            next.storeKitConfiguration = `${next.name}/${path}`;
+          },
+          appIconSet: async (layers, background) => {
+            const icon = (await import("@nagarjuna2002/ios-agent/dist/icon.js")) as { iconCatalogFiles(layers: string[], background: string): Record<string, string | Uint8Array> };
+            return icon.iconCatalogFiles(layers, background);
+          },
+          renderPng: (svg, width) => new Resvg(svg, { fitTo: { mode: "width", value: width }, font: { loadSystemFonts: false } }).render().asPng(),
           writeFile: async (path, content) => {
             const outcome = await io.writeSourceFile(path, content);
             if (outcome === "kept") record.notes.push(`Kept existing ${path}; it differs from the generated file.`);

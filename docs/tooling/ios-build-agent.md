@@ -72,7 +72,7 @@ Capabilities that need an account declare `credentialsNeeded` with the key, wher
 
 ## Capabilities
 
-See [`capabilities/README.md`](../../capabilities/README.md) for the module contract. Verify modules on a Mac:
+See [`capabilities/README.md`](../../capabilities/README.md) for the module contract and [`capabilities/CATALOG.md`](../../capabilities/CATALOG.md) for the landscape and each module's status. Verify modules on a Mac:
 
 ```bash
 ios-agent-mcp capabilities verify --all --write ./capabilities

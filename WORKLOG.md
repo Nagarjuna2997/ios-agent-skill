@@ -1,4 +1,52 @@
-# Autonomous work log — 2026-10-02
+# Autonomous work log
+
+## Run 2 — iOS build agent (branch `agent/overnight`, started 02:40 CDT, 2026-10-02)
+
+### Environment facts (decide everything below)
+
+- This session runs in a Linux cloud container (x86_64, Ubuntu 24.04, Node 22.22, Python 3.12) with a clone of the repository. The owner's Mac is reachable only through a file bridge into a Linux VM (no Xcode, no Swift). Driving macOS Terminal through computer use was refused: the Claude app has no macOS Screen Recording permission, and the owner could not grant it.
+- Therefore `xcodebuild`, `xcrun simctl`, XcodeGen and the iOS Simulator cannot be run in this session. Swift is not installable either (Docker Hub, download.swift.org and apt have no route or package).
+- Headless Claude Code (`claude -p`, 2.1.287) is authenticated here, so the language-model half of the agent (planning, code generation, error repair prompts) can be exercised for real.
+- Consequence for the brief: the Phase 1 definition of done (three apps built, launched and screenshotted) and every capability `verify` cannot pass tonight. Everything is built so that it runs on a Mac with Xcode, unit-tested here against fake `xcodebuild`/`xcrun`/`xcodegen` executables, and every capability is `status: untested`. No example screenshots or RUN_REPORT files from a fake toolchain are presented as real runs.
+- Persistence: there is no push. After each checkpoint the branch is written as a git bundle into the owner's `work/autonomous-run/` folder and fetched into the Mac's local repository as branch `agent/overnight` (main and its worktree are not touched).
+
+### Clock
+
+| Phase | Start | End |
+|---|---|---|
+| 0 Orient | 02:40 | not logged (before Phase 1) |
+| 1 Core loop | after Phase 0 | 03:14 (`90f5096`) |
+| 2 Capability system and catalog | 03:14 | |
+
+### Backlog
+
+| # | Phase | Item | Size | Status |
+|---|---|---|---|---|
+| A1 | 1 | Agent toolchain layer: command runner with per-call log, toolchain detection, preflight with install commands | S | done (`90f5096`) |
+| A2 | 1 | Project layer: app spec, XcodeGen `project.yml` renderer, create/write-files/add-package with out-dir containment, xcconfig + gitignored `.env` secrets | M | done (`90f5096`) |
+| A3 | 1 | Build layer: `xcodebuild` invocation and structured error/warning parser; run/screenshot/logs via `simctl` with dynamic simulator choice | M | done (`90f5096`) |
+| A4 | 1 | MCP tools `ios_create_project`, `ios_write_files`, `ios_add_package`, `ios_build`, `ios_run`, `ios_screenshot`, `ios_logs` (+ `ios_preflight`), schemas, unit tests, fake-toolchain integration tests | M | done (`90f5096`) |
+| A5 | 1 | Loop orchestrator: plan → create → capabilities → generate → build/fix (max 8) → run → screenshots → RUN_REPORT.md; wall-clock cap, attempt cap, state.json, progress lines | M | done (`90f5096`) |
+| A6 | 1 | Entry points: `/ios-build` slash command; `ios-agent-mcp build` CLI with a headless-Claude brain | S | done (`90f5096`); CLI uses `claude -p`, untested against Xcode |
+| B1 | 2 | Capability contract (manifest schema, recipe, template, apply.ts, verify.ts), loader/validator, resolver with dependencies and defaults | M | done |
+| B2 | 2 | `capabilities/catalog.json` landscape and generated `CATALOG.md` | M | done |
+| B3 | 2 | P0 capability modules, then P1/P2 as time allows (all `untested`) | L | P0 done (13 modules, all untested) |
+| C1 | 3 | PLAN.md with capability choices, credentials and budget; progress lines; resume; refine; preflight | M | pending |
+| D1 | 4 | README first screen, generated capability table, CHANGELOG, minor version bump, final log | M | pending |
+
+### Judgment calls (Run 2)
+
+- **No example apps committed.** The three Phase 1 examples and the food-delivery composite need Xcode to build, launch and screenshot. A run against the fake toolchain would produce a RUN_REPORT and PNGs that look real but prove nothing, so none are committed. The examples are listed under "needs the owner" with exact commands.
+- **CLI name.** The terminal entry point is `ios-agent-mcp build`, not a new `ios-agent` binary: `cli/` is a separate published package that `mcp-server` depends on, and adding the agent there would invert that dependency. The brain is headless Claude Code (`claude -p`, tools disabled) instead of a new Agent SDK dependency, because it is already installed and authenticated wherever `/ios-build` would run.
+- **Capability build check is per module, on a Mac.** `ios-agent-mcp capabilities verify` builds a module into a minimal app with its `VerifyUsage.swift`; only a passing run writes `verification.json` and flips the status to `verified`. The loader refuses `status: verified` without that file, so a hand edit cannot claim it.
+- **Costs.** Catalog entries carry a cost model and a note, never a price. A module manifest carries an amount only when it was read on the vendor page this session (Apple Developer Program, 99 USD/year, checked 2026-10-02). The Supabase pricing page was not fetched, so `email-password-auth` has no amount.
+- **Defaults.** Each category's default is Apple-native where Apple has a framework (Sign in with Apple, SwiftData, StoreKit 2, MapKit, Swift Charts, RealityKit, UserNotifications, Keychain). Third-party modules (Supabase email auth, Lottie) are alternatives. Lottie is not the animation default; the default (`swiftui-animations`) is still catalog-only, so requesting the category `animation` reports it as not built.
+- **iOS floor.** The generated app's deployment target is iOS 17.0, raised to the highest `minOS` of the applied modules. `realitykit-3d` needs iOS 18 (`RealityView` camera API) and says so in its usage text.
+- **Lottie package version** `from: 4.5.0` of `lottie-spm` is taken from memory of the package's releases, not checked online this session; the first Mac verify run resolves it.
+- **Link check scope.** The markdown link check now skips `mcp-server/data/` (gitignored build output holding a copy of `capabilities/`, whose relative links only resolve in the source tree). It was failing locally after `npm run build`; CI never builds before that step.
+- **Swift not type-checked.** No Swift compiler can be installed here, so the module Swift is reviewed against the local guides (for example RealityKit section 16, StoreKit, Swift Charts) but never compiled. Every module stays `untested`.
+
+# Run 1 — maintenance (2026-10-02, 01:50–02:40 CDT)
 
 Working copy: a fresh clone of `main` at `0e5cb39`. All commits are authored as the repository owner, with no AI attribution.
 

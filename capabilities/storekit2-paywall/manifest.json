@@ -1,0 +1,43 @@
+{
+  "id": "storekit2-paywall",
+  "name": "StoreKit 2 subscriptions and paywall",
+  "category": "payments",
+  "description": "Load subscription products, purchase, restore and track entitlements with StoreKit 2, a paywall view, and a local StoreKit configuration for simulator testing.",
+  "default": true,
+  "appleNative": true,
+  "alternatives": [
+    "revenuecat",
+    "storekit-one-time-purchase",
+    "superwall-paywalls",
+    "adapty"
+  ],
+  "requires": {
+    "capabilities": []
+  },
+  "cost": {
+    "model": "usage-based",
+    "note": "Apple keeps a commission on digital sales; selling requires an Apple Developer Program membership and paid-apps agreement",
+    "link": "https://developer.apple.com/app-store/subscriptions/",
+    "amounts": [
+      {
+        "label": "Apple Developer Program membership (needed to distribute; not needed for simulator builds)",
+        "usd": 99,
+        "period": "year",
+        "verified": true,
+        "checkedOn": "2026-10-02",
+        "source": "https://developer.apple.com/support/compare-memberships/"
+      }
+    ]
+  },
+  "minOS": "17.0",
+  "docs": [
+    "docs/frameworks/storekit.md",
+    "docs/apple/technologies/storekittest.md"
+  ],
+  "usage": "Create `StoreModel(productIDs: StoreProducts.all, service: StoreKitPurchaseService())` at the composition root. Present `PaywallView(model:features:)` (features is a list of short strings). Gate premium features on `model.isPremium`. Attach `.task { await model.load() }` and `.task { await model.listenForTransactions() }` once near the root. Digital goods must use StoreKit, never Apple Pay or Stripe.",
+  "platforms": [
+    "iOS"
+  ],
+  "status": "untested",
+  "statusNote": "Not yet built on a Mac; run `ios-agent-mcp capabilities verify storekit2-paywall` on a Mac with Xcode."
+}

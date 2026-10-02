@@ -1,0 +1,29 @@
+{
+  "id": "swiftdata",
+  "name": "SwiftData local persistence",
+  "category": "persistence",
+  "description": "On-device storage for the app's @Model types with SwiftData, plus an in-memory container for previews and tests.",
+  "default": true,
+  "appleNative": true,
+  "alternatives": [
+    "swiftdata-cloudkit-sync",
+    "core-data",
+    "file-storage",
+    "grdb-sqlite"
+  ],
+  "cost": {
+    "model": "free",
+    "note": "Apple frameworks only",
+    "amounts": []
+  },
+  "minOS": "17.0",
+  "docs": [
+    "docs/frameworks/swiftdata.md"
+  ],
+  "usage": "Declare persisted plan models as `@Model final class`. In the App type, attach `.modelContainer(for: [Note.self])` to the WindowGroup (or build one with `PersistenceController.container(for:)` to show an error view on failure). Read with `@Query` and write through `@Environment(\\.modelContext)`. In previews use `.modelContainer(PersistenceController.preview(for: [Note.self]))`.",
+  "platforms": [
+    "iOS"
+  ],
+  "status": "untested",
+  "statusNote": "Not yet built on a Mac; run `ios-agent-mcp capabilities verify swiftdata` on a Mac with Xcode."
+}

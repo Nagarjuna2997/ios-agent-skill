@@ -1,0 +1,26 @@
+{
+  "id": "swift-charts-dashboard",
+  "name": "Swift Charts dashboard",
+  "category": "charts",
+  "description": "Dashboard building blocks with Swift Charts: stat tiles, a trend line over time and a category bar chart, with accessible summaries.",
+  "default": true,
+  "appleNative": true,
+  "alternatives": [
+    "dgcharts"
+  ],
+  "cost": {
+    "model": "free",
+    "note": "Apple frameworks only",
+    "amounts": []
+  },
+  "minOS": "17.0",
+  "docs": [
+    "docs/frameworks/swift-charts.md"
+  ],
+  "usage": "Map the app's data to `ChartPoint(label:date:value:)` values in a view model. Compose a dashboard with `DashboardCard(title:) { ... }` containing `StatTile(title:value:systemImage:)`, `TrendChart(points:valueLabel:)` (values over dates) and `CategoryBarChart(points:valueLabel:)` (values per label). Show an empty state when there are no points.",
+  "platforms": [
+    "iOS"
+  ],
+  "status": "untested",
+  "statusNote": "Not yet built on a Mac; run `ios-agent-mcp capabilities verify swift-charts-dashboard` on a Mac with Xcode."
+}

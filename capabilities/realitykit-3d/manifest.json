@@ -1,0 +1,27 @@
+{
+  "id": "realitykit-3d",
+  "name": "RealityKit 3D view",
+  "category": "3d-ar",
+  "description": "A non-AR RealityKit scene in an ordinary screen: virtual camera, light rig, orbit controls, and a bundled USDZ model or a generated placeholder shape.",
+  "default": true,
+  "appleNative": true,
+  "alternatives": [
+    "scenekit-3d",
+    "arkit-world-tracking"
+  ],
+  "cost": {
+    "model": "free",
+    "note": "Apple frameworks only",
+    "amounts": []
+  },
+  "minOS": "18.0",
+  "docs": [
+    "docs/frameworks/realitykit.md"
+  ],
+  "usage": "Show `ModelViewer(modelName: \"Chair\")` for a bundled `Chair.usdz`, or `ModelViewer(modelName: nil)` for a generated rounded box. The view opts out of world tracking (`content.camera = .virtual`), so there is no camera prompt. Applying this capability raises the app's minimum iOS to 18.0.",
+  "platforms": [
+    "iOS"
+  ],
+  "status": "untested",
+  "statusNote": "Not yet built on a Mac; run `ios-agent-mcp capabilities verify realitykit-3d` on a Mac with Xcode."
+}

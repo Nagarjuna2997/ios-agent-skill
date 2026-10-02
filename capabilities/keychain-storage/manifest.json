@@ -1,0 +1,27 @@
+{
+  "id": "keychain-storage",
+  "name": "Keychain storage",
+  "category": "security",
+  "description": "A small Keychain wrapper for tokens and credentials, kept on this device only, plus an in-memory store for previews.",
+  "default": true,
+  "appleNative": true,
+  "alternatives": [
+    "cryptokit-encryption"
+  ],
+  "cost": {
+    "model": "free",
+    "note": "Apple frameworks only",
+    "amounts": []
+  },
+  "minOS": "17.0",
+  "docs": [
+    "docs/frameworks/cryptokit.md",
+    "docs/backend/security.md"
+  ],
+  "usage": "Store secrets through `any SecureStore`: use `KeychainStore()` at the composition root and `InMemorySecureStore()` in previews and tests. Never put tokens in UserDefaults or @AppStorage.",
+  "platforms": [
+    "iOS"
+  ],
+  "status": "untested",
+  "statusNote": "Not yet built on a Mac; run `ios-agent-mcp capabilities verify keychain-storage` on a Mac with Xcode."
+}

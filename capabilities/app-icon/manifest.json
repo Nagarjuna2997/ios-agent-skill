@@ -1,0 +1,27 @@
+{
+  "id": "app-icon",
+  "name": "App icon (rendered from SVG layers, Icon Composer ready)",
+  "category": "app-icon",
+  "description": "Editable square SVG icon layers kept in the project and an opaque 1024 px AppIcon rendered from them locally; import the layers into Icon Composer for a layered icon.",
+  "default": true,
+  "appleNative": true,
+  "alternatives": [
+    "alternate-app-icons"
+  ],
+  "cost": {
+    "model": "free",
+    "note": "Local rendering with the bundled resvg renderer; Icon Composer ships with Xcode",
+    "amounts": []
+  },
+  "minOS": "17.0",
+  "docs": [
+    "docs/design/icon-composer.md",
+    "docs/design/asset-generation.md"
+  ],
+  "usage": "No code needed. The project gets AppIcon in Resources/Assets.xcassets and editable layers in Resources/IconLayers (excluded from the build). Do not reference the icon from Swift.",
+  "platforms": [
+    "iOS"
+  ],
+  "status": "untested",
+  "statusNote": "Not yet built on a Mac; run `ios-agent-mcp capabilities verify app-icon` on a Mac with Xcode."
+}

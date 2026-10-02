@@ -1,0 +1,28 @@
+{
+  "id": "mapkit-map",
+  "name": "MapKit map with places",
+  "category": "maps-location",
+  "description": "A SwiftUI Map showing places as markers with selection and standard controls; no location permission needed.",
+  "default": true,
+  "appleNative": true,
+  "alternatives": [
+    "google-maps",
+    "mapbox",
+    "location-services"
+  ],
+  "cost": {
+    "model": "free",
+    "note": "Apple frameworks only",
+    "amounts": []
+  },
+  "minOS": "17.0",
+  "docs": [
+    "docs/frameworks/mapkit.md"
+  ],
+  "usage": "Model places as `MapPlace(id:name:latitude:longitude:)`. Show `PlacesMap(places:selection:)` with a `@State var selection: MapPlace.ID?`; react to selection (for example show a sheet). Use placeholder coordinates for sample data. For the user's own location add the location-services capability.",
+  "platforms": [
+    "iOS"
+  ],
+  "status": "untested",
+  "statusNote": "Not yet built on a Mac; run `ios-agent-mcp capabilities verify mapkit-map` on a Mac with Xcode."
+}

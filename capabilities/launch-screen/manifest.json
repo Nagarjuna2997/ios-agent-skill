@@ -1,0 +1,27 @@
+{
+  "id": "launch-screen",
+  "name": "Launch screen and animated splash",
+  "category": "launch-screen",
+  "description": "A launch screen declared in Info.plist (background color with dark variant and a logo image) and a SwiftUI splash that animates the same logo into the app.",
+  "default": true,
+  "appleNative": true,
+  "alternatives": [
+    "lottie-animation"
+  ],
+  "cost": {
+    "model": "free",
+    "note": "Apple frameworks only",
+    "amounts": []
+  },
+  "minOS": "17.0",
+  "docs": [
+    "docs/tooling/launch-screen-review.md",
+    "docs/swiftui/animations.md"
+  ],
+  "usage": "Wrap the root in the App: `WindowGroup { SplashContainer { RootView() } }`. The system launch screen shows LaunchBackground and LaunchLogo from the asset catalog; SplashContainer continues with the same logo, animates it (respecting Reduce Motion) and fades into the app. It skips itself for -ios-agent-screen launches so screenshots show the real screens.",
+  "platforms": [
+    "iOS"
+  ],
+  "status": "untested",
+  "statusNote": "Not yet built on a Mac; run `ios-agent-mcp capabilities verify launch-screen` on a Mac with Xcode."
+}

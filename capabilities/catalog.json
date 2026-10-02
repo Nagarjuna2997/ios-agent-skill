@@ -1,0 +1,2896 @@
+{
+  "schemaVersion": 1,
+  "note": "Landscape of iOS app capabilities. status is planned until a module exists in capabilities/<id>/; module status comes from its manifest.",
+  "entries": [
+    {
+      "id": "appearance-settings",
+      "name": "Appearance setting (light, dark, system)",
+      "category": "app-structure",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/design/dark-mode-colors.md",
+        "docs/swiftui/state-and-data-flow.md"
+      ],
+      "priority": "P0",
+      "status": "planned"
+    },
+    {
+      "id": "search",
+      "name": "Searchable lists",
+      "category": "app-structure",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "SwiftUI searchable; written by the agent without a module"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/swiftui/views-and-controls.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "onboarding-flow",
+      "name": "Onboarding pages",
+      "category": "app-structure",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/design/stunning-ui-patterns.md"
+      ],
+      "priority": "P2",
+      "status": "planned"
+    },
+    {
+      "id": "settings-bundle",
+      "name": "Settings screen and preferences",
+      "category": "app-structure",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/swiftui/state-and-data-flow.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "sign-in-with-apple",
+      "name": "Sign in with Apple",
+      "category": "authentication",
+      "appleNative": true,
+      "defaultInCategory": true,
+      "cost": {
+        "model": "subscription",
+        "note": "Apple Developer Program membership needed for device builds and distribution; simulator use is free"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/authentication-services.md",
+        "docs/apple/technologies/signinwithapple.md"
+      ],
+      "priority": "P0",
+      "status": "planned"
+    },
+    {
+      "id": "email-password-auth",
+      "name": "Email and password sign-in (Supabase Auth REST)",
+      "category": "authentication",
+      "appleNative": false,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "usage-based",
+        "note": "Supabase project; free tier and paid plans"
+      },
+      "credentials": [
+        "SUPABASE_URL",
+        "SUPABASE_ANON_KEY"
+      ],
+      "docs": [
+        "docs/backend/authentication.md",
+        "docs/backend/supabase.md"
+      ],
+      "priority": "P0",
+      "status": "planned"
+    },
+    {
+      "id": "passkeys",
+      "name": "Passkeys",
+      "category": "authentication",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "subscription",
+        "note": "Apple Developer Program membership needed for device builds and distribution; simulator use is free; needs your own relying-party server and associated domain"
+      },
+      "credentials": [
+        "ASSOCIATED_DOMAIN"
+      ],
+      "docs": [
+        "docs/frameworks/authentication-services.md"
+      ],
+      "priority": "P1",
+      "status": "planned"
+    },
+    {
+      "id": "biometric-unlock",
+      "name": "Face ID / Touch ID unlock",
+      "category": "authentication",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/local-authentication.md"
+      ],
+      "priority": "P1",
+      "status": "planned"
+    },
+    {
+      "id": "google-sign-in",
+      "name": "Google Sign-In",
+      "category": "authentication",
+      "appleNative": false,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Google Cloud project; no charge for sign-in itself"
+      },
+      "credentials": [
+        "GOOGLE_CLIENT_ID",
+        "GOOGLE_REVERSED_CLIENT_ID"
+      ],
+      "docs": [
+        "docs/backend/authentication.md"
+      ],
+      "priority": "P1",
+      "status": "planned"
+    },
+    {
+      "id": "firebase-auth",
+      "name": "Firebase Authentication",
+      "category": "authentication",
+      "appleNative": false,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "usage-based",
+        "note": "Firebase project; free tier, phone auth and higher volumes billed"
+      },
+      "credentials": [
+        "GOOGLE_SERVICE_INFO_PLIST"
+      ],
+      "docs": [
+        "docs/backend/firebase.md",
+        "docs/backend/authentication.md"
+      ],
+      "priority": "P1",
+      "status": "planned"
+    },
+    {
+      "id": "supabase-auth-sdk",
+      "name": "Supabase Auth (supabase-swift SDK)",
+      "category": "authentication",
+      "appleNative": false,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "usage-based",
+        "note": "Supabase project"
+      },
+      "credentials": [
+        "SUPABASE_URL",
+        "SUPABASE_ANON_KEY"
+      ],
+      "docs": [
+        "docs/backend/supabase.md"
+      ],
+      "priority": "P2",
+      "status": "planned"
+    },
+    {
+      "id": "auth0",
+      "name": "Auth0",
+      "category": "authentication",
+      "appleNative": false,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "subscription",
+        "note": "Auth0 tenant; free and paid plans"
+      },
+      "credentials": [
+        "AUTH0_DOMAIN",
+        "AUTH0_CLIENT_ID"
+      ],
+      "docs": [
+        "docs/backend/authentication.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "clerk",
+      "name": "Clerk",
+      "category": "authentication",
+      "appleNative": false,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "subscription",
+        "note": "Clerk application; free and paid plans"
+      },
+      "credentials": [
+        "CLERK_PUBLISHABLE_KEY"
+      ],
+      "docs": [
+        "docs/backend/authentication.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "amplify-auth",
+      "name": "AWS Amplify Auth (Cognito)",
+      "category": "authentication",
+      "appleNative": false,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "usage-based",
+        "note": "AWS account; Cognito usage billing"
+      },
+      "credentials": [
+        "AMPLIFY_OUTPUTS_JSON"
+      ],
+      "docs": [
+        "docs/backend/aws-amplify.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "appwrite-auth",
+      "name": "Appwrite Auth",
+      "category": "authentication",
+      "appleNative": false,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "usage-based",
+        "note": "Appwrite Cloud or self-hosted"
+      },
+      "credentials": [
+        "APPWRITE_ENDPOINT",
+        "APPWRITE_PROJECT_ID"
+      ],
+      "docs": [
+        "docs/backend/appwrite.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "facebook-login",
+      "name": "Facebook Login",
+      "category": "authentication",
+      "appleNative": false,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Meta developer app"
+      },
+      "credentials": [
+        "FACEBOOK_APP_ID",
+        "FACEBOOK_CLIENT_TOKEN"
+      ],
+      "docs": [
+        "docs/backend/authentication.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "microsoft-entra-sign-in",
+      "name": "Microsoft Entra ID sign-in (MSAL)",
+      "category": "authentication",
+      "appleNative": false,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "usage-based",
+        "note": "Azure tenant"
+      },
+      "credentials": [
+        "MSAL_CLIENT_ID",
+        "MSAL_TENANT_ID"
+      ],
+      "docs": [
+        "docs/backend/authentication.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "magic-link-auth",
+      "name": "Email magic-link sign-in",
+      "category": "authentication",
+      "appleNative": false,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "usage-based",
+        "note": "Requires an auth backend that sends email"
+      },
+      "credentials": [
+        "SUPABASE_URL",
+        "SUPABASE_ANON_KEY"
+      ],
+      "docs": [
+        "docs/backend/authentication.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "phone-otp-auth",
+      "name": "Phone number OTP sign-in",
+      "category": "authentication",
+      "appleNative": false,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "usage-based",
+        "note": "SMS delivery is billed by the provider"
+      },
+      "credentials": [
+        "SUPABASE_URL",
+        "SUPABASE_ANON_KEY"
+      ],
+      "docs": [
+        "docs/backend/authentication.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "cloudkit-database",
+      "name": "CloudKit database",
+      "category": "backend",
+      "appleNative": true,
+      "defaultInCategory": true,
+      "cost": {
+        "model": "subscription",
+        "note": "Apple Developer Program membership needed for device builds and distribution; simulator use is free; CloudKit storage quotas apply"
+      },
+      "credentials": [
+        "ICLOUD_CONTAINER_ID"
+      ],
+      "docs": [
+        "docs/frameworks/cloudkit.md",
+        "docs/backend/cloudkit.md"
+      ],
+      "priority": "P1",
+      "status": "planned"
+    },
+    {
+      "id": "supabase-backend",
+      "name": "Supabase database and storage",
+      "category": "backend",
+      "appleNative": false,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "usage-based",
+        "note": "Supabase project; free tier and paid plans"
+      },
+      "credentials": [
+        "SUPABASE_URL",
+        "SUPABASE_ANON_KEY"
+      ],
+      "docs": [
+        "docs/backend/supabase.md"
+      ],
+      "priority": "P1",
+      "status": "planned"
+    },
+    {
+      "id": "firebase-firestore",
+      "name": "Firebase Firestore",
+      "category": "backend",
+      "appleNative": false,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "usage-based",
+        "note": "Firebase project; reads, writes and storage billed past the free tier"
+      },
+      "credentials": [
+        "GOOGLE_SERVICE_INFO_PLIST"
+      ],
+      "docs": [
+        "docs/backend/firebase.md"
+      ],
+      "priority": "P1",
+      "status": "planned"
+    },
+    {
+      "id": "rest-api-client",
+      "name": "REST API client",
+      "category": "backend",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Your own server"
+      },
+      "credentials": [
+        "API_BASE_URL"
+      ],
+      "docs": [
+        "docs/backend/rest.md",
+        "docs/frameworks/networking.md"
+      ],
+      "priority": "P1",
+      "status": "planned"
+    },
+    {
+      "id": "graphql-apollo",
+      "name": "GraphQL with Apollo iOS",
+      "category": "backend",
+      "appleNative": false,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apollo iOS is open source; your GraphQL server is separate"
+      },
+      "credentials": [
+        "GRAPHQL_ENDPOINT"
+      ],
+      "docs": [
+        "docs/backend/graphql.md"
+      ],
+      "priority": "P2",
+      "status": "planned"
+    },
+    {
+      "id": "aws-amplify-data",
+      "name": "AWS Amplify Data",
+      "category": "backend",
+      "appleNative": false,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "usage-based",
+        "note": "AWS account"
+      },
+      "credentials": [
+        "AMPLIFY_OUTPUTS_JSON"
+      ],
+      "docs": [
+        "docs/backend/aws-amplify.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "appwrite-database",
+      "name": "Appwrite database",
+      "category": "backend",
+      "appleNative": false,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "usage-based",
+        "note": "Appwrite Cloud or self-hosted"
+      },
+      "credentials": [
+        "APPWRITE_ENDPOINT",
+        "APPWRITE_PROJECT_ID"
+      ],
+      "docs": [
+        "docs/backend/appwrite.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "convex-backend",
+      "name": "Convex backend",
+      "category": "backend",
+      "appleNative": false,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "usage-based",
+        "note": "Convex project"
+      },
+      "credentials": [
+        "CONVEX_URL"
+      ],
+      "docs": [
+        "docs/backend/choosing-a-backend.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "pocketbase-backend",
+      "name": "PocketBase (self-hosted)",
+      "category": "backend",
+      "appleNative": false,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Self-hosted server costs"
+      },
+      "credentials": [
+        "POCKETBASE_URL"
+      ],
+      "docs": [
+        "docs/backend/choosing-a-backend.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "swiftdata",
+      "name": "SwiftData local persistence",
+      "category": "persistence",
+      "appleNative": true,
+      "defaultInCategory": true,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/swiftdata.md"
+      ],
+      "priority": "P0",
+      "status": "planned"
+    },
+    {
+      "id": "swiftdata-cloudkit-sync",
+      "name": "SwiftData with iCloud sync",
+      "category": "persistence",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "subscription",
+        "note": "Apple Developer Program membership needed for device builds and distribution; simulator use is free"
+      },
+      "credentials": [
+        "ICLOUD_CONTAINER_ID"
+      ],
+      "docs": [
+        "docs/frameworks/swiftdata.md",
+        "docs/frameworks/cloudkit.md"
+      ],
+      "priority": "P1",
+      "status": "planned"
+    },
+    {
+      "id": "core-data",
+      "name": "Core Data",
+      "category": "persistence",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/core-data.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "file-storage",
+      "name": "Codable JSON files in the app container",
+      "category": "persistence",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/foundation.md"
+      ],
+      "priority": "P2",
+      "status": "planned"
+    },
+    {
+      "id": "user-defaults-settings",
+      "name": "UserDefaults / AppStorage settings",
+      "category": "persistence",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/swiftui/state-and-data-flow.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "realm",
+      "name": "Realm (Atlas Device SDK)",
+      "category": "persistence",
+      "appleNative": false,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Local use is free; sync services are billed"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/backend/choosing-a-backend.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "grdb-sqlite",
+      "name": "SQLite with GRDB",
+      "category": "persistence",
+      "appleNative": false,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Open source"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/backend/choosing-a-backend.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "storekit2-paywall",
+      "name": "StoreKit 2 subscriptions and paywall",
+      "category": "payments",
+      "appleNative": true,
+      "defaultInCategory": true,
+      "cost": {
+        "model": "usage-based",
+        "note": "Apple keeps a commission on digital purchases; Apple Developer Program membership needed for device builds and distribution; simulator use is free"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/storekit.md",
+        "docs/apple/technologies/storekittest.md"
+      ],
+      "priority": "P0",
+      "status": "planned"
+    },
+    {
+      "id": "storekit-one-time-purchase",
+      "name": "StoreKit 2 one-time unlock",
+      "category": "payments",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "usage-based",
+        "note": "Apple commission on digital purchases"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/storekit.md"
+      ],
+      "priority": "P2",
+      "status": "planned"
+    },
+    {
+      "id": "revenuecat",
+      "name": "RevenueCat subscriptions",
+      "category": "payments",
+      "appleNative": false,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "usage-based",
+        "note": "Free below a revenue threshold, then a percentage of tracked revenue"
+      },
+      "credentials": [
+        "REVENUECAT_API_KEY"
+      ],
+      "docs": [
+        "docs/frameworks/storekit.md"
+      ],
+      "priority": "P1",
+      "status": "planned"
+    },
+    {
+      "id": "apple-pay",
+      "name": "Apple Pay for physical goods",
+      "category": "payments",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "usage-based",
+        "note": "Card processing fees from your payment processor; needs a merchant ID"
+      },
+      "credentials": [
+        "APPLE_PAY_MERCHANT_ID"
+      ],
+      "docs": [
+        "docs/frameworks/services/passkit.md"
+      ],
+      "priority": "P1",
+      "status": "planned"
+    },
+    {
+      "id": "stripe-payments",
+      "name": "Stripe payments (physical goods and services)",
+      "category": "payments",
+      "appleNative": false,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "usage-based",
+        "note": "Per-transaction fees; secret key stays on your server"
+      },
+      "credentials": [
+        "STRIPE_PUBLISHABLE_KEY",
+        "STRIPE_SECRET_KEY"
+      ],
+      "docs": [
+        "docs/backend/security.md"
+      ],
+      "priority": "P1",
+      "status": "planned"
+    },
+    {
+      "id": "superwall-paywalls",
+      "name": "Superwall remote paywalls",
+      "category": "payments",
+      "appleNative": false,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "usage-based",
+        "note": "Free tier and revenue-based plans"
+      },
+      "credentials": [
+        "SUPERWALL_API_KEY"
+      ],
+      "docs": [
+        "docs/frameworks/storekit.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "adapty",
+      "name": "Adapty subscriptions",
+      "category": "payments",
+      "appleNative": false,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "usage-based",
+        "note": "Revenue-based plans"
+      },
+      "credentials": [
+        "ADAPTY_API_KEY"
+      ],
+      "docs": [
+        "docs/frameworks/storekit.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "wallet-passes",
+      "name": "Wallet passes",
+      "category": "payments",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "subscription",
+        "note": "Apple Developer Program membership needed for device builds and distribution; simulator use is free; pass signing certificate"
+      },
+      "credentials": [
+        "PASS_TYPE_ID"
+      ],
+      "docs": [
+        "docs/frameworks/services/passkit.md",
+        "docs/apple/technologies/walletpasses.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "mapkit-map",
+      "name": "MapKit map with places",
+      "category": "maps-location",
+      "appleNative": true,
+      "defaultInCategory": true,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/mapkit.md"
+      ],
+      "priority": "P0",
+      "status": "planned"
+    },
+    {
+      "id": "location-services",
+      "name": "Current location (Core Location)",
+      "category": "maps-location",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/core-location.md"
+      ],
+      "priority": "P1",
+      "status": "planned"
+    },
+    {
+      "id": "geofencing",
+      "name": "Region monitoring",
+      "category": "maps-location",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/core-location.md"
+      ],
+      "priority": "P2",
+      "status": "planned"
+    },
+    {
+      "id": "mapkit-directions",
+      "name": "Directions and ETA",
+      "category": "maps-location",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/mapkit.md"
+      ],
+      "priority": "P2",
+      "status": "planned"
+    },
+    {
+      "id": "weatherkit",
+      "name": "WeatherKit",
+      "category": "maps-location",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "subscription",
+        "note": "Apple Developer Program membership needed for device builds and distribution; simulator use is free; monthly call allowance, then billed"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/services/weatherkit.md"
+      ],
+      "priority": "P2",
+      "status": "planned"
+    },
+    {
+      "id": "google-maps",
+      "name": "Google Maps SDK",
+      "category": "maps-location",
+      "appleNative": false,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "usage-based",
+        "note": "Google Maps Platform usage billing"
+      },
+      "credentials": [
+        "GOOGLE_MAPS_API_KEY"
+      ],
+      "docs": [
+        "docs/frameworks/mapkit.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "mapbox",
+      "name": "Mapbox Maps SDK",
+      "category": "maps-location",
+      "appleNative": false,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "usage-based",
+        "note": "Mapbox usage billing past the free tier"
+      },
+      "credentials": [
+        "MAPBOX_ACCESS_TOKEN"
+      ],
+      "docs": [
+        "docs/frameworks/mapkit.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "photos-picker",
+      "name": "Photo picker",
+      "category": "media-camera",
+      "appleNative": true,
+      "defaultInCategory": true,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/photosui.md"
+      ],
+      "priority": "P1",
+      "status": "planned"
+    },
+    {
+      "id": "camera-capture",
+      "name": "Camera capture",
+      "category": "media-camera",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only; simulator has no camera"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/avfoundation.md"
+      ],
+      "priority": "P1",
+      "status": "planned"
+    },
+    {
+      "id": "video-playback",
+      "name": "Video playback (AVKit)",
+      "category": "media-camera",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/avfoundation.md"
+      ],
+      "priority": "P2",
+      "status": "planned"
+    },
+    {
+      "id": "audio-playback",
+      "name": "Audio playback",
+      "category": "media-camera",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/avfoundation.md"
+      ],
+      "priority": "P2",
+      "status": "planned"
+    },
+    {
+      "id": "audio-recording",
+      "name": "Audio recording",
+      "category": "media-camera",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/avfoundation.md"
+      ],
+      "priority": "P2",
+      "status": "planned"
+    },
+    {
+      "id": "document-scanner",
+      "name": "Document scanner (VisionKit)",
+      "category": "media-camera",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/visionkit.md"
+      ],
+      "priority": "P2",
+      "status": "planned"
+    },
+    {
+      "id": "barcode-scanner",
+      "name": "Barcode and QR scanning",
+      "category": "media-camera",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/visionkit.md"
+      ],
+      "priority": "P2",
+      "status": "planned"
+    },
+    {
+      "id": "image-cache",
+      "name": "Remote image loading and caching",
+      "category": "media-camera",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/networking.md"
+      ],
+      "priority": "P2",
+      "status": "planned"
+    },
+    {
+      "id": "music-kit",
+      "name": "Apple Music (MusicKit)",
+      "category": "media-camera",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "subscription",
+        "note": "Apple Developer Program membership needed for device builds and distribution; simulator use is free; listeners need an Apple Music subscription for playback"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/apple/technologies/applemusicapi.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "cloudinary-media",
+      "name": "Cloudinary media uploads",
+      "category": "media-camera",
+      "appleNative": false,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "usage-based",
+        "note": "Usage-based plans"
+      },
+      "credentials": [
+        "CLOUDINARY_CLOUD_NAME",
+        "CLOUDINARY_UPLOAD_PRESET"
+      ],
+      "docs": [
+        "docs/backend/choosing-a-backend.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "local-notifications",
+      "name": "Local notifications and reminders",
+      "category": "notifications",
+      "appleNative": true,
+      "defaultInCategory": true,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/usernotifications.md"
+      ],
+      "priority": "P0",
+      "status": "planned"
+    },
+    {
+      "id": "push-notifications",
+      "name": "Remote push notifications (APNs)",
+      "category": "notifications",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "subscription",
+        "note": "Apple Developer Program membership needed for device builds and distribution; simulator use is free; needs your server to send pushes"
+      },
+      "credentials": [
+        "APNS_KEY_ID",
+        "APNS_TEAM_ID"
+      ],
+      "docs": [
+        "docs/frameworks/usernotifications.md",
+        "docs/apple/technologies/pushkit.md"
+      ],
+      "priority": "P1",
+      "status": "planned"
+    },
+    {
+      "id": "firebase-messaging",
+      "name": "Firebase Cloud Messaging",
+      "category": "notifications",
+      "appleNative": false,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Free; needs APNs credentials uploaded to Firebase"
+      },
+      "credentials": [
+        "GOOGLE_SERVICE_INFO_PLIST"
+      ],
+      "docs": [
+        "docs/backend/firebase.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "onesignal",
+      "name": "OneSignal push",
+      "category": "notifications",
+      "appleNative": false,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "subscription",
+        "note": "Free and paid plans"
+      },
+      "credentials": [
+        "ONESIGNAL_APP_ID"
+      ],
+      "docs": [
+        "docs/frameworks/usernotifications.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "notification-content-extension",
+      "name": "Rich notification extension",
+      "category": "notifications",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/usernotifications.md",
+        "docs/apple/technologies/usernotificationsui.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "launch-screen",
+      "name": "Launch screen and animated splash",
+      "category": "launch-screen",
+      "appleNative": true,
+      "defaultInCategory": true,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/tooling/launch-screen-review.md",
+        "docs/swiftui/animations.md"
+      ],
+      "priority": "P0",
+      "status": "planned"
+    },
+    {
+      "id": "app-icon",
+      "name": "App icon (rendered from SVG layers, Icon Composer ready)",
+      "category": "app-icon",
+      "appleNative": true,
+      "defaultInCategory": true,
+      "cost": {
+        "model": "free",
+        "note": "Free local rendering; Icon Composer ships with Xcode"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/design/icon-composer.md",
+        "docs/design/asset-generation.md"
+      ],
+      "priority": "P0",
+      "status": "planned"
+    },
+    {
+      "id": "alternate-app-icons",
+      "name": "Alternate app icons",
+      "category": "app-icon",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/design/icon-composer.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "color-assets",
+      "name": "Semantic color asset catalog",
+      "category": "assets",
+      "appleNative": true,
+      "defaultInCategory": true,
+      "cost": {
+        "model": "free",
+        "note": "Free local generation"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/design/palette-generation.md",
+        "docs/design/asset-generation.md"
+      ],
+      "priority": "P1",
+      "status": "planned"
+    },
+    {
+      "id": "sf-symbols",
+      "name": "SF Symbols and custom symbols",
+      "category": "assets",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/design/apple-design-resources.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "custom-fonts",
+      "name": "Bundled custom fonts",
+      "category": "assets",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Font licenses vary"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/design/fonts-catalog.md",
+        "docs/design/typography-system.md"
+      ],
+      "priority": "P2",
+      "status": "planned"
+    },
+    {
+      "id": "image-playground",
+      "name": "Image Playground generated images",
+      "category": "assets",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "On-device; Apple Intelligence devices only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/apple/technologies/imageplayground.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "swiftui-animations",
+      "name": "Native SwiftUI animations (phase, keyframe, transitions)",
+      "category": "animation",
+      "appleNative": true,
+      "defaultInCategory": true,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/swiftui/animations.md"
+      ],
+      "priority": "P2",
+      "status": "planned"
+    },
+    {
+      "id": "lottie-animation",
+      "name": "Lottie animations",
+      "category": "animation",
+      "appleNative": false,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Lottie is open source (Apache 2.0)"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/design/third-party-animations.md"
+      ],
+      "priority": "P0",
+      "status": "planned"
+    },
+    {
+      "id": "rive-animation",
+      "name": "Rive animations",
+      "category": "animation",
+      "appleNative": false,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Runtime is open source; the Rive editor has free and paid plans"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/design/third-party-animations.md"
+      ],
+      "priority": "P1",
+      "status": "planned"
+    },
+    {
+      "id": "webview-animation",
+      "name": "HTML/CSS/JS animation in a web view",
+      "category": "animation",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/web/native-vs-web-animation.md",
+        "docs/animation/web-animation-concepts.md"
+      ],
+      "priority": "P1",
+      "status": "planned"
+    },
+    {
+      "id": "spritekit-scene",
+      "name": "SpriteKit 2D scene",
+      "category": "animation",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/graphics/README.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "confetti-particles",
+      "name": "Particle effects",
+      "category": "animation",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/swiftui/animations.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "realitykit-3d",
+      "name": "RealityKit 3D view",
+      "category": "3d-ar",
+      "appleNative": true,
+      "defaultInCategory": true,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/realitykit.md"
+      ],
+      "priority": "P0",
+      "status": "planned"
+    },
+    {
+      "id": "arkit-world-tracking",
+      "name": "AR world tracking",
+      "category": "3d-ar",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only; needs a device with a camera"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/arkit.md"
+      ],
+      "priority": "P2",
+      "status": "planned"
+    },
+    {
+      "id": "quick-look-ar",
+      "name": "AR Quick Look for USDZ models",
+      "category": "3d-ar",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/apple/technologies/quicklookui.md"
+      ],
+      "priority": "P2",
+      "status": "planned"
+    },
+    {
+      "id": "scenekit-3d",
+      "name": "SceneKit 3D scene",
+      "category": "3d-ar",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only (SceneKit is in maintenance)"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/scenekit.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "object-capture",
+      "name": "Object Capture (photogrammetry)",
+      "category": "3d-ar",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only; needs LiDAR devices"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/realitykit.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "unity-as-a-library",
+      "name": "Unity as a Library",
+      "category": "3d-ar",
+      "appleNative": false,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "subscription",
+        "note": "Unity license terms apply"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/graphics/README.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "swift-charts-dashboard",
+      "name": "Swift Charts dashboard",
+      "category": "charts",
+      "appleNative": true,
+      "defaultInCategory": true,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/swift-charts.md"
+      ],
+      "priority": "P0",
+      "status": "planned"
+    },
+    {
+      "id": "dgcharts",
+      "name": "DGCharts",
+      "category": "charts",
+      "appleNative": false,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Open source"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/swift-charts.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "url-session-networking",
+      "name": "URLSession networking layer",
+      "category": "networking",
+      "appleNative": true,
+      "defaultInCategory": true,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/networking.md",
+        "docs/backend/rest.md"
+      ],
+      "priority": "P1",
+      "status": "planned"
+    },
+    {
+      "id": "websocket-realtime",
+      "name": "WebSocket realtime updates",
+      "category": "networking",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only; your server is separate"
+      },
+      "credentials": [
+        "WEBSOCKET_URL"
+      ],
+      "docs": [
+        "docs/backend/websockets.md"
+      ],
+      "priority": "P2",
+      "status": "planned"
+    },
+    {
+      "id": "network-monitor",
+      "name": "Connectivity monitoring",
+      "category": "networking",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/network-framework.md"
+      ],
+      "priority": "P2",
+      "status": "planned"
+    },
+    {
+      "id": "supabase-realtime",
+      "name": "Supabase Realtime",
+      "category": "networking",
+      "appleNative": false,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "usage-based",
+        "note": "Supabase project"
+      },
+      "credentials": [
+        "SUPABASE_URL",
+        "SUPABASE_ANON_KEY"
+      ],
+      "docs": [
+        "docs/backend/supabase.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "server-sent-events",
+      "name": "Server-sent events streaming",
+      "category": "networking",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/networking.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "foundation-models",
+      "name": "On-device language model (Foundation Models)",
+      "category": "ai-ml",
+      "appleNative": true,
+      "defaultInCategory": true,
+      "cost": {
+        "model": "free",
+        "note": "On-device; Apple Intelligence devices only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/foundation-models.md"
+      ],
+      "priority": "P1",
+      "status": "planned"
+    },
+    {
+      "id": "vision-text-recognition",
+      "name": "Text recognition (Vision)",
+      "category": "ai-ml",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/ml/vision.md"
+      ],
+      "priority": "P2",
+      "status": "planned"
+    },
+    {
+      "id": "speech-recognition",
+      "name": "Speech recognition",
+      "category": "ai-ml",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/ml/speech.md"
+      ],
+      "priority": "P2",
+      "status": "planned"
+    },
+    {
+      "id": "coreml-model",
+      "name": "Core ML model",
+      "category": "ai-ml",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only; model licenses vary"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/ml/coreml.md"
+      ],
+      "priority": "P2",
+      "status": "planned"
+    },
+    {
+      "id": "natural-language",
+      "name": "Natural Language tagging and sentiment",
+      "category": "ai-ml",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/ml/natural-language.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "translation",
+      "name": "Translation framework",
+      "category": "ai-ml",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/ml/translation.md"
+      ],
+      "priority": "P2",
+      "status": "planned"
+    },
+    {
+      "id": "openai-api",
+      "name": "OpenAI API (through your server)",
+      "category": "ai-ml",
+      "appleNative": false,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "usage-based",
+        "note": "Per-token billing; key stays on your server"
+      },
+      "credentials": [
+        "OPENAI_PROXY_URL"
+      ],
+      "docs": [
+        "docs/ai/providers.md"
+      ],
+      "priority": "P2",
+      "status": "planned"
+    },
+    {
+      "id": "anthropic-api",
+      "name": "Claude API (through your server)",
+      "category": "ai-ml",
+      "appleNative": false,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "usage-based",
+        "note": "Per-token billing; key stays on your server"
+      },
+      "credentials": [
+        "CLAUDE_PROXY_URL"
+      ],
+      "docs": [
+        "docs/ai/providers.md"
+      ],
+      "priority": "P2",
+      "status": "planned"
+    },
+    {
+      "id": "gemini-api",
+      "name": "Gemini API (Firebase AI Logic)",
+      "category": "ai-ml",
+      "appleNative": false,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "usage-based",
+        "note": "Per-token billing past free quotas"
+      },
+      "credentials": [
+        "GOOGLE_SERVICE_INFO_PLIST"
+      ],
+      "docs": [
+        "docs/ai/providers.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "mlx-local-llm",
+      "name": "MLX local models",
+      "category": "ai-ml",
+      "appleNative": false,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Open source; model licenses vary"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/ml/on-device-ai.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "visual-intelligence",
+      "name": "Visual Intelligence integration",
+      "category": "ai-ml",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/apple/technologies/visualintelligence.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "oslog-diagnostics",
+      "name": "OSLog logging and MetricKit diagnostics",
+      "category": "analytics",
+      "appleNative": true,
+      "defaultInCategory": true,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/oslog.md",
+        "docs/apple/technologies/metrickit.md"
+      ],
+      "priority": "P2",
+      "status": "planned"
+    },
+    {
+      "id": "telemetrydeck",
+      "name": "TelemetryDeck analytics",
+      "category": "analytics",
+      "appleNative": false,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "subscription",
+        "note": "Free and paid plans"
+      },
+      "credentials": [
+        "TELEMETRYDECK_APP_ID"
+      ],
+      "docs": [
+        "docs/backend/privacy.md"
+      ],
+      "priority": "P2",
+      "status": "planned"
+    },
+    {
+      "id": "firebase-analytics",
+      "name": "Firebase Analytics",
+      "category": "analytics",
+      "appleNative": false,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Free"
+      },
+      "credentials": [
+        "GOOGLE_SERVICE_INFO_PLIST"
+      ],
+      "docs": [
+        "docs/backend/firebase.md",
+        "docs/backend/privacy.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "firebase-crashlytics",
+      "name": "Firebase Crashlytics",
+      "category": "analytics",
+      "appleNative": false,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Free"
+      },
+      "credentials": [
+        "GOOGLE_SERVICE_INFO_PLIST"
+      ],
+      "docs": [
+        "docs/backend/firebase.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "sentry",
+      "name": "Sentry crash and performance monitoring",
+      "category": "analytics",
+      "appleNative": false,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "subscription",
+        "note": "Free and paid plans"
+      },
+      "credentials": [
+        "SENTRY_DSN"
+      ],
+      "docs": [
+        "docs/backend/privacy.md"
+      ],
+      "priority": "P2",
+      "status": "planned"
+    },
+    {
+      "id": "mixpanel",
+      "name": "Mixpanel analytics",
+      "category": "analytics",
+      "appleNative": false,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "usage-based",
+        "note": "Event-based plans"
+      },
+      "credentials": [
+        "MIXPANEL_TOKEN"
+      ],
+      "docs": [
+        "docs/backend/privacy.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "posthog",
+      "name": "PostHog analytics",
+      "category": "analytics",
+      "appleNative": false,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "usage-based",
+        "note": "Usage-based plans"
+      },
+      "credentials": [
+        "POSTHOG_API_KEY",
+        "POSTHOG_HOST"
+      ],
+      "docs": [
+        "docs/backend/privacy.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "app-tracking-transparency",
+      "name": "App Tracking Transparency prompt",
+      "category": "analytics",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/apple/technologies/apptrackingtransparency.md",
+        "docs/backend/privacy.md"
+      ],
+      "priority": "P2",
+      "status": "planned"
+    },
+    {
+      "id": "privacy-manifest",
+      "name": "Privacy manifest (PrivacyInfo.xcprivacy)",
+      "category": "security",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/backend/privacy.md"
+      ],
+      "priority": "P1",
+      "status": "planned"
+    },
+    {
+      "id": "string-catalog-localization",
+      "name": "String Catalog localization",
+      "category": "localization",
+      "appleNative": true,
+      "defaultInCategory": true,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only; translations are yours"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/swiftui/views-and-controls.md"
+      ],
+      "priority": "P1",
+      "status": "planned"
+    },
+    {
+      "id": "right-to-left-layout",
+      "name": "Right-to-left layout support",
+      "category": "localization",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/swiftui/layout.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "accessibility-baseline",
+      "name": "Accessibility baseline (VoiceOver, Dynamic Type, contrast)",
+      "category": "accessibility",
+      "appleNative": true,
+      "defaultInCategory": true,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/accessibility.md",
+        "docs/design/color-accessibility.md"
+      ],
+      "priority": "P1",
+      "status": "planned"
+    },
+    {
+      "id": "accessibility-ui-tests",
+      "name": "Accessibility audits in UI tests",
+      "category": "accessibility",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/testing/xcuiautomation.md"
+      ],
+      "priority": "P2",
+      "status": "planned"
+    },
+    {
+      "id": "home-screen-widget",
+      "name": "Home Screen widget",
+      "category": "widgets",
+      "appleNative": true,
+      "defaultInCategory": true,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only; adds a widget extension"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/widgetkit.md"
+      ],
+      "priority": "P1",
+      "status": "planned"
+    },
+    {
+      "id": "live-activity",
+      "name": "Live Activity and Dynamic Island",
+      "category": "widgets",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only; remote updates need push credentials"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/activitykit.md",
+        "docs/frameworks/widgetkit.md"
+      ],
+      "priority": "P1",
+      "status": "planned"
+    },
+    {
+      "id": "control-widget",
+      "name": "Control Center control",
+      "category": "widgets",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/widgetkit.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "lock-screen-widget",
+      "name": "Lock Screen widget",
+      "category": "widgets",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/widgetkit.md"
+      ],
+      "priority": "P2",
+      "status": "planned"
+    },
+    {
+      "id": "app-clip",
+      "name": "App Clip",
+      "category": "app-clips",
+      "appleNative": true,
+      "defaultInCategory": true,
+      "cost": {
+        "model": "subscription",
+        "note": "Apple Developer Program membership needed for device builds and distribution; simulator use is free; App Clip experiences need App Store Connect setup"
+      },
+      "credentials": [
+        "APP_CLIP_DOMAIN"
+      ],
+      "docs": [
+        "docs/frameworks/app-clips.md"
+      ],
+      "priority": "P2",
+      "status": "planned"
+    },
+    {
+      "id": "deep-links",
+      "name": "Custom URL scheme deep links",
+      "category": "sharing-deep-links",
+      "appleNative": true,
+      "defaultInCategory": true,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/swiftui/deep-linking-and-routing.md"
+      ],
+      "priority": "P1",
+      "status": "planned"
+    },
+    {
+      "id": "universal-links",
+      "name": "Universal links",
+      "category": "sharing-deep-links",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "subscription",
+        "note": "Apple Developer Program membership needed for device builds and distribution; simulator use is free; needs a domain you control"
+      },
+      "credentials": [
+        "ASSOCIATED_DOMAIN"
+      ],
+      "docs": [
+        "docs/swiftui/deep-linking-and-routing.md"
+      ],
+      "priority": "P1",
+      "status": "planned"
+    },
+    {
+      "id": "share-sheet",
+      "name": "Share sheet (ShareLink)",
+      "category": "sharing-deep-links",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/integrations/README.md"
+      ],
+      "priority": "P1",
+      "status": "planned"
+    },
+    {
+      "id": "share-extension",
+      "name": "Share extension",
+      "category": "sharing-deep-links",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/integrations/README.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "app-intents-shortcuts",
+      "name": "App Intents and Shortcuts",
+      "category": "sharing-deep-links",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/app-intents.md"
+      ],
+      "priority": "P1",
+      "status": "planned"
+    },
+    {
+      "id": "spotlight-indexing",
+      "name": "Spotlight indexing",
+      "category": "sharing-deep-links",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/core-spotlight-rag.md"
+      ],
+      "priority": "P2",
+      "status": "planned"
+    },
+    {
+      "id": "shared-with-you",
+      "name": "Shared with You",
+      "category": "sharing-deep-links",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/apple/technologies/sharedwithyou.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "group-activities",
+      "name": "SharePlay",
+      "category": "sharing-deep-links",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/apple/technologies/groupactivities.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "background-refresh",
+      "name": "Background app refresh (BGTaskScheduler)",
+      "category": "background",
+      "appleNative": true,
+      "defaultInCategory": true,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/background-tasks.md"
+      ],
+      "priority": "P1",
+      "status": "planned"
+    },
+    {
+      "id": "background-downloads",
+      "name": "Background URLSession downloads",
+      "category": "background",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/background-tasks.md",
+        "docs/frameworks/networking.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "alarmkit-alarms",
+      "name": "AlarmKit alarms and timers",
+      "category": "background",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/apple/technologies/alarmkit.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "keychain-storage",
+      "name": "Keychain storage",
+      "category": "security",
+      "appleNative": true,
+      "defaultInCategory": true,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/cryptokit.md",
+        "docs/backend/security.md"
+      ],
+      "priority": "P0",
+      "status": "planned"
+    },
+    {
+      "id": "cryptokit-encryption",
+      "name": "CryptoKit encryption",
+      "category": "security",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/cryptokit.md"
+      ],
+      "priority": "P2",
+      "status": "planned"
+    },
+    {
+      "id": "app-attest",
+      "name": "App Attest and DeviceCheck",
+      "category": "security",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "subscription",
+        "note": "Apple Developer Program membership needed for device builds and distribution; simulator use is free; your server validates attestations"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/device-integrity.md"
+      ],
+      "priority": "P2",
+      "status": "planned"
+    },
+    {
+      "id": "ssl-pinning",
+      "name": "Certificate / public-key pinning",
+      "category": "security",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/network-framework.md",
+        "docs/backend/security.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "testflight",
+      "name": "TestFlight distribution",
+      "category": "distribution",
+      "appleNative": true,
+      "defaultInCategory": true,
+      "cost": {
+        "model": "subscription",
+        "note": "Apple Developer Program membership needed for device builds and distribution; simulator use is free"
+      },
+      "credentials": [
+        "APPLE_TEAM_ID"
+      ],
+      "docs": [
+        "docs/tooling/local-release-package.md",
+        "docs/apple/technologies/appstoreconnectapi.md"
+      ],
+      "priority": "P2",
+      "status": "planned"
+    },
+    {
+      "id": "app-store-submission",
+      "name": "App Store submission",
+      "category": "distribution",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "subscription",
+        "note": "Apple Developer Program membership needed for device builds and distribution; simulator use is free"
+      },
+      "credentials": [
+        "APPLE_TEAM_ID"
+      ],
+      "docs": [
+        "docs/tooling/local-release-package.md",
+        "checklists/app-store-submission.md"
+      ],
+      "priority": "P2",
+      "status": "planned"
+    },
+    {
+      "id": "xcode-cloud",
+      "name": "Xcode Cloud CI",
+      "category": "distribution",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "subscription",
+        "note": "Included compute hours with the developer program; more is billed"
+      },
+      "credentials": [
+        "APPLE_TEAM_ID"
+      ],
+      "docs": [
+        "docs/apple/technologies/xcode__xcode-cloud.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "github-actions-ci",
+      "name": "GitHub Actions build and test",
+      "category": "distribution",
+      "appleNative": false,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "usage-based",
+        "note": "macOS runner minutes billed past free allowances"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/development.md"
+      ],
+      "priority": "P2",
+      "status": "planned"
+    },
+    {
+      "id": "fastlane",
+      "name": "fastlane automation",
+      "category": "distribution",
+      "appleNative": false,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Open source"
+      },
+      "credentials": [
+        "APPLE_TEAM_ID"
+      ],
+      "docs": [
+        "docs/tooling/local-release-package.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "app-store-screenshots",
+      "name": "App Store screenshot sets",
+      "category": "distribution",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Free local rendering"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/screenshots/README.md"
+      ],
+      "priority": "P2",
+      "status": "planned"
+    },
+    {
+      "id": "healthkit",
+      "name": "HealthKit",
+      "category": "health-fitness",
+      "appleNative": true,
+      "defaultInCategory": true,
+      "cost": {
+        "model": "subscription",
+        "note": "Apple Developer Program membership needed for device builds and distribution; simulator use is free for the HealthKit capability on device"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/hardware/healthkit.md"
+      ],
+      "priority": "P2",
+      "status": "planned"
+    },
+    {
+      "id": "workoutkit",
+      "name": "WorkoutKit",
+      "category": "health-fitness",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/apple/technologies/workoutkit.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "core-motion",
+      "name": "Motion and pedometer (Core Motion)",
+      "category": "health-fitness",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/hardware/core-motion.md"
+      ],
+      "priority": "P2",
+      "status": "planned"
+    },
+    {
+      "id": "haptics",
+      "name": "Haptic feedback",
+      "category": "device-hardware",
+      "appleNative": true,
+      "defaultInCategory": true,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/design/interaction-standards.md"
+      ],
+      "priority": "P1",
+      "status": "planned"
+    },
+    {
+      "id": "core-bluetooth",
+      "name": "Bluetooth LE (Core Bluetooth)",
+      "category": "device-hardware",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/hardware/core-bluetooth.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "core-nfc",
+      "name": "NFC tag reading",
+      "category": "device-hardware",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "subscription",
+        "note": "Apple Developer Program membership needed for device builds and distribution; simulator use is free for the NFC entitlement"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/hardware/core-nfc.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "homekit",
+      "name": "HomeKit",
+      "category": "device-hardware",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/hardware/homekit.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "matter",
+      "name": "Matter accessories",
+      "category": "device-hardware",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/apple/technologies/matter.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "in-app-browser",
+      "name": "In-app browser (SFSafariViewController)",
+      "category": "web-content",
+      "appleNative": true,
+      "defaultInCategory": true,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/apple/technologies/safariservices.md"
+      ],
+      "priority": "P2",
+      "status": "planned"
+    },
+    {
+      "id": "webview-content",
+      "name": "Embedded web content (WKWebView / WebView)",
+      "category": "web-content",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/web/README.md"
+      ],
+      "priority": "P2",
+      "status": "planned"
+    },
+    {
+      "id": "in-app-messaging",
+      "name": "Chat messaging",
+      "category": "communication",
+      "appleNative": false,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "usage-based",
+        "note": "Needs a realtime backend (Supabase, Firebase or your server)"
+      },
+      "credentials": [
+        "SUPABASE_URL",
+        "SUPABASE_ANON_KEY"
+      ],
+      "docs": [
+        "docs/backend/websockets.md"
+      ],
+      "priority": "P2",
+      "status": "planned"
+    },
+    {
+      "id": "callkit-voip",
+      "name": "VoIP calls (CallKit + PushKit)",
+      "category": "communication",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "subscription",
+        "note": "Apple Developer Program membership needed for device builds and distribution; simulator use is free; needs a VoIP service"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/apple/technologies/callkit.md",
+        "docs/apple/technologies/pushkit.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "stream-chat",
+      "name": "Stream Chat SDK",
+      "category": "communication",
+      "appleNative": false,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "subscription",
+        "note": "Free and paid plans"
+      },
+      "credentials": [
+        "STREAM_API_KEY"
+      ],
+      "docs": [
+        "docs/backend/websockets.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "mail-compose",
+      "name": "Email composer",
+      "category": "communication",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/apple/technologies/messageui.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "calendar-events",
+      "name": "Calendar and reminders (EventKit)",
+      "category": "productivity",
+      "appleNative": true,
+      "defaultInCategory": true,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/services/eventkit.md"
+      ],
+      "priority": "P2",
+      "status": "planned"
+    },
+    {
+      "id": "contacts-access",
+      "name": "Contacts access",
+      "category": "productivity",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/services/contacts.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "document-files",
+      "name": "Documents and Files app integration",
+      "category": "productivity",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/integrations/README.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "tipkit",
+      "name": "TipKit feature tips",
+      "category": "productivity",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/frameworks/tipkit.md"
+      ],
+      "priority": "P2",
+      "status": "planned"
+    },
+    {
+      "id": "pdfkit",
+      "name": "PDF viewing and creation",
+      "category": "productivity",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/integrations/README.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    },
+    {
+      "id": "paperkit-drawing",
+      "name": "Drawing and markup (PencilKit / PaperKit)",
+      "category": "productivity",
+      "appleNative": true,
+      "defaultInCategory": false,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/apple/technologies/paperkit.md"
+      ],
+      "priority": "P3",
+      "status": "planned"
+    }
+  ]
+}

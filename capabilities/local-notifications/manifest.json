@@ -1,0 +1,28 @@
+{
+  "id": "local-notifications",
+  "name": "Local notifications and reminders",
+  "category": "notifications",
+  "description": "Permission request, one-off and daily local notifications, cancellation, foreground presentation, and a reminder settings view.",
+  "default": true,
+  "appleNative": true,
+  "alternatives": [
+    "push-notifications",
+    "firebase-messaging",
+    "onesignal"
+  ],
+  "cost": {
+    "model": "free",
+    "note": "Apple frameworks only",
+    "amounts": []
+  },
+  "minOS": "17.0",
+  "docs": [
+    "docs/frameworks/usernotifications.md"
+  ],
+  "usage": "Keep one `NotificationPresenter` alive in the App (for example `@State private var presenter = NotificationPresenter()` and call `presenter.install()` in init or onAppear) so notifications show while the app is open. Use `ReminderModel(scheduler: LocalNotificationScheduler())` with `ReminderSettingsView(model:)` for a daily reminder, or call the scheduler directly for one-off notifications. Ask for permission when the user turns reminders on, not at launch.",
+  "platforms": [
+    "iOS"
+  ],
+  "status": "untested",
+  "statusNote": "Not yet built on a Mac; run `ios-agent-mcp capabilities verify local-notifications` on a Mac with Xcode."
+}

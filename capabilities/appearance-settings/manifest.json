@@ -1,0 +1,25 @@
+{
+  "id": "appearance-settings",
+  "name": "Appearance setting (light, dark, system)",
+  "category": "app-structure",
+  "description": "A stored appearance preference with a System/Light/Dark picker or a dark-mode toggle, applied at the app root.",
+  "default": false,
+  "appleNative": true,
+  "alternatives": [],
+  "cost": {
+    "model": "free",
+    "note": "Apple frameworks only",
+    "amounts": []
+  },
+  "minOS": "17.0",
+  "docs": [
+    "docs/design/dark-mode-colors.md",
+    "docs/swiftui/state-and-data-flow.md"
+  ],
+  "usage": "Apply `.appAppearance()` once to the root view in the App's WindowGroup. In Settings use `AppearancePicker()` (System/Light/Dark) or `DarkModeToggle()` inside a Form. The choice is stored with @AppStorage under AppearancePreference.storageKey. Use semantic colors so both appearances read well.",
+  "platforms": [
+    "iOS"
+  ],
+  "status": "untested",
+  "statusNote": "Not yet built on a Mac; run `ios-agent-mcp capabilities verify appearance-settings` on a Mac with Xcode."
+}

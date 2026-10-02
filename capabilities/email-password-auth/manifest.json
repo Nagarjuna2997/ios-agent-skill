@@ -1,0 +1,52 @@
+{
+  "id": "email-password-auth",
+  "name": "Email and password sign-in (Supabase Auth REST)",
+  "category": "authentication",
+  "description": "Sign up, sign in and sign out with email and password against Supabase Auth over HTTPS, with the session in the Keychain and a configuration message until keys are added.",
+  "default": false,
+  "appleNative": false,
+  "alternatives": [
+    "sign-in-with-apple",
+    "firebase-auth",
+    "supabase-auth-sdk",
+    "amplify-auth",
+    "appwrite-auth",
+    "passkeys"
+  ],
+  "requires": {
+    "capabilities": [
+      "keychain-storage"
+    ]
+  },
+  "credentialsNeeded": [
+    {
+      "key": "SUPABASE_URL",
+      "description": "Your Supabase project URL (https://<project>.supabase.co)",
+      "whereToGet": "https://supabase.com/dashboard: Project Settings > API",
+      "kind": "client"
+    },
+    {
+      "key": "SUPABASE_ANON_KEY",
+      "description": "Your project's anon (public) key; protect data with row-level security",
+      "whereToGet": "https://supabase.com/dashboard: Project Settings > API",
+      "kind": "client"
+    }
+  ],
+  "cost": {
+    "model": "usage-based",
+    "note": "Supabase has a free tier and paid plans; check current limits on its pricing page",
+    "link": "https://supabase.com/pricing",
+    "amounts": []
+  },
+  "minOS": "17.0",
+  "docs": [
+    "docs/backend/authentication.md",
+    "docs/backend/supabase.md"
+  ],
+  "usage": "At the composition root: `EmailAuthModel(service: SupabaseEmailAuth.fromBundle(), store: KeychainStore())`; `fromBundle()` returns nil until real keys are in .env, and the model then reports `isConfigured == false`. Call `model.restore()` at launch. Show `EmailAuthForm(model:)` until `model.state` is `.signedIn(session)`. Previews: `EmailAuthModel(service: nil, store: InMemorySecureStore())`.",
+  "platforms": [
+    "iOS"
+  ],
+  "status": "untested",
+  "statusNote": "Not yet built on a Mac; run `ios-agent-mcp capabilities verify email-password-auth` on a Mac with Xcode."
+}

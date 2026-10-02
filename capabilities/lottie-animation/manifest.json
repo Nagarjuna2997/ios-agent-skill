@@ -1,0 +1,42 @@
+{
+  "id": "lottie-animation",
+  "name": "Lottie animation",
+  "category": "animation",
+  "description": "Plays After Effects animations exported as Lottie JSON with the Lottie package, with a Reduce Motion fallback and a bundled sample animation.",
+  "default": false,
+  "appleNative": false,
+  "alternatives": [
+    "swiftui-animations",
+    "rive-animation"
+  ],
+  "requires": {
+    "packages": [
+      {
+        "name": "lottie-spm",
+        "url": "https://github.com/airbnb/lottie-spm.git",
+        "version": {
+          "from": "4.5.0"
+        },
+        "products": [
+          "Lottie"
+        ]
+      }
+    ]
+  },
+  "cost": {
+    "model": "free",
+    "note": "Open-source package (Apache 2.0); designing animations may need paid tools",
+    "amounts": []
+  },
+  "minOS": "17.0",
+  "docs": [
+    "docs/design/third-party-animations.md",
+    "docs/swiftui/animations.md"
+  ],
+  "usage": "Add the animation JSON next to the template (or anywhere in the app target) and show it with `LoopingLottie(name: \"pulse\")`. Pass `loop: false` for one-shot animations. Under Reduce Motion the first frame is shown still. Prefer SwiftUI animations for simple motion; use Lottie when a designer supplies an exported animation.",
+  "platforms": [
+    "iOS"
+  ],
+  "status": "untested",
+  "statusNote": "Not yet built on a Mac; run `ios-agent-mcp capabilities verify lottie-animation` on a Mac with Xcode."
+}
