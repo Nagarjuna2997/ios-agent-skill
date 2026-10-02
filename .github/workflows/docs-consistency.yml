@@ -387,6 +387,9 @@ jobs:
           python3 scripts/sync-apple-technologies.py --check
           python3 -m unittest discover -s scripts/tests -p "test_apple_technologies.py"
 
+      - name: Community page renderer tests
+        run: python3 -m unittest discover -s scripts/tests -p "test_community.py"
+
       - name: Local source index and retrieval tests
         run: |
           node scripts/index-local-library.mjs --check
