@@ -65,6 +65,9 @@ jobs:
       - name: Guide samples avoid deprecated SwiftUI/UIKit APIs
         run: python3 scripts/check-deprecated-apis.py
 
+      - name: Capability catalog is consistent and rendered
+        run: node scripts/render-capability-catalog.mjs --check
+
       - name: Referenced documentation files exist
         run: |
           python3 - <<'PY'
@@ -224,6 +227,10 @@ jobs:
 
           for root, dirs, files in os.walk("."):
               dirs[:] = [d for d in dirs if d not in {".git", ".build", "node_modules"}]
+              # mcp-server/data is gitignored build output (bundled copies of
+              # capabilities/ whose relative links only resolve in the source).
+              if os.path.normpath(root) == "mcp-server":
+                  dirs[:] = [d for d in dirs if d != "data"]
               for name in files:
                   if not name.endswith(".md"):
                       continue
