@@ -23,7 +23,9 @@ private struct MotionAwareAnimation<Value: Equatable>: ViewModifier {
     }
 }
 
-/// Spacing that grows with Dynamic Type. Use as `@State private var spacing = ScaledSpacing()` and read `spacing.standard`.
+/// Spacing that grows with Dynamic Type. Store it directly on a view, `private let spacing = ScaledSpacing()`,
+/// and read `spacing.standard` in `body`. Never wrap it in `@State`: SwiftUI then does not install the
+/// `@ScaledMetric` values, they stop scaling, and the runtime reports reads outside a view.
 struct ScaledSpacing: DynamicProperty {
     @ScaledMetric(relativeTo: .body) var compact: CGFloat = 8
     @ScaledMetric(relativeTo: .body) var standard: CGFloat = 16

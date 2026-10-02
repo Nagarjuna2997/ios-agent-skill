@@ -16,7 +16,7 @@
     "docs/frameworks/accessibility.md",
     "docs/design/color-accessibility.md"
   ],
-  "usage": "Use `.minimumTapTarget()` on small icon buttons, `.motionAwareAnimation(.spring, value: x)` instead of `.animation` for decorative motion, and `@ScaledMetric` spacing via `ScaledSpacing`. Give icon-only buttons a text label (`Label` or `.accessibilityLabel`). Mark section titles with `.accessibilityAddTraits(.isHeader)`.",
+  "usage": "Use `.minimumTapTarget()` on small icon buttons, `.motionAwareAnimation(.spring, value: x)` instead of `.animation` for decorative motion, and spacing that grows with Dynamic Type via `private let spacing = ScaledSpacing()` stored directly on the view (never in `@State`, which stops it from scaling). Give icon-only buttons a text label (`Label` or `.accessibilityLabel`). Mark section titles with `.accessibilityAddTraits(.isHeader)`.",
   "platforms": [
     "iOS"
   ],
