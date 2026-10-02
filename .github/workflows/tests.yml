@@ -61,6 +61,18 @@ jobs:
             -target "$(uname -m)-apple-macos14.0"
           test -x "$RUNNER_TEMP/StudioLauncher"
 
+  installer:
+    name: Source installer (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Hermetic install.sh tests (local remote, temporary HOME)
+        run: python3 -m unittest scripts/tests/test_install.py
+
   site-discovery:
     name: Website discovery and metadata
     runs-on: ubuntu-latest

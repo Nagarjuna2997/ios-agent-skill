@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 # Optional source-skill installer. MCP installation remains separate.
 set -euo pipefail
-REPO_URL='https://github.com/Nagarjuna2997/ios-agent-skill.git'
+# IOS_AGENT_SKILL_REPO_URL exists for the installer's own tests and for mirrors;
+# an existing checkout is only updated when its origin matches this URL.
+REPO_URL="${IOS_AGENT_SKILL_REPO_URL:-https://github.com/Nagarjuna2997/ios-agent-skill.git}"
 usage() {
   cat <<'HELP'
 Usage: bash install.sh --client claude|codex|muse [--dir PATH]
@@ -48,10 +50,10 @@ if [[ -e "$target" ]]; then
   [[ "$(git -C "$target" remote get-url origin)" == "$REPO_URL" ]] || { echo 'Refusing a checkout with another origin.' >&2; exit 1; }
   [[ -z "$(git -C "$target" status --porcelain)" ]] || { echo 'Local changes found. Preserve or commit them before updating.' >&2; exit 1; }
   [[ "$(git -C "$target" branch --show-current)" == main ]] || { echo 'Refusing to update a branch other than main.' >&2; exit 1; }
-  git -C "$target" pull --ff-only origin main
+  git -C "$target" pull --ff-only origin main || { echo "Update failed. The checkout at $target was left unchanged; check your network or resolve the reported git error." >&2; exit 1; }
 else
   mkdir -p "$(dirname "$target")"
-  git clone --branch main --single-branch "$REPO_URL" "$target"
+  git clone --branch main --single-branch "$REPO_URL" "$target" || { echo "Clone failed. Check your network and that $REPO_URL is reachable, then re-run." >&2; exit 1; }
 fi
 printf '\nSource skill installed at: %s\n' "$target"
 echo 'MCP is configured separately. Keep the bundled references with SKILL.md.'
