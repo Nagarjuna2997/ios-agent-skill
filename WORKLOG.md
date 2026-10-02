@@ -13,8 +13,8 @@ Working copy: a fresh clone of `main` at `0e5cb39`. All commits are authored as 
 | 4 | Remove the stray bare ProductHunt URL from README (owner preference: promotion through owned channels only) | XS | done |
 | 5 | CONTRIBUTING "Swift 5.9+" modern-first wording contradicts the toolchain the skill targets (Swift 6.4 / Xcode 27, deployment floor iOS 17) | XS | done |
 | 6 | Deprecated SwiftUI/UIKit APIs in guide prose and samples (`NavigationView`, `.foregroundColor`, `UIScreen.main`, two-parameter `onChange`, `UIApplication.shared.windows`, `.autocapitalization`, `.cornerRadius`, `PreviewProvider`); fix unlabelled uses and add a regression check | M | done |
-| 7 | External markdown link check; fix confirmed dead links | S | pending |
-| 8 | MCP server: 15 of 67 registered tools are never exercised by a test; add at least one test per tool | M | pending |
+| 7 | External markdown link check; fix confirmed dead links | S | done, no dead links found in the verifiable set |
+| 8 | MCP server: 15 of 67 registered tools are never exercised by a test; add at least one test per tool | M | done |
 | 9 | `install.sh`: add a hermetic test (local remote, idempotent re-run, refusal cases) | S | pending |
 | 10 | CHANGELOG Unreleased, version bump, final log | S | pending |
 
@@ -56,6 +56,8 @@ Measured on Linux (Ubuntu 24.04, Node 22.22, Python 3.12). No Swift toolchain, X
 - README contained a bare ProductHunt URL with no surrounding text between the footer links and the backend section. It was removed because the owner promotes only through owned channels. The ProductHunt entry on the community-monitor page was kept: it is a listings monitor, not promotion.
 
 - Deprecated-API audit: fixed 13 unlabelled uses in guide/checklist samples (`UIScreen.main` ×7 including three snapshot-test frames that `.image(on:)` already sizes, `.foregroundColor` ×4, `.autocapitalization` ×2) and the prose recommendation in `docs/uikit/animations.md`. Labelled counter-examples (WRONG blocks, the legacy `PreviewProvider` section, the iOS 14–16 `onChange` form) were kept. `.cornerRadius(_:)` (22 uses) was not changed: the iOS 17 SDK marks it with a future deprecation rather than a compiler warning, and replacing it without a compiler is not worth the risk. None of the edited Swift could be compile-checked here (no Swift toolchain); the edits are mechanical replacements with iOS 17-available APIs (`foregroundStyle`, `textInputAutocapitalization`, `traitCollection.displayScale`, `GeometryProxy.bounds(of:)`). The new `scripts/check-deprecated-apis.py` flags exactly these 10 fenced uses on the pre-fix tree and none after.
+
+- External links: relative links are already enforced by CI. Locally verified every `github.com/Nagarjuna2997/ios-agent-skill/blob|tree/main/...` link against the tree, the seven third-party GitHub repositories with `git ls-remote` (plus XcodeGen's `Docs/ProjectSpec.md` on `master`), and six vendor documentation pages (OpenAI ×2, ChatGPT Learn, Gemini CLI, Claude Code, MCP registry) by fetching them. All resolved. The 569 hand-written and roughly 8,400 generated developer.apple.com links, and the remaining vendor hosts, could not be checked: both this environment and the linked Mac's sandbox are refused by the network policy. Nothing was removed on the basis of an unreachable host.
 
 ## Commits
 
