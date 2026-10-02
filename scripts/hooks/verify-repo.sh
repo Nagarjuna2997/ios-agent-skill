@@ -44,6 +44,12 @@ PY
   FAILURES+=("SKILL.md frontmatter:\n$FM_OUT")
 fi
 
+# 2b. Skill manifests (skill.json, Gemini extension, Codex plugins) carry the
+# SKILL.md version. They once stayed three releases behind unnoticed.
+if ! VERSION_OUT="$(python3 scripts/check-manifest-versions.py 2>&1)"; then
+  FAILURES+=("Manifest versions:\n$VERSION_OUT")
+fi
+
 # 3. Every referenced documentation path exists.
 if ! PATH_OUT="$(python3 - <<'PY' 2>&1
 import os, re, sys

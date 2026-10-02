@@ -59,6 +59,9 @@ jobs:
           print(f"OK - {name} v{re.search(r'^version:\s*(.+)$', block, re.MULTILINE).group(1).strip()}")
           PY
 
+      - name: Skill manifests share the SKILL.md version
+        run: python3 scripts/check-manifest-versions.py
+
       - name: Referenced documentation files exist
         run: |
           python3 - <<'PY'
