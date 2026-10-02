@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="studio-token" content="__TOKEN__" />
+    <meta name="theme-color" content="#f5f5f7" />
+    <title>iOS Agent Studio</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <header class="topbar">
+      <a class="brand" href="/"
+        ><span class="mark" aria-hidden="true"
+          ><svg viewBox="0 0 256 256" fill="currentColor" width="20" height="20"><path d="M200,64V168a8,8,0,0,1-16,0V83.31L69.66,197.66a8,8,0,0,1-11.32-11.32L172.69,72H88a8,8,0,0,1,0-16H192A8,8,0,0,1,200,64Z"/></svg></span
+        >iOS Agent Studio<span class="beta">Local</span></a
+      >
+      <div class="header-actions">
+        <button id="new" class="chip">＋ New project</button
+        ><button id="export" class="chip" hidden>Export ZIP</button
+        ><button id="reveal" class="chip" hidden>Project files</button
+        ><button id="xcode" class="chip" hidden>Open in Xcode</button
+        ><button id="theme" class="appearance-toggle" aria-label="Switch color theme"><span aria-hidden="true">☾</span><span class="appearance-label">Dark mode</span></button>
+      </div>
+    </header>
+    <main id="main" class="wrap">
+      <div class="switcher-row">
+        <span class="eyebrow">Your workspace</span>
+        <nav id="projects" class="switcher" aria-label="Projects"></nav>
+      </div>
+      <section id="welcome">
+        <div class="hero-copy">
+          <p class="eyebrow">Your app workshop</p>
+          <h1>A little idea.<br />A real app.</h1>
+          <p class="hero-lead">
+            Describe what you want. Watch a native SwiftUI app take shape, built and tested on your Mac. Keep the source.
+          </p>
+        </div>
+        <form id="create" class="card">
+          <label for="name">Name your project</label
+          ><input id="name" maxlength="60" placeholder="Pocket Habits" required />
+          <div class="field-row">
+            <div>
+              <label for="provider">Coding client</label
+              ><select id="provider">
+                <option value="codex">Codex</option>
+                <option value="claude">Claude Code</option>
+              </select>
+            </div>
+            <div>
+              <label for="template">Starting point</label
+              ><select id="template">
+                <option value="custom">Your own app idea</option>
+                <option value="reading-list">Reading-list starter</option>
+              </select>
+            </div>
+            <div>
+              <label for="backend">Data storage</label
+              ><select id="backend">
+                <option value="none">On-device storage</option>
+                <option value="local">Local REST backend · development</option>
+              </select>
+            </div>
+          </div>
+          <label for="brief">What are we building?</label
+          ><textarea
+            id="brief"
+            rows="4"
+            placeholder="A habit tracker with daily check-ins, an overview of my progress and saved routines…"
+            required
+            maxlength="10000"
+          ></textarea>
+          <div class="composer-bottom">
+            <span>Your idea → native SwiftUI</span
+            ><button type="submit" class="btn primary">Create workspace <span class="arrow">↗</span></button>
+          </div>
+        </form>
+        <div class="ideas">
+          <span>Try an idea</span
+          ><button id="habit-demo" class="chip">Habit tracker</button
+          ><button id="demo" class="chip">Reading list</button>
+        </div>
+        <div class="onboarding">
+          <article class="card">
+            <b>01</b>
+            <h3>Make a plan</h3>
+            <p>Review the screens, behaviors and automated checks before any code changes.</p>
+          </article>
+          <article class="card">
+            <b>02</b>
+            <h3>See it take shape</h3>
+            <p>Swift source, real Xcode builds and simulator captures you can inspect.</p>
+          </article>
+          <article class="card">
+            <b>03</b>
+            <h3>Make it yours</h3>
+            <p>Refine in chat, tap through the live simulator, open the project in Xcode.</p>
+          </article>
+        </div>
+        <p class="privacy">
+          Your brief and Swift files are sent to your selected coding client when you plan or edit. Projects and build evidence stay on this Mac.
+        </p>
+      </section>
+      <section id="workspace" hidden>
+        <div class="conversation card">
+          <div class="section-top">
+            <div>
+              <span class="crumb">Workspace</span>
+              <strong id="title">A little idea. A real app.</strong>
+            </div>
+            <span id="state" class="pill">Draft</span>
+          </div>
+          <div id="messages" aria-live="polite"></div>
+          <details id="plan" class="plan" hidden></details>
+          <div id="notice" role="status" hidden></div>
+          <div id="error" role="alert" hidden></div>
+          <div class="workflow-actions">
+            <button id="plan-button" class="btn">Plan app</button
+            ><button id="build" class="btn primary">Build plan ↗</button
+            ><button id="restore" class="btn" hidden>Undo changes</button
+            ><button id="verify" class="btn">Check starter</button
+            ><button id="stop" class="btn danger" hidden>Stop</button>
+          </div>
+          <form id="refine" class="composer">
+            <label for="change">Your next change</label
+            ><textarea
+              id="change"
+              rows="3"
+              placeholder="Make the empty state feel warmer and use an indigo accent…"
+              maxlength="10000"
+              required
+            ></textarea>
+            <div class="composer-bottom">
+              <span>Changes → build → acceptance tests</span
+              ><button type="submit" class="btn primary">Make changes ↑</button>
+            </div>
+          </form>
+          <p class="fine" id="scope-note">
+            Small offline SwiftUI apps. Review the planned tests; untested behavior needs your review.
+          </p>
+        </div>
+        <div class="preview">
+          <div class="live-actions">
+            <button id="live-start" class="btn">▶ Live simulator</button
+            ><button id="live-stop" class="btn danger" hidden>Stop preview</button
+            ><span id="live-status">Captures are saved test evidence.</span>
+          </div>
+          <div class="preview-toolbar">
+            <span>Simulator preview</span
+            ><select id="screen" aria-label="Preview screen">
+              <option value="library">Library</option>
+              <option value="empty">Empty state</option>
+              <option value="add">Add book</option>
+              <option value="detail">Book details</option>
+              <option value="search-empty">No results</option>
+              <option value="error">Error state</option>
+            </select>
+          </div>
+          <div class="stage">
+            <div class="phone">
+              <img id="capture" alt="Verified simulator capture" hidden />
+              <div id="placeholder">
+                <span class="app-icon" aria-hidden="true">▤</span>
+                <h2>A place for<br />your next idea.</h2>
+                <p>Your actual simulator screenshot<br />appears after verification.</p>
+                <span class="preview-label">Preview not generated</span>
+              </div>
+            </div>
+          </div>
+          <form id="live-input" hidden>
+            <label for="live-text">Type into the focused simulator field</label
+            ><input id="live-text" maxlength="500" autocomplete="off" placeholder="Tap a field in the preview first" />
+            <div class="live-buttons">
+              <button class="btn primary">Send text</button
+              ><button type="button" id="live-return" class="btn">Return ↵</button
+              ><button type="button" id="live-relaunch" class="btn">Relaunch</button>
+            </div>
+          </form>
+          <details id="backend-panel" hidden>
+            <summary>Development backend data</summary>
+            <button id="backend-refresh" class="chip">Refresh records</button>
+            <pre id="backend-records">Preview namespace only. Automated tests use isolated datasets.</pre>
+          </details>
+          <div id="evidence" class="evidence">No build evidence yet.</div>
+          <details id="activity">
+            <summary>Build activity</summary>
+            <div id="events"></div>
+            <pre id="logs">No build output yet.</pre>
+          </details>
+        </div>
+      </section>
+    </main>
+    <footer id="health" class="wrap">Checking your local tools…</footer>
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>
