@@ -230,6 +230,16 @@
       "url": "https://www.skillsdirectory.com/skills/nagarjuna2997-ios-agent-skill",
       "verifiedOn": "2026-10-01",
       "evidence": "Direct HTTPS fetch returned 200 and names Nagarjuna2997/ios-agent-skill in its install command and project metadata. Web search extraction could not open the page; direct HTML verification succeeded. Automated directory analysis is not an endorsement or independent security guarantee."
+    },
+    {
+      "id": "ahel",
+      "platform": "ahel",
+      "kind": "directory",
+      "category": "Skill catalog · index",
+      "description": "Indexes the Copilot skill with its source attribution, usage guidance and setup information.",
+      "url": "https://mcp.ahel.ai/catalog/item/ios-agent-skill",
+      "verifiedOn": "2026-10-03",
+      "evidence": "Opened the catalog page and confirmed its exact Nagarjuna2997/ios-agent-skill source link and plugins/ios-agent-copilot/skills/ios-agent-skill/SKILL.md attribution. Catalog listing, not independent testing or endorsement."
     }
   ]
 }
