@@ -27,14 +27,11 @@ Every external command is logged to `.ios-agent/tool-log.jsonl` (commands and ex
 
 ## Install
 
-The agent tools ship in `ios-agent-mcp` 2.10.0. That version is prepared in this repository but not yet on npm (npm has 2.9.0, which does not include them), so build the server from a checkout. On a Mac with Node 20 or later and Xcode 16 or later:
+The agent tools ship in `ios-agent-mcp` 2.10.0. That version is published on npm (verified October 3, 2026). On a Mac with Node 20 or later and Xcode 16 or later:
 
 ```bash
-git clone https://github.com/Nagarjuna2997/ios-agent-skill.git
-cd ios-agent-skill/mcp-server
-npm ci && npm run build
-claude mcp add ios-agent -- node "$PWD/dist/unified.js"
-node dist/unified.js install-command --global
+claude mcp add ios-agent -- npx -y ios-agent-mcp@latest
+npx -y ios-agent-mcp@latest install-command --global
 ```
 
 `install-command` copies `/ios-build` into `~/.claude/commands/` and prints the `claude mcp add` line for the server you ran it from. XcodeGen is optional.

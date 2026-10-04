@@ -35,12 +35,9 @@
 </ol>
 <p>Every external command is logged to <code>.ios-agent/tool-log.jsonl</code> (commands and exit codes, not output). Run state lives in <code>.ios-agent/state.json</code>, so runs resume.</p>
 <h2 id="install">Install</h2>
-<p>The agent tools ship in <code>ios-agent-mcp</code> 2.10.0. That version is prepared in this repository but not yet on npm (npm has 2.9.0, which does not include them), so build the server from a checkout. On a Mac with Node 20 or later and Xcode 16 or later:</p>
-<pre><code class="language-bash">git clone https://github.com/Nagarjuna2997/ios-agent-skill.git
-cd ios-agent-skill/mcp-server
-npm ci &amp;&amp; npm run build
-claude mcp add ios-agent -- node &quot;$PWD/dist/unified.js&quot;
-node dist/unified.js install-command --global
+<p>The agent tools ship in <code>ios-agent-mcp</code> 2.10.0. That version is published on npm (verified October 3, 2026). On a Mac with Node 20 or later and Xcode 16 or later:</p>
+<pre><code class="language-bash">claude mcp add ios-agent -- npx -y ios-agent-mcp@latest
+npx -y ios-agent-mcp@latest install-command --global
 </code></pre>
 <p><code>install-command</code> copies <code>/ios-build</code> into <code>~/.claude/commands/</code> and prints the <code>claude mcp add</code> line for the server you ran it from. XcodeGen is optional.</p>
 <h2 id="entry-points">Entry points</h2>

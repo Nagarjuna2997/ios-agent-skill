@@ -16,16 +16,15 @@ Describe an app in one sentence and the `/ios-build` agent plans it, writes the 
 
 ## Build an app from one sentence
 
-`/ios-build "<what you want>"` asks Claude Code to plan an iOS app, write its SwiftUI code and Xcode project, apply capability modules (sign-in, storage, payments, maps and more), then build, run and screenshot it in the iOS Simulator, ending with a report of what needs your accounts or money. As of 2026-10-02 it is on `main` but not yet in the published npm package. Four apps it planned and wrote built on the first build with Xcode 27.0 and ran in the simulator. One of them is a food-delivery app with 20 capability modules and a widget extension. Its own build-and-fix loop has not yet run end to end on a Mac.
+`/ios-build "<what you want>"` asks Claude Code to plan an iOS app, write its SwiftUI code and Xcode project, apply capability modules (sign-in, storage, payments, maps and more), then build, run and screenshot it in the iOS Simulator, ending with a report of what needs your accounts or money. The tools are published in `ios-agent-mcp` 2.10.0 (npm verified October 3, 2026). Four apps it planned and wrote built on the first build with Xcode 27.0 and ran in the simulator. One of them is a food-delivery app with 20 capability modules and a widget extension. Its own build-and-fix loop has not yet run end to end on a Mac.
 
 ### Quickstart
 
-From a checkout (the `build` command is not published to npm yet):
+Install the published server and Claude Code command:
 
 ```bash
-cd mcp-server && npm ci && npm run build
-claude mcp add ios-agent -- node "$PWD/dist/unified.js"
-node dist/unified.js install-command --global
+claude mcp add ios-agent -- npx -y ios-agent-mcp@latest
+npx -y ios-agent-mcp@latest install-command --global
 ```
 
 Then, in any Claude Code session on a Mac with Xcode 16 or later:
@@ -100,7 +99,7 @@ For an existing app, provide its absolute project path and ask for a focused rev
 <!-- product-features:start -->
 | Feature | What you get |
 |---|---|
-| Build an app from a sentence | The ios-build agent plans screens, data and capabilities, writes SwiftUI and the Xcode project, then builds, runs and screenshots the app in the simulator. On main, not yet in the npm package. |
+| Build an app from a sentence | The ios-build agent plans screens, data and capabilities, writes SwiftUI and the Xcode project, then builds, runs and screenshots the app in the simulator. Available in ios-agent-mcp 2.10.0. |
 | Start an app | An editable Swift starter, implementation brief and optional XcodeGen specification. |
 | Reuse Apple knowledge | Search local Swift source and guides in bounded sections, plus a dated directory of Apple technologies and release notes. |
 | Review Swift code | File-located findings for concurrency, architecture, SwiftUI, availability, security, performance and App Intents. |
@@ -132,7 +131,7 @@ The [Reading List demo](samples/ReadingList/README.md) has persistence, search, 
   <img src="examples/reading-list/library.png" alt="Reading List running in the simulator" width="260">
 </a>
 
-npm 2.9.0 exposes 67 tools; 2.10.0, prepared here and not yet on npm, adds the 13 build-agent tools for 80. They include seven [Apple system integration tools](docs/integrations/README.md) and nine [Screenshot Studio tools](docs/screenshots/README.md). Static reviews are heuristics, not compiler diagnostics. The Apple directory is a reference map, not Apple's proprietary framework source or proof of 405 working integrations. Token savings have not been benchmarked. [Build-loop verification limits](docs/tooling/app-building-loop.md).
+Published npm 2.10.0 adds 13 build-agent tools to the previous 67, for 80 tools. They include seven [Apple system integration tools](docs/integrations/README.md) and nine [Screenshot Studio tools](docs/screenshots/README.md). Static reviews are heuristics, not compiler diagnostics. The Apple directory is a reference map, not Apple's proprietary framework source or proof of 405 working integrations. Token savings have not been benchmarked. [Build-loop verification limits](docs/tooling/app-building-loop.md).
 
 ## Why use this alongside Xcode?
 
