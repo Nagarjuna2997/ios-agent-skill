@@ -2,7 +2,7 @@
 // model a raw build log: it gets {file, line, column, message} records, with
 // the full log saved under .ios-agent/logs for a human.
 import { mkdir, writeFile } from "node:fs/promises";
-import { existsSync } from "node:fs";
+import { existsSync, realpathSync } from "node:fs";
 import { isAbsolute, join, relative, sep } from "node:path";
 import type { CommandRunner } from "./runner.js";
 import { projectPaths, readSpec, requireProjectDir } from "./project.js";
@@ -42,7 +42,16 @@ export function parseBuildOutput(text: string, root?: string): { errors: Diagnos
     const located = line.match(LOCATED);
     if (located && !/^\s/.test(line)) {
       let file = located[1]!;
-      if (root && isAbsolute(file) && file.startsWith(root + sep)) file = relative(root, file);
+      if (root && isAbsolute(file)) {
+        // Xcode resolves workspace aliases (notably /var -> /private/var on macOS).
+        // Keep external diagnostics absolute; only app-contained paths are editable.
+        let canonicalRoot = root;
+        let canonicalFile = file;
+        try { canonicalRoot = realpathSync(root); } catch { /* synthetic/missing root */ }
+        try { canonicalFile = realpathSync(file); } catch { /* deleted/generated source */ }
+        if (canonicalFile.startsWith(canonicalRoot + sep)) file = relative(canonicalRoot, canonicalFile);
+        else if (file.startsWith(root + sep)) file = relative(root, file);
+      }
       diagnostic = {
         severity: located[4] === "warning" ? "warning" : "error",
         file,

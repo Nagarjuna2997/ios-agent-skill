@@ -6,12 +6,12 @@
     "url": "https://github.com/Nagarjuna2997/ios-agent-skill",
     "source": "github"
   },
-  "version": "2.10.0",
+  "version": "2.10.1",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "ios-agent-mcp",
-      "version": "2.10.0",
+      "version": "2.10.1",
       "transport": {
         "type": "stdio"
       }

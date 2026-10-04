@@ -6,7 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
-Version 3.9.0 (skill manifests), `ios-agent-mcp` 2.10.0 and `@nagarjuna2002/ios-agent` 0.4.1 (npm package files) are prepared on `main`. Nothing has been tagged, released or published. The 3.8.2 notes below were prepared earlier and have not been released either. Install paths still pin the published `ios-agent-mcp@2.9.0`.
+### npm patch 2.10.1 — published 2026-10-03
+
+- Published `ios-agent-mcp` 2.10.1 with companion CLI 0.4.1 cleanup/help safety fixes and current npm installation guidance. npm registry and `latest` tag verified October 3, 2026.
+- Normalize Xcode diagnostic paths across macOS workspace symlinks so the repair loop receives project-relative source paths; add a regression that preserves external diagnostics.
+- Update vulnerable transitive dependencies; npm audit reports zero vulnerabilities. All 493 MCP tests pass.
+
+Version 3.9.0 (skill manifests), `ios-agent-mcp` 2.10.0 and `@nagarjuna2002/ios-agent` 0.4.1 (npm package files) are prepared on `main`. npm 2.10.0 and CLI 0.4.1 are published (registry verified October 3, 2026); repository tag/release status is separate. The 3.8.2 notes below were prepared earlier and have not been released either. Current installation instructions use `ios-agent-mcp@latest`.
 
 ### Added -- 3.9.0
 

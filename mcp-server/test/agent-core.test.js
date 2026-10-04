@@ -369,3 +369,19 @@ test("writeFiles validates input before writing anything", async (t) => {
   assert.deepEqual(deleted.deleted, ["Notes/Keep.swift"]);
   assert.equal(deleted.regenerated, true);
 });
+
+
+test("diagnostics resolve workspace directory aliases without relativizing external files", async () => {
+  const base = await mkdtemp(join(tmpdir(), "diagnostic-alias-"));
+  try {
+    const real = join(base, "real"), alias = join(base, "alias");
+    await mkdir(join(real, "App"), { recursive: true });
+    await writeFile(join(real, "App", "Main.swift"), "invalid");
+    await symlink(real, alias, "dir");
+    const outside = join(base, "External.swift");
+    await writeFile(outside, "invalid");
+    const result = parseBuildOutput(`${join(real, "App", "Main.swift")}:1:2: error: broken\n${outside}:3: error: external`, alias);
+    assert.equal(result.errors[0].file, "App/Main.swift");
+    assert.equal(result.errors[1].file, outside);
+  } finally { await rm(base, { recursive: true, force: true }); }
+});
