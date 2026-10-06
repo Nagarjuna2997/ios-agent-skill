@@ -240,6 +240,16 @@
       "url": "https://mcp.ahel.ai/catalog/item/ios-agent-skill",
       "verifiedOn": "2026-10-03",
       "evidence": "Opened the catalog page and confirmed its exact Nagarjuna2997/ios-agent-skill source link and plugins/ios-agent-copilot/skills/ios-agent-skill/SKILL.md attribution. Catalog listing, not independent testing or endorsement."
+    },
+    {
+      "id": "product-hunt",
+      "platform": "Product Hunt",
+      "kind": "official",
+      "category": "Launch · maintainer-submitted",
+      "description": "The project’s launch page presents its iOS development workflow and a maker introduction.",
+      "url": "https://www.producthunt.com/products/ios-agent-mcp",
+      "verifiedOn": "2026-10-06",
+      "evidence": "Opened the previously inaccessible launch page. Its website link identifies nagarjuna2997.github.io/ios-agent-skill; the maker introduction is attributed to Nagarjuna Reddy. Official project launch, not independent coverage or endorsement."
     }
   ]
 }
