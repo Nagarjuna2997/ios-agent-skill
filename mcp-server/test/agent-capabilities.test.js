@@ -133,6 +133,14 @@ describe("capability resolution", () => {
     // Lottie is an alternative, not the animation default, so the category is not satisfied by it.
     assert.match(unavailable[2].reason, /No capability module is the default for category animation/);
   });
+
+  test("planned apps resolve the design system and its semantic color dependency", async () => {
+    const loaded = await loadCapabilities(sourceDir);
+    const catalog = await loadCatalog(sourceDir);
+    const resolution = resolveCapabilities(["design-system"], loaded, catalog);
+    assert.deepEqual(resolution.ordered.map((entry) => entry.manifest.id), ["color-assets", "design-system"]);
+    assert.equal(resolution.ordered[1].manifest.default, true);
+  });
 });
 
 describe("applying every module", () => {
@@ -274,6 +282,26 @@ describe("brand colors", () => {
       assert.ok(contrast(readable(hue, 75, 62, "#111111", "lighter"), "#111111") >= 4.5, `dark primary ${hue}`);
     }
     assert.equal(contrast("#FFFFFF", "#000000"), 21);
+  });
+
+  test("color assets use the selected plan palette and create AccentColor", async () => {
+    const { applyCapabilities } = await import("../dist/agent/capabilities.js");
+    const { newAppSpec } = await import("../dist/agent/spec.js");
+    const loaded = await loadCapabilities(capabilitiesDir());
+    const resolution = resolveCapabilities(["design-system"], loaded, await loadCatalog(capabilitiesDir()));
+    const files = new Map();
+    const design = { palette: { name: "Deep Teal", primary: "#005F73", secondary: "#0A9396", accent: "#EE9B00" } };
+    const applied = await applyCapabilities(newAppSpec({ name: "PaletteProbe" }), resolution.ordered, {
+      writeSourceFile: async (path, content) => { files.set(path, Buffer.from(content).toString("utf8")); return "written"; },
+    }, {}, design);
+    const primary = JSON.parse(files.get("Resources/Assets.xcassets/BrandPrimary.colorset/Contents.json"));
+    const rgb = primary.colors[0].color.components;
+    assert.equal(rgb.red, "0.000");
+    assert.equal(rgb.green, "0.373");
+    assert.equal(rgb.blue, "0.451");
+    assert.ok(files.has("Resources/Assets.xcassets/AccentColor.colorset/Contents.json"));
+    assert.match(files.get("DesignSystem/AppComponents.swift"), /struct AppEmptyStateView/);
+    assert.ok(applied.applied.some((item) => item.id === "design-system"));
   });
 });
 

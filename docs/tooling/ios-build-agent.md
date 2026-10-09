@@ -15,10 +15,10 @@ The automated build-and-fix loop has not yet run against a real `xcodebuild`, an
 ## What a run does
 
 1. **Preflight** checks Node, Xcode, the iOS Simulator SDK and an available simulator, and prints the install command for anything missing. XcodeGen is optional.
-2. **Plan** turns the description into screens, navigation, a data model and a capability list, then writes `PLAN.md` before any code: default choice and alternatives for each capability, cost model, credentials the user must provide, whether it is built fully or with placeholder keys, and a budget from the capability manifests.
+2. **Plan** turns the description into screens, navigation, a data model, synthetic example records and a design direction (mood, named palette, typography, shape, density and motion), then writes `PLAN.md` before any code. The person can review the visual direction before files are created. New models need at least two synthetic sample records; old saved plans remain readable.
 3. **Project** creates an XcodeGen `project.yml` from `.ios-agent/spec.json`, `Config/Base.xcconfig`, a gitignored `Config/Secrets.xcconfig` generated from the gitignored `.env`, and starter sources. XcodeGen generates the `.xcodeproj` when it is installed. Otherwise the built-in writer renders the same spec into a folder-synchronized project that needs Xcode 16 or later; that project includes the app target, packages, Info.plist, entitlements, a shared scheme and the WidgetKit extension. Set `IOS_AGENT_PROJECT_GENERATOR=xcodegen` or `builtin` to force one writer.
-4. **Capabilities** are applied in dependency order: Info.plist keys, entitlements, Swift packages, build settings, credentials and template files.
-5. **Code**: the model writes SwiftUI under `<AppName>/`. The root view honors `-ios-agent-screen <id>` so each top-level screen can be opened for a screenshot.
+4. **Capabilities** are applied in dependency order: Info.plist keys, entitlements, Swift packages, build settings, credentials and template files. A reusable SwiftUI design system is included by default; its semantic color assets use the palette approved in `PLAN.md` and adjust foreground colors for contrast.
+5. **Code**: the model writes SwiftUI under `<AppName>/`, composes feature screens from the included design components, and defines `SampleData` for every model. Previews and agent demo launches reuse the same synthetic examples. `-ios-agent-screen <id>` selects a screen; `-ios-agent-sample-data YES` enables demo records only in that process, leaving the ordinary app state untouched.
 6. **Build and fix**: `xcodebuild` errors come back as `{file, line, column, message}`; the model fixes them; at most 8 attempts and 25 minutes per cycle, with the clock starting at the cycle's first build. Each refinement starts a new cycle (`ios_build` with `newCycle: true`), and earlier builds stay in the history.
 7. **Run**: the newest installed iOS runtime's iPhone (or a booted one) is used; the app is installed, launched once per top-level screen and screenshotted.
 8. **Report**: `RUN_REPORT.md` lists the result, screenshots, capabilities (applied, status, awaiting credentials), builds, what needs the user's accounts or money, next steps and the progress log.
@@ -70,7 +70,7 @@ ios-agent-mcp build "A three-tab app: Home feed of cards, Search, Profile" --pla
 | `ios_write_files` | Write or delete files under `<AppName>/` |
 | `ios_add_package` | Add a Swift package and regenerate |
 | `ios_build` | Structured build result, capped attempts |
-| `ios_run` | Boot, install, launch (optionally at a screen) |
+| `ios_run` | Boot, install and launch with synthetic demo data by default; `sampleData: false` shows normal app state |
 | `ios_screenshot` | Save a PNG of the simulator |
 | `ios_logs` | Recent unified-log lines for the app |
 | `ios_progress` | Record a status line for the report |

@@ -2435,6 +2435,25 @@
       "status": "planned"
     },
     {
+      "id": "design-system",
+      "name": "SwiftUI design system and components",
+      "category": "design-system",
+      "appleNative": true,
+      "defaultInCategory": true,
+      "cost": {
+        "model": "free",
+        "note": "Apple frameworks only"
+      },
+      "credentials": [],
+      "docs": [
+        "docs/design/design-tokens.md",
+        "docs/design/typography-system.md",
+        "docs/design/stunning-ui-patterns.md"
+      ],
+      "priority": "P1",
+      "status": "untested"
+    },
+    {
       "id": "testflight",
       "name": "TestFlight distribution",
       "category": "distribution",

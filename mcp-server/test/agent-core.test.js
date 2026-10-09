@@ -21,7 +21,7 @@ import {
 import { containedPath, writeProjectFiles, addPackage, readSpec } from "../dist/agent/project.js";
 import { ProcessRunner, LoggingRunner } from "../dist/agent/runner.js";
 import { runApp, screenshot, appLogs } from "../dist/agent/simulator.js";
-import { createProject, recordedBuild, writeReport, writePlan } from "../dist/agent/workspace.js";
+import { createProject, recordedBuild, requestedCapabilities, writeReport, writePlan } from "../dist/agent/workspace.js";
 import { loadState, saveState } from "../dist/agent/state.js";
 import { PlanSchema } from "../dist/agent/plan.js";
 import { fakeXcode, BOOTED, NEWER } from "./helpers/fake-xcode.js";
@@ -187,6 +187,22 @@ describe("plan schema", () => {
     const plan = PlanSchema.parse(base);
     assert.deepEqual(plan.models, []);
     assert.deepEqual(plan.screens[0].capabilities, []);
+    assert.deepEqual(plan.design.palette, { name: "Ocean Ink", primary: "#1677C8", secondary: "#48A9A6", accent: "#F2A65A" });
+    assert.ok(requestedCapabilities(plan).includes("design-system"));
+  });
+  test("design brief is reviewable and model sample data only contains declared fields", async () => {
+    const plan = PlanSchema.parse({
+      ...base,
+      design: { mood: "warm editorial", palette: { name: "Citrus", primary: "#C6531A", secondary: "#356859", accent: "#E7B84B" }, typography: "serif", shape: "soft", density: "spacious", motion: "minimal" },
+      models: [{ name: "Article", persisted: false, fields: [{ name: "title", type: "String", optional: false }, { name: "readMinutes", type: "Int", optional: false }], sampleData: [{ title: "Small habits, lasting change", readMinutes: 6 }, { title: "A calmer morning", readMinutes: 4 }] }],
+    });
+    assert.equal(plan.models[0].sampleData.length, 2);
+    const { renderPlanMarkdown } = await import("../dist/agent/plan.js");
+    const markdown = renderPlanMarkdown(plan, [], { oneTimeUsd: 0, monthlyUsd: 0, yearlyUsd: 0, lines: [], unpriced: [] });
+    assert.match(markdown, /warm editorial/);
+    assert.match(markdown, /#C6531A/);
+    assert.match(markdown, /Synthetic preview records: 2/);
+    assert.throws(() => PlanSchema.parse({ ...base, models: [{ name: "Article", persisted: false, fields: [{ name: "title", type: "String" }], sampleData: [{ wrong: "not a declared model field" }] }] }), /unknown field/);
   });
   test("rejects duplicate screens, no top-level screen and more than five tabs", () => {
     assert.throws(() => PlanSchema.parse({ ...base, screens: [base.screens[0], base.screens[0]] }), /Duplicate screen id/);
@@ -212,6 +228,9 @@ describe("project workflow against fake Xcode", () => {
     assert.equal(created.generated, true, created.generateError);
     assert.equal(created.scheme, "Habits");
     assert.ok(existsSync(join(root, "Habits.xcodeproj", "project.pbxproj")));
+    const launchSupport = await readFile(join(root, "Habits/App/AgentLaunch.swift"), "utf8");
+    assert.match(launchSupport, /usesSampleData/);
+    assert.match(launchSupport, /ios-agent-sample-data/);
     for (const file of ["project.yml", "Config/Base.xcconfig", "Config/Secrets.xcconfig", ".env.example", ".gitignore", "Habits/App/HabitsApp.swift", "Habits/App/AgentLaunch.swift"]) {
       assert.ok(existsSync(join(root, file)), file);
     }
@@ -343,7 +362,7 @@ describe("project workflow against fake Xcode", () => {
           { id: "list", title: "Habits", purpose: "Today's habits", topLevel: true },
           { id: "settings", title: "Settings", purpose: "Appearance", topLevel: true },
         ],
-        models: [{ name: "Habit", persisted: true, fields: [{ name: "title", type: "String" }] }],
+        models: [{ name: "Habit", persisted: true, fields: [{ name: "title", type: "String" }], sampleData: [{ title: "Stretch" }, { title: "Walk" }] }],
         capabilities: [{ id: "no-such-capability", reason: "test" }],
       },
       { description: "A habit tracker" },
@@ -351,6 +370,7 @@ describe("project workflow against fake Xcode", () => {
     assert.ok(existsSync(join(root, "PLAN.md")));
     assert.match(outcome.markdown, /\| Habits \(`list`\) \| tab bar \| Today's habits \|/);
     assert.match(outcome.markdown, /Habit\*\* \(stored on device with SwiftData\): title: String/);
+    assert.match(outcome.markdown, /Example 1: \{"title":"Stretch"\}/);
     assert.match(outcome.markdown, /Not built: no module yet/);
     assert.equal(outcome.resolution.unavailable[0].id, "no-such-capability");
     assert.equal((await loadState(root)).description, "A habit tracker");

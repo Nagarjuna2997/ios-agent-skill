@@ -12,8 +12,9 @@ const SWIFT_RULES = `Write native SwiftUI for iOS. Rules:
 - Swift 6 language mode with strict concurrency. Use async/await; no DispatchQueue.main.async in async code; no Task.detached; no @unchecked Sendable.
 - Use SwiftData (@Model, ModelContainer, @Query) only for models marked persisted; otherwise plain value types.
 - NavigationStack (never NavigationView); a TabView with one NavigationStack per tab for tab navigation.
-- Show loading, empty and error states. Use semantic colors, Dynamic Type text styles and SF Symbols; label icon-only buttons for VoiceOver; support dark mode.
-- Every view gets a #Preview that works without network or disk (use in-memory containers or sample data).
+- Follow the approved plan's design direction. Compose feature screens from \`AppTheme\`, \`AppCard\`, \`HeroHeader\`, \`AppStatTile\`, \`AppChip\`, \`AppEmptyStateView\`, \`AppSectionHeader\`, \`AppProgressRing\` and \`ThumbnailPlaceholder\`; reserve \`List\`/\`Form\` for settings and data-entry forms. Use semantic colors, Dynamic Type text styles and SF Symbols; label icon-only buttons for VoiceOver; support dark mode.
+- Define a \`SampleData\` namespace with realistic, synthetic examples for every planned model. Reuse the plan's examples in \`#Preview\` providers. When \`AgentLaunch.usesSampleData\` is true, initialize the visible dashboard/feed/list with those examples; otherwise preserve the normal empty or persisted-data behavior. Never use real personal data.
+- Every view gets a #Preview that works without network or disk (use in-memory containers and SampleData).
 - Use only Apple frameworks plus the capability templates already in the project; do not add packages.
 - Never embed credentials. Read client keys from Bundle.main.object(forInfoDictionaryKey:) as the capability templates do.
 - The app must build with no errors for the iOS Simulator.`;
@@ -23,6 +24,7 @@ const ROOT_CONTRACT = (spec: AppSpec) => `Project contract:
 - ${spec.name}/App/${spec.name}App.swift is the @main entry. Replace it if the app needs a modelContainer or environment setup; keep the type name ${spec.name}App.
 - ${spec.name}/Views/RootView.swift must define \`struct RootView: View\` and be what the app shows at launch.
 - RootView must honor \`AgentLaunch.requestedScreen\` (already defined in ${spec.name}/App/AgentLaunch.swift): when it equals a top-level screen id, start on that screen (select that tab, or show it), so the agent can screenshot each screen. Unknown or nil values show the default first screen.
+- Use \`AgentLaunch.usesSampleData\` (already defined in ${spec.name}/App/AgentLaunch.swift) to seed preview/demo state only when launched with \`-ios-agent-sample-data YES\`; keep production state and persistence paths unchanged otherwise.
 - Deployment target is iOS ${spec.deploymentTarget}; do not use newer APIs without availability checks.`;
 
 const OUTPUT = `Return ONLY a JSON object, no prose and no code fences: {"files":[{"path":"<AppName>/Views/Example.swift","content":"<entire file>"}],"notes":"<one short sentence>"}. Each file's content is the complete file. To delete a file, use {"path":"...","delete":true}.`;
@@ -129,12 +131,13 @@ Request: ${input.description}
 
 Return ONLY JSON matching:
 {"appName":"UpperCamelCase Swift identifier, not App/View/Test","displayName":"<=30 chars","summary":"2-3 sentences","navigation":"tabs|stack|split",
+ "design":{"mood":"short visual direction","palette":{"name":"...","primary":"#RRGGBB","secondary":"#RRGGBB","accent":"#RRGGBB"},"typography":"system|rounded|serif","shape":"square|soft|rounded|organic","density":"compact|comfortable|spacious","motion":"minimal|subtle|expressive"},
  "screens":[{"id":"kebab-case","title":"...","purpose":"one line","topLevel":true,"capabilities":[]}],
- "models":[{"name":"UpperCamelCase","persisted":true,"fields":[{"name":"lowerCamel","type":"Swift type","optional":false}]}],
+ "models":[{"name":"UpperCamelCase","persisted":true,"fields":[{"name":"lowerCamel","type":"Swift type","optional":false}],"sampleData":[{"field":"synthetic example"},{"field":"second example"}]}],
  "capabilities":[{"id":"<capability id>","reason":"why the app needs it"}],
  "features":["..."],"assumptions":["what you assumed about unclear requirements"]}
 
-Rules: at most 5 top-level screens for tabs; mark persisted only data that must survive relaunch; deployment floor iOS ${input.deploymentFloor}.
+Rules: at most 5 top-level screens for tabs; mark persisted only data that must survive relaunch; deployment floor iOS ${input.deploymentFloor}. Choose a specific visual mood and a domain-appropriate readable palette (honor colors the user requested), not a random brand hue. Include 2-3 synthetic sampleData records for each model, covering varied realistic content without personal information. For a plan with no models, use an empty models array.
 List every capability the app needs. Prefer these implemented modules (ids exactly as written; Apple-native defaults first):
 ${modules}
 If the app needs something with no module, still list it using the closest catalog id so the plan shows it as not built yet. Catalog ids: ${catalog || "none"}.

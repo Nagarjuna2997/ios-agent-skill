@@ -19,7 +19,7 @@ const PLAN = {
     { id: "habit-detail", title: "Habit", purpose: "One habit's history", topLevel: false },
     { id: "settings", title: "Settings", purpose: "Dark mode toggle", topLevel: true },
   ],
-  models: [{ name: "Habit", persisted: false, fields: [{ name: "title", type: "String" }] }],
+  models: [{ name: "Habit", persisted: false, fields: [{ name: "title", type: "String" }], sampleData: [{ title: "Walk outside" }, { title: "Read for ten minutes" }] }],
   capabilities: [],
   assumptions: ["Habits reset at midnight local time."],
 };
@@ -76,12 +76,19 @@ test("description to screenshots: plan, create, generate, fail, fix, build, laun
   for (const file of ["PLAN.md", "RUN_REPORT.md", ".ios-agent/state.json", ".ios-agent/plan.json", ".ios-agent/screenshots/habits.png", ".ios-agent/screenshots/settings.png"]) {
     assert.ok(existsSync(join(projectDir, file)), file);
   }
+  const planMarkdown = await readFile(join(projectDir, "PLAN.md"), "utf8");
+  assert.match(planMarkdown, /Design direction[\s\S]*Ocean Ink/);
+  assert.match(planMarkdown, /Synthetic preview records: 2/);
   const report = await readFile(join(projectDir, "RUN_REPORT.md"), "utf8");
   assert.match(report, /Status: \*\*complete\*\*/);
   assert.match(report, /\[fixing\] Fixing 1 error/);
   assert.match(report, /Nothing\. The app runs in the simulator without accounts\./);
-  const launches = (await fake.calls()).filter((c) => c.args[1] === "launch").map((c) => c.args.at(-1));
-  assert.deepEqual(launches, ["habits", "settings"]);
+  const launches = (await fake.calls()).filter((c) => c.args[1] === "launch");
+  assert.deepEqual(launches.map((c) => c.args.at(-1)), ["habits", "settings"]);
+  assert.deepEqual(launches.map((c) => c.args.slice(-4)), [
+    ["-ios-agent-sample-data", "YES", "-ios-agent-screen", "habits"],
+    ["-ios-agent-sample-data", "YES", "-ios-agent-screen", "settings"],
+  ]);
   await assert.rejects(runAgent({ projectDir, description: "again", brain, runner }), /already has a run/);
 });
 

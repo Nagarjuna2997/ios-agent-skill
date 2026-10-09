@@ -1,0 +1,38 @@
+{
+  "id": "design-system",
+  "name": "SwiftUI design system and components",
+  "category": "design-system",
+  "description": "A reusable SwiftUI theme and accessible component kit, included by default in planned apps and driven by the plan's design direction and palette.",
+  "default": true,
+  "appleNative": true,
+  "alternatives": [],
+  "requires": {
+    "capabilities": [
+      "color-assets"
+    ],
+    "entitlements": {},
+    "infoPlist": {},
+    "packages": [],
+    "buildSettings": {},
+    "frameworks": []
+  },
+  "credentialsNeeded": [],
+  "cost": {
+    "model": "free",
+    "note": "Apple frameworks only",
+    "amounts": []
+  },
+  "platforms": [
+    "iOS"
+  ],
+  "minOS": "17.0",
+  "status": "verified",
+  "statusNote": "Built into a minimal app with Xcode 27.0 (27A266a) on 2026-10-09.",
+  "docs": [
+    "docs/design/design-tokens.md",
+    "docs/design/typography-system.md",
+    "docs/design/stunning-ui-patterns.md"
+  ],
+  "usage": "Use AppTheme spacing, radii and dynamic text styles when composing planned screens. Reuse AppCard for grouped content, HeroHeader for the primary screen title, AppStatTile for key metrics, AppChip for filters/status, AppSectionHeader for hierarchy, AppProgressRing for progress, AppEmptyStateView for genuine empty states, ThumbnailPlaceholder for image-free art direction, and AppPrimaryButtonStyle for primary actions. Read AppColor tokens from the asset catalog. Match the approved plan's mood, typography, shape, density and motion; do not use List/Form as the default layout for feature screens.",
+  "destination": "DesignSystem"
+}

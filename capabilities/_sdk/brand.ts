@@ -16,6 +16,23 @@ export function hsl(h: number, s: number, l: number): string {
   return `#${f(0)}${f(8)}${f(4)}`.toUpperCase();
 }
 
+/** Convert a validated #RRGGBB color into hue/saturation/lightness. */
+export function hslFromHex(hex: string): { hue: number; saturation: number; lightness: number } {
+  const values = [1, 3, 5].map((offset) => parseInt(hex.slice(offset, offset + 2), 16) / 255);
+  const [r, g, b] = values as [number, number, number];
+  const max = Math.max(r, g, b), min = Math.min(r, g, b), delta = max - min;
+  const lightness = (max + min) / 2;
+  let hue = 0;
+  let saturation = 0;
+  if (delta !== 0) {
+    saturation = delta / (1 - Math.abs(2 * lightness - 1));
+    if (max === r) hue = 60 * (((g - b) / delta) % 6);
+    else if (max === g) hue = 60 * ((b - r) / delta + 2);
+    else hue = 60 * ((r - g) / delta + 4);
+  }
+  return { hue: (hue + 360) % 360, saturation: saturation * 100, lightness: lightness * 100 };
+}
+
 /** WCAG relative luminance of a #RRGGBB color. */
 export function luminance(hex: string): number {
   const channel = (offset: number) => {

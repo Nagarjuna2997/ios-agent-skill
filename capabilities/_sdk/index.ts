@@ -18,6 +18,8 @@ export interface ApplyContext {
   readonly sourcesDir: string;
   /** Capabilities already applied before this one. */
   readonly capabilities: readonly string[];
+  /** Design choices approved in PLAN.md, when this app was planned by the build agent. */
+  readonly design?: { palette: { name: string; primary: string; secondary: string; accent: string } };
   setInfoPlist(key: string, value: unknown): void;
   addEntitlement(key: string, value: unknown): void;
   addBuildSetting(key: string, value: string): void;

@@ -90,7 +90,7 @@ test("slash-command tool sequence: preflight, plan, create, write, build, fix, r
   const run = (await call("ios_run", { projectDir, screen: "settings" })).json();
   assert.equal(run.pid, 4242);
   const launch = (await fake.calls()).find((c) => c.args[1] === "launch");
-  assert.deepEqual(launch.args.slice(-2), ["-ios-agent-screen", "settings"]);
+  assert.deepEqual(launch.args.slice(-5), ["com.example.habittracker", "-ios-agent-sample-data", "YES", "-ios-agent-screen", "settings"]);
   const shot = await call("ios_screenshot", { projectDir, udid: run.udid, name: "settings", waitSeconds: 0 });
   assert.notEqual(shot.response.isError, true, shot.text);
   const logs = (await call("ios_logs", { projectDir, udid: run.udid, seconds: 5 })).json();

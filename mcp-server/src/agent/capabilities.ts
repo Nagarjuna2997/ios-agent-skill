@@ -18,6 +18,7 @@ import { PackageSchema, SecretSchema, maxOS, type AppSpec, type PackageDependenc
 
 export const CATEGORIES = [
   "app-structure",
+  "design-system",
   "authentication",
   "backend",
   "persistence",
@@ -312,6 +313,7 @@ export interface ApplyContext {
   readonly displayName: string;
   readonly sourcesDir: string;
   readonly capabilities: readonly string[];
+  readonly design?: { palette: { name: string; primary: string; secondary: string; accent: string } };
   setInfoPlist(key: string, value: unknown): void;
   addEntitlement(key: string, value: unknown): void;
   addBuildSetting(key: string, value: string): void;
@@ -371,6 +373,7 @@ export async function applyCapabilities(
   ordered: LoadedCapability[],
   io: { writeSourceFile(path: string, content: string | Uint8Array): Promise<"written" | "unchanged" | "kept"> },
   env: Record<string, string> = {},
+  design?: ApplyContext["design"],
 ): Promise<{ spec: AppSpec; applied: AppliedCapability[] }> {
   const next: AppSpec = structuredClone(spec);
   const applied: AppliedCapability[] = [];
@@ -428,6 +431,7 @@ export async function applyCapabilities(
           displayName: next.displayName,
           sourcesDir: next.name,
           capabilities: [...next.capabilities],
+          ...(design ? { design } : {}),
           setInfoPlist: (k, v) => mergeValue(next.infoPlist, k, v, owner, "Info.plist"),
           addEntitlement: (k, v) => mergeValue(next.entitlements, k, v, owner, "entitlements"),
           addBuildSetting: (k, v) => {

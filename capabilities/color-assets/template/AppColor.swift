@@ -4,6 +4,7 @@ import SwiftUI
 enum AppColor {
     static let primary = Color("BrandPrimary")
     static let secondary = Color("BrandSecondary")
+    static let accent = Color("BrandAccent")
     static let surface = Color("BrandSurface")
     static let onPrimary = Color("BrandOnPrimary")
 }

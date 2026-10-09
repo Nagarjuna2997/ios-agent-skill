@@ -6,6 +6,15 @@ import type { CatalogEntry, LoadedCapability, Resolution } from "./capabilities.
 import { SWIFT_IDENTIFIER } from "./spec.js";
 
 const SCREEN_ID = /^[a-z][a-z0-9-]{0,39}$/;
+const COLOR_HEX = /^#[0-9a-fA-F]{6}$/;
+const DESIGN_DEFAULT = {
+  mood: "calm, clear, and native",
+  palette: { name: "Ocean Ink", primary: "#1677C8", secondary: "#48A9A6", accent: "#F2A65A" },
+  typography: "system" as const,
+  shape: "soft" as const,
+  density: "comfortable" as const,
+  motion: "subtle" as const,
+};
 
 export const PlanSchema = z
   .object({
@@ -14,6 +23,19 @@ export const PlanSchema = z
     summary: z.string().min(1).max(600),
     bundleId: z.string().optional(),
     navigation: z.enum(["tabs", "stack", "split"]),
+    design: z.object({
+      mood: z.string().min(1).max(100),
+      palette: z.object({
+        name: z.string().min(1).max(60),
+        primary: z.string().regex(COLOR_HEX, "Use a six-digit #RRGGBB color"),
+        secondary: z.string().regex(COLOR_HEX, "Use a six-digit #RRGGBB color"),
+        accent: z.string().regex(COLOR_HEX, "Use a six-digit #RRGGBB color"),
+      }).strict(),
+      typography: z.enum(["system", "rounded", "serif"]),
+      shape: z.enum(["square", "soft", "rounded", "organic"]),
+      density: z.enum(["compact", "comfortable", "spacious"]),
+      motion: z.enum(["minimal", "subtle", "expressive"]),
+    }).strict().default(DESIGN_DEFAULT),
     screens: z
       .array(
         z
@@ -38,6 +60,7 @@ export const PlanSchema = z
               .array(z.object({ name: z.string().regex(/^[a-z][A-Za-z0-9]{0,39}$/), type: z.string().min(1).max(60), optional: z.boolean().default(false) }).strict())
               .min(1)
               .max(40),
+            sampleData: z.array(z.record(z.string(), z.unknown())).max(6).default([]),
           })
           .strict(),
       )
@@ -57,6 +80,15 @@ export const PlanSchema = z
     if (!plan.screens.some((s) => s.topLevel)) ctx.addIssue({ code: "custom", message: "At least one screen must be topLevel (reachable from launch)." });
     if (plan.navigation === "tabs" && plan.screens.filter((s) => s.topLevel).length > 5) {
       ctx.addIssue({ code: "custom", message: "A tab bar shows at most five top-level screens." });
+    }
+    for (const model of plan.models) {
+      const fields = new Set(model.fields.map((field) => field.name));
+      model.sampleData.forEach((sample, index) => {
+        const unknown = Object.keys(sample).filter((field) => !fields.has(field));
+        if (unknown.length) ctx.addIssue({ code: "custom", message: `${model.name} sample ${index + 1} contains unknown field(s): ${unknown.join(", ")}` });
+        const missing = model.fields.filter((field) => !field.optional && !(field.name in sample)).map((field) => field.name);
+        if (missing.length) ctx.addIssue({ code: "custom", message: `${model.name} sample ${index + 1} is missing required field(s): ${missing.join(", ")}` });
+      });
     }
   });
 export type Plan = z.infer<typeof PlanSchema>;
@@ -170,10 +202,15 @@ export function renderPlanMarkdown(plan: Plan, rows: CapabilityPlanRow[], money_
     lines.push(`| ${escapeCell(screen.title)} (\`${screen.id}\`) | ${screen.topLevel ? (plan.navigation === "tabs" ? "tab bar" : "launch") : "navigation"} | ${escapeCell(screen.purpose)} |`);
   }
   lines.push("", `Navigation: ${plan.navigation}.`, "");
+  lines.push("## Design direction", "", `- Mood: ${plan.design.mood}`, `- Palette: **${plan.design.palette.name}** — primary \`${plan.design.palette.primary}\`, secondary \`${plan.design.palette.secondary}\`, accent \`${plan.design.palette.accent}\``, `- Typography: ${plan.design.typography}`, `- Shapes: ${plan.design.shape}`, `- Density: ${plan.design.density}`, `- Motion: ${plan.design.motion}`, "- A reusable SwiftUI design system is included by default; the screen layouts and components will follow this direction.", "");
   lines.push("## Data model", "");
   if (!plan.models.length) lines.push("No stored data model.", "");
   for (const model of plan.models) {
     lines.push(`- **${model.name}**${model.persisted ? " (stored on device with SwiftData)" : ""}: ${model.fields.map((f) => `${f.name}: ${f.type}${f.optional ? "?" : ""}`).join(", ")}`);
+    if (model.sampleData.length) {
+      lines.push(`  - Synthetic preview records: ${model.sampleData.length}`);
+      model.sampleData.forEach((sample, index) => lines.push(`    - Example ${index + 1}: ${JSON.stringify(sample)}`));
+    }
   }
   if (plan.models.length) lines.push("");
   lines.push("## Capabilities", "");

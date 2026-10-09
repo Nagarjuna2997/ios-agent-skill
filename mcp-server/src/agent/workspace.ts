@@ -51,7 +51,7 @@ async function capabilityContext(): Promise<{ loaded: Map<string, LoadedCapabili
 }
 
 export function requestedCapabilities(plan: Plan): string[] {
-  return [...new Set([...plan.capabilities.map((c) => c.id), ...plan.screens.flatMap((s) => s.capabilities)])];
+  return [...new Set(["design-system", ...plan.capabilities.map((c) => c.id), ...plan.screens.flatMap((s) => s.capabilities)])];
 }
 
 /** Validate the plan, resolve capabilities, and write PLAN.md before any code exists. */
@@ -62,6 +62,9 @@ export async function writePlan(
 ): Promise<PlanOutcome> {
   const root = requireProjectDir(rootDir);
   const plan = PlanSchema.parse(input);
+  for (const model of plan.models) {
+    if (model.sampleData.length < 2) throw new Error(`Plan model ${model.name} needs at least two synthetic sampleData records so previews and simulator screenshots can show real content.`);
+  }
   const { loaded, catalog } = await capabilityContext();
   const resolution = resolveCapabilities(requestedCapabilities(plan), loaded, catalog);
   const env = await readEnv(root);
@@ -125,7 +128,8 @@ export async function addCapabilities(rootDir: string, requested: string[], runn
   for (const capability of resolution.ordered) {
     if (!spec.capabilities.includes(capability.manifest.id)) progress(state, "capabilities", `Applying capability ${capability.manifest.name} (${capability.manifest.status}).`, sink);
   }
-  const { spec: next, applied } = await applyCapabilities(spec, resolution.ordered, sourceWriter(root, spec), await readEnv(root));
+  const plan = await readPlan(root);
+  const { spec: next, applied } = await applyCapabilities(spec, resolution.ordered, sourceWriter(root, spec), await readEnv(root), plan?.design);
   await writeSpec(root, next);
   for (const record of applied) {
     state.capabilities = [

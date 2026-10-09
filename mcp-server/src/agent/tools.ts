@@ -99,11 +99,11 @@ export function registerAgentTools(server: McpServer, runners: RunnerFactory = d
     {
       title: "Write the build plan",
       description:
-        "Use this first for a new app, before any code: validates the plan (screens, navigation, models, capabilities), resolves capabilities to modules with defaults and dependencies, and writes PLAN.md with costs, credentials and what will be built. Screen ids are kebab-case; capability ids come from ios_capabilities.",
+        "Use this first for a new app, before any code: validates the plan (screens, navigation, design direction and palette, model sample records, capabilities), includes the default SwiftUI design system, resolves module dependencies, and writes PLAN.md with costs, credentials and what will be built. New models need at least two synthetic sampleData records. Screen ids are kebab-case; capability ids come from ios_capabilities.",
       inputSchema: {
         projectDir,
         description: z.string().min(1).max(2000).describe("The user's request, verbatim."),
-        plan: z.record(z.unknown()).describe("Plan JSON: appName, displayName, summary, navigation (tabs|stack|split), screens[{id,title,purpose,topLevel,capabilities}], models[{name,persisted,fields[{name,type,optional}]}], capabilities[{id,reason}], features[], assumptions[]."),
+        plan: z.record(z.unknown()).describe("Plan JSON: appName, displayName, summary, navigation, design{mood,palette{name,primary,secondary,accent},typography,shape,density,motion}, screens[], models[{name,persisted,fields[],sampleData[2+ synthetic records]}], capabilities[], features[], assumptions[]."),
       },
       annotations: writes,
     },
@@ -259,18 +259,19 @@ export function registerAgentTools(server: McpServer, runners: RunnerFactory = d
     "ios_run",
     {
       title: "Run the app in the simulator",
-      description: "Use this after a successful ios_build to boot a simulator if needed (newest installed iOS runtime unless a UDID is given), install the app and launch it. screen opens that screen via -ios-agent-screen.",
-      inputSchema: { projectDir, udid: z.string().optional(), screen: z.string().regex(/^[a-z][a-z0-9-]{0,39}$/).optional() },
+      description: "Use this after a successful ios_build to boot a simulator if needed (newest installed iOS runtime unless a UDID is given), install the app and launch it. Synthetic sample data is enabled by default for a useful demo; set sampleData=false to see the app's normal state. screen opens that screen via -ios-agent-screen.",
+      inputSchema: { projectDir, udid: z.string().optional(), screen: z.string().regex(/^[a-z][a-z0-9-]{0,39}$/).optional(), sampleData: z.boolean().default(true) },
       annotations: writes,
     },
-    async ({ projectDir: dir, udid, screen }) => {
+    async ({ projectDir: dir, udid, screen, sampleData }) => {
       try {
         const root = requireProjectDir(dir);
-        const result = await runApp(root, runners(root), { ...(udid ? { udid } : {}), launchArguments: screen ? ["-ios-agent-screen", screen] : [] });
+        const launchArguments = [...(sampleData ? ["-ios-agent-sample-data", "YES"] : []), ...(screen ? ["-ios-agent-screen", screen] : [])];
+        const result = await runApp(root, runners(root), { ...(udid ? { udid } : {}), launchArguments });
         const state = await ensureState(root);
         state.run = { udid: result.udid, simulator: result.simulator, ...(result.pid ? { pid: result.pid } : {}) };
         state.toolchain = { ...(state.toolchain ?? {}), simulator: result.simulator };
-        progress(state, "launching", `Launched on ${result.simulator}${screen ? ` at screen ${screen}` : ""}.`);
+        progress(state, "launching", `Launched on ${result.simulator}${screen ? ` at screen ${screen}` : ""}${sampleData ? " with synthetic sample data" : ""}.`);
         await saveState(root, state);
         return ok(result);
       } catch (error) {

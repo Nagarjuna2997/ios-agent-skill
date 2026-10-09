@@ -162,7 +162,7 @@ async function launchAndCapture(root: string, options: LoopOptions, plan: Plan):
   progress(state, "launching", "Launching in the simulator.", sink);
   await saveState(root, state);
   for (const screen of screens) {
-    const run = await runApp(root, options.runner, { ...(options.udid ? { udid: options.udid } : {}), launchArguments: ["-ios-agent-screen", screen.id] });
+    const run = await runApp(root, options.runner, { ...(options.udid ? { udid: options.udid } : {}), launchArguments: ["-ios-agent-sample-data", "YES", "-ios-agent-screen", screen.id] });
     await new Promise((r) => setTimeout(r, options.screenshotDelayMs ?? 3000));
     const shot = await screenshot(root, options.runner, run.udid, screen.id);
     state = (await loadState(root))!;
