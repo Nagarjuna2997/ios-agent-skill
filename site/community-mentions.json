@@ -250,6 +250,26 @@
       "url": "https://www.producthunt.com/products/ios-agent-mcp",
       "verifiedOn": "2026-10-06",
       "evidence": "Opened the previously inaccessible launch page. Its website link identifies nagarjuna2997.github.io/ios-agent-skill; the maker introduction is attributed to Nagarjuna Reddy. Official project launch, not independent coverage or endorsement."
+    },
+    {
+      "id": "freemcp-space",
+      "platform": "freemcp.space",
+      "kind": "directory",
+      "category": "MCP directory · public listing",
+      "description": "Lists the repository’s Swift, Apple documentation, MCP and Xcode Simulator capabilities. The project is listed, not deployed on freemcp.space.",
+      "url": "https://freemcp.space/featured/ios-agent-skill",
+      "verifiedOn": "2026-10-09",
+      "evidence": "Opened public listing and confirmed the exact Nagarjuna2997/ios-agent-skill GitHub link, October 8, 2026 creation date and Listed / Not deployed status. The page states that source code has not been built or run on freemcp.space. Directory listing, not independent testing or endorsement."
+    },
+    {
+      "id": "mcprush",
+      "platform": "MCPRush",
+      "kind": "directory",
+      "category": "MCP directory · public index",
+      "description": "Indexes ios-agent-mcp with its source repository and local installation instructions. The server runs locally; the listing does not establish a hosted deployment.",
+      "url": "https://mcprush.com/nagarjuna2997/ios-agent-skill-mcp",
+      "verifiedOn": "2026-10-09",
+      "evidence": "Direct HTTPS fetch returned 200. Public page links the ios-agent-mcp npm package; embedded listing data identifies source.from as https://github.com/Nagarjuna2997/ios-agent-skill and source.value as ios-agent-mcp. It labels the publisher unclaimed and says the listing was collected from a public index, with local / stdio runtime and nothing hosted. Directory listing, not endorsement; automated scan scores and endpoint claims are not independently validated here."
     }
   ]
 }
