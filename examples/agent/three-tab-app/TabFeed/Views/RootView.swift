@@ -1,6 +1,7 @@
 import SwiftData
 import SwiftUI
 
+/// Tab identifiers match the plan's top-level screen ids so `-ios-agent-screen` can select them.
 enum AppTab: String, Hashable {
     case home = "home-feed"
     case search
@@ -30,7 +31,7 @@ private struct RootContent: View {
     var body: some View {
         TabView(selection: $selection) {
             HomeView(feed: feed)
-                .tabItem { Label("Home", systemImage: "house") }
+                .tabItem { Label("Home", systemImage: "house.fill") }
                 .tag(AppTab.home)
             SearchView(feed: feed)
                 .tabItem { Label("Search", systemImage: "magnifyingglass") }
@@ -39,10 +40,11 @@ private struct RootContent: View {
                 .tabItem { Label("Profile", systemImage: "person.crop.circle") }
                 .tag(AppTab.profile)
         }
+        .fontDesign(AppTheme.fontDesign)
     }
 }
 
 #Preview {
     RootView()
-        .modelContainer(PreviewSupport.container())
+        .modelContainer(PreviewSupport.seededContainer())
 }

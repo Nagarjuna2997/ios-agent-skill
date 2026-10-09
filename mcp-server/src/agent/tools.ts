@@ -1,3 +1,4 @@
+import { testProject } from "./testing.js";
 // MCP tools for the iOS build agent. The /ios-build slash command drives these
 // in order; the CLI loop calls the same functions directly.
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
@@ -6,6 +7,9 @@ import { capabilityRecipe, loadCapabilities, loadCatalog, CATEGORIES } from "./c
 import { addPackage, projectPaths, requireProjectDir, writeProjectFiles } from "./project.js";
 import { LoggingRunner, ProcessRunner, type CommandRunner } from "./runner.js";
 import { appLogs, runApp, screenshot } from "./simulator.js";
+import { launchAndCapture } from "./loop.js";
+import { VISUAL_CHECKLIST, visualInputs } from "./visual-review.js";
+import { readPlan } from "./workspace.js";
 import { STAGES, loadState, progress, saveState } from "./state.js";
 import { chooseSimulator, preflight } from "./toolchain.js";
 import { addCapabilities, createProject, ensureState, recordedBuild, writePlan, writeReport } from "./workspace.js";
@@ -31,6 +35,26 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 export function registerAgentTools(server: McpServer, runners: RunnerFactory = defaultRunnerFactory): void {
   const readOnly = { readOnlyHint: true, openWorldHint: false } as const;
   const writes = { readOnlyHint: false, destructiveHint: false, openWorldHint: false } as const;
+
+  server.registerTool("ios_design_evidence", {
+    title: "See the app for design review",
+    description: "Use this after a successful build to review actual light, dark and largest Dynamic Type screenshot images for one top-level screen, with approved brief and HIG checklist. capture=true first refreshes the full matrix on the simulator. Images are shared with the connected model; use synthetic sample data. A model opinion is not accessibility certification.",
+    inputSchema: { projectDir, screen: z.string(), capture: z.boolean().default(false) }, annotations: writes,
+  }, async ({ projectDir: folder, screen, capture }) => {
+    try {
+      const root = requireProjectDir(folder);
+      const plan = await readPlan(root);
+      if (!plan) throw new Error("Write a plan first");
+      if (!plan.screens.some(s => s.id === screen && s.topLevel)) throw new Error("Unknown top-level screen");
+      if (capture) await launchAndCapture(root, {runner: runners(root)}, plan);
+      const state = await loadState(root);
+      if (!state) throw new Error("No run state");
+      const {snapshotFiles, snapshotHash} = await import("./remote.js");
+      if (state.captureSourceHash !== snapshotHash(await snapshotFiles(root))) throw new Error("Screenshots are stale or not tied to a build. Rebuild and capture=true.");
+      const input = (await visualInputs(root, plan, state)).find(i => i.screen.id === screen)!;
+      return { content: [ {type: "text" as const, text: JSON.stringify({checklist: VISUAL_CHECKLIST, design: plan.design, screen: input.screen, variants: input.images.map(i => ({variant:i.variant,sha256:i.sha256}))})}, ...input.images.map(i => ({type: "image" as const, mimeType: "image/png", data: i.data})) ] };
+    } catch (error) { return fail(error); }
+  });
 
   server.registerTool(
     "ios_preflight",
@@ -136,6 +160,7 @@ export function registerAgentTools(server: McpServer, runners: RunnerFactory = d
         displayName: z.string().max(30).optional(),
         deploymentTarget: z.string().optional().describe("iOS version, default 17.0; raised automatically for capabilities that need more."),
         capabilities: z.array(z.string()).default([]),
+        tests: z.boolean().optional().describe("Create separate unit and UI test targets; write tests before requesting runTests."),
       },
       annotations: writes,
     },
@@ -240,15 +265,17 @@ export function registerAgentTools(server: McpServer, runners: RunnerFactory = d
         projectDir,
         scheme: z.string().optional(),
         udid: z.string().optional(),
+        runTests: z.boolean().optional().describe("After a successful build, run the configured unit/UI tests and return separate test evidence."),
         newCycle: z.boolean().optional().describe("Start a new attempt budget and deadline (refinement or resume)."),
         change: z.string().max(500).optional().describe("The refinement being applied, recorded in RUN_REPORT.md."),
       },
       annotations: writes,
     },
-    async ({ projectDir: dir, scheme, udid, newCycle, change }) => {
+    async ({ projectDir: dir, scheme, udid, newCycle, change, runTests }) => {
       try {
         const result = await recordedBuild(dir, runners(dir), { ...(scheme ? { scheme } : {}), ...(udid ? { udid } : {}), ...(newCycle ? { newCycle } : {}), ...(change ? { change } : {}) });
-        return ok(result);
+        const tests = runTests && result.success ? await testProject(dir, runners(dir), udid) : undefined;
+        return ok({...result, ...(tests ? {tests} : {})});
       } catch (error) {
         return fail(error);
       }
@@ -346,7 +373,7 @@ export function registerAgentTools(server: McpServer, runners: RunnerFactory = d
     "ios_report",
     {
       title: "Write the run report",
-      description: "Use this to finish every /ios-build run: writes RUN_REPORT.md from the run state with result, screenshots, capabilities (applied, status, awaiting credentials), builds, what needs the user's accounts or money, next steps and the progress log.",
+      description: "Use this to finish every /ios-build run: writes RUN_REPORT.md from the run state with result, light/dark/XXL screenshot matrix per top-level screen when the full build loop ran, generated palette contrast evidence, capabilities (applied, status, awaiting credentials), builds, what needs the user's accounts or money, next steps and the progress log. Standalone MCP screenshots remain single captures and do not claim appearance or text-size coverage.",
       inputSchema: {
         projectDir,
         status: z.enum(["complete", "failed", "stopped"]).optional(),

@@ -41,6 +41,16 @@ final class OrderTrackingModel {
         task = Task { await run(orderID: id) }
     }
 
+    /// Shows deterministic preview content without requesting notifications or starting a Live Activity.
+    func showSampleOrder(_ order: Order, address: String) {
+        task?.cancel()
+        currentOrder = order
+        active = ActiveOrder(id: order.id, restaurantName: order.restaurantName, itemSummary: order.itemSummary, address: address)
+        stage = OrderStage(rawValue: order.status) ?? .placed
+        eta = stage.etaMinutes.map { Date.now.addingTimeInterval(Double($0) * 60) }
+        message = nil
+    }
+
     func dismiss() {
         task?.cancel()
         task = nil

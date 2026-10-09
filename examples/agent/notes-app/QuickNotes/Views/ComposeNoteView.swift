@@ -1,9 +1,9 @@
 import SwiftData
 import SwiftUI
 
+/// "compose-note" screen: a form for writing a new note or editing an existing one.
 struct ComposeNoteView: View {
     @State private var viewModel: ComposeViewModel
-    @State private var spacing = ScaledSpacing()
     @FocusState private var focus: Field?
     @Environment(\.dismiss) private var dismiss
 
@@ -16,24 +16,31 @@ struct ComposeNoteView: View {
     var body: some View {
         @Bindable var vm = viewModel
 
-        ScrollView {
-            VStack(alignment: .leading, spacing: spacing.standard) {
+        Form {
+            Section {
                 TextField("Title", text: $vm.title, axis: .vertical)
-                    .font(.title2.weight(.semibold))
+                    .font(.title3.weight(.semibold))
                     .focused($focus, equals: .title)
                     .submitLabel(.next)
                     .onSubmit { focus = .body }
-
-                Divider()
-
-                TextField("Start writing…", text: $vm.body, axis: .vertical)
-                    .font(.body)
-                    .focused($focus, equals: .body)
-                    .frame(maxWidth: .infinity, minHeight: 240, alignment: .topLeading)
+            } header: {
+                Text("Title")
+            } footer: {
+                Text("A short line you will recognise in the list.")
             }
-            .padding(spacing.standard)
+
+            Section {
+                TextField("Start writing…", text: $vm.body, axis: .vertical)
+                    .lineLimit(6...)
+                    .focused($focus, equals: .body)
+            } header: {
+                Text("Note")
+            } footer: {
+                Text("\(vm.wordCount) words. Notes stay on this device.")
+            }
         }
         .scrollDismissesKeyboard(.interactively)
+        .fontDesign(AppTheme.fontDesign)
         .navigationTitle(vm.isEditing ? "Edit Note" : "New Note")
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden()
@@ -69,7 +76,7 @@ struct ComposeNoteView: View {
 }
 
 #Preview("New") {
-    let container = PreviewSupport.container(seeded: false)
+    let container = SampleData.previewContainer(seeded: false)
     NavigationStack {
         ComposeNoteView(noteID: nil, repository: SwiftDataNoteRepository(context: container.mainContext))
     }
@@ -77,10 +84,10 @@ struct ComposeNoteView: View {
 }
 
 #Preview("Edit") {
-    let container = PreviewSupport.container()
+    let container = SampleData.previewContainer()
     NavigationStack {
         ComposeNoteView(
-            noteID: PreviewSupport.firstNoteID(in: container),
+            noteID: SampleData.mostRecentNoteID(in: container),
             repository: SwiftDataNoteRepository(context: container.mainContext)
         )
     }

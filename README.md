@@ -16,7 +16,7 @@ Describe an app in one sentence and the `/ios-build` agent plans it, writes the 
 
 ## Build an app from one sentence
 
-`/ios-build "<what you want>"` asks Claude Code to plan an iOS app, write its SwiftUI code and Xcode project, apply capability modules (sign-in, storage, payments, maps and more), then build, run and screenshot it in the iOS Simulator, ending with a report of what needs your accounts or money. The tools are published in `ios-agent-mcp` 2.10.0 (npm verified October 3, 2026). Four apps it planned and wrote built on the first build with Xcode 27.0 and ran in the simulator. One of them is a food-delivery app with 20 capability modules and a widget extension. Its own build-and-fix loop has not yet run end to end on a Mac.
+`/ios-build "<what you want>"` asks Claude Code to plan an iOS app, write its SwiftUI code and Xcode project, apply capability modules (sign-in, storage, payments, maps and more), then build, run and screenshot it in the iOS Simulator, ending with a report of what needs your accounts or money. Published tools are in `ios-agent-mcp` 2.10.1 (npm verified October 3, 2026). The 3.9.1 GitHub branch adds plan-driven design tokens, sample data, palette-aligned assets, and light/dark/XXL screenshot evidence; these MCP changes are not published to npm yet. Four existing apps built and ran on Xcode 27.0; see [examples/agent](examples/agent/README.md) for refreshed evidence.
 
 ### Quickstart
 
@@ -33,13 +33,17 @@ Then, in any Claude Code session on a Mac with Xcode 16 or later:
 /ios-build "A habit tracker with a list, a detail screen, and settings with dark mode toggle"
 ```
 
-XcodeGen is optional: without it, the agent writes a folder-synchronized Xcode project itself. The steps are described in [docs/tooling/ios-build-agent.md](docs/tooling/ios-build-agent.md). This quickstart has not been run in a Claude Code session on a Mac yet.
+**Shipping (unreleased GitHub source):** `ios-agent-mcp ship` prepares screenshot sets and metadata, then offers separately approved signing/archive and TestFlight upload steps. [Setup and limitations](docs/tooling/ship-testflight.md). Live signed distribution is not yet verified; npm is unchanged.
+
+**Windows/Linux or cloud client:** the GitHub source now includes `build --remote` for unsigned builds and simulator screenshots on GitHub Actions. It requires a destination repository, GitHub CLI authentication and pinned toolkit/Xcode versions. See [remote macOS setup and billing](docs/tooling/remote-macos-build.md). npm publication is deferred.
+
+XcodeGen is optional: without it, the agent writes a folder-synchronized Xcode project itself. The steps are described in [docs/tooling/ios-build-agent.md](docs/tooling/ios-build-agent.md). The four screenshot examples reused existing app folders; this exact one-sentence quickstart has not yet been run from planning through code generation in one Mac session.
 
 ### Examples
 
 | Habit tracker | Notes with search | Three-tab feed | Food delivery |
 |---|---|---|---|
-| ![Habit tracker settings](examples/agent/habit-tracker/screenshots/03-settings.jpg) | ![Notes list](examples/agent/notes-app/screenshots/01-notes-list.jpg) | ![Home feed](examples/agent/three-tab-app/screenshots/01-home.jpg) | ![Restaurant map](examples/agent/food-delivery/screenshots/04-restaurant-map.jpg) |
+| <img src="examples/agent/habit-tracker/.ios-agent/screenshots/habit-list-light.png" alt="Populated HabitTracker in the iOS Simulator" width="180"> | <img src="examples/agent/notes-app/.ios-agent/screenshots/notes-list-light.png" alt="Populated QuickNotes in the iOS Simulator" width="180"> | <img src="examples/agent/three-tab-app/.ios-agent/screenshots/home-feed-light.png" alt="Populated TabFeed in the iOS Simulator" width="180"> | <img src="examples/agent/food-delivery/.ios-agent/screenshots/restaurants-light.png" alt="FoodDash restaurant list in the iOS Simulator" width="180"> |
 
 Plans, generated sources, run reports and what was and was not exercised: [examples/agent](examples/agent/README.md).
 
@@ -50,11 +54,11 @@ Every capability is a folder in [capabilities/](capabilities/README.md) with a m
 <!-- capability-summary:start -->
 | Status | Capabilities |
 |---|---|
-| Verified on a Mac | 1 |
+| Verified on a Mac | 7 |
 | Module exists, not yet verified on a Mac | 41 |
 | ...of which the Swift compiled on a Mac (combined compile check) | 41 |
 | Blocked | 0 |
-| Listed for planning only | 120 |
+| Listed for planning only | 114 |
 
 162 catalog entries in 31 categories; generated from [capabilities/CATALOG.md](capabilities/CATALOG.md).
 <!-- capability-summary:end -->
@@ -65,15 +69,15 @@ The agent builds and runs everything in the simulator without accounts. Capabili
 
 ### Not yet
 
-- No capability is `verified`: no module has passed its own verify run on a Mac. All modules compiled together once (see [the compile check](capabilities/README.md#compile-check)).
-- The agent's automated loop (`xcodebuild` errors fed back to the model, `simctl` launch and screenshots per screen) is covered by tests against fake tools, not by a real run.
+- The design-system, firebase-auth, firebase-firestore, google-sign-in, stripe-payments, rive-animation and webview-animation capabilities have passed isolated Mac compile verification. Provider accounts and runtime transactions remain unverified; a combined compile check is not a substitute for each module's verify run (see [the compile check](capabilities/README.md#compile-check)).
+- The agent's build, simulator launch and per-screen capture stages ran on Mac for these four existing examples. The original planning and code-generation sessions were separate, and a fresh one-sentence generation has not yet been run end to end on Mac.
 - Taps and scrolling during the agent's own screenshots, and device builds, are not done. In the food-delivery example the StoreKit purchase and the Live Activity were not exercised.
 
 ## Which workflow to use
 
 | You want to | Use | Notes |
 |---|---|---|
-| Build a new app from a description | `/ios-build "<description>"` in Claude Code, or `ios-agent-mcp build` | Plans, writes, builds, runs and screenshots; see [above](#build-an-app-from-one-sentence). |
+| Build a new app from a description | `/ios-build "<description>"` in Claude Code, or `ios-agent-mcp build` | Plans, writes, builds, runs and screenshots; see [above](#build-an-app-from-one-sentence). Available in the GitHub 3.9.1 branch; the published npm package remains 2.10.1. |
 | Make an existing project pass your own acceptance tests | `ios-agent-mcp loop` | Runs the checks you write and asks Claude to repair failures; see [the app-building loop](docs/tooling/app-building-loop.md) and the [Reading List demo](samples/ReadingList/README.md). |
 | Get an editable starter only | `ios-agent-mcp new MyApp` | A starting point with a brief, not a finished app. |
 | Review or extend code you already have | The MCP tools below | File-located reviews, local references, assets and simulator checks. |
@@ -86,7 +90,7 @@ For Claude Code:
 claude mcp add ios-agent -- npx -y ios-agent-mcp@latest
 ```
 
-[Set up ChatGPT/Codex, Gemini CLI or Muse](https://nagarjuna2997.github.io/ios-agent-skill/install.html). One npm package includes reviews, local references, app scaffolding and simulator tools. Node.js 20+ is required; building and running iOS apps needs macOS and Xcode.
+[Set up ChatGPT/Codex, Gemini CLI or Muse](https://nagarjuna2997.github.io/ios-agent-skill/install.html). One npm package includes reviews, local references, app scaffolding and simulator tools. Node.js 20+ is required; local iOS builds need macOS and Xcode; the GitHub-source remote lane runs those steps on Actions.
 
 Then ask:
 
@@ -131,7 +135,7 @@ The [Reading List demo](samples/ReadingList/README.md) has persistence, search, 
   <img src="examples/reading-list/library.png" alt="Reading List running in the simulator" width="260">
 </a>
 
-Published npm 2.10.0 adds 13 build-agent tools to the previous 67, for 80 tools. They include seven [Apple system integration tools](docs/integrations/README.md) and nine [Screenshot Studio tools](docs/screenshots/README.md). Static reviews are heuristics, not compiler diagnostics. The Apple directory is a reference map, not Apple's proprietary framework source or proof of 405 working integrations. Token savings have not been benchmarked. [Build-loop verification limits](docs/tooling/app-building-loop.md).
+The published npm 2.10.1 package includes the build-agent tools and 80 unified tools. They include seven [Apple system integration tools](docs/integrations/README.md) and nine [Screenshot Studio tools](docs/screenshots/README.md). Static reviews are heuristics, not compiler diagnostics. The Apple directory is a reference map, not Apple's proprietary framework source or proof of 405 working integrations. Token savings have not been benchmarked. [Build-loop verification limits](docs/tooling/app-building-loop.md).
 
 ## Why use this alongside Xcode?
 

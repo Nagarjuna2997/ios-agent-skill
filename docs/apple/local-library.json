@@ -3106,8 +3106,8 @@
       "path": "docs/mcp/tools.md",
       "title": "MCP Tool Reference",
       "kind": "guide",
-      "characters": 23955,
-      "hash": "29937361b19c206f3f50fa3e4b00daade1880be895ace2717e78ab752b7080cb"
+      "characters": 24022,
+      "hash": "6ca0d02b10ca8275d6ac2adf127beb78c96d12a8bbeb40ef6ace9e1dde95dd48"
     },
     {
       "path": "docs/mcp/vnext-analysis-tools.md",
@@ -3404,6 +3404,13 @@
       "hash": "6f36ef2be9118abd415ac822f69ff7b3575f380ea22dfe6be09383d265cae2eb"
     },
     {
+      "path": "docs/tooling/generated-app-quality.md",
+      "title": "Generated app quality",
+      "kind": "guide",
+      "characters": 5696,
+      "hash": "d201b785e2083da31e8cd9c7e3ca4a90e802458c2832931c2bd483c9738e59f2"
+    },
+    {
       "path": "docs/tooling/idea-to-app.md",
       "title": "From an Idea to a Running Apple App",
       "kind": "guide",
@@ -3414,8 +3421,8 @@
       "path": "docs/tooling/ios-build-agent.md",
       "title": "iOS build agent",
       "kind": "guide",
-      "characters": 6982,
-      "hash": "a1660bc7bf3ec1dd74ca573ae8846248c2ac37c5568f5e8b74a488a3100c92b9"
+      "characters": 11213,
+      "hash": "716ac4397a4276d244e8397824d8a07077705985007a05424651565bf3f9eec3"
     },
     {
       "path": "docs/tooling/ios-simulator-mcp.md",
@@ -3428,8 +3435,8 @@
       "path": "docs/tooling/issue-reporting.md",
       "title": "AI-assisted issue previews",
       "kind": "guide",
-      "characters": 5432,
-      "hash": "e3512610a31ec22e26060ff59eee581eec9fc1b6247b0e96fa948e5d3cfa9298"
+      "characters": 5314,
+      "hash": "1b3a11d78b50bb17b97cabcc424c5ac9bb6d9b1eb1de1d7d20fbd5aa2b740696"
     },
     {
       "path": "docs/tooling/launch-screen-review.md",
@@ -3449,8 +3456,8 @@
       "path": "docs/tooling/local-release-package.md",
       "title": "Local App Store release preparation — Phase 1",
       "kind": "guide",
-      "characters": 10506,
-      "hash": "f58289fcdea3d7d5e11a23974e28a312a464bfc28bed0862345739970e98be81"
+      "characters": 10660,
+      "hash": "560ca1afc269b87a1631471e53394b61be1188688c609a6166e35cbb8303991c"
     },
     {
       "path": "docs/tooling/offline-source-library.md",
@@ -3467,11 +3474,25 @@
       "hash": "569306705c836e4141b476921c445a1633c979d9173e0841f856ef401e89e337"
     },
     {
+      "path": "docs/tooling/remote-macos-build.md",
+      "title": "Build on GitHub Actions from Windows or Linux",
+      "kind": "guide",
+      "characters": 6245,
+      "hash": "f561094e57eaa946c5e8bc2148e4819f4c988e90cfd8742716a01b2053a0d86a"
+    },
+    {
       "path": "docs/tooling/september-2026-distribution.md",
       "title": "September 2026 distribution and runtime update notes",
       "kind": "guide",
       "characters": 4820,
       "hash": "769268507c9584447e351bcc1251afe784f24cf4a2e46b11930ec51015090cca"
+    },
+    {
+      "path": "docs/tooling/ship-testflight.md",
+      "title": "Ship an app to TestFlight",
+      "kind": "guide",
+      "characters": 6303,
+      "hash": "b8a39e2455b8efe35a9506adff1d5bfa5cb215c997c2be6949b5688df9a44723"
     },
     {
       "path": "docs/tooling/visual-iteration-loop.md",
@@ -4515,6 +4536,13 @@
       "kind": "source",
       "characters": 10116,
       "hash": "76b5db4e93feffc7acd91524c514adcf7732b9d9039b7a60c0d82a8b39fa1ae0"
+    },
+    {
+      "path": "templates/ci-cd/ios-agent-remote.yml",
+      "title": "Installed on a content-addressed ios-agent-build/* branch by build --remote.",
+      "kind": "source",
+      "characters": 1621,
+      "hash": "748ce8ad3627f9f37f4f9cbb8467fe390dc9bac14dd2fcd4febebfa0234615d9"
     },
     {
       "path": "templates/clients/muse-settings.json",

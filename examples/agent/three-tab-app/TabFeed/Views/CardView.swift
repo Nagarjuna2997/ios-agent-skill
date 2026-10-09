@@ -1,52 +1,60 @@
 import SwiftUI
 
+/// One feed card: illustration, label chip, title, excerpt, date and a favorite toggle.
 struct CardView: View {
     let card: FeedCard
     let onToggleFavorite: () -> Void
-    @State private var spacing = ScaledSpacing()
+    private let spacing = ScaledSpacing()
 
     var body: some View {
-        VStack(alignment: .leading, spacing: spacing.compact) {
-            HStack(alignment: .top, spacing: spacing.standard) {
-                Image(systemName: card.imageName ?? "square.text.square")
-                    .font(.title)
-                    .foregroundStyle(AppColor.primary)
-                    .frame(width: 44, height: 44)
-                    .accessibilityHidden(true)
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(card.title)
-                        .font(.headline)
-                        .foregroundStyle(.primary)
-                    if let subtitle = card.subtitle {
-                        Text(subtitle)
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                    }
+        AppCard {
+            VStack(alignment: .leading, spacing: spacing.compact) {
+                ThumbnailPlaceholder(symbol: card.imageName ?? "text.alignleft", title: "Illustration for \(card.title)")
+                    .frame(height: 132)
+                if let subtitle = card.subtitle {
+                    AppChip(title: subtitle)
+                        .padding(.top, AppTheme.Space.xSmall)
                 }
-                Spacer(minLength: 44)
+                Text(card.title)
+                    .font(.title3.weight(.semibold))
+                    .foregroundStyle(.primary)
+                    .fixedSize(horizontal: false, vertical: true)
+                Text(card.body)
+                    .font(.body)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(3)
+                    .multilineTextAlignment(.leading)
+                HStack(alignment: .center) {
+                    Label {
+                        Text(card.createdAt, format: .dateTime.day().month())
+                    } icon: {
+                        Image(systemName: "calendar")
+                    }
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    Spacer(minLength: AppTheme.Space.small)
+                    Button(action: onToggleFavorite) {
+                        Image(systemName: card.isFavorite ? "heart.fill" : "heart")
+                            .font(.title3)
+                            .foregroundStyle(card.isFavorite ? Color.red : Color.secondary)
+                    }
+                    .buttonStyle(.plain)
+                    .minimumTapTarget()
+                    .accessibilityLabel(card.isFavorite ? "Remove from favorites" : "Add to favorites")
+                    .motionAwareAnimation(.snappy(duration: AppTheme.motionDuration), value: card.isFavorite)
+                }
             }
-            Text(card.body)
-                .font(.body)
-                .foregroundStyle(.primary)
-                .lineLimit(3)
-                .multilineTextAlignment(.leading)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(spacing.standard)
-        .background(AppColor.surface, in: .rect(cornerRadius: 16))
-        .overlay(alignment: .topTrailing) {
-            Button(action: onToggleFavorite) {
-                Image(systemName: card.isFavorite ? "heart.fill" : "heart")
-                    .foregroundStyle(card.isFavorite ? Color.red : Color.secondary)
-            }
-            .buttonStyle(.plain)
-            .minimumTapTarget()
-            .accessibilityLabel(card.isFavorite ? "Remove from favorites" : "Add to favorites")
         }
     }
 }
 
 #Preview {
-    CardView(card: FeedCard.samples()[0], onToggleFavorite: {})
-        .padding()
+    ScrollView {
+        VStack(spacing: AppTheme.Space.large) {
+            CardView(card: SampleData.feedCards[0], onToggleFavorite: {})
+            CardView(card: SampleData.feedCards[1], onToggleFavorite: {})
+        }
+        .padding(AppTheme.screenInset)
+    }
+    .background(Color(.systemGroupedBackground))
 }

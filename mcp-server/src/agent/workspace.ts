@@ -1,3 +1,4 @@
+import { snapshotFiles, snapshotHash } from "./remote.js";
 // High-level operations shared by the MCP tools and the CLI loop.
 import { existsSync } from "node:fs";
 import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
@@ -16,7 +17,7 @@ import {
 import { budget, capabilityRows, PlanSchema, renderPlanMarkdown, type Budget, type CapabilityPlanRow, type Plan, type DesignBrief } from "./plan.js";
 import { buildProject, type BuildResult } from "./build.js";
 import { containedPath, initProject, projectPaths, readSpec, regenerate, requireProjectDir, writeSpec, type CreatedProject } from "./project.js";
-import { renderRunReport, toolCallCount } from "./report.js";
+import { auditGeneratedPalette, renderRunReport, toolCallCount } from "./report.js";
 import type { CommandRunner } from "./runner.js";
 import { parseDotEnv, type AppSpec } from "./spec.js";
 import { DEFAULT_WALL_CLOCK_MINUTES, assertCanBuild, attemptsThisCycle, loadState, newRunState, progress, saveState, startCycle, type ProgressSink, type RunState } from "./state.js";
@@ -101,7 +102,7 @@ export async function updatePlanDesign(
   const root = requireProjectDir(rootDir);
   const current = await readPlan(root);
   if (!current) throw new Error("This project has no saved plan to refine.");
-  const outcome = await writePlan(root, { ...current, design }, { requireSampleData: false, ...(options.sink ? { sink: options.sink } : {}) });
+  const outcome = await writePlan(root, { ...current, design, ...(current.designDirections ? { designDirections: current.designDirections.map(d => d.id === current.selectedDesign ? {...d, design} : d) } : {}) }, { requireSampleData: false, ...(options.sink ? { sink: options.sink } : {}) });
   const spec = await readSpec(root);
   if (spec.capabilities.includes("color-assets")) {
     const { loaded } = await capabilityContext();
@@ -190,6 +191,8 @@ export async function createProject(
   runner: CommandRunner,
   sink?: ProgressSink,
 ): Promise<CreatedProject & { capabilities: CapabilityOutcome }> {
+  const savedPlan = await readPlan(requireProjectDir(input.projectDir));
+  if (savedPlan?.designDirections && !savedPlan.selectedDesign) throw new Error("Choose a design direction in the plan before creating the app.");
   const { root, spec, files } = await initProject({ ...input, capabilities: input.capabilities ?? [] });
   const state = await ensureState(root);
   progress(state, "creating", `Creating ${spec.name} (${spec.bundleId}, iOS ${spec.deploymentTarget}).`, sink);
@@ -233,8 +236,18 @@ export async function recordedBuild(
   const attempt = attemptsThisCycle(state) + 1;
   progress(state, "building", `Build attempt ${attempt} of ${state.maxBuildAttempts}.`, options.sink);
   await saveState(root, state);
+  const beforeHash = snapshotHash(await snapshotFiles(root));
   const result = await buildProject(root, runner, { attempt: state.builds.length + 1, ...(options.udid ? { udid: options.udid } : {}), ...(options.scheme ? { scheme: options.scheme } : {}) });
   const fresh = (await loadState(root)) ?? state;
+  const afterHash = snapshotHash(await snapshotFiles(root));
+  if (result.success && beforeHash === afterHash) fresh.buildSourceHash = afterHash;
+  else delete fresh.buildSourceHash;
+  if (result.success && beforeHash !== afterHash) {
+    result.success = false;
+    result.toolError = "Source changed during build; rebuild a stable checkout.";
+    result.errors.push({severity: "error", message: result.toolError});
+  }
+  delete fresh.captureSourceHash;
   fresh.builds.push({
     cycle: fresh.cycle,
     attempt,
@@ -258,6 +271,11 @@ export async function recordedBuild(
 export async function writeReport(rootDir: string, options: { status?: RunState["status"]; failure?: string } = {}): Promise<{ path: string; markdown: string }> {
   const root = requireProjectDir(rootDir);
   const state = await ensureState(root);
+  if (options.status === "complete" && existsSync(projectPaths(root).spec) && (await readSpec(root)).tests) {
+    const tests = state.tests?.at(-1);
+    const current = snapshotHash(await snapshotFiles(root));
+    if (!tests || tests.status !== "passed" || tests.sourceHash !== current || !existsSync(join(root, tests.logPath)) || !existsSync(join(root, tests.resultBundle))) throw new Error("Cannot complete: current passing test evidence and artifacts are required.");
+  }
   if (options.status) state.status = options.status;
   if (options.failure) state.failure = options.failure;
   if (options.status === "complete") state.stage = "complete";
@@ -267,14 +285,37 @@ export async function writeReport(rootDir: string, options: { status?: RunState[
   let rows: CapabilityPlanRow[] | undefined;
   let money: Budget | undefined;
   if (plan) {
+    let spec: AppSpec | undefined;
+    try { spec = await readSpec(root); } catch { /* plan-only and pre-project reports have no generated asset catalog */ }
     const { loaded, catalog } = await capabilityContext();
     const resolution = resolveCapabilities(requestedCapabilities(plan), loaded, catalog);
     rows = capabilityRows(plan, resolution, await readEnv(root));
     money = budget(resolution, catalog);
+    const colorAssets = loaded.get("color-assets")?.applyModule;
+    if (colorAssets && spec) {
+      const module = (await import(pathToFileURL(colorAssets).href)) as { paletteAssetFiles?: (palette: DesignBrief["palette"]) => Record<string, string> };
+      if (module.paletteAssetFiles) {
+        const expectedFiles = module.paletteAssetFiles(plan.design.palette);
+        const actualFiles: Record<string, string> = {};
+        for (const path of Object.keys(expectedFiles)) {
+          try { actualFiles[path] = await readFile(join(root, spec.name, path), "utf8"); }
+          catch (error) { if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error; }
+        }
+        const paletteMatchesPlan = Object.entries(expectedFiles).every(([path, expected]) => actualFiles[path]?.trim() === expected.trim());
+        state.designEvidence = { ...auditGeneratedPalette(actualFiles), paletteMatchesPlan };
+        const colorCapability = state.capabilities.find((capability) => capability.id === "color-assets");
+        if (colorCapability) colorCapability.notes = [
+          paletteMatchesPlan
+            ? `Applied the ${plan.design.palette.name} palette from the app plan; generated semantic assets match it and text colors are adjusted for contrast.`
+            : `The generated semantic color assets do not match the approved ${plan.design.palette.name} plan palette; review the asset catalog before release.`,
+        ];
+      }
+    }
   }
   await saveState(root, state);
   const markdown = renderRunReport({
     state,
+    projectDir: root,
     ...(plan ? { plan } : {}),
     ...(rows ? { rows } : {}),
     ...(money ? { budget: money } : {}),

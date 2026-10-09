@@ -1,0 +1,38 @@
+{
+  "id": "rive-animation",
+  "name": "Rive animation",
+  "category": "animation",
+  "description": "Use BundledRiveAnimation(name:label:) with a user-supplied licensed bundled .riv asset.",
+  "default": false,
+  "appleNative": false,
+  "alternatives": [],
+  "cost": {
+    "model": "free",
+    "note": "Provider charges and quotas depend on your account; consult the official pricing page.",
+    "amounts": []
+  },
+  "minOS": "17.0",
+  "docs": [
+    "docs/tooling/generated-app-quality.md"
+  ],
+  "usage": "Use BundledRiveAnimation(name:label:) with a user-supplied licensed bundled .riv asset. Reduce Motion and missing assets show a static symbol. This pins the stable RiveViewModel runtime API; no animation assets are copied from third parties.",
+  "platforms": [
+    "iOS"
+  ],
+  "status": "verified",
+  "statusNote": "Built into a minimal app with Xcode 27.0 (27A266a) on 2026-10-09.",
+  "requires": {
+    "packages": [
+      {
+        "name": "rive-ios",
+        "url": "https://github.com/rive-app/rive-ios.git",
+        "version": {
+          "exactVersion": "6.28.1"
+        },
+        "products": [
+          "RiveRuntime"
+        ]
+      }
+    ]
+  }
+}

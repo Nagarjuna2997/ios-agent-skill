@@ -18,7 +18,11 @@ struct RootView: View {
         self.dependencies = dependencies
         _selection = State(initialValue: AppTab(rawValue: AgentLaunch.requestedScreen ?? "") ?? .restaurants)
         _restaurantsModel = State(initialValue: RestaurantsViewModel(service: dependencies.restaurants, location: dependencies.location))
-        _tracking = State(initialValue: dependencies.makeTrackingModel())
+        let tracking = dependencies.makeTrackingModel()
+        if AgentLaunch.usesSampleData, let order = SampleData.orders.first {
+            tracking.showSampleOrder(order, address: "Market Street, San Francisco")
+        }
+        _tracking = State(initialValue: tracking)
     }
 
     private var requested: String? { AgentLaunch.requestedScreen }
@@ -36,6 +40,7 @@ struct RootView: View {
             }
         }
         .task { await dependencies.auth.restore() }
+        .fontDesign(AppTheme.fontDesign)
     }
 
     private var tabs: some View {

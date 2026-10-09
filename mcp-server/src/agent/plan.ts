@@ -39,6 +39,8 @@ export const PlanSchema = z
     bundleId: z.string().optional(),
     navigation: z.enum(["tabs", "stack", "split"]),
     design: DesignSchema,
+    designDirections: z.array(z.object({ id: z.string().regex(SCREEN_ID), name: z.string().min(1).max(60), rationale: z.string().min(1).max(300), design: DesignSchema }).strict()).min(2).max(3).optional(),
+    selectedDesign: z.string().regex(SCREEN_ID).optional(),
     screens: z
       .array(
         z
@@ -46,6 +48,7 @@ export const PlanSchema = z
             id: z.string().regex(SCREEN_ID),
             title: z.string().min(1).max(40),
             purpose: z.string().min(1).max(200),
+            kind: z.enum(["list", "detail", "dashboard", "feed", "form", "settings", "map", "cart", "checkout", "onboarding", "paywall", "auth", "profile", "search"]).default("list"),
             topLevel: z.boolean(),
             capabilities: z.array(z.string()).default([]),
           })
@@ -75,6 +78,11 @@ export const PlanSchema = z
   })
   .strict()
   .superRefine((plan, ctx) => {
+    const directions = plan.designDirections ?? [];
+    if (new Set(directions.map(d => d.id)).size !== directions.length) ctx.addIssue({ code: "custom", message: "Design direction IDs must be unique" });
+    if (plan.selectedDesign && !directions.some(d => d.id === plan.selectedDesign)) ctx.addIssue({ code: "custom", message: "Selected design must name a supplied direction" });
+    const selected = directions.find(d => d.id === plan.selectedDesign);
+    if (selected && JSON.stringify(selected.design) !== JSON.stringify(plan.design)) ctx.addIssue({ code: "custom", message: "Design must match the selected direction" });
     const ids = new Set<string>();
     for (const screen of plan.screens) {
       if (ids.has(screen.id)) ctx.addIssue({ code: "custom", message: `Duplicate screen id ${screen.id}` });
@@ -200,11 +208,14 @@ export function renderPlanMarkdown(plan: Plan, rows: CapabilityPlanRow[], money_
   const lines: string[] = [];
   lines.push(`# ${plan.displayName}: build plan`, "", plan.summary, "");
   if (toolchain) lines.push(`Target toolchain: ${toolchain.xcode ?? "Xcode not detected"}; simulator: ${toolchain.simulator ?? "none detected"}.`, "");
-  lines.push("## Screens", "", "| Screen | Reached from | Purpose |", "|---|---|---|");
+  lines.push("## Screens", "", "| Screen | Layout | Reached from | Purpose |", "|---|---|---|---|");
   for (const screen of plan.screens) {
-    lines.push(`| ${escapeCell(screen.title)} (\`${screen.id}\`) | ${screen.topLevel ? (plan.navigation === "tabs" ? "tab bar" : "launch") : "navigation"} | ${escapeCell(screen.purpose)} |`);
+    lines.push(`| ${escapeCell(screen.title)} (\`${screen.id}\`) | ${screen.kind} | ${screen.topLevel ? (plan.navigation === "tabs" ? "tab bar" : "launch") : "navigation"} | ${escapeCell(screen.purpose)} |`);
   }
   lines.push("", `Navigation: ${plan.navigation}.`, "");
+  if (plan.designDirections) {
+    lines.push("## Choose a design", "", ...plan.designDirections.map(d => `- **${d.name}** (\`${d.id}\`): ${d.rationale} — ${d.design.mood}; ${d.design.palette.name}, ${d.design.typography}, ${d.design.density}.`), "", plan.selectedDesign ? `Selected: ${plan.selectedDesign}` : "Choose a direction, then resume with --design <id>. No app code is generated before your choice.", "");
+  }
   lines.push("## Design direction", "", `- Mood: ${plan.design.mood}`, `- Palette: **${plan.design.palette.name}** — primary \`${plan.design.palette.primary}\`, secondary \`${plan.design.palette.secondary}\`, accent \`${plan.design.palette.accent}\``, `- Typography: ${plan.design.typography}`, `- Shapes: ${plan.design.shape}`, `- Density: ${plan.design.density}`, `- Motion: ${plan.design.motion}`, "- A reusable SwiftUI design system is included by default; the screen layouts and components will follow this direction.", "");
   lines.push("## Data model", "");
   if (!plan.models.length) lines.push("No stored data model.", "");

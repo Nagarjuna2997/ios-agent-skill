@@ -17,11 +17,11 @@ The automated build-and-fix loop has not yet run against a real `xcodebuild`, an
 1. **Preflight** checks Node, Xcode, the iOS Simulator SDK and an available simulator, and prints the install command for anything missing. XcodeGen is optional.
 2. **Plan** turns the description into screens, navigation, a data model, synthetic example records and a design direction (mood, named palette, typography, shape, density and motion), then writes `PLAN.md` before any code. The person can review the visual direction before files are created. A design-focused `--refine` updates the saved brief and regenerates its color assets along with the SwiftUI changes. New models need at least two synthetic sample records; old saved plans remain readable.
 3. **Project** creates an XcodeGen `project.yml` from `.ios-agent/spec.json`, `Config/Base.xcconfig`, a gitignored `Config/Secrets.xcconfig` generated from the gitignored `.env`, and starter sources. XcodeGen generates the `.xcodeproj` when it is installed. Otherwise the built-in writer renders the same spec into a folder-synchronized project that needs Xcode 16 or later; that project includes the app target, packages, Info.plist, entitlements, a shared scheme and the WidgetKit extension. Set `IOS_AGENT_PROJECT_GENERATOR=xcodegen` or `builtin` to force one writer.
-4. **Capabilities** are applied in dependency order: Info.plist keys, entitlements, Swift packages, build settings, credentials and template files. A reusable SwiftUI design system is included by default; its semantic color assets use the palette approved in `PLAN.md` and adjust foreground colors for contrast.
-5. **Code**: the model writes SwiftUI under `<AppName>/`, composes feature screens from the included design components, and defines `SampleData` for every model. Previews and agent demo launches reuse the same synthetic examples. `-ios-agent-screen <id>` selects a screen; `-ios-agent-sample-data YES` enables demo records only in that process, leaving the ordinary app state untouched.
+4. **Capabilities** are applied in dependency order: Info.plist keys, entitlements, Swift packages, build settings, credentials and template files. A reusable SwiftUI design system is included by default; its spacing, corner radii, typography and motion settings are configured from the approved brief. Color assets adjust foreground pairs to meet WCAG AA, and app-icon/launch-screen assets use that same plan palette rather than a bundle-ID hash.
+5. **Code**: the model writes SwiftUI under `<AppName>/`, composes feature screens from the included design components, selects a screen layout archetype (list, detail, dashboard, feed, form, settings, map, cart, checkout, onboarding, paywall, auth, profile or search), and defines `SampleData` for every model. Previews and agent demo launches reuse the plan's synthetic examples. `-ios-agent-screen <id>` selects a screen; `-ios-agent-sample-data YES` enables demo records only in that process, leaving the ordinary app state and persistent store untouched.
 6. **Build and fix**: `xcodebuild` errors come back as `{file, line, column, message}`; the model fixes them; at most 8 attempts and 25 minutes per cycle, with the clock starting at the cycle's first build. Each refinement starts a new cycle (`ios_build` with `newCycle: true`), and earlier builds stay in the history.
-7. **Run**: the newest installed iOS runtime's iPhone (or a booted one) is used; the app is installed, launched once per top-level screen and screenshotted.
-8. **Report**: `RUN_REPORT.md` lists the result, screenshots, capabilities (applied, status, awaiting credentials), builds, what needs the user's accounts or money, next steps and the progress log.
+7. **Run**: the newest installed iOS runtime's iPhone (or a booted one) is used; SpringBoard is foregrounded before capture so screenshots do not show a return link to a previously captured app. Each top-level screen is launched with sample data and captured in light, dark and XXL Dynamic Type. The simulator's original appearance and text-size settings are restored afterward.
+8. **Report**: `RUN_REPORT.md` lists the result, a per-screen appearance/text-size image matrix, measured contrast for generated semantic asset pairs, capabilities (applied, status, awaiting credentials), builds, what needs the user's accounts or money, next steps and the progress log. The contrast check covers generated palette assets, not every custom text/background pairing in app code.
 
 Every external command is logged to `.ios-agent/tool-log.jsonl` (commands and exit codes, not output). Run state lives in `.ios-agent/state.json`, so runs resume.
 
@@ -93,5 +93,51 @@ A module becomes `verified` only when that command builds it into a minimal app 
 ## Limits
 
 - Simulator only; no signing, device installs, TestFlight or App Store submission.
-- Taps and scrolling are not automated; screenshots show each top-level screen at launch.
+- Taps and scrolling are not automated; screenshots show each top-level screen at launch. XXL captures may expose clipping and layout pressure, but do not automatically diagnose or repair it.
 - A generated plan or app is model output: review it. A successful build and screenshots do not prove the app is correct.
+
+## Remote macOS builds
+
+Use `build --remote` to send generated source to an explicitly chosen GitHub repository and run unsigned simulator verification on Actions. Planning and compiler repairs remain on the client. See [remote macOS setup, evidence, privacy and billing](remote-macos-build.md). This is GitHub source support; npm publication is deferred.
+
+## Visual design review loop
+
+New CLI plans offer two or three design directions. Read `PLAN.md`, then choose explicitly:
+
+```sh
+ios-agent-mcp build --out ./MyApp --resume --design calm
+```
+
+Use an ID from your own plan. The plan records mood, semantic palette, typography,
+shape, density and motion. Code generation waits for that choice. Existing plans
+without alternatives keep their approved design; use `--refine` to change it.
+
+After a successful build the CLI captures each top-level screen in light, dark
+and accessibility-extra-extra-extra-large text. It sends the actual PNG image
+blocks, screen purpose and approved brief to Claude Code for a structured critique
+of layout, hierarchy, visible readability, states and appearance. This uses your
+configured model/provider and may consume its quota. Synthetic launch data avoids
+populating captures with personal records; inspect your app's data before running
+this on an existing project. Each PNG is limited to 2 MB.
+
+Observed findings drive view-only repairs, then a fresh build and capture. There
+are at most three review rounds within the existing build/time budget. Unknown
+captures, provider errors, no-op repairs and exhausted budgets stay unresolved.
+No score or quality improvement is claimed from the presence of this loop.
+
+`.ios-agent/design-reviews/<hash>/` preserves screenshots and per-screen assessments.
+Completed screen reviews survive interruptions; changed source, plan, build or
+pixels invalidate reuse. `RUN_REPORT.md` separates model opinions from compilation
+and deterministic palette checks. A screenshot cannot establish VoiceOver behavior,
+actual touch targets, motion, offscreen states or HIG compliance. Human review and
+accessibility tests remain necessary.
+
+In a connected MCP client, `ios_design_evidence` returns real image blocks and the
+same checklist. `capture:true` refreshes the full matrix; request each screen by ID.
+The `/ios-build` instructions drive that client's bounded repair cycle and record
+its findings with `ios_progress`; the headless CLI additionally persists structured
+review records. Builds can use the local simulator or the opt-in remote macOS lane.
+
+## Generated app quality
+
+See [Generated app quality](generated-app-quality.md) for test targets, device coverage, provider modules, screenshot-aware refinements and the shared Studio engine. Build success, test execution and visual review are separate evidence.

@@ -73,6 +73,7 @@ struct CheckoutView: View {
                 }
             }
         }
+        .fontDesign(AppTheme.fontDesign)
     }
 
     private func summaryRow(_ title: LocalizedStringKey, _ cents: Int) -> some View {

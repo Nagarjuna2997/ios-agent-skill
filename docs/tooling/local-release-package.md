@@ -1,5 +1,7 @@
 # Local App Store release preparation — Phase 1
 
+For the separate, unreleased signing/archive/upload command, see [Ship to TestFlight](ship-testflight.md). The `apple` commands below remain local-only.
+
 Included in ios-agent-mcp 2.7.1. This phase
 collects deterministic, target-aware evidence and writes a private local draft.
 It does not connect to Apple, use AI, generate marketing copy or images, build,

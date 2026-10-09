@@ -27,10 +27,12 @@ test("slash-command tool sequence: preflight, plan, create, write, build, fix, r
   const projectDir = join(fake.root, "Apps", "HabitTracker");
 
   const { tools } = await client.listTools();
-  for (const name of ["ios_preflight", "ios_capabilities", "ios_plan", "ios_create_project", "ios_add_capabilities", "ios_write_files", "ios_add_package", "ios_build", "ios_run", "ios_screenshot", "ios_logs", "ios_progress", "ios_report"]) {
+  for (const name of ["ios_preflight", "ios_capabilities", "ios_plan", "ios_create_project", "ios_add_capabilities", "ios_write_files", "ios_add_package", "ios_build", "ios_run", "ios_screenshot", "ios_design_evidence", "ios_logs", "ios_progress", "ios_report"]) {
     assert.ok(tools.some((tool) => tool.name === name), name);
   }
 
+  const missingEvidence = await call("ios_design_evidence", {projectDir, screen:"missing"});
+  assert.equal(missingEvidence.response.isError, true);
   const pre = (await call("ios_preflight")).json();
   assert.equal(pre.chosenSimulator.udid, BOOTED);
   assert.ok(pre.checks.find((c) => c.id === "xcodegen").ok);

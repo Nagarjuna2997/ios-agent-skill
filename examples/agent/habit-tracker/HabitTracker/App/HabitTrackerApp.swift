@@ -8,7 +8,13 @@ struct HabitTrackerApp: App {
 
     init() {
         do {
-            container = try PersistenceController.container(for: [Habit.self])
+            if AgentLaunch.usesSampleData {
+                // Demo launches get an isolated in-memory store seeded from SampleData.
+                // The persistent store on disk is never opened or modified.
+                container = try SampleData.container()
+            } else {
+                container = try PersistenceController.container(for: [Habit.self])
+            }
             loadError = nil
         } catch {
             container = nil
@@ -18,9 +24,11 @@ struct HabitTrackerApp: App {
 
     var body: some Scene {
         WindowGroup {
-            content
-                .tint(AppColor.primary)
-                .appAppearance()
+            SplashContainer {
+                content
+            }
+            .tint(AppColor.primary)
+            .appAppearance()
         }
     }
 
@@ -33,6 +41,7 @@ struct HabitTrackerApp: App {
             ContentUnavailableView("Couldn't Load Habits",
                                    systemImage: "exclamationmark.triangle",
                                    description: Text(loadError ?? "Unknown error"))
+                .fontDesign(AppTheme.fontDesign)
         }
     }
 }

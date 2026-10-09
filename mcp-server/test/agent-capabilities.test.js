@@ -81,7 +81,7 @@ describe("capability modules", () => {
       for (const file of capability.templateFiles) {
         const text = await readFile(join(capability.dir, "template", file), "utf8").catch(() => "");
         const tokens = text.match(/__[A-Z_]+__/g) ?? [];
-        for (const token of tokens) assert.ok(["__APP_NAME__", "__BUNDLE_ID__", "__DISPLAY_NAME__"].includes(token), `${capability.manifest.id}/${file}: ${token}`);
+        for (const token of tokens) assert.ok(["__APP_NAME__", "__BUNDLE_ID__", "__DISPLAY_NAME__", "__DESIGN_DENSITY_SCALE__", "__DESIGN_SHAPE_SCALE__", "__DESIGN_FONT_DESIGN__", "__DESIGN_MOTION_DURATION__"].includes(token), `${capability.manifest.id}/${file}: ${token}`);
         if (file.endsWith(".swift")) assert.doesNotMatch(text, /@Previewable/, `${capability.manifest.id}/${file} must not need iOS 18 preview macros`);
       }
     }
@@ -193,7 +193,7 @@ describe("applying every module", () => {
     assert.deepEqual(widgets.entitlements.properties["com.apple.security.application-groups"], group);
     assert.equal(target.info.properties.NSSupportsLiveActivities, true);
     const info = target.info.properties;
-    assert.deepEqual(info.CFBundleURLTypes, [{ CFBundleURLName: "com.example.foodrun", CFBundleURLSchemes: ["foodrun"] }]);
+    assert.deepEqual(info.CFBundleURLTypes, [{ CFBundleURLName: "com.example.foodrun", CFBundleURLSchemes: ["foodrun"] }, { CFBundleURLName: "GoogleOAuth", CFBundleURLSchemes: ["$(GOOGLE_REVERSED_CLIENT_ID)"] }]);
     assert.deepEqual(info.BGTaskSchedulerPermittedIdentifiers, ["com.example.foodrun.refresh"]);
     // Array values from several modules are merged, not overwritten.
     assert.deepEqual([...info.UIBackgroundModes].sort(), ["fetch", "remote-notification"]);
@@ -290,7 +290,7 @@ describe("brand colors", () => {
     const loaded = await loadCapabilities(capabilitiesDir());
     const resolution = resolveCapabilities(["design-system"], loaded, await loadCatalog(capabilitiesDir()));
     const files = new Map();
-    const design = { palette: { name: "Deep Teal", primary: "#005F73", secondary: "#0A9396", accent: "#EE9B00" } };
+    const design = { mood: "calm and focused", palette: { name: "Deep Teal", primary: "#005F73", secondary: "#0A9396", accent: "#EE9B00" }, typography: "serif", shape: "rounded", density: "spacious", motion: "minimal" };
     const applied = await applyCapabilities(newAppSpec({ name: "PaletteProbe" }), resolution.ordered, {
       writeSourceFile: async (path, content) => { files.set(path, Buffer.from(content).toString("utf8")); return "written"; },
     }, {}, design);
@@ -301,7 +301,35 @@ describe("brand colors", () => {
     assert.equal(rgb.blue, "0.451");
     assert.ok(files.has("Resources/Assets.xcassets/AccentColor.colorset/Contents.json"));
     assert.match(files.get("DesignSystem/AppComponents.swift"), /struct AppEmptyStateView/);
+    assert.match(files.get("DesignSystem/AppComponents.swift"), /struct AppIconTile/);
+    assert.match(files.get("DesignSystem/AppComponents.swift"), /struct AppErrorStateView/);
+    assert.match(files.get("DesignSystem/AppComponents.swift"), /accessibilityReduceMotion/);
+    assert.match(files.get("DesignSystem/AppTheme.swift"), /densityScale: CGFloat = 1\.16/);
+    assert.match(files.get("DesignSystem/AppTheme.swift"), /shapeScale: CGFloat = 1\.0/);
+    assert.match(files.get("DesignSystem/AppTheme.swift"), /fontDesign: Font\.Design = \.serif/);
+    assert.match(files.get("DesignSystem/AppTheme.swift"), /motionDuration: Double = 0\.0/);
+    assert.doesNotMatch(files.get("DesignSystem/AppTheme.swift"), /__DESIGN_/);
     assert.ok(applied.applied.some((item) => item.id === "design-system"));
+  });
+
+  test("app icon and launch screen use the approved plan palette rather than the bundle identifier", async () => {
+    const { applyCapabilities } = await import("../dist/agent/capabilities.js");
+    const { newAppSpec } = await import("../dist/agent/spec.js");
+    const loaded = await loadCapabilities(capabilitiesDir());
+    const resolution = resolveCapabilities(["app-icon", "launch-screen", "color-assets"], loaded, await loadCatalog(capabilitiesDir()));
+    const files = new Map();
+    const design = { mood: "warm and handmade", palette: { name: "Apricot Grove", primary: "#B5472F", secondary: "#547A62", accent: "#F2B36D" }, typography: "rounded", shape: "organic", density: "comfortable", motion: "subtle" };
+    await applyCapabilities(newAppSpec({ name: "PaletteIconProbe", bundleId: "com.example.differenthash" }), resolution.ordered, {
+      writeSourceFile: async (path, content) => { files.set(path, Buffer.from(content).toString("utf8")); return "written"; },
+    }, {}, design);
+    const iconBackground = files.get("Resources/IconLayers/background.svg");
+    assert.match(iconBackground, /#547A62/);
+    assert.match(iconBackground, /#B5472F/);
+    const launchLogo = files.get("Resources/Assets.xcassets/LaunchLogo.imageset/LaunchLogo.png");
+    assert.ok(launchLogo);
+    const launchBackground = JSON.parse(files.get("Resources/Assets.xcassets/LaunchBackground.colorset/Contents.json"));
+    const brandSurface = JSON.parse(files.get("Resources/Assets.xcassets/BrandSurface.colorset/Contents.json"));
+    assert.deepEqual(launchBackground, brandSurface);
   });
 });
 

@@ -1,0 +1,24 @@
+{
+  "id": "webview-animation",
+  "name": "Local web animation",
+  "category": "animation",
+  "description": "LocalWebAnimation(html:) renders bundled CSS animation with JavaScript disabled, a nonpersistent store and restrictive CSP.",
+  "default": false,
+  "appleNative": true,
+  "alternatives": [],
+  "cost": {
+    "model": "free",
+    "note": "Apple framework; no external service.",
+    "amounts": []
+  },
+  "minOS": "17.0",
+  "docs": [
+    "docs/tooling/generated-app-quality.md"
+  ],
+  "usage": "LocalWebAnimation(html:) renders bundled CSS animation with JavaScript disabled, a nonpersistent store and restrictive CSP. No remote pages, tracking or message bridges. Provide accessible native equivalent content. Reduce Motion disables CSS animation. This is a local animation module, not a general web browser.",
+  "platforms": [
+    "iOS"
+  ],
+  "status": "verified",
+  "statusNote": "Built into a minimal app with Xcode 27.0 (27A266a) on 2026-10-09."
+}

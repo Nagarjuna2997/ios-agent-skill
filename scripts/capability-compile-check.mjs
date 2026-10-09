@@ -58,7 +58,8 @@ for (const id of ids) {
   const swift = Object.values(files)
     .join("\n")
     .replace(/\bVerifyUsage\b/g, `VerifyUsage${pascal(id)}`)
-    .replace(/\bItem\b/g, `VerifyItem${pascal(id)}`);
+    .replace(/\bItem\b/g, `VerifyItem${pascal(id)}`)
+    .replace(/\bVerifyRow\b/g, `VerifyRow${pascal(id)}`);
   await writeFile(join(out, NAME, "Verify", `Verify${pascal(id)}.swift`), swift);
 }
 

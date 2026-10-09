@@ -1,0 +1,39 @@
+{
+  "id": "firebase-auth",
+  "name": "Firebase authentication",
+  "category": "authentication",
+  "description": "Configure FirebaseEmailSession at the composition root with your own GoogleService-Info.plist.",
+  "default": false,
+  "appleNative": false,
+  "alternatives": [],
+  "cost": {
+    "model": "usage-based",
+    "note": "Provider charges and quotas depend on your account; consult the official pricing page.",
+    "amounts": []
+  },
+  "minOS": "17.0",
+  "docs": [
+    "docs/tooling/generated-app-quality.md"
+  ],
+  "usage": "Configure FirebaseEmailSession at the composition root with your own GoogleService-Info.plist. Handle missing configuration visibly; use fake services for sample data. Enable email/password in Firebase. Account deletion may require reauthentication. Never embed admin credentials.",
+  "platforms": [
+    "iOS"
+  ],
+  "status": "verified",
+  "statusNote": "Built into a minimal app with Xcode 27.0 (27A266a) on 2026-10-09.",
+  "requires": {
+    "packages": [
+      {
+        "name": "firebase-ios-sdk",
+        "url": "https://github.com/firebase/firebase-ios-sdk.git",
+        "version": {
+          "exactVersion": "12.13.0"
+        },
+        "products": [
+          "FirebaseCore",
+          "FirebaseAuth"
+        ]
+      }
+    ]
+  }
+}

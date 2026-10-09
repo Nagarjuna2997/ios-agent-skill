@@ -20,4 +20,9 @@ final class Note {
     var displayTitle: String {
         title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? String(localized: "Untitled") : title
     }
+
+    /// Number of whitespace-separated words in the body.
+    var wordCount: Int {
+        body.split(whereSeparator: { $0.isWhitespace }).count
+    }
 }

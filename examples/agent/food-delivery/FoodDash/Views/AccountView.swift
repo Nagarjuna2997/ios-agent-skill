@@ -27,6 +27,7 @@ struct AccountView: View {
             }
             .navigationTitle("Account")
         }
+        .fontDesign(AppTheme.fontDesign)
     }
 }
 

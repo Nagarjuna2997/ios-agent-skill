@@ -3,11 +3,25 @@
   "displayName": "Quick Notes",
   "summary": "A simple notes app that saves your notes on the device so they are still there after you close the app. You can search all notes by title or text and write new notes or edit existing ones on a dedicated compose screen.",
   "navigation": "stack",
+  "design": {
+    "mood": "quiet, tactile, and editorial",
+    "palette": {
+      "name": "Ink & Paper",
+      "primary": "#355070",
+      "secondary": "#6D597A",
+      "accent": "#D88C70"
+    },
+    "typography": "serif",
+    "shape": "soft",
+    "density": "comfortable",
+    "motion": "minimal"
+  },
   "screens": [
     {
       "id": "notes-list",
       "title": "Notes",
       "purpose": "Browse all notes, newest first, with a search field to filter them.",
+      "kind": "list",
       "topLevel": true,
       "capabilities": [
         "swiftdata",
@@ -19,6 +33,7 @@
       "id": "compose-note",
       "title": "Compose",
       "purpose": "Write a new note or edit an existing one with a title and body.",
+      "kind": "form",
       "topLevel": false,
       "capabilities": [
         "swiftdata",
@@ -30,6 +45,7 @@
       "id": "note-detail",
       "title": "Note",
       "purpose": "Read a single note and jump to editing or deleting it.",
+      "kind": "detail",
       "topLevel": false,
       "capabilities": [
         "swiftdata",
@@ -66,6 +82,29 @@
           "name": "updatedAt",
           "type": "Date",
           "optional": false
+        }
+      ],
+      "sampleData": [
+        {
+          "id": "B0000000-0000-0000-0000-000000000001",
+          "title": "A slower Sunday",
+          "body": "Make coffee, open the windows, and leave a little space between plans.",
+          "createdAt": "2026-10-08T08:15:00Z",
+          "updatedAt": "2026-10-08T08:15:00Z"
+        },
+        {
+          "id": "B0000000-0000-0000-0000-000000000002",
+          "title": "Ideas for the garden",
+          "body": "Try rosemary beside the steps and add a small bench near the herbs.",
+          "createdAt": "2026-10-07T17:40:00Z",
+          "updatedAt": "2026-10-08T07:10:00Z"
+        },
+        {
+          "id": "B0000000-0000-0000-0000-000000000003",
+          "title": "Book notes",
+          "body": "The best ideas are the ones that still feel useful the next morning.",
+          "createdAt": "2026-10-06T20:00:00Z",
+          "updatedAt": "2026-10-06T20:00:00Z"
         }
       ]
     }

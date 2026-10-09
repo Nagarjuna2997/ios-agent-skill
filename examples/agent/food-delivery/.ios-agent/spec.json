@@ -56,7 +56,6 @@
     }
   ],
   "capabilities": [
-    "launch-screen",
     "lottie-animation",
     "accessibility-baseline",
     "keychain-storage",
@@ -73,9 +72,11 @@
     "swift-charts-dashboard",
     "haptics",
     "appearance-settings",
-    "app-icon",
     "color-assets",
-    "privacy-manifest"
+    "privacy-manifest",
+    "design-system",
+    "app-icon",
+    "launch-screen"
   ],
   "sourceExcludes": [
     "Capabilities/Storekit2Paywall/Products.storekit",

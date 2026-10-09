@@ -88,6 +88,16 @@ async function refresh() {
       ul.append(...items.map((x) => el("li", x)));
       $("plan").append(el("h3", title), ul);
     }
+    if (p.template === "agent" && p.agentPlan?.designDirections) {
+      const label = el("label", "Design direction"); label.htmlFor = "design-direction";
+      const select = el("select", ""); select.id = "design-direction";
+      for (const direction of p.agentPlan.designDirections) {
+        const option = el("option", direction.name + " — " + direction.rationale); option.value = direction.id;
+        option.selected = direction.id === p.agentPlan.selectedDesign; select.append(option);
+      }
+      select.disabled = p.busy || !!p.agentPlan.selectedDesign;
+      $("plan").append(label, select);
+    }
     if (p.plan.journeys) {
       $("plan").append(el("h3", "Automated journeys · fixed before coding"));
       for (const j of p.plan.journeys) {
@@ -124,9 +134,9 @@ async function refresh() {
   $("export").disabled = p.busy;
   $("plan-button").disabled = p.busy || (p.template === "custom" && !!p.plan);
   $("verify").textContent =
-    p.template === "custom" ? "Run app checks" : "Check starter";
+    ["agent", "custom"].includes(p.template) ? "Run app checks" : "Check starter";
   $("scope-note").textContent =
-    p.template === "custom"
+    p.template === "agent" ? "Shared CLI workflow: build, tests, screenshots and design review. Evidence details are in RUN_REPORT.md." : p.template === "custom"
       ? "App-specific UI journeys are frozen before code generation. Manual criteria and behavior outside those journeys need review."
       : "Reading-list acceptance suite. Additional plan criteria need separate review.";
   $("build").disabled = p.busy || !p.plan;
@@ -141,7 +151,7 @@ async function refresh() {
       ),
   );
   const options =
-    p.template === "custom"
+    p.template === "agent" ? Object.keys(p.evidence?.screens ?? {}).map(k => [k,k]) : p.template === "custom"
       ? (p.plan?.journeys ?? []).map((j) => [j.screen, j.name])
       : [
           ["library", "Library"],
@@ -263,7 +273,7 @@ $("demo").onclick = () => {
   $("name").focus();
 };
 $("plan-button").onclick = () => action("plan");
-$("build").onclick = () => action("build");
+$("build").onclick = () => action("build", $("design-direction")?.value);
 $("verify").onclick = () => action("verify");
 $("stop").onclick = async () => {
   try {

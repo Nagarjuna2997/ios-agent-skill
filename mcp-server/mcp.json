@@ -38,232 +38,264 @@
   },
   "tools": [
     {
-      "name": "review_swift_concurrency",
-      "summary": "Check a Swift project for Swift 6 concurrency and isolation defects: @Observable types missing @MainActor, Task.detached, DispatchQueue.main.async in async code, @unchecked Sendable, nonisolated(unsafe), unstructured Tasks in onAppear, empty catch blocks, and types named Task that shadow _Concurrency.Task. Use when reviewing Swift code, migrating to Swift 6, or diagnosing a data race."
-    },
-    {
-      "name": "review_swift_architecture",
-      "summary": "Check a Swift project for architecture and testability defects: dependencies defaulting to live implementations, the presentation layer naming concrete data-layer types (URLSession, APIClient, ModelContext), singletons resolved inside view models, the domain layer importing UI frameworks, nested NavigationStacks, and deprecated NavigationView. Use when reviewing MVVM or Clean Architecture code, or when a screen cannot be previewed without a network."
-    },
-    {
-      "name": "review_swiftui",
-      "summary": "Check SwiftUI code for view and state defects: fixed font sizes and heights that break Dynamic Type, AnyView, deprecated .cornerRadius, literal spacing values instead of design tokens, materials applied over solid backgrounds, transient presentation state stored on models, legacy ObservableObject and @EnvironmentObject, and try!. Use when reviewing or building SwiftUI screens."
-    },
-    {
-      "name": "check_availability_guards",
-      "summary": "Verify that version-gated Apple APIs are guarded on the version where they were INTRODUCED rather than the newest SDK. Catches both missing guards and over-restrictive ones — for example Liquid Glass (iOS 26) guarded at iOS 27, which silently drops every iOS 26 device to the fallback. Also flags Foundation Models used without a runtime SystemLanguageModel.availability check. Use before shipping, or after bumping an SDK."
-    },
-    {
-      "name": "audit_app_store_readiness",
-      "summary": "Check a Swift project for issues that cause App Store rejection or runtime termination: permission-gated frameworks used without an Info.plist purpose string, a missing PrivacyInfo.xcprivacy manifest, unlocalized user-facing strings, icon-only buttons with no accessibility label, and print() used for logging. Use before submitting to App Review."
-    },
-    {
-      "name": "analyze_swift_project",
-      "summary": "Produce an overview of a Swift project — file and line counts, deployment target, Swift tools version, frameworks in use, whether tests exist — together with a summary count of findings across every rule category (concurrency, architecture, SwiftUI, availability, App Store). Use this first when you are unfamiliar with a codebase, then run the focused tools on whichever category has findings."
-    },
-    {
-      "name": "lint_skill",
-      "summary": "Validate the metadata of an Agent Skill repository rather than Swift source: SKILL.md frontmatter (required keys, kebab-case name, semver version, description length limits), subagent definitions in .claude/agents/ (name matches filename, unknown tool names, and read-only agents that are nonetheless granted Edit or Write), whether generated mirror files such as CLAUDE.md and AGENTS.md have drifted from SKILL.md, and backtick-quoted doc paths that do not resolve. Use when authoring or reviewing a skill, before publishing a release, or when a subagent or skill is not being invoked as expected."
-    },
-    {
-      "name": "review_swift_memory",
-      "summary": "Check a Swift project for retain cycles and lifetime defects: repeating Timers and block-based NotificationCenter observers capturing self strongly, Combine sinks stored in a cancellables set owned by the same object, non-weak delegate properties, stored closure properties capturing self, `unowned self` in escaping closures, and long-running unstructured Tasks that keep an object alive after its screen is gone. Use when memory grows over time, when deinit is never called, or before shipping a screen with timers or subscriptions."
-    },
-    {
-      "name": "review_swift_security",
-      "summary": "Check a Swift project for security defects: hardcoded API keys, tokens, and passwords in source; credentials written to UserDefaults instead of the Keychain; App Transport Security disabled; cleartext http:// endpoints; TLS server trust accepted without evaluation; MD5 and SHA-1; Keychain items with over-permissive accessibility; non-cryptographic randomness used for nonces and salts; secrets written to logs; and string interpolation into evaluated JavaScript. Use before shipping, during a security review, or when handling credentials."
-    },
-    {
-      "name": "review_swift_testing",
-      "summary": "Check a Swift test suite for defects that make it unreliable or vacuous: tests that wait by sleeping, tests with no assertion at all, `await` inside an XCTAssert autoclosure (which does not compile), live URLSession calls in tests, `try!`, static mutable state that makes results order-dependent, long expectation timeouts covering for races, and XCTAssertTrue on an equality that hides both values on failure. Also reports when a project has no tests or very few. Use when tests are flaky, before trusting a green suite, or when adding coverage."
-    },
-    {
-      "name": "review_swift_performance",
-      "summary": "Check for runtime cost that shows up as dropped frames: DateFormatter and JSONDecoder allocated inside `body`, collections sorted or filtered on every render, ForEach over indices instead of stable identity, non-lazy stacks inside a ScrollView, AsyncImage with no frame, blocking file or network I/O on the render path, and GeometryReader wrapping an entire body. Use when scrolling stutters, launch is slow, or before shipping a list-heavy screen."
-    },
-    {
-      "name": "search_apple_technologies",
-      "summary": "Find Apple frameworks, tools, services and legacy technologies in the bundled 405-entry source snapshot."
-    },
-    {
-      "name": "get_apple_technology",
-      "summary": "Get a compact technology overview and local source routes by default. Use view full only when the entire guide and API topic map are required."
-    },
-    {
-      "name": "get_apple_updates",
-      "summary": "Search dated Apple update and release-note landing pages with version-specific source links. Does not claim live results."
-    },
-    {
-      "name": "plan_ios_app",
-      "summary": "Return an implementation workflow and safe CLI argument array for a named app. No files are created and no build is claimed."
-    },
-    {
-      "name": "plan_app_icon",
-      "summary": "Return a separate-layer icon specification, Apple workflow and appearance checks. Does not fabricate a native .icon document."
-    },
-    {
-      "name": "search_local_references",
-      "summary": "Search complete repository guides, Swift source, templates and assets offline. Returns compact file matches without loading bodies. Source files and guide code blocks have different verification status."
-    },
-    {
-      "name": "read_local_reference",
-      "summary": "Read exact bundled file content in bounded character ranges. Use nextOffset to continue without omission; no network or user filesystem access. Offset is a JavaScript UTF-16 string index."
-    },
-    {
-      "name": "get_reference_outline",
-      "summary": "Get heading offsets so only the relevant section needs to be read."
-    },
-    {
-      "name": "simulator_list",
-      "summary": "List available Simulator devices using xcrun simctl. Use before booting, installing, launching, or capturing screenshots when you do not know the simulator UDID."
-    },
-    {
-      "name": "simulator_boot",
-      "summary": "Boot a simulator by UDID using xcrun simctl boot. Use before install_app, launch_app, screenshot, or open_deep_link. This does not erase or reset simulator content."
-    },
-    {
-      "name": "simulator_shutdown",
-      "summary": "Shut down a simulator by UDID using xcrun simctl shutdown. Use after runtime validation to clean up a booted simulator. This does not erase content."
-    },
-    {
-      "name": "install_app",
-      "summary": "Install a built .app bundle into a simulator using xcrun simctl install. Use after build_project or after locating a derived-data app bundle."
-    },
-    {
-      "name": "launch_app",
-      "summary": "Launch an installed app in the simulator by bundle identifier. Optional arguments are passed after the bundle id and are useful for UI-test/debug launch flags."
-    },
-    {
-      "name": "terminate_app",
-      "summary": "Terminate a running simulator app by bundle identifier without uninstalling it or resetting its state."
-    },
-    {
-      "name": "open_deep_link",
-      "summary": "Open a URL in the simulator using xcrun simctl openurl. Use to verify deep links, universal links, onboarding routes, and state restoration."
-    },
-    {
-      "name": "screenshot",
-      "summary": "Capture a simulator screenshot to a PNG path using xcrun simctl io screenshot. Use as evidence for visual review and before/after comparison."
-    },
-    {
-      "name": "build_project",
-      "summary": "Run xcodebuild build for a project or workspace. Use before installing and launching the app. Requires a scheme and either project or workspace."
-    },
-    {
-      "name": "run_tests",
-      "summary": "Run xcodebuild test for a project or workspace. Use to verify runtime/test behavior before visual review. Requires an explicit destination."
-    },
-    {
-      "name": "simulator_environment",
-      "summary": "Report selected Xcode, installed runtimes and real device profiles, including Duo when installed. Does not download or update Xcode."
-    },
-    {
-      "name": "simulator_show",
-      "summary": "Boot and wait for a selected available device, then open its native Simulator window for touch/keyboard interaction."
-    },
-    {
-      "name": "simulator_preview_start",
-      "summary": "Start a token-protected loopback screenshot viewer for a booted device. Open the returned URL in the client sidebar/browser. Read-only visual preview; interact in the native Simulator. Not a public hosted simulator."
-    },
-    {
-      "name": "simulator_preview_stop",
-      "summary": "Stop this server’s preview for a device and remove its temporary screenshots; leaves the Simulator running."
-    },
-    {
-      "name": "create_app",
-      "summary": "Create an editable Swift app starter, implementation brief and optional XcodeGen specification/icon layers. Writes a NEW project; does not implement the full app idea. Then use source retrieval, review and simulator tools to implement and verify it."
-    },
-    {
-      "name": "review_app_intents",
-      "summary": "Read-only SiriKit migration advice and opt-in Apple Intelligence schema/onscreen entity review. No blanket SiriKit deprecation claim."
-    },
-    {
-      "name": "prepare_issue_report",
-      "summary": "Local category-only issue preview; no network, diagnostics collection or submission. User reviews and signs in to GitHub to submit."
-    },
-    {
-      "name": "private_feedback",
-      "summary": "Source-preview consented category-only private feedback. Preview first, explicitly approve, then submit to configured HTTPS receiver; unavailable without backend. No public fallback."
-    },
-    {
-      "name": "generate_color_system",
-      "summary": "Read-only deterministic iOS palette preview with contrast and asset tokens."
-    },
-    {
-      "name": "review_color_system",
-      "summary": "Read-only project colors, appearance coverage, duplicates and explicit contrast evidence."
-    },
-    {
-      "name": "review_backend_integration",
-      "summary": "Use when integrating a backend: detect supported Swift SDKs and inspect concrete credential, auth, policy and transport evidence. Read-only, bounded and credential-redacted; does not audit deployed services."
-    },
-    {
       "name": "list_system_integrations",
-      "summary": "Use this when adding or reviewing Apple integrations. List supported Apple system integration workflows, conditional permissions and verification limits."
+      "description": "Use this when adding or reviewing Apple integrations. List supported Apple system integration workflows, conditional permissions and verification limits.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
     },
     {
       "name": "get_system_integration",
-      "summary": "Use this when adding or reviewing Apple integrations. Get a supported integration’s APIs, guide routes, operations, permissions and device verification requirements."
+      "description": "Use this when adding or reviewing Apple integrations. Get a supported integration’s APIs, guide routes, operations, permissions and device verification requirements.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "integration": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          }
+        },
+        "required": [
+          "integration"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
     },
     {
       "name": "scaffold_system_integration",
-      "summary": "Use this when adding or reviewing Apple integrations. Return a reusable Swift file preview for a supported system integration. Read-only: never writes or overwrites project files. iOS 17+ starter; app-specific wiring and device tests required."
+      "description": "Use this when adding or reviewing Apple integrations. Return a reusable Swift file preview for a supported system integration. Read-only: never writes or overwrites project files. iOS 17+ starter; app-specific wiring and device tests required.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "integration": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "operations": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 20
+          }
+        },
+        "required": [
+          "path",
+          "integration"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
     },
     {
       "name": "review_system_integrations",
-      "summary": "Use this when adding or reviewing Apple integrations. Review concrete API usage, selected privacy configuration and entitlements; reuse App Intents checks. Unknown target/configuration is reported, not treated as missing."
+      "description": "Use this when adding or reviewing Apple integrations. Review concrete API usage, selected privacy configuration and entitlements; reuse App Intents checks. Unknown target/configuration is reported, not treated as missing.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "infoPlist": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Effective selected-target plist relative to project. Use a built plist when Xcode generates keys."
+          },
+          "entitlements": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Effective selected-target entitlements relative to project."
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
     },
     {
       "name": "check_apple_permissions",
-      "summary": "Use this when adding or reviewing Apple integrations. Report required versus detected privacy keys for concrete API operations. Picker-only Photos, Maps coordinates and system sharing do not imply broad data access."
+      "description": "Use this when adding or reviewing Apple integrations. Report required versus detected privacy keys for concrete API operations. Picker-only Photos, Maps coordinates and system sharing do not imply broad data access.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "infoPlist": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Effective selected-target plist relative to project. Use a built plist when Xcode generates keys."
+          },
+          "entitlements": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Effective selected-target entitlements relative to project."
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
     },
     {
       "name": "check_apple_capabilities",
-      "summary": "Use this when adding or reviewing Apple integrations. Check selected entitlements separately from usage descriptions for concrete HealthKit, Apple Pay, CloudKit and push usage. Associated-domain provisioning needs manual verification."
+      "description": "Use this when adding or reviewing Apple integrations. Check selected entitlements separately from usage descriptions for concrete HealthKit, Apple Pay, CloudKit and push usage. Associated-domain provisioning needs manual verification.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "infoPlist": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Effective selected-target plist relative to project. Use a built plist when Xcode generates keys."
+          },
+          "entitlements": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Effective selected-target entitlements relative to project."
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
     },
     {
       "name": "recommend_system_integrations",
-      "summary": "Use this when adding or reviewing Apple integrations. Suggest verification of integrations already evidenced in source. Does not recommend unrelated features or infer product requirements."
+      "description": "Use this when adding or reviewing Apple integrations. Suggest verification of integrations already evidenced in source. Does not recommend unrelated features or infer product requirements.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "infoPlist": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Effective selected-target plist relative to project. Use a built plist when Xcode generates keys."
+          },
+          "entitlements": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Effective selected-target entitlements relative to project."
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
     },
     {
-      "name": "list_screenshot_templates",
-      "summary": "Use this before creating local App Store screenshot sets. List structurally distinct layouts and dated output profiles. No network, capture, upload or Apple approval."
+      "name": "xcode_mcp_status",
+      "description": "Discover Xcode MCP bridge, handshake and capabilities; discovery does not prove authorization. Use before generating Apple API code.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
     },
     {
-      "name": "get_screenshot_template",
-      "summary": "Use this to choose a Screenshot Studio layout. Inspect text positions, device placement, background, callouts and safe-region requirements before rendering."
-    },
-    {
-      "name": "generate_screenshot_set",
-      "summary": "Use this to render supplied PNG/JPEG captures offline into NEW local directories with neutral frames, supplied copy, hashed metadata and a gallery. Does not capture or upload. Single-image tool requires one screen and template; variants requires multiple templates."
-    },
-    {
-      "name": "generate_screenshot_variants",
-      "summary": "Use this to render supplied PNG/JPEG captures offline into NEW local directories with neutral frames, supplied copy, hashed metadata and a gallery. Does not capture or upload. Single-image tool requires one screen and template; variants requires multiple templates."
-    },
-    {
-      "name": "render_app_store_screenshot",
-      "summary": "Use this to render supplied PNG/JPEG captures offline into NEW local directories with neutral frames, supplied copy, hashed metadata and a gallery. Does not capture or upload. Single-image tool requires one screen and template; variants requires multiple templates."
-    },
-    {
-      "name": "inspect_screenshot_set",
-      "summary": "Use this before sharing/exporting a local screenshot set. Verify dimensions, RGB PNG format, hashes, recorded bounds, text contrast and duplicate sources. This is not Apple approval or a complete design review."
-    },
-    {
-      "name": "preview_screenshot_set",
-      "summary": "Use this to locate the generated local contact sheet and HTML gallery after validating a screenshot set. Returns local paths only; does not open a browser or upload."
-    },
-    {
-      "name": "export_screenshot_set",
-      "summary": "Use this after visually reviewing a local set. Copy validated PNG files and export metadata to a NEW directory, refusing invalid or modified outputs. No upload or automatic App Store submission."
-    },
-    {
-      "name": "localize_screenshot_set",
-      "summary": "Use this to render a new locale from supplied translated copy, preserving screen order and templates. No hosted translation. Font coverage and overflow must pass; existing sets are never overwritten."
+      "name": "xcode_mcp_tools",
+      "description": "Discover actual Xcode tools, schemas, resources and prompts with category hints; unknown tools remain visible. Use before generating Apple API code.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
     },
     {
       "name": "apple_docs_status",
-      "description": "Discover installed Xcode, SDKs and local Apple documentation; does not prove bridge authorization.",
+      "description": "Discover installed Xcode, SDKs and local Apple documentation; does not prove bridge authorization. Use before generating Apple API code.",
       "inputSchema": {
         "type": "object",
         "properties": {},
@@ -275,7 +307,7 @@
     },
     {
       "name": "apple_docs_frameworks",
-      "description": "List frameworks present in installed SDKs, grouped by SDK.",
+      "description": "List frameworks present in installed SDKs, grouped by SDK. Use before generating Apple API code.",
       "inputSchema": {
         "type": "object",
         "properties": {},
@@ -287,7 +319,7 @@
     },
     {
       "name": "apple_docs_platform_support",
-      "description": "Inspect dynamically installed SDK/platform inventory; not API availability.",
+      "description": "Inspect dynamically installed SDK/platform inventory; not API availability. Use before generating Apple API code.",
       "inputSchema": {
         "type": "object",
         "properties": {},
@@ -299,7 +331,7 @@
     },
     {
       "name": "apple_docs_sdk_diff",
-      "description": "Compare installed Xcode SDK inventories; not a symbol-level API diff.",
+      "description": "Compare installed Xcode SDK inventories; not a symbol-level API diff. Use before generating Apple API code.",
       "inputSchema": {
         "type": "object",
         "properties": {},
@@ -465,24 +497,645 @@
       }
     },
     {
-      "name": "xcode_mcp_status",
-      "description": "Discover Xcode MCP bridge, handshake and capabilities; discovery does not prove authorization. Use before generating Apple API code.",
+      "name": "list_screenshot_templates",
+      "description": "Use this before creating local App Store screenshot sets. List structurally distinct layouts and dated output profiles. No network, capture, upload or Apple approval.",
       "inputSchema": {
         "type": "object",
         "properties": {},
         "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
       },
       "execution": {
         "taskSupport": "forbidden"
       }
     },
     {
-      "name": "xcode_mcp_tools",
-      "description": "Discover actual Xcode tools, schemas, resources and prompts with category hints; unknown tools remain visible. Use before generating Apple API code.",
+      "name": "get_screenshot_template",
+      "description": "Use this to choose a Screenshot Studio layout. Inspect text positions, device placement, background, callouts and safe-region requirements before rendering.",
       "inputSchema": {
         "type": "object",
-        "properties": {},
+        "properties": {
+          "template": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "template"
+        ],
+        "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "generate_screenshot_set",
+      "description": "Use this to render supplied PNG/JPEG captures offline into NEW local directories with neutral frames, supplied copy, hashed metadata and a gallery. Does not capture or upload. Single-image tool requires one screen and template; variants requires multiple templates.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "recipe": {
+            "type": "object",
+            "properties": {
+              "projectPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
+              },
+              "inputDirectory": {
+                "$ref": "#/properties/recipe/properties/projectPath"
+              },
+              "screens": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "image": {
+                      "$ref": "#/properties/recipe/properties/projectPath"
+                    },
+                    "headline": {
+                      "type": "string",
+                      "maxLength": 240
+                    },
+                    "description": {
+                      "$ref": "#/properties/recipe/properties/screens/items/properties/headline"
+                    },
+                    "subtitle": {
+                      "$ref": "#/properties/recipe/properties/screens/items/properties/headline"
+                    },
+                    "badge": {
+                      "$ref": "#/properties/recipe/properties/screens/items/properties/headline"
+                    },
+                    "additionalImages": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/properties/recipe/properties/projectPath"
+                      },
+                      "maxItems": 2
+                    }
+                  },
+                  "required": [
+                    "image"
+                  ],
+                  "additionalProperties": false
+                },
+                "minItems": 1,
+                "maxItems": 10
+              },
+              "appName": {
+                "$ref": "#/properties/recipe/properties/screens/items/properties/headline",
+                "default": "Your app"
+              },
+              "templates": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 40
+                },
+                "minItems": 1,
+                "maxItems": 8,
+                "default": [
+                  "minimal"
+                ]
+              },
+              "profile": {
+                "type": "string",
+                "enum": [
+                  "iphone-portrait",
+                  "iphone-landscape",
+                  "ipad-portrait",
+                  "ipad-landscape",
+                  "mac",
+                  "apple-tv",
+                  "vision-pro",
+                  "watch-ultra"
+                ],
+                "default": "iphone-portrait"
+              },
+              "locale": {
+                "type": "string",
+                "pattern": "^[a-zA-Z]{2,8}(?:-[a-zA-Z0-9]{1,8})*$",
+                "default": "en-US"
+              },
+              "direction": {
+                "type": "string",
+                "enum": [
+                  "ltr",
+                  "rtl"
+                ]
+              },
+              "accent": {
+                "type": "string",
+                "pattern": "^#[\\da-fA-F]{6}$"
+              },
+              "fontPaths": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/properties/recipe/properties/projectPath"
+                },
+                "minItems": 1,
+                "maxItems": 8
+              },
+              "iconPath": {
+                "$ref": "#/properties/recipe/properties/projectPath"
+              },
+              "outputDirectory": {
+                "$ref": "#/properties/recipe/properties/projectPath"
+              }
+            },
+            "required": [
+              "outputDirectory"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "recipe"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "generate_screenshot_variants",
+      "description": "Use this to render supplied PNG/JPEG captures offline into NEW local directories with neutral frames, supplied copy, hashed metadata and a gallery. Does not capture or upload. Single-image tool requires one screen and template; variants requires multiple templates.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "recipe": {
+            "type": "object",
+            "properties": {
+              "projectPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
+              },
+              "inputDirectory": {
+                "$ref": "#/properties/recipe/properties/projectPath"
+              },
+              "screens": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "image": {
+                      "$ref": "#/properties/recipe/properties/projectPath"
+                    },
+                    "headline": {
+                      "type": "string",
+                      "maxLength": 240
+                    },
+                    "description": {
+                      "$ref": "#/properties/recipe/properties/screens/items/properties/headline"
+                    },
+                    "subtitle": {
+                      "$ref": "#/properties/recipe/properties/screens/items/properties/headline"
+                    },
+                    "badge": {
+                      "$ref": "#/properties/recipe/properties/screens/items/properties/headline"
+                    },
+                    "additionalImages": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/properties/recipe/properties/projectPath"
+                      },
+                      "maxItems": 2
+                    }
+                  },
+                  "required": [
+                    "image"
+                  ],
+                  "additionalProperties": false
+                },
+                "minItems": 1,
+                "maxItems": 10
+              },
+              "appName": {
+                "$ref": "#/properties/recipe/properties/screens/items/properties/headline",
+                "default": "Your app"
+              },
+              "templates": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 40
+                },
+                "minItems": 1,
+                "maxItems": 8,
+                "default": [
+                  "minimal"
+                ]
+              },
+              "profile": {
+                "type": "string",
+                "enum": [
+                  "iphone-portrait",
+                  "iphone-landscape",
+                  "ipad-portrait",
+                  "ipad-landscape",
+                  "mac",
+                  "apple-tv",
+                  "vision-pro",
+                  "watch-ultra"
+                ],
+                "default": "iphone-portrait"
+              },
+              "locale": {
+                "type": "string",
+                "pattern": "^[a-zA-Z]{2,8}(?:-[a-zA-Z0-9]{1,8})*$",
+                "default": "en-US"
+              },
+              "direction": {
+                "type": "string",
+                "enum": [
+                  "ltr",
+                  "rtl"
+                ]
+              },
+              "accent": {
+                "type": "string",
+                "pattern": "^#[\\da-fA-F]{6}$"
+              },
+              "fontPaths": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/properties/recipe/properties/projectPath"
+                },
+                "minItems": 1,
+                "maxItems": 8
+              },
+              "iconPath": {
+                "$ref": "#/properties/recipe/properties/projectPath"
+              },
+              "outputDirectory": {
+                "$ref": "#/properties/recipe/properties/projectPath"
+              }
+            },
+            "required": [
+              "outputDirectory"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "recipe"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "render_app_store_screenshot",
+      "description": "Use this to render supplied PNG/JPEG captures offline into NEW local directories with neutral frames, supplied copy, hashed metadata and a gallery. Does not capture or upload. Single-image tool requires one screen and template; variants requires multiple templates.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "recipe": {
+            "type": "object",
+            "properties": {
+              "projectPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
+              },
+              "inputDirectory": {
+                "$ref": "#/properties/recipe/properties/projectPath"
+              },
+              "screens": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "image": {
+                      "$ref": "#/properties/recipe/properties/projectPath"
+                    },
+                    "headline": {
+                      "type": "string",
+                      "maxLength": 240
+                    },
+                    "description": {
+                      "$ref": "#/properties/recipe/properties/screens/items/properties/headline"
+                    },
+                    "subtitle": {
+                      "$ref": "#/properties/recipe/properties/screens/items/properties/headline"
+                    },
+                    "badge": {
+                      "$ref": "#/properties/recipe/properties/screens/items/properties/headline"
+                    },
+                    "additionalImages": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/properties/recipe/properties/projectPath"
+                      },
+                      "maxItems": 2
+                    }
+                  },
+                  "required": [
+                    "image"
+                  ],
+                  "additionalProperties": false
+                },
+                "minItems": 1,
+                "maxItems": 10
+              },
+              "appName": {
+                "$ref": "#/properties/recipe/properties/screens/items/properties/headline",
+                "default": "Your app"
+              },
+              "templates": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 40
+                },
+                "minItems": 1,
+                "maxItems": 8,
+                "default": [
+                  "minimal"
+                ]
+              },
+              "profile": {
+                "type": "string",
+                "enum": [
+                  "iphone-portrait",
+                  "iphone-landscape",
+                  "ipad-portrait",
+                  "ipad-landscape",
+                  "mac",
+                  "apple-tv",
+                  "vision-pro",
+                  "watch-ultra"
+                ],
+                "default": "iphone-portrait"
+              },
+              "locale": {
+                "type": "string",
+                "pattern": "^[a-zA-Z]{2,8}(?:-[a-zA-Z0-9]{1,8})*$",
+                "default": "en-US"
+              },
+              "direction": {
+                "type": "string",
+                "enum": [
+                  "ltr",
+                  "rtl"
+                ]
+              },
+              "accent": {
+                "type": "string",
+                "pattern": "^#[\\da-fA-F]{6}$"
+              },
+              "fontPaths": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/properties/recipe/properties/projectPath"
+                },
+                "minItems": 1,
+                "maxItems": 8
+              },
+              "iconPath": {
+                "$ref": "#/properties/recipe/properties/projectPath"
+              },
+              "outputDirectory": {
+                "$ref": "#/properties/recipe/properties/projectPath"
+              }
+            },
+            "required": [
+              "outputDirectory"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "recipe"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "inspect_screenshot_set",
+      "description": "Use this before sharing/exporting a local screenshot set. Verify dimensions, RGB PNG format, hashes, recorded bounds, text contrast and duplicate sources. This is not Apple approval or a complete design review.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "directory": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          }
+        },
+        "required": [
+          "directory"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "preview_screenshot_set",
+      "description": "Use this to locate the generated local contact sheet and HTML gallery after validating a screenshot set. Returns local paths only; does not open a browser or upload.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "directory": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          }
+        },
+        "required": [
+          "directory"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "export_screenshot_set",
+      "description": "Use this after visually reviewing a local set. Copy validated PNG files and export metadata to a NEW directory, refusing invalid or modified outputs. No upload or automatic App Store submission.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "directory": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "outputDirectory": {
+            "$ref": "#/properties/directory"
+          }
+        },
+        "required": [
+          "directory",
+          "outputDirectory"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "localize_screenshot_set",
+      "description": "Use this to render a new locale from supplied translated copy, preserving screen order and templates. No hosted translation. Font coverage and overflow must pass; existing sets are never overwritten.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "directory": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "outputDirectory": {
+            "$ref": "#/properties/directory"
+          },
+          "locale": {
+            "type": "string"
+          },
+          "copy": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "headline": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 240
+                },
+                "subtitle": {
+                  "type": "string",
+                  "maxLength": 240
+                },
+                "badge": {
+                  "type": "string",
+                  "maxLength": 240
+                }
+              },
+              "required": [
+                "headline"
+              ],
+              "additionalProperties": false
+            },
+            "minItems": 1,
+            "maxItems": 10
+          },
+          "fontPaths": {
+            "type": "array",
+            "items": {
+              "$ref": "#/properties/directory"
+            },
+            "minItems": 1,
+            "maxItems": 8
+          }
+        },
+        "required": [
+          "directory",
+          "outputDirectory",
+          "locale",
+          "copy"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "ios_design_evidence",
+      "title": "See the app for design review",
+      "description": "Use this after a successful build to review actual light, dark and largest Dynamic Type screenshot images for one top-level screen, with approved brief and HIG checklist. capture=true first refreshes the full matrix on the simulator. Images are shared with the connected model; use synthetic sample data. A model opinion is not accessibility certification.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "projectDir": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Absolute path of the app's project folder. Every file the agent writes stays inside it."
+          },
+          "screen": {
+            "type": "string"
+          },
+          "capture": {
+            "type": "boolean",
+            "default": false
+          }
+        },
+        "required": [
+          "projectDir",
+          "screen"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false
       },
       "execution": {
         "taskSupport": "forbidden"
@@ -520,6 +1173,7 @@
             "type": "string",
             "enum": [
               "app-structure",
+              "design-system",
               "authentication",
               "backend",
               "persistence",
@@ -574,7 +1228,7 @@
     {
       "name": "ios_plan",
       "title": "Write the build plan",
-      "description": "Use this first for a new app, before any code: validates the plan (screens, navigation, models, capabilities), resolves capabilities to modules with defaults and dependencies, and writes PLAN.md with costs, credentials and what will be built. Screen ids are kebab-case; capability ids come from ios_capabilities.",
+      "description": "Use this first for a new app, before any code: validates the plan (screens, navigation, design direction and palette, model sample records, capabilities), includes the default SwiftUI design system, resolves module dependencies, and writes PLAN.md with costs, credentials and what will be built. New models need at least two synthetic sampleData records. Screen ids are kebab-case; capability ids come from ios_capabilities.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -592,7 +1246,7 @@
           "plan": {
             "type": "object",
             "additionalProperties": {},
-            "description": "Plan JSON: appName, displayName, summary, navigation (tabs|stack|split), screens[{id,title,purpose,topLevel,capabilities}], models[{name,persisted,fields[{name,type,optional}]}], capabilities[{id,reason}], features[], assumptions[]."
+            "description": "Plan JSON: appName, displayName, summary, navigation, design{mood,palette{name,primary,secondary,accent},typography,shape,density,motion}, screens[], models[{name,persisted,fields[],sampleData[2+ synthetic records]}], capabilities[], features[], assumptions[]."
           }
         },
         "required": [
@@ -645,6 +1299,10 @@
               "type": "string"
             },
             "default": []
+          },
+          "tests": {
+            "type": "boolean",
+            "description": "Create separate unit and UI test targets; write tests before requesting runTests."
           }
         },
         "required": [
@@ -815,7 +1473,7 @@
     {
       "name": "ios_build",
       "title": "Build the app",
-      "description": "Use this after writing code to build for the iOS Simulator with xcodebuild. Returns {success, errors:[{file,line,column,message}], warnings, durationMs}, never the raw log. Enforces the per-run attempt cap (8) and wall-clock cap (25 min).",
+      "description": "Use this after writing code to build for the iOS Simulator with xcodebuild. Returns {success, errors:[{file,line,column,message}], warnings, durationMs}, never the raw log. Enforces 8 attempts and 25 minutes per cycle; the clock starts at the cycle's first build. Pass newCycle (and change) on the first build of a refinement or a resumed run to start a fresh budget.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -829,6 +1487,19 @@
           },
           "udid": {
             "type": "string"
+          },
+          "runTests": {
+            "type": "boolean",
+            "description": "After a successful build, run the configured unit/UI tests and return separate test evidence."
+          },
+          "newCycle": {
+            "type": "boolean",
+            "description": "Start a new attempt budget and deadline (refinement or resume)."
+          },
+          "change": {
+            "type": "string",
+            "maxLength": 500,
+            "description": "The refinement being applied, recorded in RUN_REPORT.md."
           }
         },
         "required": [
@@ -849,7 +1520,7 @@
     {
       "name": "ios_run",
       "title": "Run the app in the simulator",
-      "description": "Use this after a successful ios_build to boot a simulator if needed (newest installed iOS runtime unless a UDID is given), install the app and launch it. screen opens that screen via -ios-agent-screen.",
+      "description": "Use this after a successful ios_build to boot a simulator if needed (newest installed iOS runtime unless a UDID is given), install the app and launch it. Synthetic sample data is enabled by default for a useful demo; set sampleData=false to see the app's normal state. screen opens that screen via -ios-agent-screen.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -864,6 +1535,10 @@
           "screen": {
             "type": "string",
             "pattern": "^[a-z][a-z0-9-]{0,39}$"
+          },
+          "sampleData": {
+            "type": "boolean",
+            "default": true
           }
         },
         "required": [
@@ -1016,7 +1691,7 @@
     {
       "name": "ios_report",
       "title": "Write the run report",
-      "description": "Use this to finish every /ios-build run: writes RUN_REPORT.md from the run state with result, screenshots, capabilities (applied, status, awaiting credentials), builds, what needs the user's accounts or money, next steps and the progress log.",
+      "description": "Use this to finish every /ios-build run: writes RUN_REPORT.md from the run state with result, light/dark/XXL screenshot matrix per top-level screen when the full build loop ran, generated palette contrast evidence, capabilities (applied, status, awaiting credentials), builds, what needs the user's accounts or money, next steps and the progress log. Standalone MCP screenshots remain single captures and do not claim appearance or text-size coverage.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -1051,6 +1726,2348 @@
       },
       "execution": {
         "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "review_backend_integration",
+      "title": "Review iOS backend integration",
+      "description": "Use when integrating or reviewing Supabase, Firebase, CloudKit, Amplify, Appwrite, Apollo, REST or WebSockets. Detects concrete imports/dependencies/configuration and redacted auth/security evidence. Read-only; no service calls or deployment claims.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Absolute path to the Swift project root (the folder containing Package.swift or the .xcodeproj)."
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "generate_color_system",
+      "title": "Generate an iOS color system preview",
+      "description": "Use when designing or revising app colors. Deterministic OKLCH seed/intent palette, four appearances, contrast report, named-color Swift snippets and existing assets-CLI token JSON. Read-only: no project changes, network. Image input accepts opaque samples or an explicitly provided local sRGB PNG.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string",
+            "maxLength": 2000,
+            "default": ""
+          },
+          "category": {
+            "type": "string",
+            "maxLength": 80,
+            "default": ""
+          },
+          "mood": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 40
+            },
+            "maxItems": 16,
+            "default": []
+          },
+          "primaryColor": {
+            "type": "string",
+            "pattern": "^#[\\da-fA-F]{6}$"
+          },
+          "brandColors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/properties/primaryColor"
+            },
+            "maxItems": 32,
+            "default": []
+          },
+          "existingColors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/properties/primaryColor"
+            },
+            "maxItems": 128,
+            "default": []
+          },
+          "existingTokens": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/properties/primaryColor"
+            },
+            "default": {}
+          },
+          "family": {
+            "type": "string",
+            "enum": [
+              "Neutral / Minimal",
+              "Blue",
+              "Indigo",
+              "Violet",
+              "Purple",
+              "Magenta",
+              "Teal",
+              "Cyan",
+              "Green",
+              "Emerald",
+              "Mint",
+              "Yellow",
+              "Amber",
+              "Orange",
+              "Red",
+              "Rose",
+              "Pink",
+              "Brown / Earth",
+              "Navy / Midnight",
+              "Slate / Graphite",
+              "Pastel",
+              "Muted",
+              "High Contrast",
+              "Monochrome",
+              "Gradient-led",
+              "Dark OLED",
+              "Warm Light",
+              "Cool Light",
+              "Glass / Translucent",
+              "Dynamic Brand",
+              "Category-aware palettes"
+            ]
+          },
+          "strategy": {
+            "type": "string",
+            "enum": [
+              "monochromatic",
+              "analogous",
+              "complementary",
+              "split-complementary",
+              "triadic",
+              "neutral-plus-accent",
+              "dominant-plus-supporting",
+              "restrained gradient"
+            ],
+            "default": "dominant-plus-supporting"
+          },
+          "appearance": {
+            "type": "string",
+            "enum": [
+              "both",
+              "light",
+              "dark",
+              "oled"
+            ],
+            "default": "both"
+          },
+          "accessibility": {
+            "type": "string",
+            "enum": [
+              "standard",
+              "high"
+            ],
+            "default": "standard"
+          },
+          "imageSamples": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "color": {
+                  "$ref": "#/properties/primaryColor"
+                },
+                "weight": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "maximum": 1000000,
+                  "default": 1
+                }
+              },
+              "required": [
+                "color"
+              ],
+              "additionalProperties": false
+            },
+            "maxItems": 4096,
+            "default": []
+          },
+          "imagePath": {
+            "type": "string",
+            "maxLength": 4096,
+            "description": "Explicit local PNG, at most 1024 × 1024 and 4 MiB; no upload. Samples are candidates, not official brand colors."
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "review_color_system",
+      "title": "Review an iOS color system",
+      "description": "Use when reviewing an existing project’s color decisions. Read-only color inventory, duplicate colors, catalog appearance coverage and conservative direct named-color text contrast. Reports evidence and limitations; custom branding is not an error.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Absolute path to the Swift project root (the folder containing Package.swift or the .xcodeproj)."
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "review_app_intents",
+      "title": "Review App Intents integration",
+      "description": "Review SiriKit/INIntent migration opportunities and, when explicitly requested, missing Apple Intelligence entity schemas or onscreen entity associations. Findings are heuristic advisories, not blanket deprecations or proof of invalid code. Use when integrating Siri, Shortcuts or Apple Intelligence.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Absolute path to the Swift project root (the folder containing Package.swift or the .xcodeproj)."
+          },
+          "appleIntelligence": {
+            "type": "boolean",
+            "default": false,
+            "description": "Review entity schemas for a requested Apple Intelligence integration; not required for ordinary intents."
+          },
+          "onscreenContent": {
+            "type": "boolean",
+            "default": false,
+            "description": "Review onscreen entity association only when Siri should reference visible content."
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "summary": {
+            "type": "string",
+            "description": "One-line plain-language result."
+          },
+          "score": {
+            "type": "integer",
+            "description": "0-100 defect density. 100 = no findings. penalty = 10*blockers + 3*serious + 1*minor; capacity = files*10. Comparable across runs on ONE project, not between projects."
+          },
+          "counts": {
+            "type": "object",
+            "properties": {
+              "blocker": {
+                "type": "integer"
+              },
+              "serious": {
+                "type": "integer"
+              },
+              "minor": {
+                "type": "integer"
+              },
+              "total": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "blocker",
+              "serious",
+              "minor",
+              "total"
+            ],
+            "additionalProperties": false
+          },
+          "files_checked": {
+            "type": "integer",
+            "description": "Swift files actually scanned."
+          },
+          "issues": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "file": {
+                  "type": "string"
+                },
+                "line": {
+                  "type": "integer"
+                },
+                "severity": {
+                  "type": "string",
+                  "enum": [
+                    "blocker",
+                    "serious",
+                    "minor"
+                  ]
+                },
+                "rule": {
+                  "type": "string"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "consequence": {
+                  "type": "string"
+                },
+                "fix": {
+                  "type": "string"
+                },
+                "doc": {
+                  "type": "string"
+                },
+                "excerpt": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "file",
+                "line",
+                "severity",
+                "rule",
+                "message",
+                "consequence",
+                "fix",
+                "doc",
+                "excerpt"
+              ],
+              "additionalProperties": false
+            },
+            "description": "Every finding, most severe first."
+          },
+          "suggestions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Prioritized next actions, deduplicated by rule — not a restatement of every issue's fix."
+          }
+        },
+        "required": [
+          "summary",
+          "score",
+          "counts",
+          "files_checked",
+          "issues",
+          "suggestions"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "review_swift_concurrency",
+      "title": "Review Swift concurrency and actor isolation",
+      "description": "Check a Swift project for Swift 6 concurrency and isolation defects: @Observable types missing @MainActor, Task.detached, DispatchQueue.main.async in async code, @unchecked Sendable, nonisolated(unsafe), unstructured Tasks in onAppear, empty catch blocks, and types named Task that shadow _Concurrency.Task. Use when reviewing Swift code, migrating to Swift 6, or diagnosing a data race.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Absolute path to the Swift project root (the folder containing Package.swift or the .xcodeproj)."
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "summary": {
+            "type": "string",
+            "description": "One-line plain-language result."
+          },
+          "score": {
+            "type": "integer",
+            "description": "0-100 defect density. 100 = no findings. penalty = 10*blockers + 3*serious + 1*minor; capacity = files*10. Comparable across runs on ONE project, not between projects."
+          },
+          "counts": {
+            "type": "object",
+            "properties": {
+              "blocker": {
+                "type": "integer"
+              },
+              "serious": {
+                "type": "integer"
+              },
+              "minor": {
+                "type": "integer"
+              },
+              "total": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "blocker",
+              "serious",
+              "minor",
+              "total"
+            ],
+            "additionalProperties": false
+          },
+          "files_checked": {
+            "type": "integer",
+            "description": "Swift files actually scanned."
+          },
+          "issues": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "file": {
+                  "type": "string"
+                },
+                "line": {
+                  "type": "integer"
+                },
+                "severity": {
+                  "type": "string",
+                  "enum": [
+                    "blocker",
+                    "serious",
+                    "minor"
+                  ]
+                },
+                "rule": {
+                  "type": "string"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "consequence": {
+                  "type": "string"
+                },
+                "fix": {
+                  "type": "string"
+                },
+                "doc": {
+                  "type": "string"
+                },
+                "excerpt": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "file",
+                "line",
+                "severity",
+                "rule",
+                "message",
+                "consequence",
+                "fix",
+                "doc",
+                "excerpt"
+              ],
+              "additionalProperties": false
+            },
+            "description": "Every finding, most severe first."
+          },
+          "suggestions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Prioritized next actions, deduplicated by rule — not a restatement of every issue's fix."
+          }
+        },
+        "required": [
+          "summary",
+          "score",
+          "counts",
+          "files_checked",
+          "issues",
+          "suggestions"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "review_swift_architecture",
+      "title": "Review iOS architecture boundaries",
+      "description": "Check a Swift project for architecture and testability defects: dependencies defaulting to live implementations, the presentation layer naming concrete data-layer types (URLSession, APIClient, ModelContext), singletons resolved inside view models, the domain layer importing UI frameworks, nested NavigationStacks, and deprecated NavigationView. Use when reviewing MVVM or Clean Architecture code, or when a screen cannot be previewed without a network.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Absolute path to the Swift project root (the folder containing Package.swift or the .xcodeproj)."
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "summary": {
+            "type": "string",
+            "description": "One-line plain-language result."
+          },
+          "score": {
+            "type": "integer",
+            "description": "0-100 defect density. 100 = no findings. penalty = 10*blockers + 3*serious + 1*minor; capacity = files*10. Comparable across runs on ONE project, not between projects."
+          },
+          "counts": {
+            "type": "object",
+            "properties": {
+              "blocker": {
+                "type": "integer"
+              },
+              "serious": {
+                "type": "integer"
+              },
+              "minor": {
+                "type": "integer"
+              },
+              "total": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "blocker",
+              "serious",
+              "minor",
+              "total"
+            ],
+            "additionalProperties": false
+          },
+          "files_checked": {
+            "type": "integer",
+            "description": "Swift files actually scanned."
+          },
+          "issues": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "file": {
+                  "type": "string"
+                },
+                "line": {
+                  "type": "integer"
+                },
+                "severity": {
+                  "type": "string",
+                  "enum": [
+                    "blocker",
+                    "serious",
+                    "minor"
+                  ]
+                },
+                "rule": {
+                  "type": "string"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "consequence": {
+                  "type": "string"
+                },
+                "fix": {
+                  "type": "string"
+                },
+                "doc": {
+                  "type": "string"
+                },
+                "excerpt": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "file",
+                "line",
+                "severity",
+                "rule",
+                "message",
+                "consequence",
+                "fix",
+                "doc",
+                "excerpt"
+              ],
+              "additionalProperties": false
+            },
+            "description": "Every finding, most severe first."
+          },
+          "suggestions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Prioritized next actions, deduplicated by rule — not a restatement of every issue's fix."
+          }
+        },
+        "required": [
+          "summary",
+          "score",
+          "counts",
+          "files_checked",
+          "issues",
+          "suggestions"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "review_swiftui",
+      "title": "Review SwiftUI views and state",
+      "description": "Check SwiftUI code for view and state defects: fixed font sizes and heights that break Dynamic Type, AnyView, deprecated .cornerRadius, literal spacing values instead of design tokens, materials applied over solid backgrounds, transient presentation state stored on models, legacy ObservableObject and @EnvironmentObject, and try!. Use when reviewing or building SwiftUI screens.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Absolute path to the Swift project root (the folder containing Package.swift or the .xcodeproj)."
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "summary": {
+            "type": "string",
+            "description": "One-line plain-language result."
+          },
+          "score": {
+            "type": "integer",
+            "description": "0-100 defect density. 100 = no findings. penalty = 10*blockers + 3*serious + 1*minor; capacity = files*10. Comparable across runs on ONE project, not between projects."
+          },
+          "counts": {
+            "type": "object",
+            "properties": {
+              "blocker": {
+                "type": "integer"
+              },
+              "serious": {
+                "type": "integer"
+              },
+              "minor": {
+                "type": "integer"
+              },
+              "total": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "blocker",
+              "serious",
+              "minor",
+              "total"
+            ],
+            "additionalProperties": false
+          },
+          "files_checked": {
+            "type": "integer",
+            "description": "Swift files actually scanned."
+          },
+          "issues": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "file": {
+                  "type": "string"
+                },
+                "line": {
+                  "type": "integer"
+                },
+                "severity": {
+                  "type": "string",
+                  "enum": [
+                    "blocker",
+                    "serious",
+                    "minor"
+                  ]
+                },
+                "rule": {
+                  "type": "string"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "consequence": {
+                  "type": "string"
+                },
+                "fix": {
+                  "type": "string"
+                },
+                "doc": {
+                  "type": "string"
+                },
+                "excerpt": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "file",
+                "line",
+                "severity",
+                "rule",
+                "message",
+                "consequence",
+                "fix",
+                "doc",
+                "excerpt"
+              ],
+              "additionalProperties": false
+            },
+            "description": "Every finding, most severe first."
+          },
+          "suggestions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Prioritized next actions, deduplicated by rule — not a restatement of every issue's fix."
+          }
+        },
+        "required": [
+          "summary",
+          "score",
+          "counts",
+          "files_checked",
+          "issues",
+          "suggestions"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "check_availability_guards",
+      "title": "Check iOS availability guards",
+      "description": "Verify that version-gated Apple APIs are guarded on the version where they were INTRODUCED rather than the newest SDK. Catches both missing guards and over-restrictive ones — for example Liquid Glass (iOS 26) guarded at iOS 27, which silently drops every iOS 26 device to the fallback. Also flags Foundation Models used without a runtime SystemLanguageModel.availability check. Use before shipping, or after bumping an SDK.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Absolute path to the Swift project root (the folder containing Package.swift or the .xcodeproj)."
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "summary": {
+            "type": "string",
+            "description": "One-line plain-language result."
+          },
+          "score": {
+            "type": "integer",
+            "description": "0-100 defect density. 100 = no findings. penalty = 10*blockers + 3*serious + 1*minor; capacity = files*10. Comparable across runs on ONE project, not between projects."
+          },
+          "counts": {
+            "type": "object",
+            "properties": {
+              "blocker": {
+                "type": "integer"
+              },
+              "serious": {
+                "type": "integer"
+              },
+              "minor": {
+                "type": "integer"
+              },
+              "total": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "blocker",
+              "serious",
+              "minor",
+              "total"
+            ],
+            "additionalProperties": false
+          },
+          "files_checked": {
+            "type": "integer",
+            "description": "Swift files actually scanned."
+          },
+          "issues": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "file": {
+                  "type": "string"
+                },
+                "line": {
+                  "type": "integer"
+                },
+                "severity": {
+                  "type": "string",
+                  "enum": [
+                    "blocker",
+                    "serious",
+                    "minor"
+                  ]
+                },
+                "rule": {
+                  "type": "string"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "consequence": {
+                  "type": "string"
+                },
+                "fix": {
+                  "type": "string"
+                },
+                "doc": {
+                  "type": "string"
+                },
+                "excerpt": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "file",
+                "line",
+                "severity",
+                "rule",
+                "message",
+                "consequence",
+                "fix",
+                "doc",
+                "excerpt"
+              ],
+              "additionalProperties": false
+            },
+            "description": "Every finding, most severe first."
+          },
+          "suggestions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Prioritized next actions, deduplicated by rule — not a restatement of every issue's fix."
+          }
+        },
+        "required": [
+          "summary",
+          "score",
+          "counts",
+          "files_checked",
+          "issues",
+          "suggestions"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "audit_app_store_readiness",
+      "title": "Audit App Store submission readiness",
+      "description": "Check a Swift project for issues that cause App Store rejection or runtime termination: permission-gated frameworks used without an Info.plist purpose string, a missing PrivacyInfo.xcprivacy manifest, unlocalized user-facing strings, icon-only buttons with no accessibility label, print() used for logging, and target-aware launch-screen configuration/storyboard/asset checks with explicit coverage limitations. Use before submitting to App Review.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Absolute path to the Swift project root (the folder containing Package.swift or the .xcodeproj)."
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "analyze_swift_project",
+      "title": "Analyze a Swift project",
+      "description": "Produce an overview of a Swift project — file and line counts, deployment target, Swift tools version, frameworks in use, whether tests exist — together with a summary count of findings across every rule category (concurrency, architecture, SwiftUI, availability, App Store). Use this first when you are unfamiliar with a codebase, then run the focused tools on whichever category has findings.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Absolute path to the Swift project root (the folder containing Package.swift or the .xcodeproj)."
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "lint_skill",
+      "title": "Lint an Agent Skill repository",
+      "description": "Validate the metadata of an Agent Skill repository rather than Swift source: SKILL.md frontmatter (required keys, kebab-case name, semver version, description length limits), subagent definitions in .claude/agents/ (name matches filename, unknown tool names, and read-only agents that are nonetheless granted Edit or Write), whether generated mirror files such as CLAUDE.md and AGENTS.md have drifted from SKILL.md, and backtick-quoted doc paths that do not resolve. Use when authoring or reviewing a skill, before publishing a release, or when a subagent or skill is not being invoked as expected.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Absolute path to the skill repository root (the folder containing SKILL.md)."
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "review_swift_memory",
+      "title": "Review memory and retain cycles",
+      "description": "Check a Swift project for retain cycles and lifetime defects: repeating Timers and block-based NotificationCenter observers capturing self strongly, Combine sinks stored in a cancellables set owned by the same object, non-weak delegate properties, stored closure properties capturing self, `unowned self` in escaping closures, and long-running unstructured Tasks that keep an object alive after its screen is gone. Use when memory grows over time, when deinit is never called, or before shipping a screen with timers or subscriptions.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Absolute path to the Swift project root (the folder containing Package.swift or the .xcodeproj)."
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "summary": {
+            "type": "string",
+            "description": "One-line plain-language result."
+          },
+          "score": {
+            "type": "integer",
+            "description": "0-100 defect density. 100 = no findings. penalty = 10*blockers + 3*serious + 1*minor; capacity = files*10. Comparable across runs on ONE project, not between projects."
+          },
+          "counts": {
+            "type": "object",
+            "properties": {
+              "blocker": {
+                "type": "integer"
+              },
+              "serious": {
+                "type": "integer"
+              },
+              "minor": {
+                "type": "integer"
+              },
+              "total": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "blocker",
+              "serious",
+              "minor",
+              "total"
+            ],
+            "additionalProperties": false
+          },
+          "files_checked": {
+            "type": "integer",
+            "description": "Swift files actually scanned."
+          },
+          "issues": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "file": {
+                  "type": "string"
+                },
+                "line": {
+                  "type": "integer"
+                },
+                "severity": {
+                  "type": "string",
+                  "enum": [
+                    "blocker",
+                    "serious",
+                    "minor"
+                  ]
+                },
+                "rule": {
+                  "type": "string"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "consequence": {
+                  "type": "string"
+                },
+                "fix": {
+                  "type": "string"
+                },
+                "doc": {
+                  "type": "string"
+                },
+                "excerpt": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "file",
+                "line",
+                "severity",
+                "rule",
+                "message",
+                "consequence",
+                "fix",
+                "doc",
+                "excerpt"
+              ],
+              "additionalProperties": false
+            },
+            "description": "Every finding, most severe first."
+          },
+          "suggestions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Prioritized next actions, deduplicated by rule — not a restatement of every issue's fix."
+          }
+        },
+        "required": [
+          "summary",
+          "score",
+          "counts",
+          "files_checked",
+          "issues",
+          "suggestions"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "review_swift_security",
+      "title": "Review iOS security",
+      "description": "Check a Swift project for security defects: hardcoded API keys, tokens, and passwords in source; credentials written to UserDefaults instead of the Keychain; App Transport Security disabled; cleartext http:// endpoints; TLS server trust accepted without evaluation; MD5 and SHA-1; Keychain items with over-permissive accessibility; non-cryptographic randomness used for nonces and salts; secrets written to logs; and string interpolation into evaluated JavaScript. Use before shipping, during a security review, or when handling credentials.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Absolute path to the Swift project root (the folder containing Package.swift or the .xcodeproj)."
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "summary": {
+            "type": "string",
+            "description": "One-line plain-language result."
+          },
+          "score": {
+            "type": "integer",
+            "description": "0-100 defect density. 100 = no findings. penalty = 10*blockers + 3*serious + 1*minor; capacity = files*10. Comparable across runs on ONE project, not between projects."
+          },
+          "counts": {
+            "type": "object",
+            "properties": {
+              "blocker": {
+                "type": "integer"
+              },
+              "serious": {
+                "type": "integer"
+              },
+              "minor": {
+                "type": "integer"
+              },
+              "total": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "blocker",
+              "serious",
+              "minor",
+              "total"
+            ],
+            "additionalProperties": false
+          },
+          "files_checked": {
+            "type": "integer",
+            "description": "Swift files actually scanned."
+          },
+          "issues": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "file": {
+                  "type": "string"
+                },
+                "line": {
+                  "type": "integer"
+                },
+                "severity": {
+                  "type": "string",
+                  "enum": [
+                    "blocker",
+                    "serious",
+                    "minor"
+                  ]
+                },
+                "rule": {
+                  "type": "string"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "consequence": {
+                  "type": "string"
+                },
+                "fix": {
+                  "type": "string"
+                },
+                "doc": {
+                  "type": "string"
+                },
+                "excerpt": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "file",
+                "line",
+                "severity",
+                "rule",
+                "message",
+                "consequence",
+                "fix",
+                "doc",
+                "excerpt"
+              ],
+              "additionalProperties": false
+            },
+            "description": "Every finding, most severe first."
+          },
+          "suggestions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Prioritized next actions, deduplicated by rule — not a restatement of every issue's fix."
+          }
+        },
+        "required": [
+          "summary",
+          "score",
+          "counts",
+          "files_checked",
+          "issues",
+          "suggestions"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "review_swift_testing",
+      "title": "Review test suite quality",
+      "description": "Check a Swift test suite for defects that make it unreliable or vacuous: tests that wait by sleeping, tests with no assertion at all, `await` inside an XCTAssert autoclosure (which does not compile), live URLSession calls in tests, `try!`, static mutable state that makes results order-dependent, long expectation timeouts covering for races, and XCTAssertTrue on an equality that hides both values on failure. Also reports when a project has no tests or very few. Use when tests are flaky, before trusting a green suite, or when adding coverage.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Absolute path to the Swift project root (the folder containing Package.swift or the .xcodeproj)."
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "summary": {
+            "type": "string",
+            "description": "One-line plain-language result."
+          },
+          "score": {
+            "type": "integer",
+            "description": "0-100 defect density. 100 = no findings. penalty = 10*blockers + 3*serious + 1*minor; capacity = files*10. Comparable across runs on ONE project, not between projects."
+          },
+          "counts": {
+            "type": "object",
+            "properties": {
+              "blocker": {
+                "type": "integer"
+              },
+              "serious": {
+                "type": "integer"
+              },
+              "minor": {
+                "type": "integer"
+              },
+              "total": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "blocker",
+              "serious",
+              "minor",
+              "total"
+            ],
+            "additionalProperties": false
+          },
+          "files_checked": {
+            "type": "integer",
+            "description": "Swift files actually scanned."
+          },
+          "issues": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "file": {
+                  "type": "string"
+                },
+                "line": {
+                  "type": "integer"
+                },
+                "severity": {
+                  "type": "string",
+                  "enum": [
+                    "blocker",
+                    "serious",
+                    "minor"
+                  ]
+                },
+                "rule": {
+                  "type": "string"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "consequence": {
+                  "type": "string"
+                },
+                "fix": {
+                  "type": "string"
+                },
+                "doc": {
+                  "type": "string"
+                },
+                "excerpt": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "file",
+                "line",
+                "severity",
+                "rule",
+                "message",
+                "consequence",
+                "fix",
+                "doc",
+                "excerpt"
+              ],
+              "additionalProperties": false
+            },
+            "description": "Every finding, most severe first."
+          },
+          "suggestions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Prioritized next actions, deduplicated by rule — not a restatement of every issue's fix."
+          }
+        },
+        "required": [
+          "summary",
+          "score",
+          "counts",
+          "files_checked",
+          "issues",
+          "suggestions"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "review_swift_performance",
+      "title": "Review SwiftUI and Swift performance",
+      "description": "Check for runtime cost that shows up as dropped frames: DateFormatter and JSONDecoder allocated inside `body`, collections sorted or filtered on every render, ForEach over indices instead of stable identity, non-lazy stacks inside a ScrollView, AsyncImage with no frame, blocking file or network I/O on the render path, and GeometryReader wrapping an entire body. Use when scrolling stutters, launch is slow, or before shipping a list-heavy screen.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Absolute path to the Swift project root (the folder containing Package.swift or the .xcodeproj)."
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "summary": {
+            "type": "string",
+            "description": "One-line plain-language result."
+          },
+          "score": {
+            "type": "integer",
+            "description": "0-100 defect density. 100 = no findings. penalty = 10*blockers + 3*serious + 1*minor; capacity = files*10. Comparable across runs on ONE project, not between projects."
+          },
+          "counts": {
+            "type": "object",
+            "properties": {
+              "blocker": {
+                "type": "integer"
+              },
+              "serious": {
+                "type": "integer"
+              },
+              "minor": {
+                "type": "integer"
+              },
+              "total": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "blocker",
+              "serious",
+              "minor",
+              "total"
+            ],
+            "additionalProperties": false
+          },
+          "files_checked": {
+            "type": "integer",
+            "description": "Swift files actually scanned."
+          },
+          "issues": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "file": {
+                  "type": "string"
+                },
+                "line": {
+                  "type": "integer"
+                },
+                "severity": {
+                  "type": "string",
+                  "enum": [
+                    "blocker",
+                    "serious",
+                    "minor"
+                  ]
+                },
+                "rule": {
+                  "type": "string"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "consequence": {
+                  "type": "string"
+                },
+                "fix": {
+                  "type": "string"
+                },
+                "doc": {
+                  "type": "string"
+                },
+                "excerpt": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "file",
+                "line",
+                "severity",
+                "rule",
+                "message",
+                "consequence",
+                "fix",
+                "doc",
+                "excerpt"
+              ],
+              "additionalProperties": false
+            },
+            "description": "Every finding, most severe first."
+          },
+          "suggestions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Prioritized next actions, deduplicated by rule — not a restatement of every issue's fix."
+          }
+        },
+        "required": [
+          "summary",
+          "score",
+          "counts",
+          "files_checked",
+          "issues",
+          "suggestions"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "search_apple_technologies",
+      "title": "Search Apple technologies",
+      "description": "Find Apple frameworks, tools, services and legacy technologies in the bundled 405-entry source snapshot.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 30,
+            "default": 10
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "get_apple_technology",
+      "title": "Read Apple technology guide",
+      "description": "Get a compact technology overview and local source routes by default. Use view full only when the entire guide and API topic map are required.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "view": {
+            "type": "string",
+            "enum": [
+              "overview",
+              "full"
+            ],
+            "default": "overview"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "get_apple_updates",
+      "title": "Find Apple updates and release notes",
+      "description": "Search dated Apple update and release-note landing pages with version-specific source links. Does not claim live results.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "maxLength": 200,
+            "default": ""
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 30,
+            "default": 10
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "plan_ios_app",
+      "title": "Plan an iOS app from a brief",
+      "description": "Return an implementation workflow and safe CLI argument array for a named app. No files are created and no build is claimed.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "brief": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 8000
+          }
+        },
+        "required": [
+          "name",
+          "brief"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "plan_app_icon",
+      "title": "Plan layered Icon Composer artwork",
+      "description": "Return a separate-layer icon specification, Apple workflow and appearance checks. Does not fabricate a native .icon document.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "appName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "concept": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "appName",
+          "concept"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "search_local_references",
+      "title": "Search bundled source and guides",
+      "description": "Search complete repository guides, Swift source, templates and assets offline. Returns compact file matches without loading bodies. Source files and guide code blocks have different verification status.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 20,
+            "default": 8
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "all",
+              "source",
+              "guide"
+            ],
+            "default": "all"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "read_local_reference",
+      "title": "Read local source or guide",
+      "description": "Read exact bundled file content in bounded character ranges. Use nextOffset to continue without omission; no network or user filesystem access. Offset is a JavaScript UTF-16 string index.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          },
+          "offset": {
+            "type": "integer",
+            "minimum": 0,
+            "default": 0
+          },
+          "maxChars": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 16000,
+            "default": 6000
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "get_reference_outline",
+      "title": "Outline a local guide",
+      "description": "Get heading offsets so only the relevant section needs to be read.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "simulator_list",
+      "title": "List available iOS simulators",
+      "description": "List available Simulator devices using xcrun simctl. Use before booting, installing, launching, or capturing screenshots when you do not know the simulator UDID.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "simulator_boot",
+      "title": "Boot an iOS simulator",
+      "description": "Boot a simulator by UDID using xcrun simctl boot. Use before install_app, launch_app, screenshot, or open_deep_link. This does not erase or reset simulator content.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "udid": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Simulator UDID. Use simulator_list first when unsure."
+          }
+        },
+        "required": [
+          "udid"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "simulator_shutdown",
+      "title": "Shut down an iOS simulator",
+      "description": "Shut down a simulator by UDID using xcrun simctl shutdown. Use after runtime validation to clean up a booted simulator. This does not erase content.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "udid": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Simulator UDID. Use simulator_list first when unsure."
+          }
+        },
+        "required": [
+          "udid"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "install_app",
+      "title": "Install an app bundle",
+      "description": "Install a built .app bundle into a simulator using xcrun simctl install. Use after build_project or after locating a derived-data app bundle.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "udid": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Simulator UDID. Use simulator_list first when unsure."
+          },
+          "appPath": {
+            "type": "string",
+            "description": "Path to a built .app bundle."
+          }
+        },
+        "required": [
+          "udid",
+          "appPath"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "launch_app",
+      "title": "Launch an installed app",
+      "description": "Launch an installed app in the simulator by bundle identifier. Optional arguments are passed after the bundle id and are useful for UI-test/debug launch flags.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "udid": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Simulator UDID. Use simulator_list first when unsure."
+          },
+          "bundleId": {
+            "type": "string"
+          },
+          "args": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "udid",
+          "bundleId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "terminate_app",
+      "title": "Terminate an app",
+      "description": "Terminate a running simulator app by bundle identifier without uninstalling it or resetting its state.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "udid": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Simulator UDID. Use simulator_list first when unsure."
+          },
+          "bundleId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "udid",
+          "bundleId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "open_deep_link",
+      "title": "Open a deep link",
+      "description": "Open a URL in the simulator using xcrun simctl openurl. Use to verify deep links, universal links, onboarding routes, and state restoration.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "udid": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Simulator UDID. Use simulator_list first when unsure."
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "required": [
+          "udid",
+          "url"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "screenshot",
+      "title": "Capture a simulator screenshot",
+      "description": "Capture a simulator screenshot to a PNG path using xcrun simctl io screenshot. Use as evidence for visual review and before/after comparison.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "udid": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Simulator UDID. Use simulator_list first when unsure."
+          },
+          "outputPath": {
+            "type": "string",
+            "description": "Output PNG path."
+          },
+          "includeImage": {
+            "type": "boolean",
+            "default": false
+          }
+        },
+        "required": [
+          "udid",
+          "outputPath"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "build_project",
+      "title": "Build an Xcode project or workspace",
+      "description": "Run xcodebuild build for a project or workspace. Use before installing and launching the app. Requires a scheme and either project or workspace.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project": {
+            "type": "string"
+          },
+          "workspace": {
+            "type": "string"
+          },
+          "scheme": {
+            "type": "string"
+          },
+          "destination": {
+            "type": "string"
+          },
+          "configuration": {
+            "type": "string"
+          },
+          "derivedDataPath": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "scheme"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "run_tests",
+      "title": "Run Xcode tests",
+      "description": "Run xcodebuild test for a project or workspace. Use to verify runtime/test behavior before visual review. Requires an explicit destination.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project": {
+            "type": "string"
+          },
+          "workspace": {
+            "type": "string"
+          },
+          "scheme": {
+            "type": "string"
+          },
+          "destination": {
+            "type": "string"
+          },
+          "configuration": {
+            "type": "string"
+          },
+          "derivedDataPath": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "scheme",
+          "destination"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "simulator_environment",
+      "title": "Installed Xcode and device support",
+      "description": "Report selected Xcode, installed runtimes and real device profiles, including Duo when installed. Does not download or update Xcode.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "simulator_show",
+      "title": "Show native Simulator",
+      "description": "Boot and wait for a selected available device, then open its native Simulator window for touch/keyboard interaction.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "udid": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Simulator UDID. Use simulator_list first when unsure."
+          }
+        },
+        "required": [
+          "udid"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "simulator_preview_start",
+      "title": "Open sidebar simulator preview",
+      "description": "Start a token-protected loopback screenshot viewer for a booted device. Open the returned URL in the client sidebar/browser. Read-only visual preview; interact in the native Simulator. Not a public hosted simulator.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "udid": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Simulator UDID. Use simulator_list first when unsure."
+          }
+        },
+        "required": [
+          "udid"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "simulator_preview_stop",
+      "title": "Close simulator preview",
+      "description": "Stop this server’s preview for a device and remove its temporary screenshots; leaves the Simulator running.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "udid": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Simulator UDID. Use simulator_list first when unsure."
+          }
+        },
+        "required": [
+          "udid"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "create_app",
+      "description": "Create an editable Swift app starter, implementation brief and optional XcodeGen specification/icon layers. Writes a NEW starter project; does not implement the full app idea. To have the build agent plan, write, build and screenshot the whole app, use ios_create_project and the /ios-build workflow instead.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "directory": {
+            "type": "string",
+            "description": "Parent directory for the new project"
+          },
+          "brief": {
+            "type": "string"
+          },
+          "xcodegen": {
+            "type": "boolean",
+            "default": true
+          }
+        },
+        "required": [
+          "name",
+          "directory",
+          "brief"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "prepare_issue_report",
+      "description": "Prepare a local category-only GitHub draft for a confirmed significant ios-agent-mcp knowledge gap, incorrect guidance, or package failure that blocks development. Do not report minor warnings or defects in the user app. The terminal AI should show the fixed-field preview and open submissionUrl automatically for these qualifying issues; if browser access is unavailable, display the link. The user reviews and clicks Submit. This tool makes no network request and never submits automatically. Never include app source, prompts, logs, paths, credentials, or other private details. Do not reopen a dismissed or duplicate draft. GitHub sign-in is required to submit.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "feature": {
+            "type": "string",
+            "enum": [
+              "installation",
+              "swift-review",
+              "local-references",
+              "app-starter",
+              "asset-generation",
+              "simulator",
+              "app-loop",
+              "client-connection"
+            ]
+          },
+          "symptom": {
+            "type": "string",
+            "enum": [
+              "unexpected-error",
+              "timeout",
+              "incorrect-result",
+              "missing-result",
+              "invalid-output",
+              "documentation-mismatch",
+              "missing-guidance",
+              "incorrect-guidance"
+            ]
+          },
+          "client": {
+            "type": "string",
+            "enum": [
+              "claude",
+              "chatgpt-codex",
+              "gemini-cli",
+              "muse",
+              "unknown"
+            ],
+            "default": "unknown"
+          },
+          "platform": {
+            "type": "string",
+            "enum": [
+              "macos",
+              "linux",
+              "windows",
+              "unknown"
+            ],
+            "default": "unknown"
+          },
+          "reproducibility": {
+            "type": "string",
+            "enum": [
+              "once",
+              "repeated",
+              "unknown"
+            ],
+            "default": "unknown"
+          }
+        },
+        "required": [
+          "feature",
+          "symptom"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "private_feedback",
+      "description": "Source-preview private feedback for a failure in iOS Agent tools, not the user app. First preview fixed categories. Show ALL fields, destination and privacy notice in chat. Submit only after the user explicitly approves that preview; never infer approval from a tool failure. No GitHub login needed for the user. Never send source, diagnostics, paths, credentials or free text. Not available until the operator configures an HTTPS receiver. Do not repeatedly offer after dismissal.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "preview",
+              "submit"
+            ]
+          },
+          "report": {
+            "type": "object",
+            "properties": {
+              "feature": {
+                "type": "string",
+                "enum": [
+                  "installation",
+                  "swift-review",
+                  "local-references",
+                  "app-starter",
+                  "asset-generation",
+                  "simulator",
+                  "app-loop",
+                  "client-connection"
+                ]
+              },
+              "symptom": {
+                "type": "string",
+                "enum": [
+                  "unexpected-error",
+                  "timeout",
+                  "incorrect-result",
+                  "missing-result",
+                  "invalid-output",
+                  "documentation-mismatch"
+                ]
+              },
+              "client": {
+                "type": "string",
+                "enum": [
+                  "claude",
+                  "chatgpt-codex",
+                  "gemini-cli",
+                  "muse",
+                  "unknown"
+                ]
+              },
+              "platform": {
+                "type": "string",
+                "enum": [
+                  "macos",
+                  "linux",
+                  "windows",
+                  "unknown"
+                ]
+              },
+              "reproducibility": {
+                "type": "string",
+                "enum": [
+                  "once",
+                  "repeated",
+                  "unknown"
+                ]
+              }
+            },
+            "required": [
+              "feature",
+              "symptom"
+            ],
+            "additionalProperties": false
+          },
+          "previewId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "userApproved": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "required": [
+          "action"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": true
       }
     }
   ],

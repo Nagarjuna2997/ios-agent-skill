@@ -24,10 +24,26 @@ import { runApp, screenshot, appLogs } from "../dist/agent/simulator.js";
 import { createProject, recordedBuild, requestedCapabilities, writeReport, writePlan } from "../dist/agent/workspace.js";
 import { loadState, saveState } from "../dist/agent/state.js";
 import { PlanSchema } from "../dist/agent/plan.js";
+import { auditGeneratedPalette, renderRunReport } from "../dist/agent/report.js";
 import { fakeXcode, BOOTED, NEWER } from "./helpers/fake-xcode.js";
 
 const simctl = (devices) => JSON.stringify({ devices });
 const dev = (udid, name, state, type = "iPhone-17") => ({ udid, name, state, isAvailable: true, deviceTypeIdentifier: `com.apple.CoreSimulator.SimDeviceType.${type}` });
+
+test("run reports summarize provider rate limits without copying response payloads", () => {
+  const providerError = 'Claude exited with 1: {"api_error_status":429,"result":"You have hit the session limit","private":"do-not-copy"}';
+  const now = new Date("2026-10-09T07:00:00Z");
+  const report = renderRunReport({
+    state: {
+      version: 1, description: "sample", projectDir: ".", startedAt: now.toISOString(), cycleStartedAt: now.toISOString(), updatedAt: now.toISOString(), deadlineAt: now.toISOString(),
+      stage: "failed", status: "failed", failure: providerError, maxBuildAttempts: 8, cycle: 1, builds: [], screenshots: [], capabilities: [], unavailable: [],
+      progress: [{ at: now.toISOString(), stage: "failed", message: providerError }], refinements: [],
+    },
+    now,
+  });
+  assert.match(report, /Provider returned HTTP 429.*session limit/);
+  assert.doesNotMatch(report, /do-not-copy|api_error_status/);
+});
 
 describe("toolchain detection", () => {
   test("parses iOS simulators only and prefers a booted iPhone", () => {
@@ -188,7 +204,24 @@ describe("plan schema", () => {
     assert.deepEqual(plan.models, []);
     assert.deepEqual(plan.screens[0].capabilities, []);
     assert.deepEqual(plan.design.palette, { name: "Ocean Ink", primary: "#1677C8", secondary: "#48A9A6", accent: "#F2A65A" });
+    assert.equal(plan.screens[0].kind, "list");
     assert.ok(requestedCapabilities(plan).includes("design-system"));
+  });
+  test("screen archetypes are explicit and palette evidence checks generated light/dark asset pairs", () => {
+    const plan = PlanSchema.parse({ ...base, screens: [{ ...base.screens[0], kind: "dashboard" }] });
+    assert.equal(plan.screens[0].kind, "dashboard");
+    assert.throws(() => PlanSchema.parse({ ...base, screens: [{ ...base.screens[0], kind: "gallery" }] }), /Invalid enum/);
+    const colorset = (light, dark) => JSON.stringify({ colors: [
+      { idiom: "universal", color: { "color-space": "srgb", components: { alpha: "1.000", red: (parseInt(light.slice(1, 3), 16) / 255).toFixed(3), green: (parseInt(light.slice(3, 5), 16) / 255).toFixed(3), blue: (parseInt(light.slice(5, 7), 16) / 255).toFixed(3) } } },
+      { idiom: "universal", appearances: [{ appearance: "luminosity", value: "dark" }], color: { "color-space": "srgb", components: { alpha: "1.000", red: (parseInt(dark.slice(1, 3), 16) / 255).toFixed(3), green: (parseInt(dark.slice(3, 5), 16) / 255).toFixed(3), blue: (parseInt(dark.slice(5, 7), 16) / 255).toFixed(3) } } },
+    ] });
+    const pairs = Object.fromEntries(["BrandPrimary", "BrandSecondary", "BrandAccent"].map((name) => [`Resources/Assets.xcassets/${name}.colorset/Contents.json`, colorset("#005F73", "#EE9B00")]));
+    pairs["Resources/Assets.xcassets/BrandOnPrimary.colorset/Contents.json"] = colorset("#FFFFFF", "#111111");
+    assert.equal(auditGeneratedPalette(pairs).passesAA, true);
+    pairs["Resources/Assets.xcassets/BrandAccent.colorset/Contents.json"] = colorset("#FFFFFF", "#EE9B00");
+    const failed = auditGeneratedPalette(pairs);
+    assert.equal(failed.passesAA, false);
+    assert.equal(failed.contrast.find((row) => row.color === "BrandAccent").passesAA, false);
   });
   test("design brief is reviewable and model sample data only contains declared fields", async () => {
     const plan = PlanSchema.parse({
@@ -281,6 +314,8 @@ describe("project workflow against fake Xcode", () => {
     assert.match(report.markdown, /External tool calls logged: \d+/);
     const toolLog = (await readFile(join(root, ".ios-agent", "tool-log.jsonl"), "utf8")).trim().split("\n").map((l) => JSON.parse(l));
     assert.ok(toolLog.some((e) => e.command === "xcodebuild" && e.args.includes("build")));
+    assert.ok(toolLog.filter((entry) => entry.cwd).every((entry) => entry.cwd === "."), "tool logs store checkout-relative working directories, not developer home paths");
+    assert.ok(!JSON.stringify(toolLog).includes(root), "tool logs do not persist absolute checkout paths in command arguments");
     assert.ok(!JSON.stringify(toolLog).includes("AGENT_TEST_ERROR"), "tool log stores commands, never output");
   });
 
@@ -314,6 +349,7 @@ describe("project workflow against fake Xcode", () => {
     assert.equal(refined.attempt, 1);
     const after = await loadState(root);
     assert.equal(after.cycle, 2);
+    assert.ok(Date.parse(after.cycleStartedAt) >= Date.parse(after.startedAt), "reports can measure the active cycle without discarding the original run timestamp");
     assert.equal(after.status, "running");
     assert.deepEqual(after.refinements.map((r) => r.change), ["Add a streak counter"]);
     assert.ok(Date.parse(after.deadlineAt) > Date.now());
@@ -368,7 +404,7 @@ describe("project workflow against fake Xcode", () => {
       { description: "A habit tracker" },
     );
     assert.ok(existsSync(join(root, "PLAN.md")));
-    assert.match(outcome.markdown, /\| Habits \(`list`\) \| tab bar \| Today's habits \|/);
+    assert.match(outcome.markdown, /\| Habits \(`list`\) \| list \| tab bar \| Today's habits \|/);
     assert.match(outcome.markdown, /Habit\*\* \(stored on device with SwiftData\): title: String/);
     assert.match(outcome.markdown, /Example 1: \{"title":"Stretch"\}/);
     assert.match(outcome.markdown, /Not built: no module yet/);

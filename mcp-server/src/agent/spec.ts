@@ -72,6 +72,8 @@ export interface AppSpec {
   capabilities: string[];
   /** Asset catalog app icon name, set by the app-icon capability once an icon exists. */
   appIconName?: string;
+  /** Separate unit/UI test bundles; never compiled into the application. */
+  tests?: boolean;
   /** Glob patterns under the sources folder that are kept in the project but not built or bundled. */
   sourceExcludes?: string[];
   /** StoreKit configuration file (relative to the project root) used by the Run scheme for local purchase testing. */
@@ -169,7 +171,8 @@ export function infoPlistProperties(spec: AppSpec): Record<string, unknown> {
     CFBundleVersion: "$(CURRENT_PROJECT_VERSION)",
     UILaunchScreen: {},
     UIApplicationSceneManifest: { UIApplicationSupportsMultipleScenes: false },
-    UISupportedInterfaceOrientations: ["UIInterfaceOrientationPortrait"],
+    UISupportedInterfaceOrientations: ["UIInterfaceOrientationPortrait", "UIInterfaceOrientationLandscapeLeft", "UIInterfaceOrientationLandscapeRight"],
+    "UISupportedInterfaceOrientations~ipad": ["UIInterfaceOrientationPortrait", "UIInterfaceOrientationPortraitUpsideDown", "UIInterfaceOrientationLandscapeLeft", "UIInterfaceOrientationLandscapeRight"],
     ...spec.infoPlist,
     ...exposed,
   };
@@ -189,7 +192,7 @@ export function renderProjectYml(spec: AppSpec): string {
         PRODUCT_NAME: spec.name,
         MARKETING_VERSION: "1.0",
         CURRENT_PROJECT_VERSION: "1",
-        TARGETED_DEVICE_FAMILY: "1",
+        TARGETED_DEVICE_FAMILY: "1,2",
         GENERATE_INFOPLIST_FILE: "NO",
         ENABLE_PREVIEWS: "YES",
         CODE_SIGN_STYLE: "Automatic",
@@ -207,6 +210,11 @@ export function renderProjectYml(spec: AppSpec): string {
   if (dependencies.length) target.dependencies = dependencies;
   const targets: Record<string, unknown> = { [spec.name]: target };
   for (const ext of spec.extensions ?? []) targets[ext.name] = extensionTarget(spec, ext);
+  if (spec.tests) for (const suffix of ["Tests", "UITests"]) targets[spec.name + suffix] = {
+    type: suffix === "Tests" ? "bundle.unit-test" : "bundle.ui-testing", platform: "iOS", deploymentTarget: spec.deploymentTarget,
+    sources: [{ path: spec.name + suffix }], dependencies: [{ target: spec.name }],
+    settings: { base: { GENERATE_INFOPLIST_FILE: "YES", PRODUCT_BUNDLE_IDENTIFIER: spec.bundleId + "." + suffix.toLowerCase(), TARGETED_DEVICE_FAMILY: "1,2" } },
+  };
   const project: Record<string, unknown> = {
     name: spec.name,
     options: { deploymentTarget: { iOS: spec.deploymentTarget }, createIntermediateGroups: true },
@@ -222,6 +230,7 @@ export function renderProjectYml(spec: AppSpec): string {
     schemes: {
       [spec.name]: {
         build: { targets: { [spec.name]: "all" } },
+        ...(spec.tests ? { test: { targets: [spec.name + "Tests", spec.name + "UITests"] } } : {}),
         run: { config: "Debug", ...(spec.storeKitConfiguration ? { storeKitConfiguration: spec.storeKitConfiguration } : {}) },
       },
     },
@@ -251,7 +260,7 @@ function extensionTarget(spec: AppSpec, ext: ExtensionSpec): Record<string, unkn
         PRODUCT_NAME: ext.name,
         MARKETING_VERSION: "1.0",
         CURRENT_PROJECT_VERSION: "1",
-        TARGETED_DEVICE_FAMILY: "1",
+        TARGETED_DEVICE_FAMILY: "1,2",
         GENERATE_INFOPLIST_FILE: "NO",
         SKIP_INSTALL: "YES",
         CODE_SIGN_STYLE: "Automatic",

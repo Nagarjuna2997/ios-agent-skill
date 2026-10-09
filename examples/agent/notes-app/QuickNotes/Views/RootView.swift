@@ -1,15 +1,12 @@
 import SwiftData
 import SwiftUI
 
+/// The single navigation stack. "notes-list" is the only top-level screen and the default;
+/// the compose and detail screens can be opened directly for agent screenshots.
 struct RootView: View {
     @Environment(\.modelContext) private var context
-    @State private var path: [Route]
-
-    init() {
-        // "notes-list" is the only top-level screen and the default; compose is offered for screenshots.
-        let initial: [Route] = AgentLaunch.requestedScreen == "compose-note" ? [.compose(nil)] : []
-        _path = State(initialValue: initial)
-    }
+    @State private var path: [Route] = []
+    @State private var didHandleLaunch = false
 
     var body: some View {
         let repository = SwiftDataNoteRepository(context: context)
@@ -26,10 +23,46 @@ struct RootView: View {
                 }
         }
         .tint(AppColor.primary)
+        .fontDesign(AppTheme.fontDesign)
+        .onAppear(perform: openRequestedScreen)
+    }
+
+    private func openRequestedScreen() {
+        guard !didHandleLaunch else { return }
+        didHandleLaunch = true
+
+        let destination: [Route]
+        switch AgentLaunch.requestedScreen {
+        case "compose-note":
+            destination = [.compose(nil)]
+        case "note-detail":
+            destination = mostRecentNoteID().map { [.detail($0)] } ?? []
+        default:
+            // "notes-list", nil and unknown values all show the list.
+            destination = []
+        }
+        guard !destination.isEmpty else { return }
+
+        var transaction = Transaction()
+        transaction.disablesAnimations = true
+        withTransaction(transaction) {
+            path = destination
+        }
+    }
+
+    private func mostRecentNoteID() -> UUID? {
+        var descriptor = FetchDescriptor<Note>(sortBy: [SortDescriptor(\Note.updatedAt, order: .reverse)])
+        descriptor.fetchLimit = 1
+        return (try? context.fetch(descriptor))?.first?.id
     }
 }
 
-#Preview {
+#Preview("With notes") {
     RootView()
-        .modelContainer(PreviewSupport.container())
+        .modelContainer(SampleData.previewContainer())
+}
+
+#Preview("Empty") {
+    RootView()
+        .modelContainer(SampleData.previewContainer(seeded: false))
 }

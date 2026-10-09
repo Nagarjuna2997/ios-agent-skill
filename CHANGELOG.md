@@ -6,6 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+- Prepare shared generated-app quality workflow: separate Swift Testing/UI test targets and bounded repairs, source-bound screenshot refinements, iPad captures and adaptive-layout generation instructions, six provider/animation modules, macOS capability evidence CI, and a Studio entry point using the same CLI engine. Provider configuration and unverified runtime behavior remain explicit; npm is unchanged.
+
+- Add `ship` local preparation, explicitly approved signing/archive and separate TestFlight upload, reusing release analysis and screenshot composition. Metadata/screenshots remain reviewed local drafts; live signed distribution is not yet verified.
+
+- Add user-selected design alternatives and a bounded screenshot critique/repair loop for `/ios-build`, with light/dark/large-text evidence, per-screen resumability, source hashes and explicit unresolved outcomes. `ios_design_evidence` returns images to connected MCP clients. Real Claude critique remains unverified because the live smoke attempt reached the provider session limit.
+
+- Add an opt-in GitHub Actions macOS backend for `build --remote`, with pinned toolkit/Xcode, resumable run receipts, source/artifact hashes and simulator evidence. Planning and repairs stay on the client; npm publication is deferred.
+
+### Prepared — skill 3.9.1 (GitHub review; npm not updated)
+
+- `/ios-build` now uses the approved plan mood, palette, typography, shape, density and motion to configure its default SwiftUI design system and semantic assets. App icons and launch screens use the same app palette instead of a bundle-ID-derived color.
+- The plan names a layout archetype per screen and supplies synthetic records for every model. Generated apps expose `-ios-agent-sample-data` for isolated demo/preview content.
+- The full Mac build loop captures each top-level screen in light, dark and XXL Dynamic Type, measures contrast in generated palette asset pairs, restores Simulator UI settings, and records a Design evidence section in `RUN_REPORT.md`.
+- SpringBoard is foregrounded before each project capture to remove the previous-app status item. Saved state and tool logs use checkout-relative paths, so checked-in evidence survives moving to another machine. Provider rate-limit failures are summarized without copying the full response payload.
+- Refreshed the four synthetic `/ios-build` examples with distinct design briefs and populated sample states. Simulator build and screenshot evidence is recorded in each example.
+
 ### npm patch 2.10.1 — published 2026-10-03
 
 - Published `ios-agent-mcp` 2.10.1 with companion CLI 0.4.1 cleanup/help safety fixes and current npm installation guidance. npm registry and `latest` tag verified October 3, 2026.

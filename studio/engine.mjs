@@ -1,3 +1,4 @@
+import { executeAgent, agentFingerprint } from "./agent-bridge.mjs";
 import {
   createCustom,
   customContract,
@@ -257,7 +258,7 @@ export class Studio {
   }
   async create(name, brief, provider = "codex", template = "reading-list", backend = "none") {
     if (!["none", "local"].includes(backend) || (backend === "local" && template !== "custom")) throw Error("Backend requires a custom project");
-    if (!["custom", "reading-list"].includes(template))
+    if (!["agent", "custom", "reading-list"].includes(template))
       throw Error("Unknown project foundation");
     if (
       typeof name !== "string" ||
@@ -270,9 +271,14 @@ export class Studio {
       throw Error("Enter an app name and a brief (up to 10,000 characters).");
     if (!["claude", "codex"].includes(provider))
       throw Error("Unsupported client");
+    if (template === "agent" && provider !== "claude") throw Error("Shared agent requires Claude Code; choose it explicitly.");
     const id = randomUUID(),
       dir = this.dir(id);
     await fs.mkdir(dir);
+    if (template === "agent") {
+      const p = {id,provider,template,name:name.trim(),brief,status:"draft",busy:false,messages:[],events:[],plan:null,evidence:null,created:new Date().toISOString()};
+      await fs.mkdir(path.join(dir,"project")); await this.save(p); return p;
+    }
     if (template === "custom")
       return createCustom(this, id, name, brief, provider, backend);
     await fs.cp(
@@ -283,7 +289,7 @@ export class Studio {
         filter: (s) =>
           !s
             .split(path.sep)
-            .some((x) => [".build", ".ios-agent", "xcuserdata"].includes(x)),
+            .some((x) => [".build", ".ios-agent", "xcuserdata", ".env", "Secrets.xcconfig"].includes(x)),
       },
     );
     const projectFile = path.join(
@@ -339,6 +345,7 @@ export class Studio {
     await this.save(p);
   }
   async fingerprint(id) {
+    if ((await this.get(id)).template === "agent") return agentFingerprint(this,id);
     if ((await this.get(id)).template === "custom")
       return customFingerprint(path.join(this.dir(id), "project"));
     const base = path.join(this.dir(id), "project");
@@ -423,7 +430,7 @@ export class Studio {
         filter: (p) =>
           !p
             .split(path.sep)
-            .some((x) => [".build", ".ios-agent", "xcuserdata"].includes(x)),
+            .some((x) => [".build", ".ios-agent", "xcuserdata", ".env", "Secrets.xcconfig"].includes(x)),
       });
       const zip = path.join(staging, "project.zip");
       await this.runner("ditto", ["-c", "-k", "--norsrc", "--keepParent", target, zip]);
@@ -567,6 +574,7 @@ export class Studio {
     this.jobs.get(id)?.abort();
   }
   async execute(p, kind, message, signal, attempt = 0) {
+    if (p.template === "agent") return executeAgent(this,p,kind,message,signal);
     if (p.template === "custom")
       return executeCustom(this, p, kind, message, signal, attempt);
     if (signal.aborted) throw Error("Cancelled");
@@ -734,14 +742,21 @@ export class Studio {
   async screenshot(id, name) {
     const p = await this.get(id);
     const names =
-      p.template === "custom"
+      p.template === "agent" ? Object.keys(p.evidence?.screens ?? {}) : p.template === "custom"
         ? (p.plan?.journeys ?? []).map((j) => j.screen)
         : ["empty", "add", "library", "detail", "search-empty", "error"];
     if (!names.includes(name)) throw Error("Unknown screenshot");
     if (!p.evidence || p.evidence.sourceHash !== (await this.fingerprint(id)))
       throw Error("Preview is stale. Verify again.");
+    if (p.template === "agent") {
+      const file = p.evidence.paths[name];
+      if (typeof file !== "string" || !/^\.ios-agent\/screenshots\/[a-zA-Z0-9_.-]+\.png$/.test(file)) throw Error("Invalid screenshot path");
+      const root = await fs.realpath(path.join(this.dir(id), "project"));
+      const actual = await fs.realpath(path.join(root,file));
+      if (!actual.startsWith(root + path.sep)) throw Error("Screenshot escapes project");
+    }
     const b = await fs.readFile(
-      path.join(this.dir(id), "project/.ios-agent/evidence", name + ".png"),
+      p.template === "agent" ? path.join(this.dir(id), "project", p.evidence.paths[name]) : path.join(this.dir(id), "project/.ios-agent/evidence", name + ".png"),
     );
     if (digest(b) !== p.evidence.screens[name])
       throw Error("Preview hash mismatch");

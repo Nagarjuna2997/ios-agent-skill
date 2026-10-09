@@ -9,6 +9,9 @@ struct RestaurantsView: View {
     var body: some View {
         NavigationStack(path: $path) {
             VStack(spacing: 0) {
+                HeroHeader(title: "Good food, nearby", subtitle: "Seasonal favorites, picked for today.", symbol: "fork.knife")
+                    .padding(.horizontal)
+                    .padding(.top, AppTheme.Space.medium)
                 Picker("Display", selection: $model.mode) {
                     ForEach(RestaurantsViewModel.Mode.allCases) { mode in
                         Text(mode.title).tag(mode)
@@ -40,6 +43,7 @@ struct RestaurantsView: View {
                     .presentationDetents([.medium])
             }
             .task { await model.load() }
+            .fontDesign(AppTheme.fontDesign)
         }
     }
 
@@ -106,10 +110,7 @@ struct RestaurantRow: View {
             AsyncImage(url: restaurant.imageURL) { image in
                 image.resizable().scaledToFill()
             } placeholder: {
-                Image(systemName: "fork.knife")
-                    .foregroundStyle(AppColor.onPrimary)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(AppColor.primary)
+                AppIconTile(symbol: "fork.knife", accessibilityLabel: "Restaurant")
             }
             .frame(width: 56, height: 56)
             .clipShape(.rect(cornerRadius: 12))

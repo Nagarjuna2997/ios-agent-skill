@@ -43,6 +43,7 @@ struct MenuView: View {
             }
         }
         .motionAwareAnimation(.spring, value: model.lastAdded)
+        .fontDesign(AppTheme.fontDesign)
     }
 
     private var menuList: some View {
