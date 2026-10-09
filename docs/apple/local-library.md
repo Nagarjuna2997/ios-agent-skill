@@ -495,9 +495,9 @@ Search offline with `node scripts/query-library.mjs search "SwiftData"`. Read a 
 | [docs/tooling/fm-cli.md](../../docs/tooling/fm-cli.md) | guide | 2447 |
 | [docs/tooling/foundation-models-instruments.md](../../docs/tooling/foundation-models-instruments.md) | guide | 3378 |
 | [docs/tooling/idea-to-app.md](../../docs/tooling/idea-to-app.md) | guide | 4036 |
-| [docs/tooling/ios-build-agent.md](../../docs/tooling/ios-build-agent.md) | guide | 6982 |
+| [docs/tooling/ios-build-agent.md](../../docs/tooling/ios-build-agent.md) | guide | 8425 |
 | [docs/tooling/ios-simulator-mcp.md](../../docs/tooling/ios-simulator-mcp.md) | guide | 7719 |
-| [docs/tooling/issue-reporting.md](../../docs/tooling/issue-reporting.md) | guide | 5432 |
+| [docs/tooling/issue-reporting.md](../../docs/tooling/issue-reporting.md) | guide | 5314 |
 | [docs/tooling/launch-screen-review.md](../../docs/tooling/launch-screen-review.md) | guide | 6420 |
 | [docs/tooling/local-apple-documentation.md](../../docs/tooling/local-apple-documentation.md) | guide | 7570 |
 | [docs/tooling/local-release-package.md](../../docs/tooling/local-release-package.md) | guide | 10506 |
