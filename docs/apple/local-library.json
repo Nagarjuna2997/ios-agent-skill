@@ -3414,8 +3414,8 @@
       "path": "docs/tooling/ios-build-agent.md",
       "title": "iOS build agent",
       "kind": "guide",
-      "characters": 8425,
-      "hash": "f554b0dc673dbade27eb6e67f4f8bd3dedc62bf02aa21d76efedc097bb9e7fff"
+      "characters": 8782,
+      "hash": "8ff114864e38f636798828ca864f5355c88c184cb4722643ff4d66aff31fdb6a"
     },
     {
       "path": "docs/tooling/ios-simulator-mcp.md",
@@ -3465,6 +3465,13 @@
       "kind": "guide",
       "characters": 18060,
       "hash": "569306705c836e4141b476921c445a1633c979d9173e0841f856ef401e89e337"
+    },
+    {
+      "path": "docs/tooling/remote-macos-build.md",
+      "title": "Build on GitHub Actions from Windows or Linux",
+      "kind": "guide",
+      "characters": 5837,
+      "hash": "78164c2b47c648bccd8d30b20575cfece69e10dc41d3095f807741df4b0b4da3"
     },
     {
       "path": "docs/tooling/september-2026-distribution.md",
@@ -4515,6 +4522,13 @@
       "kind": "source",
       "characters": 10116,
       "hash": "76b5db4e93feffc7acd91524c514adcf7732b9d9039b7a60c0d82a8b39fa1ae0"
+    },
+    {
+      "path": "templates/ci-cd/ios-agent-remote.yml",
+      "title": "Installed on a content-addressed ios-agent-build/* branch by build --remote.",
+      "kind": "source",
+      "characters": 1621,
+      "hash": "748ce8ad3627f9f37f4f9cbb8467fe390dc9bac14dd2fcd4febebfa0234615d9"
     },
     {
       "path": "templates/clients/muse-settings.json",

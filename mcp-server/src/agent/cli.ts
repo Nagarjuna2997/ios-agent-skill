@@ -10,6 +10,7 @@ import { copyFile, mkdir } from "node:fs/promises";
 import { homedir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { GitHubBuildBackend } from "./remote.js";
 import { ClaudeCodeBrain } from "./brain.js";
 import { loadCapabilities } from "./capabilities.js";
 import { runAgent } from "./loop.js";
@@ -26,7 +27,7 @@ function parse(args: string[]): { positional: string[]; flags: Map<string, strin
     const arg = args[i]!;
     if (arg.startsWith("--")) {
       const next = args[i + 1];
-      if (next !== undefined && !next.startsWith("--") && !["--resume", "--plan-only", "--all", "--global", "--keep"].includes(arg)) {
+      if (next !== undefined && !next.startsWith("--") && !["--remote", "--remote-retry", "--resume", "--plan-only", "--all", "--global", "--keep"].includes(arg)) {
         flags.set(arg.slice(2), next);
         i++;
       } else flags.set(arg.slice(2), true);
@@ -49,6 +50,7 @@ const slug = (text: string) =>
 
 const USAGE = `ios-agent-mcp build "<description>" [--out DIR] [--max-attempts 8] [--minutes 25] [--udid UDID] [--model MODEL] [--plan-only]
 ios-agent-mcp build --resume --out DIR
+ios-agent-mcp build "<description>" --remote --remote-repo OWNER/REPO --remote-tool-ref FULL_SHA --remote-xcode VERSION [--remote-runner macos-15]
 ios-agent-mcp build --refine "<change>" --out DIR
 ios-agent-mcp preflight
 ios-agent-mcp capabilities list | verify <id...>|--all [--write CAPABILITIES_DIR] [--keep]
@@ -57,7 +59,7 @@ ios-agent-mcp install-command [--global | --project DIR]
 build plans the app (PLAN.md), creates the Xcode project (XcodeGen when installed, otherwise the built-in writer),
 applies capabilities, writes SwiftUI with headless Claude Code (claude -p), builds and fixes errors (capped),
 launches in the simulator, screenshots each top-level screen and writes RUN_REPORT.md.
-Requires macOS, Xcode 16 or later, an iOS simulator and a signed-in Claude Code CLI. XcodeGen is optional.`;
+Local verification requires macOS, Xcode 16 or later, an iOS simulator and a signed-in Claude Code CLI. XcodeGen is optional.`;
 
 export async function buildCLI(args: string[]): Promise<number> {
   const { positional, flags } = parse(args);
@@ -65,6 +67,7 @@ export async function buildCLI(args: string[]): Promise<number> {
     console.log(USAGE);
     return 0;
   }
+  if (flags.has("remote-retry") && (!flags.has("remote") || !flags.has("resume"))) throw new Error("--remote-retry requires --remote --resume");
   const description = positional.join(" ").trim();
   const resume = flags.has("resume");
   const refine = str(flags, "refine");
@@ -76,15 +79,21 @@ export async function buildCLI(args: string[]): Promise<number> {
   const runner = new LoggingRunner(new ProcessRunner(), projectPaths(out).toolLog);
   const brain = new ClaudeCodeBrain({ runner: new ProcessRunner(), ...(str(flags, "model") ? { model: str(flags, "model")! } : {}) });
   const maxAttempts = Number(str(flags, "max-attempts") ?? 8);
-  const minutes = Number(str(flags, "minutes") ?? 25);
+  const minutes = Number(str(flags, "minutes") ?? (flags.has("remote") ? 60 : 25));
   if (!Number.isInteger(maxAttempts) || maxAttempts < 1 || maxAttempts > 20) throw new Error("--max-attempts must be 1-20");
   if (!Number.isFinite(minutes) || minutes < 1 || minutes > 240) throw new Error("--minutes must be 1-240");
+  const remote = flags.has("remote") ? new GitHubBuildBackend({
+    repo: str(flags, "remote-repo") ?? "", toolRef: str(flags, "remote-tool-ref") ?? "", xcode: str(flags, "remote-xcode") ?? "",
+    ...(str(flags, "remote-runner") ? { runnerLabel: str(flags, "remote-runner")! } : {}),
+  }, new ProcessRunner()) : undefined;
+  if (remote) console.log(`Remote build uploads generated app source to ${str(flags, "remote-repo")}. Check repository visibility and Actions billing. Only source/configuration is selected; .env and Secrets.xcconfig are excluded.`);
   console.log(`Project folder: ${out}`);
   const result = await runAgent({
     projectDir: out,
     ...(description ? { description } : {}),
     brain,
     runner,
+    ...(remote ? { remote, remoteRetry: flags.has("remote-retry") } : {}),
     sink: (line) => console.log(line),
     maxBuildAttempts: maxAttempts,
     wallClockMinutes: minutes,

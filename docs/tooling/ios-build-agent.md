@@ -95,3 +95,7 @@ A module becomes `verified` only when that command builds it into a minimal app 
 - Simulator only; no signing, device installs, TestFlight or App Store submission.
 - Taps and scrolling are not automated; screenshots show each top-level screen at launch. XXL captures may expose clipping and layout pressure, but do not automatically diagnose or repair it.
 - A generated plan or app is model output: review it. A successful build and screenshots do not prove the app is correct.
+
+## Remote macOS builds
+
+Use `build --remote` to send generated source to an explicitly chosen GitHub repository and run unsigned simulator verification on Actions. Planning and compiler repairs remain on the client. See [remote macOS setup, evidence, privacy and billing](remote-macos-build.md). This is GitHub source support; npm publication is deferred.

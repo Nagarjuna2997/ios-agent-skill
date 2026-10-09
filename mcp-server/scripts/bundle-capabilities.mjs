@@ -29,3 +29,6 @@ const commands = join(here, "..", "data", "commands");
 mkdirSync(commands, { recursive: true });
 cpSync(join(here, "..", "..", ".claude", "commands", "ios-build.md"), join(commands, "ios-build.md"));
 console.log(`Bundled capabilities into ${target} and the /ios-build command`);
+
+mkdirSync(join(here, "..", "data", "remote"), { recursive: true });
+cpSync(join(here, "..", "..", "templates", "ci-cd", "ios-agent-remote.yml"), join(here, "..", "data", "remote", "ios-agent-remote.yml"));

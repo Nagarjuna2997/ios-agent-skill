@@ -41,6 +41,8 @@ export interface Brain {
 
 export interface LoopOptions {
   projectDir: string;
+  remoteRetry?: boolean;
+  remote?: { build(root: string): ReturnType<typeof recordedBuild> };
   description?: string;
   brain: Brain;
   runner: CommandRunner;
@@ -144,10 +146,11 @@ async function buildAndFix(root: string, options: LoopOptions, state: StateWithM
       await saveState(root, fresh);
       return false;
     }
-    const result = await recordedBuild(root, options.runner, { ...(options.udid ? { udid: options.udid } : {}), ...(sink ? { sink } : {}) });
+    const result = options.remote ? await options.remote.build(root) : await recordedBuild(root, options.runner, { ...(options.udid ? { udid: options.udid } : {}), ...(sink ? { sink } : {}) });
     if (result.success) {
       const after = ((await loadState(root)) ?? fresh) as StateWithMilestones;
       mark(after, "built");
+      if (options.remote) { mark(after, "launched"); mark(after, "screenshots"); }
       await saveState(root, after);
       return true;
     }
@@ -165,7 +168,7 @@ async function buildAndFix(root: string, options: LoopOptions, state: StateWithM
     progress(after, "fixing", `Fixing ${result.errors.length} error(s) for attempt ${result.attempt + 1} of ${result.cap}.`, sink);
     await saveState(root, after);
     const changes = await options.brain.fix({ plan, spec, errors: result.errors, files, attempt: result.attempt, maxAttempts: result.cap });
-    if (!changes.length) {
+    if (!changes.length || (options.remote && changes.every(c => files.some(f => f.path === c.path && f.content === c.content)))) {
       const stuck = (await loadState(root)) ?? after;
       progress(stuck, "fixing", "The model proposed no changes; stopping.", sink);
       await saveState(root, stuck);
@@ -175,7 +178,7 @@ async function buildAndFix(root: string, options: LoopOptions, state: StateWithM
   }
 }
 
-async function launchAndCapture(root: string, options: LoopOptions, plan: Plan): Promise<void> {
+export async function launchAndCapture(root: string, options: Pick<LoopOptions, "runner" | "sink" | "udid" | "screenshotDelayMs">, plan: Plan): Promise<void> {
   const sink = options.sink;
   const screens = plan.screens.filter((s) => s.topLevel);
   let state = (await loadState(root))!;
@@ -262,7 +265,7 @@ export async function runAgent(options: LoopOptions): Promise<LoopResult> {
     await saveState(root, state);
   } else {
     // A run that stopped on its attempt or time cap gets a fresh attempt budget.
-    const capped = state.status === "failed" && !reached(state, "built") && attemptsThisCycle(state) > 0;
+    const capped = state.status === "failed" && !reached(state, "built") && attemptsThisCycle(state) > 0 && (!options.remote || (attemptsThisCycle(state) >= state.maxBuildAttempts && !state.builds.at(-1)?.success));
     if (capped) {
       state.cycle += 1;
       state.cycleStartedAt = new Date().toISOString();
@@ -277,18 +280,28 @@ export async function runAgent(options: LoopOptions): Promise<LoopResult> {
     await saveState(root, state);
   }
 
+  if (options.remoteRetry && options.remote) {
+    state.cycle += 1;
+    state.cycleStartedAt = new Date().toISOString();
+    delete state.milestones?.built;
+    delete state.milestones?.launched;
+    delete state.milestones?.screenshots;
+    progress(state, "preflight", "Explicit remote retry: starting a new Actions job and build budget.", sink);
+    await saveState(root, state);
+  }
+
   // Preflight: record the toolchain; without Xcode the run can still plan and write code.
   const check = await preflight(options.runner);
   const simulator = chooseSimulator(check.toolchain.simulators, options.udid);
   state = (await loadState(root)) as StateWithMilestones;
-  state.toolchain = {
+  if (!options.remote) state.toolchain = {
     ...(check.toolchain.xcode ? { xcode: `Xcode ${check.toolchain.xcode.version}${check.toolchain.xcode.build ? ` (${check.toolchain.xcode.build})` : ""}` } : {}),
     ...(simulator ? { simulator: `${simulator.name} (iOS ${simulator.runtimeVersion.join(".")})` } : {}),
   };
   const missing = check.checks.filter((c) => !c.ok);
   // Builds need the Apple tools themselves; the platform line is informational.
   const blocking = missing.filter((c) => ["xcode", "simulator-sdk", "simulator"].includes(c.id));
-  progress(state, "preflight", missing.length ? `Missing: ${missing.map((c) => `${c.id} (${c.fix ?? c.detail})`).join("; ")}` : `Toolchain ready: ${state.toolchain.xcode}, ${state.toolchain.simulator}.`, sink);
+  progress(state, "preflight", options.remote ? "Remote macOS verification selected; local Apple tools are not required." : missing.length ? `Missing: ${missing.map((c) => `${c.id} (${c.fix ?? c.detail})`).join("; ")}` : `Toolchain ready: ${state.toolchain?.xcode}, ${state.toolchain?.simulator}.`, sink);
   await saveState(root, state);
 
   try {
@@ -365,14 +378,14 @@ export async function runAgent(options: LoopOptions): Promise<LoopResult> {
       await saveState(root, state);
     }
 
-    if (blocking.length) return await finish(root, "failed", `toolchain missing: ${blocking.map((c) => c.id).join(", ")}`, sink);
+    if (blocking.length && !options.remote) return await finish(root, "failed", `toolchain missing: ${blocking.map((c) => c.id).join(", ")}`, sink);
 
     if (!reached(state, "built")) {
       const built = await buildAndFix(root, options, state, plan);
       if (!built) return await finish(root, "failed", "the app did not build within the attempt or time cap", sink);
     }
     state = (await loadState(root)) as StateWithMilestones;
-    if (!reached(state, "screenshots")) await launchAndCapture(root, options, plan);
+    if (!options.remote && !reached(state, "screenshots")) await launchAndCapture(root, options, plan);
     return await finish(root, "complete", undefined, sink);
   } catch (error) {
     const message = conciseFailure(error);

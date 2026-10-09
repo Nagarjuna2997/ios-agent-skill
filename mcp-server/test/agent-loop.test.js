@@ -225,3 +225,41 @@ test("model output parsing tolerates fences and preambles but not malformed file
   assert.throws(() => filesFrom({}), /no files array/);
   assert.throws(() => filesFrom({ files: [{ content: "x" }] }), /no path/);
 });
+
+test('remote loop fixes compiler errors without local Apple tools and preserves remote evidence on resume', async t => {
+  const { projectDir, runner } = await setup(t);
+  const local = { async run(cmd, args, opts) {
+    if (['xcodebuild', 'xcrun', 'xcodegen'].includes(cmd)) return { exitCode: 1, stdout: '', stderr: 'not installed', durationMs: 1, timedOut: false, command: cmd, args };
+    return runner.run(cmd, args, opts);
+  } };
+  let count = 0;
+  const remote = { async build(root) {
+    count++;
+    const state = await loadState(root);
+    const success = count > 1;
+    const errors = success ? [] : [{ severity: 'error', message: 'unknown symbol', file: 'HabitTracker/Views/RootView.swift', line: 1 }];
+    state.builds.push({ cycle: state.cycle, attempt: count, success, errors: errors.length, warnings: 0, durationMs: 1, at: new Date().toISOString(), firstErrors: errors });
+    state.toolchain = { xcode: 'Remote Xcode', simulator: 'Remote iPhone' };
+    if (success) state.run = { udid: 'remote-sim', simulator: 'Remote iPhone' };
+    await saveState(root, state);
+    return { success, errors, warnings: [], durationMs: 1, logPath: '.ios-agent/logs/build.log', scheme: 'HabitTracker', destination: 'sim', attempt: count, cap: 8 };
+  } };
+  const result = await runAgent({ projectDir, description: 'Habit app', brain: scriptedBrain(), runner: local, remote });
+  assert.equal(result.state.status, 'complete', result.state.failure); assert.equal(count, 2);
+  const resumed = await runAgent({ projectDir, resume: true, brain: scriptedBrain(), runner: local, remote });
+  assert.equal(count, 2); assert.equal(resumed.state.toolchain.xcode, 'Remote Xcode'); assert.ok(resumed.state.run);
+});
+
+test('remote loop stops on an unchanged repair instead of replaying a paid attempt', async t => {
+  const { projectDir, runner } = await setup(t);
+  let count = 0;
+  const remote = { async build(root) {
+    count++; const state = await loadState(root);
+    state.builds.push({ cycle: state.cycle, attempt: count, success: false, errors: 1, warnings: 0, durationMs: 1, at: new Date().toISOString(), firstErrors: [] });
+    await saveState(root, state);
+    return { success: false, errors: [{ severity: 'error', message: 'bad' }], warnings: [], durationMs: 1, logPath: '', scheme: '', destination: '', attempt: count, cap: 8 };
+  } };
+  const brain = scriptedBrain({ fix: () => [{ path: 'HabitTracker/Views/RootView.swift', content: 'struct RootView { let broken = AGENT_TEST_ERROR }\n' }] });
+  const result = await runAgent({ projectDir, description: 'Habit app', brain, runner, remote });
+  assert.equal(result.state.status, 'failed'); assert.equal(count, 1);
+});

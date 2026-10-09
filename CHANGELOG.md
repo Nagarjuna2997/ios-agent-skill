@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+- Add an opt-in GitHub Actions macOS backend for `build --remote`, with pinned toolkit/Xcode, resumable run receipts, source/artifact hashes and simulator evidence. Planning and repairs stay on the client; npm publication is deferred.
+
 ### Prepared — skill 3.9.1 (GitHub review; npm not updated)
 
 - `/ios-build` now uses the approved plan mood, palette, typography, shape, density and motion to configure its default SwiftUI design system and semantic assets. App icons and launch screens use the same app palette instead of a bundle-ID-derived color.
