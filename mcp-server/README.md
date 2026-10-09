@@ -33,9 +33,9 @@ Requires Node.js 20 or later. Building and simulator operations require macOS an
 
 [Website and quick start](https://nagarjuna2997.github.io/ios-agent-skill/) · [GitHub source](https://github.com/Nagarjuna2997/ios-agent-skill)
 
-## Feedback and support
+## Feedback from your terminal AI
 
-Found a broken tool, incorrect guidance, or a missing iOS workflow? [Open a bug report](https://github.com/Nagarjuna2997/ios-agent-skill/issues/new?template=bug_report.md) or [suggest an improvement](https://github.com/Nagarjuna2997/ios-agent-skill/issues/new?template=feature_request.md). Include the `ios-agent-mcp` version, AI client and version, Xcode/SDK/Swift versions when relevant, what you expected, what happened, and minimal reproduction steps. Please redact logs and never include app source, credentials, API keys, signing files, or other private data. GitHub issues are public.
+For a confirmed, significant gap in this repository's iOS guidance or a package failure that blocks development, the connected AI can use `prepare_issue_report` to create and open a category-only GitHub draft. It excludes app code, prompts, logs, paths and credentials. The issue is public: review the draft and click **Submit** yourself. The tool does not submit issues. Ordinary bugs in your app are not sent as package feedback. [Browse existing issues](https://github.com/Nagarjuna2997/ios-agent-skill/issues) or [open a bug report](https://github.com/Nagarjuna2997/ios-agent-skill/issues/new?template=bug_report.md) manually.
 
 # Local source retrieval in 2.4.0
 

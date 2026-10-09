@@ -18,16 +18,15 @@ Example MCP arguments:
 }
 ```
 
-1. Report only significant missing/incorrect guidance or a blocking package failure.
-   Minor warnings and normal bugs in the generated app do not belong here.
-2. Show the complete category-only preview and say the GitHub issue will be public.
-3. If the developer requested reporting for this issue or enabled opening major-issue
-   drafts for this session, the AI opens the prefilled `submissionUrl` through its
-   client's browser capability. Otherwise ask before opening. If browser access is
-   unavailable, display the link. Never claim the tool itself launches a browser.
-4. The developer reviews the draft, signs into GitHub if needed, and clicks Submit.
+1. Report only confirmed, significant missing/incorrect repo guidance or a blocking
+   package failure. Minor warnings and ordinary bugs in the user's app do not belong here.
+2. Show the category-only preview and say the GitHub issue will be public. Open the
+   prefilled `submissionUrl` through the terminal client's browser capability without
+   asking again. If browser access is unavailable, display the link. The tool itself
+   never launches a browser.
+3. The developer reviews the draft, signs into GitHub if needed, and clicks Submit.
    Opening the draft does not submit it. No automatic submission or private backend
-   is needed. Do not open repeat drafts after dismissal or for the same failure.
+   is needed. Respect dismissal and do not open repeat drafts for the same issue.
 
 The source also supports `missing-guidance` and `incorrect-guidance` symptoms;
 these additions are pending the next npm release. Use `feature: "local-references"`

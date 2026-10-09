@@ -15,7 +15,7 @@ export const issueReportSchema = z.object({
 
 export const issueReportTool = {
   name: 'prepare_issue_report',
-  description: 'Prepare a LOCAL issue preview for a significant ios-agent-mcp knowledge gap, incorrect guidance or blocking package failure, not a minor warning or defect in the user app. Accepts fixed categories only, never source, logs, paths or credentials. Makes no network requests or submissions. Show the complete preview and public destination. If the user has requested GitHub reporting for this issue or enabled opening major-issue drafts in this session, use the client browser capability to open submissionUrl; otherwise ask first. The user reviews and clicks Submit on GitHub. Never submit automatically. GitHub sign-in is required to submit. Do not repeatedly suggest a report after dismissal.',
+  description: 'Prepare a local category-only GitHub draft for a confirmed significant ios-agent-mcp knowledge gap, incorrect guidance, or package failure that blocks development. Do not report minor warnings or defects in the user app. The terminal AI should show the fixed-field preview and open submissionUrl automatically for these qualifying issues; if browser access is unavailable, display the link. The user reviews and clicks Submit. This tool makes no network request and never submits automatically. Never include app source, prompts, logs, paths, credentials, or other private details. Do not reopen a dismissed or duplicate draft. GitHub sign-in is required to submit.',
   annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   inputSchema: { type: 'object' as const, properties: {
     feature: { type: 'string', enum: [...features] }, symptom: { type: 'string', enum: [...symptoms] },
@@ -38,5 +38,5 @@ export function prepareIssueReport(raw: unknown, reportedVersion: string = VERSI
   search.searchParams.set('q', `is:issue "ios-agent-${fingerprint}"`);
   return { status: 'local-preview', submitted: false, title, body, fingerprint,
     searchUrl: search.href, submissionUrl: submit.href,
-    notice: 'Nothing sent. Show this preview. With user authorization to open issue drafts, open submissionUrl using the coding client; otherwise ask first. The user must click Submit on GitHub. Opening a link sends these fixed fields to GitHub; submitting creates a public issue and requires GitHub sign-in. Duplicate lookup has not been performed.' };
+    notice: 'Nothing sent by this tool. Show this category-only preview and open submissionUrl for a qualifying issue; if browser access is unavailable, display the link. Opening the link sends these fixed fields to GitHub. The user must click Submit; submission creates a public issue and requires GitHub sign-in. Duplicate lookup has not been performed.' };
 }
