@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "name": "RemoteDemo",
+  "displayName": "RemoteDemo",
+  "bundleId": "com.example.remotedemo",
+  "deploymentTarget": "17.0",
+  "swiftVersion": "6.0",
+  "entitlements": {},
+  "infoPlist": {},
+  "packages": [],
+  "buildSettings": {},
+  "secrets": [],
+  "capabilities": []
+}

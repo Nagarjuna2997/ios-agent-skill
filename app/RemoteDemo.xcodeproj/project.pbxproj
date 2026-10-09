@@ -1,0 +1,75 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+		1A0000000000000000000001 = {isa = PBXProject; attributes = {BuildIndependentTargetsInParallel = 1; LastSwiftUpdateCheck = 1600; LastUpgradeCheck = 1600; TargetAttributes = {1A0000000000000000000002 = {CreatedOnToolsVersion = 16.0; }; }; }; buildConfigurationList = 1A0000000000000000000010; developmentRegion = en; hasScannedForEncodings = 0; knownRegions = (en, Base, ); mainGroup = 1A0000000000000000000003; minimizedProjectReferenceProxies = 1; packageReferences = (); preferredProjectObjectVersion = 77; productRefGroup = 1A0000000000000000000004; projectDirPath = ""; projectRoot = ""; targets = (1A0000000000000000000002, ); };
+		1A0000000000000000000002 = {isa = PBXNativeTarget; buildConfigurationList = 1A000000000000000000000D; buildPhases = (1A0000000000000000000009, 1A000000000000000000000A, 1A000000000000000000000B, ); buildRules = (); dependencies = (); fileSystemSynchronizedGroups = (1A0000000000000000000007, ); name = RemoteDemo; packageProductDependencies = (); productName = RemoteDemo; productReference = 1A0000000000000000000008; productType = "com.apple.product-type.application"; };
+		1A0000000000000000000003 = {isa = PBXGroup; children = (1A0000000000000000000007, 1A0000000000000000000005, 1A0000000000000000000004, ); sourceTree = "<group>"; };
+		1A0000000000000000000004 = {isa = PBXGroup; children = (1A0000000000000000000008, ); name = Products; sourceTree = "<group>"; };
+		1A0000000000000000000005 = {isa = PBXGroup; children = (1A0000000000000000000006, ); path = Config; sourceTree = "<group>"; };
+		1A0000000000000000000006 = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Base.xcconfig; sourceTree = "<group>"; };
+		1A0000000000000000000007 = {isa = PBXFileSystemSynchronizedRootGroup; path = RemoteDemo; sourceTree = "<group>"; };
+		1A0000000000000000000008 = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RemoteDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1A0000000000000000000009 = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		1A000000000000000000000A = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		1A000000000000000000000B = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		1A000000000000000000000D = {isa = XCConfigurationList; buildConfigurations = (1A000000000000000000000E, 1A000000000000000000000F, ); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		1A000000000000000000000E = {isa = XCBuildConfiguration; baseConfigurationReference = 1A0000000000000000000006; buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Config/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.remotedemo;
+				PRODUCT_NAME = RemoteDemo;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			}; name = Debug; };
+		1A000000000000000000000F = {isa = XCBuildConfiguration; baseConfigurationReference = 1A0000000000000000000006; buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Config/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.remotedemo;
+				PRODUCT_NAME = RemoteDemo;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			}; name = Release; };
+		1A0000000000000000000010 = {isa = XCConfigurationList; buildConfigurations = (1A0000000000000000000011, 1A0000000000000000000012, ); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		1A0000000000000000000011 = {isa = XCBuildConfiguration; buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 6.0;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			}; name = Debug; };
+		1A0000000000000000000012 = {isa = XCBuildConfiguration; buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 6.0;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			}; name = Release; };
+	};
+	rootObject = 1A0000000000000000000001;
+}

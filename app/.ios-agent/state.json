@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "description": "Synthetic remote smoke test",
+  "projectDir": ".",
+  "startedAt": "2026-10-09T07:48:29.960Z",
+  "cycleStartedAt": "2026-10-09T07:48:29.960Z",
+  "updatedAt": "2026-10-09T07:48:29.965Z",
+  "deadlineAt": "2026-10-09T08:48:29.960Z",
+  "wallClockMinutes": 60,
+  "stage": "preflight",
+  "status": "running",
+  "maxBuildAttempts": 8,
+  "cycle": 1,
+  "builds": [],
+  "screenshots": [],
+  "capabilities": [],
+  "unavailable": [],
+  "progress": [],
+  "refinements": []
+}

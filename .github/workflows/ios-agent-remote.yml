@@ -1,0 +1,49 @@
+# Installed on a content-addressed ios-agent-build/* branch by build --remote.
+# This branch contains generated app source. Review its repository visibility.
+name: iOS Agent remote build
+on:
+  push:
+    branches: ['ios-agent-build/**']
+permissions:
+  contents: read
+concurrency:
+  group: ios-agent-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          path: input
+      - uses: actions/checkout@v4
+        with:
+          repository: Nagarjuna2997/ios-agent-skill
+          ref: 267f5a2a2d49df361d435e18be1328d33e16dcf3
+          persist-credentials: false
+          path: toolkit
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Select pinned Xcode
+        shell: bash
+        run: |
+          test -d /Applications/Xcode_26.3.app/Contents/Developer
+          sudo xcode-select -s /Applications/Xcode_26.3.app/Contents/Developer
+          xcodebuild -version
+          xcodebuild -showsdks
+      - name: Build toolkit from pinned source
+        working-directory: toolkit/mcp-server
+        run: npm ci && npm run build
+      - name: Unsigned build and simulator screen matrix
+        run: node toolkit/mcp-server/dist/agent/remote-worker.js input/app input/request.json evidence
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ios-agent-evidence
+          path: evidence/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 7
