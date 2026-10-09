@@ -289,3 +289,61 @@ test('switching from completed local verification to remote does not reuse local
   const switched = await runAgent({ projectDir, resume: true, brain: scriptedBrain(), runner, remote });
   assert.equal(calls, 1); assert.equal(switched.state.status, 'failed'); assert.equal(switched.state.run, undefined); assert.equal(switched.state.screenshots.length, 0);
 });
+
+test("visual loop repairs, rebuilds and reviews fresh captures", async t => {
+  const {projectDir, runner}=await setup(t);
+  const brain=scriptedBrain({generate:()=>[{path:'HabitTracker/Views/RootView.swift',content:'struct RootView {}'}]});
+  let calls=0;brain.reviewDesign=async()=> ++calls <= 2 ? {verdict:'needs_changes',findings:[{variant:'light',category:'layout',observation:'Title clipped at upper edge',repair:'Allow wrapping'}],limitations:[]} : {verdict:'pass',findings:[],limitations:['Interaction untested']};
+  brain.repairDesign=async()=>[{path:'HabitTracker/Views/RootView.swift',content:'struct RootView { let wrapped = true }'}];
+  const result=await runAgent({projectDir,runner,brain,description:'Habits',screenshotDelayMs:0});
+  assert.equal(result.state.status,'complete',result.state.failure);assert.equal(result.state.builds.length,2);assert.equal(result.state.visualReviews.length,2);assert.equal(calls,4);
+});
+test("visual unknown never passes and design alternatives wait for the user", async t => {
+  const {projectDir,runner}=await setup(t);
+  const {PlanSchema}=await import('../dist/agent/plan.js');const parsed=PlanSchema.parse(PLAN);
+  const brain=scriptedBrain({plan:()=>({...parsed,designDirections:['calm','bold'].map(id=>({id,name:id,rationale:'Fits habits',design:parsed.design}))})});
+  brain.reviewDesign=async()=>({verdict:'unknown',findings:[],limitations:['Blank capture']});
+  let result=await runAgent({projectDir,runner,brain,description:'Habits',screenshotDelayMs:0});
+  assert.equal(result.state.status,'stopped');assert.equal(result.state.builds.length,0);assert.deepEqual(brain.calls.map(c=>c[0]),['plan']);
+  result=await runAgent({projectDir,runner,brain,resume:true,design:'calm',screenshotDelayMs:0});
+  assert.equal(result.state.status,'stopped');assert.match(result.state.failure,/inconclusive/);
+});
+
+test("resume rebuilds externally edited source instead of reviewing old pixels", async t => {
+  const {projectDir,runner}=await setup(t);
+  const brain=scriptedBrain({generate:()=>[{path:'HabitTracker/Views/RootView.swift',content:'struct RootView {}'}]});
+  brain.reviewDesign=async()=>({verdict:'pass',findings:[],limitations:[]});
+  let result=await runAgent({projectDir,runner,brain,description:'Habits',screenshotDelayMs:0});
+  assert.equal(result.state.status,'complete',result.state.failure);
+  const {writeFile}=await import('node:fs/promises');
+  await writeFile(join(projectDir,'HabitTracker/Views/RootView.swift'),'struct RootView { let changed = true }');
+  result=await runAgent({projectDir,runner,brain,resume:true,screenshotDelayMs:0});
+  assert.equal(result.state.status,'complete',result.state.failure);assert.equal(result.state.builds.length,2);
+  assert.equal(result.state.visualReviews.length,2);assert.equal(result.state.buildSourceHash,result.state.captureSourceHash);
+});
+test("visual compiler fixes cannot escape Views and rounds stay bounded", async t => {
+  const {projectDir,runner}=await setup(t);
+  const brain=scriptedBrain({generate:()=>[{path:'HabitTracker/Views/RootView.swift',content:'struct RootView {}'}],fix:()=>[{path:'HabitTracker/Models/Habit.swift',content:'struct Habit {}'}]});
+  brain.reviewDesign=async()=>({verdict:'needs_changes',findings:[{variant:'dark',category:'contrast',observation:'Title invisible',repair:'Use semantic foreground'}],limitations:[]});
+  brain.repairDesign=async()=>[{path:'HabitTracker/Views/RootView.swift',content:'struct RootView { let broken = AGENT_TEST_ERROR }'}];
+  const result=await runAgent({projectDir,runner,brain,description:'Habits',screenshotDelayMs:0});
+  assert.equal(result.state.status,'failed');assert.match(result.state.failure,/only replace Swift files/);
+});
+test("three visual rounds stop unresolved without extra builds", async t=>{
+  const {projectDir,runner}=await setup(t);
+  const brain=scriptedBrain({generate:()=>[{path:'HabitTracker/Views/RootView.swift',content:'struct RootView {}'}]});
+  brain.reviewDesign=async()=>({verdict:'needs_changes',findings:[{variant:'xxl',category:'layout',observation:'Title overlaps badge',repair:'Wrap row'}],limitations:[]});
+  let revision=0;brain.repairDesign=async()=>[{path:'HabitTracker/Views/RootView.swift',content:`struct RootView { let revision = ${++revision} }`}];
+  const result=await runAgent({projectDir,runner,brain,description:'Habits',screenshotDelayMs:0});
+  assert.equal(result.state.status,'stopped');assert.match(result.state.failure,/budget exhausted/);assert.equal(result.state.builds.length,3);assert.equal(result.state.visualReviews.length,3);
+});
+
+test("source changed during build cannot receive a visual pass", async t => {
+  const {projectDir,runner}=await setup(t);let changed=false;
+  const {writeFile}=await import('node:fs/promises');
+  const unstable={async run(command,args,options){const result=await runner.run(command,args,options);if(command==='xcodebuild' && args.includes('build') && !changed){changed=true;await writeFile(join(projectDir,'HabitTracker/Views/RootView.swift'),'struct RootView { let changedDuringBuild = true }');}return result;}};
+  const brain=scriptedBrain({generate:()=>[{path:'HabitTracker/Views/RootView.swift',content:'struct RootView {}'}]});
+  let calls=0;brain.reviewDesign=async()=>{calls++;return {verdict:'pass',findings:[],limitations:[]};};
+  const result=await runAgent({projectDir,runner:unstable,brain,description:'Habits',screenshotDelayMs:0});
+  assert.equal(result.state.status,'failed');assert.equal(calls,0);
+});

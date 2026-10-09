@@ -25,6 +25,8 @@ export interface RunOptions {
   timeoutMs?: number;
   env?: Record<string, string>;
   signal?: AbortSignal;
+  /** Sent on stdin; never included in the tool log. */
+  input?: string;
 }
 
 export interface CommandRunner {
@@ -51,7 +53,7 @@ export class ProcessRunner implements CommandRunner {
       const child = spawn(command, args, {
         cwd: options.cwd,
         env,
-        stdio: ["ignore", "pipe", "pipe"],
+        stdio: [options.input === undefined ? "ignore" : "pipe", "pipe", "pipe"],
         detached: process.platform !== "win32",
       });
       const stop = () => {
@@ -83,10 +85,12 @@ export class ProcessRunner implements CommandRunner {
         stop();
       }, options.timeoutMs ?? 120_000);
       options.signal?.addEventListener("abort", onAbort, { once: true });
-      child.stdout.on("data", (chunk) => {
+      child.stdin?.on("error", () => {}); // Early provider exit may close stdin.
+      if (options.input !== undefined) child.stdin?.end(options.input);
+      child.stdout!.on("data", (chunk) => {
         stdout = keepTail(stdout + chunk);
       });
-      child.stderr.on("data", (chunk) => {
+      child.stderr!.on("data", (chunk) => {
         stderr = keepTail(stderr + chunk);
       });
       child.on("error", (error) => finish(null, error.message));

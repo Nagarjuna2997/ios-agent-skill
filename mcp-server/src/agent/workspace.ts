@@ -1,3 +1,4 @@
+import { snapshotFiles, snapshotHash } from "./remote.js";
 // High-level operations shared by the MCP tools and the CLI loop.
 import { existsSync } from "node:fs";
 import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
@@ -101,7 +102,7 @@ export async function updatePlanDesign(
   const root = requireProjectDir(rootDir);
   const current = await readPlan(root);
   if (!current) throw new Error("This project has no saved plan to refine.");
-  const outcome = await writePlan(root, { ...current, design }, { requireSampleData: false, ...(options.sink ? { sink: options.sink } : {}) });
+  const outcome = await writePlan(root, { ...current, design, ...(current.designDirections ? { designDirections: current.designDirections.map(d => d.id === current.selectedDesign ? {...d, design} : d) } : {}) }, { requireSampleData: false, ...(options.sink ? { sink: options.sink } : {}) });
   const spec = await readSpec(root);
   if (spec.capabilities.includes("color-assets")) {
     const { loaded } = await capabilityContext();
@@ -190,6 +191,8 @@ export async function createProject(
   runner: CommandRunner,
   sink?: ProgressSink,
 ): Promise<CreatedProject & { capabilities: CapabilityOutcome }> {
+  const savedPlan = await readPlan(requireProjectDir(input.projectDir));
+  if (savedPlan?.designDirections && !savedPlan.selectedDesign) throw new Error("Choose a design direction in the plan before creating the app.");
   const { root, spec, files } = await initProject({ ...input, capabilities: input.capabilities ?? [] });
   const state = await ensureState(root);
   progress(state, "creating", `Creating ${spec.name} (${spec.bundleId}, iOS ${spec.deploymentTarget}).`, sink);
@@ -233,8 +236,18 @@ export async function recordedBuild(
   const attempt = attemptsThisCycle(state) + 1;
   progress(state, "building", `Build attempt ${attempt} of ${state.maxBuildAttempts}.`, options.sink);
   await saveState(root, state);
+  const beforeHash = snapshotHash(await snapshotFiles(root));
   const result = await buildProject(root, runner, { attempt: state.builds.length + 1, ...(options.udid ? { udid: options.udid } : {}), ...(options.scheme ? { scheme: options.scheme } : {}) });
   const fresh = (await loadState(root)) ?? state;
+  const afterHash = snapshotHash(await snapshotFiles(root));
+  if (result.success && beforeHash === afterHash) fresh.buildSourceHash = afterHash;
+  else delete fresh.buildSourceHash;
+  if (result.success && beforeHash !== afterHash) {
+    result.success = false;
+    result.toolError = "Source changed during build; rebuild a stable checkout.";
+    result.errors.push({severity: "error", message: result.toolError});
+  }
+  delete fresh.captureSourceHash;
   fresh.builds.push({
     cycle: fresh.cycle,
     attempt,

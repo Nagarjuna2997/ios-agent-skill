@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+- Add user-selected design alternatives and a bounded screenshot critique/repair loop for `/ios-build`, with light/dark/large-text evidence, per-screen resumability, source hashes and explicit unresolved outcomes. `ios_design_evidence` returns images to connected MCP clients. Real Claude critique remains unverified because the live smoke attempt reached the provider session limit.
+
 - Add an opt-in GitHub Actions macOS backend for `build --remote`, with pinned toolkit/Xcode, resumable run receipts, source/artifact hashes and simulator evidence. Planning and repairs stay on the client; npm publication is deferred.
 
 ### Prepared — skill 3.9.1 (GitHub review; npm not updated)

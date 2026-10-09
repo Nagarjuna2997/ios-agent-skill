@@ -53,6 +53,10 @@ export interface RunState {
   run?: { udid: string; simulator: string; pid?: number };
   /** `variant` is light, dark or xxl for the design evidence matrix; older state files omit it. */
   screenshots: Array<{ screen: string; path: string; variant?: "light" | "dark" | "xxl" }>;
+  visualRepairPending?: boolean;
+  buildSourceHash?: string;
+  captureSourceHash?: string;
+  visualReviews?: import("./visual-review.js").VisualRound[];
   designEvidence?: { contrast: Array<{ color: string; light: number; dark: number; passesAA: boolean }>; passesAA: boolean; paletteMatchesPlan?: boolean };
   capabilities: Array<{ id: string; name: string; status: string; placeholders: string[]; files: number; notes: string[] }>;
   unavailable: Array<{ id: string; reason: string }>;

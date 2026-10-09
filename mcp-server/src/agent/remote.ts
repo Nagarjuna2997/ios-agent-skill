@@ -175,6 +175,7 @@ export class GitHubBuildBackend {
       fresh.toolchain = result.toolchain;
       fresh.run = result.run;
       fresh.screenshots = result.screenshots;
+      if (result.build.success) { fresh.buildSourceHash = inputHash; fresh.captureSourceHash = inputHash; }
       progress(fresh, 'building', receipt);
       await saveState(root, fresh);
     }

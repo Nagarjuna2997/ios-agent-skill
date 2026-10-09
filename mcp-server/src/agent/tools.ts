@@ -6,6 +6,9 @@ import { capabilityRecipe, loadCapabilities, loadCatalog, CATEGORIES } from "./c
 import { addPackage, projectPaths, requireProjectDir, writeProjectFiles } from "./project.js";
 import { LoggingRunner, ProcessRunner, type CommandRunner } from "./runner.js";
 import { appLogs, runApp, screenshot } from "./simulator.js";
+import { launchAndCapture } from "./loop.js";
+import { VISUAL_CHECKLIST, visualInputs } from "./visual-review.js";
+import { readPlan } from "./workspace.js";
 import { STAGES, loadState, progress, saveState } from "./state.js";
 import { chooseSimulator, preflight } from "./toolchain.js";
 import { addCapabilities, createProject, ensureState, recordedBuild, writePlan, writeReport } from "./workspace.js";
@@ -31,6 +34,26 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 export function registerAgentTools(server: McpServer, runners: RunnerFactory = defaultRunnerFactory): void {
   const readOnly = { readOnlyHint: true, openWorldHint: false } as const;
   const writes = { readOnlyHint: false, destructiveHint: false, openWorldHint: false } as const;
+
+  server.registerTool("ios_design_evidence", {
+    title: "See the app for design review",
+    description: "Use this after a successful build to review actual light, dark and largest Dynamic Type screenshot images for one top-level screen, with approved brief and HIG checklist. capture=true first refreshes the full matrix on the simulator. Images are shared with the connected model; use synthetic sample data. A model opinion is not accessibility certification.",
+    inputSchema: { projectDir, screen: z.string(), capture: z.boolean().default(false) }, annotations: writes,
+  }, async ({ projectDir: folder, screen, capture }) => {
+    try {
+      const root = requireProjectDir(folder);
+      const plan = await readPlan(root);
+      if (!plan) throw new Error("Write a plan first");
+      if (!plan.screens.some(s => s.id === screen && s.topLevel)) throw new Error("Unknown top-level screen");
+      if (capture) await launchAndCapture(root, {runner: runners(root)}, plan);
+      const state = await loadState(root);
+      if (!state) throw new Error("No run state");
+      const {snapshotFiles, snapshotHash} = await import("./remote.js");
+      if (state.captureSourceHash !== snapshotHash(await snapshotFiles(root))) throw new Error("Screenshots are stale or not tied to a build. Rebuild and capture=true.");
+      const input = (await visualInputs(root, plan, state)).find(i => i.screen.id === screen)!;
+      return { content: [ {type: "text" as const, text: JSON.stringify({checklist: VISUAL_CHECKLIST, design: plan.design, screen: input.screen, variants: input.images.map(i => ({variant:i.variant,sha256:i.sha256}))})}, ...input.images.map(i => ({type: "image" as const, mimeType: "image/png", data: i.data})) ] };
+    } catch (error) { return fail(error); }
+  });
 
   server.registerTool(
     "ios_preflight",

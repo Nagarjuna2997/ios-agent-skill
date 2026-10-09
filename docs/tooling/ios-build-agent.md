@@ -99,3 +99,41 @@ A module becomes `verified` only when that command builds it into a minimal app 
 ## Remote macOS builds
 
 Use `build --remote` to send generated source to an explicitly chosen GitHub repository and run unsigned simulator verification on Actions. Planning and compiler repairs remain on the client. See [remote macOS setup, evidence, privacy and billing](remote-macos-build.md). This is GitHub source support; npm publication is deferred.
+
+## Visual design review loop
+
+New CLI plans offer two or three design directions. Read `PLAN.md`, then choose explicitly:
+
+```sh
+ios-agent-mcp build --out ./MyApp --resume --design calm
+```
+
+Use an ID from your own plan. The plan records mood, semantic palette, typography,
+shape, density and motion. Code generation waits for that choice. Existing plans
+without alternatives keep their approved design; use `--refine` to change it.
+
+After a successful build the CLI captures each top-level screen in light, dark
+and accessibility-extra-extra-extra-large text. It sends the actual PNG image
+blocks, screen purpose and approved brief to Claude Code for a structured critique
+of layout, hierarchy, visible readability, states and appearance. This uses your
+configured model/provider and may consume its quota. Synthetic launch data avoids
+populating captures with personal records; inspect your app's data before running
+this on an existing project. Each PNG is limited to 2 MB.
+
+Observed findings drive view-only repairs, then a fresh build and capture. There
+are at most three review rounds within the existing build/time budget. Unknown
+captures, provider errors, no-op repairs and exhausted budgets stay unresolved.
+No score or quality improvement is claimed from the presence of this loop.
+
+`.ios-agent/design-reviews/<hash>/` preserves screenshots and per-screen assessments.
+Completed screen reviews survive interruptions; changed source, plan, build or
+pixels invalidate reuse. `RUN_REPORT.md` separates model opinions from compilation
+and deterministic palette checks. A screenshot cannot establish VoiceOver behavior,
+actual touch targets, motion, offscreen states or HIG compliance. Human review and
+accessibility tests remain necessary.
+
+In a connected MCP client, `ios_design_evidence` returns real image blocks and the
+same checklist. `capture:true` refreshes the full matrix; request each screen by ID.
+The `/ios-build` instructions drive that client's bounded repair cycle and record
+its findings with `ios_progress`; the headless CLI additionally persists structured
+review records. Builds can use the local simulator or the opt-in remote macOS lane.

@@ -1,3 +1,4 @@
+import { snapshotFiles, snapshotHash } from "./remote.js";
 // The autonomous build loop used by `ios-agent-mcp build`:
 // description -> plan -> project -> capabilities -> code -> build/fix (capped)
 // -> launch -> screenshot each top-level screen -> RUN_REPORT.md.
@@ -5,6 +6,7 @@
 import { existsSync } from "node:fs";
 import { readdir, readFile } from "node:fs/promises";
 import { join, relative } from "node:path";
+import { reviewVisualRound, type VisualInput, type VisualRound } from "./visual-review.js";
 import type { Diagnostic } from "./build.js";
 import { loadCapabilities, loadCatalog } from "./capabilities.js";
 import type { Plan } from "./plan.js";
@@ -33,6 +35,8 @@ export interface CapabilityBrief {
 
 /** The language-model side of the loop. Implementations: headless Claude Code, or a fake in tests. */
 export interface Brain {
+  reviewDesign?(input: VisualInput): Promise<unknown>;
+  repairDesign?(input: { plan: Plan; spec: AppSpec; files: SourceFile[]; review: VisualRound }): Promise<FileChangeInput[]>;
   plan(input: { description: string; capabilities: CapabilityBrief[]; catalog: Array<{ id: string; name: string; category: string }>; deploymentFloor: string }): Promise<unknown>;
   generate(input: { plan: Plan; spec: AppSpec; capabilities: CapabilityBrief[]; files: SourceFile[] }): Promise<FileChangeInput[]>;
   fix(input: { plan: Plan; spec: AppSpec; errors: Diagnostic[]; files: SourceFile[]; attempt: number; maxAttempts: number }): Promise<FileChangeInput[]>;
@@ -54,6 +58,7 @@ export interface LoopOptions {
   udid?: string;
   /** Stop after PLAN.md, before any code. */
   planOnly?: boolean;
+  design?: string;
   screenshotDelayMs?: number;
 }
 
@@ -132,7 +137,7 @@ async function capabilityBriefs(ids?: string[]): Promise<CapabilityBrief[]> {
 
 const timeLeft = (state: RunState) => Date.parse(state.deadlineAt) - Date.now();
 
-async function buildAndFix(root: string, options: LoopOptions, state: StateWithMilestones, plan: Plan): Promise<boolean> {
+async function buildAndFix(root: string, options: LoopOptions, state: StateWithMilestones, plan: Plan, visualOnly = false): Promise<boolean> {
   const sink = options.sink;
   for (;;) {
     const fresh = ((await loadState(root)) ?? state) as StateWithMilestones;
@@ -149,6 +154,7 @@ async function buildAndFix(root: string, options: LoopOptions, state: StateWithM
     const result = options.remote ? await options.remote.build(root) : await recordedBuild(root, options.runner, { ...(options.udid ? { udid: options.udid } : {}), ...(sink ? { sink } : {}) });
     if (result.success) {
       const after = ((await loadState(root)) ?? fresh) as StateWithMilestones;
+      delete after.visualRepairPending;
       mark(after, "built");
       if (options.remote) { mark(after, "launched"); mark(after, "screenshots"); }
       await saveState(root, after);
@@ -174,11 +180,19 @@ async function buildAndFix(root: string, options: LoopOptions, state: StateWithM
       await saveState(root, stuck);
       return false;
     }
+    if (visualOnly) assertVisualChanges(changes, spec.name);
     await writeProjectFiles(root, changes, options.runner);
   }
 }
 
+function assertVisualChanges(changes: FileChangeInput[], name: string): void {
+  if (changes.some(c => !c.path.startsWith(`${name}/Views/`) || !c.path.endsWith(".swift") || c.path.includes("..") || c.delete)) throw new Error("Visual repair must only replace Swift files under the app's Views directory.");
+}
+
 export async function launchAndCapture(root: string, options: Pick<LoopOptions, "runner" | "sink" | "udid" | "screenshotDelayMs">, plan: Plan): Promise<void> {
+  const captureHash = snapshotHash(await snapshotFiles(root));
+  const saved = await loadState(root);
+  if (saved?.buildSourceHash !== captureHash) throw new Error("Source changed since the build; rebuild before capture.");
   const sink = options.sink;
   const screens = plan.screens.filter((s) => s.topLevel);
   let state = (await loadState(root))!;
@@ -226,6 +240,8 @@ export async function launchAndCapture(root: string, options: Pick<LoopOptions, 
     await options.runner.run("xcrun", ["simctl", "ui", simulator.udid, "content_size", restoreContentSize], { timeoutMs: 30_000 });
   }
   state = (await loadState(root))!;
+  if (snapshotHash(await snapshotFiles(root)) !== captureHash) throw new Error("Source changed during capture; rebuild and recapture.");
+  if (state.buildSourceHash === captureHash) state.captureSourceHash = captureHash;
   mark(state as StateWithMilestones, "launched");
   mark(state as StateWithMilestones, "screenshots");
   await saveState(root, state);
@@ -348,7 +364,14 @@ export async function runAgent(options: LoopOptions): Promise<LoopResult> {
       progress(state, "planning", `PLAN.md written (${relative(process.cwd(), outcome.planPath) || outcome.planPath}).`, sink);
       await saveState(root, state);
     }
+    if (options.design) {
+      if (reached(state, "created")) throw new Error("Use --refine to change design after code generation.");
+      const direction = plan.designDirections?.find(d => d.id === options.design);
+      if (!direction) throw new Error("Unknown design direction; choose an ID from PLAN.md.");
+      plan = (await writePlan(root, { ...plan, selectedDesign: direction.id, design: direction.design })).plan;
+    }
     if (options.planOnly) return await finish(root, "stopped", "plan only", sink);
+    if (plan.designDirections && !plan.selectedDesign) return await finish(root, "stopped", "Choose a design direction from PLAN.md, then --resume --design <id>.", sink);
 
     // Project and capabilities.
     if (!reached(state, "created")) {
@@ -394,12 +417,49 @@ export async function runAgent(options: LoopOptions): Promise<LoopResult> {
 
     if (blocking.length && !options.remote) return await finish(root, "failed", `toolchain missing: ${blocking.map((c) => c.id).join(", ")}`, sink);
 
+    if (options.brain.reviewDesign && state.captureSourceHash !== snapshotHash(await snapshotFiles(root))) {
+      delete state.milestones?.built; delete state.milestones?.screenshots; delete state.milestones?.launched;
+      await saveState(root, state);
+    }
     if (!reached(state, "built")) {
-      const built = await buildAndFix(root, options, state, plan);
+      const built = await buildAndFix(root, options, state, plan, state.visualRepairPending === true);
       if (!built) return await finish(root, "failed", "the app did not build within the attempt or time cap", sink);
     }
     state = (await loadState(root)) as StateWithMilestones;
     if (!options.remote && !reached(state, "screenshots")) await launchAndCapture(root, options, plan);
+    if (options.brain.reviewDesign) {
+      for (;;) {
+        state = (await loadState(root)) as StateWithMilestones;
+        const spec = await readSpec(root);
+        const files = await sourceFiles(root, spec);
+        progress(state, "screenshots", "Reviewing screenshot pixels against the approved design and HIG checklist.", sink);
+        await saveState(root, state);
+        const reviewHash = snapshotHash(await snapshotFiles(root));
+        if (state.captureSourceHash !== reviewHash) throw new Error("Visual evidence is stale; rebuild and recapture.");
+        const review = await reviewVisualRound(root, plan, files, state, input => options.brain.reviewDesign!(input));
+        state = (await loadState(root)) as StateWithMilestones;
+        if (snapshotHash(await snapshotFiles(root)) !== reviewHash) throw new Error("Source changed during visual review; rebuild and recapture.");
+        state.visualReviews = [...(state.visualReviews ?? []).filter(r => r.key !== review.key), review];
+        await saveState(root, state);
+        if (review.status === "pass") break;
+        if (review.status === "unknown") return await finish(root, "stopped", "Visual review inconclusive; inspect the saved screenshots and findings.", sink);
+        if (state.visualReviews.filter(r => r.cycle === review.cycle).length >= 3 || timeLeft(state) <= 0 || attemptsThisCycle(state) >= state.maxBuildAttempts) return await finish(root, "stopped", "Visual repair budget exhausted; unresolved findings saved.", sink);
+        if (!options.brain.repairDesign) return await finish(root, "stopped", "Visual findings require repair; no repair provider configured.", sink);
+        const changes = await options.brain.repairDesign({plan, spec, files, review});
+        if (!changes.length || changes.every(c => files.some(f => f.path === c.path && f.content === c.content))) return await finish(root, "stopped", "Visual repair proposed no changes.", sink);
+        // A visual critique may edit views only, never models, credentials or project configuration.
+        assertVisualChanges(changes, spec.name);
+        state.visualRepairPending = true;
+        delete state.milestones?.built;
+        delete state.milestones?.launched;
+        delete state.milestones?.screenshots;
+        state.screenshots = [];
+        await saveState(root, state);
+        await writeProjectFiles(root, changes, options.runner);
+        if (!await buildAndFix(root, options, state, plan, true)) return await finish(root, "failed", "Visual repair did not build within the budget.", sink);
+        if (!options.remote) await launchAndCapture(root, options, plan);
+      }
+    }
     return await finish(root, "complete", undefined, sink);
   } catch (error) {
     const message = conciseFailure(error);

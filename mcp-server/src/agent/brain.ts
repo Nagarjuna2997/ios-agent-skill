@@ -1,8 +1,9 @@
 // Headless Claude Code as the loop's planner and Swift author. The model gets
 // no tools: it returns JSON, and the agent validates and writes every file.
+import { VISUAL_CHECKLIST, VisualAssessmentSchema, type VisualInput, type VisualRound } from "./visual-review.js";
 import type { Diagnostic } from "./build.js";
 import type { Brain, CapabilityBrief, SourceFile } from "./loop.js";
-import { DesignSchema, type Plan } from "./plan.js";
+import { DesignSchema, PlanSchema, type Plan } from "./plan.js";
 import type { FileChangeInput } from "./project.js";
 import type { CommandRunner } from "./runner.js";
 import type { AppSpec } from "./spec.js";
@@ -92,26 +93,18 @@ export interface ClaudeBrainOptions {
   command?: string;
 }
 
-/** Calls `claude -p` with tools disabled; the prompt travels on stdin through a temporary file. */
+/** Calls `claude -p` with tools disabled; prompts and image blocks travel on stdin. */
 export class ClaudeCodeBrain implements Brain {
   constructor(private readonly options: ClaudeBrainOptions) {}
 
   private async ask(prompt: string): Promise<unknown> {
-    const { mkdtemp, writeFile, rm } = await import("node:fs/promises");
+    const { mkdtemp, rm } = await import("node:fs/promises");
     const { tmpdir } = await import("node:os");
     const { join } = await import("node:path");
     const dir = await mkdtemp(join(tmpdir(), "ios-agent-brain-"));
     try {
-      const promptFile = join(dir, "prompt.txt");
-      await writeFile(promptFile, prompt);
-      const args = [
-        "-c",
-        `"$CLAUDE_BIN" -p --output-format json --max-turns 1 --no-session-persistence --tools "" --strict-mcp-config --mcp-config '{"mcpServers":{}}'${this.options.model ? ` --model "$CLAUDE_MODEL"` : ""} < "$PROMPT_FILE"`,
-      ];
-      const result = await this.options.runner.run("/bin/sh", args, {
-        cwd: dir,
-        timeoutMs: this.options.timeoutMs ?? 15 * 60_000,
-        env: { CLAUDE_BIN: this.options.command ?? "claude", PROMPT_FILE: promptFile, ...(this.options.model ? { CLAUDE_MODEL: this.options.model } : {}) },
+      const result = await this.options.runner.run(this.options.command ?? "claude", ["-p", "--output-format", "json", "--max-turns", "1", "--no-session-persistence", "--tools", "", "--strict-mcp-config", "--mcp-config", '{"mcpServers":{}}', ...(this.options.model ? ["--model", this.options.model] : [])], {
+        cwd: dir, timeoutMs: this.options.timeoutMs ?? 15 * 60_000, input: prompt,
       });
       if (result.exitCode !== 0) throw new Error(`claude exited with ${result.exitCode}: ${(result.stderr || result.stdout).slice(-600)}`);
       const envelope = JSON.parse(result.stdout) as { result?: string; is_error?: boolean; subtype?: string };
@@ -125,7 +118,7 @@ export class ClaudeCodeBrain implements Brain {
   async plan(input: Parameters<Brain["plan"]>[0]): Promise<unknown> {
     const modules = input.capabilities.map((c) => `- ${c.id} [${c.category}]${c.default ? " (Apple-native default)" : ""}: ${c.description}`).join("\n") || "- none";
     const catalog = input.catalog.map((c) => `${c.id} [${c.category}]`).join(", ");
-    return this.ask(`You plan native iOS apps for non-developers. Turn the request into a build plan.
+    const proposal = await this.ask(`You plan native iOS apps for non-developers. Turn the request into a build plan.
 
 Request: ${input.description}
 
@@ -137,11 +130,35 @@ Return ONLY JSON matching:
  "capabilities":[{"id":"<capability id>","reason":"why the app needs it"}],
  "features":["..."],"assumptions":["what you assumed about unclear requirements"]}
 
+Also include "designDirections": 2 or 3 objects {"id":"kebab-case","name":"short name","rationale":"why it suits this app","design":<complete design object>}. Make alternatives meaningfully different in layout density, palette and typography while honoring requirements. Do not include selectedDesign: the user chooses before generation.
 Rules: at most 5 top-level screens for tabs; mark persisted only data that must survive relaunch; deployment floor iOS ${input.deploymentFloor}. Choose a specific visual mood and a domain-appropriate readable palette (honor colors the user requested), not a random brand hue. Select the best layout kind for every screen. Include 2-3 synthetic sampleData records for each model, covering varied realistic content without personal information. For a plan with no models, use an empty models array.
 List every capability the app needs. Prefer these implemented modules (ids exactly as written; Apple-native defaults first):
 ${modules}
 If the app needs something with no module, still list it using the closest catalog id so the plan shows it as not built yet. Catalog ids: ${catalog || "none"}.
 Do not invent costs.`);
+    const plan = PlanSchema.parse(proposal);
+    if (!plan.designDirections || plan.selectedDesign) throw new Error("New plans require 2-3 unselected design directions for the user to choose.");
+    return plan;
+  }
+
+  async reviewDesign(input: VisualInput): Promise<unknown> {
+    const { mkdtemp, rm } = await import("node:fs/promises");
+    const { tmpdir } = await import("node:os");
+    const { join } = await import("node:path");
+    const dir = await mkdtemp(join(tmpdir(), "ios-agent-vision-"));
+    const prompt = `${VISUAL_CHECKLIST}\nApproved brief: ${JSON.stringify(input.plan.design)}\nScreen: ${JSON.stringify(input.screen)}\nImages follow in light, dark, xxl order. Return ONLY JSON: {"verdict":"pass|needs_changes|unknown","findings":[{"variant":"light|dark|xxl","category":"layout|hierarchy|contrast|states|dark-mode|dynamic-type","observation":"visible evidence and location","repair":"minimal view repair"}],"limitations":["unverifiable areas"]}. A blank, wrong or unreadable capture is unknown, never pass.`;
+    const message = { type: "user", message: { role: "user", content: [{type: "text", text: prompt}, ...input.images.map(i => ({type: "image", source: {type: "base64", media_type: "image/png", data: i.data}}))] } };
+    try {
+      const result = await this.options.runner.run(this.options.command ?? "claude", ["-p", "--input-format", "stream-json", "--output-format", "stream-json", "--verbose", "--max-turns", "1", "--no-session-persistence", "--tools", "", "--strict-mcp-config", "--mcp-config", '{"mcpServers":{}}', ...(this.options.model ? ["--model", this.options.model] : [])], {cwd: dir, timeoutMs: this.options.timeoutMs ?? 120_000, input: JSON.stringify(message) + "\n"});
+      if (result.exitCode !== 0) throw new Error(`Visual provider failed (exit ${result.exitCode}); review incomplete.`);
+      const envelope = result.stdout.trim().split("\n").map(line => JSON.parse(line)).find(e => e.type === "result");
+      if (!envelope || envelope.is_error || typeof envelope.result !== "string") throw new Error("Visual provider returned no successful result; review incomplete.");
+      return VisualAssessmentSchema.parse(extractJson(envelope.result));
+    } finally { await rm(dir, { recursive: true, force: true }); }
+  }
+
+  async repairDesign(input: { plan: Plan; spec: AppSpec; files: SourceFile[]; review: VisualRound }): Promise<FileChangeInput[]> {
+    return filesFrom(await this.ask(`${SWIFT_RULES}\n${ROOT_CONTRACT(input.spec)}\nRepair only the observed visual findings, preserving every feature, navigation and sample-data contract. Only replace Swift files in ${input.spec.name}/Views/. No deletions or business logic changes. Approved plan: ${JSON.stringify(input.plan)}\nFindings: ${JSON.stringify(input.review)}\nSource:\n${filesBlock(input.files)}\n${OUTPUT}`));
   }
 
   async generate(input: Parameters<Brain["generate"]>[0]): Promise<FileChangeInput[]> {

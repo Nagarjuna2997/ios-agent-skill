@@ -1,5 +1,5 @@
 // `ios-agent-mcp build "<description>"` and companions:
-//   build "<description>" [--out DIR] [--max-attempts N] [--minutes N] [--udid UDID] [--model M] [--plan-only]
+//   build "<description>" [--out DIR] [--max-attempts N] [--minutes N] [--udid UDID] [--model M] [--plan-only] [--design ID]
 //   build --resume --out DIR
 //   build --refine "<change>" --out DIR
 //   preflight
@@ -48,7 +48,7 @@ const slug = (text: string) =>
     .replace(/^-+|-+$/g, "")
     .slice(0, 40) || "app";
 
-const USAGE = `ios-agent-mcp build "<description>" [--out DIR] [--max-attempts 8] [--minutes 25] [--udid UDID] [--model MODEL] [--plan-only]
+const USAGE = `ios-agent-mcp build "<description>" [--out DIR] [--max-attempts 8] [--minutes 25] [--udid UDID] [--model MODEL] [--plan-only] [--design ID]
 ios-agent-mcp build --resume --out DIR
 ios-agent-mcp build "<description>" --remote --remote-repo OWNER/REPO --remote-tool-ref FULL_SHA --remote-xcode VERSION [--remote-runner macos-15]
 ios-agent-mcp build --refine "<change>" --out DIR
@@ -88,6 +88,7 @@ export async function buildCLI(args: string[]): Promise<number> {
     ...(str(flags, "remote-runner") ? { runnerLabel: str(flags, "remote-runner")! } : {}),
   }, new ProcessRunner()) : undefined;
   if (remote) console.log(`Remote build uploads generated app source to ${str(flags, "remote-repo")}. Check repository visibility and Actions billing. Only source/configuration is selected; .env and Secrets.xcconfig are excluded.`);
+  console.log("Visual review sends synthetic simulator screenshots and the design brief to your configured Claude model; up to 3 rounds. Review PLAN.md before continuing.");
   console.log(`Project folder: ${out}`);
   const result = await runAgent({
     projectDir: out,
@@ -102,9 +103,10 @@ export async function buildCLI(args: string[]): Promise<number> {
     ...(refine ? { refine } : {}),
     ...(str(flags, "udid") ? { udid: str(flags, "udid")! } : {}),
     planOnly: flags.has("plan-only"),
+    ...(str(flags, "design") ? { design: str(flags, "design")! } : {}),
   });
   console.log(`\n${result.state.status === "complete" ? "Done" : `Stopped (${result.state.failure ?? result.state.status})`}. Report: ${result.reportPath}`);
-  return result.state.status === "complete" || (flags.has("plan-only") && result.state.failure === "plan only") ? 0 : 1;
+  return result.state.status === "complete" || result.state.failure?.startsWith("Choose a design direction") || (flags.has("plan-only") && result.state.failure === "plan only") ? 0 : 1;
 }
 
 export async function preflightCLI(): Promise<number> {

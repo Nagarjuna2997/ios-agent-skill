@@ -130,6 +130,17 @@ export function renderRunReport(input: {
       }
   }
 
+  lines.push("## Visual model review", "", "Screenshot review is a model assessment, not HIG certification or an accessibility audit. VoiceOver, interaction, motion and offscreen states need separate tests.", "");
+  if (!state.visualReviews?.length) lines.push("No completed visual model review. Screenshots alone do not establish a design pass.", "");
+  for (const review of state.visualReviews ?? []) {
+    lines.push(`### Cycle ${review.cycle}, round ${review.round}: ${review.status}`, "", `Evidence: .ios-agent/design-reviews/${review.key}/review.json`, "");
+    for (const screen of review.screens) {
+      lines.push(`- ${screen.screen}: ${screen.assessment?.verdict ?? "incomplete"}`);
+      for (const finding of screen.assessment?.findings ?? []) lines.push(`  - ${finding.variant} / ${finding.category}: ${finding.observation} Repair: ${finding.repair}`);
+      for (const limitation of screen.assessment?.limitations ?? []) lines.push(`  - Limitation: ${limitation}`);
+    }
+    lines.push("");
+  }
   lines.push("## Capabilities", "");
   if (!state.capabilities.length && !state.unavailable.length) lines.push("No capabilities beyond SwiftUI and Foundation.", "");
   if (state.capabilities.length) {
