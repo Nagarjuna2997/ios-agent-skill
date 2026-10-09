@@ -19,11 +19,11 @@ export const RemoteResult = z.object({
   build: z.object({ success: z.boolean(), errors: z.array(diagnostic), warnings: z.array(diagnostic), durationMs: z.number().nonnegative(), scheme: z.string(), destination: z.string(), logPath: z.string(), toolError: z.string().optional() }),
   captureError: z.string().optional(),
   run: z.object({ udid: z.string(), simulator: z.string(), pid: z.number().optional() }).optional(),
-  toolchain: z.object({ xcode: z.string().optional(), simulator: z.string().optional() }),
+  toolchain: z.object({ sdk: z.string().optional(), xcode: z.string().optional(), simulator: z.string().optional() }),
   screenshots: z.array(z.object({ screen: z.string(), variant: z.enum(['light', 'dark', 'xxl']), path: z.string() })),
   files: z.array(z.object({ path: z.string(), sha256: z.string().regex(/^[a-f0-9]{64}$/) })).max(500),
 });
-export type RemoteOptions = { repo: string; toolRef: string; xcode: string; runnerLabel?: string };
+export type RemoteOptions = { repo: string; toolRef: string; xcode: string; runnerLabel?: string; sink?: (message: string) => void };
 export function validateRemoteOptions(o: RemoteOptions): void {
   if (!/^[A-Za-z0-9][A-Za-z0-9-]*\/[A-Za-z0-9][A-Za-z0-9_.-]*$/.test(o.repo)) throw new Error('--remote-repo must be owner/repo');
   if (!/^[a-f0-9]{40}$/.test(o.toolRef)) throw new Error('--remote-tool-ref must pin a full Git commit SHA containing the remote worker');
@@ -65,7 +65,7 @@ export async function snapshotFiles(root: string): Promise<Array<{ path: string;
 }
 export const snapshotHash = (files: Array<{ path: string; content: Buffer }>) => digest(files.map(f => `${f.path}\0${digest(f.content)}`).sort().join('\n'));
 
-interface Checkpoint { protocol: 1; identity: string; branch: string; commit?: string; run?: number; applied?: boolean }
+interface Checkpoint { protocol: 1; identity: string; branch: string; commit?: string; run?: number; runAttempt?: number; applied?: boolean }
 async function atomicJSON(path: string, value: unknown) {
   await mkdir(dirname(path), { recursive: true });
   await writeFile(`${path}.tmp`, JSON.stringify(value, null, 2));
@@ -73,6 +73,7 @@ async function atomicJSON(path: string, value: unknown) {
 }
 
 export class GitHubBuildBackend {
+  get id(): string { return `github:${digest(JSON.stringify(this.options))}`; }
   constructor(private options: RemoteOptions, private runner: CommandRunner, private request: typeof fetch = fetch, private pollMs = 10000) { validateRemoteOptions(options); }
   async build(root: string): Promise<BuildResult & { attempt: number; cap: number }> {
     const state = (await loadState(root))!;
@@ -85,7 +86,7 @@ export class GitHubBuildBackend {
     try { checkpoint = JSON.parse(await readFile(checkpointPath, 'utf8')); }
     catch (e) { if ((e as NodeJS.ErrnoException).code !== 'ENOENT') throw e; checkpoint = { protocol: 1, identity, branch: `ios-agent-build/${identity.slice(0, 24)}` }; }
     if (checkpoint.identity !== identity || checkpoint.protocol !== 1) throw new Error('Remote checkpoint identity mismatch');
-    const auth = await this.runner.run('gh', ['auth', 'token'], { timeoutMs: 30000 });
+    const auth = await this.runner.run('gh', ['auth', 'token', '--hostname', 'github.com'], { timeoutMs: 30000 });
     if (auth.exitCode !== 0 || !auth.stdout.trim()) throw new Error('Sign in with gh auth login; contents/workflow write and Actions read access are required');
     const token = auth.stdout.trim();
     const api = async (path: string, method = 'GET', body?: unknown): Promise<any> => {
@@ -127,6 +128,7 @@ export class GitHubBuildBackend {
     if (!refs.some((r: { ref: string }) => r.ref === `refs/heads/${checkpoint.branch}`)) await api('git/refs', 'POST', { ref: `refs/heads/${checkpoint.branch}`, sha: checkpoint.commit });
     const deadline = Date.parse(state.deadlineAt);
     let completed = false;
+    let lastStatus = "";
     while (Date.now() < deadline) {
       if (!checkpoint.run) {
         const runs = await api(`actions/runs?head_sha=${checkpoint.commit}&event=push&per_page=100`);
@@ -135,14 +137,15 @@ export class GitHubBuildBackend {
       }
       if (checkpoint.run) {
         const run = await api(`actions/runs/${checkpoint.run}`);
+        if (run.status !== lastStatus) { this.options.sink?.(`[remote] ${run.status}: https://github.com/${this.options.repo}/actions/runs/${checkpoint.run}`); lastStatus = run.status; }
         if (run.head_sha !== checkpoint.commit) throw new Error('Remote run commit mismatch');
-        if (run.status === 'completed') { completed = true; break; }
+        if (run.status === 'completed') { checkpoint.runAttempt = run.run_attempt ?? 1; await atomicJSON(checkpointPath, checkpoint); completed = true; break; }
       }
       await new Promise(r => setTimeout(r, this.pollMs));
     }
     if (!completed) throw new Error(`Remote run pending; resume to reuse it. Branch ${checkpoint.branch}${checkpoint.run ? `, run ${checkpoint.run}` : ''}`);
     const downloaded = await mkdtemp(join(folder, 'download-')); 
-    const download = await this.runner.run('gh', ['run', 'download', String(checkpoint.run), '--repo', this.options.repo, '--name', 'ios-agent-evidence', '--dir', downloaded], { timeoutMs: 120000 });
+    const download = await this.runner.run('gh', ['run', 'download', String(checkpoint.run), '--repo', `github.com/${this.options.repo}`, '--name', 'ios-agent-evidence', '--dir', downloaded], { timeoutMs: 120000 });
     if (download.exitCode !== 0) throw new Error(`Remote infrastructure/artifact failure. Inspect https://github.com/${this.options.repo}/actions/runs/${checkpoint.run}; app source was not modified. Use --resume --remote-retry to start a new job`);
     const result = RemoteResult.parse(JSON.parse(await readFile(join(downloaded, 'result.json'), 'utf8')));
     if (result.inputHash !== inputHash) throw new Error('Remote evidence source hash mismatch');
@@ -165,7 +168,7 @@ export class GitHubBuildBackend {
     for (const f of result.files) { await mkdir(dirname(join(root, f.path)), { recursive: true }); await copyFile(join(downloaded, f.path), join(root, f.path)); }
     const fresh = (await loadState(root))!;
     const attempt = attemptsThisCycle(fresh) + 1;
-    const receipt = `https://github.com/${this.options.repo}/actions/runs/${checkpoint.run}`;
+    const receipt = `https://github.com/${this.options.repo}/actions/runs/${checkpoint.run}?attempt=${checkpoint.runAttempt ?? 1}`;
     // State receipt makes replay idempotent even if interrupted before checkpoint update.
     if (!fresh.progress.some(p => p.message === receipt)) {
       fresh.builds.push({ cycle: fresh.cycle, attempt, success: result.build.success, errors: result.build.errors.length, warnings: result.build.warnings.length, durationMs: result.build.durationMs, at: new Date().toISOString(), firstErrors: result.build.errors.slice(0, 5) });

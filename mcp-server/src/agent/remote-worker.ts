@@ -3,21 +3,21 @@ import { mkdir, readFile, readdir, copyFile, writeFile } from 'node:fs/promises'
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { launchAndCapture } from './loop.js';
-import { ProcessRunner } from './runner.js';
+import { ProcessRunner, type CommandRunner } from './runner.js';
 import { loadState, saveState } from './state.js';
 import { recordedBuild, readPlan } from './workspace.js';
 import { preflight, chooseSimulator } from './toolchain.js';
 import { digest, snapshotFiles, snapshotHash, RemoteResult } from './remote.js';
 
-export async function remoteWorker(root: string, requestPath: string, output: string): Promise<void> {
+export async function remoteWorker(root: string, requestPath: string, output: string, options: { runner?: CommandRunner; screenshotDelayMs?: number } = {}): Promise<boolean> {
   const request = JSON.parse(await readFile(requestPath, 'utf8'));
   if (request.protocol !== 1 || request.inputHash !== snapshotHash(await snapshotFiles(root))) throw new Error('Remote request source hash mismatch');
-  const runner = new ProcessRunner();
+  const runner = options.runner ?? new ProcessRunner();
   const check = await preflight(runner);
   const simulator = chooseSimulator(check.toolchain.simulators);
   const state = (await loadState(root))!;
   state.deadlineAt = new Date(Date.now() + 30 * 60000).toISOString();
-  state.toolchain = { xcode: check.toolchain.xcode ? `Xcode ${check.toolchain.xcode.version} (${check.toolchain.xcode.build})` : 'unavailable', simulator: simulator ? `${simulator.name} (${simulator.runtimeVersion.join('.')})` : 'unavailable' };
+  state.toolchain = { ...(check.toolchain.iosSimulatorSdk ? { sdk: check.toolchain.iosSimulatorSdk } : {}), xcode: check.toolchain.xcode ? `Xcode ${check.toolchain.xcode.version} (${check.toolchain.xcode.build})` : 'unavailable', simulator: simulator ? `${simulator.name} (${simulator.runtimeVersion.join('.')})` : 'unavailable' };
   await saveState(root, state);
   const build = await recordedBuild(root, runner, simulator ? { udid: simulator.udid } : {});
   let captureError: string | undefined;
@@ -25,7 +25,7 @@ export async function remoteWorker(root: string, requestPath: string, output: st
     try {
       const plan = await readPlan(root);
       if (!plan || !plan.screens.some(s => s.topLevel)) throw new Error('Plan has no top-level screens');
-      await launchAndCapture(root, { runner, ...(simulator ? { udid: simulator.udid } : {}) }, plan);
+      await launchAndCapture(root, { runner, ...(options.screenshotDelayMs !== undefined ? { screenshotDelayMs: options.screenshotDelayMs } : {}), ...(simulator ? { udid: simulator.udid } : {}) }, plan);
     } catch (e) { captureError = String(e).slice(0, 1000); }
   }
   const fresh = (await loadState(root))!;
@@ -46,9 +46,11 @@ export async function remoteWorker(root: string, requestPath: string, output: st
   const result = RemoteResult.parse({ protocol: 1, inputHash: request.inputHash, build: { ...portable, logPath: `.ios-agent/logs/${build.logPath.split(/[\\/]/).at(-1)}` }, captureError, toolchain: fresh.toolchain, screenshots: fresh.screenshots, run: fresh.run, files });
   await mkdir(output, { recursive: true });
   await writeFile(join(output, 'result.json'), JSON.stringify(result, null, 2));
+  console.log(JSON.stringify({ buildSucceeded: build.success, screenshots: result.screenshots.length, captureError, toolchain: result.toolchain }));
+  return build.success && !captureError;
 }
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const [root, request, output] = process.argv.slice(2);
   if (!root || !request || !output) throw new Error('remote-worker ROOT REQUEST OUTPUT');
-  await remoteWorker(resolve(root), resolve(request), resolve(output));
+  if (!await remoteWorker(resolve(root), resolve(request), resolve(output))) process.exitCode = 1;
 }

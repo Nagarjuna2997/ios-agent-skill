@@ -263,3 +263,29 @@ test('remote loop stops on an unchanged repair instead of replaying a paid attem
   const result = await runAgent({ projectDir, description: 'Habit app', brain, runner, remote });
   assert.equal(result.state.status, 'failed'); assert.equal(count, 1);
 });
+
+test('explicit remote retry uses a new cycle after terminal simulator failure', async t => {
+  const { projectDir, runner } = await setup(t);
+  const cycles = [];
+  const remote = { async build(root) {
+    const state = await loadState(root); cycles.push(state.cycle);
+    state.builds.push({ cycle: state.cycle, attempt: 1, success: true, errors: 0, warnings: 0, durationMs: 1, at: new Date().toISOString(), firstErrors: [] });
+    await saveState(root, state);
+    if (cycles.length === 1) throw new Error('simulator failed; retry explicitly');
+    return { success: true, errors: [], warnings: [], durationMs: 1, logPath: '', scheme: '', destination: '', attempt: 1, cap: 8 };
+  } };
+  const failed = await runAgent({ projectDir, description: 'Habit app', brain: scriptedBrain(), runner, remote });
+  assert.equal(failed.state.status, 'failed');
+  const retried = await runAgent({ projectDir, resume: true, remoteRetry: true, brain: scriptedBrain(), runner, remote });
+  assert.equal(retried.state.status, 'complete'); assert.deepEqual(cycles, [1, 2]);
+});
+
+test('switching from completed local verification to remote does not reuse local success', async t => {
+  const { projectDir, runner } = await setup(t);
+  const local = await runAgent({ projectDir, description: 'Habit app', brain: scriptedBrain(), runner, screenshotDelayMs: 0 });
+  assert.equal(local.state.status, 'complete');
+  let calls = 0;
+  const remote = { async build() { calls++; throw new Error('remote provider unavailable'); } };
+  const switched = await runAgent({ projectDir, resume: true, brain: scriptedBrain(), runner, remote });
+  assert.equal(calls, 1); assert.equal(switched.state.status, 'failed'); assert.equal(switched.state.run, undefined); assert.equal(switched.state.screenshots.length, 0);
+});

@@ -503,7 +503,7 @@ Search offline with `node scripts/query-library.mjs search "SwiftData"`. Read a 
 | [docs/tooling/local-release-package.md](../../docs/tooling/local-release-package.md) | guide | 10506 |
 | [docs/tooling/offline-source-library.md](../../docs/tooling/offline-source-library.md) | guide | 4736 |
 | [docs/tooling/project-scaffolding.md](../../docs/tooling/project-scaffolding.md) | guide | 18060 |
-| [docs/tooling/remote-macos-build.md](../../docs/tooling/remote-macos-build.md) | guide | 5837 |
+| [docs/tooling/remote-macos-build.md](../../docs/tooling/remote-macos-build.md) | guide | 6245 |
 | [docs/tooling/september-2026-distribution.md](../../docs/tooling/september-2026-distribution.md) | guide | 4820 |
 | [docs/tooling/visual-iteration-loop.md](../../docs/tooling/visual-iteration-loop.md) | guide | 3160 |
 | [docs/tooling/xcode-27-2.md](../../docs/tooling/xcode-27-2.md) | guide | 3221 |

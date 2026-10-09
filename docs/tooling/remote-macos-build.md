@@ -6,7 +6,7 @@ This is source in the GitHub branch, not yet an npm release. Use the built check
 
 ## Setup
 
-Install Node 20 or later, GitHub CLI (`gh`), and a signed-in Claude Code CLI on the client. Authenticate with `gh auth login`; the GitHub identity needs repository contents and workflow write access plus Actions read access. Choose an **existing, initialized repository you own**, with Actions enabled. Use a dedicated private repository for private app source. A public destination makes the uploaded source public.
+Install Node 20 or later, GitHub CLI (`gh`), and a signed-in Claude Code CLI on the client. Authenticate with `gh auth login`; the GitHub identity needs repository contents and workflow write access plus Actions read access. For the OAuth token from GitHub CLI, add workflow scope with `gh auth refresh -h github.com -s workflow` if needed. Choose an **existing, initialized repository you own**, with Actions enabled. Use a dedicated private repository for private app source. A public destination makes the uploaded source public.
 
 Pin a full commit SHA of this toolkit that contains `remote-worker.ts`, and an Xcode version installed on the chosen [runner image](https://github.com/actions/runner-images/tree/main/images/macos). The worker fails if that Xcode installation is unavailable. Runner image updates can remove versions; versioned labels alone are not immutable VM images. The artifact records the selected Xcode build and simulator runtime.
 
@@ -42,3 +42,7 @@ Each job is capped at 45 minutes; the client defaults to 60 minutes in remote mo
 ## Cost
 
 Standard GitHub-hosted runners are free for public repositories; larger runners are not. Private repositories consume the account's included allowance and incur usage charges beyond it. The often-quoted **10× macOS minute multiplier describes the legacy allowance model**, not a universal current price formula. GitHub's current standard macOS price is listed as **$0.062/minute** (checked October 9, 2026); billing rules and prices can change. Check the repository owner's plan, budget and [current runner pricing](https://docs.github.com/en/billing/reference/actions-runner-pricing) and [Actions billing](https://docs.github.com/en/billing/concepts/product-billing/github-actions) before running. Artifact storage is accounted for separately.
+
+## Verification record
+
+See the [hosted smoke-test evidence](../../examples/remote-build/README.md): an unsigned Xcode 26.3 build and three simulator captures completed on GitHub Actions. The evidence identifies which transport steps were exercised live and which were tested with fixtures.

@@ -83,6 +83,7 @@ export async function buildCLI(args: string[]): Promise<number> {
   if (!Number.isInteger(maxAttempts) || maxAttempts < 1 || maxAttempts > 20) throw new Error("--max-attempts must be 1-20");
   if (!Number.isFinite(minutes) || minutes < 1 || minutes > 240) throw new Error("--minutes must be 1-240");
   const remote = flags.has("remote") ? new GitHubBuildBackend({
+    sink: line => console.log(line),
     repo: str(flags, "remote-repo") ?? "", toolRef: str(flags, "remote-tool-ref") ?? "", xcode: str(flags, "remote-xcode") ?? "",
     ...(str(flags, "remote-runner") ? { runnerLabel: str(flags, "remote-runner")! } : {}),
   }, new ProcessRunner()) : undefined;

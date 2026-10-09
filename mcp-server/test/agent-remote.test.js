@@ -21,7 +21,7 @@ async function harness(root, mutate = r => r) {
   const inputHash = snapshotHash(await snapshotFiles(root));
   const contents = { '.ios-agent/logs/build-1.log': Buffer.from('BUILD SUCCEEDED'), ...Object.fromEntries(['light','dark','xxl'].map(v => [`.ios-agent/screenshots/home-${v}.png`, Buffer.from(`png-${v}`)])) };
   const result = mutate({ protocol: 1, inputHash, build: { success: true, errors: [], warnings: [], durationMs: 1, scheme: 'DemoApp', destination: 'simulator', logPath: '.ios-agent/logs/build-1.log' }, toolchain: { xcode: 'Xcode 26.3', simulator: 'iPhone' }, run: { udid: 'sim', simulator: 'iPhone' }, screenshots: ['light','dark','xxl'].map(variant => ({ screen: 'home', variant, path: `.ios-agent/screenshots/home-${variant}.png` })), files: Object.entries(contents).map(([path, content]) => ({ path, sha256: digest(content) })) });
-  const calls = []; let ref; let failPoll = false;
+  const calls = []; let ref; let failPoll = false; let failRef = false;
   const request = async (url, init) => {
     const path = url.split('/repos/example/builds/')[1]; calls.push([path, init.method]);
     const body = init.body ? JSON.parse(init.body) : {};
@@ -29,7 +29,7 @@ async function harness(root, mutate = r => r) {
     if (path.startsWith('git/matching-refs/')) value = ref ? [ref] : [];
     else if (path === 'git/blobs' || path === 'git/trees') value = { sha: 'b'.repeat(40) };
     else if (path === 'git/commits') value = { sha: 'c'.repeat(40) };
-    else if (path === 'git/refs') { ref = { ref: body.ref, object: { sha: body.sha } }; value = ref; }
+    else if (path === 'git/refs') { if (failRef) { failRef = false; throw new Error('interrupted ref creation'); } ref = { ref: body.ref, object: { sha: body.sha } }; value = ref; }
     else if (path.startsWith('actions/runs?')) value = { workflow_runs: [{ id: 7, head_sha: 'c'.repeat(40), path: '.github/workflows/ios-agent-remote.yml' }] };
     else if (path === 'actions/runs/7') { if (failPoll) throw new Error('connection dropped'); value = { status: 'completed', head_sha: 'c'.repeat(40) }; }
     else throw new Error(`Unexpected ${path}`);
@@ -43,7 +43,7 @@ async function harness(root, mutate = r => r) {
     await writeFile(join(out, 'result.json'), JSON.stringify(result));
     return { exitCode: 0, stdout: '' };
   } };
-  return { backend: new GitHubBuildBackend(options, runner, request, 0), calls, failPoll(value) { failPoll = value; } };
+  return { backend: new GitHubBuildBackend(options, runner, request, 0), calls, failPoll(value) { failPoll = value; }, failRefOnce() { failRef = true; } };
 }
 test('snapshot excludes secrets and artifacts, changes when Swift changes, rejects symlinks', async t => {
   const root = await fixture(t); const before = await snapshotFiles(root);
@@ -87,4 +87,41 @@ test('capture failure is explicitly retryable and is not reported as a complete 
 test('workflow pins tooling and Xcode, restricts token, always uploads hidden evidence', async () => {
   const text = await readFile(new URL('../../templates/ci-cd/ios-agent-remote.yml', import.meta.url), 'utf8');
   assert.match(text, /ref: __TOOL_REF__/); assert.match(text, /contents: read/); assert.match(text, /persist-credentials: false/); assert.match(text, /if: always\(\)/); assert.match(text, /include-hidden-files: true/);
+});
+
+test('worker returns build diagnostics and real-shaped hashed capture manifest without a model', async t => {
+  const { remoteWorker } = await import('../dist/agent/remote-worker.js');
+  const { ProcessRunner } = await import('../dist/agent/runner.js');
+  const { fakeXcode } = await import('./helpers/fake-xcode.js');
+  const fake = await fakeXcode(t); const root = await fixture(t);
+  const request = join(root, 'request.json');
+  const processRunner = new ProcessRunner({ ...process.env, ...fake.env });
+  let firstProbe = true;
+  const runner = { async run(command, args, options) {
+    if (firstProbe && command === 'xcrun' && args.includes('list')) {
+      firstProbe = false;
+      return { command, args, exitCode: 1, stdout: '', stderr: 'Simulator service starting', durationMs: 1 };
+    }
+    return processRunner.run(command, args, options);
+  } };
+  await writeFile(request, JSON.stringify({ protocol: 1, inputHash: snapshotHash(await snapshotFiles(root)) }));
+  assert.equal(await remoteWorker(root, request, join(root, 'evidence'), { runner, screenshotDelayMs: 0 }), true);
+  const good = JSON.parse(await readFile(join(root, 'evidence/result.json'), 'utf8'));
+  assert.match(good.toolchain.simulator, /iPhone Fixture/); assert.equal(good.toolchain.sdk, "27.0");
+  assert.equal(good.screenshots.length, 3); assert.equal(good.build.success, true);
+  for (const file of good.files) assert.equal(digest(await readFile(join(root, 'evidence', file.path))), file.sha256);
+  await writeFile(join(root, 'DemoApp/Main.swift'), 'AGENT_TEST_ERROR');
+  // A fresh remote attempt begins with no previous runtime evidence.
+  const state = await loadState(root); state.screenshots = []; delete state.run; await saveState(root, state);
+  await writeFile(request, JSON.stringify({ protocol: 1, inputHash: snapshotHash(await snapshotFiles(root)) }));
+  assert.equal(await remoteWorker(root, request, join(root, 'broken-evidence'), { runner, screenshotDelayMs: 0 }), false);
+  const broken = JSON.parse(await readFile(join(root, 'broken-evidence/result.json'), 'utf8'));
+  assert.equal(broken.build.errors[0].file, 'DemoApp/Main.swift'); assert.equal(broken.screenshots.length, 0);
+});
+
+test('interruption after commit creation resumes without another source commit', async t => {
+  const root = await fixture(t); const h = await harness(root);
+  h.failRefOnce(); await assert.rejects(h.backend.build(root), /interrupted ref/);
+  assert.equal((await h.backend.build(root)).success, true);
+  assert.equal(h.calls.filter(([p]) => p === 'git/commits').length, 1);
 });

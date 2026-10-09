@@ -58,7 +58,8 @@ export interface RunState {
   unavailable: Array<{ id: string; reason: string }>;
   progress: Array<{ at: string; stage: Stage; message: string }>;
   refinements: Array<{ at: string; change: string }>;
-  toolchain?: { xcode?: string; simulator?: string };
+  verificationBackend?: string;
+  toolchain?: { sdk?: string; xcode?: string; simulator?: string };
   failure?: string;
 }
 

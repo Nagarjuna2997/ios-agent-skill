@@ -3470,8 +3470,8 @@
       "path": "docs/tooling/remote-macos-build.md",
       "title": "Build on GitHub Actions from Windows or Linux",
       "kind": "guide",
-      "characters": 5837,
-      "hash": "78164c2b47c648bccd8d30b20575cfece69e10dc41d3095f807741df4b0b4da3"
+      "characters": 6245,
+      "hash": "f561094e57eaa946c5e8bc2148e4819f4c988e90cfd8742716a01b2053a0d86a"
     },
     {
       "path": "docs/tooling/september-2026-distribution.md",

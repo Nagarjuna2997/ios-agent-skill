@@ -1,0 +1,57 @@
+{
+  "protocol": 1,
+  "inputHash": "8da66b20e75067c0b2d18fd9d9a9ba09c578e59bcc81d447e20d803f74e11f7a",
+  "build": {
+    "success": true,
+    "errors": [],
+    "warnings": [],
+    "durationMs": 19549,
+    "scheme": "RemoteDemo",
+    "destination": "platform=iOS Simulator,id=E952A9B0-CC78-435C-BF08-06AD47FE1076",
+    "logPath": ".ios-agent/logs/build-1.log"
+  },
+  "run": {
+    "udid": "E952A9B0-CC78-435C-BF08-06AD47FE1076",
+    "simulator": "iPhone 17 Pro",
+    "pid": 13864
+  },
+  "toolchain": {
+    "xcode": "Xcode 26.3 (17C529)",
+    "simulator": "unavailable"
+  },
+  "screenshots": [
+    {
+      "screen": "home",
+      "variant": "light",
+      "path": ".ios-agent/screenshots/home-light.png"
+    },
+    {
+      "screen": "home",
+      "variant": "dark",
+      "path": ".ios-agent/screenshots/home-dark.png"
+    },
+    {
+      "screen": "home",
+      "variant": "xxl",
+      "path": ".ios-agent/screenshots/home-xxl.png"
+    }
+  ],
+  "files": [
+    {
+      "path": ".ios-agent/logs/build-1.log",
+      "sha256": "1ded9436c706ffd4e76e638cdbac6067840f7cf619558e87b58f9189d579b842"
+    },
+    {
+      "path": ".ios-agent/screenshots/home-dark.png",
+      "sha256": "6216f4ed3bbf2eebca3799b2b6ffad51da2a08788e7ceac7c8cb598831b472dc"
+    },
+    {
+      "path": ".ios-agent/screenshots/home-light.png",
+      "sha256": "8900296be4874ac0a69046ef2e8e2586ad353006d88e14a41467b2230bf60cbf"
+    },
+    {
+      "path": ".ios-agent/screenshots/home-xxl.png",
+      "sha256": "64c5a2de23b0d1a06f85bfd4975ef047fe79a78881fa8532099cd5da7256084f"
+    }
+  ]
+}

@@ -42,7 +42,7 @@ export interface Brain {
 export interface LoopOptions {
   projectDir: string;
   remoteRetry?: boolean;
-  remote?: { build(root: string): ReturnType<typeof recordedBuild> };
+  remote?: { id?: string; build(root: string): ReturnType<typeof recordedBuild> };
   description?: string;
   brain: Brain;
   runner: CommandRunner;
@@ -185,6 +185,8 @@ export async function launchAndCapture(root: string, options: Pick<LoopOptions, 
   progress(state, "launching", "Launching in the simulator.", sink);
   await saveState(root, state);
   const { simulator } = await ensureBooted(options.runner, options.udid);
+  state.toolchain = { ...state.toolchain, simulator: `${simulator.name} (iOS ${simulator.runtimeVersion.join(".")})` };
+  await saveState(root, state);
   const originalAppearance = await options.runner.run("xcrun", ["simctl", "ui", simulator.udid, "appearance"], { timeoutMs: 30_000 });
   const originalContentSize = await options.runner.run("xcrun", ["simctl", "ui", simulator.udid, "content_size"], { timeoutMs: 30_000 });
   const restoreAppearance = originalAppearance.exitCode === 0 && /\bdark\b/i.test(originalAppearance.stdout) ? "dark" : "light";
@@ -280,6 +282,18 @@ export async function runAgent(options: LoopOptions): Promise<LoopResult> {
     await saveState(root, state);
   }
 
+  const backendId = options.remote ? options.remote.id ?? "github" : "local";
+  if ((state.verificationBackend ?? "local") !== backendId) {
+    if (state.builds.length) state.cycle += 1;
+    delete state.milestones?.built;
+    delete state.milestones?.launched;
+    delete state.milestones?.screenshots;
+    delete state.run;
+    state.screenshots = [];
+    delete state.toolchain;
+  }
+  state.verificationBackend = backendId;
+  await saveState(root, state);
   if (options.remoteRetry && options.remote) {
     state.cycle += 1;
     state.cycleStartedAt = new Date().toISOString();

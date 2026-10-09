@@ -93,7 +93,7 @@ export function renderRunReport(input: {
   lines.push(`- Last build: ${lastBuild ? `${lastBuild.success ? "succeeded" : `failed with ${lastBuild.errors} error(s)`} in ${seconds(lastBuild.durationMs)}` : "not run"}`);
   lines.push(`- Launched: ${state.run ? `yes, on ${state.run.simulator} (${state.run.udid})${state.run.pid ? `, pid ${state.run.pid}` : ""}` : "no"}`);
   lines.push(`- Screenshots: ${state.screenshots.length}`);
-  if (state.toolchain) lines.push(`- Toolchain: ${state.toolchain.xcode ?? "unknown Xcode"}; simulator ${state.toolchain.simulator ?? "unknown"}`);
+  if (state.toolchain) lines.push(`- Toolchain: ${state.toolchain.xcode ?? "unknown Xcode"}; simulator ${state.toolchain.simulator ?? "unknown"}${state.toolchain.sdk ? `; iOS Simulator SDK ${state.toolchain.sdk}` : ""}`);
   if (input.toolCalls !== undefined) lines.push(`- External tool calls logged: ${input.toolCalls} (\`.ios-agent/tool-log.jsonl\`)`);
   lines.push("");
 

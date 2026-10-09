@@ -33,6 +33,8 @@ Then, in any Claude Code session on a Mac with Xcode 16 or later:
 /ios-build "A habit tracker with a list, a detail screen, and settings with dark mode toggle"
 ```
 
+**Windows/Linux or cloud client:** the GitHub source now includes `build --remote` for unsigned builds and simulator screenshots on GitHub Actions. It requires a destination repository, GitHub CLI authentication and pinned toolkit/Xcode versions. See [remote macOS setup and billing](docs/tooling/remote-macos-build.md). npm publication is deferred.
+
 XcodeGen is optional: without it, the agent writes a folder-synchronized Xcode project itself. The steps are described in [docs/tooling/ios-build-agent.md](docs/tooling/ios-build-agent.md). The four screenshot examples reused existing app folders; this exact one-sentence quickstart has not yet been run from planning through code generation in one Mac session.
 
 ### Examples
@@ -86,7 +88,7 @@ For Claude Code:
 claude mcp add ios-agent -- npx -y ios-agent-mcp@latest
 ```
 
-[Set up ChatGPT/Codex, Gemini CLI or Muse](https://nagarjuna2997.github.io/ios-agent-skill/install.html). One npm package includes reviews, local references, app scaffolding and simulator tools. Node.js 20+ is required; building and running iOS apps needs macOS and Xcode.
+[Set up ChatGPT/Codex, Gemini CLI or Muse](https://nagarjuna2997.github.io/ios-agent-skill/install.html). One npm package includes reviews, local references, app scaffolding and simulator tools. Node.js 20+ is required; local iOS builds need macOS and Xcode; the GitHub-source remote lane runs those steps on Actions.
 
 Then ask:
 
