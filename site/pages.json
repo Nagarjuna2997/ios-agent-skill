@@ -1042,5 +1042,17 @@
   "guides/tooling-ios-build-agent.html": {
     "title": "iOS Build Agent",
     "description": "Repository guidance for the iOS build agent: plan, capability modules, build and fix, simulator screenshots, and what has and has not been verified."
+  },
+  "guides/tooling-generated-app-quality.html": {
+    "title": "Generated App Quality and Test Evidence",
+    "description": "Generate behavioral tests, choose a design direction, review simulator screenshots and distinguish compile evidence from unverified provider behavior."
+  },
+  "guides/tooling-remote-macos-build.html": {
+    "title": "Remote macOS Builds for iOS Apps",
+    "description": "Build generated iOS projects on GitHub macOS runners and verify source hashes, simulator screenshots and downloadable build evidence."
+  },
+  "guides/tooling-ship-testflight.html": {
+    "title": "Reviewed Archives and TestFlight Uploads",
+    "description": "Prepare an iOS release, review signing requirements, archive with Xcode and separately approve a TestFlight upload with recorded evidence."
   }
 }

@@ -1688,5 +1688,44 @@
       "Capability modules and Xcode project",
       "Simulator evidence and RUN_REPORT.md"
     ]
+  },
+  "docs/tooling/ship-testflight.md": {
+    "flow": [
+      "Inspect release configuration",
+      "Review signing and archive plan",
+      "Approve archive and inspect evidence",
+      "Approve TestFlight upload separately"
+    ],
+    "architecture": [
+      "Local project and release plan",
+      "Xcode signing and archive",
+      "App Store Connect upload receipt"
+    ]
+  },
+  "docs/tooling/remote-macos-build.md": {
+    "flow": [
+      "Snapshot project source",
+      "Dispatch pinned macOS workflow",
+      "Build and capture simulator evidence",
+      "Verify artifact hashes before repair"
+    ],
+    "architecture": [
+      "Local agent and source snapshot",
+      "GitHub macOS worker",
+      "Hashed build logs and screenshots"
+    ]
+  },
+  "docs/tooling/generated-app-quality.md": {
+    "flow": [
+      "Select a design direction",
+      "Generate app and behavioral tests",
+      "Build, capture and critique once",
+      "Run tests and report verified evidence"
+    ],
+    "architecture": [
+      "Shared CLI and Studio engine",
+      "Design modules and test targets",
+      "Source-bound screenshots and test results"
+    ]
   }
 }
