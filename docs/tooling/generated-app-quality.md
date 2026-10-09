@@ -43,4 +43,5 @@ The capability-verification workflow runs combined compilation and isolated modu
 - The MCP suite passed 546 tests and Studio passed 49 tests. A separate regression covers resuming after the test budget is exhausted.
 - A small local target-wiring probe passed one Swift Testing test and the generated portrait/landscape XCUITest (two tests, zero failures/skips). This proves execution and result parsing, not generated business-logic coverage.
 - A live Claude-generated app passed plan validation after retry, then exposed early test-file emission; test targets are now enabled before generation. The retry hit a provider HTTP 429 session limit. End-to-end generation, visual critique and final app tests are therefore not claimed as passed.
+- The combined 48-module project also compiled successfully on Xcode 27.0 after resolving the Firebase/Google dependency conflict and isolating duplicate fixture helper names.
 - CI verification artifacts and provider runtime/account behavior are separate evidence; neither is inferred from these compile results.
