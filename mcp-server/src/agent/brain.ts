@@ -2,7 +2,7 @@
 // no tools: it returns JSON, and the agent validates and writes every file.
 import type { Diagnostic } from "./build.js";
 import type { Brain, CapabilityBrief, SourceFile } from "./loop.js";
-import type { Plan } from "./plan.js";
+import { DesignSchema, type Plan } from "./plan.js";
 import type { FileChangeInput } from "./project.js";
 import type { CommandRunner } from "./runner.js";
 import type { AppSpec } from "./spec.js";
@@ -181,7 +181,7 @@ ${OUTPUT}`),
     );
   }
 
-  async refine(input: Parameters<Brain["refine"]>[0]): Promise<{ files: FileChangeInput[]; capabilities?: string[] }> {
+  async refine(input: Parameters<Brain["refine"]>[0]): Promise<{ files: FileChangeInput[]; capabilities?: string[]; design?: Plan["design"] }> {
     const value = await this.ask(`${SWIFT_RULES}
 
 ${ROOT_CONTRACT(input.spec)}
@@ -195,8 +195,10 @@ ${capabilityBlock(input.capabilities)}
 Files:
 ${filesBlock(input.files)}
 
-Return ONLY JSON: {"files":[...],"capabilities":["optional ids to add"],"notes":"..."} where files follow: ${OUTPUT}`);
+Return ONLY JSON: {"files":[...],"capabilities":["optional ids to add"],"design":{"mood":"...","palette":{"name":"...","primary":"#RRGGBB","secondary":"#RRGGBB","accent":"#RRGGBB"},"typography":"system|rounded|serif","shape":"square|soft|rounded|organic","density":"compact|comfortable|spacious","motion":"minimal|subtle|expressive"},"notes":"..."}. Include the full design object only when the user's requested change explicitly changes the visual direction or palette; otherwise omit it. The saved plan and semantic color assets will update together. where files follow: ${OUTPUT}`);
     const capabilities = (value as { capabilities?: unknown }).capabilities;
-    return { files: filesFrom(value), ...(Array.isArray(capabilities) ? { capabilities: capabilities.filter((c): c is string => typeof c === "string") } : {}) };
+    const rawDesign = (value as { design?: unknown }).design;
+    const design = rawDesign === undefined ? undefined : DesignSchema.parse(rawDesign);
+    return { files: filesFrom(value), ...(Array.isArray(capabilities) ? { capabilities: capabilities.filter((c): c is string => typeof c === "string") } : {}), ...(design ? { design } : {}) };
   }
 }

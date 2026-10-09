@@ -16,6 +16,21 @@ const DESIGN_DEFAULT = {
   motion: "subtle" as const,
 };
 
+export const DesignSchema = z.object({
+  mood: z.string().min(1).max(100),
+  palette: z.object({
+    name: z.string().min(1).max(60),
+    primary: z.string().regex(COLOR_HEX, "Use a six-digit #RRGGBB color"),
+    secondary: z.string().regex(COLOR_HEX, "Use a six-digit #RRGGBB color"),
+    accent: z.string().regex(COLOR_HEX, "Use a six-digit #RRGGBB color"),
+  }).strict(),
+  typography: z.enum(["system", "rounded", "serif"]),
+  shape: z.enum(["square", "soft", "rounded", "organic"]),
+  density: z.enum(["compact", "comfortable", "spacious"]),
+  motion: z.enum(["minimal", "subtle", "expressive"]),
+}).strict().default(DESIGN_DEFAULT);
+export type DesignBrief = z.infer<typeof DesignSchema>;
+
 export const PlanSchema = z
   .object({
     appName: z.string().regex(SWIFT_IDENTIFIER, "UpperCamelCase Swift identifier"),
@@ -23,19 +38,7 @@ export const PlanSchema = z
     summary: z.string().min(1).max(600),
     bundleId: z.string().optional(),
     navigation: z.enum(["tabs", "stack", "split"]),
-    design: z.object({
-      mood: z.string().min(1).max(100),
-      palette: z.object({
-        name: z.string().min(1).max(60),
-        primary: z.string().regex(COLOR_HEX, "Use a six-digit #RRGGBB color"),
-        secondary: z.string().regex(COLOR_HEX, "Use a six-digit #RRGGBB color"),
-        accent: z.string().regex(COLOR_HEX, "Use a six-digit #RRGGBB color"),
-      }).strict(),
-      typography: z.enum(["system", "rounded", "serif"]),
-      shape: z.enum(["square", "soft", "rounded", "organic"]),
-      density: z.enum(["compact", "comfortable", "spacious"]),
-      motion: z.enum(["minimal", "subtle", "expressive"]),
-    }).strict().default(DESIGN_DEFAULT),
+    design: DesignSchema,
     screens: z
       .array(
         z

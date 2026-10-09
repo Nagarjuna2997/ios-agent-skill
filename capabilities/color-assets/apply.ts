@@ -1,9 +1,8 @@
 import { defineApply } from "../_sdk/index.js";
 import { contrast, hslFromHex, readable } from "../_sdk/brand.js";
 
-// Semantic colors with light and dark variants, derived from one brand hue
-// (from the bundle identifier until the user supplies brand colors). Primary
-// and secondary are adjusted until BrandOnPrimary text on them reaches 4.5:1.
+// Semantic color sets with light and dark variants, derived from the approved
+// plan palette. Foreground and accent colors are adjusted for WCAG AA contrast.
 const component = (hex: string, offset: number) => (parseInt(hex.slice(offset, offset + 2), 16) / 255).toFixed(3);
 const colorset = (light: string, dark: string) =>
   JSON.stringify(
@@ -22,8 +21,7 @@ const colorset = (light: string, dark: string) =>
     2,
   ) + "\n";
 
-export default defineApply(async (ctx) => {
-  const palette = ctx.design?.palette ?? { primary: "#1677C8", secondary: "#48A9A6", accent: "#F2A65A" };
+export function paletteAssetFiles(palette: { name: string; primary: string; secondary: string; accent: string }): Record<string, string> {
   const accessible = (hex: string, text: string) => {
     if (!/^#[0-9a-fA-F]{6}$/.test(hex)) return hex;
     if (contrast(hex, text) >= 4.5) return hex.toUpperCase();
@@ -45,9 +43,16 @@ export default defineApply(async (ctx) => {
     BrandSurface: ["#F5F7FA", "#191C22"],
     BrandOnPrimary: [textOnPrimaryLight, textOnPrimaryDark],
   };
+  const files: Record<string, string> = {};
   for (const [name, [light, dark]] of Object.entries(colors)) {
-    await ctx.writeFile(`Resources/Assets.xcassets/${name}.colorset/Contents.json`, colorset(light, dark));
+    files[`Resources/Assets.xcassets/${name}.colorset/Contents.json`] = colorset(light, dark);
   }
-  await ctx.writeFile("Resources/Assets.xcassets/AccentColor.colorset/Contents.json", colorset(primaryLight, primaryDark));
-  ctx.note(`Applied the ${ctx.design?.palette.name ?? "default Ocean Ink"} palette from the app plan; primary and accent text colors are adjusted to meet WCAG AA contrast where needed.`);
+  files["Resources/Assets.xcassets/AccentColor.colorset/Contents.json"] = colorset(primaryLight, primaryDark);
+  return files;
+}
+
+export default defineApply(async (ctx) => {
+  const palette = ctx.design?.palette ?? { name: "Ocean Ink", primary: "#1677C8", secondary: "#48A9A6", accent: "#F2A65A" };
+  for (const [path, contents] of Object.entries(paletteAssetFiles(palette))) await ctx.writeFile(path, contents);
+  ctx.note(`Applied the ${palette.name} palette from the app plan; primary and accent text colors are adjusted to meet WCAG AA contrast where needed.`);
 });

@@ -2,6 +2,7 @@
 import { existsSync } from "node:fs";
 import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
+import { pathToFileURL } from "node:url";
 import {
   applyCapabilities,
   loadCapabilities,
@@ -12,7 +13,7 @@ import {
   type LoadedCapability,
   type Resolution,
 } from "./capabilities.js";
-import { budget, capabilityRows, PlanSchema, renderPlanMarkdown, type Budget, type CapabilityPlanRow, type Plan } from "./plan.js";
+import { budget, capabilityRows, PlanSchema, renderPlanMarkdown, type Budget, type CapabilityPlanRow, type Plan, type DesignBrief } from "./plan.js";
 import { buildProject, type BuildResult } from "./build.js";
 import { containedPath, initProject, projectPaths, readSpec, regenerate, requireProjectDir, writeSpec, type CreatedProject } from "./project.js";
 import { renderRunReport, toolCallCount } from "./report.js";
@@ -58,12 +59,14 @@ export function requestedCapabilities(plan: Plan): string[] {
 export async function writePlan(
   rootDir: string,
   input: unknown,
-  options: { description?: string; toolchain?: { xcode?: string; simulator?: string }; sink?: ProgressSink } = {},
+  options: { description?: string; toolchain?: { xcode?: string; simulator?: string }; sink?: ProgressSink; requireSampleData?: boolean } = {},
 ): Promise<PlanOutcome> {
   const root = requireProjectDir(rootDir);
   const plan = PlanSchema.parse(input);
-  for (const model of plan.models) {
-    if (model.sampleData.length < 2) throw new Error(`Plan model ${model.name} needs at least two synthetic sampleData records so previews and simulator screenshots can show real content.`);
+  if (options.requireSampleData !== false) {
+    for (const model of plan.models) {
+      if (model.sampleData.length < 2) throw new Error(`Plan model ${model.name} needs at least two synthetic sampleData records so previews and simulator screenshots can show real content.`);
+    }
   }
   const { loaded, catalog } = await capabilityContext();
   const resolution = resolveCapabilities(requestedCapabilities(plan), loaded, catalog);
@@ -87,6 +90,34 @@ export async function writePlan(
   );
   await saveState(root, state);
   return { plan, resolution, rows, budget: money, planPath, markdown };
+}
+
+/** Update a reviewed design brief and regenerate the plan palette assets for an existing app. */
+export async function updatePlanDesign(
+  rootDir: string,
+  design: DesignBrief,
+  options: { sink?: ProgressSink } = {},
+): Promise<PlanOutcome> {
+  const root = requireProjectDir(rootDir);
+  const current = await readPlan(root);
+  if (!current) throw new Error("This project has no saved plan to refine.");
+  const outcome = await writePlan(root, { ...current, design }, { requireSampleData: false, ...(options.sink ? { sink: options.sink } : {}) });
+  const spec = await readSpec(root);
+  if (spec.capabilities.includes("color-assets")) {
+    const { loaded } = await capabilityContext();
+    const modulePath = loaded.get("color-assets")?.applyModule;
+    if (!modulePath) throw new Error("The color-assets capability is unavailable; the plan was updated but palette assets could not be regenerated.");
+    const module = (await import(pathToFileURL(modulePath).href)) as { paletteAssetFiles?: (palette: DesignBrief["palette"]) => Record<string, string> };
+    if (!module.paletteAssetFiles) throw new Error("The color-assets module cannot regenerate palette assets; the plan was updated but assets remain unchanged.");
+    for (const [path, contents] of Object.entries(module.paletteAssetFiles(outcome.plan.design.palette))) {
+      const target = await containedPath(root, `${spec.name}/${path}`);
+      await mkdir(dirname(target), { recursive: true });
+      const temp = `${target}.tmp-${process.pid}`;
+      await writeFile(temp, contents);
+      await rename(temp, target);
+    }
+  }
+  return outcome;
 }
 
 export async function readPlan(root: string): Promise<Plan | undefined> {

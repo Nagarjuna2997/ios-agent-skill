@@ -14,7 +14,7 @@ import { runApp, screenshot } from "./simulator.js";
 import type { AppSpec } from "./spec.js";
 import { attemptsThisCycle, loadState, newRunState, progress, saveState, type ProgressSink, type RunState } from "./state.js";
 import { chooseSimulator, preflight } from "./toolchain.js";
-import { addCapabilities, createProject, readPlan, recordedBuild, requestedCapabilities, writePlan, writeReport } from "./workspace.js";
+import { addCapabilities, createProject, readPlan, recordedBuild, requestedCapabilities, updatePlanDesign, writePlan, writeReport } from "./workspace.js";
 
 export interface SourceFile {
   path: string;
@@ -36,7 +36,7 @@ export interface Brain {
   plan(input: { description: string; capabilities: CapabilityBrief[]; catalog: Array<{ id: string; name: string; category: string }>; deploymentFloor: string }): Promise<unknown>;
   generate(input: { plan: Plan; spec: AppSpec; capabilities: CapabilityBrief[]; files: SourceFile[] }): Promise<FileChangeInput[]>;
   fix(input: { plan: Plan; spec: AppSpec; errors: Diagnostic[]; files: SourceFile[]; attempt: number; maxAttempts: number }): Promise<FileChangeInput[]>;
-  refine(input: { plan: Plan; spec: AppSpec; change: string; capabilities: CapabilityBrief[]; files: SourceFile[] }): Promise<{ files: FileChangeInput[]; capabilities?: string[] }>;
+  refine(input: { plan: Plan; spec: AppSpec; change: string; capabilities: CapabilityBrief[]; files: SourceFile[] }): Promise<{ files: FileChangeInput[]; capabilities?: string[]; design?: Plan["design"] }>;
 }
 
 export interface LoopOptions {
@@ -283,6 +283,11 @@ export async function runAgent(options: LoopOptions): Promise<LoopResult> {
     if (options.refine) {
       const spec = await readSpec(root);
       const result = await options.brain.refine({ plan, spec, change: options.refine, capabilities: await capabilityBriefs(), files: await sourceFiles(root, spec) });
+      if (result.design) {
+        const outcome = await updatePlanDesign(root, result.design, sink ? { sink } : {});
+        plan = outcome.plan;
+        progress((await loadState(root))!, "planning", `Design direction updated: ${plan.design.mood}; palette ${plan.design.palette.name}.`, sink);
+      }
       if (result.capabilities?.length) await addCapabilities(root, result.capabilities, options.runner, sink);
       if (result.files.length) await writeProjectFiles(root, result.files, options.runner);
       state = (await loadState(root)) as StateWithMilestones;

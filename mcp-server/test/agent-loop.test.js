@@ -47,7 +47,7 @@ function scriptedBrain(overrides = {}) {
     },
     async refine(input) {
       calls.push(["refine", input.change]);
-      return { files: [{ path: "HabitTracker/Views/StreakBadge.swift", content: "struct StreakBadge {}\n" }] };
+      return overrides.refine ? overrides.refine(calls, input) : { files: [{ path: "HabitTracker/Views/StreakBadge.swift", content: "struct StreakBadge {}\n" }] };
     },
   };
   return brain;
@@ -145,14 +145,23 @@ test("an interrupted run resumes from the stage where it stopped", async (t) => 
 
 test("refine applies a change to the last app and rebuilds, relaunches and re-screenshots", async (t) => {
   const { projectDir, runner } = await setup(t);
-  const brain = scriptedBrain({ generate: () => [{ path: "HabitTracker/Views/RootView.swift", content: "struct RootView {}\n" }] });
+  const calmerDesign = { mood: "quiet and restorative", palette: { name: "Lavender Dusk", primary: "#6842A6", secondary: "#3E7D78", accent: "#D18F42" }, typography: "rounded", shape: "soft", density: "comfortable", motion: "minimal" };
+  const brain = scriptedBrain({
+    generate: () => [{ path: "HabitTracker/Views/RootView.swift", content: "struct RootView {}\n" }],
+    refine: () => ({ files: [{ path: "HabitTracker/Views/StreakBadge.swift", content: "struct StreakBadge {}\n" }], design: calmerDesign }),
+  });
   await runAgent({ projectDir, description: "habits", brain, runner, screenshotDelayMs: 0 });
   await assert.rejects(runAgent({ projectDir: join(projectDir, "..", "other"), brain, runner, refine: "x" }), /Nothing to refine/);
-  const refined = await runAgent({ projectDir, brain, runner, refine: "Show a streak badge", screenshotDelayMs: 0 });
+  const refined = await runAgent({ projectDir, brain, runner, refine: "Make the visual design calmer", screenshotDelayMs: 0 });
   assert.equal(refined.state.status, "complete", refined.state.failure);
   assert.equal(refined.state.cycle, 2);
-  assert.deepEqual(refined.state.refinements.map((r) => r.change), ["Show a streak badge"]);
+  assert.deepEqual(refined.state.refinements.map((r) => r.change), ["Make the visual design calmer"]);
   assert.ok(existsSync(join(projectDir, "HabitTracker", "Views", "StreakBadge.swift")));
+  const updatedPlan = JSON.parse(await readFile(join(projectDir, ".ios-agent", "plan.json"), "utf8"));
+  assert.equal(updatedPlan.design.palette.name, "Lavender Dusk");
+  assert.match(await readFile(join(projectDir, "PLAN.md"), "utf8"), /quiet and restorative/);
+  const updatedColors = JSON.parse(await readFile(join(projectDir, "HabitTracker/Resources/Assets.xcassets/BrandPrimary.colorset/Contents.json"), "utf8"));
+  assert.notEqual(updatedColors.colors[0].color.components.red, "0.086");
   assert.equal(refined.state.builds.filter((b) => b.cycle === 2).length, 1);
 });
 
