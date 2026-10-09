@@ -20,7 +20,8 @@ jobs:
         with:
           node-version: '22'
       - run: npm ci --prefix mcp-server
-      - run: npm run build --prefix mcp-server
+      - id: build
+        run: npm run build --prefix mcp-server
       - name: Record toolchain and source identity
         run: |
           mkdir -p evidence
@@ -34,7 +35,7 @@ jobs:
           set -o pipefail
           xcodebuild -project "$RUNNER_TEMP/CapCheck/CapCheck.xcodeproj" -scheme CapCheck -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build 2>&1 | tee evidence/combined.log
       - name: Verify each isolated module
-        if: always()
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: |
           set -o pipefail
           node mcp-server/dist/unified.js capabilities verify --all --write capabilities 2>&1 | tee evidence/modules.log

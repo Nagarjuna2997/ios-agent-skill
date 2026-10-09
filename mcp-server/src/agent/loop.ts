@@ -302,7 +302,8 @@ export async function runAgent(options: LoopOptions): Promise<LoopResult> {
     await saveState(root, state);
   } else {
     // A run that stopped on its attempt or time cap gets a fresh attempt budget.
-    const testCapped = (state.tests ?? []).filter(test => test.cycle === state.cycle).length >= 3;
+    const currentCycle = state.cycle;
+    const testCapped = (state.tests ?? []).filter(test => test.cycle === currentCycle).length >= 3;
     const capped = state.status === "failed" && (testCapped || (!reached(state, "built") && attemptsThisCycle(state) > 0 && (!options.remote || (attemptsThisCycle(state) >= state.maxBuildAttempts && !state.builds.at(-1)?.success))));
     if (capped) {
       state.cycle += 1;
