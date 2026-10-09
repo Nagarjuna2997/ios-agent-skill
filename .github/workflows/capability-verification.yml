@@ -5,6 +5,9 @@ on:
   pull_request:
     paths: ['capabilities/**', 'mcp-server/src/agent/**', 'scripts/capability-compile-check.mjs', '.github/workflows/capability-verification.yml']
   workflow_dispatch:
+defaults:
+  run:
+    shell: bash
 permissions:
   contents: read
 concurrency:
