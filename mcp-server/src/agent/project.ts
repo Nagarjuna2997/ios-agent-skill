@@ -202,6 +202,7 @@ export const CreateProjectInput = z
     displayName: z.string().max(30).optional(),
     deploymentTarget: z.string().optional(),
     capabilities: z.array(z.string()).default([]),
+    tests: z.boolean().optional(),
   })
   .strict();
 
@@ -229,7 +230,9 @@ export async function initProject(input: z.infer<typeof CreateProjectInput>): Pr
     ...(input.displayName ? { displayName: input.displayName } : {}),
     ...(input.deploymentTarget ? { deploymentTarget: input.deploymentTarget } : {}),
   });
+  if (input.tests) spec.tests = true;
   await mkdir(root, { recursive: true });
+  if (spec.tests) for (const suffix of ["Tests", "UITests"]) await mkdir(join(root, spec.name + suffix), {recursive:true});
   const files: string[] = [];
   for (const [path, content] of Object.entries(STARTER(spec.name))) {
     await atomicWrite(await containedPath(root, path), content);
@@ -268,7 +271,7 @@ export async function writeProjectFiles(rootDir: string, changes: FileChangeInpu
   const parsed = changes.map((c) => FileChange.parse(c));
   const result: WriteResult = { written: [], deleted: [], created: [], regenerated: false };
   for (const change of parsed) {
-    if (!change.path.startsWith(`${spec.name}/`)) throw new Error(`Write app files under ${spec.name}/ (got ${change.path}). Project settings change through capabilities and packages.`);
+    if (!change.path.startsWith(`${spec.name}/`) && !(spec.tests && ["Tests", "UITests"].some(suffix => change.path.startsWith(`${spec.name}${suffix}/`) && change.path.endsWith(".swift")))) throw new Error(`Write app files under ${spec.name}/ (got ${change.path}). Project settings change through capabilities and packages.`);
     if (!ALLOWED_EXTENSIONS.test(change.path) && !change.path.includes(".xcassets/")) throw new Error(`Unsupported file type: ${change.path}`);
     const target = await containedPath(root, change.path);
     if (change.delete) {

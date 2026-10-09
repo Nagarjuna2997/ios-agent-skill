@@ -347,3 +347,35 @@ test("source changed during build cannot receive a visual pass", async t => {
   const result=await runAgent({projectDir,runner:unstable,brain,description:'Habits',screenshotDelayMs:0});
   assert.equal(result.state.status,'failed');assert.equal(calls,0);
 });
+
+test('generated tests run before completion and test failures repair application source', async (t) => {
+  const {projectDir, runner: base} = await setup(t);
+  let executions = 0;
+  const runner = {async run(command,args,options) {
+    if (command === 'xcodebuild' && args.includes('test')) {
+      executions++;
+      const {mkdir} = await import('node:fs/promises');
+      await mkdir(args[args.indexOf('-resultBundlePath')+1],{recursive:true});
+      return {command,args,exitCode:executions===1?65:0,stdout:executions===1?'error: synthetic behavior assertion failed':'',stderr:'',durationMs:1,timedOut:false};
+    }
+    if (args.includes('xcresulttool')) return {command,args,exitCode:0,stdout:JSON.stringify({passedTests:executions===1?1:2,failedTests:executions===1?1:0,skippedTests:0}),stderr:'',durationMs:1,timedOut:false};
+    return base.run(command,args,options);
+  }};
+  const brain = scriptedBrain({generate:()=>[{path:'HabitTracker/Views/RootView.swift',content:'struct RootView {}'},{path:'HabitTrackerTests/EarlyTests.swift',content:'import Testing\n@Test func early() { #expect(1 == 1) }'}]});
+  brain.generateTests=async()=>[{path:'HabitTrackerTests/Behavior.swift',content:'import Testing\n@Test func behavior() { #expect(true) }'},{path:'HabitTrackerUITests/Smoke.swift',content:'import XCTest\nfinal class Smoke: XCTestCase {}'}];
+  const result=await runAgent({projectDir,runner,brain,description:'habits',screenshotDelayMs:0});
+  assert.equal(result.state.status,'complete',result.state.failure);
+  assert.equal(executions,2);
+  assert.deepEqual(result.state.tests.map(t=>t.status),['failed','passed']);
+  assert.ok(brain.calls.some(c=>c[0]==='fix'));
+  // An exhausted test budget can resume even after compilation succeeded.
+  const {writeFile} = await import('node:fs/promises');
+  const priorCycle = result.state.cycle;
+  result.state.status = 'failed';
+  result.state.tests = Array.from({length:3},()=>({...result.state.tests[0],cycle:priorCycle,status:'failed'}));
+  await writeFile(join(projectDir,'.ios-agent/state.json'),JSON.stringify(result.state));
+  const resumed = await runAgent({projectDir,runner,brain,resume:true,screenshotDelayMs:0});
+  assert.equal(resumed.state.cycle,priorCycle+1);
+  assert.equal(resumed.state.status,'complete',resumed.state.failure);
+  assert.equal(executions,3);
+});

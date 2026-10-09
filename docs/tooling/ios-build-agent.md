@@ -137,3 +137,7 @@ same checklist. `capture:true` refreshes the full matrix; request each screen by
 The `/ios-build` instructions drive that client's bounded repair cycle and record
 its findings with `ios_progress`; the headless CLI additionally persists structured
 review records. Builds can use the local simulator or the opt-in remote macOS lane.
+
+## Generated app quality
+
+See [Generated app quality](generated-app-quality.md) for test targets, device coverage, provider modules, screenshot-aware refinements and the shared Studio engine. Build success, test execution and visual review are separate evidence.

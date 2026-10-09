@@ -193,7 +193,7 @@ describe("applying every module", () => {
     assert.deepEqual(widgets.entitlements.properties["com.apple.security.application-groups"], group);
     assert.equal(target.info.properties.NSSupportsLiveActivities, true);
     const info = target.info.properties;
-    assert.deepEqual(info.CFBundleURLTypes, [{ CFBundleURLName: "com.example.foodrun", CFBundleURLSchemes: ["foodrun"] }]);
+    assert.deepEqual(info.CFBundleURLTypes, [{ CFBundleURLName: "com.example.foodrun", CFBundleURLSchemes: ["foodrun"] }, { CFBundleURLName: "GoogleOAuth", CFBundleURLSchemes: ["$(GOOGLE_REVERSED_CLIENT_ID)"] }]);
     assert.deepEqual(info.BGTaskSchedulerPermittedIdentifiers, ["com.example.foodrun.refresh"]);
     // Array values from several modules are merged, not overwritten.
     assert.deepEqual([...info.UIBackgroundModes].sort(), ["fetch", "remote-notification"]);

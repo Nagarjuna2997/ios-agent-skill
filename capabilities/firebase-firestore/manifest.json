@@ -1,0 +1,39 @@
+{
+  "id": "firebase-firestore",
+  "name": "Firebase Firestore",
+  "category": "backend",
+  "description": "Inject a configured Firestore instance into FirestoreDocuments<Row>.",
+  "default": false,
+  "appleNative": false,
+  "alternatives": [],
+  "cost": {
+    "model": "usage-based",
+    "note": "Provider charges and quotas depend on your account; consult the official pricing page.",
+    "amounts": []
+  },
+  "minOS": "17.0",
+  "docs": [
+    "docs/tooling/generated-app-quality.md"
+  ],
+  "usage": "Inject a configured Firestore instance into FirestoreDocuments<Row>. Configure FirebaseCore once before constructing it. Use authenticated per-user paths and restrictive Firestore rules, tested with the emulator; a client wrapper does not deploy or prove security rules. Use synthetic in-memory services in previews.",
+  "platforms": [
+    "iOS"
+  ],
+  "status": "verified",
+  "statusNote": "Built into a minimal app with Xcode 27.0 (27A266a) on 2026-10-09.",
+  "requires": {
+    "packages": [
+      {
+        "name": "firebase-ios-sdk",
+        "url": "https://github.com/firebase/firebase-ios-sdk.git",
+        "version": {
+          "exactVersion": "12.13.0"
+        },
+        "products": [
+          "FirebaseCore",
+          "FirebaseFirestore"
+        ]
+      }
+    ]
+  }
+}

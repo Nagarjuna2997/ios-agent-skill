@@ -26,7 +26,7 @@ export const VisualAssessmentSchema = z.object({
 });
 export type VisualAssessment = z.infer<typeof VisualAssessmentSchema>;
 export interface VisualImage { variant: "light" | "dark" | "xxl"; sha256: string; data: string }
-export interface VisualInput { plan: Plan; screen: Plan["screens"][number]; images: VisualImage[] }
+export interface VisualInput { device?: "iphone" | "ipad"; plan: Plan; screen: Plan["screens"][number]; images: VisualImage[] }
 export interface VisualRound {
   key: string; cycle: number; round: number;
   status: "reviewing" | "pass" | "needs_changes" | "unknown";
@@ -36,13 +36,13 @@ const hash = (v: string | Buffer) => createHash("sha256").update(v).digest("hex"
 export function visualKey(plan: Plan, files: SourceFile[], state: RunState, images: Array<{screen: string; images: VisualImage[]}>): string {
   return hash(JSON.stringify({ plan, files: [...files].sort((a,b) => a.path.localeCompare(b.path)), cycle: state.cycle, build: state.builds.at(-1), images: images.map(s => ({screen: s.screen, hashes: s.images.map(i => i.sha256)})) }));
 }
-export async function visualInputs(root: string, plan: Plan, state: RunState): Promise<Array<{ screen: Plan["screens"][number]; images: VisualImage[] }>> {
+export async function visualInputs(root: string, plan: Plan, state: RunState): Promise<Array<{ screen: Plan["screens"][number]; images: VisualImage[]; device: "iphone" | "ipad" }>> {
   const base = await realpath(root);
   const result = [];
   for (const screen of plan.screens.filter(s => s.topLevel)) {
     const images: VisualImage[] = [];
     for (const variant of ["light", "dark", "xxl"] as const) {
-      const shots = state.screenshots.filter(s => s.screen === screen.id && s.variant === variant);
+      const shots = state.screenshots.filter(s => s.screen === screen.id && s.variant === variant && (s.device ?? "iphone") === (state.primaryCaptureDevice ?? "iphone"));
       if (shots.length !== 1) throw new Error(`Visual evidence missing or ambiguous: ${screen.id}/${variant}`);
       const full = await realpath(join(base, shots[0]!.path));
       const rel = relative(base, full);
@@ -52,7 +52,7 @@ export async function visualInputs(root: string, plan: Plan, state: RunState): P
       if (bytes.length > 2_000_000 || bytes.length < 24 || bytes.subarray(0,8).toString("hex") !== "89504e470d0a1a0a") throw new Error(`Screenshot must be a PNG under 2 MB: ${screen.id}/${variant}`);
       images.push({ variant, sha256: hash(bytes), data: bytes.toString("base64") });
     }
-    result.push({ screen, images });
+    result.push({ screen, images, device: state.primaryCaptureDevice ?? "iphone" });
   }
   return result;
 }

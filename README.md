@@ -54,11 +54,11 @@ Every capability is a folder in [capabilities/](capabilities/README.md) with a m
 <!-- capability-summary:start -->
 | Status | Capabilities |
 |---|---|
-| Verified on a Mac | 1 |
+| Verified on a Mac | 7 |
 | Module exists, not yet verified on a Mac | 41 |
 | ...of which the Swift compiled on a Mac (combined compile check) | 41 |
 | Blocked | 0 |
-| Listed for planning only | 120 |
+| Listed for planning only | 114 |
 
 162 catalog entries in 31 categories; generated from [capabilities/CATALOG.md](capabilities/CATALOG.md).
 <!-- capability-summary:end -->
@@ -69,7 +69,7 @@ The agent builds and runs everything in the simulator without accounts. Capabili
 
 ### Not yet
 
-- The design-system capability has passed its own Mac verify run. The other modules remain unverified individually; their combined compile check is not a substitute for each module's verify run (see [the compile check](capabilities/README.md#compile-check)).
+- The design-system, firebase-auth, firebase-firestore, google-sign-in, stripe-payments, rive-animation and webview-animation capabilities have passed isolated Mac compile verification. Provider accounts and runtime transactions remain unverified; a combined compile check is not a substitute for each module's verify run (see [the compile check](capabilities/README.md#compile-check)).
 - The agent's build, simulator launch and per-screen capture stages ran on Mac for these four existing examples. The original planning and code-generation sessions were separate, and a fresh one-sentence generation has not yet been run end to end on Mac.
 - Taps and scrolling during the agent's own screenshots, and device builds, are not done. In the food-delivery example the StoreKit purchase and the Live Activity were not exercised.
 

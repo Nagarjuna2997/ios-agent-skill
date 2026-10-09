@@ -50,9 +50,11 @@ export interface RunState {
   /** Incremented by each refinement; build attempts are capped per cycle. */
   cycle: number;
   builds: BuildRecord[];
+  tests?: import("./testing.js").TestEvidence[];
   run?: { udid: string; simulator: string; pid?: number };
   /** `variant` is light, dark or xxl for the design evidence matrix; older state files omit it. */
-  screenshots: Array<{ screen: string; path: string; variant?: "light" | "dark" | "xxl" }>;
+  screenshots: Array<{ screen: string; path: string; device?: "iphone" | "ipad"; variant?: "light" | "dark" | "xxl" }>;
+  primaryCaptureDevice?: "iphone" | "ipad";
   visualRepairPending?: boolean;
   buildSourceHash?: string;
   captureSourceHash?: string;

@@ -199,7 +199,7 @@ export async function serve({
           await run("open", [
             path.join(
               studio.dir(id),
-              (await studio.get(id)).template === "custom"
+              (await studio.get(id)).template === "agent" ? `project/${(await studio.get(id)).agentPlan?.appName}.xcodeproj` : (await studio.get(id)).template === "custom"
                 ? "project/AppProject.xcodeproj"
                 : "project/ReadingList.xcodeproj",
             ),

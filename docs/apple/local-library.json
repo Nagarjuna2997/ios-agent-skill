@@ -3404,6 +3404,13 @@
       "hash": "6f36ef2be9118abd415ac822f69ff7b3575f380ea22dfe6be09383d265cae2eb"
     },
     {
+      "path": "docs/tooling/generated-app-quality.md",
+      "title": "Generated app quality",
+      "kind": "guide",
+      "characters": 5520,
+      "hash": "5059762d0b28753509653fdda2c43545a1924cc189c18ac26c8b5238baee1a4c"
+    },
+    {
       "path": "docs/tooling/idea-to-app.md",
       "title": "From an Idea to a Running Apple App",
       "kind": "guide",
@@ -3414,8 +3421,8 @@
       "path": "docs/tooling/ios-build-agent.md",
       "title": "iOS build agent",
       "kind": "guide",
-      "characters": 10949,
-      "hash": "ef3ebd298b5a695e7dbf602559c1c0cd70119694cdb4687c9fbcfb59ed1662f9"
+      "characters": 11213,
+      "hash": "716ac4397a4276d244e8397824d8a07077705985007a05424651565bf3f9eec3"
     },
     {
       "path": "docs/tooling/ios-simulator-mcp.md",

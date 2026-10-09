@@ -1,0 +1,46 @@
+{
+  "id": "stripe-payments",
+  "name": "Stripe PaymentSheet",
+  "category": "payments",
+  "description": "Create the PaymentIntent on your authenticated server with server-calculated amount/currency and idempotency.",
+  "default": false,
+  "appleNative": false,
+  "alternatives": [],
+  "cost": {
+    "model": "usage-based",
+    "note": "Provider charges and quotas depend on your account; consult the official pricing page.",
+    "amounts": []
+  },
+  "minOS": "17.0",
+  "docs": [
+    "docs/tooling/generated-app-quality.md"
+  ],
+  "usage": "Create the PaymentIntent on your authenticated server with server-calculated amount/currency and idempotency. Inject only its client secret and the publishable key into StripeCheckout. Handle completed/canceled/failed separately; fulfill only after verified server webhooks. Never embed sk_ keys. Use for eligible payments; StoreKit requirements depend on product and storefront.",
+  "platforms": [
+    "iOS"
+  ],
+  "status": "verified",
+  "statusNote": "Built into a minimal app with Xcode 27.0 (27A266a) on 2026-10-09.",
+  "requires": {
+    "packages": [
+      {
+        "name": "stripe-ios",
+        "url": "https://github.com/stripe/stripe-ios.git",
+        "version": {
+          "exactVersion": "26.13.0"
+        },
+        "products": [
+          "StripePaymentSheet"
+        ]
+      }
+    ]
+  },
+  "credentialsNeeded": [
+    {
+      "key": "STRIPE_PUBLISHABLE_KEY",
+      "description": "Client-safe pk_ key; never a Stripe secret key",
+      "whereToGet": "https://dashboard.stripe.com/apikeys",
+      "kind": "client"
+    }
+  ]
+}

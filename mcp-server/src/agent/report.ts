@@ -154,6 +154,13 @@ export function renderRunReport(input: {
     lines.push("Requested but not built:", "", ...state.unavailable.map((u) => `- \`${u.id}\`: ${u.reason}`), "");
   }
 
+  const tabletShots = state.screenshots.filter(s => s.device === "ipad");
+  lines.push("## iPad evidence", "");
+  if (!tabletShots.length) lines.push("Not captured; tablet layout remains unverified.", "");
+  for (const shot of tabletShots) lines.push(`- [${shot.screen} / ${shot.variant}](${shot.path})`);
+  lines.push("", "## Tests", "");
+  if (!state.tests?.length) lines.push("Not run. A successful build is not test evidence.", "");
+  for (const t of state.tests ?? []) lines.push(`- ${t.status}: ${t.passed} passed, ${t.failed} failed, ${t.skipped} skipped; source ${t.sourceHash}. [Log](${t.logPath}); result bundle: ${t.resultBundle}${t.reason ? ` — ${t.reason}` : ""}`, "");
   lines.push("## Builds", "");
   if (!state.builds.length) lines.push("No build ran.", "");
   else {

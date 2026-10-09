@@ -88,7 +88,7 @@ export async function buildCLI(args: string[]): Promise<number> {
     ...(str(flags, "remote-runner") ? { runnerLabel: str(flags, "remote-runner")! } : {}),
   }, new ProcessRunner()) : undefined;
   if (remote) console.log(`Remote build uploads generated app source to ${str(flags, "remote-repo")}. Check repository visibility and Actions billing. Only source/configuration is selected; .env and Secrets.xcconfig are excluded.`);
-  console.log("Visual review sends synthetic simulator screenshots and the design brief to your configured Claude model; up to 3 rounds. Review PLAN.md before continuing.");
+  console.log("Visual review sends synthetic simulator screenshots and the design brief to your configured Claude model; one repair pass plus verification. Review PLAN.md before continuing.");
   console.log(`Project folder: ${out}`);
   const result = await runAgent({
     projectDir: out,
@@ -102,6 +102,7 @@ export async function buildCLI(args: string[]): Promise<number> {
     resume,
     ...(refine ? { refine } : {}),
     ...(str(flags, "udid") ? { udid: str(flags, "udid")! } : {}),
+    maxVisualRepairs: 1,
     planOnly: flags.has("plan-only"),
     ...(str(flags, "design") ? { design: str(flags, "design")! } : {}),
   });

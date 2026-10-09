@@ -271,6 +271,11 @@ export async function recordedBuild(
 export async function writeReport(rootDir: string, options: { status?: RunState["status"]; failure?: string } = {}): Promise<{ path: string; markdown: string }> {
   const root = requireProjectDir(rootDir);
   const state = await ensureState(root);
+  if (options.status === "complete" && existsSync(projectPaths(root).spec) && (await readSpec(root)).tests) {
+    const tests = state.tests?.at(-1);
+    const current = snapshotHash(await snapshotFiles(root));
+    if (!tests || tests.status !== "passed" || tests.sourceHash !== current || !existsSync(join(root, tests.logPath)) || !existsSync(join(root, tests.resultBundle))) throw new Error("Cannot complete: current passing test evidence and artifacts are required.");
+  }
   if (options.status) state.status = options.status;
   if (options.failure) state.failure = options.failure;
   if (options.status === "complete") state.stage = "complete";

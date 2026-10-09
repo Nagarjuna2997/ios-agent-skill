@@ -1,3 +1,4 @@
+import { testProject } from "./testing.js";
 // MCP tools for the iOS build agent. The /ios-build slash command drives these
 // in order; the CLI loop calls the same functions directly.
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
@@ -159,6 +160,7 @@ export function registerAgentTools(server: McpServer, runners: RunnerFactory = d
         displayName: z.string().max(30).optional(),
         deploymentTarget: z.string().optional().describe("iOS version, default 17.0; raised automatically for capabilities that need more."),
         capabilities: z.array(z.string()).default([]),
+        tests: z.boolean().optional().describe("Create separate unit and UI test targets; write tests before requesting runTests."),
       },
       annotations: writes,
     },
@@ -263,15 +265,17 @@ export function registerAgentTools(server: McpServer, runners: RunnerFactory = d
         projectDir,
         scheme: z.string().optional(),
         udid: z.string().optional(),
+        runTests: z.boolean().optional().describe("After a successful build, run the configured unit/UI tests and return separate test evidence."),
         newCycle: z.boolean().optional().describe("Start a new attempt budget and deadline (refinement or resume)."),
         change: z.string().max(500).optional().describe("The refinement being applied, recorded in RUN_REPORT.md."),
       },
       annotations: writes,
     },
-    async ({ projectDir: dir, scheme, udid, newCycle, change }) => {
+    async ({ projectDir: dir, scheme, udid, newCycle, change, runTests }) => {
       try {
         const result = await recordedBuild(dir, runners(dir), { ...(scheme ? { scheme } : {}), ...(udid ? { udid } : {}), ...(newCycle ? { newCycle } : {}), ...(change ? { change } : {}) });
-        return ok(result);
+        const tests = runTests && result.success ? await testProject(dir, runners(dir), udid) : undefined;
+        return ok({...result, ...(tests ? {tests} : {})});
       } catch (error) {
         return fail(error);
       }

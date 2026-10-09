@@ -27,6 +27,8 @@
 <li><strong>Report.</strong> Writes RUN_REPORT.md with the builds, the screenshots and what still needs your accounts or money.</li>
 </ol><p>Then change it in plain words: <code>/ios-build --refine "Add a streak badge to each habit"</code>. A refinement gets its own build budget. A stopped run continues with <code>--resume</code>.</p></section>
 
+<section aria-labelledby="quality-update"><p class="eyebrow">Next update · GitHub review · not yet on npm</p><h2 id="quality-update">Build, test, then look at the app.</h2><p>The shared build engine adds generated unit and screen tests, design choices, source-matched visual refinements, and iPad captures. Studio can use this same workflow through its shared-agent starting point.</p><p>Firebase, Google Sign-In, Stripe and animation modules include configuration guidance. Compilation, provider setup, test execution and visual observations are reported separately. See the <a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/feature/generated-app-quality/docs/tooling/generated-app-quality.md">implementation notes and limits</a>.</p></section>
+
 <section aria-labelledby="examples"><h2 id="examples">Apps it made</h2><p>Four requests, run on October 2, 2026. The agent planned each app and wrote all the code. The projects were then opened in Xcode 27.0 and run on the iPhone 18 Pro Simulator. Each one built on the first try with no code changes. These are screenshots of those runs, not mockups.</p>
 <h3>Habit tracker</h3><div class="shots"><figure><img src="assets/agent/habit-tracker-01-habit-list-empty.webp" width="360" height="777" loading="lazy" alt="Habit list"><figcaption>Habit list</figcaption></figure><figure><img src="assets/agent/habit-tracker-03-settings.webp" width="360" height="777" loading="lazy" alt="Settings with dark mode toggle"><figcaption>Settings with dark mode toggle</figcaption></figure></div>
 <h3>Notes with SwiftData and search</h3><div class="shots"><figure><img src="assets/agent/notes-app-01-notes-list.webp" width="360" height="777" loading="lazy" alt="Notes list with search"><figcaption>Notes list with search</figcaption></figure><figure><img src="assets/agent/notes-app-02-compose.webp" width="360" height="777" loading="lazy" alt="Compose screen"><figcaption>Compose screen</figcaption></figure></div>
@@ -42,12 +44,14 @@
 </ul></section>
 
 <section aria-labelledby="capabilities"><h2 id="capabilities">Capability modules</h2><!-- capability-modules:start -->
-<p>42 modules the agent can apply, from 162 capabilities it can plan for. <strong>1 verified</strong>, <strong>41 untested</strong>: a module is verified only after its own build check passes on a Mac. 41 compiled together in one app. Generated from the module manifests.</p>
+<p>48 modules the agent can apply, from 162 capabilities it can plan for. <strong>7 verified</strong>, <strong>41 untested</strong>: a module is verified only after its own build check passes on a Mac. 41 compiled together in one app. Generated from the module manifests.</p>
 <div class="table-scroll"><table><thead><tr><th>Module</th><th>Category</th><th>Kind</th><th>You provide</th><th>Status</th><th>Compiled</th></tr></thead><tbody>
 <tr><td>RealityKit 3D view</td><td>3d-ar</td><td>Apple, default</td><td>nothing</td><td>untested</td><td>yes</td></tr>
 <tr><td>Accessibility baseline</td><td>accessibility</td><td>Apple, default</td><td>nothing</td><td>untested</td><td>yes</td></tr>
 <tr><td>On-device AI (Foundation Models)</td><td>ai-ml</td><td>Apple, default</td><td>nothing</td><td>untested</td><td>yes</td></tr>
+<tr><td>Local web animation</td><td>animation</td><td>Apple</td><td>nothing</td><td>verified</td><td>no</td></tr>
 <tr><td>Lottie animation</td><td>animation</td><td>third-party</td><td>nothing</td><td>untested</td><td>yes</td></tr>
+<tr><td>Rive animation</td><td>animation</td><td>third-party</td><td>nothing</td><td>verified</td><td>no</td></tr>
 <tr><td>App icon (rendered from SVG layers, Icon Composer ready)</td><td>app-icon</td><td>Apple, default</td><td>nothing</td><td>untested</td><td>yes</td></tr>
 <tr><td>Appearance setting (light, dark, system)</td><td>app-structure</td><td>Apple</td><td>nothing</td><td>untested</td><td>yes</td></tr>
 <tr><td>Searchable lists</td><td>app-structure</td><td>Apple</td><td>nothing</td><td>untested</td><td>yes</td></tr>
@@ -55,9 +59,12 @@
 <tr><td>SF Symbols</td><td>assets</td><td>Apple</td><td>nothing</td><td>untested</td><td>yes</td></tr>
 <tr><td>Email and password sign-in (Supabase Auth REST)</td><td>authentication</td><td>third-party</td><td><code>SUPABASE_URL</code>, <code>SUPABASE_ANON_KEY</code></td><td>untested</td><td>yes</td></tr>
 <tr><td>Face ID / Touch ID lock</td><td>authentication</td><td>Apple</td><td>nothing</td><td>untested</td><td>yes</td></tr>
+<tr><td>Firebase authentication</td><td>authentication</td><td>third-party</td><td>nothing</td><td>verified</td><td>no</td></tr>
+<tr><td>Google Sign-In</td><td>authentication</td><td>third-party</td><td><code>GOOGLE_CLIENT_ID</code>, <code>GOOGLE_REVERSED_CLIENT_ID</code></td><td>verified</td><td>no</td></tr>
 <tr><td>Passkeys</td><td>authentication</td><td>Apple</td><td><code>ASSOCIATED_DOMAIN</code></td><td>untested</td><td>yes</td></tr>
 <tr><td>Sign in with Apple</td><td>authentication</td><td>Apple, default</td><td>nothing</td><td>untested</td><td>yes</td></tr>
 <tr><td>CloudKit database</td><td>backend</td><td>Apple, default</td><td>nothing</td><td>untested</td><td>yes</td></tr>
+<tr><td>Firebase Firestore</td><td>backend</td><td>third-party</td><td>nothing</td><td>verified</td><td>no</td></tr>
 <tr><td>Supabase database (supabase-swift)</td><td>backend</td><td>third-party</td><td><code>SUPABASE_URL</code>, <code>SUPABASE_ANON_KEY</code></td><td>untested</td><td>yes</td></tr>
 <tr><td>Your REST API</td><td>backend</td><td>Apple</td><td><code>API_BASE_URL</code></td><td>untested</td><td>yes</td></tr>
 <tr><td>Background app refresh</td><td>background</td><td>Apple, default</td><td>nothing</td><td>untested</td><td>yes</td></tr>
@@ -76,6 +83,7 @@
 <tr><td>Apple Pay checkout</td><td>payments</td><td>Apple</td><td><code>APPLE_PAY_MERCHANT_ID</code></td><td>untested</td><td>yes</td></tr>
 <tr><td>RevenueCat subscriptions</td><td>payments</td><td>third-party</td><td><code>REVENUECAT_API_KEY</code></td><td>untested</td><td>yes</td></tr>
 <tr><td>StoreKit 2 subscriptions and paywall</td><td>payments</td><td>Apple, default</td><td>nothing</td><td>untested</td><td>yes</td></tr>
+<tr><td>Stripe PaymentSheet</td><td>payments</td><td>third-party</td><td><code>STRIPE_PUBLISHABLE_KEY</code></td><td>verified</td><td>no</td></tr>
 <tr><td>SwiftData iCloud sync</td><td>persistence</td><td>Apple</td><td>nothing</td><td>untested</td><td>yes</td></tr>
 <tr><td>SwiftData local persistence</td><td>persistence</td><td>Apple, default</td><td>nothing</td><td>untested</td><td>yes</td></tr>
 <tr><td>Keychain storage</td><td>security</td><td>Apple, default</td><td>nothing</td><td>untested</td><td>yes</td></tr>

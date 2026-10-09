@@ -1,0 +1,63 @@
+{
+  "id": "google-sign-in",
+  "name": "Google Sign-In",
+  "category": "authentication",
+  "description": "Construct GoogleSession with the iOS client ID, use GoogleSignInButton, pass the current presenting view controller and forward .onOpenURL to handle.",
+  "default": false,
+  "appleNative": false,
+  "alternatives": [],
+  "cost": {
+    "model": "free",
+    "note": "Provider charges and quotas depend on your account; consult the official pricing page.",
+    "amounts": []
+  },
+  "minOS": "17.0",
+  "docs": [
+    "docs/tooling/generated-app-quality.md"
+  ],
+  "usage": "Construct GoogleSession with the iOS client ID, use GoogleSignInButton, pass the current presenting view controller and forward .onOpenURL to handle. Register the reversed client ID URL scheme in the app spec before building. Validate tokens on your backend; userID is not server authentication. Check Apple login-services rules. The manifest registers the reversed-ID callback scheme from .env; use GoogleSession.configured() for the client ID.",
+  "platforms": [
+    "iOS"
+  ],
+  "status": "verified",
+  "statusNote": "Built into a minimal app with Xcode 27.0 (27A266a) on 2026-10-09.",
+  "requires": {
+    "packages": [
+      {
+        "name": "GoogleSignIn-iOS",
+        "url": "https://github.com/google/GoogleSignIn-iOS.git",
+        "version": {
+          "exactVersion": "10.0.0"
+        },
+        "products": [
+          "GoogleSignIn",
+          "GoogleSignInSwift"
+        ]
+      }
+    ],
+    "infoPlist": {
+      "CFBundleURLTypes": [
+        {
+          "CFBundleURLName": "GoogleOAuth",
+          "CFBundleURLSchemes": [
+            "$(GOOGLE_REVERSED_CLIENT_ID)"
+          ]
+        }
+      ]
+    }
+  },
+  "credentialsNeeded": [
+    {
+      "key": "GOOGLE_CLIENT_ID",
+      "description": "iOS OAuth client ID",
+      "whereToGet": "https://console.cloud.google.com/apis/credentials",
+      "kind": "client"
+    },
+    {
+      "key": "GOOGLE_REVERSED_CLIENT_ID",
+      "description": "Reversed iOS OAuth client ID used for callback URLs",
+      "whereToGet": "https://console.cloud.google.com/apis/credentials",
+      "kind": "client"
+    }
+  ]
+}

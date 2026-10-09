@@ -225,7 +225,7 @@ export async function renderXcodeProject(root: string, spec: AppSpec): Promise<P
       SDKROOT: "iphoneos",
       SKIP_INSTALL: "YES",
       SWIFT_VERSION: spec.swiftVersion,
-      TARGETED_DEVICE_FAMILY: "1",
+      TARGETED_DEVICE_FAMILY: "1,2",
       ...(Object.keys(ext.entitlements).length ? { CODE_SIGN_ENTITLEMENTS: `Config/${ext.name}.entitlements` } : {}),
     };
     add(`${DEBUG} = {isa = XCBuildConfiguration; baseConfigurationReference = ${XCCONFIG}; buildSettings = ${settingsBlock(extSettings)}; name = Debug; };`);
@@ -236,6 +236,28 @@ export async function renderXcodeProject(root: string, spec: AppSpec): Promise<P
     );
     files[`Config/${ext.name}-Info.plist`] = renderPlist(extensionInfoPlist(spec));
     if (Object.keys(ext.entitlements).length) files[`Config/${ext.name}.entitlements`] = renderPlist(ext.entitlements);
+  }
+
+  // Independent test bundles with an explicit dependency on the application.
+  const testTargets: Array<{id: string; name: string}> = [];
+  if (spec.tests) for (const suffix of ["Tests", "UITests"]) {
+    const name = spec.name + suffix;
+    const T = ids.get(`test:${name}`), SYNC = ids.get(`sync:${name}`), PRODUCT = ids.get(`product:${name}`);
+    const SOURCES = ids.get(`sources:${name}`), FRAMEWORKS = ids.get(`frameworks:${name}`);
+    const CL = ids.get(`cl:${name}`), DEBUG = ids.get(`debug:${name}`), RELEASE = ids.get(`release:${name}`);
+    const PROXY = ids.get(`proxy:${name}`), DEP = ids.get(`dependency:${name}`);
+    testTargets.push({id: T, name}); extensionSyncGroups.push(SYNC); productRefs.push(PRODUCT);
+    add(`${PRODUCT} = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = ${name}.xctest; sourceTree = BUILT_PRODUCTS_DIR; };`);
+    add(`${SYNC} = {isa = PBXFileSystemSynchronizedRootGroup; path = ${name}; sourceTree = "<group>"; };`);
+    add(`${PROXY} = {isa = PBXContainerItemProxy; containerPortal = ${P}; proxyType = 1; remoteGlobalIDString = ${APP}; remoteInfo = ${spec.name}; };`);
+    add(`${DEP} = {isa = PBXTargetDependency; target = ${APP}; targetProxy = ${PROXY}; };`);
+    add(`${SOURCES} = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };`);
+    add(`${FRAMEWORKS} = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };`);
+    const settings = { PRODUCT_NAME: name, PRODUCT_BUNDLE_IDENTIFIER: spec.bundleId + "." + suffix.toLowerCase(), GENERATE_INFOPLIST_FILE: "YES", SWIFT_VERSION: spec.swiftVersion, IPHONEOS_DEPLOYMENT_TARGET: spec.deploymentTarget, SDKROOT: "iphoneos", TARGETED_DEVICE_FAMILY: "1,2", ...(suffix === "Tests" ? { TEST_HOST: `$(BUILT_PRODUCTS_DIR)/${spec.name}.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/${spec.name}`, BUNDLE_LOADER: "$(TEST_HOST)" } : { TEST_TARGET_NAME: spec.name }) };
+    add(`${DEBUG} = {isa = XCBuildConfiguration; buildSettings = ${settingsBlock(settings)}; name = Debug; };`);
+    add(`${RELEASE} = {isa = XCBuildConfiguration; buildSettings = ${settingsBlock(settings)}; name = Release; };`);
+    add(`${CL} = {isa = XCConfigurationList; buildConfigurations = (${DEBUG}, ${RELEASE}, ); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };`);
+    add(`${T} = {isa = PBXNativeTarget; buildConfigurationList = ${CL}; buildPhases = (${SOURCES}, ${FRAMEWORKS}, ); buildRules = (); dependencies = (${DEP}, ); fileSystemSynchronizedGroups = (${SYNC}, ); name = ${name}; productName = ${name}; productReference = ${PRODUCT}; productType = "com.apple.product-type.bundle.${suffix === "Tests" ? "unit-test" : "ui-testing"}"; };`);
   }
 
   // App target
@@ -277,7 +299,7 @@ export async function renderXcodeProject(root: string, spec: AppSpec): Promise<P
     PRODUCT_NAME: spec.name,
     SDKROOT: "iphoneos",
     SWIFT_VERSION: spec.swiftVersion,
-    TARGETED_DEVICE_FAMILY: "1",
+    TARGETED_DEVICE_FAMILY: "1,2",
     ...(spec.appIconName ? { ASSETCATALOG_COMPILER_APPICON_NAME: spec.appIconName } : {}),
     ...(Object.keys(spec.entitlements).length ? { CODE_SIGN_ENTITLEMENTS: `Config/${spec.name}.entitlements` } : {}),
   };
@@ -301,19 +323,19 @@ export async function renderXcodeProject(root: string, spec: AppSpec): Promise<P
     `${PROJECT_RELEASE} = {isa = XCBuildConfiguration; buildSettings = ${settingsBlock({ ...projectBase, DEBUG_INFORMATION_FORMAT: "dwarf-with-dsym", SWIFT_COMPILATION_MODE: "wholemodule", VALIDATE_PRODUCT: "YES" })}; name = Release; };`,
   );
   add(`${PROJECT_CL} = {isa = XCConfigurationList; buildConfigurations = (${PROJECT_DEBUG}, ${PROJECT_RELEASE}, ); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };`);
-  const targetAttributes = [APP, ...extensionTargets].map((t) => `${t} = {CreatedOnToolsVersion = 16.0; }; `).join("");
+  const targetAttributes = [APP, ...extensionTargets, ...testTargets.map(t => t.id)].map((t) => `${t} = {CreatedOnToolsVersion = 16.0; }; `).join("");
   add(
-    `${P} = {isa = PBXProject; attributes = {BuildIndependentTargetsInParallel = 1; LastSwiftUpdateCheck = 1600; LastUpgradeCheck = 1600; TargetAttributes = {${targetAttributes}}; }; buildConfigurationList = ${PROJECT_CL}; developmentRegion = en; hasScannedForEncodings = 0; knownRegions = (en, Base, ); mainGroup = ${MAIN}; minimizedProjectReferenceProxies = 1; packageReferences = ${list(packageRefs)}; preferredProjectObjectVersion = 77; productRefGroup = ${PRODUCTS}; projectDirPath = ""; projectRoot = ""; targets = ${list([APP, ...extensionTargets])}; };`,
+    `${P} = {isa = PBXProject; attributes = {BuildIndependentTargetsInParallel = 1; LastSwiftUpdateCheck = 1600; LastUpgradeCheck = 1600; TargetAttributes = {${targetAttributes}}; }; buildConfigurationList = ${PROJECT_CL}; developmentRegion = en; hasScannedForEncodings = 0; knownRegions = (en, Base, ); mainGroup = ${MAIN}; minimizedProjectReferenceProxies = 1; packageReferences = ${list(packageRefs)}; preferredProjectObjectVersion = 77; productRefGroup = ${PRODUCTS}; projectDirPath = ""; projectRoot = ""; targets = ${list([APP, ...extensionTargets, ...testTargets.map(t => t.id)])}; };`,
   );
 
   files[`${spec.name}.xcodeproj/project.pbxproj`] = `// !$*UTF8*$!\n{\n\tarchiveVersion = 1;\n\tclasses = {\n\t};\n\tobjectVersion = 77;\n\tobjects = {\n${objects.sort().join("\n")}\n\t};\n\trootObject = ${P};\n}\n`;
-  files[`${spec.name}.xcodeproj/xcshareddata/xcschemes/${spec.name}.xcscheme`] = renderScheme(spec, APP);
+  files[`${spec.name}.xcodeproj/xcshareddata/xcschemes/${spec.name}.xcscheme`] = renderScheme(spec, APP, testTargets);
   files["Config/Info.plist"] = renderPlist(appInfoPlist(spec));
   if (Object.keys(spec.entitlements).length) files[`Config/${spec.name}.entitlements`] = renderPlist(spec.entitlements);
   return { files };
 }
 
-function renderScheme(spec: AppSpec, appTarget: string): string {
+function renderScheme(spec: AppSpec, appTarget: string, tests: Array<{id: string; name: string}>): string {
   const ref = `<BuildableReference BuildableIdentifier = "primary" BlueprintIdentifier = "${appTarget}" BuildableName = "${spec.name}.app" BlueprintName = "${spec.name}" ReferencedContainer = "container:${spec.name}.xcodeproj"></BuildableReference>`;
   const storeKit = spec.storeKitConfiguration ? `\n      <StoreKitConfigurationFileReference identifier = "../../${xmlEscape(spec.storeKitConfiguration)}"></StoreKitConfigurationFileReference>` : "";
   return `<?xml version="1.0" encoding="UTF-8"?>
@@ -326,6 +348,7 @@ function renderScheme(spec: AppSpec, appTarget: string): string {
       </BuildActionEntries>
    </BuildAction>
    <TestAction buildConfiguration = "Debug" selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB" selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB" shouldUseLaunchSchemeArgsEnv = "YES">
+      <Testables>${tests.map(t => `<TestableReference skipped="NO"><BuildableReference BuildableIdentifier="primary" BlueprintIdentifier="${t.id}" BuildableName="${t.name}.xctest" BlueprintName="${t.name}" ReferencedContainer="container:${spec.name}.xcodeproj"/></TestableReference>`).join("")}</Testables>
    </TestAction>
    <LaunchAction buildConfiguration = "Debug" selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB" selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB" launchStyle = "0" useCustomWorkingDirectory = "NO" ignoresPersistentStateOnLaunch = "NO" debugDocumentVersioning = "YES" debugServiceExtension = "internal" allowLocationSimulation = "YES">
       <BuildableProductRunnable runnableDebuggingMode = "0">

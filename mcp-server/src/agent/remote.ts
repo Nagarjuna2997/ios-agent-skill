@@ -17,10 +17,12 @@ const diagnostic = z.object({ severity: z.enum(['error', 'warning']), message: z
 export const RemoteResult = z.object({
   protocol: z.literal(1), inputHash: z.string().regex(/^[a-f0-9]{64}$/),
   build: z.object({ success: z.boolean(), errors: z.array(diagnostic), warnings: z.array(diagnostic), durationMs: z.number().nonnegative(), scheme: z.string(), destination: z.string(), logPath: z.string(), toolError: z.string().optional() }),
+  primaryCaptureDevice: z.enum(["iphone", "ipad"]).optional(),
   captureError: z.string().optional(),
+  tests: z.object({cycle:z.number().int().positive().optional(), sourceHash: z.string(), at: z.string(), status: z.enum(['passed','failed','unavailable']), passed: z.number().int().nonnegative(), failed: z.number().int().nonnegative(), skipped: z.number().int().nonnegative(), logPath: z.string(), resultBundle: z.string(), reason: z.string().optional()}).optional(),
   run: z.object({ udid: z.string(), simulator: z.string(), pid: z.number().optional() }).optional(),
   toolchain: z.object({ sdk: z.string().optional(), xcode: z.string().optional(), simulator: z.string().optional() }),
-  screenshots: z.array(z.object({ screen: z.string(), variant: z.enum(['light', 'dark', 'xxl']), path: z.string() })),
+  screenshots: z.array(z.object({ screen: z.string(), device: z.enum(['iphone','ipad']).optional(), variant: z.enum(['light', 'dark', 'xxl']), path: z.string() })),
   files: z.array(z.object({ path: z.string(), sha256: z.string().regex(/^[a-f0-9]{64}$/) })).max(500),
 });
 export type RemoteOptions = { repo: string; toolRef: string; xcode: string; runnerLabel?: string; sink?: (message: string) => void };
@@ -32,7 +34,7 @@ export function validateRemoteOptions(o: RemoteOptions): void {
 }
 
 export function evidencePath(path: string): boolean {
-  return /^\.ios-agent\/(?:logs|screenshots)\/[a-zA-Z0-9_.-]+\.(?:log|png)$/.test(path) && !path.includes('..');
+  return /^\.ios-agent\/(?:logs|screenshots)\/[a-zA-Z0-9_.-]+\.(?:log|png|zip)$/.test(path) && !path.includes('..');
 }
 
 /** Narrow generated-project selection; never include .env, Secrets.xcconfig,
@@ -60,7 +62,7 @@ export async function snapshotFiles(root: string): Promise<Array<{ path: string;
       files.push({ path, content: await readFile(full) });
     }
   };
-  for (const path of [spec.name, ...(spec.extensions ?? []).map(e => e.name), `${spec.name}.xcodeproj`, 'Config', 'project.yml', '.ios-agent/spec.json', '.ios-agent/plan.json']) await walk(path);
+  for (const path of [spec.name, ...(spec.tests ? [spec.name + "Tests", spec.name + "UITests"] : []), ...(spec.extensions ?? []).map(e => e.name), `${spec.name}.xcodeproj`, 'Config', 'project.yml', '.ios-agent/spec.json', '.ios-agent/plan.json']) await walk(path);
   return files;
 }
 export const snapshotHash = (files: Array<{ path: string; content: Buffer }>) => digest(files.map(f => `${f.path}\0${digest(f.content)}`).sort().join('\n'));
@@ -157,12 +159,14 @@ export class GitHubBuildBackend {
       if (!(await lstat(source)).isFile() || digest(await readFile(source)) !== f.sha256) throw new Error(`Remote evidence hash mismatch: ${f.path}`);
     }
     for (const shot of result.screenshots) if (!result.files.some(f => f.path === shot.path && f.path.endsWith('.png'))) throw new Error('Screenshot missing verified evidence');
+    if (result.tests?.resultBundle.endsWith('.zip') && !result.files.some(f => f.path === result.tests!.resultBundle)) throw new Error('Test bundle missing verified evidence');
+    if (result.tests && (result.tests.sourceHash !== inputHash || !result.files.some(f => f.path === result.tests!.logPath) || (result.tests.status === 'passed' && (!result.tests.passed || result.tests.failed || result.tests.skipped)))) throw new Error('Invalid remote test evidence');
     if (!result.files.some(f => f.path === result.build.logPath)) throw new Error('Build log missing verified evidence');
     if (result.build.success && !result.captureError) {
       if (result.build.errors.length || !result.run) throw new Error('Inconsistent remote success evidence');
       const plan = PlanSchema.parse(JSON.parse(await readFile(join(root, '.ios-agent/plan.json'), 'utf8')));
       const expected = plan.screens.filter(s => s.topLevel).flatMap(s => ['light', 'dark', 'xxl'].map(v => `${s.id}:${v}`));
-      const actual = result.screenshots.map(s => `${s.screen}:${s.variant}`);
+      const actual = result.screenshots.filter(s => (s.device ?? "iphone") === (result.primaryCaptureDevice ?? "iphone")).map(s => `${s.screen}:${s.variant}`);
       if (!expected.length || expected.length !== actual.length || expected.some(k => !actual.includes(k))) throw new Error('Incomplete remote screenshot matrix');
     }
     for (const f of result.files) { await mkdir(dirname(join(root, f.path)), { recursive: true }); await copyFile(join(downloaded, f.path), join(root, f.path)); }
@@ -172,9 +176,11 @@ export class GitHubBuildBackend {
     // State receipt makes replay idempotent even if interrupted before checkpoint update.
     if (!fresh.progress.some(p => p.message === receipt)) {
       fresh.builds.push({ cycle: fresh.cycle, attempt, success: result.build.success, errors: result.build.errors.length, warnings: result.build.warnings.length, durationMs: result.build.durationMs, at: new Date().toISOString(), firstErrors: result.build.errors.slice(0, 5) });
+      if (result.tests) fresh.tests = [...(fresh.tests ?? []), result.tests];
       fresh.toolchain = result.toolchain;
       fresh.run = result.run;
       fresh.screenshots = result.screenshots;
+      fresh.primaryCaptureDevice = result.primaryCaptureDevice ?? "iphone";
       if (result.build.success) { fresh.buildSourceHash = inputHash; fresh.captureSourceHash = inputHash; }
       progress(fresh, 'building', receipt);
       await saveState(root, fresh);

@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+- Prepare shared generated-app quality workflow: separate Swift Testing/UI test targets and bounded repairs, source-bound screenshot refinements, iPad captures and adaptive-layout generation instructions, six provider/animation modules, macOS capability evidence CI, and a Studio entry point using the same CLI engine. Provider configuration and unverified runtime behavior remain explicit; npm is unchanged.
+
 - Add `ship` local preparation, explicitly approved signing/archive and separate TestFlight upload, reusing release analysis and screenshot composition. Metadata/screenshots remain reviewed local drafts; live signed distribution is not yet verified.
 
 - Add user-selected design alternatives and a bounded screenshot critique/repair loop for `/ios-build`, with light/dark/large-text evidence, per-screen resumability, source hashes and explicit unresolved outcomes. `ios_design_evidence` returns images to connected MCP clients. Real Claude critique remains unverified because the live smoke attempt reached the provider session limit.

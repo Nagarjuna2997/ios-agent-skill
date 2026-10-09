@@ -1,0 +1,49 @@
+name: Capability compile evidence
+on:
+  push:
+    paths: ['capabilities/**', 'mcp-server/src/agent/**', 'scripts/capability-compile-check.mjs', '.github/workflows/capability-verification.yml']
+  pull_request:
+    paths: ['capabilities/**', 'mcp-server/src/agent/**', 'scripts/capability-compile-check.mjs', '.github/workflows/capability-verification.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: capability-verification-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: macos-26
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci --prefix mcp-server
+      - run: npm run build --prefix mcp-server
+      - name: Record toolchain and source identity
+        run: |
+          mkdir -p evidence
+          git rev-parse HEAD > evidence/commit.txt
+          xcodebuild -version > evidence/xcode.txt
+          xcrun swift --version > evidence/swift.txt
+          xcodebuild -showsdks > evidence/sdks.txt
+      - name: Combined compile check
+        run: |
+          node scripts/capability-compile-check.mjs --out "$RUNNER_TEMP/CapCheck"
+          set -o pipefail
+          xcodebuild -project "$RUNNER_TEMP/CapCheck/CapCheck.xcodeproj" -scheme CapCheck -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build 2>&1 | tee evidence/combined.log
+      - name: Verify each isolated module
+        if: always()
+        run: |
+          set -o pipefail
+          node mcp-server/dist/unified.js capabilities verify --all --write capabilities 2>&1 | tee evidence/modules.log
+      - name: Upload actual evidence (never auto-commit status)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: capability-verification-${{ github.sha }}
+          path: |
+            evidence/
+            capabilities/*/verification.json
+            capabilities/*/manifest.json
