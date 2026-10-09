@@ -313,7 +313,14 @@ export interface ApplyContext {
   readonly displayName: string;
   readonly sourcesDir: string;
   readonly capabilities: readonly string[];
-  readonly design?: { palette: { name: string; primary: string; secondary: string; accent: string } };
+  readonly design?: {
+    mood: string;
+    palette: { name: string; primary: string; secondary: string; accent: string };
+    typography: "system" | "rounded" | "serif";
+    shape: "square" | "soft" | "rounded" | "organic";
+    density: "compact" | "comfortable" | "spacious";
+    motion: "minimal" | "subtle" | "expressive";
+  };
   setInfoPlist(key: string, value: unknown): void;
   addEntitlement(key: string, value: unknown): void;
   addBuildSetting(key: string, value: string): void;
@@ -357,8 +364,18 @@ export interface AppliedCapability {
 
 export const pascal = (id: string) => id.split("-").map((p) => p.charAt(0).toUpperCase() + p.slice(1)).join("");
 
-export function substitute(text: string, spec: AppSpec): string {
-  return text.replaceAll("__APP_NAME__", spec.name).replaceAll("__BUNDLE_ID__", spec.bundleId).replaceAll("__DISPLAY_NAME__", spec.displayName);
+export function substitute(text: string, spec: AppSpec, design?: ApplyContext["design"]): string {
+  let output = text.replaceAll("__APP_NAME__", spec.name).replaceAll("__BUNDLE_ID__", spec.bundleId).replaceAll("__DISPLAY_NAME__", spec.displayName);
+  if (output.includes("__DESIGN_")) {
+    const selected = design ?? { density: "comfortable", shape: "soft", typography: "system", motion: "subtle" };
+    const densityScale = { compact: "0.88", comfortable: "1.0", spacious: "1.16" }[selected.density];
+    const shapeScale = { square: "0.0", soft: "0.72", rounded: "1.0", organic: "1.2" }[selected.shape];
+    const fontDesign = { system: "default", rounded: "rounded", serif: "serif" }[selected.typography];
+    const motionDuration = { minimal: "0.0", subtle: "0.18", expressive: "0.32" }[selected.motion];
+    output = output.replaceAll("__DESIGN_DENSITY_SCALE__", densityScale).replaceAll("__DESIGN_SHAPE_SCALE__", shapeScale)
+      .replaceAll("__DESIGN_FONT_DESIGN__", fontDesign).replaceAll("__DESIGN_MOTION_DURATION__", motionDuration);
+  }
+  return output;
 }
 
 const TEXT_TEMPLATE = /\.(swift|json|strings|xcstrings|md|txt|html|css|js|svg|storekit|xcprivacy|plist)$/i;
@@ -415,7 +432,7 @@ export async function applyCapabilities(
     for (const file of capability.templateFiles) {
       const source = join(capability.dir, "template", file);
       const raw = await readFile(source);
-      const content = TEXT_TEMPLATE.test(file) ? substitute(raw.toString("utf8"), next) : raw;
+      const content = TEXT_TEMPLATE.test(file) ? substitute(raw.toString("utf8"), next, manifest.id === "design-system" ? design : undefined) : raw;
       const path = `${destination}/${file}`;
       const outcome = await io.writeSourceFile(path, content);
       if (outcome === "kept") record.notes.push(`Kept existing ${path}; it differs from the template.`);

@@ -3,11 +3,25 @@
   "displayName": "Tab Feed",
   "summary": "A three-tab app with a Home feed of cards, a Search tab for finding cards, and a Profile tab for the user's details and preferences. Cards and profile data are stored on the device so they remain after relaunch.",
   "navigation": "tabs",
+  "design": {
+    "mood": "curious, bright, and thoughtfully crafted",
+    "palette": {
+      "name": "Blue Hour",
+      "primary": "#315B78",
+      "secondary": "#6B8E74",
+      "accent": "#D28C55"
+    },
+    "typography": "system",
+    "shape": "rounded",
+    "density": "spacious",
+    "motion": "subtle"
+  },
   "screens": [
     {
       "id": "home-feed",
       "title": "Home",
       "purpose": "Scrollable feed of cards.",
+      "kind": "feed",
       "topLevel": true,
       "capabilities": [
         "swiftdata",
@@ -19,6 +33,7 @@
       "id": "search",
       "title": "Search",
       "purpose": "Search cards by text and see matching results.",
+      "kind": "search",
       "topLevel": true,
       "capabilities": [
         "search",
@@ -29,6 +44,7 @@
       "id": "profile",
       "title": "Profile",
       "purpose": "Shows the user's name, avatar and app preferences.",
+      "kind": "profile",
       "topLevel": true,
       "capabilities": [
         "swiftdata",
@@ -40,6 +56,7 @@
       "id": "card-detail",
       "title": "Card",
       "purpose": "Full view of a single card opened from Home or Search.",
+      "kind": "detail",
       "topLevel": false,
       "capabilities": [
         "share-sheet"
@@ -86,6 +103,32 @@
           "type": "Bool",
           "optional": false
         }
+      ],
+      "sampleData": [
+        {
+          "id": "C0000000-0000-0000-0000-000000000001",
+          "title": "Make room for focus",
+          "subtitle": "A small practice",
+          "body": "Choose one thing to finish before opening another tab.",
+          "createdAt": "2026-10-09T09:00:00Z",
+          "isFavorite": true
+        },
+        {
+          "id": "C0000000-0000-0000-0000-000000000002",
+          "title": "Notice the details",
+          "subtitle": "Field notes",
+          "body": "A walk can change the shape of an idea. Take the long way home.",
+          "createdAt": "2026-10-08T16:30:00Z",
+          "isFavorite": false
+        },
+        {
+          "id": "C0000000-0000-0000-0000-000000000003",
+          "title": "Start with a sketch",
+          "subtitle": "Creative work",
+          "body": "A rough outline makes the first real decision easier.",
+          "createdAt": "2026-10-07T13:15:00Z",
+          "isFavorite": false
+        }
       ]
     },
     {
@@ -111,6 +154,18 @@
           "name": "avatarData",
           "type": "Data",
           "optional": true
+        }
+      ],
+      "sampleData": [
+        {
+          "id": "D0000000-0000-0000-0000-000000000001",
+          "displayName": "Alex Morgan",
+          "bio": "Collecting good ideas and quiet moments."
+        },
+        {
+          "id": "D0000000-0000-0000-0000-000000000002",
+          "displayName": "Sam Rivera",
+          "bio": "Learning one small thing every day."
         }
       ]
     }

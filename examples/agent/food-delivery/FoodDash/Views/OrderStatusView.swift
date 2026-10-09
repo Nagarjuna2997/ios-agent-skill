@@ -52,6 +52,7 @@ struct OrderStatusView: View {
             }
             .navigationTitle("Order Status")
         }
+        .fontDesign(AppTheme.fontDesign)
     }
 
     private func stageRow(_ stage: OrderStage) -> some View {

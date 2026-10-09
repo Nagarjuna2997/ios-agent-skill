@@ -15,46 +15,57 @@ struct DashboardView: View {
             }
             .navigationTitle("Past Orders")
         }
+        .fontDesign(AppTheme.fontDesign)
     }
 
     private var dashboard: some View {
         let stats = OrderStats(orders: orders)
         return ScrollView {
-            VStack(spacing: 16) {
-                HStack(spacing: 12) {
-                    StatTile(title: "Orders", value: "\(stats.count)", systemImage: "bag")
-                    StatTile(title: "Spent", value: Money.format(cents: stats.totalCents), systemImage: "creditcard")
+            VStack(alignment: .leading, spacing: AppTheme.Space.large) {
+                HeroHeader(title: "Your table, lately", subtitle: "A little history of good meals.", symbol: "chart.bar.xaxis")
+                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: AppTheme.Space.medium) {
+                    AppStatTile(title: "Orders", value: "\(stats.count)", symbol: "bag")
+                    AppStatTile(title: "Total spent", value: Money.format(cents: stats.totalCents), symbol: "creditcard")
                 }
-                StatTile(title: "Average order", value: Money.format(cents: stats.averageCents), systemImage: "chart.bar")
-                DashboardCard(title: "Spending over time") {
-                    TrendChart(points: stats.trend, valueLabel: "Dollars")
+                AppStatTile(title: "Average order", value: Money.format(cents: stats.averageCents), symbol: "chart.bar")
+                AppCard {
+                    VStack(alignment: .leading, spacing: AppTheme.Space.medium) {
+                        AppSectionHeader(title: "Spending over time")
+                        TrendChart(points: stats.trend, valueLabel: "Dollars")
+                    }
                 }
-                DashboardCard(title: "Top restaurants") {
-                    CategoryBarChart(points: stats.byRestaurant, valueLabel: "Dollars")
+                AppCard {
+                    VStack(alignment: .leading, spacing: AppTheme.Space.medium) {
+                        AppSectionHeader(title: "Top restaurants")
+                        CategoryBarChart(points: stats.byRestaurant, valueLabel: "Dollars")
+                    }
                 }
-                DashboardCard(title: "History") {
-                    ForEach(orders) { order in
-                        VStack(alignment: .leading, spacing: 4) {
-                            HStack {
-                                Text(order.restaurantName).font(.headline)
-                                Spacer()
-                                Text(Money.format(cents: order.totalCents)).font(.headline).monospacedDigit()
+                AppCard {
+                    VStack(alignment: .leading, spacing: AppTheme.Space.medium) {
+                        AppSectionHeader(title: "Recent meals")
+                        ForEach(orders) { order in
+                            VStack(alignment: .leading, spacing: 4) {
+                                HStack {
+                                    Text(order.restaurantName).font(.headline)
+                                    Spacer()
+                                    Text(Money.format(cents: order.totalCents)).font(.headline).monospacedDigit()
+                                }
+                                Text(order.itemSummary).font(.subheadline).foregroundStyle(.secondary)
+                                HStack {
+                                    Text(order.placedAt, format: .dateTime.month().day().hour().minute())
+                                    Spacer()
+                                    Text(order.status)
+                                        .foregroundStyle(order.status == OrderStage.delivered.rawValue ? Color.green : Color.orange)
+                                }
+                                .font(.caption)
+                                Divider()
                             }
-                            Text(order.itemSummary).font(.subheadline).foregroundStyle(.secondary)
-                            HStack {
-                                Text(order.placedAt, format: .dateTime.month().day().hour().minute())
-                                Spacer()
-                                Text(order.status)
-                                    .foregroundStyle(order.status == OrderStage.delivered.rawValue ? Color.green : Color.orange)
-                            }
-                            .font(.caption)
-                            Divider()
+                            .accessibilityElement(children: .combine)
                         }
-                        .accessibilityElement(children: .combine)
                     }
                 }
             }
-            .padding()
+            .padding(AppTheme.screenInset)
         }
     }
 }

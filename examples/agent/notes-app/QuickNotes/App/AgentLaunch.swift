@@ -7,4 +7,10 @@ enum AgentLaunch {
     static var requestedScreen: String? {
         UserDefaults.standard.string(forKey: "ios-agent-screen")
     }
+
+    /// True when launched with `-ios-agent-sample-data YES`. The app then shows an
+    /// isolated in-memory demo store and never touches the persistent one.
+    static var usesSampleData: Bool {
+        UserDefaults.standard.bool(forKey: "ios-agent-sample-data")
+    }
 }

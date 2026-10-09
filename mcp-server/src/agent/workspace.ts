@@ -16,7 +16,7 @@ import {
 import { budget, capabilityRows, PlanSchema, renderPlanMarkdown, type Budget, type CapabilityPlanRow, type Plan, type DesignBrief } from "./plan.js";
 import { buildProject, type BuildResult } from "./build.js";
 import { containedPath, initProject, projectPaths, readSpec, regenerate, requireProjectDir, writeSpec, type CreatedProject } from "./project.js";
-import { renderRunReport, toolCallCount } from "./report.js";
+import { auditGeneratedPalette, renderRunReport, toolCallCount } from "./report.js";
 import type { CommandRunner } from "./runner.js";
 import { parseDotEnv, type AppSpec } from "./spec.js";
 import { DEFAULT_WALL_CLOCK_MINUTES, assertCanBuild, attemptsThisCycle, loadState, newRunState, progress, saveState, startCycle, type ProgressSink, type RunState } from "./state.js";
@@ -267,14 +267,37 @@ export async function writeReport(rootDir: string, options: { status?: RunState[
   let rows: CapabilityPlanRow[] | undefined;
   let money: Budget | undefined;
   if (plan) {
+    let spec: AppSpec | undefined;
+    try { spec = await readSpec(root); } catch { /* plan-only and pre-project reports have no generated asset catalog */ }
     const { loaded, catalog } = await capabilityContext();
     const resolution = resolveCapabilities(requestedCapabilities(plan), loaded, catalog);
     rows = capabilityRows(plan, resolution, await readEnv(root));
     money = budget(resolution, catalog);
+    const colorAssets = loaded.get("color-assets")?.applyModule;
+    if (colorAssets && spec) {
+      const module = (await import(pathToFileURL(colorAssets).href)) as { paletteAssetFiles?: (palette: DesignBrief["palette"]) => Record<string, string> };
+      if (module.paletteAssetFiles) {
+        const expectedFiles = module.paletteAssetFiles(plan.design.palette);
+        const actualFiles: Record<string, string> = {};
+        for (const path of Object.keys(expectedFiles)) {
+          try { actualFiles[path] = await readFile(join(root, spec.name, path), "utf8"); }
+          catch (error) { if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error; }
+        }
+        const paletteMatchesPlan = Object.entries(expectedFiles).every(([path, expected]) => actualFiles[path]?.trim() === expected.trim());
+        state.designEvidence = { ...auditGeneratedPalette(actualFiles), paletteMatchesPlan };
+        const colorCapability = state.capabilities.find((capability) => capability.id === "color-assets");
+        if (colorCapability) colorCapability.notes = [
+          paletteMatchesPlan
+            ? `Applied the ${plan.design.palette.name} palette from the app plan; generated semantic assets match it and text colors are adjusted for contrast.`
+            : `The generated semantic color assets do not match the approved ${plan.design.palette.name} plan palette; review the asset catalog before release.`,
+        ];
+      }
+    }
   }
   await saveState(root, state);
   const markdown = renderRunReport({
     state,
+    projectDir: root,
     ...(plan ? { plan } : {}),
     ...(rows ? { rows } : {}),
     ...(money ? { budget: money } : {}),

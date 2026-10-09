@@ -3414,8 +3414,8 @@
       "path": "docs/tooling/ios-build-agent.md",
       "title": "iOS build agent",
       "kind": "guide",
-      "characters": 6982,
-      "hash": "a1660bc7bf3ec1dd74ca573ae8846248c2ac37c5568f5e8b74a488a3100c92b9"
+      "characters": 8425,
+      "hash": "f554b0dc673dbade27eb6e67f4f8bd3dedc62bf02aa21d76efedc097bb9e7fff"
     },
     {
       "path": "docs/tooling/ios-simulator-mcp.md",
@@ -3428,8 +3428,8 @@
       "path": "docs/tooling/issue-reporting.md",
       "title": "AI-assisted issue previews",
       "kind": "guide",
-      "characters": 5432,
-      "hash": "e3512610a31ec22e26060ff59eee581eec9fc1b6247b0e96fa948e5d3cfa9298"
+      "characters": 5314,
+      "hash": "1b3a11d78b50bb17b97cabcc424c5ac9bb6d9b1eb1de1d7d20fbd5aa2b740696"
     },
     {
       "path": "docs/tooling/launch-screen-review.md",

@@ -15,10 +15,11 @@ final class SwiftDataCardStore: CardStoring {
         self.context = context
     }
 
+    /// Fills an empty store with the starter cards on first launch only.
     func seedIfNeeded() throws {
         let count = try context.fetchCount(FetchDescriptor<FeedCard>())
         guard count == 0 else { return }
-        for card in FeedCard.samples() {
+        for card in SampleData.feedCards {
             context.insert(card)
         }
         try context.save()

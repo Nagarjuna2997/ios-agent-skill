@@ -1,10 +1,11 @@
 import SwiftData
 import SwiftUI
 
+/// "note-detail" screen: read one note, then edit, share or delete it.
 struct NoteDetailView: View {
     @Query private var matches: [Note]
     @State private var viewModel: NoteDetailViewModel
-    @State private var spacing = ScaledSpacing()
+    private let spacing = ScaledSpacing()
     @Environment(\.dismiss) private var dismiss
 
     private let noteID: UUID
@@ -22,24 +23,37 @@ struct NoteDetailView: View {
             if let note = matches.first {
                 ScrollView {
                     VStack(alignment: .leading, spacing: spacing.standard) {
+                        ThumbnailPlaceholder(symbol: "text.quote", title: "Note illustration")
+                            .frame(height: 140)
+
                         Text(note.displayTitle)
-                            .font(.title2.weight(.semibold))
+                            .font(.largeTitle.weight(.bold))
+                            .fixedSize(horizontal: false, vertical: true)
                             .accessibilityAddTraits(.isHeader)
-                        Text(note.updatedAt, format: .dateTime.day().month().year().hour().minute())
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                        if note.body.isEmpty {
-                            Text("No text")
-                                .font(.body)
-                                .foregroundStyle(.secondary)
-                        } else {
-                            Text(note.body)
-                                .font(.body)
+
+                        metadata(for: note)
+
+                        AppSectionHeader(title: "Note")
+                            .accessibilityAddTraits(.isHeader)
+
+                        AppCard {
+                            if note.body.isEmpty {
+                                Text("No text")
+                                    .font(.body)
+                                    .foregroundStyle(.secondary)
+                            } else {
+                                Text(note.body)
+                                    .font(.body)
+                                    .lineSpacing(spacing.compact / 2)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
                         }
+                        .textSelection(.enabled)
+
+                        actions
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(spacing.standard)
-                    .textSelection(.enabled)
+                    .padding(AppTheme.screenInset)
                 }
                 .toolbar {
                     ToolbarItemGroup(placement: .primaryAction) {
@@ -56,9 +70,14 @@ struct NoteDetailView: View {
                     }
                 }
             } else {
-                ContentUnavailableView("Note Not Found", systemImage: "questionmark.folder")
+                AppEmptyStateView(
+                    title: "Note Not Found",
+                    message: "This note may have been deleted.",
+                    symbol: "questionmark.folder"
+                )
             }
         }
+        .fontDesign(AppTheme.fontDesign)
         .navigationTitle("Note")
         .navigationBarTitleDisplayMode(.inline)
         .appFeedback(.warning, trigger: vm.deleteCount)
@@ -82,15 +101,57 @@ struct NoteDetailView: View {
             Text(vm.errorMessage ?? "")
         }
     }
+
+    private func metadata(for note: Note) -> some View {
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: spacing.compact) { chips(for: note) }
+            VStack(alignment: .leading, spacing: spacing.compact) { chips(for: note) }
+        }
+    }
+
+    @ViewBuilder
+    private func chips(for note: Note) -> some View {
+        AppChip(title: "Updated \(note.updatedAt.formatted(.dateTime.day().month()))")
+        AppChip(title: "Created \(note.createdAt.formatted(.dateTime.day().month()))")
+        AppChip(title: "\(note.wordCount) words")
+    }
+
+    private var actions: some View {
+        VStack(spacing: spacing.compact) {
+            NavigationLink(value: Route.compose(noteID)) {
+                Label("Edit Note", systemImage: "pencil")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(AppPrimaryButtonStyle())
+
+            Button(role: .destructive) {
+                viewModel.showDeleteConfirmation = true
+            } label: {
+                Label("Delete Note", systemImage: "trash")
+                    .frame(maxWidth: .infinity)
+                    .frame(minHeight: AppTheme.controlMinimumHeight)
+            }
+            .buttonStyle(.bordered)
+        }
+        .padding(.top, spacing.compact)
+    }
 }
 
 #Preview {
-    let container = PreviewSupport.container()
+    let container = SampleData.previewContainer()
     NavigationStack {
         NoteDetailView(
-            noteID: PreviewSupport.firstNoteID(in: container) ?? UUID(),
+            noteID: SampleData.mostRecentNoteID(in: container) ?? UUID(),
             repository: SwiftDataNoteRepository(context: container.mainContext)
         )
+    }
+    .modelContainer(container)
+}
+
+#Preview("Missing") {
+    let container = SampleData.previewContainer(seeded: false)
+    NavigationStack {
+        NoteDetailView(noteID: UUID(), repository: SwiftDataNoteRepository(context: container.mainContext))
     }
     .modelContainer(container)
 }

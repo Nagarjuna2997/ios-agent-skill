@@ -1,56 +1,55 @@
 import Foundation
+import SwiftData
 
+/// Synthetic records for previews and the agent's isolated simulator showcase.
 enum SampleData {
     static let restaurants: [Restaurant] = [
-        Restaurant(id: "r1", name: "Sakura Sushi", cuisine: "Japanese", latitude: 37.3349, longitude: -122.0090, rating: 4.7, imageURL: nil),
-        Restaurant(id: "r2", name: "Luigi's Trattoria", cuisine: "Italian", latitude: 37.3382, longitude: -122.0050, rating: 4.5, imageURL: nil),
-        Restaurant(id: "r3", name: "Taco Fiesta", cuisine: "Mexican", latitude: 37.3310, longitude: -122.0150, rating: 4.3, imageURL: nil),
-        Restaurant(id: "r4", name: "Green Bowl", cuisine: "Healthy", latitude: 37.3290, longitude: -122.0030, rating: 4.6, imageURL: nil),
-        Restaurant(id: "r5", name: "Burger Barn", cuisine: "American", latitude: 37.3400, longitude: -122.0200, rating: 4.2, imageURL: nil),
-        Restaurant(id: "r6", name: "Spice Route", cuisine: "Indian", latitude: 37.3250, longitude: -122.0100, rating: 4.8, imageURL: nil),
+        Restaurant(id: "rest-01", name: "Juniper & Rye", cuisine: "Seasonal bowls", latitude: 37.7749, longitude: -122.4194, rating: 4.8, imageURL: nil),
+        Restaurant(id: "rest-02", name: "Little Fig Kitchen", cuisine: "Mediterranean", latitude: 37.7694, longitude: -122.4142, rating: 4.7, imageURL: nil),
+        Restaurant(id: "rest-03", name: "Saffron House", cuisine: "Indian comfort food", latitude: 37.7812, longitude: -122.4101, rating: 4.9, imageURL: nil),
     ]
 
     static func menu(for restaurantId: String) -> [MenuItem] {
         menus[restaurantId] ?? []
     }
 
-    private static func dish(_ r: String, _ n: Int, _ name: String, _ details: String, _ price: Int) -> MenuItem {
-        MenuItem(id: "\(r)-\(n)", restaurantId: r, name: name, details: details, priceCents: price)
+    @MainActor static let cartItems: [CartItem] = [
+        CartItem(id: UUID(uuidString: "E0000000-0000-0000-0000-000000000001")!, menuItemId: "dish-01", restaurantId: "rest-01", name: "Roasted squash bowl", priceCents: 1495, quantity: 1),
+        CartItem(id: UUID(uuidString: "E0000000-0000-0000-0000-000000000002")!, menuItemId: "dish-02", restaurantId: "rest-01", name: "Lemon tahini greens", priceCents: 1195, quantity: 2),
+    ]
+
+    @MainActor static var orders: [Order] {
+        [
+            Order(id: UUID(uuidString: "F0000000-0000-0000-0000-000000000001")!, restaurantName: "Juniper & Rye", totalCents: 3885, placedAt: date("2026-10-08T18:30:00Z"), status: OrderStage.onTheWay.rawValue, itemSummary: "1 squash bowl · 2 greens"),
+            Order(id: UUID(uuidString: "F0000000-0000-0000-0000-000000000002")!, restaurantName: "Little Fig Kitchen", totalCents: 2390, placedAt: date("2026-10-07T18:10:00Z"), status: OrderStage.delivered.rawValue, itemSummary: "2 herbed flatbreads"),
+        ]
+    }
+
+    @MainActor
+    static func seed(into context: ModelContext) {
+        for item in cartItems { context.insert(item) }
+        for order in orders { context.insert(order) }
+        try? context.save()
+    }
+
+    private static func date(_ value: String) -> Date {
+        ISO8601DateFormatter().date(from: value) ?? .now
+    }
+
+    private static func dish(_ id: String, _ restaurant: String, _ name: String, _ details: String, _ price: Int) -> MenuItem {
+        MenuItem(id: id, restaurantId: restaurant, name: name, details: details, priceCents: price)
     }
 
     private static let menus: [String: [MenuItem]] = [
-        "r1": [
-            dish("r1", 1, "Salmon Nigiri", "Six pieces of fresh salmon nigiri", 1299),
-            dish("r1", 2, "Dragon Roll", "Eel, avocado and cucumber", 1499),
-            dish("r1", 3, "Miso Soup", "Tofu, seaweed and scallions", 399),
-            dish("r1", 4, "Chicken Katsu", "Crispy cutlet with rice", 1349),
+        "rest-01": [
+            dish("dish-01", "rest-01", "Roasted squash bowl", "Farro, herbs, toasted seeds", 1495),
+            dish("dish-02", "rest-01", "Lemon tahini greens", "Crisp greens, chickpeas", 1195),
         ],
-        "r2": [
-            dish("r2", 1, "Margherita Pizza", "Tomato, mozzarella and basil", 1399),
-            dish("r2", 2, "Spaghetti Carbonara", "Guanciale, egg and pecorino", 1599),
-            dish("r2", 3, "Tiramisu", "Classic espresso dessert", 749),
-            dish("r2", 4, "Caesar Salad", "Romaine, parmesan, croutons", 999),
+        "rest-02": [
+            dish("dish-03", "rest-02", "Herbed flatbread", "Warm flatbread, whipped feta", 895),
         ],
-        "r3": [
-            dish("r3", 1, "Carne Asada Tacos", "Three tacos with salsa verde", 1199),
-            dish("r3", 2, "Chicken Burrito", "Rice, beans and grilled chicken", 1249),
-            dish("r3", 3, "Guacamole & Chips", "Made fresh daily", 699),
-        ],
-        "r4": [
-            dish("r4", 1, "Quinoa Power Bowl", "Roasted veggies and tahini", 1299),
-            dish("r4", 2, "Acai Bowl", "Berries, granola and honey", 1099),
-            dish("r4", 3, "Green Smoothie", "Spinach, apple and ginger", 699),
-        ],
-        "r5": [
-            dish("r5", 1, "Classic Cheeseburger", "Beef patty, cheddar, pickles", 1199),
-            dish("r5", 2, "Loaded Fries", "Cheese, bacon and chives", 799),
-            dish("r5", 3, "Chocolate Shake", "Thick and creamy", 649),
-        ],
-        "r6": [
-            dish("r6", 1, "Butter Chicken", "Creamy tomato curry with rice", 1599),
-            dish("r6", 2, "Garlic Naan", "Fresh from the tandoor", 399),
-            dish("r6", 3, "Vegetable Biryani", "Fragrant basmati rice", 1399),
-            dish("r6", 4, "Mango Lassi", "Chilled yogurt drink", 549),
+        "rest-03": [
+            dish("dish-04", "rest-03", "Saffron lentil bowl", "Slow-cooked lentils, herbs, rice", 1395),
         ],
     ]
 }

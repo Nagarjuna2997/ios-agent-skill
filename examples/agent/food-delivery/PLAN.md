@@ -2,35 +2,59 @@
 
 A food delivery app where users sign in with Apple or email, browse nearby restaurants on a list or map, build a cart, and pay at checkout using StoreKit. After ordering, they follow progress with a Live Activity on the Lock Screen and Dynamic Island, and review past orders on a dashboard.
 
-Target toolchain: Xcode not detected; simulator: none detected.
-
 ## Screens
 
-| Screen | Reached from | Purpose |
-|---|---|---|
-| Splash (`splash`) | navigation | Animated logo shown at launch before entering the app. |
-| Sign In (`sign-in`) | navigation | Sign in with Apple or with email and password, or create an account. |
-| Restaurants (`restaurants`) | tab bar | Browse restaurants as a list or on a map and open a menu. |
-| Menu (`restaurant-menu`) | navigation | Show a restaurant's dishes and add items to the cart. |
-| Cart (`cart`) | tab bar | Review items, change quantities and proceed to checkout. |
-| Checkout (`checkout`) | navigation | Confirm the order total and delivery address, then pay with StoreKit. |
-| Order Status (`order-status`) | tab bar | Track the current order's progress, mirrored in a Live Activity. |
-| Past Orders (`dashboard`) | tab bar | Dashboard of past orders with spending stats and a history list. |
-| Account (`account`) | tab bar | Profile, appearance setting and sign out. |
+| Screen | Layout | Reached from | Purpose |
+|---|---|---|---|
+| Splash (`splash`) | onboarding | navigation | Animated logo shown at launch before entering the app. |
+| Sign In (`sign-in`) | auth | navigation | Sign in with Apple or with email and password, or create an account. |
+| Restaurants (`restaurants`) | list | tab bar | Browse restaurants as a list or on a map and open a menu. |
+| Menu (`restaurant-menu`) | detail | navigation | Show a restaurant's dishes and add items to the cart. |
+| Cart (`cart`) | cart | tab bar | Review items, change quantities and proceed to checkout. |
+| Checkout (`checkout`) | checkout | navigation | Confirm the order total and delivery address, then pay with StoreKit. |
+| Order Status (`order-status`) | detail | tab bar | Track the current order's progress, mirrored in a Live Activity. |
+| Past Orders (`dashboard`) | dashboard | tab bar | Dashboard of past orders with spending stats and a history list. |
+| Account (`account`) | profile | tab bar | Profile, appearance setting and sign out. |
 
 Navigation: tabs.
+
+## Design direction
+
+- Mood: warm, fresh, and generous
+- Palette: **Market Table** — primary `#9D3E2E`, secondary `#557A54`, accent `#E7A64A`
+- Typography: rounded
+- Shapes: organic
+- Density: comfortable
+- Motion: expressive
+- A reusable SwiftUI design system is included by default; the screen layouts and components will follow this direction.
 
 ## Data model
 
 - **Restaurant**: id: String, name: String, cuisine: String, latitude: Double, longitude: Double, rating: Double?, imageURL: URL?
+  - Synthetic preview records: 3
+    - Example 1: {"id":"rest-01","name":"Juniper & Rye","cuisine":"Seasonal bowls","latitude":37.7749,"longitude":-122.4194,"rating":4.8}
+    - Example 2: {"id":"rest-02","name":"Little Fig Kitchen","cuisine":"Mediterranean","latitude":37.7694,"longitude":-122.4142,"rating":4.7}
+    - Example 3: {"id":"rest-03","name":"Saffron House","cuisine":"Indian comfort food","latitude":37.7812,"longitude":-122.4101,"rating":4.9}
 - **MenuItem**: id: String, restaurantId: String, name: String, details: String?, priceCents: Int
+  - Synthetic preview records: 3
+    - Example 1: {"id":"dish-01","restaurantId":"rest-01","name":"Roasted squash bowl","details":"Farro, herbs, toasted seeds","priceCents":1495}
+    - Example 2: {"id":"dish-02","restaurantId":"rest-01","name":"Lemon tahini greens","details":"Crisp greens, chickpeas","priceCents":1195}
+    - Example 3: {"id":"dish-03","restaurantId":"rest-02","name":"Herbed flatbread","details":"Warm flatbread, whipped feta","priceCents":895}
 - **CartItem** (stored on device with SwiftData): id: UUID, menuItemId: String, restaurantId: String, name: String, priceCents: Int, quantity: Int
+  - Synthetic preview records: 2
+    - Example 1: {"id":"E0000000-0000-0000-0000-000000000001","menuItemId":"dish-01","restaurantId":"rest-01","name":"Roasted squash bowl","priceCents":1495,"quantity":1}
+    - Example 2: {"id":"E0000000-0000-0000-0000-000000000002","menuItemId":"dish-02","restaurantId":"rest-01","name":"Lemon tahini greens","priceCents":1195,"quantity":2}
 - **Order** (stored on device with SwiftData): id: UUID, restaurantName: String, totalCents: Int, placedAt: Date, status: String, itemSummary: String, transactionId: String?
+  - Synthetic preview records: 2
+    - Example 1: {"id":"F0000000-0000-0000-0000-000000000001","restaurantName":"Juniper & Rye","totalCents":3885,"placedAt":"2026-10-09T12:30:00Z","status":"On the way","itemSummary":"1 squash bowl · 2 greens"}
+    - Example 2: {"id":"F0000000-0000-0000-0000-000000000002","restaurantName":"Little Fig Kitchen","totalCents":2390,"placedAt":"2026-10-07T18:10:00Z","status":"Delivered","itemSummary":"2 herbed flatbreads"}
 
 ## Capabilities
 
 | Capability | Why | Choice | Alternatives | Cost | You provide | Tonight | Module status |
 |---|---|---|---|---|---|---|---|
+| Brand colors (asset catalog) | Brand colors with light and dark variants. | Apple-native | appearance-settings | free: No cost | nothing | Built with the app | untested |
+| SwiftUI design system and components | requested | Apple-native | none | free: Apple frameworks only | nothing | Built with the app | verified |
 | Launch screen and animated splash | Launch screen and animated logo splash into the app. | Apple-native | lottie-animation | free: Apple frameworks only | nothing | Built with the app | untested |
 | Lottie animation | Optional richer logo animation on the splash screen. | third-party | swiftui-animations, rive-animation | free: Open-source package (Apache 2.0); designing animations may need paid tools | nothing | Built with the app | untested |
 | Accessibility baseline | 44 pt tap targets, Reduce Motion aware animation and Dynamic Type spacing. | Apple-native | none | free: Apple frameworks only | nothing | Built with the app | untested |
@@ -49,7 +73,6 @@ Navigation: tabs.
 | Haptic feedback | Feedback on add to cart and successful payment. | Apple-native | none | free: Apple frameworks only | nothing | Built with the app | untested |
 | Appearance setting (light, dark, system) | Light, dark or system appearance choice. | Apple-native | none | free: Apple frameworks only | nothing | Built with the app | untested |
 | App icon (rendered from SVG layers, Icon Composer ready) | Provides the app icon. | Apple-native | alternate-app-icons | free: Local rendering with the bundled resvg renderer; Icon Composer ships with Xcode | nothing | Built with the app | untested |
-| Brand colors (asset catalog) | Brand colors with light and dark variants. | Apple-native | appearance-settings | free: No cost | nothing | Built with the app | untested |
 | Privacy manifest | Required privacy declarations before App Store submission. | Apple-native | keychain-storage | free: Apple requirement, no cost | nothing | Built with the app | untested |
 | WebSocket realtime updates | Live order status updates from the server (no built module yet). | Apple-native | none | free: Apple frameworks only; your server is separate | `WEBSOCKET_URL` | Not built: no module yet | planned |
 
@@ -61,10 +84,9 @@ Building and running in the iOS Simulator needs no paid account. The amounts bel
 
 | Capability | Item | Amount | Verified |
 |---|---|---|---|
-| sign-in-with-apple | Apple Developer Program membership (needed to distribute; not needed for simulator builds) | $99.00 per year | yes (2026-10-02) |
-| storekit2-paywall | Apple Developer Program membership (needed to distribute; not needed for simulator builds) | $99.00 per year | yes (2026-10-02) |
+| sign-in-with-apple, storekit2-paywall | Apple Developer Program membership (needed to distribute; not needed for simulator builds) | $99.00 per year | yes (2026-10-02) |
 
-Totals from priced items: $0.00 one-time, $0.00 per month, $198.00 per year.
+Totals from priced items: $0.00 one-time, $0.00 per month, $99.00 per year.
 
 Not included in the totals (usage-based or no confirmed price):
 

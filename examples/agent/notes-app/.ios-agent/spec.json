@@ -6,7 +6,13 @@
   "deploymentTarget": "17.0",
   "swiftVersion": "6.0",
   "entitlements": {},
-  "infoPlist": {},
+  "infoPlist": {
+    "UILaunchScreen": {
+      "UIColorName": "LaunchBackground",
+      "UIImageName": "LaunchLogo",
+      "UIImageRespectsSafeAreaInsets": true
+    }
+  },
   "packages": [],
   "buildSettings": {},
   "secrets": [],
@@ -15,8 +21,10 @@
     "accessibility-baseline",
     "haptics",
     "share-sheet",
+    "color-assets",
+    "design-system",
     "app-icon",
-    "color-assets"
+    "launch-screen"
   ],
   "sourceExcludes": [
     "Resources/IconLayers/**"

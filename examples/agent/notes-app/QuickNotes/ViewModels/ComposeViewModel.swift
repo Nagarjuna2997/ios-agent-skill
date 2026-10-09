@@ -21,6 +21,10 @@ final class ComposeViewModel {
 
     var isEditing: Bool { noteID != nil }
 
+    var wordCount: Int {
+        body.split(whereSeparator: { $0.isWhitespace }).count
+    }
+
     var canSave: Bool {
         !title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
             || !body.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty

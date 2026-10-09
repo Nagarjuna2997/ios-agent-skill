@@ -10,7 +10,7 @@ import { loadCapabilities, loadCatalog } from "./capabilities.js";
 import type { Plan } from "./plan.js";
 import { projectPaths, readSpec, requireProjectDir, writeProjectFiles, type FileChangeInput } from "./project.js";
 import type { CommandRunner } from "./runner.js";
-import { runApp, screenshot } from "./simulator.js";
+import { ensureBooted, runApp, screenshot } from "./simulator.js";
 import type { AppSpec } from "./spec.js";
 import { attemptsThisCycle, loadState, newRunState, progress, saveState, type ProgressSink, type RunState } from "./state.js";
 import { chooseSimulator, preflight } from "./toolchain.js";
@@ -69,6 +69,26 @@ const reached = (state: StateWithMilestones, m: Milestone) => Boolean(state.mile
 const mark = (state: StateWithMilestones, m: Milestone) => {
   state.milestones = { ...(state.milestones ?? {}), [m]: new Date().toISOString() };
 };
+
+function conciseFailure(error: unknown): string {
+  const message = error instanceof Error ? error.message : String(error);
+  if (/api_error_status["']?\s*:\s*429/.test(message)) {
+    const detail = message.match(/"result"\s*:\s*"([^"]{1,300})/i)?.[1];
+    return `Provider returned HTTP 429${detail ? `: ${detail}` : "; retry after its session limit resets."}`;
+  }
+  const jsonStart = message.indexOf("{");
+  if (jsonStart >= 0) {
+    try {
+      const payload = JSON.parse(message.slice(jsonStart)) as { result?: unknown; message?: unknown; error?: unknown };
+      const detail = [payload.result, payload.message, payload.error].find((value) => typeof value === "string");
+      const prefix = message.slice(0, jsonStart).trimEnd();
+      return `${prefix}${prefix ? " " : ""}${typeof detail === "string" ? detail : "(structured provider response omitted)"}`.slice(0, 500);
+    } catch {
+      // Fall through to a bounded first-line diagnostic for non-JSON output.
+    }
+  }
+  return message.split("\n")[0]!.slice(0, 500);
+}
 
 async function sourceFiles(root: string, spec: AppSpec, limitBytes = 400_000): Promise<SourceFile[]> {
   const base = join(root, spec.name);
@@ -161,15 +181,44 @@ async function launchAndCapture(root: string, options: LoopOptions, plan: Plan):
   let state = (await loadState(root))!;
   progress(state, "launching", "Launching in the simulator.", sink);
   await saveState(root, state);
-  for (const screen of screens) {
-    const run = await runApp(root, options.runner, { ...(options.udid ? { udid: options.udid } : {}), launchArguments: ["-ios-agent-sample-data", "YES", "-ios-agent-screen", screen.id] });
-    await new Promise((r) => setTimeout(r, options.screenshotDelayMs ?? 3000));
-    const shot = await screenshot(root, options.runner, run.udid, screen.id);
-    state = (await loadState(root))!;
-    state.run = { udid: run.udid, simulator: run.simulator, ...(run.pid ? { pid: run.pid } : {}) };
-    state.screenshots = [...state.screenshots.filter((s) => s.screen !== screen.id), { screen: screen.id, path: shot.path }];
-    progress(state, "screenshots", `Captured ${screen.title} (${screen.id}).`, sink);
-    await saveState(root, state);
+  const { simulator } = await ensureBooted(options.runner, options.udid);
+  const originalAppearance = await options.runner.run("xcrun", ["simctl", "ui", simulator.udid, "appearance"], { timeoutMs: 30_000 });
+  const originalContentSize = await options.runner.run("xcrun", ["simctl", "ui", simulator.udid, "content_size"], { timeoutMs: 30_000 });
+  const restoreAppearance = originalAppearance.exitCode === 0 && /\bdark\b/i.test(originalAppearance.stdout) ? "dark" : "light";
+  const restoreContentSize = originalContentSize.exitCode === 0 ? originalContentSize.stdout.trim().split(/\s+/).at(-1) || "large" : "large";
+  // A direct simctl launch can leave iOS's "back to previous app" status item
+  // in every capture. Foreground SpringBoard first so the evidence shows the
+  // app as a developer sees it when opening it from the Home Screen.
+  const home = await options.runner.run("xcrun", ["simctl", "launch", simulator.udid, "com.apple.springboard"], { timeoutMs: 30_000 });
+  if (home.exitCode !== 0) progress(state, "launching", "Could not foreground SpringBoard before capture; screenshots may include the previous-app status item.", sink);
+  const variants = [
+    { id: "light", appearance: "light", contentSize: "large" },
+    { id: "dark", appearance: "dark", contentSize: "large" },
+    { id: "xxl", appearance: "light", contentSize: "accessibility-extra-extra-extra-large" },
+  ] as const;
+  try {
+    for (const screen of screens) {
+      for (const variant of variants) {
+        for (const [setting, value] of [["appearance", variant.appearance], ["content_size", variant.contentSize]] as const) {
+          const changed = await options.runner.run("xcrun", ["simctl", "ui", simulator.udid, setting, value], { timeoutMs: 30_000 });
+          if (changed.exitCode !== 0) throw new Error(`Simulator ${setting}=${value} was rejected: ${changed.stderr || changed.stdout}`);
+        }
+        const run = await runApp(root, options.runner, { udid: simulator.udid, launchArguments: ["-ios-agent-sample-data", "YES", "-ios-agent-screen", screen.id] });
+        // The first SwiftUI frame can still be the launch screen on a cold simulator.
+        // Leave enough time for app startup and the requested screen's state to settle.
+        await new Promise((r) => setTimeout(r, options.screenshotDelayMs ?? 8000));
+        const shot = await screenshot(root, options.runner, run.udid, `${screen.id}-${variant.id}`);
+        state = (await loadState(root))!;
+        state.run = { udid: run.udid, simulator: run.simulator, ...(run.pid ? { pid: run.pid } : {}) };
+        const screenshotPath = relative(root, shot.path).split("\\").join("/");
+        state.screenshots = [...state.screenshots.filter((s) => !(s.screen === screen.id && s.variant === variant.id)), { screen: screen.id, variant: variant.id, path: screenshotPath }];
+        progress(state, "screenshots", `Captured ${screen.title} (${screen.id}) in ${variant.id} appearance.`, sink);
+        await saveState(root, state);
+      }
+    }
+  } finally {
+    await options.runner.run("xcrun", ["simctl", "ui", simulator.udid, "appearance", restoreAppearance], { timeoutMs: 30_000 });
+    await options.runner.run("xcrun", ["simctl", "ui", simulator.udid, "content_size", restoreContentSize], { timeoutMs: 30_000 });
   }
   state = (await loadState(root))!;
   mark(state as StateWithMilestones, "launched");
@@ -194,6 +243,7 @@ export async function runAgent(options: LoopOptions): Promise<LoopResult> {
     if (!state || !existsSync(projectPaths(root).spec)) throw new Error("Nothing to refine in this folder. Build an app first.");
     state.cycle += 1;
     state.status = "running";
+    state.cycleStartedAt = new Date().toISOString();
     delete state.failure;
     state.deadlineAt = new Date(Date.now() + (options.wallClockMinutes ?? 25) * 60_000).toISOString();
     state.refinements.push({ at: new Date().toISOString(), change: options.refine });
@@ -213,7 +263,13 @@ export async function runAgent(options: LoopOptions): Promise<LoopResult> {
   } else {
     // A run that stopped on its attempt or time cap gets a fresh attempt budget.
     const capped = state.status === "failed" && !reached(state, "built") && attemptsThisCycle(state) > 0;
-    if (capped) state.cycle += 1;
+    if (capped) {
+      state.cycle += 1;
+      state.cycleStartedAt = new Date().toISOString();
+    }
+    // Older saved runs predate cycleStartedAt. Start their resumed cycle now
+    // instead of reporting elapsed time from the original planning session.
+    state.cycleStartedAt ??= new Date().toISOString();
     state.status = "running";
     delete state.failure;
     state.deadlineAt = new Date(Date.now() + (options.wallClockMinutes ?? 25) * 60_000).toISOString();
@@ -319,10 +375,10 @@ export async function runAgent(options: LoopOptions): Promise<LoopResult> {
     if (!reached(state, "screenshots")) await launchAndCapture(root, options, plan);
     return await finish(root, "complete", undefined, sink);
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
+    const message = conciseFailure(error);
     const current = (await loadState(root)) ?? state;
-    progress(current, "failed", message.split("\n")[0]!, sink);
+    progress(current, "failed", message, sink);
     await saveState(root, current);
-    return await finish(root, "failed", message.split("\n")[0], sink);
+    return await finish(root, "failed", message, sink);
   }
 }

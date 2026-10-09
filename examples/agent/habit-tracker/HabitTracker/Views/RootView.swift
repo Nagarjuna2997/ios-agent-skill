@@ -16,10 +16,12 @@ struct RootView: View {
 
 private struct RootContent: View {
     let store: any HabitStoring
+    @Environment(\.modelContext) private var modelContext
     @State private var path: [AppRoute]
 
     init(store: any HabitStoring) {
         self.store = store
+        // "habit-list" (the only top-level screen), nil and unknown ids all start on the list.
         let initial: [AppRoute] = AgentLaunch.requestedScreen == "settings" ? [.settings] : []
         _path = State(initialValue: initial)
     }
@@ -36,10 +38,28 @@ private struct RootContent: View {
                     }
                 }
         }
+        .task {
+            openRequestedDetailIfNeeded()
+        }
+    }
+
+    /// `-ios-agent-screen habit-detail` pushes the first habit so the detail can be screenshotted.
+    private func openRequestedDetailIfNeeded() {
+        guard AgentLaunch.requestedScreen == "habit-detail", path.isEmpty else { return }
+        var descriptor = FetchDescriptor<Habit>(sortBy: [SortDescriptor(\Habit.createdAt)])
+        descriptor.fetchLimit = 1
+        if let first = try? modelContext.fetch(descriptor).first {
+            path = [.habit(first.id)]
+        }
     }
 }
 
 #Preview {
     RootView()
-        .modelContainer(HabitSamples.container())
+        .modelContainer(SampleData.previewContainer())
+}
+
+#Preview("Empty") {
+    RootView()
+        .modelContainer(PersistenceController.preview(for: [Habit.self]))
 }

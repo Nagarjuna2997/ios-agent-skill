@@ -38,6 +38,8 @@ export interface RunState {
   description: string;
   projectDir: string;
   startedAt: string;
+  /** Start time for the current build/refinement cycle; older state files fall back to startedAt. */
+  cycleStartedAt?: string;
   updatedAt: string;
   deadlineAt: string;
   /** Minutes allowed per cycle, counted from the cycle's first build. */
@@ -49,7 +51,9 @@ export interface RunState {
   cycle: number;
   builds: BuildRecord[];
   run?: { udid: string; simulator: string; pid?: number };
-  screenshots: Array<{ screen: string; path: string }>;
+  /** `variant` is light, dark or xxl for the design evidence matrix; older state files omit it. */
+  screenshots: Array<{ screen: string; path: string; variant?: "light" | "dark" | "xxl" }>;
+  designEvidence?: { contrast: Array<{ color: string; light: number; dark: number; passesAA: boolean }>; passesAA: boolean; paletteMatchesPlan?: boolean };
   capabilities: Array<{ id: string; name: string; status: string; placeholders: string[]; files: number; notes: string[] }>;
   unavailable: Array<{ id: string; reason: string }>;
   progress: Array<{ at: string; stage: Stage; message: string }>;
@@ -67,8 +71,11 @@ export function newRunState(input: { description: string; projectDir: string; ma
   return {
     version: 1,
     description: input.description,
-    projectDir: input.projectDir,
+    // The state file travels with the project; keep it usable after a checkout
+    // moves to another machine instead of persisting a developer's home path.
+    projectDir: ".",
     startedAt: now.toISOString(),
+    cycleStartedAt: now.toISOString(),
     updatedAt: now.toISOString(),
     deadlineAt: new Date(now.getTime() + minutes * 60_000).toISOString(),
     wallClockMinutes: minutes,
@@ -126,6 +133,7 @@ export function attemptsThisCycle(state: RunState): number {
 export function startCycle(state: RunState, options: { change?: string; minutes?: number; now?: Date } = {}): void {
   const now = options.now ?? new Date();
   if (state.builds.some((b) => b.cycle === state.cycle)) state.cycle += 1;
+  state.cycleStartedAt = now.toISOString();
   state.status = "running";
   delete state.failure;
   state.deadlineAt = new Date(now.getTime() + (options.minutes ?? state.wallClockMinutes ?? DEFAULT_WALL_CLOCK_MINUTES) * 60_000).toISOString();

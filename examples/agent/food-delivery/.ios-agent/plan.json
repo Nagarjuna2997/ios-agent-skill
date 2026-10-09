@@ -3,11 +3,25 @@
   "displayName": "FoodDash",
   "summary": "A food delivery app where users sign in with Apple or email, browse nearby restaurants on a list or map, build a cart, and pay at checkout using StoreKit. After ordering, they follow progress with a Live Activity on the Lock Screen and Dynamic Island, and review past orders on a dashboard.",
   "navigation": "tabs",
+  "design": {
+    "mood": "warm, fresh, and generous",
+    "palette": {
+      "name": "Market Table",
+      "primary": "#9D3E2E",
+      "secondary": "#557A54",
+      "accent": "#E7A64A"
+    },
+    "typography": "rounded",
+    "shape": "organic",
+    "density": "comfortable",
+    "motion": "expressive"
+  },
   "screens": [
     {
       "id": "splash",
       "title": "Splash",
       "purpose": "Animated logo shown at launch before entering the app.",
+      "kind": "onboarding",
       "topLevel": false,
       "capabilities": [
         "launch-screen",
@@ -18,6 +32,7 @@
       "id": "sign-in",
       "title": "Sign In",
       "purpose": "Sign in with Apple or with email and password, or create an account.",
+      "kind": "auth",
       "topLevel": false,
       "capabilities": [
         "sign-in-with-apple",
@@ -29,6 +44,7 @@
       "id": "restaurants",
       "title": "Restaurants",
       "purpose": "Browse restaurants as a list or on a map and open a menu.",
+      "kind": "list",
       "topLevel": true,
       "capabilities": [
         "mapkit-map",
@@ -40,6 +56,7 @@
       "id": "restaurant-menu",
       "title": "Menu",
       "purpose": "Show a restaurant's dishes and add items to the cart.",
+      "kind": "detail",
       "topLevel": false,
       "capabilities": [
         "url-session-networking"
@@ -49,6 +66,7 @@
       "id": "cart",
       "title": "Cart",
       "purpose": "Review items, change quantities and proceed to checkout.",
+      "kind": "cart",
       "topLevel": true,
       "capabilities": [
         "swiftdata"
@@ -58,6 +76,7 @@
       "id": "checkout",
       "title": "Checkout",
       "purpose": "Confirm the order total and delivery address, then pay with StoreKit.",
+      "kind": "checkout",
       "topLevel": false,
       "capabilities": [
         "storekit2-paywall",
@@ -68,6 +87,7 @@
       "id": "order-status",
       "title": "Order Status",
       "purpose": "Track the current order's progress, mirrored in a Live Activity.",
+      "kind": "detail",
       "topLevel": true,
       "capabilities": [
         "live-activity",
@@ -79,6 +99,7 @@
       "id": "dashboard",
       "title": "Past Orders",
       "purpose": "Dashboard of past orders with spending stats and a history list.",
+      "kind": "dashboard",
       "topLevel": true,
       "capabilities": [
         "swift-charts-dashboard",
@@ -89,6 +110,7 @@
       "id": "account",
       "title": "Account",
       "purpose": "Profile, appearance setting and sign out.",
+      "kind": "profile",
       "topLevel": true,
       "capabilities": [
         "appearance-settings",
@@ -137,6 +159,32 @@
           "type": "URL",
           "optional": true
         }
+      ],
+      "sampleData": [
+        {
+          "id": "rest-01",
+          "name": "Juniper & Rye",
+          "cuisine": "Seasonal bowls",
+          "latitude": 37.7749,
+          "longitude": -122.4194,
+          "rating": 4.8
+        },
+        {
+          "id": "rest-02",
+          "name": "Little Fig Kitchen",
+          "cuisine": "Mediterranean",
+          "latitude": 37.7694,
+          "longitude": -122.4142,
+          "rating": 4.7
+        },
+        {
+          "id": "rest-03",
+          "name": "Saffron House",
+          "cuisine": "Indian comfort food",
+          "latitude": 37.7812,
+          "longitude": -122.4101,
+          "rating": 4.9
+        }
       ]
     },
     {
@@ -167,6 +215,29 @@
           "name": "priceCents",
           "type": "Int",
           "optional": false
+        }
+      ],
+      "sampleData": [
+        {
+          "id": "dish-01",
+          "restaurantId": "rest-01",
+          "name": "Roasted squash bowl",
+          "details": "Farro, herbs, toasted seeds",
+          "priceCents": 1495
+        },
+        {
+          "id": "dish-02",
+          "restaurantId": "rest-01",
+          "name": "Lemon tahini greens",
+          "details": "Crisp greens, chickpeas",
+          "priceCents": 1195
+        },
+        {
+          "id": "dish-03",
+          "restaurantId": "rest-02",
+          "name": "Herbed flatbread",
+          "details": "Warm flatbread, whipped feta",
+          "priceCents": 895
         }
       ]
     },
@@ -203,6 +274,24 @@
           "name": "quantity",
           "type": "Int",
           "optional": false
+        }
+      ],
+      "sampleData": [
+        {
+          "id": "E0000000-0000-0000-0000-000000000001",
+          "menuItemId": "dish-01",
+          "restaurantId": "rest-01",
+          "name": "Roasted squash bowl",
+          "priceCents": 1495,
+          "quantity": 1
+        },
+        {
+          "id": "E0000000-0000-0000-0000-000000000002",
+          "menuItemId": "dish-02",
+          "restaurantId": "rest-01",
+          "name": "Lemon tahini greens",
+          "priceCents": 1195,
+          "quantity": 2
         }
       ]
     },
@@ -244,6 +333,24 @@
           "name": "transactionId",
           "type": "String",
           "optional": true
+        }
+      ],
+      "sampleData": [
+        {
+          "id": "F0000000-0000-0000-0000-000000000001",
+          "restaurantName": "Juniper & Rye",
+          "totalCents": 3885,
+          "placedAt": "2026-10-09T12:30:00Z",
+          "status": "On the way",
+          "itemSummary": "1 squash bowl · 2 greens"
+        },
+        {
+          "id": "F0000000-0000-0000-0000-000000000002",
+          "restaurantName": "Little Fig Kitchen",
+          "totalCents": 2390,
+          "placedAt": "2026-10-07T18:10:00Z",
+          "status": "Delivered",
+          "itemSummary": "2 herbed flatbreads"
         }
       ]
     }

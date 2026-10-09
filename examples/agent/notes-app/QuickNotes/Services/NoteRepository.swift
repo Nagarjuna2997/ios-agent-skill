@@ -42,23 +42,3 @@ struct SwiftDataNoteRepository: NoteRepository {
         try context.save()
     }
 }
-
-#if DEBUG
-@MainActor
-enum PreviewSupport {
-    static func container(seeded: Bool = true) -> ModelContainer {
-        let container = PersistenceController.preview(for: [Note.self])
-        if seeded {
-            let context = container.mainContext
-            context.insert(Note(title: "Groceries", body: "Milk, eggs, bread and coffee.", updatedAt: .now))
-            context.insert(Note(title: "Ideas", body: "A small app for jotting thoughts down quickly.", updatedAt: .now.addingTimeInterval(-86_400)))
-            context.insert(Note(title: "Meeting", body: "Discuss roadmap and the next release.", updatedAt: .now.addingTimeInterval(-172_800)))
-        }
-        return container
-    }
-
-    static func firstNoteID(in container: ModelContainer) -> UUID? {
-        (try? container.mainContext.fetch(FetchDescriptor<Note>()))?.first?.id
-    }
-}
-#endif

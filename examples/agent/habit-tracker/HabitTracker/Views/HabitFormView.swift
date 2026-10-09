@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Shared form for adding and editing a habit.
+/// Shared data-entry form for adding and editing a habit.
 struct HabitFormView: View {
     let title: LocalizedStringKey
     let onSave: (String, String?) -> Void
@@ -23,12 +23,18 @@ struct HabitFormView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("Name") {
+                Section {
                     TextField("e.g. Read 20 minutes", text: $name)
+                } header: {
+                    Text("Name").accessibilityAddTraits(.isHeader)
                 }
-                Section("Notes") {
+                Section {
                     TextField("Optional notes", text: $notes, axis: .vertical)
                         .lineLimit(3...6)
+                } header: {
+                    Text("Notes").accessibilityAddTraits(.isHeader)
+                } footer: {
+                    Text("A short reminder of what counts, like \"Any book counts.\"")
                 }
             }
             .navigationTitle(title)
@@ -47,9 +53,14 @@ struct HabitFormView: View {
                 }
             }
         }
+        .fontDesign(AppTheme.fontDesign)
     }
 }
 
 #Preview {
     HabitFormView(title: "New Habit") { _, _ in }
+}
+
+#Preview("Editing") {
+    HabitFormView(title: "Edit Habit", name: "Walk outside", notes: "A short loop after lunch.") { _, _ in }
 }

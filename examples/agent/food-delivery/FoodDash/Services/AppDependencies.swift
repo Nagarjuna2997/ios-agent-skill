@@ -40,6 +40,9 @@ final class AppDependencies {
     }
 
     static func live() -> AppDependencies {
+        // The agent's showcase uses a separate in-memory store and local services.
+        // Normal launches continue to use the persistent store and configured services.
+        if AgentLaunch.usesSampleData { return .preview(seeded: true) }
         let types: [any PersistentModel.Type] = [CartItem.self, Order.self]
         let container: ModelContainer
         do {
@@ -82,18 +85,7 @@ final class AppDependencies {
             tracker: SimulatedOrderTracker(stepDelay: .seconds(3))
         )
         if seeded {
-            let menu = SampleData.menu(for: "r1")
-            deps.store.addToCart(menu[0])
-            deps.store.addToCart(menu[1])
-            let samples: [(String, Int, Int)] = [
-                ("Sakura Sushi", 2598, 12), ("Luigi's Trattoria", 2148, 9), ("Taco Fiesta", 1898, 6),
-                ("Sakura Sushi", 1798, 4), ("Spice Route", 2347, 2), ("Green Bowl", 1598, 0),
-            ]
-            for sample in samples {
-                let date = Calendar.current.date(byAdding: .day, value: -sample.2, to: .now) ?? .now
-                container.mainContext.insert(Order(restaurantName: sample.0, totalCents: sample.1, placedAt: date, status: OrderStage.delivered.rawValue, itemSummary: "2× House special"))
-            }
-            deps.store.saveChanges()
+            SampleData.seed(into: container.mainContext)
         }
         return deps
     }

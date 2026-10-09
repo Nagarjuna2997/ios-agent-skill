@@ -21,11 +21,13 @@ struct CartView: View {
         NavigationStack(path: $path) {
             Group {
                 if items.isEmpty {
-                    ContentUnavailableView("Your cart is empty", systemImage: "cart", description: Text("Add dishes from a restaurant menu to get started."))
+                    AppEmptyStateView(title: "Your cart is empty", message: "Choose a fresh favorite to get started.", symbol: "basket")
                 } else {
                     List {
                         ForEach(items) { item in
-                            row(item)
+                            AppCard { row(item) }
+                                .listRowSeparator(.hidden)
+                                .listRowBackground(Color.clear)
                         }
                         .onDelete { offsets in
                             for index in offsets {
@@ -45,7 +47,7 @@ struct CartView: View {
                             } label: {
                                 Text("Checkout").frame(maxWidth: .infinity)
                             }
-                            .buttonStyle(.borderedProminent)
+                            .buttonStyle(AppPrimaryButtonStyle())
                             .controlSize(.large)
                         }
                         .padding()
@@ -69,10 +71,12 @@ struct CartView: View {
                 }
             }
         }
+        .fontDesign(AppTheme.fontDesign)
     }
 
     private func row(_ item: CartItem) -> some View {
-        HStack {
+        HStack(spacing: AppTheme.Space.medium) {
+            AppIconTile(symbol: "takeoutbag.and.cup.and.straw", accessibilityLabel: "Food item")
             VStack(alignment: .leading, spacing: 4) {
                 Text(item.name).font(.headline)
                 Text(Money.format(cents: item.priceCents * item.quantity))

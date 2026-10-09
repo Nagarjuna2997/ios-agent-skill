@@ -3,9 +3,10 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
-import { join } from "node:path";
+import { isAbsolute, join } from "node:path";
 import { runAgent } from "../dist/agent/loop.js";
 import { ProcessRunner, LoggingRunner } from "../dist/agent/runner.js";
+import { loadState, saveState } from "../dist/agent/state.js";
 import { extractJson, filesFrom } from "../dist/agent/brain.js";
 import { fakeXcode } from "./helpers/fake-xcode.js";
 
@@ -69,26 +70,45 @@ test("description to screenshots: plan, create, generate, fail, fix, build, laun
   assert.deepEqual(brain.calls.map((c) => c[0]), ["plan", "generate", "fix"]);
   assert.deepEqual(brain.calls[2].slice(1), ["HabitTracker/Views/RootView.swift:1", 1]);
   assert.equal(result.state.builds.length, 2);
-  assert.deepEqual(result.state.screenshots.map((s) => s.screen), ["habits", "settings"], "only top-level screens");
-  for (const stage of ["[preflight]", "[planning]", "[creating]", "[generating]", "[building] Build attempt 1 of 8.", "[fixing] Fixing 1 error(s) for attempt 2 of 8.", "[launching]", "[screenshots] Captured Settings (settings).", "[reporting]"]) {
+  assert.deepEqual(result.state.screenshots.map((s) => [s.screen, s.variant]), [
+    ["habits", "light"], ["habits", "dark"], ["habits", "xxl"], ["settings", "light"], ["settings", "dark"], ["settings", "xxl"],
+  ], "only top-level screens, each with the three design variants");
+  assert.equal(result.state.projectDir, ".", "saved run state is checkout-relative");
+  assert.ok(result.state.screenshots.every((shot) => !isAbsolute(shot.path)), "saved screenshot references are portable paths inside the project");
+  for (const stage of ["[preflight]", "[planning]", "[creating]", "[generating]", "[building] Build attempt 1 of 8.", "[fixing] Fixing 1 error(s) for attempt 2 of 8.", "[launching]", "[screenshots] Captured Settings (settings) in xxl appearance.", "[reporting]"]) {
     assert.ok(lines.some((l) => l.startsWith(stage)), `missing progress line ${stage}\n${lines.join("\n")}`);
   }
-  for (const file of ["PLAN.md", "RUN_REPORT.md", ".ios-agent/state.json", ".ios-agent/plan.json", ".ios-agent/screenshots/habits.png", ".ios-agent/screenshots/settings.png"]) {
+  for (const file of ["PLAN.md", "RUN_REPORT.md", ".ios-agent/state.json", ".ios-agent/plan.json", ".ios-agent/screenshots/habits-light.png", ".ios-agent/screenshots/habits-dark.png", ".ios-agent/screenshots/habits-xxl.png", ".ios-agent/screenshots/settings-light.png", ".ios-agent/screenshots/settings-dark.png", ".ios-agent/screenshots/settings-xxl.png"]) {
     assert.ok(existsSync(join(projectDir, file)), file);
   }
   const planMarkdown = await readFile(join(projectDir, "PLAN.md"), "utf8");
   assert.match(planMarkdown, /Design direction[\s\S]*Ocean Ink/);
   assert.match(planMarkdown, /Synthetic preview records: 2/);
+  assert.match(planMarkdown, /\| Screen \| Layout \|/);
   const report = await readFile(join(projectDir, "RUN_REPORT.md"), "utf8");
   assert.match(report, /Status: \*\*complete\*\*/);
   assert.match(report, /\[fixing\] Fixing 1 error/);
   assert.match(report, /Nothing\. The app runs in the simulator without accounts\./);
-  const launches = (await fake.calls()).filter((c) => c.args[1] === "launch");
-  assert.deepEqual(launches.map((c) => c.args.at(-1)), ["habits", "settings"]);
+  assert.match(report, /Design evidence/);
+  assert.match(report, /light, dark and XXL captured/);
+  assert.match(report, /Palette on-color contrast/);
+  assert.match(report, /src="\.ios-agent\/screenshots\/habits-light\.png"/, "screenshots use paths relative to the current project checkout");
+  const calls = await fake.calls();
+  assert.ok(calls.some((c) => c.args[1] === "launch" && c.args.at(-1) === "com.apple.springboard"), "foreground SpringBoard so captures do not show a return link to the previously captured app");
+  const launches = calls.filter((c) => c.args[1] === "launch" && c.args.includes("--terminate-running-process"));
+  assert.deepEqual(launches.map((c) => c.args.at(-1)), ["habits", "habits", "habits", "settings", "settings", "settings"]);
   assert.deepEqual(launches.map((c) => c.args.slice(-4)), [
     ["-ios-agent-sample-data", "YES", "-ios-agent-screen", "habits"],
+    ["-ios-agent-sample-data", "YES", "-ios-agent-screen", "habits"],
+    ["-ios-agent-sample-data", "YES", "-ios-agent-screen", "habits"],
+    ["-ios-agent-sample-data", "YES", "-ios-agent-screen", "settings"],
+    ["-ios-agent-sample-data", "YES", "-ios-agent-screen", "settings"],
     ["-ios-agent-sample-data", "YES", "-ios-agent-screen", "settings"],
   ]);
+  const uiCalls = (await fake.calls()).filter((c) => c.tool === "xcrun" && c.args[0] === "simctl" && c.args[1] === "ui");
+  assert.ok(uiCalls.some((c) => c.args.slice(-2).join(" ") === "appearance dark"));
+  assert.ok(uiCalls.some((c) => c.args.slice(-2).join(" ") === "content_size accessibility-extra-extra-extra-large"));
+  assert.deepEqual(uiCalls.slice(-2).map((c) => c.args.slice(-2)), [["appearance", "light"], ["content_size", "large"]], "restore the simulator UI settings after capture");
   await assert.rejects(runAgent({ projectDir, description: "again", brain, runner }), /already has a run/);
 });
 
@@ -138,9 +158,25 @@ test("an interrupted run resumes from the stage where it stopped", async (t) => 
   const first = await runAgent({ projectDir, description: "habits", brain, runner, screenshotDelayMs: 0 });
   assert.equal(first.state.status, "failed");
   assert.equal(first.state.failure, "network dropped");
+  const legacy = await loadState(projectDir);
+  delete legacy.cycleStartedAt;
+  await saveState(projectDir, legacy);
   const second = await runAgent({ projectDir, brain, runner, resume: true, screenshotDelayMs: 0 });
   assert.equal(second.state.status, "complete", second.state.failure);
+  assert.ok(Date.parse(second.state.cycleStartedAt) >= Date.parse(second.state.updatedAt) - 10_000, "legacy saved runs start timing the resumed cycle instead of using the original run date");
   assert.equal(brain.calls.filter((c) => c[0] === "plan").length, 1);
+});
+
+test("provider rate-limit failures are concise in the run report", async (t) => {
+  const { projectDir, runner } = await setup(t);
+  const brain = scriptedBrain({
+    generate: () => { throw new Error('claude exited with 1: {"api_error_status":429,"result":"You have hit the session limit","private":"do-not-copy"}'); },
+  });
+  const result = await runAgent({ projectDir, description: "habits", brain, runner });
+  assert.equal(result.state.status, "failed");
+  assert.match(result.state.failure, /HTTP 429.*session limit/);
+  assert.doesNotMatch(result.state.failure, /private|do-not-copy/);
+  assert.doesNotMatch(await readFile(join(projectDir, "RUN_REPORT.md"), "utf8"), /do-not-copy/);
 });
 
 test("refine applies a change to the last app and rebuilds, relaunches and re-screenshots", async (t) => {

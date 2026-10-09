@@ -346,7 +346,7 @@ export function registerAgentTools(server: McpServer, runners: RunnerFactory = d
     "ios_report",
     {
       title: "Write the run report",
-      description: "Use this to finish every /ios-build run: writes RUN_REPORT.md from the run state with result, screenshots, capabilities (applied, status, awaiting credentials), builds, what needs the user's accounts or money, next steps and the progress log.",
+      description: "Use this to finish every /ios-build run: writes RUN_REPORT.md from the run state with result, light/dark/XXL screenshot matrix per top-level screen when the full build loop ran, generated palette contrast evidence, capabilities (applied, status, awaiting credentials), builds, what needs the user's accounts or money, next steps and the progress log. Standalone MCP screenshots remain single captures and do not claim appearance or text-size coverage.",
       inputSchema: {
         projectDir,
         status: z.enum(["complete", "failed", "stopped"]).optional(),

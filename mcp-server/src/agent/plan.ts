@@ -46,6 +46,7 @@ export const PlanSchema = z
             id: z.string().regex(SCREEN_ID),
             title: z.string().min(1).max(40),
             purpose: z.string().min(1).max(200),
+            kind: z.enum(["list", "detail", "dashboard", "feed", "form", "settings", "map", "cart", "checkout", "onboarding", "paywall", "auth", "profile", "search"]).default("list"),
             topLevel: z.boolean(),
             capabilities: z.array(z.string()).default([]),
           })
@@ -200,9 +201,9 @@ export function renderPlanMarkdown(plan: Plan, rows: CapabilityPlanRow[], money_
   const lines: string[] = [];
   lines.push(`# ${plan.displayName}: build plan`, "", plan.summary, "");
   if (toolchain) lines.push(`Target toolchain: ${toolchain.xcode ?? "Xcode not detected"}; simulator: ${toolchain.simulator ?? "none detected"}.`, "");
-  lines.push("## Screens", "", "| Screen | Reached from | Purpose |", "|---|---|---|");
+  lines.push("## Screens", "", "| Screen | Layout | Reached from | Purpose |", "|---|---|---|---|");
   for (const screen of plan.screens) {
-    lines.push(`| ${escapeCell(screen.title)} (\`${screen.id}\`) | ${screen.topLevel ? (plan.navigation === "tabs" ? "tab bar" : "launch") : "navigation"} | ${escapeCell(screen.purpose)} |`);
+    lines.push(`| ${escapeCell(screen.title)} (\`${screen.id}\`) | ${screen.kind} | ${screen.topLevel ? (plan.navigation === "tabs" ? "tab bar" : "launch") : "navigation"} | ${escapeCell(screen.purpose)} |`);
   }
   lines.push("", `Navigation: ${plan.navigation}.`, "");
   lines.push("## Design direction", "", `- Mood: ${plan.design.mood}`, `- Palette: **${plan.design.palette.name}** — primary \`${plan.design.palette.primary}\`, secondary \`${plan.design.palette.secondary}\`, accent \`${plan.design.palette.accent}\``, `- Typography: ${plan.design.typography}`, `- Shapes: ${plan.design.shape}`, `- Density: ${plan.design.density}`, `- Motion: ${plan.design.motion}`, "- A reusable SwiftUI design system is included by default; the screen layouts and components will follow this direction.", "");

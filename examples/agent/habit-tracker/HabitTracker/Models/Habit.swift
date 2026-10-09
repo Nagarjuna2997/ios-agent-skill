@@ -44,4 +44,16 @@ extension Habit {
     func history(calendar: Calendar = .current) -> [Date] {
         Set(completedDates.map { calendar.startOfDay(for: $0) }).sorted(by: >)
     }
+
+    /// An SF Symbol for image-free illustration placeholders, chosen from the habit's name.
+    var symbolName: String {
+        let lowered = name.lowercased()
+        if lowered.contains("read") || lowered.contains("book") { return "book.fill" }
+        if lowered.contains("walk") || lowered.contains("run") { return "figure.walk" }
+        if lowered.contains("stretch") || lowered.contains("yoga") { return "figure.flexibility" }
+        if lowered.contains("water") || lowered.contains("drink") { return "drop.fill" }
+        if lowered.contains("sleep") || lowered.contains("bed") { return "moon.zzz.fill" }
+        if lowered.contains("meditat") || lowered.contains("breath") { return "wind" }
+        return "leaf.fill"
+    }
 }

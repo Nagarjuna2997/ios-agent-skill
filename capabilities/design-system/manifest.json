@@ -33,6 +33,6 @@
     "docs/design/typography-system.md",
     "docs/design/stunning-ui-patterns.md"
   ],
-  "usage": "Use AppTheme spacing, radii and dynamic text styles when composing planned screens. Reuse AppCard for grouped content, HeroHeader for the primary screen title, AppStatTile for key metrics, AppChip for filters/status, AppSectionHeader for hierarchy, AppProgressRing for progress, AppEmptyStateView for genuine empty states, ThumbnailPlaceholder for image-free art direction, and AppPrimaryButtonStyle for primary actions. Read AppColor tokens from the asset catalog. Match the approved plan's mood, typography, shape, density and motion; do not use List/Form as the default layout for feature screens.",
+  "usage": "Use the plan-configured AppTheme spacing, radii, font design and motion duration. Compose feature screens from AppCard, HeroHeader, AppStatTile, AppIconTile, AppChip, AppSectionHeader, AppProgressRing, AppEmptyStateView, AppErrorStateView, SkeletonBlock and ThumbnailPlaceholder; use AppPrimaryButtonStyle for primary actions. Read semantic colors from AppColor. Respect Reduce Motion and Dynamic Type. Choose the layout recipe matching each screen's kind; reserve List/Form for settings and data-entry forms.",
   "destination": "DesignSystem"
 }

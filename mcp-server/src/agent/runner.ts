@@ -6,7 +6,7 @@
 // a bound, then truncated from the front: build errors are at the end.
 import { spawn } from "node:child_process";
 import { appendFile, mkdir } from "node:fs/promises";
-import { dirname } from "node:path";
+import { basename, dirname, isAbsolute, relative, sep } from "node:path";
 
 export interface CommandResult {
   command: string;
@@ -108,18 +108,22 @@ export interface ToolLogEntry {
 
 /** Records every command (never its output, which may contain paths or secrets) as JSON lines. */
 export class LoggingRunner implements CommandRunner {
+  private readonly projectRoot: string;
+
   constructor(
     private readonly inner: CommandRunner,
     private readonly logFile: string,
-  ) {}
+  ) {
+    this.projectRoot = dirname(dirname(logFile));
+  }
 
   async run(command: string, args: string[], options: RunOptions = {}): Promise<CommandResult> {
     const result = await this.inner.run(command, args, options);
     const entry: ToolLogEntry = {
       at: new Date().toISOString(),
       command,
-      args,
-      ...(options.cwd ? { cwd: options.cwd } : {}),
+      args: args.map((arg) => this.portablePath(arg)),
+      ...(options.cwd ? { cwd: this.portableCwd(options.cwd) } : {}),
       exitCode: result.exitCode,
       durationMs: result.durationMs,
       timedOut: result.timedOut,
@@ -128,6 +132,18 @@ export class LoggingRunner implements CommandRunner {
     await mkdir(dirname(this.logFile), { recursive: true });
     await appendFile(this.logFile, JSON.stringify(entry) + "\n");
     return result;
+  }
+
+  private portableCwd(cwd: string): string | undefined {
+    return this.portablePath(cwd);
+  }
+
+  private portablePath(value: string): string {
+    if (!isAbsolute(value)) return value;
+    const path = relative(this.projectRoot, value);
+    if (path === "") return ".";
+    if (path === ".." || path.startsWith(`..${sep}`) || isAbsolute(path)) return `<external-path:${basename(value)}>`;
+    return path.split(sep).join("/");
   }
 }
 
