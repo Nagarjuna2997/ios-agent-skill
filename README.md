@@ -33,6 +33,8 @@ Then, in any Claude Code session on a Mac with Xcode 16 or later:
 /ios-build "A habit tracker with a list, a detail screen, and settings with dark mode toggle"
 ```
 
+**Shipping (unreleased GitHub source):** `ios-agent-mcp ship` prepares screenshot sets and metadata, then offers separately approved signing/archive and TestFlight upload steps. [Setup and limitations](docs/tooling/ship-testflight.md). Live signed distribution is not yet verified; npm is unchanged.
+
 **Windows/Linux or cloud client:** the GitHub source now includes `build --remote` for unsigned builds and simulator screenshots on GitHub Actions. It requires a destination repository, GitHub CLI authentication and pinned toolkit/Xcode versions. See [remote macOS setup and billing](docs/tooling/remote-macos-build.md). npm publication is deferred.
 
 XcodeGen is optional: without it, the agent writes a folder-synchronized Xcode project itself. The steps are described in [docs/tooling/ios-build-agent.md](docs/tooling/ios-build-agent.md). The four screenshot examples reused existing app folders; this exact one-sentence quickstart has not yet been run from planning through code generation in one Mac session.

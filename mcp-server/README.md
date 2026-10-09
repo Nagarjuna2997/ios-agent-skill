@@ -373,3 +373,7 @@ See [provider setup and limitations](https://github.com/Nagarjuna2997/ios-agent-
 npm version 2.9.0 exposes 67 tools (2.10.0 adds the 13 build-agent tools, 80 in all) and includes the updated CLI dependency. Use `xcode-mcp tools` for discovered Xcode schemas and `doctor xcode` for setup diagnostics.
 
 Use `ios-agent-mcp docs status` and `ios-agent-mcp docs symbol SwiftUI.NavigationStack` for version-aware documentation grounding. The adapter prefers Xcode MCP DocumentationSearch, then bounded SDK evidence. Apple’s archive is never bundled. Bridge authorization is required; retrieval is not automatic code validation. [Setup, tools and limitations](https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-local-apple-documentation.html).
+
+## Unreleased: ship to TestFlight
+
+The GitHub `ship` command prepares screenshot sets and metadata, then uses separate digest-approved archive and upload steps. See [the shipping guide](../docs/tooling/ship-testflight.md). This is not in npm yet; live Apple distribution remains unverified.

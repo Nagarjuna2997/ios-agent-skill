@@ -3449,8 +3449,8 @@
       "path": "docs/tooling/local-release-package.md",
       "title": "Local App Store release preparation — Phase 1",
       "kind": "guide",
-      "characters": 10506,
-      "hash": "f58289fcdea3d7d5e11a23974e28a312a464bfc28bed0862345739970e98be81"
+      "characters": 10660,
+      "hash": "560ca1afc269b87a1631471e53394b61be1188688c609a6166e35cbb8303991c"
     },
     {
       "path": "docs/tooling/offline-source-library.md",
@@ -3479,6 +3479,13 @@
       "kind": "guide",
       "characters": 4820,
       "hash": "769268507c9584447e351bcc1251afe784f24cf4a2e46b11930ec51015090cca"
+    },
+    {
+      "path": "docs/tooling/ship-testflight.md",
+      "title": "Ship an app to TestFlight",
+      "kind": "guide",
+      "characters": 6303,
+      "hash": "b8a39e2455b8efe35a9506adff1d5bfa5cb215c997c2be6949b5688df9a44723"
     },
     {
       "path": "docs/tooling/visual-iteration-loop.md",
