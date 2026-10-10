@@ -1,0 +1,64 @@
+name: iOS build live acceptance
+on:
+  schedule:
+    - cron: '20 8 * * 1'
+  workflow_dispatch:
+permissions:
+  contents: read
+defaults:
+  run:
+    shell: bash
+concurrency:
+  group: ios-build-live-acceptance
+  cancel-in-progress: false
+jobs:
+  live:
+    # Paid provider calls are opt-in; never run untrusted PR code with a secret.
+    if: github.ref == 'refs/heads/main' && vars.IOS_BUILD_E2E_ENABLED == 'true'
+    runs-on: macos-26
+    timeout-minutes: 55
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        case: [counter, reading-list, habit-dashboard]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Require explicit pins
+        env:
+          XCODE_PIN: ${{ vars.IOS_BUILD_E2E_XCODE }}
+        run: test -n "$XCODE_PIN"
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: ${{ vars.IOS_BUILD_E2E_XCODE }}
+      - run: npm ci --prefix mcp-server && npm run build --prefix mcp-server
+      - name: Install pinned client
+        run: |
+          VERSION=$(node -p "JSON.parse(require('fs').readFileSync('scripts/ios-build-e2e/cases.json')).claudeVersion")
+          npm install --global "@anthropic-ai/claude-code@$VERSION"
+      - name: Real plan, generation, build, simulator, visual review and tests
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.IOS_BUILD_E2E_ANTHROPIC_API_KEY }}
+          IOS_BUILD_E2E_MODEL: ${{ vars.IOS_BUILD_E2E_MODEL }}
+          IOS_BUILD_E2E_XCODE: ${{ vars.IOS_BUILD_E2E_XCODE }}
+          IOS_BUILD_E2E_SDK: ${{ vars.IOS_BUILD_E2E_SDK }}
+          IOS_BUILD_E2E_RUNTIME: ${{ vars.IOS_BUILD_E2E_RUNTIME }}
+        run: node scripts/ios-build-e2e/run.mjs '${{ matrix.case }}' "$RUNNER_TEMP/e2e"
+      - name: Select synthetic evidence for investigation and local resume
+        if: always()
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.IOS_BUILD_E2E_ANTHROPIC_API_KEY }}
+        run: node scripts/ios-build-e2e/export.mjs "$RUNNER_TEMP/e2e"
+      - name: Retain per-case evidence even on failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-build-${{ matrix.case }}-${{ github.run_id }}-${{ github.run_attempt }}
+          retention-days: 14
+          include-hidden-files: true
+          path: ${{ runner.temp }}/e2e/export

@@ -1,0 +1,9 @@
+{
+  "protocol": "ios-build-e2e-v1",
+  "claudeVersion": "2.1.296",
+  "cases": [
+    {"id":"counter","prompt":"Build a local counter app named CounterProbe with one top-level dashboard, increment and reset actions, an observable view model, synthetic sample data, and unit tests for increment/reset."},
+    {"id":"reading-list","prompt":"Build a local reading-list app named ReadingProbe with a top-level searchable list and a book detail screen, three synthetic books, mark-finished behavior, and unit tests for filtering and marking finished. Use in-memory state; no account or network."},
+    {"id":"habit-dashboard","prompt":"Build a local habit dashboard named HabitProbe with a top-level dashboard and settings screen, three synthetic habits, completion counts, and unit tests for completing and resetting habits. Use in-memory state; no account or network."}
+  ]
+}

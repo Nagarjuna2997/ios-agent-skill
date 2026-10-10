@@ -31,6 +31,7 @@ jobs:
         with:
           node-version: "22"
       - run: node --test studio/test/*.test.mjs
+      - run: node --test scripts/ios-build-e2e/contracts.test.mjs
 
   local-studio-macos:
     name: Local studio on macOS (tests, tool PATH, launcher compile)

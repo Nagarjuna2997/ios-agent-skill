@@ -45,3 +45,72 @@ The capability-verification workflow runs combined compilation and isolated modu
 - A live Claude-generated app passed plan validation after retry, then exposed early test-file emission; test targets are now enabled before generation. The retry hit a provider HTTP 429 session limit. End-to-end generation, visual critique and final app tests are therefore not claimed as passed.
 - The combined 48-module project also compiled successfully on Xcode 27.0 after resolving the Firebase/Google dependency conflict and isolating duplicate fixture helper names.
 - CI verification artifacts and provider runtime/account behavior are separate evidence; neither is inferred from these compile results.
+
+## Scheduled full-loop regression lane
+
+`.github/workflows/ios-build-e2e.yml` runs the real `ios-agent-mcp build`
+entry point weekly or by manual dispatch on **main only**. Three fixed synthetic
+requests cover a counter, a searchable reading list, and a habit dashboard.
+It plans first, checks a local-only capability allowlist, chooses the first design
+direction, and resumes through generation, actual Xcode builds, simulator captures,
+visual review and tests. Build repairs happen when compilation fails; a prompt
+that builds immediately does not prove the repair path. Existing deterministic
+loop tests cover forced failure/repair transitions.
+
+This lane is implemented, **not yet a recorded successful live run**. It is not a
+benchmark, does not compare arms, and changes no historical scores or verification
+manifests. Model visual judgments can fluctuate; inspect failures before attributing
+them to a code regression. Passing also does not prove every requested app behavior.
+
+### Enable deliberately
+
+Paid model requests are disabled unless repository variable
+`IOS_BUILD_E2E_ENABLED` is `true`. Set secret `IOS_BUILD_E2E_ANTHROPIC_API_KEY`
+and variables `IOS_BUILD_E2E_MODEL` (a dated model ID, not `sonnet` or `latest`),
+`IOS_BUILD_E2E_XCODE`, `IOS_BUILD_E2E_SDK`, and `IOS_BUILD_E2E_RUNTIME` (the exact
+`com.apple.CoreSimulator.SimRuntime.iOS-…` identifier). Choose versions installed
+on the `macos-26` runner; the driver checks the actual versions and available
+iPhone before any model call. The Claude CLI version and protocol are checked
+into `scripts/ios-build-e2e/cases.json`. Missing credentials or mismatched pins fail;
+an unenabled workflow is **skipped, never evidence of a pass**.
+
+The API key is exposed only in the trusted-main execution/export steps. Checkout
+credentials are not persisted. There are no PR or fork triggers, no npm publication,
+and no signing/upload/distribution action. All app data and prompts are synthetic.
+Each case has four build attempts per cycle, an outer 40-minute deadline (preserved
+on local resume), and a 55-minute job limit. Three cases run serially to limit load.
+Configure a provider spending limit separately; a time cap is not a dollar cap.
+
+### Results and recovery
+
+Every cell writes its own atomic identity, checkpoint and result. `pass`,
+`provider_failure`, `infrastructure_failure`, `timeout`, and `regression` are distinct;
+all non-pass outcomes fail the job. A zero CLI exit alone cannot pass: the verifier
+requires successful build/launch, source-bound passing tests with no skips, real
+light/dark/XXL screenshot artifacts for each top-level screen, a matching visual
+review, and the plan/report. It does not weaken visual checks to manufacture green.
+
+Artifacts retain synthetic source, state, logs, xcresult bundles and screenshots
+for 14 days, including failed runs. The exporter excludes HOME and DerivedData,
+refuses symlinks, and refuses files containing the configured provider credential.
+Artifacts on a public repository are public. Do not use this lane for personal apps.
+If a job is force-killed before export, GitHub may have no artifact; completed cells
+in other jobs remain intact.
+
+A GitHub rerun is a **new observation**, not a silent continuation. To investigate
+or locally resume an interrupted cell, download its artifact, check out the recorded
+commit, install the recorded pins, and pass the unpacked cell directory:
+
+```sh
+node scripts/ios-build-e2e/run.mjs counter /absolute/path/to/unpacked-cell
+```
+
+Completed results are retained instead of retried. A completed pass is revalidated;
+a changed identity is rejected without overwriting it. Use a fresh directory for an
+intentional new trial. No automated artifact restore across Actions runs is claimed.
+Portable acceptance-contract tests run with the ordinary Tests workflow, without
+Xcode, credentials, or provider calls:
+
+```sh
+node --test scripts/ios-build-e2e/contracts.test.mjs
+```
