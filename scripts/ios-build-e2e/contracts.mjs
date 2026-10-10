@@ -5,7 +5,9 @@ export const hash = data => createHash('sha256').update(data).digest('hex');
 export function validatePins(pins) {
   for (const field of ['commit', 'model', 'xcode', 'sdk', 'runtime', 'claude']) if (!pins[field]) throw new Error(`Missing pin: ${field}`);
   if (!/^[a-f0-9]{40}$/.test(pins.commit)) throw new Error('Commit must be a full SHA');
-  if (!/^claude-[a-z0-9-]+-\d{8}$/.test(pins.model)) throw new Error('Model must be a dated Claude model ID, not an alias');
+  // Versioned API IDs no longer necessarily have a date suffix. This checks
+  // explicit-ID syntax, not provider availability or model immutability.
+  if (typeof pins.model !== 'string' || pins.model.trim() !== pins.model || !/^claude-[a-z0-9]+(?:-[a-z0-9]+)*-\d+$/.test(pins.model) || pins.model.split('-').includes('latest')) throw new Error('Model must be an explicit versioned Claude API ID, not a shorthand or latest alias');
   for (const field of ['xcode','sdk','claude']) if (!/^\d+\.\d+(?:\.\d+)?$/.test(pins[field])) throw new Error(`Invalid ${field} version`);
   if (!/^com\.apple\.CoreSimulator\.SimRuntime\.iOS-[0-9-]+$/.test(pins.runtime)) throw new Error('Pin an iOS simulator runtime identifier');
 }

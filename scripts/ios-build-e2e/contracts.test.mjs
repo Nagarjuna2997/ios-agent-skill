@@ -4,8 +4,8 @@ import { mkdtemp, mkdir, writeFile, rm, symlink } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { validatePins, validatePlan, classify, artifact, hash, verifyEvidence } from './contracts.mjs';
-const pins = {commit:'a'.repeat(40),model:'claude-sonnet-4-5-20250929',xcode:'26.6',sdk:'26.6',runtime:'com.apple.CoreSimulator.SimRuntime.iOS-26-6',claude:'2.1.296'};
-test('requires complete immutable model/client/toolchain pins',()=>{
+const pins = {commit:'a'.repeat(40),model:'claude-sonnet-4-5-20250929',xcode:'26.5',sdk:'26.5',runtime:'com.apple.CoreSimulator.SimRuntime.iOS-26-5',claude:'2.1.296'};
+test('requires complete explicit model/client/toolchain pins',()=>{
   validatePins(pins);
   for(const key of Object.keys(pins)) assert.throws(()=>validatePins({...pins,[key]:undefined}));
   for(const model of ['sonnet','claude-sonnet-latest','']) assert.throws(()=>validatePins({...pins,model}));
@@ -81,4 +81,11 @@ test('a fresh preflight failure is recorded without a model call',async t=>{
  const {finalizeResult}=await import('./contracts.mjs');const root=await mkdtemp(join(tmpdir(),'e2e-preflight-'));t.after(()=>rm(root,{recursive:true,force:true}));
  assert.equal(await finalizeResult(root,{status:'infrastructure_failure'},false),true);
  assert.equal(JSON.parse(await artifact(root,'result.json')).status,'infrastructure_failure');
+});
+
+test('accepts versioned Claude API IDs without dates and legacy dated IDs',()=>{
+ for(const model of ['claude-opus-5-5','claude-sonnet-5-5','claude-haiku-5-5','claude-fable-5-1','claude-sonnet-4-5-20250929','claude-3-5-sonnet-20241022']) validatePins({...pins,model});
+});
+test('rejects shorthand, latest aliases and malformed model pins',()=>{
+ for(const model of ['sonnet','opus','haiku','default','latest','claude-sonnet','claude-sonnet-latest','claude-sonnet-5-5-latest','claude-latest-5-5',' claude-sonnet-5-5','claude-sonnet-5-5\n','claude--5-5','https://example.com/model',123]) assert.throws(()=>validatePins({...pins,model}),String(model));
 });

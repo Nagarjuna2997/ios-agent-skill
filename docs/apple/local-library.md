@@ -494,7 +494,7 @@ Search offline with `node scripts/query-library.mjs search "SwiftData"`. Read a 
 | [docs/tooling/device-hub.md](../../docs/tooling/device-hub.md) | guide | 8029 |
 | [docs/tooling/fm-cli.md](../../docs/tooling/fm-cli.md) | guide | 2447 |
 | [docs/tooling/foundation-models-instruments.md](../../docs/tooling/foundation-models-instruments.md) | guide | 3378 |
-| [docs/tooling/generated-app-quality.md](../../docs/tooling/generated-app-quality.md) | guide | 9628 |
+| [docs/tooling/generated-app-quality.md](../../docs/tooling/generated-app-quality.md) | guide | 10932 |
 | [docs/tooling/idea-to-app.md](../../docs/tooling/idea-to-app.md) | guide | 4036 |
 | [docs/tooling/ios-build-agent.md](../../docs/tooling/ios-build-agent.md) | guide | 11213 |
 | [docs/tooling/ios-simulator-mcp.md](../../docs/tooling/ios-simulator-mcp.md) | guide | 7719 |

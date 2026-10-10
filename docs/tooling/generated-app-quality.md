@@ -66,7 +66,7 @@ them to a code regression. Passing also does not prove every requested app behav
 
 Paid model requests are disabled unless repository variable
 `IOS_BUILD_E2E_ENABLED` is `true`. Set secret `IOS_BUILD_E2E_ANTHROPIC_API_KEY`
-and variables `IOS_BUILD_E2E_MODEL` (a dated model ID, not `sonnet` or `latest`),
+and variables `IOS_BUILD_E2E_MODEL` (an explicit versioned API ID such as `claude-sonnet-5-5`, not `sonnet` or `*-latest`),
 `IOS_BUILD_E2E_XCODE`, `IOS_BUILD_E2E_SDK`, and `IOS_BUILD_E2E_RUNTIME` (the exact
 `com.apple.CoreSimulator.SimRuntime.iOS-…` identifier). Choose versions installed
 on the `macos-26` runner; the driver checks the actual versions and available
@@ -80,6 +80,25 @@ and no signing/upload/distribution action. All app data and prompts are syntheti
 Each case has four build attempts per cycle, an outer 40-minute deadline (preserved
 on local resume), and a 55-minute job limit. Three cases run serially to limit load.
 Configure a provider spending limit separately; a time cap is not a dollar cap.
+
+### Hosted runner baseline (checked October 10, 2026)
+
+The [GitHub macos-26 image inventory](https://github.com/actions/runner-images/blob/main/images/macos/macos-26-Readme.md)
+lists Xcode 26.5 with iOS Simulator SDK 26.5 and runtime 26.5. An aligned
+configuration is `IOS_BUILD_E2E_XCODE=26.5`, `IOS_BUILD_E2E_SDK=26.5`, and
+`IOS_BUILD_E2E_RUNTIME=com.apple.CoreSimulator.SimRuntime.iOS-26-5`.
+Xcode 26.6 also uses SDK 26.5; do not infer SDK/runtime versions from the Xcode
+version. No Xcode 27 is listed. These hosted checks are separate from the local
+Xcode 27 evidence above; use of SDK 27 APIs can correctly fail this older baseline.
+Installed-image contents change, so preflight verifies the configured pins each run.
+
+[Anthropic's model reference](https://platform.claude.com/docs/en/models/overview)
+lists versioned IDs without date suffixes. The validator accepts those and legacy
+dated IDs while rejecting shorthand and latest aliases. Syntax acceptance does
+not prove account access, availability, or immutable provider behavior. Configure
+a rate-limited API key with a spending limit; a subscription login is not used by
+this CI lane. The three in-memory apps test the core loop and default design
+capabilities, not the complete capability catalog.
 
 ### Results and recovery
 
