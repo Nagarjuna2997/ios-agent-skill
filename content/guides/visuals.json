@@ -1727,5 +1727,31 @@
       "Design modules and test targets",
       "Source-bound screenshots and test results"
     ]
+  },
+  "docs/tooling/deployment-guard.md": {
+    "flow": [
+      "Resolve the target and deployment minimum",
+      "Typecheck supported targets with the local SDK",
+      "Review scoped static candidates when compilation is unavailable",
+      "Inspect compiler status and coverage before applying a fix"
+    ],
+    "architecture": [
+      "Project configuration and Swift source membership",
+      "Local Swift compiler or SDK-derived static analysis",
+      "Labelled findings, unknown coverage and developer-reviewed repairs"
+    ]
+  },
+  "docs/tooling/app-store-readiness.md": {
+    "flow": [
+      "Select project, app target and release configuration",
+      "Inspect purpose strings, privacy reasons and capabilities",
+      "Review metadata and unresolved compliance answers",
+      "Seal the readiness report in ship preparation"
+    ],
+    "architecture": [
+      "Selected source, plist, entitlements and resource evidence",
+      "Read-only checks with explicit uncertainty",
+      "Developer review before separately approved signing and upload"
+    ]
   }
 }

@@ -1054,5 +1054,13 @@
   "guides/tooling-ship-testflight.html": {
     "title": "Reviewed Archives and TestFlight Uploads",
     "description": "Prepare an iOS release, review signing requirements, archive with Xcode and separately approve a TestFlight upload with recorded evidence."
+  },
+  "guides/tooling-deployment-guard.html": {
+    "title": "Check iOS deployment targets and availability guards",
+    "description": "Review project deployment targets with local compiler diagnostics and scoped SDK evidence, keeping static findings and unknown coverage explicit."
+  },
+  "guides/tooling-app-store-readiness.html": {
+    "title": "Review App Store readiness with local evidence",
+    "description": "Check target-specific permissions, privacy reasons, entitlements and metadata before separately approved signing and upload."
   }
 }
