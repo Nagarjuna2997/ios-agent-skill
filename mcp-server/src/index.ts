@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { reviewReadiness, metadataSchema } from './analyzers/readiness.js';
 import { reviewAvailability } from './availability/review.js';
 import { registerAppleDocs } from './apple-docs/tools.js';
 import { registerScreenshotTools } from './screenshots/tools.js';
@@ -20,7 +21,7 @@ import { analyzeAppIntents } from "./analyzers/app-intents.js";
 import { analyzeConcurrency } from "./analyzers/concurrency.js";
 import { analyzeArchitecture } from "./analyzers/architecture.js";
 import { analyzeSwiftUI } from "./analyzers/swiftui.js";
-import { analyzeAppStore, analyzeProjectLevelAppStore } from "./analyzers/appstore.js";
+import { analyzeAppStore } from "./analyzers/appstore.js";
 import { lintSkill } from "./analyzers/skill.js";
 import { analyzeMemory } from "./analyzers/memory.js";
 import { analyzeSecurity } from "./analyzers/security.js";
@@ -270,42 +271,12 @@ server.registerTool(
   "audit_app_store_readiness",
   {
     title: "Audit App Store submission readiness",
-    description:
-      "Check a Swift project for issues that cause App Store rejection or runtime termination: permission-gated frameworks used without an Info.plist purpose string, a missing PrivacyInfo.xcprivacy manifest, unlocalized user-facing strings, icon-only buttons with no accessibility label, print() used for logging, and target-aware launch-screen configuration/storyboard/asset checks with explicit coverage limitations. Use before submitting to App Review.",
-    inputSchema: pathInput,
+    description: "Use before submitting an app. Review selected-target permission strings, required-reason privacy declarations, entitlement-operation mismatches, export-compliance answers, optional metadata wording and launch screens. Offline static evidence with explicit unknown configurations; never claims Apple approval or chooses legal answers.",
+    inputSchema: {...pathInput,project:z.string().optional(),target:z.string().optional(),configuration:z.string().optional(),metadata:metadataSchema.optional()},
   },
-  async ({ path }) => {
-    try {
-      const root = await resolveProjectRoot(path);
-      const [files, context, launch] = await Promise.all([
-        readSwiftFiles(root),
-        readProjectContext(root),
-        reviewLaunchScreens(root),
-      ]);
-      const findings = [
-        ...launch.findings,
-        ...analyzeProjectLevelAppStore(context),
-        ...files.flatMap((file) => analyzeAppStore(file, context)),
-      ];
-      return {
-        content: [
-          {
-            type: "text" as const,
-            text: renderFindings("App Store Readiness Audit", findings, files.length) + "\n\nLaunch-screen coverage: " + launch.configurations + " configurations.\n" + launch.coverage.map(x => "- " + x).join("\n"),
-          },
-        ],
-      };
-    } catch (error) {
-      return {
-        content: [
-          {
-            type: "text" as const,
-            text: `Audit failed: ${error instanceof Error ? error.message : String(error)}`,
-          },
-        ],
-        isError: true,
-      };
-    }
+  async ({path,project,target,configuration,metadata}) => {
+    try {const report=await reviewReadiness(path,{project,target,configuration,metadata});return {content:[{type:'text' as const,text:JSON.stringify(report,null,2)}]};}
+    catch(error){return {isError:true,content:[{type:'text' as const,text:`Readiness review failed: ${error instanceof Error?error.message:String(error)}`}]};}
   },
 );
 
@@ -327,25 +298,31 @@ server.registerTool(
       ]);
       const summary = await summarizeProject(root, files);
 
+      const readiness=await reviewReadiness(root);
+      const availability=await reviewAvailability(root,{mode:'static'});
       const categories = {
         "App Intents": analyzeAppIntents(files),
         Concurrency: files.flatMap(analyzeConcurrency),
         Architecture: files.flatMap(analyzeArchitecture),
         SwiftUI: files.flatMap(analyzeSwiftUI),
-        Availability: (await reviewAvailability(root,{mode:'static'})).targets.flatMap(t=>t.findings),
+        Availability: availability.targets.flatMap(t=>t.findings),
         Memory: files.flatMap(analyzeMemory),
         Security: files.flatMap(analyzeSecurity),
         Performance: files.flatMap(analyzePerformance),
         Testing: [...analyzeTestCoverage(files), ...files.flatMap(analyzeTesting)],
         "App Store": [
-          ...launch.findings,
-        ...analyzeProjectLevelAppStore(context),
-          ...files.flatMap((file) => analyzeAppStore(file, context)),
+        ...readiness.findings,
+          ...files.flatMap((file) => analyzeAppStore(file, context)).filter(f=>f.rule!=='missing-purpose-string'),
         ],
       };
 
       const lines: string[] = [
         "# Swift Project Analysis",
+        availability.notice,
+        ...availability.targets.flatMap(t=>t.limitations.map(l=>`Availability ${t.target}/${t.configuration}: ${l}`)),
+        readiness.notice,
+        ...readiness.limitations,
+        ...readiness.targets.flatMap(t=>t.limitations.map(l=>`Readiness ${t.target}/${t.configuration}: ${l}`)),
         `Launch-screen coverage: ${launch.configurations} configurations.`,
         ...launch.coverage.map(x => `- ${x}`),
         "",

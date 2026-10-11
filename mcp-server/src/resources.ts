@@ -5,8 +5,9 @@ import { analyzeAppIntents } from "./analyzers/app-intents.js";
 import { analyzeConcurrency } from "./analyzers/concurrency.js";
 import { analyzeArchitecture } from "./analyzers/architecture.js";
 import { analyzeSwiftUI } from "./analyzers/swiftui.js";
+import { reviewReadiness } from './analyzers/readiness.js';
 import { reviewAvailability } from './availability/review.js';
-import { analyzeAppStore, analyzeProjectLevelAppStore } from "./analyzers/appstore.js";
+import { analyzeAppStore } from "./analyzers/appstore.js";
 import { analyzeMemory } from "./analyzers/memory.js";
 import { analyzeSecurity } from "./analyzers/security.js";
 import { analyzeTesting, analyzeTestCoverage } from "./analyzers/testing.js";
@@ -231,19 +232,21 @@ export async function projectIssuesResource(
       return unavailable(uri, resolved, "No Swift files found under this path.");
     }
 
+    const readiness=await reviewReadiness(root);
+    const availability=await reviewAvailability(root,{mode:'static'});
     const categories: Record<string, Finding[]> = {
       app_intents: analyzeAppIntents(files),
       concurrency: files.flatMap(analyzeConcurrency),
       architecture: files.flatMap(analyzeArchitecture),
       swiftui: files.flatMap(analyzeSwiftUI),
-      availability: (await reviewAvailability(root,{mode:'static'})).targets.flatMap(t=>t.findings),
+      availability: availability.targets.flatMap(t=>t.findings),
       memory: files.flatMap(analyzeMemory),
       security: files.flatMap(analyzeSecurity),
       performance: files.flatMap(analyzePerformance),
       testing: [...analyzeTestCoverage(files), ...files.flatMap(analyzeTesting)],
       app_store: [
-        ...analyzeProjectLevelAppStore(context),
-        ...files.flatMap((file) => analyzeAppStore(file, context)),
+        ...readiness.findings,
+        ...files.flatMap((file) => analyzeAppStore(file, context)).filter(f=>f.rule!=='missing-purpose-string'),
       ],
     };
 
@@ -259,6 +262,7 @@ export async function projectIssuesResource(
         minor: all.filter((f) => f.severity === "minor").length,
         total: all.length,
       },
+      evidence_coverage: {availability,readiness},
       by_category: Object.fromEntries(
         Object.entries(categories).map(([name, found]) => [name, found.length]),
       ),

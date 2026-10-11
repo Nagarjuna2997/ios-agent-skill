@@ -3383,6 +3383,13 @@
       "hash": "2fa29d5b252a2ecef5650cb9ebcb3520f41655ad9202cd302a5d00483abde949"
     },
     {
+      "path": "docs/tooling/app-store-readiness.md",
+      "title": "Local App Store readiness review",
+      "kind": "guide",
+      "characters": 4530,
+      "hash": "3da43441fd518bf48995bfc61c021f26992db32ca2847bedf378ce1743c3a9fa"
+    },
+    {
       "path": "docs/tooling/deployment-guard.md",
       "title": "Deployment-target availability review",
       "kind": "guide",

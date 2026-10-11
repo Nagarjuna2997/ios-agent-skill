@@ -5,6 +5,7 @@ import { mkdir, readFile, writeFile, rename, readdir, lstat, realpath, rm, chmod
 import { resolve, join, relative, isAbsolute } from 'node:path';
 import * as plist from 'plist';
 import { z } from 'zod';
+import { reviewReadiness } from '../analyzers/readiness.js';
 import { prepareRelease } from './package.js';
 import { canonical, digest } from './model.js';
 import { generateSet, inspectSet, recipeSchema } from '../screenshots/studio.js';
@@ -68,6 +69,7 @@ export async function prepareShip(projectRoot:string,input:unknown){
   try{
     const analysis=await prepareRelease({root,...(config.project?{project:config.project}:{workspace:config.workspace!}),target:config.target,configuration:config.configuration});
     if(analysis.status==='BLOCKED')throw Error('Release analysis is blocked; resolve target/configuration selection first');
+    await atomic(join(stage,'readiness.json'),await reviewReadiness(root,{project:analysis.model.selection.project??config.project,target:config.target,configuration:config.configuration,metadata:config.metadata}));
     await atomic(join(stage,'metadata.json'),{...config.metadata,reviewRequired:true,privacyAnswers:'NOT_GENERATED',ageRating:'NOT_GENERATED',reviewNotes:'DEVELOPER_REQUIRED'});
     await atomic(join(stage,'analysis.json'),{package:relative(root,analysis.path),questions:analysis.questions,model:analysis.model});
     for(let i=0;i<config.screenshots.length;i++){

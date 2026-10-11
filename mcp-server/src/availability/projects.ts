@@ -17,7 +17,7 @@ export async function inventory(path:string) {
    const p=join(dir,e.name);
    if(e.isSymbolicLink()){limitations.push('Symlink omitted: '+relative(root,p));continue;}
    if(e.isDirectory()){if(!['.git','.build','.swiftpm','node_modules','Pods','Carthage','DerivedData','build','.ios-agent'].includes(e.name))await walk(p);continue;}
-   if(!e.isFile()||! /\.(swift|pbxproj|xcproj|xcconfig|plist|xcprivacy|entitlements)$|(?:^|\/)project\.ya?ml$/.test(p))continue;
+   if(!e.isFile()||! /\.(swift|pbxproj|xcproj|xcconfig|plist|xcprivacy|entitlements|strings)$|(?:^|\/)project\.ya?ml$/.test(p))continue;
    const size=(await lstat(p)).size;
    if(size>4_000_000||bytes+size>64_000_000||files.size>=4000){limitations.push('File inventory limit reached.');continue;}
    bytes+=size;files.set(relative(root,p).split(sep).join('/'),await readFile(p,'utf8'));

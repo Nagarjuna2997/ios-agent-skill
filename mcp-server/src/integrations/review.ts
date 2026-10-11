@@ -4,7 +4,7 @@ import { resolveProjectRoot, readSwiftFiles } from '../scan.js';
 import { appIntentsCode, analyzeAppIntents } from '../analyzers/app-intents.js';
 import { isSupportFile, Finding } from '../analyzers/types.js';
 import { parsePropertyList } from '../release/project.js';
-import { permissionEvidence } from './permissions.js';
+import { permissionEvidence, entitlementEvidence, validEntitlement } from './permissions.js';
 import { integrations } from './registry.js';
 export interface Selection { infoPlist?: string; entitlements?: string; }
 const markers: Record<string, RegExp> = {
@@ -54,13 +54,7 @@ export async function inspectIntegrations(path: string, selection: Selection = {
  });
  const required=files.flatMap(f=>permissionEvidence(f.content).map(e=>({ ...e,file:f.path,status:privacy.status==='unknown'?'unknown':typeof privacy.values[e.key]==='string'&&(privacy.values[e.key] as string).trim()?'present':'missing-or-empty'})));
  const findings:Finding[]=required.filter(e=>e.status==='missing-or-empty').map(e=>({file:e.file,line:e.line,rule:'missing-purpose-string',severity:'serious',message:`${e.key} is missing or empty in the selected configuration.`,consequence:'The detected operation may be denied or terminate at runtime.',fix:'Add a specific user-facing reason to the effective app Info.plist; verify selected target and configuration.',doc:'docs/integrations/README.md',excerpt:e.operation}));
- const entitlementRules: Array<[string,RegExp]>=[
-  ['com.apple.developer.healthkit',/\bHKHealthStore\s*\(/],
-  ['com.apple.developer.in-app-payments',/\bPKPaymentAuthorization(?:Controller|ViewController)\s*\(/],
-  ['com.apple.developer.icloud-services',/\bCKContainer\b/],
-  ['aps-environment',/\bregisterForRemoteNotifications\s*\(/],
- ];
- const requiredCapabilities=files.flatMap(f=>entitlementRules.flatMap(([key,re])=>{const m=re.exec(appIntentsCode(f.content));if(!m)return [];const value=capabilities.values[key];const valid=key==='com.apple.developer.healthkit'?value===true:key==='aps-environment'?['development','production'].includes(String(value)):Array.isArray(value)&&(key==='com.apple.developer.icloud-services'?value.includes('CloudKit'):value.length>0&&value.every(v=>typeof v==='string'&&/^merchant\.[A-Za-z0-9.-]+$/.test(v)));return [{key,file:f.path,line:f.content.slice(0,m.index).split('\n').length,status:capabilities.status==='unknown'?'unknown':valid?'present':'missing-or-invalid'}];}));
+ const requiredCapabilities=files.flatMap(f=>entitlementEvidence(f.content).map(e=>({...e,file:f.path,status:capabilities.status==='unknown'?'unknown':validEntitlement(e.key,capabilities.values[e.key])?'present':'missing-or-invalid'})));
  for(const e of requiredCapabilities.filter(e=>e.status==='missing-or-invalid'))findings.push({file:e.file,line:e.line,rule:'missing-integration-capability',severity:'serious',message:`Selected entitlements do not enable ${e.key}.`,consequence:'The detected integration may fail even when privacy permission is granted.',fix:'Enable the capability on the selected target and verify provisioning; do not substitute a privacy string.',doc:'docs/integrations/README.md',excerpt:e.key});
  for(const file of files){
   const code=appIntentsCode(file.content), m=/\brequestAccess\s*\(\s*to:\s*\.(?:event|reminder)\b/.exec(code);

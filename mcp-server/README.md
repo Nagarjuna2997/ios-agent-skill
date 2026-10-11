@@ -165,8 +165,8 @@ npm install && npm run build
 | `review_swift_concurrency` | `@Observable` without `@MainActor`, `Task.detached`, `DispatchQueue.main.async`, `@unchecked Sendable`, `nonisolated(unsafe)`, unstructured `Task` in `onAppear`, empty `catch`, a type named `Task` |
 | `review_swift_architecture` | Live-implementation default arguments, presentation naming `URLSession`/`APIClient`/`ModelContext`, singletons in view models, domain importing SwiftUI, nested `NavigationStack`, `NavigationView` |
 | `review_swiftui` | Fixed font sizes and heights, `AnyView`, `.cornerRadius`, literal spacing, materials over solid backgrounds, view state on models, `ObservableObject`, `@EnvironmentObject`, `try!` |
-| `check_availability_guards` | Missing guards, **over-restrictive guards** (an iOS 26 API guarded at iOS 27 silently drops every iOS 26 device), Foundation Models without a runtime availability check |
-| `audit_app_store_readiness` | Permission frameworks with no Info.plist purpose string, missing `PrivacyInfo.xcprivacy`, unlocalized strings, unlabeled icon buttons, `print()`; source builds also check launch configuration, storyboards and assets |
+| `check_availability_guards` | Per-target deployment minima, scoped guards and annotations, bounded local compiler evidence, SDK-derived static fallback, and advisory over-restrictive guards |
+| `audit_app_store_readiness` | Selected-target purpose strings, required-reason declarations, entitlement operations, export-compliance questions, optional metadata review, and launch configuration; unresolved evidence is explicit |
 | `review_swift_memory` | Repeating `Timer` and `NotificationCenter` blocks capturing self, Combine sinks, non-`weak` delegates, stored closures, `unowned self` |
 | `review_swift_security` | Hardcoded secrets, credentials in `UserDefaults`, disabled ATS, cleartext HTTP, TLS trust accepted without evaluation, MD5/SHA-1, Keychain accessibility |
 | `review_swift_testing` | **Test files only.** Sleeping, tests with no assertion, live `URLSession`, `await` in an `XCTAssert` autoclosure, order-dependent static state |
@@ -377,3 +377,7 @@ Use `ios-agent-mcp docs status` and `ios-agent-mcp docs symbol SwiftUI.Navigatio
 ## Unreleased: ship to TestFlight
 
 The GitHub `ship` command prepares screenshot sets and metadata, then uses separate digest-approved archive and upload steps. See [the shipping guide](../docs/tooling/ship-testflight.md). This is not in npm yet; live Apple distribution remains unverified.
+
+### Offline pre-submission checks
+
+From a built checkout, run `node mcp-server/dist/unified.js availability --path /path/to/app` or `node mcp-server/dist/unified.js readiness --path /path/to/app --target App --configuration Release`. These commands never call a paid model, upload code, or sign an app. Read the evidence mode and limitations: a static review is not compiler verification or Apple approval. `ship prepare` seals a `readiness.json` report alongside its existing reviewed artifacts. See [deployment guard](../docs/tooling/deployment-guard.md) and [readiness](../docs/tooling/app-store-readiness.md) for coverage and exit statuses.
