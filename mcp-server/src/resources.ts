@@ -5,7 +5,7 @@ import { analyzeAppIntents } from "./analyzers/app-intents.js";
 import { analyzeConcurrency } from "./analyzers/concurrency.js";
 import { analyzeArchitecture } from "./analyzers/architecture.js";
 import { analyzeSwiftUI } from "./analyzers/swiftui.js";
-import { analyzeAvailability } from "./analyzers/availability.js";
+import { reviewAvailability } from './availability/review.js';
 import { analyzeAppStore, analyzeProjectLevelAppStore } from "./analyzers/appstore.js";
 import { analyzeMemory } from "./analyzers/memory.js";
 import { analyzeSecurity } from "./analyzers/security.js";
@@ -236,7 +236,7 @@ export async function projectIssuesResource(
       concurrency: files.flatMap(analyzeConcurrency),
       architecture: files.flatMap(analyzeArchitecture),
       swiftui: files.flatMap(analyzeSwiftUI),
-      availability: files.flatMap(analyzeAvailability),
+      availability: (await reviewAvailability(root,{mode:'static'})).targets.flatMap(t=>t.findings),
       memory: files.flatMap(analyzeMemory),
       security: files.flatMap(analyzeSecurity),
       performance: files.flatMap(analyzePerformance),

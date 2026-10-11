@@ -3383,6 +3383,13 @@
       "hash": "2fa29d5b252a2ecef5650cb9ebcb3520f41655ad9202cd302a5d00483abde949"
     },
     {
+      "path": "docs/tooling/deployment-guard.md",
+      "title": "Deployment-target availability review",
+      "kind": "guide",
+      "characters": 4680,
+      "hash": "183d88705b081d1f783c0fa384ef5d35c36ac48d6e8150709982f539d27c599f"
+    },
+    {
       "path": "docs/tooling/device-hub.md",
       "title": "Device Hub",
       "kind": "guide",

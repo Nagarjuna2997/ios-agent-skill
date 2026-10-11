@@ -1,4 +1,6 @@
-import { Finding, SourceFile, eachLine } from "./types.js";
+import { Finding, SourceFile } from "./types.js";
+
+import { availabilityScopes, compare } from '../availability/scopes.js';
 
 const DOC = "docs/compatibility-matrix.md";
 
@@ -28,64 +30,44 @@ const INTRODUCED: Array<{ pattern: RegExp; version: number; name: string }> = [
   { pattern: /\bTextRenderer\b/, version: 18, name: "TextRenderer" },
 ];
 
-/** Highest iOS version mentioned in an availability guard on or above a line. */
-function guardedVersions(content: string): number[] {
-  const versions: number[] = [];
-  const guard = /#available\(\s*iOS\s+(\d+)|@available\([^)]*iOS\s+(\d+)/g;
-  let match: RegExpExecArray | null;
-  while ((match = guard.exec(content)) !== null) {
-    versions.push(Number(match[1] ?? match[2]));
-  }
-  return versions;
-}
+export interface AvailabilitySymbol { name: string; version: string; kind?: string; framework?: string; pattern?: RegExp }
+export interface AvailabilityOptions { deploymentTarget?: string | null; symbols?: AvailabilitySymbol[] }
 
-export function analyzeAvailability(file: SourceFile): Finding[] {
+export function analyzeAvailability(file: SourceFile, input?: AvailabilityOptions | number): Finding[] {
+  // Array.flatMap supplies an index as the second argument for older internal callers.
+  const options = typeof input === 'object' && input ? input : {};
+  const {code,ranges}=availabilityScopes(file.content);
   const findings: Finding[] = [];
-  const guards = guardedVersions(file.content);
-
-  eachLine(file, (text, number) => {
-    for (const entry of INTRODUCED) {
-      if (!entry.pattern.test(text)) continue;
-
-      // Unguarded use of a version-gated symbol.
-      if (guards.length === 0) {
-        findings.push({
-          file: file.path,
-          line: number,
-          severity: "blocker",
-          rule: "missing-availability-guard",
-          message: `${entry.name} requires iOS ${entry.version} but the file has no availability guard.`,
-          consequence:
-            "The app fails to compile against an older deployment target, or crashes on launch if the symbol is weakly linked.",
-          fix: `Wrap in \`if #available(iOS ${entry.version}.0, *)\` or annotate with \`@available(iOS ${entry.version}.0, *)\`, and provide a fallback.`,
-          doc: DOC,
-          excerpt: text.trim(),
-        });
-        continue;
-      }
-
-      // Over-guarded: guarded at a HIGHER version than the symbol needs.
-      const tightest = Math.min(...guards);
-      if (tightest > entry.version) {
-        findings.push({
-          file: file.path,
-          line: number,
-          severity: "serious",
-          rule: "over-restrictive-guard",
-          message: `${entry.name} was introduced in iOS ${entry.version} but is guarded at iOS ${tightest}.`,
-          consequence: `Every device on iOS ${entry.version}–${tightest - 1} falls back unnecessarily, losing the feature for a large installed base. This is invisible when testing on a current device.`,
-          fix: `Guard on iOS ${entry.version}, the version where the symbol was introduced — not the newest SDK.`,
-          doc: DOC,
-          excerpt: text.trim(),
-        });
-      }
+  const symbols:AvailabilitySymbol[]=options.symbols ?? INTRODUCED.map(e=>({...e,version:String(e.version)}));
+  // No project target is represented explicitly by null, never an invented iOS minimum.
+  if(options.deploymentTarget !== null) for(const entry of symbols){
+    if(options.deploymentTarget && compare(options.deploymentTarget,entry.version)>=0)continue;
+    if(new RegExp('\\b(?:struct|class|enum|actor|protocol|typealias|func|var|let)\\s+'+entry.name+'\\b').test(code))continue;
+    const pattern=entry.pattern ? new RegExp(entry.pattern.source,'g') : new RegExp('\\b'+entry.name+'\\b'+(entry.kind==='func'?'(?=\\s*(?:<[^>]*>)?\\s*\\()':''),'g');
+    for(const match of code.matchAll(pattern)){
+      const index=match.index!;
+      if(/\bimport\s+[^;\n]*$/.test(code.slice(0,index)))continue;
+      const enclosing=ranges.filter(r=>r.start<=index && index<r.end);
+      const strongest=enclosing.map(r=>r.version).sort(compare).at(-1);
+      const line=code.slice(0,index).split('\n').length;
+      const common={file:file.path,line,doc:DOC,excerpt:file.content.split('\n')[line-1].trim()};
+      if(!strongest || compare(strongest,entry.version)<0) findings.push({...common,
+        severity:'serious',rule:'missing-availability-guard',
+        message:`[static] ${entry.name} requires iOS ${entry.version}; no sufficient enclosing guard was found${options.deploymentTarget ? ` for target iOS ${options.deploymentTarget}` : ' (deployment target not supplied to legacy helper)'}.`,
+        consequence:'Static candidate: confirm symbol resolution with the compiler before changing code.',
+        fix:`Use if #available(iOS ${entry.version}, *) with a fallback, or annotate the enclosing declaration. Suggested repairs must be reviewed using the developer’s own tools/model.`});
+      else if(compare(strongest,entry.version)>0 && enclosing.some(r=>r.kind!=='declaration'&&r.version===strongest)) findings.push({...common,
+        severity:'minor',rule:'over-restrictive-guard',
+        message:`[static] ${entry.name} was introduced in iOS ${entry.version} but is guarded at iOS ${strongest}.`,
+        consequence:'Review only: other APIs or intentional behavior in this branch may require the higher version.',
+        fix:`Consider iOS ${entry.version} only after checking every API and behavior in this branch; do not mechanically lower its guard.`});
     }
-  });
+  }
 
   // Foundation Models used without the RUNTIME availability check.
-  const usesFoundationModels = /\bLanguageModelSession\s*\(/.test(file.content);
+  const usesFoundationModels = /\bLanguageModelSession\s*\(/.test(code);
   const hasRuntimeCheck = /SystemLanguageModel[^\n]*\.availability|case\s+\.available/.test(
-    file.content,
+    code,
   );
   if (usesFoundationModels && !hasRuntimeCheck) {
     const line =
@@ -95,7 +77,7 @@ export function analyzeAvailability(file: SourceFile): Finding[] {
       line,
       severity: "blocker",
       rule: "missing-runtime-model-check",
-      message: "Foundation Models used without a runtime availability check.",
+      message: "[static] Foundation Models used without a runtime availability check.",
       consequence:
         "An @available guard proves the symbol exists; it does not prove the model is usable on this device, in this region, with Apple Intelligence enabled. The feature fails at tap time.",
       fix: "Check `SystemLanguageModel.default.availability` and show a real unavailable state before the entry point renders.",

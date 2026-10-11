@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { reviewAvailability } from './availability/review.js';
 import { registerAppleDocs } from './apple-docs/tools.js';
 import { registerScreenshotTools } from './screenshots/tools.js';
 import { registerAgentTools } from './agent/tools.js';
@@ -19,7 +20,6 @@ import { analyzeAppIntents } from "./analyzers/app-intents.js";
 import { analyzeConcurrency } from "./analyzers/concurrency.js";
 import { analyzeArchitecture } from "./analyzers/architecture.js";
 import { analyzeSwiftUI } from "./analyzers/swiftui.js";
-import { analyzeAvailability } from "./analyzers/availability.js";
 import { analyzeAppStore, analyzeProjectLevelAppStore } from "./analyzers/appstore.js";
 import { lintSkill } from "./analyzers/skill.js";
 import { analyzeMemory } from "./analyzers/memory.js";
@@ -257,15 +257,13 @@ server.registerTool(
   "check_availability_guards",
   {
     title: "Check iOS availability guards",
-    description:
-      "Verify that version-gated Apple APIs are guarded on the version where they were INTRODUCED rather than the newest SDK. Catches both missing guards and over-restrictive ones — for example Liquid Glass (iOS 26) guarded at iOS 27, which silently drops every iOS 26 device to the fallback. Also flags Foundation Models used without a runtime SystemLanguageModel.availability check. Use before shipping, or after bumping an SDK.",
-    inputSchema: pathInput,
-    outputSchema: reviewOutputShape,
+    description: "Use before building or after an SDK update. Check iOS deployment availability per target using a bounded local simulator typecheck where supported, otherwise scoped static SDK/curated evidence. Never downloads packages or runs project scripts. Reports unknown targets and compiler failures explicitly; over-restrictive guards are static review suggestions.",
+    inputSchema: {...pathInput, target:z.string().optional(), configuration:z.string().optional(), mode:z.enum(['auto','static']).default('auto')},
   },
-  async ({ path }) =>
-    scanAndRender(path, "Availability Guard Check", (files) =>
-      files.flatMap(analyzeAvailability),
-    ),
+  async ({path,target,configuration,mode}) => {
+    try { const report=await reviewAvailability(path,{target,configuration,mode}); return {content:[{type:'text' as const,text:JSON.stringify(report,null,2)}]}; }
+    catch(error){return {isError:true,content:[{type:'text' as const,text:`Availability review failed: ${error instanceof Error?error.message:String(error)}`}]};}
+  },
 );
 
 server.registerTool(
@@ -334,7 +332,7 @@ server.registerTool(
         Concurrency: files.flatMap(analyzeConcurrency),
         Architecture: files.flatMap(analyzeArchitecture),
         SwiftUI: files.flatMap(analyzeSwiftUI),
-        Availability: files.flatMap(analyzeAvailability),
+        Availability: (await reviewAvailability(root,{mode:'static'})).targets.flatMap(t=>t.findings),
         Memory: files.flatMap(analyzeMemory),
         Security: files.flatMap(analyzeSecurity),
         Performance: files.flatMap(analyzePerformance),
