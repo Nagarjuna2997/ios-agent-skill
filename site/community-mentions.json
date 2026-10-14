@@ -280,6 +280,36 @@
       "url": "https://geminicli.com/extensions/?name=ios-agent-skill",
       "verifiedOn": "2026-10-13",
       "evidence": "Direct HTTPS fetch of the gallery returned 200 and included the ios-agent-skill card with data-extension-id Nagarjuna2997ios-agent-skill and exact owner/repository. Web extraction exceeded its size limit; HTML was inspected directly."
+    },
+    {
+      "id": "futurepulse-ai",
+      "platform": "FuturePulse AI",
+      "kind": "article",
+      "category": "Third-party article",
+      "description": "Discusses ios-agent-skill, its SwiftUI guidance and setup, crediting Nagarjuna Reddy. Authorship and performance claims have not been independently verified.",
+      "url": "https://futurepulseai.blog/2026/04/28/transforming-coding-agents-into-senior-ios-developers-with-ios-agent-skill/",
+      "verifiedOn": "2026-10-13",
+      "evidence": "Direct HTTPS returned 200. Article dated April 28, 2026 names ios-agent-skill and Nagarjuna Reddy and discusses setup. Human authorship and zero-error claims are unverified; coverage is not adoption evidence."
+    },
+    {
+      "id": "sabemos-ai",
+      "platform": "Sabemos AI",
+      "kind": "directory",
+      "category": "MCP catalog \u00b7 automated assessment",
+      "description": "Lists the project with installation information and a catalog assessment. Its security scan and rating are third-party claims, not independently validated here.",
+      "url": "https://sabemos.ai/academy/mcp/ios-agent-skill",
+      "verifiedOn": "2026-10-13",
+      "evidence": "Direct HTTPS returned 200. Source and codeRepository identify Nagarjuna2997/ios-agent-skill. Catalog displays Recommended and Passed scan labels; neither is treated as verified human praise or a security guarantee."
+    },
+    {
+      "id": "agentskills-in",
+      "platform": "AgentSkills.in",
+      "kind": "directory",
+      "category": "MCP directory",
+      "description": "Lists ios-agent-mcp with client-specific connection examples and a link to the source repository.",
+      "url": "https://www.agentskills.in/mcp/io-github-nagarjuna2997--ios-agent-skill",
+      "verifiedOn": "2026-10-13",
+      "evidence": "Web page opened successfully on October 13 after earlier access failures. Source identifies Nagarjuna2997 and the exact repository; connection examples use ios-agent-mcp. Directory says Not scanned."
     }
   ]
 }
