@@ -16,7 +16,7 @@ Describe an app in one sentence and the `/ios-build` agent plans it, writes the 
 
 ## Build an app from one sentence
 
-`/ios-build "<what you want>"` asks Claude Code to plan an iOS app, write its SwiftUI code and Xcode project, apply capability modules (sign-in, storage, payments, maps and more), then build, run and screenshot it in the iOS Simulator, ending with a report of what needs your accounts or money. Published tools are in `ios-agent-mcp` 2.10.1 (npm verified October 3, 2026). The 3.9.1 GitHub branch adds plan-driven design tokens, sample data, palette-aligned assets, and light/dark/XXL screenshot evidence; these MCP changes are not published to npm yet. Four existing apps built and ran on Xcode 27.0; see [examples/agent](examples/agent/README.md) for refreshed evidence.
+`/ios-build "<what you want>"` asks Claude Code to plan an iOS app, write its SwiftUI code and Xcode project, apply capability modules (sign-in, storage, payments, maps and more), then build, run and screenshot it in the iOS Simulator, ending with a report of what needs your accounts or money. Published tools are in `ios-agent-mcp` 2.10.2 (npm verified October 15, 2026), including plan-driven design tokens, sample data, palette-aligned assets, light/dark/XXL screenshot evidence, deployment-target checks and App Store readiness reports. Four existing apps built and ran on Xcode 27.0; see [examples/agent](examples/agent/README.md) for refreshed evidence.
 
 ### Quickstart
 
@@ -77,7 +77,7 @@ The agent builds and runs everything in the simulator without accounts. Capabili
 
 | You want to | Use | Notes |
 |---|---|---|
-| Build a new app from a description | `/ios-build "<description>"` in Claude Code, or `ios-agent-mcp build` | Plans, writes, builds, runs and screenshots; see [above](#build-an-app-from-one-sentence). Available in the GitHub 3.9.1 branch; the published npm package remains 2.10.1. |
+| Build a new app from a description | `/ios-build "<description>"` in Claude Code, or `ios-agent-mcp build` | Plans, writes, builds, runs and screenshots; see [above](#build-an-app-from-one-sentence). Available in npm 2.10.2 and GitHub main. |
 | Make an existing project pass your own acceptance tests | `ios-agent-mcp loop` | Runs the checks you write and asks Claude to repair failures; see [the app-building loop](docs/tooling/app-building-loop.md) and the [Reading List demo](samples/ReadingList/README.md). |
 | Get an editable starter only | `ios-agent-mcp new MyApp` | A starting point with a brief, not a finished app. |
 | Review or extend code you already have | The MCP tools below | File-located reviews, local references, assets and simulator checks. |
@@ -135,7 +135,7 @@ The [Reading List demo](samples/ReadingList/README.md) has persistence, search, 
   <img src="examples/reading-list/library.png" alt="Reading List running in the simulator" width="260">
 </a>
 
-The published npm 2.10.1 package includes the build-agent tools and 80 unified tools. They include seven [Apple system integration tools](docs/integrations/README.md) and nine [Screenshot Studio tools](docs/screenshots/README.md). Static reviews are heuristics, not compiler diagnostics. The Apple directory is a reference map, not Apple's proprietary framework source or proof of 405 working integrations. Token savings have not been benchmarked. [Build-loop verification limits](docs/tooling/app-building-loop.md).
+The published npm 2.10.2 package includes the build-agent tools, deployment-target checks and App Store readiness reports. They include seven [Apple system integration tools](docs/integrations/README.md) and nine [Screenshot Studio tools](docs/screenshots/README.md). Static reviews are heuristics, not compiler diagnostics. The Apple directory is a reference map, not Apple's proprietary framework source or proof of 405 working integrations. Token savings have not been benchmarked. [Build-loop verification limits](docs/tooling/app-building-loop.md).
 
 ## Why use this alongside Xcode?
 
