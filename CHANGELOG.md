@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+### npm 2.10.2 — prepared 2026-10-15
+
+- Package merged design directions, synthetic sample data, screenshot-aware refinement, generated-app tests, iPad captures, remote macOS build support, provider modules and approved shipping workflows. Existing runtime/provider and signed-distribution limitations still apply.
+- Include deployment-target and scope-aware availability checks, local SDK/compiler evidence and target-aware App Store readiness reports.
+- Update MCP SDK and proxy-addr dependencies to address npm audit findings.
+- Publication status will be recorded after npm registry verification.
+
+
 - Prepare shared generated-app quality workflow: separate Swift Testing/UI test targets and bounded repairs, source-bound screenshot refinements, iPad captures and adaptive-layout generation instructions, six provider/animation modules, macOS capability evidence CI, and a Studio entry point using the same CLI engine. Provider configuration and unverified runtime behavior remain explicit; npm is unchanged.
 
 - Add `ship` local preparation, explicitly approved signing/archive and separate TestFlight upload, reusing release analysis and screenshot composition. Metadata/screenshots remain reviewed local drafts; live signed distribution is not yet verified.

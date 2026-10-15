@@ -2,9 +2,9 @@
 
 [Explore the website](https://nagarjuna2997.github.io/ios-agent-skill/) · [Choose your AI and install](https://nagarjuna2997.github.io/ios-agent-skill/install.html)
 
-## Version 2.10.1: installation and CLI safety update
+## Version 2.10.2: design workflows and project readiness
 
-2.10.1 updates the bundled CLI dependency to 0.4.1, including safe help/clean handling, and refreshes the published installation guidance. The build-agent tools introduced in 2.10.0 remain included.
+2.10.2 includes plan-driven design, sample data, screenshot critique/refinement, generated-app tests, iPad evidence, remote build support and separately approved shipping steps. Availability and App Store readiness reviews now use target-specific evidence. Runtime and provider limitations remain explicit; live signed Apple distribution is unverified.
 
 2.10.0 adds the `/ios-build` agent. Describe an app in one sentence and it plans the screens and capabilities, writes PLAN.md with a budget, creates the Xcode project, writes the SwiftUI code, builds and fixes errors (at most 8 attempts and 25 minutes per cycle), launches the app in the iOS Simulator, screenshots each screen and writes RUN_REPORT.md. Thirteen `ios_*` tools drive it, and 41 capability modules supply sign-in, payments, maps, charts, widgets and more. Every module is marked `untested` until its own verify run passes on a Mac. [How the agent works and what has been verified](https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/tooling/ios-build-agent.md).
 
@@ -19,7 +19,7 @@ claude mcp add ios-agent -- npx -y ios-agent-mcp@latest
 npx -y ios-agent-mcp@latest install-command --global
 ```
 
-The 2.10.1 server exposes 80 tools: the 67 tools of 2.9.0 plus the 13 build-agent tools. Optional AI/provider and environment workflows are additional CLI commands. App scaffolding and simulator packages install automatically as dependencies; no separate installation or MCP connection is needed. Remove the separate knowledge/simulator connections if you previously configured them to avoid duplicate tools.
+The unified server includes source reviews, local references, simulator tools and build-agent tools. Optional AI/provider and environment workflows are additional CLI commands. App scaffolding and simulator packages install automatically as dependencies; no separate installation or MCP connection is needed. Remove the separate knowledge/simulator connections if you previously configured them to avoid duplicate tools.
 
 Which entry point to use:
 
@@ -357,7 +357,7 @@ or submission is performed. See the [Phase 1 workflow and limitations](https://g
 
 The backend guides include login examples, not configured login services. Each app needs its own provider setup. Live sign-in, external SDK compilation and hosted-policy validation remain unverified. The full MCP suite passes 308 tests; no benchmark improvement is claimed.
 
-## Screenshot Studio (GitHub source only)
+## Screenshot Studio
 
 The source server includes nine local screenshot-composition tools and `screenshots` CLI commands. Capture stays in the existing simulator tools. Supply real images and factual copy; compare layouts, localize supplied text and export checked PNGs. No upload or Apple approval is implied. npm 2.7.2 does not include this feature. [Workflow, templates and limits](../docs/screenshots/README.md).
 
@@ -374,9 +374,9 @@ npm version 2.9.0 exposes 67 tools (2.10.0 adds the 13 build-agent tools, 80 in 
 
 Use `ios-agent-mcp docs status` and `ios-agent-mcp docs symbol SwiftUI.NavigationStack` for version-aware documentation grounding. The adapter prefers Xcode MCP DocumentationSearch, then bounded SDK evidence. Apple’s archive is never bundled. Bridge authorization is required; retrieval is not automatic code validation. [Setup, tools and limitations](https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-local-apple-documentation.html).
 
-## Unreleased: ship to TestFlight
+## Ship to TestFlight
 
-The GitHub `ship` command prepares screenshot sets and metadata, then uses separate digest-approved archive and upload steps. See [the shipping guide](../docs/tooling/ship-testflight.md). This is not in npm yet; live Apple distribution remains unverified.
+The GitHub `ship` command prepares screenshot sets and metadata, then uses separate digest-approved archive and upload steps. See [the shipping guide](../docs/tooling/ship-testflight.md). Included in 2.10.2; live Apple distribution remains unverified.
 
 ### Offline pre-submission checks
 
