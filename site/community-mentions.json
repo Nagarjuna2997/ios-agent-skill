@@ -310,6 +310,16 @@
       "url": "https://www.agentskills.in/mcp/io-github-nagarjuna2997--ios-agent-skill",
       "verifiedOn": "2026-10-13",
       "evidence": "Web page opened successfully on October 13 after earlier access failures. Source identifies Nagarjuna2997 and the exact repository; connection examples use ios-agent-mcp. Directory says Not scanned."
+    },
+    {
+      "id": "awesome-agentic-atlas",
+      "platform": "Awesome Agentic Atlas",
+      "kind": "directory",
+      "category": "Directory \u00b7 aggregated index",
+      "description": "Indexes the project from developer-resource lists and provides repository links and an on-demand documentation reader. Inclusion does not establish testing or endorsement.",
+      "url": "https://aaa.jeremyfhall.com/repo/nagarjuna2997/ios-agent-skill/",
+      "verifiedOn": "2026-10-16",
+      "evidence": "Opened the project page and confirmed the exact GitHub repository and clone URL. The atlas credits Gemini CLI Ecosystem and punkpeye MCP Servers as sources; platform assessments are inferred from repository metadata, not execution. A distinct aggregated directory, not independent coverage."
     }
   ]
 }
