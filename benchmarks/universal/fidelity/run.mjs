@@ -27,7 +27,7 @@ if(!profilePath||!output||(flag&&!resume))throw Error('Usage: run.mjs PROFILE_JS
 const profile=JSON.parse(await readFile(resolve(profilePath),'utf8'));
 if(profile.version!==1||profile.state!=='collapsed'||profile.locale!=='en_US'||profile.appearance!=='light'||profile.contentSize!=='large')throw Error('Unsupported capture profile');
 const adapter=process.env.FIDELITY_ADAPTER??'html';
-if(!['html','react-static'].includes(adapter))throw Error('Unsupported adapter');
+if(!['html','react-static','react-literal-props'].includes(adapter))throw Error('Unsupported adapter');
 const referenceApproval=process.env.FIDELITY_REFERENCE_APPROVAL?JSON.parse(await readFile(resolve(process.env.FIDELITY_REFERENCE_APPROVAL),'utf8')):null;
 const root=resolve(output);if(!resume)await mkdir(root,{recursive:false});
 // Only one runner may update a journal. A dead owner can be reclaimed on explicit resume.
@@ -72,7 +72,7 @@ try{
  report.phase='app-verification';await save();
  const recognize=async path=>{try{const result=await runner.run(ocr,[path],{timeoutMs:30000});if(result.exitCode!==0)throw Error('OCR failed');return JSON.parse(result.stdout);}catch{return {unavailable:true,reason:'Local Vision text recognition failed or exceeded 30 seconds; no typography pass inferred'};}};
  report.adapter=adapter;
- const ir=adapter==='react-static'?await importReact(join(fixture,'App.tsx'),'FieldNotes'):await importHTML(join(fixture,'index.html'),'FieldNotes');
+ const ir=adapter!=='html'?await importReact(join(fixture,adapter==='react-literal-props'?'App.props.tsx':'App.tsx'),'FieldNotes'):await importHTML(join(fixture,'index.html'),'FieldNotes');
  const referenceIR=await importHTML(join(fixture,'index.html'),'FieldNotes');
  const normalize=async(input,rect,output)=>{const png=PNG.sync.read(await readFile(input)),out=new PNG({width:rect.width,height:rect.height});PNG.bitblt(png,out,rect.x,rect.y,rect.width,rect.height,0,0);await writeFile(output,PNG.sync.write(out));};
  async function makeCandidate(name,disclosureStyle){

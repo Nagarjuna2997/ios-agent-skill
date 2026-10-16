@@ -10,7 +10,7 @@ on:
       adapter:
         description: Static fixture adapter to verify
         type: choice
-        options: [html, react-static]
+        options: [html, react-static, react-literal-props]
         default: html
 defaults:
   run:
