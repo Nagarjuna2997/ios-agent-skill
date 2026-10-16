@@ -77,3 +77,15 @@ See [report](../evidence/xctest-capture/report.json), [summary](../evidence/xcte
 Hosted OCR ran, but its transcript differed from expected visible source, so typography remained unavailable. No known-good baseline was promoted. See the preserved [summary](../evidence/hosted-xctest-capture/summary.json), [report](../evidence/hosted-xctest-capture/report.json), [baseline](../evidence/hosted-xctest-capture/baseline/native-large.png), [candidate](../evidence/hosted-xctest-capture/candidate-1/native-large.png), and [hashes](../evidence/hosted-xctest-capture/hashes.json). Raw log bytes are preserved in gzip files.
 
 Next blocker: reliable per-text-region transcription/line measurement with explicit decorative-glyph handling and an independently verified known-good fixture. Do not loosen global transcript checks or promote a baseline solely to turn CI green. M2 remains partial; no merge or npm publication is justified by these results.
+
+## M2.1 region-based typography (partial)
+
+The new experiment maps source byte ranges through App IR to native leaf identifiers. DOM ranges and SwiftUI TextRenderer word attributes provide line boundaries; OCR is supporting evidence only. Decorative disclosure glyphs are excluded while meaningful punctuation is preserved. See the [architecture and manual reference-approval protocol](../../../docs/architecture/universal-app-engine.md#m21--deterministic-typography-verification-experimental).
+
+The corrected local capture built successfully and passed three native tests on Xcode 27.0 / iOS 27.0 / iPhone 18 Pro. All nine visible text regions had distinct IDs and complete word evidence. Container accessibility identifiers initially overwrote descendant IDs; the generator now omits them and a regression test covers this.
+
+The probe changed some text pixels by one channel level (mean absolute channel error 0.00000997403514). Strict pixel identity is retained, so typography remains **unavailable**; all derived region diagnostics are provisional. No reference approval or known-good baseline was created. This local run intentionally stopped after `baseline-large`; it is not a completed repair comparison or a resume-success claim. See [summary](../evidence/typography-regions/summary.json), [capture](../evidence/typography-regions/capture.json), [ordinary screenshot](../evidence/typography-regions/native-large.png), [probe screenshot](../evidence/typography-regions/probe-large.png) and [hashes](../evidence/typography-regions/hashes.json).
+
+The new hosted branch workflow executes the same adapter and interruption/resume path. Hosted results must be reported separately after completion. M2.1 is a draft measurement foundation, not a visual-fidelity pass, and does not authorize release or npm publication.
+
+Final local portable validation: 658 passed, zero failures, one skipped; 45 focused gate/typography/capture tests passed, and the DOM geometry/pixel-invariance test passed. Repository consistency and local-library checks passed. An earlier load-sensitive process-interruption test passed on isolated rerun; the final lower-concurrency full suite passed. No historical scores were changed.

@@ -1,0 +1,200 @@
+{
+  "tests": {
+    "sourceHash": "a5c40a19823d33af5ea12fdde62ea390ade77a6fb789d28524d173d4fe96f157",
+    "at": "2026-10-16T03:36:27.617Z",
+    "logPath": ".ios-agent/logs/test-6e555700-b38d-426e-92b4-9e463ed8db5c.log",
+    "resultBundle": ".ios-agent/test-results/6e555700-b38d-426e-92b4-9e463ed8db5c.xcresult",
+    "status": "passed",
+    "passed": 3,
+    "failed": 0,
+    "skipped": 0
+  },
+  "shot": {
+    "path": "/tmp/ios-m21-regions-final/baseline-4ee43fb9-bf26-403b-b0a3-a69bf48c61b3/.ios-agent/screenshots/large-cdafbaad-98a2-4e89-84d2-891e8861127e/338AA122-60C0-4592-AEB9-7A0A8845562E.png",
+    "source": "XCTest runningForeground collapsed-state attachment"
+  },
+  "geometry": {
+    "status": "passed",
+    "clippedElements": 0,
+    "regions": [],
+    "audit": "passed"
+  },
+  "typography": {
+    "regions": [
+      {
+        "id": "node-4",
+        "lines": [
+          [
+            0,
+            1,
+            2,
+            3,
+            4
+          ]
+        ],
+        "text": "FIELD NOTES \u00b7 WEEKEND EDITION",
+        "truncated": false
+      },
+      {
+        "id": "node-5",
+        "lines": [
+          [
+            0,
+            1,
+            2
+          ],
+          [
+            3,
+            4
+          ]
+        ],
+        "text": "A little closer to nature.",
+        "truncated": false
+      },
+      {
+        "id": "node-6",
+        "lines": [
+          [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          [
+            7,
+            8,
+            9,
+            10
+          ]
+        ],
+        "text": "Three quiet trails, one good weekend. Your next walk starts here.",
+        "truncated": false
+      },
+      {
+        "id": "node-8",
+        "lines": [
+          [
+            0,
+            1,
+            2
+          ]
+        ],
+        "text": "THIS WEEK'S WALK",
+        "truncated": false
+      },
+      {
+        "id": "node-9",
+        "lines": [
+          [
+            0,
+            1
+          ]
+        ],
+        "text": "Cedar Loop",
+        "truncated": false
+      },
+      {
+        "id": "node-10",
+        "lines": [
+          [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        ],
+        "text": "4.2 miles \u00b7 Easy \u00b7 90 minutes",
+        "truncated": false
+      },
+      {
+        "id": "node-11",
+        "lines": [
+          [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          [
+            8,
+            9,
+            10,
+            11
+          ]
+        ],
+        "text": "A shaded path through tall cedars, with a quiet river stop halfway.",
+        "truncated": false
+      },
+      {
+        "id": "node-14",
+        "lines": [
+          [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          [
+            7,
+            8
+          ]
+        ],
+        "text": "Synthetic demo content. No account or location permission needed.",
+        "truncated": false
+      },
+      {
+        "id": "node-12",
+        "lines": [
+          [
+            0,
+            1,
+            2
+          ]
+        ],
+        "text": "Before you go",
+        "truncated": false
+      }
+    ],
+    "version": 1
+  },
+  "probe": "/tmp/ios-m21-regions-final/baseline-4ee43fb9-bf26-403b-b0a3-a69bf48c61b3/.ios-agent/screenshots/large-cdafbaad-98a2-4e89-84d2-891e8861127e/85F1381F-75FB-4510-910C-9E249D5D33B5.png",
+  "probeComparison": {
+    "schemaVersion": 1,
+    "referenceHash": "366a9c1778bdd2ff77f8f371cdb9c440d31d013c7b50f3362e028f09e0764afd",
+    "nativeHash": "302fb6b1ba21f626d7fb0d21ba05aea7873ffc18c9a342ed547131aaf0d4d54f",
+    "referenceRegion": {
+      "x": 0,
+      "y": 0,
+      "width": 1206,
+      "height": 2622
+    },
+    "nativeRegion": {
+      "x": 0,
+      "y": 0,
+      "width": 1206,
+      "height": 2622
+    },
+    "meanAbsoluteChannelError": 9.974035140302336e-06,
+    "changedPixelFraction": 0,
+    "channelThreshold": 8,
+    "verdict": "requires-review",
+    "limitations": [
+      "Pixel differences include font rasterization and native control rendering.",
+      "No functional, accessibility or perceptual equivalence inferred.",
+      "No resizing, registration or hidden cropping performed."
+    ]
+  }
+}

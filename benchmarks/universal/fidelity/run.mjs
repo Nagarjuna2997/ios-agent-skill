@@ -1,4 +1,6 @@
 // One local HTML adapter; evidence, checkpoint and acceptance contracts are framework-independent.
+import {annotateTextRegions,compareTextRegions} from '../../../mcp-server/dist/app-ir/typography.js';
+import {captureDOMTypography} from './dom-typography.mjs';
 import {readFile,writeFile,mkdir,copyFile,rename,readdir,open,unlink} from 'node:fs/promises';
 import {join,resolve,dirname} from 'node:path';
 import {randomUUID} from 'node:crypto';
@@ -22,6 +24,7 @@ const [profilePath,output,flag]=process.argv.slice(2);const resume=flag==='--res
 if(!profilePath||!output||(flag&&!resume))throw Error('Usage: run.mjs PROFILE_JSON OUTPUT [--resume]');
 const profile=JSON.parse(await readFile(resolve(profilePath),'utf8'));
 if(profile.version!==1||profile.state!=='collapsed'||profile.locale!=='en_US'||profile.appearance!=='light'||profile.contentSize!=='large')throw Error('Unsupported capture profile');
+const referenceApproval=process.env.FIDELITY_REFERENCE_APPROVAL?JSON.parse(await readFile(resolve(process.env.FIDELITY_REFERENCE_APPROVAL),'utf8')):null;
 const root=resolve(output);if(!resume)await mkdir(root,{recursive:false});
 // Only one runner may update a journal. A dead owner can be reclaimed on explicit resume.
 const lockPath=join(root,'run.lock');let lock;
@@ -49,7 +52,7 @@ try{
  const environment={xcode,sdk,runtimeBuild:runtime.buildversion,browser:browser.version(),host:await command('sw_vers',['-buildVersion'])};
  const inputs=[...await files(resolve(here,'../../../mcp-server/dist')),...await files(fixture),...await files(here)].filter(f=>!f.includes('/node_modules/'));
  const inputHashes=[];for(const f of inputs)inputHashes.push([f.slice(resolve(here,'../../..').length),sha256(await readFile(f))]);
- const contract=sha256(JSON.stringify({profile,environment,inputHashes}));
+ const contract=sha256(JSON.stringify({profile,environment,inputHashes,referenceApproval}));
  if(resume&&report.contract!==contract)throw Error('Run inputs, verifier or environment changed; use a new output directory');
  if(report.error){report.interruptions=[...(report.interruptions??[]),{error:report.error,resumedAt:new Date().toISOString()}];delete report.error;}
  report.contract=contract;report.environment=environment;report.status='running';await save();
@@ -65,7 +68,7 @@ try{
  const normalize=async(input,rect,output)=>{const png=PNG.sync.read(await readFile(input)),out=new PNG({width:rect.width,height:rect.height});PNG.bitblt(png,out,rect.x,rect.y,rect.width,rect.height,0,0);await writeFile(output,PNG.sync.write(out));};
  async function makeCandidate(name,disclosureStyle){
   const generated=await journal.stage(name+'-generate',async()=>{
-   const folder=join(root,name+'-'+randomUUID());const generation=await generateProject(ir,folder,{disclosureStyle});
+   const folder=join(root,name+'-'+randomUUID());const generation=await generateProject(ir,folder,{disclosureStyle,instrumentTypography:true});
    const spec=await readSpec(folder);spec.tests=true;await writeSpec(folder,spec);
    for(const suffix of ['Tests','UITests'])await mkdir(join(folder,'FieldNotes'+suffix),{recursive:true});
    await copyFile(join(fixture,'InteractionTests.swift'),join(folder,'FieldNotesUITests/InteractionTests.swift'));await regenerate(folder,spec,runner);
@@ -84,9 +87,13 @@ try{
     const manifest=join(exports,'manifest.json');
     const capture=selectVerifiedCapture(JSON.parse(await readFile(manifest,'utf8')),udid,tests.status);
     const shot={path:join(exports,capture),source:'XCTest runningForeground collapsed-state attachment'};
+    const probe=join(exports,selectVerifiedCapture(JSON.parse(await readFile(manifest,'utf8')),udid,tests.status,'typography'));
+    const probeComparison=comparePNGs(await readFile(shot.path),await readFile(probe)).report;
     const text=await readFile(log,'utf8'),match=text.match(/IOS_AGENT_GEOMETRY:(\{[^\n]+\})/);
     let geometry=null;if(match)geometry=measureClipping(JSON.parse(match[1]));
-    return {value:{tests,shot,geometry},files:[log,manifest,shot.path]};
+    const textMatch=text.match(/IOS_AGENT_TYPOGRAPHY:(\{[^\n]+\})/);
+    const typography=textMatch?JSON.parse(textMatch[1]):null;
+    return {value:{tests,shot,geometry,typography,probe,probeComparison},files:[log,manifest,shot.path,probe]};
    });await save();
   }
   await command('xcrun',['simctl','ui',udid,'content_size','large']);
@@ -96,31 +103,32 @@ try{
    if(!Number.isInteger(cropHeight)||cropHeight<=0)throw Error('Invalid crop');
    const crops={reference:{x:0,y:0,width,height:cropHeight},native:{x:0,y:profile.safeAreaTop*profile.scale,width,height:cropHeight}};
    const page=await browser.newPage({viewport:{width:width/profile.scale,height:cropHeight/profile.scale},deviceScaleFactor:profile.scale,locale:'en-US',colorScheme:'light',reducedMotion:'reduce'});
-   await page.route('**/*',r=>r.request().url().startsWith('file:')?r.continue():r.abort());await page.goto(pathToFileURL(join(fixture,'index.html')).href);await page.evaluate(()=>document.fonts.ready);
+   await page.route('**/*',r=>r.request().url().startsWith('file:')?r.continue():r.abort());await page.setContent(annotateTextRegions(await readFile(join(fixture,'index.html'),'utf8'),ir));await page.evaluate(()=>document.fonts.ready);
    const path=join(root,'reference.png');await page.screenshot({path});
-   const expected=await page.locator('body').innerText();await page.close();
+   const expected=await page.locator('body').innerText();const regions=await captureDOMTypography(page);await page.close();
    const recognized=await recognize(path);const ocrPath=join(root,'reference-text.json');await atomic(ocrPath,recognized);
    const pins={device:profile.deviceType,os:runtime.identifier+' '+runtime.buildversion,xcode,appearance:profile.appearance,contentSize:profile.contentSize,locale:profile.locale,orientation:'portrait',state:profile.state,width,height,scale:profile.scale,fontConfiguration:profile.fontConfiguration,referenceRenderer:environment.browser+' host '+environment.host,normalizationHash:sha256(JSON.stringify(crops))};
-   return {value:{path,recognized,expected,crops,pins},files:[path,ocrPath]};
+   return {value:{path,recognized,expected,regions,crops,pins},files:[path,ocrPath]};
   });
   const evidence=await journal.stage(name+'-measurement',async()=>{
    const ref=await readFile(reference.path),comparison=comparePNGs(ref,native,reference.crops);
    const diff=join(folder,'difference.png');await writeFile(diff,comparison.diff);
    const normalized=join(folder,'normalized.png');await normalize(row.large.shot.path,reference.crops.native,normalized);
-   const recognized=reference.recognized.unavailable?{unavailable:true,reason:'Reference recognition unavailable'}:await recognize(normalized);const typography=reference.recognized.unavailable||recognized.unavailable?{status:'unavailable',mismatches:null,reason:'Local OCR unavailable'}:measureLineBreaks(reference.recognized,recognized,reference.expected);
+   const recognized=reference.recognized.unavailable?{unavailable:true,reason:'Reference recognition unavailable'}:await recognize(normalized);const supportingOCR=reference.recognized.unavailable||recognized.unavailable?{status:'unavailable',mismatches:null,reason:'Local OCR unavailable'}:measureLineBreaks(reference.recognized,recognized,reference.expected);
+   const typography=compareTextRegions(reference.regions,row.large.typography,row.large.probeComparison.meanAbsoluteChannelError===0);
    const geometry=[row.large.geometry,row.xxxl.geometry];const layout=geometry.some(g=>g?.status==='failed')?'failed':geometry.every(g=>g?.status==='passed')?'passed':'unavailable';
    const clipped=geometry.every(g=>g?.clippedElements!==null&&g?.clippedElements!==undefined)?geometry.reduce((n,g)=>n+g.clippedElements,0):null;
-   const measurement={comparison:comparison.report,typography,geometry,recognized};const measurementPath=join(folder,'measurement.json');await atomic(measurementPath,measurement);
+   const measurement={comparison:comparison.report,typography,supportingOCR,geometry,recognized,referenceRegions:reference.regions,nativeRegions:row.large.typography,probeComparison:row.large.probeComparison};const measurementPath=join(folder,'measurement.json');await atomic(measurementPath,measurement);
    const checksPassed=row.large.tests.status==='passed'&&row.xxxl.tests.status==='passed';
-   const artifacts={};for(const file of [row.build.logPath,join(folder,row.large.tests.logPath),join(folder,row.xxxl.tests.logPath),row.large.shot.path,row.xxxl.shot.path,diff,measurementPath])artifacts[file]=sha256(await readFile(file));
+   const artifacts={};for(const file of [row.build.logPath,join(folder,row.large.tests.logPath),join(folder,row.xxxl.tests.logPath),row.large.shot.path,row.xxxl.shot.path,row.large.probe,row.xxxl.probe,diff,measurementPath])artifacts[file]=sha256(await readFile(file));
    return {value:{version:1,sourceHash:row.sourceHash,referenceHash:sha256(ref),screenshotHash:sha256(native),pins:reference.pins,build:'passed',functionality:checksPassed?'passed':'failed',accessibility:checksPassed?'passed':'unavailable',layout,typography:typography.status,testsPassed:Math.min(row.large.tests.passed,row.xxxl.tests.passed),accessibilityIssues:checksPassed?0:null,clippedElements:clipped,lineBreakMismatches:typography.mismatches,meanError:comparison.report.meanAbsoluteChannelError,changedFraction:comparison.report.changedPixelFraction,artifactsHash:sha256(JSON.stringify(artifacts))},files:[diff,normalized,measurementPath]};
   });row.evidence=evidence;await save();return evidence;
  }
  const baseline=await makeCandidate('baseline','platform');report.baseline=baseline;
- try{report.knownGood=seedKnownGood(baseline,profile.policy);}catch{report.knownGood=null;}
- report.repair=await repairWithGate({directory:join(root,'repairs'),baseline,policy:profile.policy,maxAttempts:1,resumeInterrupted:true,verifySavedEvidence:async saved=>{const current=await makeCandidate('candidate-1','leading');if(JSON.stringify(VisualEvidenceSchema.parse(current))!==JSON.stringify(VisualEvidenceSchema.parse(saved)))throw Error('Saved candidate evidence differs from verified checkpoints');},verifyCandidate:async()=>{try{return await makeCandidate('candidate-1','leading');}catch(error){report.candidateFailure={phase:'verification',message:String(error.message).slice(0,2000)};await save();throw error;}}});
- if(report.repair.acceptedAttempt){const candidate=report.repair.attempts.find(a=>a.number===report.repair.acceptedAttempt).evidence;report.knownGood=report.knownGood?advanceKnownGood(report.knownGood,candidate,profile.policy).baseline:seedKnownGood(candidate,profile.policy);}
- report.status=report.repair.outcome;report.limitations=['OCR cannot establish wrapping when source transcript or confidence differs.','Geometry covers text frames and Apple text-clipping audit, not arbitrary images, shadows or occlusion.','Known-good is null until baseline meets every quality requirement.'];await save();
+ try{report.knownGood=seedKnownGood(baseline,profile.policy,referenceApproval);}catch{report.knownGood=null;}
+ report.repair=await repairWithGate({directory:join(root,'repairs'),referenceApproval,baseline,policy:profile.policy,maxAttempts:1,resumeInterrupted:true,verifySavedEvidence:async saved=>{const current=await makeCandidate('candidate-1','leading');if(JSON.stringify(VisualEvidenceSchema.parse(current))!==JSON.stringify(VisualEvidenceSchema.parse(saved)))throw Error('Saved candidate evidence differs from verified checkpoints');},verifyCandidate:async()=>{try{return await makeCandidate('candidate-1','leading');}catch(error){report.candidateFailure={phase:'verification',message:String(error.message).slice(0,2000)};await save();throw error;}}});
+ if(report.repair.acceptedAttempt){const candidate=report.repair.attempts.find(a=>a.number===report.repair.acceptedAttempt).evidence;report.knownGood=report.knownGood?advanceKnownGood(report.knownGood,candidate,profile.policy,referenceApproval).baseline:seedKnownGood(candidate,profile.policy,referenceApproval);}
+ report.status=report.repair.outcome;report.limitations=['Typography is restricted to traced plain-text LTR English regions at default text size; OCR is supporting evidence only.','Probe pixels must match normal rendering exactly; otherwise region measurements remain provisional.','Geometry covers text frames and Apple text-clipping audit, not arbitrary images, shadows or occlusion.','Known-good requires every quality gate plus a matching manual reference approval; no approval is generated automatically.'];await save();
  process.exitCode=report.status==='accepted'?0:report.status==='requires-review'?2:1;
 }catch(error){report.status='failed';report.error=error.message;process.exitCode=1;}
 finally{if(browser)await browser.close();if(udid){await runner.run('xcrun',['simctl','shutdown',udid]);await runner.run('xcrun',['simctl','delete',udid]);}await save();await unlink(lockPath);console.log(JSON.stringify({status:report.status,report:join(root,'report.json')},null,2));}

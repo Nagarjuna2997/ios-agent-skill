@@ -14,3 +14,9 @@ test('rejects foreign device, failure attachments and unsafe paths',()=>{
   const e=entry();Object.assign(e.attachments[0],patch);assert.throws(()=>selectVerifiedCapture([e],'device','passed'));
  }
 });
+test('probe and ordinary captures cannot substitute for each other',()=>{
+ const e=entry();e.attachments.push({...e.attachments[0],exportedFileName:'probe.png',suggestedHumanReadableName:'verified-typography_0.png'});
+ assert.equal(selectVerifiedCapture([e],'device','passed','typography'),'probe.png');
+ assert.equal(selectVerifiedCapture([e],'device','passed'),'capture-1.png');
+ assert.throws(()=>selectVerifiedCapture([entry()],'device','passed','typography'));
+});

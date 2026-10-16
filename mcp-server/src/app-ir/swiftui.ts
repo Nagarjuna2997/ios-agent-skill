@@ -1,3 +1,4 @@
+import {typographyProbeSwift} from './typography-probe.js';
 import { mkdir, writeFile, lstat } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { AppIRSchema, sha256, type AppIR } from './schema.js';
@@ -7,7 +8,7 @@ import { ProcessRunner } from '../agent/runner.js';
 export const swiftString = (s: string): string => '"' + [...s].map(c => c === '\\' ? '\\\\' : c === '"' ? '\\"' : c.codePointAt(0)! < 32 || c.codePointAt(0) === 127 ? `\\u{${c.codePointAt(0)!.toString(16)}}` : c).join('') + '"';
 const color = (s: string) => `Color(red: ${parseInt(s.slice(1,3),16)/255}, green: ${parseInt(s.slice(3,5),16)/255}, blue: ${parseInt(s.slice(5,7),16)/255})`;
 /** Deterministic rendering for the supported IR subset; no model or web wrapper. */
-export function renderSwiftUI(value: unknown, options: { disclosureStyle?: "platform" | "leading" } = {}): {source: string; mappings: Array<{node: string; symbol: string; evidence: AppIR['nodes'][number]['evidence']}>} {
+export function renderSwiftUI(value: unknown, options: { disclosureStyle?: "platform" | "leading"; instrumentTypography?: boolean } = {}): {source: string; mappings: Array<{node: string; symbol: string; evidence: AppIR['nodes'][number]['evidence']}>} {
   const ir = AppIRSchema.parse(value);
   if (ir.screens.length !== 1) throw Error('SwiftUI prototype supports one screen; multiple-screen navigation is not implemented');
   if (ir.limitations.length) throw Error('Resolve unsupported input before generating. Inspect IR limitations; no lossy conversion is implicit.');
@@ -16,8 +17,9 @@ export function renderSwiftUI(value: unknown, options: { disclosureStyle?: "plat
   const views = ir.nodes.map(n => {
     const s = n.style;
     const children = n.children.map(c => `            ${symbol(c)}`).join('\n');
-    let view = n.kind === 'text' ? `Text(verbatim: ${swiftString(n.text!)})` : n.kind === 'disclosure'
-      ? `DisclosureGroup(isExpanded: $expanded_${symbol(n.id)}) {\n${children}\n        } label: { Text(verbatim: ${swiftString(n.text!)}) }`
+    const textView = options.instrumentTypography ? `MeasuredText(nodeID: ${swiftString(n.id)}, content: ${swiftString(n.text ?? '')})` : `Text(verbatim: ${swiftString(n.text ?? '')})`;
+    let view = n.kind === 'text' ? textView : n.kind === 'disclosure'
+      ? `DisclosureGroup(isExpanded: $expanded_${symbol(n.id)}) {\n${children}\n        } label: { ${textView} }`
       : `VStack(alignment: ${s.centered ? '.center' : '.leading'}, spacing: ${s.gap ?? 12}) {\n${children}\n        }`;
     if (n.kind === 'disclosure' && options.disclosureStyle === 'leading') view += '\n        .disclosureGroupStyle(ImportedDisclosureStyle())';
     if (s.fontSize) view += `\n        .font(.system(size: scaled_${symbol(n.id)}, weight: ${s.bold ? '.bold' : '.regular'}))`;
@@ -28,7 +30,8 @@ export function renderSwiftUI(value: unknown, options: { disclosureStyle?: "plat
     view += `\n        .frame(maxWidth: .infinity, alignment: ${s.centered ? '.center' : '.leading'})`;
     if (s.background) view += `\n        .background(${color(s.background)})`;
     if (s.radius) view += `\n        .clipShape(RoundedRectangle(cornerRadius: ${s.radius}))`;
-    view += `\n        .accessibilityIdentifier(${swiftString(n.id)})`;
+    // Container identifiers propagate to descendants in XCTest; identify leaf controls only.
+    if (n.kind !== 'column') view += `\n        .accessibilityIdentifier(${swiftString(n.id)})`;
     return `    private var ${symbol(n.id)}: some View {\n        ${view}\n    }`;
   }).join('\n\n');
   const root = ir.nodes.find(n => n.id === ir.screens[0]!.root)!;
@@ -57,9 +60,9 @@ private struct ImportedDisclosureStyle: DisclosureGroupStyle {
     }
 }
 ` : '';
-  return {source:`import SwiftUI\n\nstruct RootView: View {\n${state}\n${scales}\n    var body: some View {\n        ScrollView { ${symbol(root.id)} }\n        ${root.style.background ? `.background(${color(root.style.background)}.ignoresSafeArea())` : ''}\n    }\n\n${views}\n}\n\n${disclosureStyle}\n#Preview { RootView() }\n`,mappings:ir.nodes.map(n => ({node:n.id,symbol:symbol(n.id),evidence:n.evidence}))};
+  return {source:`import SwiftUI\n\nstruct RootView: View {\n${state}\n${scales}\n    var body: some View {\n        ScrollView { ${symbol(root.id)} }\n        ${root.style.background ? `.background(${color(root.style.background)}.ignoresSafeArea())` : ''}\n    }\n\n${views}\n}\n\n${disclosureStyle}\n${options.instrumentTypography ? typographyProbeSwift : ''}\n#Preview { RootView() }\n`,mappings:ir.nodes.map(n => ({node:n.id,symbol:symbol(n.id),evidence:n.evidence}))};
 }
-export async function generateProject(value: unknown, output: string, options: { disclosureStyle?: "platform" | "leading" } = {}): Promise<{project: string; sourceHash: string; status: 'generated-unverified'}> {
+export async function generateProject(value: unknown, output: string, options: { disclosureStyle?: "platform" | "leading"; instrumentTypography?: boolean } = {}): Promise<{project: string; sourceHash: string; status: 'generated-unverified'}> {
   const ir = AppIRSchema.parse(value);
   const rendered = renderSwiftUI(ir, options); // Reject unsupported inputs before writes.
   const root = resolve(output);
