@@ -13,5 +13,7 @@ export async function applyUIKitCandidate(source,ir,ids){
   if(source.split(old).length!==2)throw Error('Expected exactly one generated text expression');
   source=source.replace(old,`FidelityNativeText(nodeID: ${swiftString(id)}, content: ${swiftString(node.text)}, size: scaled_node_${id.replaceAll('-','_')}, bold: ${!!node.style.bold}, color: UIColor(red: ${rgb[0]}, green: ${rgb[1]}, blue: ${rgb[2]}, alpha: 1), centered: ${!!inherited.centered})`);
  }
- return source.replace('import SwiftUI','import SwiftUI\nimport UIKit')+'\n'+await readFile(new URL('./UIKitText.swift',import.meta.url),'utf8');
+ source=source.replace('ScrollView {', 'if ProcessInfo.processInfo.arguments.contains("-fidelity-live-text") { FidelityLiveTextHarness() } else { ScrollView {');
+ const end=source.indexOf('\n    }',source.indexOf('var body: some View'));if(end<0)throw Error('Generated root body missing');source=source.slice(0,end)+'\n        }'+source.slice(end);
+ return source.replace('import SwiftUI','import SwiftUI\nimport UIKit')+'\n'+await readFile(new URL('./UIKitText.swift',import.meta.url),'utf8')+'\n'+await readFile(new URL('./LiveTextHarness.swift',import.meta.url),'utf8');
 }
