@@ -1,0 +1,1046 @@
+{
+  "version": 2,
+  "profile": {
+    "version": 1,
+    "xcode": "26.5",
+    "sdk": "26.5",
+    "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-26-5",
+    "deviceType": "com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro",
+    "appearance": "light",
+    "contentSize": "large",
+    "locale": "en_US",
+    "scale": 3,
+    "safeAreaTop": 62,
+    "safeAreaBottom": 34,
+    "state": "collapsed",
+    "fontConfiguration": "system-ui browser / SwiftUI system, default weight; Dynamic Type large",
+    "policy": {
+      "version": 1,
+      "maxMeanError": 0.02,
+      "maxChangedFraction": 0.1,
+      "maxLineBreakMismatches": 0,
+      "minimumImprovement": 0.001
+    },
+    "xcodeBuild": "17F42"
+  },
+  "startedAt": "2026-10-16T05:52:33.243Z",
+  "status": "rejected",
+  "runs": [
+    {
+      "name": "baseline",
+      "folder": "/Users/runner/work/_temp/fidelity-evidence/baseline-cdad7680-d6fb-4b61-a17e-f34a4de97cb1",
+      "sourceHash": "4002c3ab7b6556b5eecd50de59243de8f60ccd15b379c24354a9985d336d00be",
+      "build": {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "durationMs": 32030,
+        "scheme": "FieldNotes",
+        "destination": "platform=iOS Simulator,id=73EF8406-C5F2-4B48-B5DC-4EBB329C058A",
+        "appPath": "/Users/runner/work/_temp/fidelity-evidence/baseline-cdad7680-d6fb-4b61-a17e-f34a4de97cb1/.ios-agent/DerivedData/Build/Products/Debug-iphonesimulator/FieldNotes.app",
+        "logPath": "/Users/runner/work/_temp/fidelity-evidence/baseline-cdad7680-d6fb-4b61-a17e-f34a4de97cb1/.ios-agent/logs/build-1792130115151.log"
+      },
+      "large": {
+        "tests": {
+          "sourceHash": "a7d0b1adbc1500ca34aae30f3609c1d60028c10bfedd558dccbac6f07656beb7",
+          "at": "2026-10-16T05:58:06.007Z",
+          "logPath": ".ios-agent/logs/test-2d3966c4-1d0d-4a8d-b059-1475d2a13de5.log",
+          "resultBundle": ".ios-agent/test-results/2d3966c4-1d0d-4a8d-b059-1475d2a13de5.xcresult",
+          "status": "passed",
+          "passed": 3,
+          "failed": 0,
+          "skipped": 0
+        },
+        "shot": {
+          "path": "/Users/runner/work/_temp/fidelity-evidence/baseline-cdad7680-d6fb-4b61-a17e-f34a4de97cb1/.ios-agent/screenshots/large-25521aa7-37bf-4156-829e-8b3439ab42e9/B3E8E9E6-DE79-4780-BC44-59B02E829E7C.png",
+          "source": "XCTest runningForeground collapsed-state attachment"
+        },
+        "geometry": {
+          "status": "passed",
+          "clippedElements": 0,
+          "regions": [],
+          "audit": "passed"
+        },
+        "typography": {
+          "regions": [
+            {
+              "id": "node-4",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4
+                ]
+              ],
+              "text": "FIELD NOTES · WEEKEND EDITION",
+              "truncated": false
+            },
+            {
+              "id": "node-5",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2
+                ],
+                [
+                  3,
+                  4
+                ]
+              ],
+              "text": "A little closer to nature.",
+              "truncated": false
+            },
+            {
+              "id": "node-6",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6
+                ],
+                [
+                  7,
+                  8,
+                  9,
+                  10
+                ]
+              ],
+              "text": "Three quiet trails, one good weekend. Your next walk starts here.",
+              "truncated": false
+            },
+            {
+              "id": "node-8",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ],
+              "text": "THIS WEEK'S WALK",
+              "truncated": false
+            },
+            {
+              "id": "node-9",
+              "lines": [
+                [
+                  0,
+                  1
+                ]
+              ],
+              "text": "Cedar Loop",
+              "truncated": false
+            },
+            {
+              "id": "node-10",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6
+                ]
+              ],
+              "text": "4.2 miles · Easy · 90 minutes",
+              "truncated": false
+            },
+            {
+              "id": "node-11",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6,
+                  7
+                ],
+                [
+                  8,
+                  9,
+                  10,
+                  11
+                ]
+              ],
+              "text": "A shaded path through tall cedars, with a quiet river stop halfway.",
+              "truncated": false
+            },
+            {
+              "id": "node-14",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6
+                ],
+                [
+                  7,
+                  8
+                ]
+              ],
+              "text": "Synthetic demo content. No account or location permission needed.",
+              "truncated": false
+            },
+            {
+              "id": "node-12",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ],
+              "text": "Before you go",
+              "truncated": false
+            }
+          ],
+          "version": 1
+        },
+        "probe": "/Users/runner/work/_temp/fidelity-evidence/baseline-cdad7680-d6fb-4b61-a17e-f34a4de97cb1/.ios-agent/screenshots/large-25521aa7-37bf-4156-829e-8b3439ab42e9/C4C37984-C26D-4017-B014-9D58DF87B043.png",
+        "probeComparison": {
+          "schemaVersion": 1,
+          "referenceHash": "c36a2db4ea2c3ed45ac5d1fdb51fd802436edc5a12c3825261458c0838897a2b",
+          "nativeHash": "c36a2db4ea2c3ed45ac5d1fdb51fd802436edc5a12c3825261458c0838897a2b",
+          "referenceRegion": {
+            "x": 0,
+            "y": 0,
+            "width": 1206,
+            "height": 2622
+          },
+          "nativeRegion": {
+            "x": 0,
+            "y": 0,
+            "width": 1206,
+            "height": 2622
+          },
+          "meanAbsoluteChannelError": 0,
+          "changedPixelFraction": 0,
+          "channelThreshold": 8,
+          "verdict": "requires-review",
+          "limitations": [
+            "Pixel differences include font rasterization and native control rendering.",
+            "No functional, accessibility or perceptual equivalence inferred.",
+            "No resizing, registration or hidden cropping performed."
+          ]
+        }
+      },
+      "xxxl": {
+        "tests": {
+          "sourceHash": "a7d0b1adbc1500ca34aae30f3609c1d60028c10bfedd558dccbac6f07656beb7",
+          "at": "2026-10-16T06:03:00.554Z",
+          "logPath": ".ios-agent/logs/test-296a60f4-5aa4-423a-8422-8584c499169e.log",
+          "resultBundle": ".ios-agent/test-results/296a60f4-5aa4-423a-8422-8584c499169e.xcresult",
+          "status": "passed",
+          "passed": 3,
+          "failed": 0,
+          "skipped": 0
+        },
+        "shot": {
+          "path": "/Users/runner/work/_temp/fidelity-evidence/baseline-cdad7680-d6fb-4b61-a17e-f34a4de97cb1/.ios-agent/screenshots/xxxl-2b27a599-e971-4b18-b9d8-cd2e1d4a7e23/B5B9A46B-E6A5-4DB0-87D0-3BD087D012E2.png",
+          "source": "XCTest runningForeground collapsed-state attachment"
+        },
+        "geometry": {
+          "status": "passed",
+          "clippedElements": 0,
+          "regions": [],
+          "audit": "passed"
+        },
+        "typography": {
+          "regions": [
+            {
+              "id": "node-4",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4
+                ]
+              ],
+              "text": "FIELD NOTES · WEEKEND EDITION",
+              "truncated": false
+            },
+            {
+              "id": "node-5",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2
+                ],
+                [
+                  3,
+                  4
+                ]
+              ],
+              "text": "A little closer to nature.",
+              "truncated": false
+            },
+            {
+              "id": "node-6",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4
+                ],
+                [
+                  5,
+                  6,
+                  7,
+                  8,
+                  9
+                ],
+                [
+                  10
+                ]
+              ],
+              "text": "Three quiet trails, one good weekend. Your next walk starts here.",
+              "truncated": false
+            },
+            {
+              "id": "node-8",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ],
+              "text": "THIS WEEK'S WALK",
+              "truncated": false
+            },
+            {
+              "id": "node-9",
+              "lines": [
+                [
+                  0,
+                  1
+                ]
+              ],
+              "text": "Cedar Loop",
+              "truncated": false
+            },
+            {
+              "id": "node-10",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6
+                ]
+              ],
+              "text": "4.2 miles · Easy · 90 minutes",
+              "truncated": false
+            },
+            {
+              "id": "node-11",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4
+                ],
+                [
+                  5,
+                  6,
+                  7,
+                  8,
+                  9,
+                  10
+                ],
+                [
+                  11
+                ]
+              ],
+              "text": "A shaded path through tall cedars, with a quiet river stop halfway.",
+              "truncated": false
+            },
+            {
+              "id": "node-14",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5
+                ],
+                [
+                  6,
+                  7,
+                  8
+                ]
+              ],
+              "text": "Synthetic demo content. No account or location permission needed.",
+              "truncated": false
+            },
+            {
+              "id": "node-12",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ],
+              "text": "Before you go",
+              "truncated": false
+            }
+          ],
+          "version": 1
+        },
+        "probe": "/Users/runner/work/_temp/fidelity-evidence/baseline-cdad7680-d6fb-4b61-a17e-f34a4de97cb1/.ios-agent/screenshots/xxxl-2b27a599-e971-4b18-b9d8-cd2e1d4a7e23/4E0A8511-A71A-403D-B7BF-B0C259430FDA.png",
+        "probeComparison": {
+          "schemaVersion": 1,
+          "referenceHash": "c9ba92ce4bdfcdc21619f5479db74b3d6bebcb4f4c408db09980f10678504d09",
+          "nativeHash": "c9ba92ce4bdfcdc21619f5479db74b3d6bebcb4f4c408db09980f10678504d09",
+          "referenceRegion": {
+            "x": 0,
+            "y": 0,
+            "width": 1206,
+            "height": 2622
+          },
+          "nativeRegion": {
+            "x": 0,
+            "y": 0,
+            "width": 1206,
+            "height": 2622
+          },
+          "meanAbsoluteChannelError": 0,
+          "changedPixelFraction": 0,
+          "channelThreshold": 8,
+          "verdict": "requires-review",
+          "limitations": [
+            "Pixel differences include font rasterization and native control rendering.",
+            "No functional, accessibility or perceptual equivalence inferred.",
+            "No resizing, registration or hidden cropping performed."
+          ]
+        }
+      },
+      "evidence": {
+        "version": 1,
+        "sourceHash": "4002c3ab7b6556b5eecd50de59243de8f60ccd15b379c24354a9985d336d00be",
+        "referenceHash": "399655fb5bc9f92b75374a06da5f72a8e17a268fc27ae2794fbd20565cdf7b9c",
+        "screenshotHash": "c36a2db4ea2c3ed45ac5d1fdb51fd802436edc5a12c3825261458c0838897a2b",
+        "pins": {
+          "device": "com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro",
+          "os": "com.apple.CoreSimulator.SimRuntime.iOS-26-5 23F77",
+          "xcode": "Xcode 26.5\nBuild version 17F42",
+          "appearance": "light",
+          "contentSize": "large",
+          "locale": "en_US",
+          "orientation": "portrait",
+          "state": "collapsed",
+          "width": 1206,
+          "height": 2622,
+          "scale": 3,
+          "fontConfiguration": "system-ui browser / SwiftUI system, default weight; Dynamic Type large",
+          "referenceRenderer": "151.0.7922.34 host 25G83",
+          "normalizationHash": "05690da7e6342fe85dd2540e5da46a4a0b7f28038b145b36d001a122edd8b970"
+        },
+        "build": "passed",
+        "functionality": "passed",
+        "accessibility": "passed",
+        "layout": "passed",
+        "typography": "failed",
+        "testsPassed": 3,
+        "accessibilityIssues": 0,
+        "clippedElements": 0,
+        "lineBreakMismatches": 2,
+        "meanError": 0.01849445108858762,
+        "changedFraction": 0.0704759549865639,
+        "artifactsHash": "8bf15de234aa42e47a58532eb06c9b0281e4597592e7e290f61336eb7f38b65b"
+      }
+    },
+    {
+      "name": "candidate-1",
+      "folder": "/Users/runner/work/_temp/fidelity-evidence/candidate-1-ccb5e11c-74d9-4805-9e44-327ad27b958d",
+      "sourceHash": "6a1e86d6ca988c6e418756596ed54cac3278e18a90bf9147c1f524c2907eb34e",
+      "build": {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "durationMs": 15034,
+        "scheme": "FieldNotes",
+        "destination": "platform=iOS Simulator,id=811E2041-2635-4D03-9AC8-17C8CCF8BE0C",
+        "appPath": "/Users/runner/work/_temp/fidelity-evidence/candidate-1-ccb5e11c-74d9-4805-9e44-327ad27b958d/.ios-agent/DerivedData/Build/Products/Debug-iphonesimulator/FieldNotes.app",
+        "logPath": "/Users/runner/work/_temp/fidelity-evidence/candidate-1-ccb5e11c-74d9-4805-9e44-327ad27b958d/.ios-agent/logs/build-1792130591161.log"
+      },
+      "large": {
+        "tests": {
+          "sourceHash": "7cd750c3cda57eb56d56bc4087e243bbf4d669c853b554e4bddab08b09d4f4f8",
+          "at": "2026-10-16T06:05:07.323Z",
+          "logPath": ".ios-agent/logs/test-95e418ad-d254-4dc5-854d-747cd34a952b.log",
+          "resultBundle": ".ios-agent/test-results/95e418ad-d254-4dc5-854d-747cd34a952b.xcresult",
+          "status": "passed",
+          "passed": 3,
+          "failed": 0,
+          "skipped": 0
+        },
+        "shot": {
+          "path": "/Users/runner/work/_temp/fidelity-evidence/candidate-1-ccb5e11c-74d9-4805-9e44-327ad27b958d/.ios-agent/screenshots/large-00266f36-60cc-4eab-9cdf-b44eefb85d22/A44CF864-63E8-4437-A2B7-934BB5DF7103.png",
+          "source": "XCTest runningForeground collapsed-state attachment"
+        },
+        "geometry": {
+          "status": "passed",
+          "clippedElements": 0,
+          "regions": [],
+          "audit": "passed"
+        },
+        "typography": {
+          "regions": [
+            {
+              "id": "node-4",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4
+                ]
+              ],
+              "text": "FIELD NOTES · WEEKEND EDITION",
+              "truncated": false
+            },
+            {
+              "id": "node-5",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2
+                ],
+                [
+                  3,
+                  4
+                ]
+              ],
+              "text": "A little closer to nature.",
+              "truncated": false
+            },
+            {
+              "id": "node-6",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6
+                ],
+                [
+                  7,
+                  8,
+                  9,
+                  10
+                ]
+              ],
+              "text": "Three quiet trails, one good weekend. Your next walk starts here.",
+              "truncated": false
+            },
+            {
+              "id": "node-8",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ],
+              "text": "THIS WEEK'S WALK",
+              "truncated": false
+            },
+            {
+              "id": "node-9",
+              "lines": [
+                [
+                  0,
+                  1
+                ]
+              ],
+              "text": "Cedar Loop",
+              "truncated": false
+            },
+            {
+              "id": "node-10",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6
+                ]
+              ],
+              "text": "4.2 miles · Easy · 90 minutes",
+              "truncated": false
+            },
+            {
+              "id": "node-11",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6,
+                  7
+                ],
+                [
+                  8,
+                  9,
+                  10,
+                  11
+                ]
+              ],
+              "text": "A shaded path through tall cedars, with a quiet river stop halfway.",
+              "truncated": false
+            },
+            {
+              "id": "node-14",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6
+                ],
+                [
+                  7,
+                  8
+                ]
+              ],
+              "text": "Synthetic demo content. No account or location permission needed.",
+              "truncated": false
+            },
+            {
+              "id": "node-12",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ],
+              "text": "Before you go",
+              "truncated": false
+            }
+          ],
+          "version": 1
+        },
+        "probe": "/Users/runner/work/_temp/fidelity-evidence/candidate-1-ccb5e11c-74d9-4805-9e44-327ad27b958d/.ios-agent/screenshots/large-00266f36-60cc-4eab-9cdf-b44eefb85d22/A5EB6F73-6F95-489C-A604-7B7DF2DF8047.png",
+        "probeComparison": {
+          "schemaVersion": 1,
+          "referenceHash": "53e742ef150cd6c2043dacdad622744ac596656fdcc959d0e8aff8f72a2acca6",
+          "nativeHash": "53e742ef150cd6c2043dacdad622744ac596656fdcc959d0e8aff8f72a2acca6",
+          "referenceRegion": {
+            "x": 0,
+            "y": 0,
+            "width": 1206,
+            "height": 2622
+          },
+          "nativeRegion": {
+            "x": 0,
+            "y": 0,
+            "width": 1206,
+            "height": 2622
+          },
+          "meanAbsoluteChannelError": 0,
+          "changedPixelFraction": 0,
+          "channelThreshold": 8,
+          "verdict": "requires-review",
+          "limitations": [
+            "Pixel differences include font rasterization and native control rendering.",
+            "No functional, accessibility or perceptual equivalence inferred.",
+            "No resizing, registration or hidden cropping performed."
+          ]
+        }
+      },
+      "xxxl": {
+        "tests": {
+          "sourceHash": "7cd750c3cda57eb56d56bc4087e243bbf4d669c853b554e4bddab08b09d4f4f8",
+          "at": "2026-10-16T06:06:16.481Z",
+          "logPath": ".ios-agent/logs/test-fc4ffe3c-d12e-40db-8804-6fdceb0c78df.log",
+          "resultBundle": ".ios-agent/test-results/fc4ffe3c-d12e-40db-8804-6fdceb0c78df.xcresult",
+          "status": "passed",
+          "passed": 3,
+          "failed": 0,
+          "skipped": 0
+        },
+        "shot": {
+          "path": "/Users/runner/work/_temp/fidelity-evidence/candidate-1-ccb5e11c-74d9-4805-9e44-327ad27b958d/.ios-agent/screenshots/xxxl-246ce8b5-2d2b-4c09-b342-22a0d032395c/BE4C0D76-A63D-4A2F-9306-B4DD98CDC039.png",
+          "source": "XCTest runningForeground collapsed-state attachment"
+        },
+        "geometry": {
+          "status": "passed",
+          "clippedElements": 0,
+          "regions": [],
+          "audit": "passed"
+        },
+        "typography": {
+          "regions": [
+            {
+              "id": "node-4",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4
+                ]
+              ],
+              "text": "FIELD NOTES · WEEKEND EDITION",
+              "truncated": false
+            },
+            {
+              "id": "node-5",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2
+                ],
+                [
+                  3,
+                  4
+                ]
+              ],
+              "text": "A little closer to nature.",
+              "truncated": false
+            },
+            {
+              "id": "node-6",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4
+                ],
+                [
+                  5,
+                  6,
+                  7,
+                  8,
+                  9
+                ],
+                [
+                  10
+                ]
+              ],
+              "text": "Three quiet trails, one good weekend. Your next walk starts here.",
+              "truncated": false
+            },
+            {
+              "id": "node-8",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ],
+              "text": "THIS WEEK'S WALK",
+              "truncated": false
+            },
+            {
+              "id": "node-9",
+              "lines": [
+                [
+                  0,
+                  1
+                ]
+              ],
+              "text": "Cedar Loop",
+              "truncated": false
+            },
+            {
+              "id": "node-10",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6
+                ]
+              ],
+              "text": "4.2 miles · Easy · 90 minutes",
+              "truncated": false
+            },
+            {
+              "id": "node-11",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4
+                ],
+                [
+                  5,
+                  6,
+                  7,
+                  8,
+                  9,
+                  10
+                ],
+                [
+                  11
+                ]
+              ],
+              "text": "A shaded path through tall cedars, with a quiet river stop halfway.",
+              "truncated": false
+            },
+            {
+              "id": "node-14",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5
+                ],
+                [
+                  6,
+                  7,
+                  8
+                ]
+              ],
+              "text": "Synthetic demo content. No account or location permission needed.",
+              "truncated": false
+            },
+            {
+              "id": "node-12",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ],
+              "text": "Before you go",
+              "truncated": false
+            }
+          ],
+          "version": 1
+        },
+        "probe": "/Users/runner/work/_temp/fidelity-evidence/candidate-1-ccb5e11c-74d9-4805-9e44-327ad27b958d/.ios-agent/screenshots/xxxl-246ce8b5-2d2b-4c09-b342-22a0d032395c/79298C32-DB1B-4EB9-8517-62CB73CC5430.png",
+        "probeComparison": {
+          "schemaVersion": 1,
+          "referenceHash": "973f71bbfc8c24df34dbca85f554826203d99ed7978809ac57a36fd8110a9db7",
+          "nativeHash": "973f71bbfc8c24df34dbca85f554826203d99ed7978809ac57a36fd8110a9db7",
+          "referenceRegion": {
+            "x": 0,
+            "y": 0,
+            "width": 1206,
+            "height": 2622
+          },
+          "nativeRegion": {
+            "x": 0,
+            "y": 0,
+            "width": 1206,
+            "height": 2622
+          },
+          "meanAbsoluteChannelError": 0,
+          "changedPixelFraction": 0,
+          "channelThreshold": 8,
+          "verdict": "requires-review",
+          "limitations": [
+            "Pixel differences include font rasterization and native control rendering.",
+            "No functional, accessibility or perceptual equivalence inferred.",
+            "No resizing, registration or hidden cropping performed."
+          ]
+        }
+      },
+      "evidence": {
+        "version": 1,
+        "sourceHash": "6a1e86d6ca988c6e418756596ed54cac3278e18a90bf9147c1f524c2907eb34e",
+        "referenceHash": "399655fb5bc9f92b75374a06da5f72a8e17a268fc27ae2794fbd20565cdf7b9c",
+        "screenshotHash": "53e742ef150cd6c2043dacdad622744ac596656fdcc959d0e8aff8f72a2acca6",
+        "pins": {
+          "device": "com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro",
+          "os": "com.apple.CoreSimulator.SimRuntime.iOS-26-5 23F77",
+          "xcode": "Xcode 26.5\nBuild version 17F42",
+          "appearance": "light",
+          "contentSize": "large",
+          "locale": "en_US",
+          "orientation": "portrait",
+          "state": "collapsed",
+          "width": 1206,
+          "height": 2622,
+          "scale": 3,
+          "fontConfiguration": "system-ui browser / SwiftUI system, default weight; Dynamic Type large",
+          "referenceRenderer": "151.0.7922.34 host 25G83",
+          "normalizationHash": "05690da7e6342fe85dd2540e5da46a4a0b7f28038b145b36d001a122edd8b970"
+        },
+        "build": "passed",
+        "functionality": "passed",
+        "accessibility": "passed",
+        "layout": "passed",
+        "typography": "failed",
+        "testsPassed": 3,
+        "accessibilityIssues": 0,
+        "clippedElements": 0,
+        "lineBreakMismatches": 2,
+        "meanError": 0.019516878701072656,
+        "changedFraction": 0.0886246431367868,
+        "artifactsHash": "2d779d2ccc892a80a15576c24d232578db17aa0c84ec69b9050ae26c9636003d"
+      }
+    }
+  ],
+  "phase": "app-verification",
+  "contract": "23606693d00f5a6c564f8e8c835011764139a8ba8ce56a537f1dcc2ccf336ae6",
+  "environment": {
+    "xcode": "Xcode 26.5\nBuild version 17F42",
+    "sdk": "26.5",
+    "runtimeBuild": "23F77",
+    "browser": "151.0.7922.34",
+    "host": "25G83"
+  },
+  "simulator": "811E2041-2635-4D03-9AC8-17C8CCF8BE0C",
+  "adapter": "react-static",
+  "interruptions": [
+    {
+      "error": "Injected interruption after baseline-large",
+      "category": "interrupted",
+      "resumedAt": "2026-10-16T05:58:32.557Z"
+    }
+  ],
+  "baseline": {
+    "version": 1,
+    "sourceHash": "4002c3ab7b6556b5eecd50de59243de8f60ccd15b379c24354a9985d336d00be",
+    "referenceHash": "399655fb5bc9f92b75374a06da5f72a8e17a268fc27ae2794fbd20565cdf7b9c",
+    "screenshotHash": "c36a2db4ea2c3ed45ac5d1fdb51fd802436edc5a12c3825261458c0838897a2b",
+    "pins": {
+      "device": "com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro",
+      "os": "com.apple.CoreSimulator.SimRuntime.iOS-26-5 23F77",
+      "xcode": "Xcode 26.5\nBuild version 17F42",
+      "appearance": "light",
+      "contentSize": "large",
+      "locale": "en_US",
+      "orientation": "portrait",
+      "state": "collapsed",
+      "width": 1206,
+      "height": 2622,
+      "scale": 3,
+      "fontConfiguration": "system-ui browser / SwiftUI system, default weight; Dynamic Type large",
+      "referenceRenderer": "151.0.7922.34 host 25G83",
+      "normalizationHash": "05690da7e6342fe85dd2540e5da46a4a0b7f28038b145b36d001a122edd8b970"
+    },
+    "build": "passed",
+    "functionality": "passed",
+    "accessibility": "passed",
+    "layout": "passed",
+    "typography": "failed",
+    "testsPassed": 3,
+    "accessibilityIssues": 0,
+    "clippedElements": 0,
+    "lineBreakMismatches": 2,
+    "meanError": 0.01849445108858762,
+    "changedFraction": 0.0704759549865639,
+    "artifactsHash": "8bf15de234aa42e47a58532eb06c9b0281e4597592e7e290f61336eb7f38b65b"
+  },
+  "knownGood": null,
+  "repair": {
+    "outcome": "rejected",
+    "attempts": [
+      {
+        "number": 1,
+        "status": "finished",
+        "evidence": {
+          "version": 1,
+          "sourceHash": "6a1e86d6ca988c6e418756596ed54cac3278e18a90bf9147c1f524c2907eb34e",
+          "referenceHash": "399655fb5bc9f92b75374a06da5f72a8e17a268fc27ae2794fbd20565cdf7b9c",
+          "screenshotHash": "53e742ef150cd6c2043dacdad622744ac596656fdcc959d0e8aff8f72a2acca6",
+          "pins": {
+            "device": "com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro",
+            "os": "com.apple.CoreSimulator.SimRuntime.iOS-26-5 23F77",
+            "xcode": "Xcode 26.5\nBuild version 17F42",
+            "appearance": "light",
+            "contentSize": "large",
+            "locale": "en_US",
+            "orientation": "portrait",
+            "state": "collapsed",
+            "width": 1206,
+            "height": 2622,
+            "scale": 3,
+            "fontConfiguration": "system-ui browser / SwiftUI system, default weight; Dynamic Type large",
+            "referenceRenderer": "151.0.7922.34 host 25G83",
+            "normalizationHash": "05690da7e6342fe85dd2540e5da46a4a0b7f28038b145b36d001a122edd8b970"
+          },
+          "build": "passed",
+          "functionality": "passed",
+          "accessibility": "passed",
+          "layout": "passed",
+          "typography": "failed",
+          "testsPassed": 3,
+          "accessibilityIssues": 0,
+          "clippedElements": 0,
+          "lineBreakMismatches": 2,
+          "meanError": 0.019516878701072656,
+          "changedFraction": 0.0886246431367868,
+          "artifactsHash": "2d779d2ccc892a80a15576c24d232578db17aa0c84ec69b9050ae26c9636003d"
+        },
+        "decision": {
+          "outcome": "rejected",
+          "reasons": [
+            "typography failed",
+            "Text wrapping exceeds tolerance or regressed",
+            "A visual metric regressed"
+          ]
+        }
+      }
+    ]
+  },
+  "limitations": [
+    "Typography is restricted to traced plain-text LTR English regions at default text size; OCR is supporting evidence only.",
+    "Probe pixels must match normal rendering exactly; otherwise region measurements remain provisional.",
+    "Geometry covers text frames and Apple text-clipping audit, not arbitrary images, shadows or occlusion.",
+    "Known-good requires every quality gate plus a matching manual reference approval; no approval is generated automatically."
+  ]
+}

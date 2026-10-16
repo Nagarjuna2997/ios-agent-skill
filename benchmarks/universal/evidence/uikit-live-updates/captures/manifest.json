@@ -1,0 +1,56 @@
+[
+  {
+    "attachments" : [
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "453E4B93-CE71-4A31-80D4-930F6846588E",
+        "deviceName" : "M22 passive typography",
+        "exportedFileName" : "6F980757-B8EC-4C89-8C98-B3274F3423D8.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "expanded-disclosure_0_CD2DB39C-FAC1-4A36-8483-C058479175F1.png",
+        "timestamp" : 1792137531.207
+      }
+    ],
+    "testIdentifier" : "InteractionTests/testDisclosureAndContent()",
+    "testIdentifierURL" : "test://com.apple.xcode/FieldNotes/FieldNotesUITests/InteractionTests/testDisclosureAndContent"
+  },
+  {
+    "attachments" : [
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "453E4B93-CE71-4A31-80D4-930F6846588E",
+        "deviceName" : "M22 passive typography",
+        "exportedFileName" : "70F237DA-E61E-45A8-A74C-5B64573364E0.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "verified-typography_0_4A33F9E8-7E9D-48B5-9DCD-3319C7974D26.png",
+        "timestamp" : 1792137566.08
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "453E4B93-CE71-4A31-80D4-930F6846588E",
+        "deviceName" : "M22 passive typography",
+        "exportedFileName" : "0A0CAA06-6825-4D00-B500-C3ECB15501AB.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "verified-collapsed_0_21C2600D-15BB-4FC2-B39B-51251C6A933E.png",
+        "timestamp" : 1792137544.017
+      }
+    ],
+    "testIdentifier" : "InteractionTests/testMeasuredGeometry()",
+    "testIdentifierURL" : "test://com.apple.xcode/FieldNotes/FieldNotesUITests/InteractionTests/testMeasuredGeometry"
+  },
+  {
+    "attachments" : [
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "453E4B93-CE71-4A31-80D4-930F6846588E",
+        "deviceName" : "M22 passive typography",
+        "exportedFileName" : "428E3AD5-2313-4C6D-B9A4-22935084C563.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "live-type-and-content-updated_0_6F2D5597-6C57-4454-81B1-7E6E54103335.png",
+        "timestamp" : 1792137585.937
+      }
+    ],
+    "testIdentifier" : "LiveTextUpdateTests/testLiveTypeAndContentUpdates()",
+    "testIdentifierURL" : "test://com.apple.xcode/FieldNotes/FieldNotesUITests/LiveTextUpdateTests/testLiveTypeAndContentUpdates"
+  }
+]
