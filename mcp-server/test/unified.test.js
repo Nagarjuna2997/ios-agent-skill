@@ -10,7 +10,7 @@ test('single connection exposes reviews, knowledge, simulator and safe app creat
  const client=new Client({name:'test',version:'1'});
  try {
   await client.connect(new StdioClientTransport({command:process.execPath,args:['dist/unified.js','--project',root],env:{...process.env,HOME:root,USERPROFILE:root}}));
-  const {tools}=await client.listTools();assert.equal(tools.length,81);assert.equal(new Set(tools.map(t=>t.name)).size,81);
+  const {tools}=await client.listTools();assert.equal(tools.length,82);assert.equal(new Set(tools.map(t=>t.name)).size,82);
   for(const name of ['review_backend_integration','generate_color_system','review_color_system','analyze_swift_project','search_local_references','simulator_list','create_app'])assert.ok(tools.some(t=>t.name===name));
   for (const name of ['list_system_integrations','get_system_integration','recommend_system_integrations','scaffold_system_integration','review_system_integrations','check_apple_permissions','check_apple_capabilities']) {
    const tool=tools.find(t=>t.name===name);assert.ok(tool);assert.equal(tool.annotations.readOnlyHint,true);
@@ -19,6 +19,12 @@ test('single connection exposes reviews, knowledge, simulator and safe app creat
   }
   assert.equal((await client.callTool({name:'get_system_integration',arguments:{integration:'invalid'}})).isError,true);
   assert.equal((await client.callTool({name:'scaffold_system_integration',arguments:{integration:'photos'}})).isError,true);
+  await writeFile(join(root,'screen.html'),'<body><h1>Imported screen</h1></body>');
+  const imported=await client.callTool({name:'ios_import_html',arguments:{path:join(root,'screen.html')}});
+  assert.notEqual(imported.isError,true);
+  assert.equal(JSON.parse(imported.content[0].text).schemaVersion,'1.0.0');
+  assert.ok(JSON.parse(imported.content[0].text).nodes.some(n=>n.text==='Imported screen'));
+  assert.equal((await client.callTool({name:'ios_import_html',arguments:{path:join(root,'missing.html')}})).isError,true);
   const backend=await client.callTool({name:'review_backend_integration',arguments:{path:root}});
   assert.notEqual(backend.isError,true);assert.equal(JSON.parse(backend.content[0].text).services.length,0);
   const colors=await client.callTool({name:'generate_color_system',arguments:{primaryColor:'#145AC8',appearance:'oled'}});

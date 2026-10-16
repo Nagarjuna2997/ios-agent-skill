@@ -47,6 +47,7 @@
     "fast-xml-parser": "5.11.1",
     "fontkit": "2.0.4",
     "jpeg-js": "0.4.4",
+    "parse5": "7.3.0",
     "plist": "5.0.0",
     "pngjs": "7.0.0",
     "yaml": "2.9.1",

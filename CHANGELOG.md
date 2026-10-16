@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+### Experimental Universal App IR foundation (not published)
+
+- Add a versioned, bounded IR with source hashes/ranges, graph validation and explicit unsupported/missing requirements.
+- Add read-only local HTML inspection through CLI/MCP and native SwiftUI generation into new directories; no imported scripts or WebView conversion.
+- Add raw reference/native PNG comparison and a synthetic disclosure-screen benchmark using the existing unsigned Xcode build, simulator and XCTest pipeline.
+- Save one real native build/test/capture result; visual differences remain review-required. Other framework adapters and automatic reference-driven repair are planned.
+
+
 ### npm 2.10.2 — published 2026-10-15
 
 - Package merged design directions, synthetic sample data, screenshot-aware refinement, generated-app tests, iPad captures, remote macOS build support, provider modules and approved shipping workflows. Existing runtime/provider and signed-distribution limitations still apply.

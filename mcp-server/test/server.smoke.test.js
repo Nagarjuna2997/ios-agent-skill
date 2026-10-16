@@ -122,6 +122,7 @@ describe("mcp server", () => {
       "ios_capabilities",
       "ios_create_project",
       "ios_design_evidence",
+      "ios_import_html",
       "ios_logs",
       "ios_plan",
       "ios_preflight",
