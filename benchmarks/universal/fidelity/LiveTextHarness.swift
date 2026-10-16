@@ -8,15 +8,20 @@ private struct FidelityLiveTextContent: View {
     }
 }
 struct FidelityLiveTextHarness: View {
-    @State private var large = false
+    @State private var typeSize: DynamicTypeSize = .large
     @State private var changed = false
     var body: some View {
         VStack {
-            FidelityLiveTextContent(content: changed ? "Updated source content remains editable and native." : "A native heading")
-                .dynamicTypeSize(large ? .xxxLarge : .large)
-            Button("Increase type") { large = true }
-            Button("Restore type") { large = false }
+            Button("Increase type") { typeSize = .xxxLarge }
+            Button("Restore type") { typeSize = .large }
+            ForEach(Array([DynamicTypeSize.accessibility1, .accessibility2, .accessibility3, .accessibility4, .accessibility5].enumerated()), id: \.offset) { index, size in
+                Button("Accessibility size \(index + 1)") { typeSize = size }
+            }
             Button("Change content") { changed = true }
+            ScrollView {
+                FidelityLiveTextContent(content: changed ? "Updated source content remains editable and native." : "A native heading")
+                    .dynamicTypeSize(typeSize)
+            }
         }
     }
 }
