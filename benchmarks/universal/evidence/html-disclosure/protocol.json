@@ -1,0 +1,18 @@
+{
+  "protocolVersion": 1,
+  "implementationCommit": "7f5c9dd72544afff0b1347f9238606d23a913f0c",
+  "mode": "deterministic, unscored prototype",
+  "model": null,
+  "client": "Node.js CLI, existing ios-agent build/test/simulator helpers",
+  "xcode": "27.0 (27A266a)",
+  "runtime": "iOS 27.0",
+  "device": "iPhone 18 Pro",
+  "referenceBrowser": "Google Chrome, headless Playwright",
+  "referenceViewportCSS": {
+    "width": 402,
+    "height": 874,
+    "deviceScaleFactor": 3
+  },
+  "automaticRepairIterations": 0,
+  "visualVerdict": "requires-review"
+}

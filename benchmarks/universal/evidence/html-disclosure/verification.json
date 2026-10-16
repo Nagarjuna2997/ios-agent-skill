@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "fixture": "html-disclosure",
+  "sourceHash": "f81a25680653a8a1e472f645776fbe90fc78c23c661c51a395e3b700f01a33cb",
+  "irHash": "edb240a567b4cbff480f2e608223bd33889f2bbe2200c3ce447437c8dee7443f",
+  "startedAt": "2026-10-16T01:41:11.828Z",
+  "status": "built-tested-captured",
+  "repairs": 0,
+  "unsupported": [],
+  "toolchain": "Xcode 27.0\nBuild version 27A266a",
+  "build": {
+    "success": true,
+    "errors": [],
+    "warnings": [],
+    "durationMs": 8131,
+    "scheme": "FieldNotes",
+    "destination": "platform=iOS Simulator,id=B4A70BB0-841F-4E38-92DD-7935C63778C2",
+    "appPath": "/tmp/ios-ir-field-notes-verified/.ios-agent/DerivedData/Build/Products/Debug-iphonesimulator/FieldNotes.app",
+    "logPath": "/tmp/ios-ir-field-notes-verified/.ios-agent/logs/build-1792114872057.log"
+  },
+  "tests": {
+    "sourceHash": "9b36c47806c3bc77b4656bb0428dc0f2a2c9772a70b9faa60909044f64ceb442",
+    "at": "2026-10-16T01:41:43.771Z",
+    "logPath": ".ios-agent/logs/test-f347bff0-140c-431a-8607-4d55743635a3.log",
+    "resultBundle": ".ios-agent/test-results/f347bff0-140c-431a-8607-4d55743635a3.xcresult",
+    "status": "passed",
+    "passed": 1,
+    "failed": 0,
+    "skipped": 0
+  },
+  "launch": {
+    "udid": "B4A70BB0-841F-4E38-92DD-7935C63778C2",
+    "simulator": "iPhone 18 Pro",
+    "bundleId": "com.example.fieldnotes",
+    "booted": false,
+    "pid": 84061
+  },
+  "screenshot": {
+    "path": "/tmp/ios-ir-field-notes-verified/.ios-agent/screenshots/native.png",
+    "bytes": 203671,
+    "sha256": "a2b794d986b94f07e7be0c29f414cca1957b313b4135a55f3cdabc94f551b084"
+  },
+  "comparison": {
+    "schemaVersion": 1,
+    "referenceHash": "a2cbd9cb66a55baabe2026e5919906c021a556381092d359390a8f38245e8f5c",
+    "nativeHash": "a2b794d986b94f07e7be0c29f414cca1957b313b4135a55f3cdabc94f551b084",
+    "referenceRegion": {
+      "x": 0,
+      "y": 0,
+      "width": 1206,
+      "height": 2622
+    },
+    "nativeRegion": {
+      "x": 0,
+      "y": 0,
+      "width": 1206,
+      "height": 2622
+    },
+    "meanAbsoluteChannelError": 0.050576267630106995,
+    "changedPixelFraction": 0.27927392025380343,
+    "channelThreshold": 8,
+    "verdict": "requires-review",
+    "limitations": [
+      "Pixel differences include font rasterization and native control rendering.",
+      "No functional, accessibility or perceptual equivalence inferred.",
+      "No resizing, registration or hidden cropping performed."
+    ]
+  },
+  "limitations": [
+    "One static HTML screen and disclosure behavior only.",
+    "Visual comparison requires human review; no fidelity pass is inferred.",
+    "No unit tests, backend, cross-framework conversion or model-driven repair validated."
+  ],
+  "elapsedMs": 35515
+}
