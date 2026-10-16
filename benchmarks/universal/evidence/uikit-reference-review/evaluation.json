@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "originalReportHash": "591e1c613cec810ff646d7875db29e585451e65bf6e49444db278c10929edef8",
+  "approval": {
+    "version": 1,
+    "referenceHash": "237315be7c347215c39fa487f24bab6b7790a0829bb3d68791718e1978c6f811",
+    "pinsHash": "463414cf07f54d9ef514f7cf32c4c062643c86b3e9800287902bcfb91f73ffd8",
+    "reviewer": "Nagarjuna — explicit reference approval in this conversation",
+    "reviewedAt": "2026-10-16T08:24:15.239Z",
+    "decision": "approved"
+  },
+  "decision": {
+    "outcome": "requires-review",
+    "reasons": [
+      "Baseline does not qualify as known-good"
+    ]
+  },
+  "promotion": {
+    "requested": false,
+    "status": "not-requested"
+  },
+  "knownGood": null,
+  "scope": "Re-evaluation of previously captured local evidence; no new native run, hosted approval, production integration, or publication."
+}

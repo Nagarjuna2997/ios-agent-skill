@@ -17,7 +17,7 @@ import {comparePNGs} from '../../../mcp-server/dist/app-ir/compare.js';
 import {repairWithGate,VisualEvidenceSchema} from '../../../mcp-server/dist/app-ir/visual-gate.js';
 import {Checkpoints} from '../../../mcp-server/dist/app-ir/checkpoints.js';
 import {measureLineBreaks,measureClipping} from '../../../mcp-server/dist/app-ir/measurements.js';
-import {seedKnownGood,advanceKnownGood} from '../../../mcp-server/dist/app-ir/known-good.js';
+import {promotionRequested,authorizedKnownGood} from './promotion.mjs';
 import {readSpec,writeSpec,regenerate} from '../../../mcp-server/dist/agent/project.js';
 import {ProcessRunner} from '../../../mcp-server/dist/agent/runner.js';
 import {buildProject} from '../../../mcp-server/dist/agent/build.js';
@@ -32,6 +32,7 @@ const adapter=process.env.FIDELITY_ADAPTER??'html';
 if(!['html','react-static'].includes(adapter))throw Error('Unsupported adapter');
 const textNodes=process.env.FIDELITY_UIKIT_TEXT_NODES ? process.env.FIDELITY_UIKIT_TEXT_NODES.split(',') : [];
 if(textNodes.some(id=>!/^node-[0-9]+$/.test(id)))throw Error('Invalid experimental text node ID');
+const promoteBaseline=promotionRequested(process.env.FIDELITY_PROMOTE_KNOWN_GOOD);
 const referenceApproval=process.env.FIDELITY_REFERENCE_APPROVAL?JSON.parse(await readFile(resolve(process.env.FIDELITY_REFERENCE_APPROVAL),'utf8')):null;
 const root=resolve(output);if(!resume)await mkdir(root,{recursive:false});
 // Only one runner may update a journal. A dead owner can be reclaimed on explicit resume.
@@ -61,7 +62,7 @@ try{
  const environment={xcode,sdk,runtimeBuild:runtime.buildversion,browser:browser.version(),host:await command('sw_vers',['-buildVersion'])};
  const inputs=[...await files(resolve(here,'../../../mcp-server/dist')),...await files(fixture),...await files(here)].filter(f=>!f.includes('/node_modules/'));
  const inputHashes=[];for(const f of inputs)inputHashes.push([f.slice(resolve(here,'../../..').length),sha256(await readFile(f))]);
- const contract=sha256(JSON.stringify({profile,environment,inputHashes,referenceApproval,adapter,textNodes}));
+ const contract=sha256(JSON.stringify({profile,environment,inputHashes,referenceApproval,adapter,textNodes,promoteBaseline}));
  if(resume&&report.contract!==contract)throw Error('Run inputs, verifier or environment changed; use a new output directory');
  if(report.error){report.interruptions=[...(report.interruptions??[]),{error:report.error,category:report.failureCategory,resumedAt:new Date().toISOString()}];delete report.error;delete report.failureCategory;}
  report.contract=contract;report.environment=environment;report.status='running';await save();
@@ -145,9 +146,10 @@ try{
   });row.evidence=evidence;await save();return evidence;
  }
  const baseline=await makeCandidate('baseline','platform');report.baseline=baseline;
- try{report.knownGood=seedKnownGood(baseline,profile.policy,referenceApproval);}catch{report.knownGood=null;}
+ try{report.knownGood=authorizedKnownGood(promoteBaseline,baseline,profile.policy,referenceApproval);}catch{report.knownGood=null;}
  report.repair=await repairWithGate({directory:join(root,'repairs'),referenceApproval,baseline,policy:profile.policy,maxAttempts:1,resumeInterrupted:true,verifySavedEvidence:async saved=>{const current=await makeCandidate('candidate-1',textNodes.length?'platform':'leading');if(JSON.stringify(VisualEvidenceSchema.parse(current))!==JSON.stringify(VisualEvidenceSchema.parse(saved)))throw Error('Saved candidate evidence differs from verified checkpoints');},verifyCandidate:async()=>{try{return await makeCandidate('candidate-1',textNodes.length?'platform':'leading');}catch(error){report.candidateFailure=candidateFailureEvidence(error);await save();throw error;}}});
- if(report.repair.acceptedAttempt){const candidate=report.repair.attempts.find(a=>a.number===report.repair.acceptedAttempt).evidence;report.knownGood=report.knownGood?advanceKnownGood(report.knownGood,candidate,profile.policy,referenceApproval).baseline:seedKnownGood(candidate,profile.policy,referenceApproval);}
+ if(report.repair.acceptedAttempt){const candidate=report.repair.attempts.find(a=>a.number===report.repair.acceptedAttempt).evidence;report.knownGood=authorizedKnownGood(promoteBaseline,candidate,profile.policy,referenceApproval);}
+ report.promotion={requested:promoteBaseline,status:report.knownGood?'promoted':promoteBaseline?'blocked':'not-requested'};
  report.status=report.repair.outcome;report.limitations=['Typography is restricted to traced plain-text LTR English regions at default text size; OCR is supporting evidence only.','Probe pixels must match normal rendering exactly; otherwise region measurements remain provisional.','Geometry covers text frames and Apple text-clipping audit, not arbitrary images, shadows or occlusion.','Known-good requires every quality gate plus a matching manual reference approval; no approval is generated automatically.'];await save();
  process.exitCode=report.status==='accepted'?0:report.status==='requires-review'?2:1;
 }catch(error){report.status='failed';report.failureCategory=classifyRunFailure(report.phase,error.message,process.env.FIDELITY_INTERRUPT_AFTER,error.code);report.error=error.message;process.exitCode=1;}
