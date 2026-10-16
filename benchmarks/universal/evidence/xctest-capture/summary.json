@@ -1,0 +1,12 @@
+{
+  "implementationCommit": "52097f55",
+  "documentationInput": "input-fidelity-readme.md captures the uncommitted documentation used in the run contract",
+  "nativeBuildsPassed": 2,
+  "nativeTestExecutionsPassed": 12,
+  "nativeTestFailures": 0,
+  "outcome": "rejected",
+  "knownGood": null,
+  "typography": "unavailable",
+  "captureSource": "XCTest assertions and pinned-device exported attachments",
+  "completedResumeReusedEveryCheckpoint": true
+}

@@ -1,0 +1,320 @@
+{
+  "version": 2,
+  "profile": {
+    "version": 1,
+    "xcode": "27.0",
+    "sdk": "27.0",
+    "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-27-0",
+    "deviceType": "com.apple.CoreSimulator.SimDeviceType.iPhone-18-Pro",
+    "appearance": "light",
+    "contentSize": "large",
+    "locale": "en_US",
+    "scale": 3,
+    "safeAreaTop": 62,
+    "safeAreaBottom": 34,
+    "state": "collapsed",
+    "fontConfiguration": "system-ui browser / SwiftUI system, default weight; Dynamic Type large",
+    "policy": {
+      "version": 1,
+      "maxMeanError": 0.02,
+      "maxChangedFraction": 0.1,
+      "maxLineBreakMismatches": 0,
+      "minimumImprovement": 0.001
+    },
+    "xcodeBuild": "27A266a"
+  },
+  "startedAt": "2026-10-16T02:43:45.833Z",
+  "status": "rejected",
+  "runs": [
+    {
+      "name": "baseline",
+      "folder": "/tmp/ios-m2-xctcapture-20261015/baseline-a27e8208-f8fb-4775-95c6-b237acbdd8b9",
+      "sourceHash": "36faba2d9e00fdbee49f271068fb97c954f1243684a6e34be8eee898b7553395",
+      "build": {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "durationMs": 60123,
+        "scheme": "FieldNotes",
+        "destination": "platform=iOS Simulator,id=05AEB186-C1E0-4AA5-9170-BA9A7EEB17D7",
+        "appPath": "/tmp/ios-m2-xctcapture-20261015/baseline-a27e8208-f8fb-4775-95c6-b237acbdd8b9/.ios-agent/DerivedData/Build/Products/Debug-iphonesimulator/FieldNotes.app",
+        "logPath": "/tmp/ios-m2-xctcapture-20261015/baseline-a27e8208-f8fb-4775-95c6-b237acbdd8b9/.ios-agent/logs/build-1792118680722.log"
+      },
+      "large": {
+        "tests": {
+          "sourceHash": "4f6a9d27cf5ec2afd2e905467b51a960a22327de6300872020a4458302af8e35",
+          "at": "2026-10-16T02:47:29.817Z",
+          "logPath": ".ios-agent/logs/test-b57a34e9-46eb-45e8-884f-412e6c4fadb8.log",
+          "resultBundle": ".ios-agent/test-results/b57a34e9-46eb-45e8-884f-412e6c4fadb8.xcresult",
+          "status": "passed",
+          "passed": 3,
+          "failed": 0,
+          "skipped": 0
+        },
+        "shot": {
+          "path": "/tmp/ios-m2-xctcapture-20261015/baseline-a27e8208-f8fb-4775-95c6-b237acbdd8b9/.ios-agent/screenshots/large-40ca48c2-95b2-4fd8-bb62-7d9b0ac5932f/39E6ABB7-B03B-4B09-ABD4-1419C0751A6A.png",
+          "source": "XCTest runningForeground collapsed-state attachment"
+        },
+        "geometry": {
+          "status": "passed",
+          "clippedElements": 0,
+          "regions": [],
+          "audit": "passed"
+        }
+      },
+      "xxxl": {
+        "tests": {
+          "sourceHash": "4f6a9d27cf5ec2afd2e905467b51a960a22327de6300872020a4458302af8e35",
+          "at": "2026-10-16T02:50:40.080Z",
+          "logPath": ".ios-agent/logs/test-1cd15012-d62e-4b72-bdb7-421e8ed3e246.log",
+          "resultBundle": ".ios-agent/test-results/1cd15012-d62e-4b72-bdb7-421e8ed3e246.xcresult",
+          "status": "passed",
+          "passed": 3,
+          "failed": 0,
+          "skipped": 0
+        },
+        "shot": {
+          "path": "/tmp/ios-m2-xctcapture-20261015/baseline-a27e8208-f8fb-4775-95c6-b237acbdd8b9/.ios-agent/screenshots/xxxl-b8971ef7-9351-4431-9a90-d11832092fb3/1945CA2B-9012-4C2B-ACB1-FE89E4F09431.png",
+          "source": "XCTest runningForeground collapsed-state attachment"
+        },
+        "geometry": {
+          "status": "passed",
+          "clippedElements": 0,
+          "regions": [],
+          "audit": "passed"
+        }
+      },
+      "evidence": {
+        "version": 1,
+        "sourceHash": "36faba2d9e00fdbee49f271068fb97c954f1243684a6e34be8eee898b7553395",
+        "referenceHash": "237315be7c347215c39fa487f24bab6b7790a0829bb3d68791718e1978c6f811",
+        "screenshotHash": "366a9c1778bdd2ff77f8f371cdb9c440d31d013c7b50f3362e028f09e0764afd",
+        "pins": {
+          "device": "com.apple.CoreSimulator.SimDeviceType.iPhone-18-Pro",
+          "os": "com.apple.CoreSimulator.SimRuntime.iOS-27-0 24A434",
+          "xcode": "Xcode 27.0\nBuild version 27A266a",
+          "appearance": "light",
+          "contentSize": "large",
+          "locale": "en_US",
+          "orientation": "portrait",
+          "state": "collapsed",
+          "width": 1206,
+          "height": 2622,
+          "scale": 3,
+          "fontConfiguration": "system-ui browser / SwiftUI system, default weight; Dynamic Type large",
+          "referenceRenderer": "155.0.8059.82 host 26A434",
+          "normalizationHash": "05690da7e6342fe85dd2540e5da46a4a0b7f28038b145b36d001a122edd8b970"
+        },
+        "build": "passed",
+        "functionality": "passed",
+        "accessibility": "passed",
+        "layout": "passed",
+        "typography": "unavailable",
+        "testsPassed": 3,
+        "accessibilityIssues": 0,
+        "clippedElements": 0,
+        "lineBreakMismatches": null,
+        "meanError": 0.018485192964781638,
+        "changedFraction": 0.07043119165668374,
+        "artifactsHash": "9959333fa8ae1217daac12ddd5140f0599562e3eaecfb7357a53efcabe3f8fd9"
+      }
+    },
+    {
+      "name": "candidate-1",
+      "folder": "/tmp/ios-m2-xctcapture-20261015/candidate-1-23bf94ab-9ab5-4f3a-b5b2-d533bb723a1b",
+      "sourceHash": "45ba81fbfe681849662f90637335d23f70ce027cca8657763727af383fde8510",
+      "build": {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "durationMs": 23272,
+        "scheme": "FieldNotes",
+        "destination": "platform=iOS Simulator,id=95AEFC1C-38BB-4E35-BE2F-1EB3082376F5",
+        "appPath": "/tmp/ios-m2-xctcapture-20261015/candidate-1-23bf94ab-9ab5-4f3a-b5b2-d533bb723a1b/.ios-agent/DerivedData/Build/Products/Debug-iphonesimulator/FieldNotes.app",
+        "logPath": "/tmp/ios-m2-xctcapture-20261015/candidate-1-23bf94ab-9ab5-4f3a-b5b2-d533bb723a1b/.ios-agent/logs/build-1792119075998.log"
+      },
+      "large": {
+        "tests": {
+          "sourceHash": "3c699bce8596e20f5c2212ed777c658801ca960c31ae63c9bfe7594186bd3e82",
+          "at": "2026-10-16T02:52:34.283Z",
+          "logPath": ".ios-agent/logs/test-c0de5933-2970-40c7-b714-3048b3f8dce4.log",
+          "resultBundle": ".ios-agent/test-results/c0de5933-2970-40c7-b714-3048b3f8dce4.xcresult",
+          "status": "passed",
+          "passed": 3,
+          "failed": 0,
+          "skipped": 0
+        },
+        "shot": {
+          "path": "/tmp/ios-m2-xctcapture-20261015/candidate-1-23bf94ab-9ab5-4f3a-b5b2-d533bb723a1b/.ios-agent/screenshots/large-1796fc04-119e-4efa-925e-fc6ff849fad0/C7902263-12F9-4A86-B655-AED2DB9F56E9.png",
+          "source": "XCTest runningForeground collapsed-state attachment"
+        },
+        "geometry": {
+          "status": "passed",
+          "clippedElements": 0,
+          "regions": [],
+          "audit": "passed"
+        }
+      },
+      "xxxl": {
+        "tests": {
+          "sourceHash": "3c699bce8596e20f5c2212ed777c658801ca960c31ae63c9bfe7594186bd3e82",
+          "at": "2026-10-16T02:53:14.184Z",
+          "logPath": ".ios-agent/logs/test-1ad29821-29cb-4ec9-a9b3-848657a3802d.log",
+          "resultBundle": ".ios-agent/test-results/1ad29821-29cb-4ec9-a9b3-848657a3802d.xcresult",
+          "status": "passed",
+          "passed": 3,
+          "failed": 0,
+          "skipped": 0
+        },
+        "shot": {
+          "path": "/tmp/ios-m2-xctcapture-20261015/candidate-1-23bf94ab-9ab5-4f3a-b5b2-d533bb723a1b/.ios-agent/screenshots/xxxl-0695ae56-6a4a-4ed6-8c3f-b27ffdf5df9c/0ABFDE45-5A4E-44FC-88F8-4ED216993E6C.png",
+          "source": "XCTest runningForeground collapsed-state attachment"
+        },
+        "geometry": {
+          "status": "passed",
+          "clippedElements": 0,
+          "regions": [],
+          "audit": "passed"
+        }
+      },
+      "evidence": {
+        "version": 1,
+        "sourceHash": "45ba81fbfe681849662f90637335d23f70ce027cca8657763727af383fde8510",
+        "referenceHash": "237315be7c347215c39fa487f24bab6b7790a0829bb3d68791718e1978c6f811",
+        "screenshotHash": "e95bd5bbb02e8493a3533cd59b639f2c27103e5e35c96db3751d49cd3c78a56d",
+        "pins": {
+          "device": "com.apple.CoreSimulator.SimDeviceType.iPhone-18-Pro",
+          "os": "com.apple.CoreSimulator.SimRuntime.iOS-27-0 24A434",
+          "xcode": "Xcode 27.0\nBuild version 27A266a",
+          "appearance": "light",
+          "contentSize": "large",
+          "locale": "en_US",
+          "orientation": "portrait",
+          "state": "collapsed",
+          "width": 1206,
+          "height": 2622,
+          "scale": 3,
+          "fontConfiguration": "system-ui browser / SwiftUI system, default weight; Dynamic Type large",
+          "referenceRenderer": "155.0.8059.82 host 26A434",
+          "normalizationHash": "05690da7e6342fe85dd2540e5da46a4a0b7f28038b145b36d001a122edd8b970"
+        },
+        "build": "passed",
+        "functionality": "passed",
+        "accessibility": "passed",
+        "layout": "passed",
+        "typography": "unavailable",
+        "testsPassed": 3,
+        "accessibilityIssues": 0,
+        "clippedElements": 0,
+        "lineBreakMismatches": null,
+        "meanError": 0.0195067456513045,
+        "changedFraction": 0.08857561663263233,
+        "artifactsHash": "2926d8013c53f1a9e6f4020bf5744b4d97c920821060546890c465e13e460231"
+      }
+    }
+  ],
+  "contract": "bf2c6f09f831da62d28430758a994aad4264cb7494714a3a3a3d1283eef10e90",
+  "environment": {
+    "xcode": "Xcode 27.0\nBuild version 27A266a",
+    "sdk": "27.0",
+    "runtimeBuild": "24A434",
+    "browser": "155.0.8059.82",
+    "host": "26A434"
+  },
+  "simulator": "0678BE10-5BB6-469E-AD2D-A1A032B84537",
+  "interruptions": [
+    {
+      "error": "Run inputs, verifier or environment changed; use a new output directory",
+      "resumedAt": "2026-10-16T02:48:42.001Z"
+    }
+  ],
+  "baseline": {
+    "version": 1,
+    "sourceHash": "36faba2d9e00fdbee49f271068fb97c954f1243684a6e34be8eee898b7553395",
+    "referenceHash": "237315be7c347215c39fa487f24bab6b7790a0829bb3d68791718e1978c6f811",
+    "screenshotHash": "366a9c1778bdd2ff77f8f371cdb9c440d31d013c7b50f3362e028f09e0764afd",
+    "pins": {
+      "device": "com.apple.CoreSimulator.SimDeviceType.iPhone-18-Pro",
+      "os": "com.apple.CoreSimulator.SimRuntime.iOS-27-0 24A434",
+      "xcode": "Xcode 27.0\nBuild version 27A266a",
+      "appearance": "light",
+      "contentSize": "large",
+      "locale": "en_US",
+      "orientation": "portrait",
+      "state": "collapsed",
+      "width": 1206,
+      "height": 2622,
+      "scale": 3,
+      "fontConfiguration": "system-ui browser / SwiftUI system, default weight; Dynamic Type large",
+      "referenceRenderer": "155.0.8059.82 host 26A434",
+      "normalizationHash": "05690da7e6342fe85dd2540e5da46a4a0b7f28038b145b36d001a122edd8b970"
+    },
+    "build": "passed",
+    "functionality": "passed",
+    "accessibility": "passed",
+    "layout": "passed",
+    "typography": "unavailable",
+    "testsPassed": 3,
+    "accessibilityIssues": 0,
+    "clippedElements": 0,
+    "lineBreakMismatches": null,
+    "meanError": 0.018485192964781638,
+    "changedFraction": 0.07043119165668374,
+    "artifactsHash": "9959333fa8ae1217daac12ddd5140f0599562e3eaecfb7357a53efcabe3f8fd9"
+  },
+  "knownGood": null,
+  "repair": {
+    "outcome": "rejected",
+    "attempts": [
+      {
+        "number": 1,
+        "status": "finished",
+        "decision": {
+          "outcome": "rejected",
+          "reasons": [
+            "A visual metric regressed"
+          ]
+        },
+        "evidence": {
+          "version": 1,
+          "sourceHash": "45ba81fbfe681849662f90637335d23f70ce027cca8657763727af383fde8510",
+          "referenceHash": "237315be7c347215c39fa487f24bab6b7790a0829bb3d68791718e1978c6f811",
+          "screenshotHash": "e95bd5bbb02e8493a3533cd59b639f2c27103e5e35c96db3751d49cd3c78a56d",
+          "pins": {
+            "device": "com.apple.CoreSimulator.SimDeviceType.iPhone-18-Pro",
+            "os": "com.apple.CoreSimulator.SimRuntime.iOS-27-0 24A434",
+            "xcode": "Xcode 27.0\nBuild version 27A266a",
+            "appearance": "light",
+            "contentSize": "large",
+            "locale": "en_US",
+            "orientation": "portrait",
+            "state": "collapsed",
+            "width": 1206,
+            "height": 2622,
+            "scale": 3,
+            "fontConfiguration": "system-ui browser / SwiftUI system, default weight; Dynamic Type large",
+            "referenceRenderer": "155.0.8059.82 host 26A434",
+            "normalizationHash": "05690da7e6342fe85dd2540e5da46a4a0b7f28038b145b36d001a122edd8b970"
+          },
+          "build": "passed",
+          "functionality": "passed",
+          "accessibility": "passed",
+          "layout": "passed",
+          "typography": "unavailable",
+          "testsPassed": 3,
+          "accessibilityIssues": 0,
+          "clippedElements": 0,
+          "lineBreakMismatches": null,
+          "meanError": 0.0195067456513045,
+          "changedFraction": 0.08857561663263233,
+          "artifactsHash": "2926d8013c53f1a9e6f4020bf5744b4d97c920821060546890c465e13e460231"
+        }
+      }
+    ]
+  },
+  "limitations": [
+    "OCR cannot establish wrapping when source transcript or confidence differs.",
+    "Geometry covers text frames and Apple text-clipping audit, not arbitrary images, shadows or occlusion.",
+    "Known-good is null until baseline meets every quality requirement."
+  ]
+}

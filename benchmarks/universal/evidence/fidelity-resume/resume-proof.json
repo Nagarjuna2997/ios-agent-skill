@@ -1,0 +1,33 @@
+{
+  "checkpointsUnchanged": true,
+  "checkpointCount": 12,
+  "before": {
+    "baseline-generate.json": 1792117240937050282,
+    "candidate-1-xxxl.json": 1792117880550413120,
+    "baseline-measurement.json": 1792117758259688313,
+    "candidate-1-generate.json": 1792117758318283039,
+    "baseline-build.json": 1792117318893402903,
+    "candidate-1-build.json": 1792117781047510315,
+    "reference.json": 1792117757317716015,
+    "candidate-1-measurement.json": 1792117881359258884,
+    "baseline-large.json": 1792117517890421363,
+    "candidate-1-large.json": 1792117835888928717,
+    "baseline-xxxl.json": 1792117724837315869,
+    "ocr-tool.json": 1792117181232620981
+  },
+  "after": {
+    "baseline-generate.json": 1792117240937050282,
+    "candidate-1-xxxl.json": 1792117880550413120,
+    "baseline-measurement.json": 1792117758259688313,
+    "candidate-1-generate.json": 1792117758318283039,
+    "baseline-build.json": 1792117318893402903,
+    "candidate-1-build.json": 1792117781047510315,
+    "reference.json": 1792117757317716015,
+    "candidate-1-measurement.json": 1792117881359258884,
+    "baseline-large.json": 1792117517890421363,
+    "candidate-1-large.json": 1792117835888928717,
+    "baseline-xxxl.json": 1792117724837315869,
+    "ocr-tool.json": 1792117181232620981
+  },
+  "outcome": "rejected"
+}

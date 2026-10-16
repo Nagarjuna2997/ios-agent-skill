@@ -39,4 +39,4 @@ Pin capture appearance/text size/browser version in the runner, normalize safe-a
 
 ## M2 visual gate
 
-The experimental [M2 benchmark](fidelity/README.md) adds a framework-independent evidence contract, bounded repair decisions, a dedicated simulator capture protocol and accessibility audits. Its first native repair regressed the measured visual differences and was not accepted. M2 remains partial; automated layout and line-break measurements are still missing. The M1 evidence above is unchanged.
+The experimental [M2 benchmark](fidelity/README.md) adds a framework-independent evidence contract, bounded repair decisions, a dedicated simulator capture protocol and accessibility audits. Its first native repair regressed the measured visual differences and was not accepted. M2 now measures native text geometry/clipping, compares recognized line breaks conservatively, and resumes hash-checked stages. The latest local run passed twelve native test executions and resumed successfully; typography remained unavailable and the repair was rejected. See the M2 report for limits and hosted verification status. The M1 evidence above is unchanged.

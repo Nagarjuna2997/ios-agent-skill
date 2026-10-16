@@ -1,0 +1,14 @@
+{
+  "implementationCommit": "52097f552a95903590af99481ffc6a7b590e89e1",
+  "workflowRun": "https://github.com/Nagarjuna2997/ios-agent-skill/actions/runs/38842111648",
+  "artifactId": 12022337666,
+  "nativeBuildsPassed": 2,
+  "nativeTestExecutionsPassed": 12,
+  "nativeTestFailures": 0,
+  "outcome": "rejected",
+  "reason": "A visual metric regressed",
+  "typography": "unavailable: recognized transcript differs from expected visible source",
+  "knownGood": null,
+  "interruptionResumed": true,
+  "workflowConclusion": "failure (quality gate rejection, not infrastructure success badge)"
+}

@@ -1,8 +1,8 @@
 # M2: Visual Fidelity & Self-Repair (experimental)
 
-This benchmark reuses App IR and the native project/build/test pipeline. The gate and repair coordinator in `mcp-server/src/app-ir/visual-gate.ts` accept framework-independent verifier evidence; future importers must use the same contract.
+This benchmark reuses App IR and the native project/build/test pipeline. Measurement, checkpoint and acceptance contracts are framework-independent. React/Next/Flutter adapters are not implemented here. No release, conversion-accuracy or production-readiness claim is made.
 
-## Run locally
+## Reproduce
 
 ```sh
 npm ci --prefix mcp-server
@@ -10,56 +10,70 @@ npm run build --prefix mcp-server
 npm ci --prefix benchmarks/universal/fidelity
 (cd benchmarks/universal/fidelity && npx playwright install chromium)
 node benchmarks/universal/fidelity/run.mjs benchmarks/universal/fidelity/local.json /tmp/new-fidelity-run
+# Restart using the same inputs, installed toolchain and output directory:
+node benchmarks/universal/fidelity/run.mjs benchmarks/universal/fidelity/local.json /tmp/new-fidelity-run --resume
 ```
 
-Requires the exact Xcode build, SDK, simulator runtime and device type in the profile. Use `ci.json` for the hosted macOS profile. A mismatch stops before comparison. The runner creates and deletes its own simulator. No signing, credentials, provider calls or imported scripts are required. Installation may require network access; fixture rendering blocks external requests.
+Requires the exact Xcode build, SDK, runtime and device type declared by the profile; a mismatch stops before comparison. `ci.json` targets the hosted Mac. Browser version, runtime build, host build, fonts, dimensions, appearance, locale, text size and UI state are recorded. Changes invalidate resume. A different environment needs its own baseline. Optional local `PLAYWRIGHT_MODULE`/`CHROME_PATH` overrides record the actual browser version. CI uses pinned Playwright dependencies.
 
-The capture records runtime build, browser version, host build, device dimensions, scale, appearance, locale, font configuration, Dynamic Type, orientation and collapsed UI state. Compare only identical capture pins and reference hashes. Browser and host versions are recorded rather than guaranteed across machines; a different environment needs its own baseline. Local overrides `PLAYWRIGHT_MODULE` and `CHROME_PATH` are recorded through the actual browser version. They are not used by CI.
+Native images are exported from the successful XCTest geometry test, which asserts foreground and collapsed state before attaching the app screenshot. The selector requires exactly one attachment from the pinned device; it never substitutes a simulator Home Screen image.
 
-## Evidence and decisions
+The runner creates and deletes only its dedicated simulator. No signing, provider calls, credentials or imported scripts are needed. Dependency installation may need network access; fixture rendering blocks external requests. Local OCR uses Apple Vision revision 3 with English recognition and CPU-only execution. The compatibility flag is deprecated but supported by the tested SDK; OCR failure or a 30-second timeout is explicitly unavailable.
 
-Each candidate builds, tests disclosure expansion/collapse, runs Apple's accessibility audit collapsed and expanded, and repeats the tests at extra-extra-extra-large Dynamic Type. This is not the largest accessibility text category and does not replace manual VoiceOver navigation. Screenshot captures use the collapsed state. Test results, logs, screenshots, pixel differences, normalized crops and artifact hashes are preserved in the output directory.
+## Measurements and scope
 
-Safe-area normalization is explicit: the profile excludes 62 points at the top and 34 at the bottom, at scale 3. No image resizing is used. Those offsets are fixture/device assumptions, not automatic measurements. The normalized browser viewport matches the resulting native content region.
+- **Clipping:** XCUITest captures text frames and runs Apple's text-clipping audit. Horizontal overflow reports the affected label and rectangle. Fully offscreen scroll content is separate; partial viewport intersections require review. This does not establish arbitrary image clipping, overlap, shadows or occlusion.
+- **Wrapping:** OCR line-end token offsets are compared only when both full transcripts match expected visible source text after NFKC/whitespace normalization. Signs and punctuation are preserved. Confidence below 0.8, missing text, decorative-marker differences or failed recognition yield unavailable, never zero mismatches.
+- **Interactions/accessibility:** native disclosure expansion/collapse, queried labels/traits and Apple's accessibility audit run at large and extra-extra-extra-large Dynamic Type. This is not the largest accessibility text category and does not replace manual VoiceOver navigation.
+- **Pixels:** the example policy requires normalized mean error <= 0.02, changed-pixel fraction <= 0.10, minimum improvement 0.001 and zero measured line-break mismatches. These are experimental thresholds, not calibrated perceptual accuracy.
 
-The predeclared example thresholds are normalized mean channel error <= 0.02, changed-pixel fraction <= 0.10, minimum mean-error improvement 0.001, and zero measured line-break mismatches. These are experimental policy values, not calibrated perceptual similarity claims.
+Safe-area normalization is explicit: 62 points top and 34 bottom at scale 3. These are fixture/device assumptions, not automatic measurements. There is no image resizing. The browser viewport matches the cropped native region; captures use collapsed state and light appearance. Dark mode and expanded-state pixel comparison remain unsupported.
 
-- **Accepted:** all required verifier checks pass, thresholds are met and neither visual metric nor functional/accessibility evidence regresses.
-- **Rejected:** a required check fails, clipping/accessibility problems remain, test coverage decreases, or a measured metric regresses.
-- **Requires review:** evidence is missing, capture conditions differ, source is unchanged, improvement is insufficient, or verification fails.
+## Gate and known-good baseline
 
-Unknown counts are null, never zero. A better pixel score alone cannot pass. CI exits nonzero for both rejected and requires-review outcomes and uploads evidence even on failure.
+**Accepted** requires all independent checks to pass, thresholds to be met, and no measured functional, accessibility or visual regression. **Rejected** means a failed check, clipping/accessibility problem, reduced test coverage or metric regression. **Requires review** means incomplete evidence, changed capture conditions, unchanged source, insufficient improvement or verifier failure. Improved pixels alone cannot accept a candidate. Both rejected and review-required exit nonzero in CI.
 
-## Repair boundaries and resumability
+A known-good baseline must satisfy every required check and threshold. It remains null until then. `known-good.ts` advances it only after acceptance; rejected/review candidates never become the next comparison baseline. The current fixture implements one deterministic leading-disclosure strategy. It does not implement a vision-model repair loop or cross-run import of a previously approved application's baseline.
 
-The generic coordinator caps attempts at three. Completed attempt records are atomically written, hashed, schema-validated and their decisions recomputed on resume. An interrupted reserved attempt requires review and is not silently rerun. Hashes detect accidental modification; they are not signatures or an isolation boundary. Use a dedicated trusted directory with trusted parents and trusted verifier callbacks.
+## Resume and evidence integrity
 
-The current fixture implements **one deterministic repair**, moving the native disclosure indicator to the leading edge with a native button and expanded/collapsed accessibility value. It does not call a vision model or implement three distinct repair strategies. Candidates are isolated and never promoted automatically. The outer simulator benchmark checkpoints evidence but does not yet resume the entire build/capture pipeline; reruns require a new output directory.
+Generation, build, tests/captures, reference and measurements have atomic checkpoints. Reuse validates the input/environment contract and every declared artifact hash. Changed/missing evidence stops reuse. Completed repair decisions also revalidate candidate checkpoints before returning a verdict.
 
-## Foundation status (historical)
+Interrupted stages rerun; completed stages do not. Interrupted generation preserves partial output and creates a new isolated directory. A PID lock serializes writers, and explicit resume reclaims only a dead owner. A hard crash can leave the dedicated simulator for manual cleanup. Hashes provide integrity checks, not signatures, a sandbox or protection from a malicious local writer.
 
-The first M2 commit was **partial**. Automated viewport geometry/clipping and text-line extraction are unavailable, so this fixture cannot receive an automatic accepted verdict. Layout and typography remain explicitly unavailable even when XCUITest and pixel checks pass. Dark-mode capture, expanded-state pixel comparison, noise calibration, full-pipeline resume and additional repair strategies remain future work. Existing M1 evidence is unchanged.
+The coordinator allows up to three reserved attempts; this adapter declares one. Checkpoint-backed recovery reuses its reserved attempt number. `FIDELITY_INTERRUPT_AFTER=baseline-large` exercises stopping after an atomic capture checkpoint. The hosted workflow tests that stop and then resumes. Completed-run resume was also verified locally without changing any of the twelve checkpoints.
 
-The workflow `.github/workflows/universal-fidelity.yml` runs portable gate tests and a supported macOS profile. Adding the workflow does not establish a hosted simulator pass; inspect its actual run and uploaded evidence after the branch is published.
+## Actual local results
 
-## Recorded local run: October 15, 2026
+Code commit: `9682582a579f5318557d90c023fb1fb8e5c473bb`, October 15, 2026 (America/Chicago).
 
-Both baseline and leading-disclosure candidate built with zero reported warnings/errors on Xcode 27.0 (27A266a), iPhone 18 Pro, iOS 27.0. Each passed two UI tests at large and at XXXL: eight executions total, zero failed/skipped. Mean pixel error increased from 0.0184852 to 0.0195067; changed-pixel fraction increased from 0.0704312 to 0.0885756. **The candidate regressed and must not be promoted.**
+- Both unsigned native builds passed on Xcode 27.0 (27A266a), iPhone 18 Pro/iOS 27.0.
+- Twelve native test executions passed; zero failed/skipped. Text geometry and clipping audits passed at both text sizes for both candidates.
+- The injected stop was resumed successfully. A subsequent completed-run resume reused all twelve checkpoints unchanged and retained the rejected verdict.
+- Typography was **unavailable** in this run because OCR failed/timed out. No known-good baseline was established.
+- The leading-disclosure candidate increased visual error and was **rejected**. No promotion occurred.
+- Portable full-suite result: 640 passed, zero failures, one skipped. A later focused run including the added checkpoint-interruption regression passed 38 tests.
 
-Raw evidence is preserved in `../evidence/fidelity-m2/`. The original runner attempted a nonexistent second strategy after rejecting the first and ended requires-review; this adapter now explicitly limits its strategy budget to one. The recorded runner also used zero placeholders for unavailable geometry counts; the current schema/adapter use null. These historical records are retained unmodified, not presented as an accepted current-protocol run. The final gate can be evaluated offline against the recorded metrics with unknown geometry explicitly null; a full rerun of the final runner remains outstanding.
+See [preserved report](../evidence/fidelity-resume/report.json), [summary](../evidence/fidelity-resume/summary.json), [resume proof](../evidence/fidelity-resume/resume-proof.json), [baseline](../evidence/fidelity-resume/baseline/native-large.png), [candidate](../evidence/fidelity-resume/candidate-1/native-large.png), and [hashes](../evidence/fidelity-resume/hashes.json). The raw report retains the earlier injected interruption in its `error` field; its final status is rejected, not a new pipeline failure. Logs are gzip-compressed without altering their original bytes. Absolute raw-run paths are local provenance, not portable artifact links.
 
-Stored build/test logs are gzip-compressed without changing their original bytes; decompress them to compare against the raw log hashes in the original report. `hashes.json` covers the stored artifacts, including compressed files. `current-gate-evaluation.json` records the explicit offline re-evaluation and rejected verdict.
+The earlier [M2 foundation evidence](../evidence/fidelity-m2/) and M1 evidence are unchanged. An intermediate run recovered OCR and observed the headline wrapping difference, but also encountered disk exhaustion; it is not a completed result for this protocol. Unknown typography, limited clipping coverage and hosted results must remain separate from successful native tests. M2 is not yet a visual-fidelity pass.
 
-## Measurement and resume extension
+## Hosted capture correction
 
-The runner now captures native text frames through XCUITest and performs Apple’s text-clipping audit. Horizontal overflow identifies the affected label and rectangle. Fully offscreen scroll content is reported separately; partial viewport intersections require review. This covers text, not arbitrary image clipping, overlap, shadows or occlusion.
+The first hosted run ([38839913120](https://github.com/Nagarjuna2997/ios-agent-skill/actions/runs/38839913120)) built both variants and passed all 12 native test executions, including checkpoint restart. Its post-test simulator screenshots captured SpringBoard, so those pixel comparisons are invalid and are not evidence of app fidelity. The revised runner uses XCTest attachments as described above. Empty OCR returns unavailable rather than crashing the verifier; resumed errors move into interruption history. The corrected local and hosted results are recorded below.
 
-Local Vision OCR (revision 3, English) measures line boundaries in explicitly normalized reference/native screenshots. Both complete recognized transcripts must match the expected visible HTML text, preserving punctuation and signs. Recognition below 0.8 confidence or differing transcripts yields unavailable, not a mismatch count of zero. Each line-end token offset is compared; changed boundaries are recorded. OCR availability and font rasterization are platform limitations, not proof of equivalent typography.
+## Corrected local capture evidence
 
-Resume with the **same** command plus `--resume`. Completed generation, build, test/capture, reference and measurement checkpoints are atomic and hash-checked. Environment, profile, compiled verifier and fixture changes invalidate reuse. Modified or missing declared artifacts stop the run. Interrupted stages rerun in their isolated workspace; interrupted generation creates a new directory and preserves the old partial files. The runner owns a PID lock; resume only reclaims it when the owner process has exited. A fresh dedicated simulator restores pinned settings. No existing user simulator is changed. A hard crash may leave the previous dedicated simulator for manual cleanup; its UDID is recorded in report.json.
+Implementation `52097f5`: two native builds and all 12 native test executions passed (three tests × two text sizes × two variants). Native images came from the foreground/collapsed XCTest attachment. The candidate increased mean pixel error from 0.018485 to 0.019507 and changed-pixel fraction from 0.070431 to 0.088576; the gate rejected it. Typography remained unavailable because local Vision OCR failed/timed out. No known-good baseline was promoted.
 
-Completed repair decisions invoke checkpoint verification again before reuse. Checkpoint-backed interrupted repairs reuse the same reserved attempt number, not a new repair budget. A trusted local journal is not a sandbox or signed evidence system.
+An interrupted run resumed from its completed capture; a completed-run resume revalidated all 12 checkpoints without changing their mtimes. An intervening documentation edit was correctly refused by the input contract and matching input was restored before continuation. The input README snapshot is included because it differed from the committed documentation.
 
-A known-good baseline requires passing build, functional, accessibility, layout and typography evidence plus the declared visual thresholds. It is null until those requirements are met. Rejected or review-required attempts never replace it. Accepted candidates advance it; each comparison stays anchored to the last accepted version.
+See [report](../evidence/xctest-capture/report.json), [summary](../evidence/xctest-capture/summary.json), [resume proof](../evidence/xctest-capture/resume-proof.json), [baseline](../evidence/xctest-capture/baseline/native-large.png), [candidate](../evidence/xctest-capture/candidate-1/native-large.png), and [hashes](../evidence/xctest-capture/hashes.json). This verifies capture and resumability, not a passing visual-fidelity result. The full portable suite passed 645 tests, failed zero and skipped one.
 
-The branch-only push workflow permits hosted verification before opening a PR. It does not publish npm, deploy the website, or merge changes. A rejected/review-required fidelity outcome remains a failing gate even if all native tests passed.
+## Corrected hosted verification
+
+[Run 38842111648](https://github.com/Nagarjuna2997/ios-agent-skill/actions/runs/38842111648) at implementation `52097f5` completed on Xcode 26.5 / iOS 26.5 / iPhone 17 Pro. Both native builds and all 12 test executions passed. The intentional post-capture interruption resumed successfully, and exported screenshots show the app. Mean pixel error increased from 0.018494 to 0.019517; changed-pixel fraction increased from 0.070476 to 0.088625. The candidate was **rejected**. The workflow is red by design for that result; it is not a passing fidelity run.
+
+Hosted OCR ran, but its transcript differed from expected visible source, so typography remained unavailable. No known-good baseline was promoted. See the preserved [summary](../evidence/hosted-xctest-capture/summary.json), [report](../evidence/hosted-xctest-capture/report.json), [baseline](../evidence/hosted-xctest-capture/baseline/native-large.png), [candidate](../evidence/hosted-xctest-capture/candidate-1/native-large.png), and [hashes](../evidence/hosted-xctest-capture/hashes.json). Raw log bytes are preserved in gzip files.
+
+Next blocker: reliable per-text-region transcription/line measurement with explicit decorative-glyph handling and an independently verified known-good fixture. Do not loosen global transcript checks or promote a baseline solely to turn CI green. M2 remains partial; no merge or npm publication is justified by these results.

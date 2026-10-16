@@ -1,0 +1,32 @@
+[
+  {
+    "attachments" : [
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "E3A31DFC-A8FF-43F2-B7B9-74EA5D264A59",
+        "deviceName" : "ios-agent-fidelity-1792119349393",
+        "exportedFileName" : "6A05E1F0-C07F-4990-9F70-C09A35568508.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "expanded-disclosure_0_7F1C9C54-3995-4EF8-8C4B-1B399A83F259.png",
+        "timestamp" : 1792119900.788
+      }
+    ],
+    "testIdentifier" : "InteractionTests/testDisclosureAndContent()",
+    "testIdentifierURL" : "test://com.apple.xcode/FieldNotes/FieldNotesUITests/InteractionTests/testDisclosureAndContent"
+  },
+  {
+    "attachments" : [
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "E3A31DFC-A8FF-43F2-B7B9-74EA5D264A59",
+        "deviceName" : "ios-agent-fidelity-1792119349393",
+        "exportedFileName" : "A4BCE763-3E1A-4F76-89AD-5E9921148085.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "verified-collapsed_0_CD136C18-526D-4B13-83E7-3850BB9D32DB.png",
+        "timestamp" : 1792119908.506
+      }
+    ],
+    "testIdentifier" : "InteractionTests/testMeasuredGeometry()",
+    "testIdentifierURL" : "test://com.apple.xcode/FieldNotes/FieldNotesUITests/InteractionTests/testMeasuredGeometry"
+  }
+]

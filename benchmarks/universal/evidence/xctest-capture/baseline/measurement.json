@@ -1,0 +1,51 @@
+{
+  "comparison": {
+    "schemaVersion": 1,
+    "referenceHash": "237315be7c347215c39fa487f24bab6b7790a0829bb3d68791718e1978c6f811",
+    "nativeHash": "366a9c1778bdd2ff77f8f371cdb9c440d31d013c7b50f3362e028f09e0764afd",
+    "referenceRegion": {
+      "x": 0,
+      "y": 0,
+      "width": 1206,
+      "height": 2334
+    },
+    "nativeRegion": {
+      "x": 0,
+      "y": 186,
+      "width": 1206,
+      "height": 2334
+    },
+    "meanAbsoluteChannelError": 0.018485192964781638,
+    "changedPixelFraction": 0.07043119165668374,
+    "channelThreshold": 8,
+    "verdict": "requires-review",
+    "limitations": [
+      "Pixel differences include font rasterization and native control rendering.",
+      "No functional, accessibility or perceptual equivalence inferred.",
+      "No resizing, registration or hidden cropping performed."
+    ]
+  },
+  "typography": {
+    "status": "unavailable",
+    "mismatches": null,
+    "reason": "Local OCR unavailable"
+  },
+  "geometry": [
+    {
+      "status": "passed",
+      "clippedElements": 0,
+      "regions": [],
+      "audit": "passed"
+    },
+    {
+      "status": "passed",
+      "clippedElements": 0,
+      "regions": [],
+      "audit": "passed"
+    }
+  ],
+  "recognized": {
+    "unavailable": true,
+    "reason": "Reference recognition unavailable"
+  }
+}
