@@ -100,3 +100,34 @@ test('many static or literal-prop siblings do not inflate ancestor provenance',(
 test('literal props reject characters that HTML would silently normalize or discard',()=>{
  for(const value of ['A\u0000B','A\u2028B','A\u2029B','A\nB','A\tB','A\u007fB'])assert.throws(()=>reactToIR(`function C(p){return <p>{p.x}</p>} export default function App(){return <C x={${JSON.stringify(value)}}/>}`),/control characters/);
 });
+
+test('bounded arithmetic and interpolation resolve without executing input',()=>{
+ const source='function C({count, label}){return <p style={{padding: 2 * (3 + 1)}}>{`${label}: ${count + 2} / ${9 % 4}`}</p>} export default function App(){return <C count={6 / 2} label={"Total" + " items"}/>}';
+ const ir=reactToIR(source),text=ir.nodes.find(n=>n.kind==='text');assert.equal(text.text,'Total items: 5 / 1');assert.equal(text.style.padding,8);assert.equal(ir.limitations.length,0);
+ const spans=text.evidence.map(e=>Buffer.from(source).subarray(e.start,e.end).toString());assert.ok(spans.some(s=>s==='6 / 2'));
+});
+test('arithmetic follows operand types and precedence; unary numbers remain numeric',()=>{
+ for(const [expression,expected] of [['1 + 2 * 3','7'],['"1" + 2 + 3','123'],['1 + 2 + "3"','33'],['-3 + +2','-1'],['`A < B & C`','A < B & C']]){
+  assert.equal(reactToIR(`export default function App(){return <p>{${expression}}</p>}`).nodes.find(n=>n.kind==='text').text,expected);
+ }
+});
+test('unsupported operators, coercions and executable interpolation fail closed',()=>{
+ for(const expression of ['1 / 0','0 % 0','1e999','"3" - 1','+"2"','Math.random()','`hi ${process.env.SECRET}`','true ? "a" : "b"','1 === 1','1 ** 2','1 && 2','x++'])assert.throws(()=>reactToIR(`export default function App(){return <p>{${expression}}</p>}`));
+});
+test('expression depth, output size and normalized whitespace remain bounded',()=>{
+ for(const expression of ['('.repeat(40)+'1'+')'.repeat(40),JSON.stringify('x'.repeat(16385)),'`a\\nb`','`a${"\\u0000"}b`'])assert.throws(()=>reactToIR(`export default function App(){return <p>{${expression}}</p>}`));
+});
+
+test('compound expressions retain bounded provenance rather than one record per operand',()=>{
+ const expression=Array.from({length:25},()=> '1').join('+');
+ const ir=reactToIR(`export default function App(){return <p>{${expression}}</p>}`);const row=ir.nodes.find(n=>n.kind==='text');assert.equal(row.text,'25');assert.ok(row.evidence.length<=3);
+});
+
+test('flat template expansion has an explicit work bound independent of output length',()=>{
+ const expression='`a'+'${""}'.repeat(257)+'`';assert.throws(()=>reactToIR(`export default function App(){return <p>{${expression}}</p>}`),/interpolation count/);
+});
+
+test('constant-expression fixture generates identical native source to the independent HTML fixture',async()=>{
+ const {importReact}=await import('../dist/app-ir/react.js');const {importHTML}=await import('../dist/app-ir/html.js');const base=new URL('../../benchmarks/universal/html-disclosure/',import.meta.url);
+ const a=await importReact(new URL('App.expressions.tsx',base).pathname,'FieldNotes'),b=await importHTML(new URL('index.html',base).pathname,'FieldNotes');assert.equal(renderSwiftUI(a,{instrumentTypography:true}).source,renderSwiftUI(b,{instrumentTypography:true}).source);
+});

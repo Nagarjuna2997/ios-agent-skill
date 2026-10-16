@@ -46,15 +46,45 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
   };
   type Literal = {value:string|number; origins:ts.Node[]};
   type Scope = Map<string, Literal|Map<string,Literal>>;
-  function literal(node:ts.Expression,scope:Scope):Literal {
-    node=unwrap(node);
-    if(ts.isStringLiteral(node)&&/[\u0000-\u001f\u007f-\u009f\u2028\u2029]/.test(node.text))fail(node,'control characters and line separators are unsupported');
-    if(ts.isStringLiteral(node)||ts.isNumericLiteral(node))return {value:ts.isNumericLiteral(node)?Number(node.text):node.text,origins:[node]};
+  let expressionSteps=0;
+  function literal(node:ts.Expression,scope:Scope,depth=0):Literal {
+    if(++expressionSteps>4096)fail(node,'static expression work budget exceeded');
+    if(depth>32)fail(node,'static expression exceeds depth limit');
+    const checked=(value:string|number,origins:ts.Node[]):Literal=>{
+      if(typeof value==='number'&&!Number.isFinite(value))fail(node,'non-finite numeric expression');
+      if(typeof value==='string'&&(value.length>16384||/[\u0000-\u001f\u007f-\u009f\u2028\u2029]/.test(value)))fail(node,'oversized text, control characters and line separators are unsupported');
+      // The expression span includes its operands; keep external prop provenance separately.
+      const unique=[...new Set(origins)];
+      return {value,origins:unique.filter(n=>!unique.some(parent=>parent!==n&&parent.pos<=n.pos&&parent.end>=n.end))};
+    };
+    if(ts.isParenthesizedExpression(node))return literal(node.expression,scope,depth+1);
+    if(ts.isStringLiteral(node)||ts.isNoSubstitutionTemplateLiteral(node)||ts.isNumericLiteral(node))return checked(ts.isNumericLiteral(node)?Number(node.text):node.text,[node]);
     if(ts.isIdentifier(node)){const value=scope.get(node.text);if(value && !(value instanceof Map))return value;}
     if(ts.isPropertyAccessExpression(node)&&ts.isIdentifier(node.expression)){
       const object=scope.get(node.expression.text);if(object instanceof Map&&object.has(node.name.text))return object.get(node.name.text)!;
     }
-    return fail(node,'only literal string/number props and direct prop reads are supported');
+    if(ts.isPrefixUnaryExpression(node)&&[ts.SyntaxKind.PlusToken,ts.SyntaxKind.MinusToken].includes(node.operator)){
+      const operand=literal(node.operand,scope,depth+1);if(typeof operand.value!=='number')fail(node,'unary arithmetic requires a number');
+      return checked(node.operator===ts.SyntaxKind.MinusToken?-operand.value:+operand.value,[node,...operand.origins]);
+    }
+    if(ts.isBinaryExpression(node)&&[ts.SyntaxKind.PlusToken,ts.SyntaxKind.MinusToken,ts.SyntaxKind.AsteriskToken,ts.SyntaxKind.SlashToken,ts.SyntaxKind.PercentToken].includes(node.operatorToken.kind)){
+      const left=literal(node.left,scope,depth+1),right=literal(node.right,scope,depth+1),op=node.operatorToken.kind;
+      let value:string|number;
+      if(op===ts.SyntaxKind.PlusToken&&(typeof left.value==='string'||typeof right.value==='string'))value=String(left.value)+String(right.value);
+      else {
+        if(typeof left.value!=='number'||typeof right.value!=='number')fail(node,'arithmetic requires numeric operands');
+        const a=left.value as number,b=right.value as number;
+        value=op===ts.SyntaxKind.PlusToken?a+b:op===ts.SyntaxKind.MinusToken?a-b:op===ts.SyntaxKind.AsteriskToken?a*b:op===ts.SyntaxKind.SlashToken?a/b:a%b;
+      }
+      return checked(value,[node,...left.origins,...right.origins]);
+    }
+    if(ts.isTemplateExpression(node)){
+      if(node.templateSpans.length>256)fail(node,'template interpolation count exceeds limit');
+      let value=node.head.text;const origins:ts.Node[]=[node];
+      for(const span of node.templateSpans){const part=literal(span.expression,scope,depth+1);value+=String(part.value)+span.literal.text;origins.push(...part.origins);checked(value,origins);}
+      return checked(value,origins);
+    }
+    return fail(node,'only bounded literal expressions and direct prop reads are supported');
   }
   const dependencies:Array<{start:number;end:number;nodes:ts.Node[]}>=[];
   let html = '', count = 0;

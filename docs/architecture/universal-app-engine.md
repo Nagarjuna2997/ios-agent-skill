@@ -121,7 +121,7 @@ Reproduce with the existing fidelity runner and `local.json` or `ci.json`; run t
 
 This is syntax inspection, not TypeScript type-checking or a React runtime. Only the five basic XML entities are decoded; other entity references and nonbreaking/special whitespace are rejected rather than silently changing wrapping.
 
-Same-file components now accept literal string/number props, one props identifier or shallow named destructuring (including aliases), direct prop reads, forwarding, and literal style values. The entry remains parameterless. Each expanded node retains definition and invocation/value evidence. This is bounded syntax lowering, not JavaScript evaluation.
+Same-file components now accept literal string/number props, one props identifier or shallow named destructuring (including aliases), direct prop reads, forwarding, and literal style values. The entry remains parameterless. Each expanded node retains definition and invocation/value evidence. This is bounded syntax lowering, not JavaScript evaluation. Primitive template interpolation, numeric unary signs, and `+`, `-`, `*`, `/`, `%` over resolved literal operands are supported. Addition follows string/number operand semantics; other arithmetic requires numbers. Calls, implicit numeric string coercion, non-finite results, control characters, and excessive expression depth/output/work are rejected. No imported code executes.
 
 Imports, hooks, arbitrary expressions, object/boolean props, defaults/rest bindings, children props, reserved key/ref props, spread attributes, async components, event handlers and unresolved components are rejected. Unsupported HTML elements/CSS remain limitations that block generation. This does not implement Next.js routing/server components, runtime React state, API calls, external stylesheets, images or arbitrary project conversion. A `use client` directive is accepted as syntax only; it does not enable client execution. The TypeScript parser is a runtime dependency because installed CLI users need it.
 
@@ -144,7 +144,7 @@ FIDELITY_ADAPTER=react-static node benchmarks/universal/fidelity/run.mjs benchma
 
 1. Resolve the heading's actual wrap mismatch without changing source typography merely to fit the fixture; repeat local/hosted comparison. Passive observation itself now has hosted zero-difference evidence.
 2. Obtain independent human reference approval only after reviewing source, images, word boundaries and capture pins. Approval cannot override a failed gate.
-3. Extend React through explicit IR contracts for props/state/navigation, with unsupported-feature tests before adding other frameworks. Current implementation handles static components and bounded literal props only.
+3. Extend React through explicit IR contracts for props/state/navigation, with unsupported-feature tests before adding other frameworks. Current implementation handles static components, bounded literal props and primitive constant expressions; state and navigation remain unsupported.
 4. Connect the saved-evidence viewer to the optional Studio UI after its artifact boundary is established. Keep CLI use independent.
 5. Add native dark-mode, responsive/multi-screen and asset fixtures before making wider design-quality claims. No backend contract, animation or framework support is implied by this prototype.
 
