@@ -30,7 +30,7 @@ const profile=JSON.parse(await readFile(resolve(profilePath),'utf8'));
 if(profile.version!==1||profile.state!=='collapsed'||profile.locale!=='en_US'||profile.appearance!=='light'||profile.contentSize!=='large')throw Error('Unsupported capture profile');
 const adapter=process.env.FIDELITY_ADAPTER??'html';
 if(!['html','react-static'].includes(adapter))throw Error('Unsupported adapter');
-const textNodes=process.env.FIDELITY_UIKIT_TEXT_NODES?.split(',') ?? [];
+const textNodes=process.env.FIDELITY_UIKIT_TEXT_NODES ? process.env.FIDELITY_UIKIT_TEXT_NODES.split(',') : [];
 if(textNodes.some(id=>!/^node-[0-9]+$/.test(id)))throw Error('Invalid experimental text node ID');
 const referenceApproval=process.env.FIDELITY_REFERENCE_APPROVAL?JSON.parse(await readFile(resolve(process.env.FIDELITY_REFERENCE_APPROVAL),'utf8')):null;
 const root=resolve(output);if(!resume)await mkdir(root,{recursive:false});
