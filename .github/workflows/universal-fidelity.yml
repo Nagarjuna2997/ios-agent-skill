@@ -6,6 +6,12 @@ on:
   pull_request:
     paths: ['mcp-server/src/app-ir/**', 'benchmarks/universal/**', '.github/workflows/universal-fidelity.yml']
   workflow_dispatch:
+    inputs:
+      adapter:
+        description: Static fixture adapter to verify
+        type: choice
+        options: [html, react-static]
+        default: html
 defaults:
   run:
     shell: bash
@@ -27,12 +33,13 @@ jobs:
           node-version: '22'
       - run: npm ci --prefix mcp-server
       - run: npm run build --prefix mcp-server
-      - run: node --test benchmarks/universal/fidelity/commands.test.mjs
+      - run: node --test benchmarks/universal/fidelity/commands.test.mjs benchmarks/universal/render-evidence.test.mjs mcp-server/test/react-ir.test.js
       - run: node --test mcp-server/test/app-ir.test.js mcp-server/test/visual-gate.test.js mcp-server/test/measurements.test.js mcp-server/test/checkpoints.test.js mcp-server/test/known-good.test.js mcp-server/test/test-capture.test.js mcp-server/test/typography.test.js
   simulator:
     runs-on: macos-26
     timeout-minutes: 35
     env:
+      FIDELITY_ADAPTER: ${{ inputs.adapter || 'html' }}
       DEVELOPER_DIR: /Applications/Xcode_26.5.app/Contents/Developer
     steps:
       - uses: actions/checkout@v4
