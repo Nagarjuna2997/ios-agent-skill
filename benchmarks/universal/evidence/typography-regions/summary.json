@@ -1,0 +1,20 @@
+{
+  "status": "partial",
+  "nativeBuilds": 1,
+  "nativeTests": {
+    "passed": 3,
+    "failed": 0,
+    "skipped": 0
+  },
+  "visibleRegions": 9,
+  "uniqueRegionIdentifiers": 9,
+  "probeMeanError": 9.974035140302336e-06,
+  "typography": "unavailable",
+  "knownGood": null,
+  "stop": "Injected interruption after baseline-large; no complete repair comparison in this local capture run",
+  "limitations": [
+    "Probe changes rendering; measurements provisional",
+    "No independent reference approval",
+    "Default text-size capture only"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "report.json": "b28a9f516e315ffa889ba804d6f9ec971e59499d959cee43300ae581a6c3b7ec",
+  "setup-commands.jsonl": "258a6b327ec6957d0b6a326d1f118ccee8fd710fc168a00fb4135389007cd9a6",
+  "baseline/difference.png": "4834d36ca51662e47e1851a4206b94f7e3e2028739cf64521f2339953ff99d9f",
+  "baseline/build-1792123375510.log.gz": "8d15c1b4454aedbc7d5f8bcf8669d72e0ff698e5d6b6505737910c15bb53cd16",
+  "baseline/test-7d8c1464-6272-4071-9dea-ba9cf7389009.log.gz": "2e7c38521eb90620780644ae898fa4941adfb055113a15aa8e70381b2d0cda3f",
+  "baseline/normalized.png": "e224606d8eff139aa2e51ba15148aba6a4613888f109ec8323b5eb26421b3fbe",
+  "baseline/measurement.json": "7ccc9a77d31717733ffcbdf45278790eebebe396eb83526789264415d2185c87",
+  "baseline/test-47f071a9-bdfe-4b2f-a653-ab4a5add0e91.log.gz": "81625fad28a0ce449049dde0b6aa0d523338ab38002e1433b4b9f9fb9d4d4591",
+  "candidate-1/difference.png": "4c73550385b1ed2417273bbf5068696b59bd467bbbcc7b941f6e602bdebce246",
+  "candidate-1/normalized.png": "02b1469714540d4f5291d42c604d41fc478b7d5d51c5c6e1201e883f6f094372",
+  "candidate-1/measurement.json": "e2c2e521b87d8da1c9407b3115066711fcdbac9c1556566190c72ea4542c8cc5",
+  "candidate-1/build-1792123892227.log.gz": "201add0741db629ae6e8dd6e03d6ba05f6c608c6f70c03c3a6e04a539420caac",
+  "candidate-1/test-5fd76485-2c42-4d4e-9d63-8a4e49b44f92.log.gz": "3fee66b767e5a1061c024c30db8a18a8493d07d65449fdd5d04d2f097cc2e459",
+  "candidate-1/test-98fc6fa8-f7d4-41f4-a9b0-edc193581fdb.log.gz": "254bd3825b8d228b81b696a07d0a91fc400c381edabe119a242aa6b4a5c252c8"
+}

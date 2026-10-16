@@ -67,7 +67,7 @@ The renderer emits SwiftUI Text, VStack, ScrollView and DisclosureGroup with loc
 | 1. Audit/reuse plan | Existing main | Concrete reuse map, gaps, risks and compatibility contract | Complete |
 | 2. IR foundation | 1 | Versioned schema, provenance, graph validation, adversarial fixtures | Implemented for a bounded subset |
 | 3. HTML vertical prototype | 2 + local Xcode | Real native build, launch, disclosure interaction test, captures and comparison | Experimental; evidence in benchmark README |
-| 4. Reliable reference verification | 3 | Pinned capture conditions, aligned regions, state variants, accessibility checks, atomic resumable checkpoints and independently reviewed fixes | Partial: explicit crops and raw metric implemented; repair loop not connected |
+| 4. Reliable reference verification | 3 | Pinned capture conditions, aligned regions, state variants, accessibility checks, atomic resumable checkpoints and independently reviewed fixes | Partial: bounded repair, hashed checkpoints and regression rejection implemented; trusted typography still blocked |
 | 5. CSS/assets/routes | 4 | Golden layouts, no silently dropped declarations, local asset hashes and licensing review, functional navigation tests | Planned |
 | 6. React/Next adapters | 5 | AST/static evidence only; backend stays server-side; fixture builds/tests/captures; dynamic ambiguity reported | Planned |
 | 7. Screenshot/Figma ingestion | 4 | Authorized image/design snapshots, visible facts separated from hidden requirements, traceable reconstruction | Planned |
@@ -95,3 +95,22 @@ npm test --prefix mcp-server
 The MCP `ios_import_html` tool performs the same read-only inspection. No `/ios-create` alias replaces `/ios-build`. No account, model subscription or network is needed for the adapter/renderer/benchmark; development dependency installation and optional XcodeGen are separate tool setup.
 
 Every new adapter must include unsupported-feature and malicious-input fixtures. Every renderer change requires compilation and meaningful behavior tests on macOS before being described as verified. Record skipped/unavailable checks separately. Keep before/after captures, source hashes and unresolved differences. Do not retune historical benchmark evidence or manufacture a visual pass.
+
+
+## M2.1 — deterministic typography verification (experimental)
+
+The shared `app-ir/typography.ts` contract compares visible region IDs and word-index line boundaries. The HTML adapter annotates original source byte ranges, then measures DOM word ranges without inserting layout-changing spans. The native benchmark uses opt-in SwiftUI `Text.LayoutKey` observations / `TextAttribute` word identities (iOS 18+) and XCTest accessibility values. Container IDs are deliberately omitted because they propagate to descendants in SwiftUI; leaf IDs retain App IR traceability. Ordinary generated apps do not contain the probe.
+
+Disclosure markers are not words: only the summary label enters the transcript. Closed disclosure body text is excluded. Exact visible text, unique IDs and complete ordered word coverage are mandatory. Split words, unsupported scripts/whitespace, missing regions and changed instrumentation remain unavailable. Current coverage is plain-text LTR English plus middot at the default text size; XXXL receives interaction and clipping checks, not a source typography equivalence claim. OCR is retained solely as supporting evidence.
+
+The measurement probe must render pixel-identically to the ordinary app. A different image makes all probe conclusions provisional, including apparent text/truncation failures. No pixel tolerance has been relaxed. The original drawing-based probe caused one-level channel differences. A controlled experiment isolated the custom drawing path. Its passive replacement produced identical pixels and nine complete regions locally; hosted verification and independent reference approval remain required. Neither experiment constitutes an accepted repair.
+
+Known-good promotion additionally requires an independently reviewed reference. A human reviews the original source, reference image, native image, region mapping and capture conditions, then supplies a JSON file through `FIDELITY_REFERENCE_APPROVAL`:
+
+```json
+{"version":1,"referenceHash":"<sha256 of reference.png>","pinsHash":"<sha256 of JSON.stringify(evidence.pins)>","reviewer":"<reviewer's name>","reviewedAt":"<ISO 8601 UTC timestamp>","decision":"approved"}
+```
+
+This is trusted local input, not authentication or a cryptographic signature. The agent must not manufacture approval. The approval content is bound into the resume contract; adding or changing it requires a new run directory. Approval alone never overrides failed, unavailable or regressed quality checks. No reviewed reference or known-good baseline is claimed in this milestone.
+
+Reproduce with the existing fidelity runner and `local.json` or `ci.json`; run the DOM test with `node --test benchmarks/universal/fidelity/dom-typography.test.mjs`. The hosted workflow installs its pinned Playwright dependency and executes the same protocol. The benchmark remains independent of future framework adapters. Keep prior M1/M2 evidence immutable and record new runs separately.

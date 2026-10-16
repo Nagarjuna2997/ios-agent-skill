@@ -355,7 +355,7 @@ Search offline with `node scripts/query-library.mjs search "SwiftData"`. Read a 
 | [docs/apple/technologies/xpc.md](../../docs/apple/technologies/xpc.md) | guide | 3017 |
 | [docs/apple/technology-workflow.md](../../docs/apple/technology-workflow.md) | guide | 7695 |
 | [docs/apple/updates-and-release-notes.md](../../docs/apple/updates-and-release-notes.md) | guide | 11109 |
-| [docs/architecture/universal-app-engine.md](../../docs/architecture/universal-app-engine.md) | guide | 11067 |
+| [docs/architecture/universal-app-engine.md](../../docs/architecture/universal-app-engine.md) | guide | 14054 |
 | [docs/backend/app-architectures.md](../../docs/backend/app-architectures.md) | guide | 3005 |
 | [docs/backend/appwrite.md](../../docs/backend/appwrite.md) | guide | 2906 |
 | [docs/backend/authentication.md](../../docs/backend/authentication.md) | guide | 3980 |
@@ -452,7 +452,7 @@ Search offline with `node scripts/query-library.mjs search "SwiftData"`. Read a 
 | [docs/mcp/installation.md](../../docs/mcp/installation.md) | guide | 15233 |
 | [docs/mcp/knowledge-server.md](../../docs/mcp/knowledge-server.md) | guide | 3540 |
 | [docs/mcp/registry.md](../../docs/mcp/registry.md) | guide | 983 |
-| [docs/mcp/tools.md](../../docs/mcp/tools.md) | guide | 24022 |
+| [docs/mcp/tools.md](../../docs/mcp/tools.md) | guide | 24086 |
 | [docs/mcp/vnext-analysis-tools.md](../../docs/mcp/vnext-analysis-tools.md) | guide | 5494 |
 | [docs/migration/ios-deployment-migration.md](../../docs/migration/ios-deployment-migration.md) | guide | 7368 |
 | [docs/migration/swift-6-migration.md](../../docs/migration/swift-6-migration.md) | guide | 9823 |

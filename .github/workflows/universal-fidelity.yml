@@ -1,11 +1,14 @@
 name: Experimental native conversion fidelity
 on:
   push:
-    branches: ['feat/universal-app-ir']
+    branches: ['feat/universal-app-ir', 'feat/universal-typography']
     paths: ['mcp-server/src/app-ir/**', 'mcp-server/test/*', 'benchmarks/universal/**', '.github/workflows/universal-fidelity.yml']
   pull_request:
     paths: ['mcp-server/src/app-ir/**', 'benchmarks/universal/**', '.github/workflows/universal-fidelity.yml']
   workflow_dispatch:
+defaults:
+  run:
+    shell: bash
 permissions:
   contents: read
 concurrency:
@@ -24,7 +27,8 @@ jobs:
           node-version: '22'
       - run: npm ci --prefix mcp-server
       - run: npm run build --prefix mcp-server
-      - run: node --test mcp-server/test/app-ir.test.js mcp-server/test/visual-gate.test.js mcp-server/test/measurements.test.js mcp-server/test/checkpoints.test.js mcp-server/test/known-good.test.js mcp-server/test/test-capture.test.js
+      - run: node --test benchmarks/universal/fidelity/commands.test.mjs
+      - run: node --test mcp-server/test/app-ir.test.js mcp-server/test/visual-gate.test.js mcp-server/test/measurements.test.js mcp-server/test/checkpoints.test.js mcp-server/test/known-good.test.js mcp-server/test/test-capture.test.js mcp-server/test/typography.test.js
   simulator:
     runs-on: macos-26
     timeout-minutes: 35
@@ -41,6 +45,7 @@ jobs:
       - run: npm run build --prefix mcp-server
       - run: npm ci --prefix benchmarks/universal/fidelity
       - run: benchmarks/universal/fidelity/node_modules/.bin/playwright install chromium
+      - run: node --test benchmarks/universal/fidelity/dom-typography.test.mjs
       - name: Exercise interruption after a completed native capture
         run: |
           set +e
@@ -59,6 +64,7 @@ jobs:
           include-hidden-files: true
           path: |
             ${{ runner.temp }}/fidelity-evidence/report.json
+            ${{ runner.temp }}/fidelity-evidence/setup-commands.jsonl
             ${{ runner.temp }}/fidelity-evidence/reference.png
             ${{ runner.temp }}/fidelity-evidence/reference-text.json
             ${{ runner.temp }}/fidelity-evidence/checkpoints/
