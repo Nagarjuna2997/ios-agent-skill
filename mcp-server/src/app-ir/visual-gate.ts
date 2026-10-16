@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { mkdir, readFile, writeFile, rename, lstat } from 'node:fs/promises';
 import { join } from 'node:path';
+import { randomUUID } from 'node:crypto';
 import { sha256 } from './schema.js';
 
 const hash = z.string().regex(/^[a-f0-9]{64}$/);
@@ -59,7 +60,8 @@ interface Attempt { number: number; status: 'reserved'|'finished'; decision?: De
  * The caller must use a dedicated local directory; only this coordinator writes its ledger.
  */
 export async function repairWithGate(options: {
-  directory: string; baseline: VisualEvidence; policy: GatePolicy; maxAttempts?: number;
+  directory: string; baseline: VisualEvidence; policy: GatePolicy; maxAttempts?: number; resumeInterrupted?: boolean;
+  verifySavedEvidence?: (evidence: VisualEvidence, attempt: number) => Promise<void>;
   verifyCandidate: (attempt: number, baseline: VisualEvidence) => Promise<VisualEvidence>;
 }): Promise<{outcome: Decision['outcome']; attempts: Attempt[]; acceptedAttempt?: number}> {
   const baseline=VisualEvidenceSchema.parse(options.baseline),policy=GatePolicySchema.parse(options.policy);
@@ -76,15 +78,18 @@ export async function repairWithGate(options: {
     if(!fresh){
       let record;
       try { const bytes=await readFile(file,'utf8'); if(bytes.length>100000)throw Error('Oversized ledger'); record=JSON.parse(bytes); }
-      catch(error){if((error as NodeJS.ErrnoException).code==='ENOENT')return {outcome:'requires-review',attempts:[...attempts,{number,status:'reserved'}]};throw error;}
+      catch(error){if((error as NodeJS.ErrnoException).code==='ENOENT'){if(!options.resumeInterrupted)return {outcome:'requires-review',attempts:[...attempts,{number,status:'reserved'}]};}else throw error;}
+      if(record){
       if(record.contract!==contract || record.hash!==sha256(JSON.stringify(record.attempt)))throw Error('Repair evidence or contract changed');
       const row=SavedAttemptSchema.parse(record.attempt);
       if(row.number!==number || row.status!=='finished' || !row.decision)throw Error('Invalid repair ledger');
       if(!row.evidence && (row.decision.outcome!=='requires-review'||row.error!=='verification-failed'))throw Error('Missing verifier evidence');
       if(row.evidence && !equal(row.decision,evaluateVisualRepair(baseline,row.evidence,policy)))throw Error('Decision does not match evidence');
+      if(row.evidence && options.verifySavedEvidence)await options.verifySavedEvidence(row.evidence,number);
       attempts.push(row);
       if(row.decision.outcome!=='rejected')return {outcome:row.decision.outcome,attempts,...(row.decision.outcome==='accepted'?{acceptedAttempt:number}:{})};
       continue;
+      }
     }
     let attempt: Attempt;
     try {
@@ -95,7 +100,8 @@ export async function repairWithGate(options: {
       attempt={number,status:'finished',decision:{outcome:'requires-review',reasons:['Candidate verification failed; inspect the isolated attempt logs']},error:'verification-failed'};
     }
     const envelope={contract,attempt,hash:sha256(JSON.stringify(attempt))};
-    await writeFile(file+'.tmp',JSON.stringify(envelope,null,2),{flag:'wx'});await rename(file+'.tmp',file);
+    const temporary=file+'.'+randomUUID()+'.tmp';
+    await writeFile(temporary,JSON.stringify(envelope,null,2),{flag:'wx'});await rename(temporary,file);
     attempts.push(attempt);
     if(attempt.decision!.outcome!=='rejected')return {outcome:attempt.decision!.outcome,attempts,...(attempt.decision!.outcome==='accepted'?{acceptedAttempt:number}:{})};
   }

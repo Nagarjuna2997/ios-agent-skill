@@ -1,5 +1,8 @@
 name: Experimental native conversion fidelity
 on:
+  push:
+    branches: ['feat/universal-app-ir']
+    paths: ['mcp-server/src/app-ir/**', 'mcp-server/test/*', 'benchmarks/universal/**', '.github/workflows/universal-fidelity.yml']
   pull_request:
     paths: ['mcp-server/src/app-ir/**', 'benchmarks/universal/**', '.github/workflows/universal-fidelity.yml']
   workflow_dispatch:
@@ -21,7 +24,7 @@ jobs:
           node-version: '22'
       - run: npm ci --prefix mcp-server
       - run: npm run build --prefix mcp-server
-      - run: node --test mcp-server/test/app-ir.test.js mcp-server/test/visual-gate.test.js
+      - run: node --test mcp-server/test/app-ir.test.js mcp-server/test/visual-gate.test.js mcp-server/test/measurements.test.js mcp-server/test/checkpoints.test.js mcp-server/test/known-good.test.js
   simulator:
     runs-on: macos-26
     timeout-minutes: 35
@@ -38,8 +41,16 @@ jobs:
       - run: npm run build --prefix mcp-server
       - run: npm ci --prefix benchmarks/universal/fidelity
       - run: benchmarks/universal/fidelity/node_modules/.bin/playwright install chromium
-      - name: Run the native gate (review-required is not a pass)
-        run: node benchmarks/universal/fidelity/run.mjs benchmarks/universal/fidelity/ci.json "$RUNNER_TEMP/fidelity-evidence"
+      - name: Exercise interruption after a completed native capture
+        run: |
+          set +e
+          FIDELITY_INTERRUPT_AFTER=baseline-large node benchmarks/universal/fidelity/run.mjs benchmarks/universal/fidelity/ci.json "$RUNNER_TEMP/fidelity-evidence"
+          status=$?
+          set -e
+          test "$status" -eq 1
+          node -e 'const fs=require("fs");const r=JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP+"/fidelity-evidence/report.json"));if(r.error!=="Injected interruption after baseline-large")process.exit(1)'
+      - name: Resume the native gate (review-required is not a pass)
+        run: node benchmarks/universal/fidelity/run.mjs benchmarks/universal/fidelity/ci.json "$RUNNER_TEMP/fidelity-evidence" --resume
       - name: Preserve results and actual logs even on failure
         if: always()
         uses: actions/upload-artifact@v4
@@ -49,6 +60,10 @@ jobs:
           path: |
             ${{ runner.temp }}/fidelity-evidence/report.json
             ${{ runner.temp }}/fidelity-evidence/reference.png
+            ${{ runner.temp }}/fidelity-evidence/reference-text.json
+            ${{ runner.temp }}/fidelity-evidence/checkpoints/
+            ${{ runner.temp }}/fidelity-evidence/*/measurement.json
+            ${{ runner.temp }}/fidelity-evidence/*/normalized.png
             ${{ runner.temp }}/fidelity-evidence/repairs/
             ${{ runner.temp }}/fidelity-evidence/*/difference.png
             ${{ runner.temp }}/fidelity-evidence/*/.ios-agent/logs/

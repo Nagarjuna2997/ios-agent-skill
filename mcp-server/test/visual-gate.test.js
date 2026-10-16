@@ -62,3 +62,16 @@ test('an adapter can limit its strategy budget to one without a fake failed seco
  try {const result=await repairWithGate({directory,baseline:base(),policy,maxAttempts:1,verifyCandidate:async()=>{calls++;return {...good(),functionality:'failed'};}});assert.equal(result.outcome,'rejected');assert.equal(calls,1);assert.equal(result.attempts.length,1);}
  finally {await rm(directory,{recursive:true,force:true});}
 });
+test('explicit checkpoint-backed recovery reuses the reserved attempt number',async()=>{
+ const directory=await mkdtemp(join(tmpdir(),'gate-'));try{
+ await mkdir(join(directory,'attempt-1'));let number;
+ const result=await repairWithGate({directory,baseline:base(),policy,maxAttempts:1,resumeInterrupted:true,verifyCandidate:async n=>{number=n;return good();}});
+ assert.equal(number,1);assert.equal(result.acceptedAttempt,1);
+ }finally{await rm(directory,{recursive:true,force:true});}
+});
+test('saved decisions validate external checkpoint artifacts when a verifier is supplied',async()=>{
+ const directory=await mkdtemp(join(tmpdir(),'gate-'));try{
+ const options={directory,baseline:base(),policy,maxAttempts:1,verifyCandidate:async()=>good()};await repairWithGate(options);
+ await assert.rejects(repairWithGate({...options,verifySavedEvidence:async()=>{throw Error('artifact missing');}}),/artifact missing/);
+ }finally{await rm(directory,{recursive:true,force:true});}
+});

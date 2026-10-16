@@ -36,9 +36,9 @@ The generic coordinator caps attempts at three. Completed attempt records are at
 
 The current fixture implements **one deterministic repair**, moving the native disclosure indicator to the leading edge with a native button and expanded/collapsed accessibility value. It does not call a vision model or implement three distinct repair strategies. Candidates are isolated and never promoted automatically. The outer simulator benchmark checkpoints evidence but does not yet resume the entire build/capture pipeline; reruns require a new output directory.
 
-## Completion status
+## Foundation status (historical)
 
-M2 is **partial**. Automated viewport geometry/clipping and text-line extraction are unavailable, so this fixture cannot receive an automatic accepted verdict. Layout and typography remain explicitly unavailable even when XCUITest and pixel checks pass. Dark-mode capture, expanded-state pixel comparison, noise calibration, full-pipeline resume and additional repair strategies remain future work. Existing M1 evidence is unchanged.
+The first M2 commit was **partial**. Automated viewport geometry/clipping and text-line extraction are unavailable, so this fixture cannot receive an automatic accepted verdict. Layout and typography remain explicitly unavailable even when XCUITest and pixel checks pass. Dark-mode capture, expanded-state pixel comparison, noise calibration, full-pipeline resume and additional repair strategies remain future work. Existing M1 evidence is unchanged.
 
 The workflow `.github/workflows/universal-fidelity.yml` runs portable gate tests and a supported macOS profile. Adding the workflow does not establish a hosted simulator pass; inspect its actual run and uploaded evidence after the branch is published.
 
@@ -49,3 +49,17 @@ Both baseline and leading-disclosure candidate built with zero reported warnings
 Raw evidence is preserved in `../evidence/fidelity-m2/`. The original runner attempted a nonexistent second strategy after rejecting the first and ended requires-review; this adapter now explicitly limits its strategy budget to one. The recorded runner also used zero placeholders for unavailable geometry counts; the current schema/adapter use null. These historical records are retained unmodified, not presented as an accepted current-protocol run. The final gate can be evaluated offline against the recorded metrics with unknown geometry explicitly null; a full rerun of the final runner remains outstanding.
 
 Stored build/test logs are gzip-compressed without changing their original bytes; decompress them to compare against the raw log hashes in the original report. `hashes.json` covers the stored artifacts, including compressed files. `current-gate-evaluation.json` records the explicit offline re-evaluation and rejected verdict.
+
+## Measurement and resume extension
+
+The runner now captures native text frames through XCUITest and performs Apple’s text-clipping audit. Horizontal overflow identifies the affected label and rectangle. Fully offscreen scroll content is reported separately; partial viewport intersections require review. This covers text, not arbitrary image clipping, overlap, shadows or occlusion.
+
+Local Vision OCR (revision 3, English) measures line boundaries in explicitly normalized reference/native screenshots. Both complete recognized transcripts must match the expected visible HTML text, preserving punctuation and signs. Recognition below 0.8 confidence or differing transcripts yields unavailable, not a mismatch count of zero. Each line-end token offset is compared; changed boundaries are recorded. OCR availability and font rasterization are platform limitations, not proof of equivalent typography.
+
+Resume with the **same** command plus `--resume`. Completed generation, build, test/capture, reference and measurement checkpoints are atomic and hash-checked. Environment, profile, compiled verifier and fixture changes invalidate reuse. Modified or missing declared artifacts stop the run. Interrupted stages rerun in their isolated workspace; interrupted generation creates a new directory and preserves the old partial files. The runner owns a PID lock; resume only reclaims it when the owner process has exited. A fresh dedicated simulator restores pinned settings. No existing user simulator is changed. A hard crash may leave the previous dedicated simulator for manual cleanup; its UDID is recorded in report.json.
+
+Completed repair decisions invoke checkpoint verification again before reuse. Checkpoint-backed interrupted repairs reuse the same reserved attempt number, not a new repair budget. A trusted local journal is not a sandbox or signed evidence system.
+
+A known-good baseline requires passing build, functional, accessibility, layout and typography evidence plus the declared visual thresholds. It is null until those requirements are met. Rejected or review-required attempts never replace it. Accepted candidates advance it; each comparison stays anchored to the last accepted version.
+
+The branch-only push workflow permits hosted verification before opening a PR. It does not publish npm, deploy the website, or merge changes. A rejected/review-required fidelity outcome remains a failing gate even if all native tests passed.
