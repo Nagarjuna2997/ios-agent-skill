@@ -2434,8 +2434,8 @@
       "path": "docs/architecture/universal-app-engine.md",
       "title": "Universal App Engine: architecture and implementation record",
       "kind": "guide",
-      "characters": 18270,
-      "hash": "3c7573d11e708897a7a722720e3545ccbbf9852254310ba03e7d6239a7bbdcf7"
+      "characters": 19069,
+      "hash": "6543cd7b5173f9a92aacc27d88d9d461611724df594c7697cb8e4ee8c57ba344"
     },
     {
       "path": "docs/backend/app-architectures.md",
