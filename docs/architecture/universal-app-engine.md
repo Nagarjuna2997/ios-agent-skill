@@ -69,11 +69,11 @@ The renderer emits SwiftUI Text, VStack, ScrollView and DisclosureGroup with loc
 | 3. HTML vertical prototype | 2 + local Xcode | Real native build, launch, disclosure interaction test, captures and comparison | Experimental; evidence in benchmark README |
 | 4. Reliable reference verification | 3 | Pinned capture conditions, aligned regions, state variants, accessibility checks, atomic resumable checkpoints and independently reviewed fixes | Partial: bounded repair, hashed checkpoints and regression rejection implemented; trusted typography still blocked |
 | 5. CSS/assets/routes | 4 | Golden layouts, no silently dropped declarations, local asset hashes and licensing review, functional navigation tests | Planned |
-| 6. React/Next adapters | 5 | AST/static evidence only; backend stays server-side; fixture builds/tests/captures; dynamic ambiguity reported | Planned |
+| 6. React/Next adapters | 5 for full completion | AST/static evidence only; backend stays server-side; fixture builds/tests/captures; dynamic ambiguity reported | Partial: bounded static React, literal props, constant expressions and children composition; Next.js/state/events/navigation unsupported |
 | 7. Screenshot/Figma ingestion | 4 | Authorized image/design snapshots, visible facts separated from hidden requirements, traceable reconstruction | Planned |
 | 8. Flutter/React Native/other adapters | 6 | Per-adapter independent fixtures and native replacement mapping | Planned |
 | 9. Source synchronization | Stable node identity | Three-way source/IR/native diff, no overwrites on conflicts, regression tests | Planned |
-| 10. Studio/roles/provider expansion | Proven contracts | Real events and evidence, provider capability negotiation, cancellation, shared checkpoints | Planned |
+| 10. Studio/roles/provider expansion | Proven contracts | Real events and evidence, provider capability negotiation, cancellation, shared checkpoints | Partial: offline evidence viewer only; live Studio orchestration remains planned |
 | 11. Release preparation | Independent review and E2E gates | Compatibility documentation, truthful support matrix, explicit release authorization | Not requested for this branch |
 
 The next milestone is verification and CSS/layout correctness, not adding framework names. No universal-support, production-readiness or fidelity claim is justified by this prototype.

@@ -355,7 +355,7 @@ Search offline with `node scripts/query-library.mjs search "SwiftData"`. Read a 
 | [docs/apple/technologies/xpc.md](../../docs/apple/technologies/xpc.md) | guide | 3017 |
 | [docs/apple/technology-workflow.md](../../docs/apple/technology-workflow.md) | guide | 7695 |
 | [docs/apple/updates-and-release-notes.md](../../docs/apple/updates-and-release-notes.md) | guide | 11109 |
-| [docs/architecture/universal-app-engine.md](../../docs/architecture/universal-app-engine.md) | guide | 20137 |
+| [docs/architecture/universal-app-engine.md](../../docs/architecture/universal-app-engine.md) | guide | 20359 |
 | [docs/backend/app-architectures.md](../../docs/backend/app-architectures.md) | guide | 3005 |
 | [docs/backend/appwrite.md](../../docs/backend/appwrite.md) | guide | 2906 |
 | [docs/backend/authentication.md](../../docs/backend/authentication.md) | guide | 3980 |
