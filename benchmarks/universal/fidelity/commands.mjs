@@ -6,3 +6,8 @@ export async function runSetupCommand(runner,command,args,record){
  if(result.timedOut||result.spawnError||result.exitCode!==0)throw Error(`Setup command failed: ${JSON.stringify(evidence)}`);
  return result.stdout.trim();
 }
+
+export function classifyRunFailure(phase,message,interruptAfter){
+ if(interruptAfter && message===`Injected interruption after ${interruptAfter}`)return 'interrupted';
+ return phase==='environment-setup'||phase==='simulator-setup'?'infrastructure_failure':'verification_failure';
+}

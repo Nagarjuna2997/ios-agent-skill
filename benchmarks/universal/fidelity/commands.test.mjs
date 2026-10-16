@@ -10,3 +10,15 @@ test('timeout, exit and spawn failures preserve evidence even with empty stderr'
  }
 });
 test('setup log output is bounded',async()=>{let record;await runSetupCommand({run:async()=>({...base,stdout:'a'.repeat(9000)})},'xcodebuild',['-version'],r=>record=r);assert.equal(record.stdout.length,8000);});
+test('setup failures are infrastructure failures, never visual regression verdicts',async()=>{
+ const {classifyRunFailure}=await import('./commands.mjs');
+ for(const phase of ['environment-setup','simulator-setup'])assert.equal(classifyRunFailure(phase),'infrastructure_failure');
+ assert.equal(classifyRunFailure('app-verification'),'verification_failure');
+});
+
+test('only the requested checkpoint interruption is classified as intentional',async()=>{
+ const {classifyRunFailure}=await import('./commands.mjs');
+ assert.equal(classifyRunFailure('app-verification','Injected interruption after baseline-large','baseline-large'),'interrupted');
+ assert.equal(classifyRunFailure('app-verification','Injected interruption after baseline-large'),'verification_failure');
+ assert.equal(classifyRunFailure('simulator-setup','xcrun failed','baseline-large'),'infrastructure_failure');
+});

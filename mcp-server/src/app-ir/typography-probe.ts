@@ -1,28 +1,9 @@
-// Opt-in benchmark probe, excluded from ordinary generated projects.
-export const typographyProbeSwift = String.raw`// Benchmark-only instrumentation. No OCR or opaque character-index/string mapping.
+// Opt-in benchmark observer; native Text drawing remains untouched.
+export const typographyProbeSwift = String.raw`// Text.LayoutKey observes native layout; no custom renderer or OCR.
 
 @available(iOS 18.0, *)
 private struct WordIdentity: TextAttribute { let index: Int }
 
-@available(iOS 18.0, *)
-private struct WordLayoutRenderer: TextRenderer {
-    let report: @MainActor @Sendable (String) -> Void
-    func draw(layout: Text.Layout, in context: inout GraphicsContext) {
-        var rows: [[Int]] = []
-        for line in layout {
-            var words: [Int] = []
-            for run in line {
-                if let word = run[WordIdentity.self], !words.contains(word.index) { words.append(word.index) }
-            }
-            if !words.isEmpty { rows.append(words) }
-            context.draw(line)
-        }
-        // Labels remain the actual text. Measurement is exposed only with the test launch flag.
-        if let data = try? JSONSerialization.data(withJSONObject: ["lines": rows, "truncated": layout.isTruncated]), let value = String(data: data, encoding: .utf8) {
-            Task { @MainActor in report(value) }
-        }
-    }
-}
 
 struct MeasuredText: View {
     let nodeID: String
@@ -31,7 +12,22 @@ struct MeasuredText: View {
     var body: some View {
         if #available(iOS 18.0, *), ProcessInfo.processInfo.arguments.contains("-ios-agent-typography") {
             attributedText
-                .textRenderer(WordLayoutRenderer { value in if measurement != value { measurement = value } })
+                 .onPreferenceChange(Text.LayoutKey.self) { layouts in
+                    guard layouts.count == 1 else { measurement = ""; return }
+                    let layout = layouts[0].layout
+                    var rows: [[Int]] = []
+                    for line in layout {
+                        var words: [Int] = []
+                        for run in line {
+                            if let word = run[WordIdentity.self], !words.contains(word.index) { words.append(word.index) }
+                        }
+                        if !words.isEmpty { rows.append(words) }
+                    }
+                    if let data = try? JSONSerialization.data(withJSONObject: ["lines": rows, "truncated": layout.isTruncated]), let value = String(data: data, encoding: .utf8) {
+                        // Commit synchronously: a queued update could restore stale evidence.
+                        if measurement != value { measurement = value }
+                    } else { measurement = "" }
+                }
                 .accessibilityLabel(content)
                 .accessibilityValue(measurement)
                 .accessibilityIdentifier(nodeID)
@@ -50,4 +46,6 @@ struct MeasuredText: View {
         }
     }
 }
+
+#Preview { RootView() }
 `;

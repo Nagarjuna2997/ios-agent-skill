@@ -24,7 +24,7 @@ test('source mapping uses byte ranges, including Unicode before a text element',
 });
 test('unmapped bare text is not guessed by its label',()=>{const html='<body>bare</body>';assert.throws(()=>annotateTextRegions(html,htmlToIR(html)),/traceable/);});
 test('ordinary generated apps omit measurement instrumentation',()=>{
- const ir=htmlToIR('<body><p>Hello</p></body>');assert.ok(!renderSwiftUI(ir).source.includes('WordLayoutRenderer'));const source=renderSwiftUI(ir,{instrumentTypography:true}).source;assert.ok(source.includes('WordLayoutRenderer'));assert.ok(source.includes('MeasuredText(nodeID: "node-2"'));
+ const ir=htmlToIR('<body><p>Hello</p></body>');assert.ok(!renderSwiftUI(ir).source.includes('Text.LayoutKey'));const source=renderSwiftUI(ir,{instrumentTypography:true}).source;assert.ok(source.includes('Text.LayoutKey'));assert.ok(source.includes('MeasuredText(nodeID: "node-2"'));
 });
 
 test('column identifiers cannot override descendant traceability',()=>{
@@ -44,4 +44,17 @@ test('untrusted probe text and truncation cannot establish failures',()=>{
  for(const candidate of [snap(region('node-1','Wrong words',[[0,1]])),snap({...region(),truncated:true})]) {
   const result=compareTextRegions(source,candidate,false);assert.equal(result.status,'unavailable');assert.equal(result.mismatches,null);
  }
+});
+
+test('typography observer does not replace native text drawing',()=>{
+ const source=renderSwiftUI(htmlToIR('<body><p>Hello world</p></body>'),{instrumentTypography:true}).source;
+ assert.ok(source.includes('.onPreferenceChange(Text.LayoutKey.self)'));
+ assert.ok(!source.includes('.textRenderer('));assert.ok(!source.includes('context.draw('));
+});
+
+test('invalid typography preferences invalidate evidence without queued writes',()=>{
+ const source=renderSwiftUI(htmlToIR('<body><p>Hello world</p></body>'),{instrumentTypography:true}).source;
+ assert.ok(source.includes('guard layouts.count == 1 else { measurement = ""; return }'));
+ assert.ok(source.includes('} else { measurement = "" }'));
+ assert.ok(!source.includes('Task {'));
 });

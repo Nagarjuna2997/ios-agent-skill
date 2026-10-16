@@ -1,0 +1,615 @@
+{
+  "comparison": {
+    "schemaVersion": 1,
+    "referenceHash": "399655fb5bc9f92b75374a06da5f72a8e17a268fc27ae2794fbd20565cdf7b9c",
+    "nativeHash": "c36a2db4ea2c3ed45ac5d1fdb51fd802436edc5a12c3825261458c0838897a2b",
+    "referenceRegion": {
+      "x": 0,
+      "y": 0,
+      "width": 1206,
+      "height": 2334
+    },
+    "nativeRegion": {
+      "x": 0,
+      "y": 186,
+      "width": 1206,
+      "height": 2334
+    },
+    "meanAbsoluteChannelError": 0.01849445108858762,
+    "changedPixelFraction": 0.0704759549865639,
+    "channelThreshold": 8,
+    "verdict": "requires-review",
+    "limitations": [
+      "Pixel differences include font rasterization and native control rendering.",
+      "No functional, accessibility or perceptual equivalence inferred.",
+      "No resizing, registration or hidden cropping performed."
+    ]
+  },
+  "typography": {
+    "status": "unavailable",
+    "reason": "Instrumentation changed the rendered image; provisional: Text wrapping differs",
+    "mismatches": null,
+    "regions": [
+      {
+        "id": "node-4",
+        "referenceLines": 1,
+        "nativeLines": 1,
+        "referenceEnds": [],
+        "nativeEnds": [],
+        "mismatches": 0
+      },
+      {
+        "id": "node-5",
+        "referenceLines": 2,
+        "nativeLines": 2,
+        "referenceEnds": [
+          3
+        ],
+        "nativeEnds": [
+          2
+        ],
+        "mismatches": 2
+      },
+      {
+        "id": "node-6",
+        "referenceLines": 2,
+        "nativeLines": 2,
+        "referenceEnds": [
+          6
+        ],
+        "nativeEnds": [
+          6
+        ],
+        "mismatches": 0
+      },
+      {
+        "id": "node-8",
+        "referenceLines": 1,
+        "nativeLines": 1,
+        "referenceEnds": [],
+        "nativeEnds": [],
+        "mismatches": 0
+      },
+      {
+        "id": "node-9",
+        "referenceLines": 1,
+        "nativeLines": 1,
+        "referenceEnds": [],
+        "nativeEnds": [],
+        "mismatches": 0
+      },
+      {
+        "id": "node-10",
+        "referenceLines": 1,
+        "nativeLines": 1,
+        "referenceEnds": [],
+        "nativeEnds": [],
+        "mismatches": 0
+      },
+      {
+        "id": "node-11",
+        "referenceLines": 2,
+        "nativeLines": 2,
+        "referenceEnds": [
+          7
+        ],
+        "nativeEnds": [
+          7
+        ],
+        "mismatches": 0
+      },
+      {
+        "id": "node-12",
+        "referenceLines": 1,
+        "nativeLines": 1,
+        "referenceEnds": [],
+        "nativeEnds": [],
+        "mismatches": 0
+      },
+      {
+        "id": "node-14",
+        "referenceLines": 2,
+        "nativeLines": 2,
+        "referenceEnds": [
+          6
+        ],
+        "nativeEnds": [
+          6
+        ],
+        "mismatches": 0
+      }
+    ]
+  },
+  "supportingOCR": {
+    "status": "unavailable",
+    "mismatches": null,
+    "reason": "Recognized transcript differs from expected visible source"
+  },
+  "geometry": [
+    {
+      "status": "passed",
+      "clippedElements": 0,
+      "regions": [],
+      "audit": "passed"
+    },
+    {
+      "status": "passed",
+      "clippedElements": 0,
+      "regions": [],
+      "audit": "passed"
+    }
+  ],
+  "recognized": {
+    "lines": [
+      {
+        "box": {
+          "height": 34.343023300170685,
+          "width": 701.2415771484375,
+          "x": 71.1404415371577,
+          "y": 81.00000052447777
+        },
+        "confidence": 1,
+        "text": "FIELD NOTES • WEEKEND EDITION"
+      },
+      {
+        "box": {
+          "height": 88.21802139282237,
+          "width": 657.2022094726562,
+          "x": 71.14047011823641,
+          "y": 173.00000001898835
+        },
+        "confidence": 1,
+        "text": "A little closer"
+      },
+      {
+        "box": {
+          "height": 82.15568161010751,
+          "width": 489.54037475585943,
+          "x": 67.11193837655321,
+          "y": 310.1795799765754
+        },
+        "confidence": 1,
+        "text": "to nature."
+      },
+      {
+        "box": {
+          "height": 55.00000000000007,
+          "width": 1029.8426513671875,
+          "x": 71.14046961317592,
+          "y": 443.9999998800632
+        },
+        "confidence": 1,
+        "text": "Three quiet trails, one good weekend. Your"
+      },
+      {
+        "box": {
+          "height": 53.520107269287,
+          "width": 515.8449707031251,
+          "x": 70.81059779037622,
+          "y": 503.1223524959331
+        },
+        "confidence": 1,
+        "text": "next walk starts here."
+      },
+      {
+        "box": {
+          "height": 37.33720970153801,
+          "width": 413.2921142578125,
+          "x": 142.28091329614983,
+          "y": 708.9999992980944
+        },
+        "confidence": 1,
+        "text": "THIS WEEK'S WALK"
+      },
+      {
+        "box": {
+          "height": 74.6337203979489,
+          "width": 453.94381713867193,
+          "x": 142.28089663656294,
+          "y": 810.7936049738454
+        },
+        "confidence": 1,
+        "text": "Cedar Loop"
+      },
+      {
+        "box": {
+          "height": 55.00000000000007,
+          "width": 687.6909790039062,
+          "x": 142.2809081155189,
+          "y": 935.999999136353
+        },
+        "confidence": 1,
+        "text": "4.2 miles • Easy • 90 minutes"
+      },
+      {
+        "box": {
+          "height": 54.366279602050945,
+          "width": 887.5617675781251,
+          "x": 142.28092006149916,
+          "y": 1037.9999991233685
+        },
+        "confidence": 1,
+        "text": "A shaded path through tall cedars, with a"
+      },
+      {
+        "box": {
+          "height": 47.49418640136722,
+          "width": 514.9213256835938,
+          "x": 145.66854820224808,
+          "y": 1095.758720277863
+        },
+        "confidence": 1,
+        "text": "quiet river stop halfway."
+      },
+      {
+        "box": {
+          "height": 47.49418640136722,
+          "width": 315.05056762695307,
+          "x": 132.117972284487,
+          "y": 1370.546510856802
+        },
+        "confidence": 1,
+        "text": "Before you go"
+      },
+      {
+        "box": {
+          "height": 40.70930099487305,
+          "width": 37.26404571533201,
+          "x": 1040.005617857944,
+          "y": 1370.5465120994072
+        },
+        "confidence": 1,
+        "text": ">"
+      },
+      {
+        "box": {
+          "height": 41.0000000000001,
+          "width": 924.8258056640625,
+          "x": 71.14047951480848,
+          "y": 1574.0000004513752
+        },
+        "confidence": 1,
+        "text": "Synthetic demo content. No account or location"
+      },
+      {
+        "box": {
+          "height": 41.02034759521477,
+          "width": 382.8033752441406,
+          "x": 71.14045103742399,
+          "y": 1624.979651828145
+        },
+        "confidence": 1,
+        "text": "permission needed."
+      }
+    ],
+    "version": 1
+  },
+  "referenceRegions": {
+    "version": 1,
+    "regions": [
+      {
+        "id": "node-4",
+        "text": "FIELD NOTES · WEEKEND EDITION",
+        "lines": [
+          [
+            0,
+            1,
+            2,
+            3,
+            4
+          ]
+        ],
+        "truncated": false
+      },
+      {
+        "id": "node-5",
+        "text": "A little closer to nature.",
+        "lines": [
+          [
+            0,
+            1,
+            2,
+            3
+          ],
+          [
+            4
+          ]
+        ],
+        "truncated": false
+      },
+      {
+        "id": "node-6",
+        "text": "Three quiet trails, one good weekend. Your next walk starts here.",
+        "lines": [
+          [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          [
+            7,
+            8,
+            9,
+            10
+          ]
+        ],
+        "truncated": false
+      },
+      {
+        "id": "node-8",
+        "text": "THIS WEEK'S WALK",
+        "lines": [
+          [
+            0,
+            1,
+            2
+          ]
+        ],
+        "truncated": false
+      },
+      {
+        "id": "node-9",
+        "text": "Cedar Loop",
+        "lines": [
+          [
+            0,
+            1
+          ]
+        ],
+        "truncated": false
+      },
+      {
+        "id": "node-10",
+        "text": "4.2 miles · Easy · 90 minutes",
+        "lines": [
+          [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        ],
+        "truncated": false
+      },
+      {
+        "id": "node-11",
+        "text": "A shaded path through tall cedars, with a quiet river stop halfway.",
+        "lines": [
+          [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          [
+            8,
+            9,
+            10,
+            11
+          ]
+        ],
+        "truncated": false
+      },
+      {
+        "id": "node-12",
+        "text": "Before you go",
+        "lines": [
+          [
+            0,
+            1,
+            2
+          ]
+        ],
+        "truncated": false
+      },
+      {
+        "id": "node-14",
+        "text": "Synthetic demo content. No account or location permission needed.",
+        "lines": [
+          [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          [
+            7,
+            8
+          ]
+        ],
+        "truncated": false
+      }
+    ]
+  },
+  "nativeRegions": {
+    "regions": [
+      {
+        "id": "node-4",
+        "lines": [
+          [
+            0,
+            1,
+            2,
+            3,
+            4
+          ]
+        ],
+        "text": "FIELD NOTES · WEEKEND EDITION",
+        "truncated": false
+      },
+      {
+        "id": "node-5",
+        "lines": [
+          [
+            0,
+            1,
+            2
+          ],
+          [
+            3,
+            4
+          ]
+        ],
+        "text": "A little closer to nature.",
+        "truncated": false
+      },
+      {
+        "id": "node-6",
+        "lines": [
+          [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          [
+            7,
+            8,
+            9,
+            10
+          ]
+        ],
+        "text": "Three quiet trails, one good weekend. Your next walk starts here.",
+        "truncated": false
+      },
+      {
+        "id": "node-8",
+        "lines": [
+          [
+            0,
+            1,
+            2
+          ]
+        ],
+        "text": "THIS WEEK'S WALK",
+        "truncated": false
+      },
+      {
+        "id": "node-9",
+        "lines": [
+          [
+            0,
+            1
+          ]
+        ],
+        "text": "Cedar Loop",
+        "truncated": false
+      },
+      {
+        "id": "node-10",
+        "lines": [
+          [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        ],
+        "text": "4.2 miles · Easy · 90 minutes",
+        "truncated": false
+      },
+      {
+        "id": "node-11",
+        "lines": [
+          [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          [
+            8,
+            9,
+            10,
+            11
+          ]
+        ],
+        "text": "A shaded path through tall cedars, with a quiet river stop halfway.",
+        "truncated": false
+      },
+      {
+        "id": "node-14",
+        "lines": [
+          [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          [
+            7,
+            8
+          ]
+        ],
+        "text": "Synthetic demo content. No account or location permission needed.",
+        "truncated": false
+      },
+      {
+        "id": "node-12",
+        "lines": [
+          [
+            0,
+            1,
+            2
+          ]
+        ],
+        "text": "Before you go",
+        "truncated": false
+      }
+    ],
+    "version": 1
+  },
+  "probeComparison": {
+    "schemaVersion": 1,
+    "referenceHash": "c36a2db4ea2c3ed45ac5d1fdb51fd802436edc5a12c3825261458c0838897a2b",
+    "nativeHash": "f61034238e91a45f863eb4f6e091c7fc9f3d7fd507f28ed54437c886edb2f898",
+    "referenceRegion": {
+      "x": 0,
+      "y": 0,
+      "width": 1206,
+      "height": 2622
+    },
+    "nativeRegion": {
+      "x": 0,
+      "y": 0,
+      "width": 1206,
+      "height": 2622
+    },
+    "meanAbsoluteChannelError": 0.0000096686442601905,
+    "changedPixelFraction": 0,
+    "channelThreshold": 8,
+    "verdict": "requires-review",
+    "limitations": [
+      "Pixel differences include font rasterization and native control rendering.",
+      "No functional, accessibility or perceptual equivalence inferred.",
+      "No resizing, registration or hidden cropping performed."
+    ]
+  }
+}

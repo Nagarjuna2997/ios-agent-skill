@@ -1,4 +1,4 @@
-import {runSetupCommand} from './commands.mjs';
+import {runSetupCommand,classifyRunFailure} from './commands.mjs';
 // One local HTML adapter; evidence, checkpoint and acceptance contracts are framework-independent.
 import {annotateTextRegions,compareTextRegions} from '../../../mcp-server/dist/app-ir/typography.js';
 import {captureDOMTypography} from './dom-typography.mjs';
@@ -45,6 +45,7 @@ const here=dirname(fileURLToPath(import.meta.url)),fixture=resolve(here,'../html
 const files=async(dir)=>{const all=[];for(const e of await readdir(dir,{withFileTypes:true})){if(e.name==='node_modules')continue;if(e.isDirectory())all.push(...await files(join(dir,e.name)));else if(e.isFile())all.push(join(dir,e.name));else throw Error('Unsupported symlink in evidence tree');}return all.sort();};
 let udid,browser;
 try{
+ report.phase='environment-setup';await save();
  const xcode=await command('xcodebuild',['-version']),sdk=await command('xcrun',['--sdk','iphonesimulator','--show-sdk-version']);
  if(xcode!==`Xcode ${profile.xcode}\nBuild version ${profile.xcodeBuild}`||sdk!==profile.sdk)throw Error('Xcode/SDK profile mismatch');
  const runtimes=JSON.parse(await command('xcrun',['simctl','list','runtimes','--json']));const runtime=runtimes.runtimes.find(r=>r.identifier===profile.runtime&&r.isAvailable);if(!runtime)throw Error('Pinned runtime unavailable');
@@ -55,15 +56,17 @@ try{
  const inputHashes=[];for(const f of inputs)inputHashes.push([f.slice(resolve(here,'../../..').length),sha256(await readFile(f))]);
  const contract=sha256(JSON.stringify({profile,environment,inputHashes,referenceApproval}));
  if(resume&&report.contract!==contract)throw Error('Run inputs, verifier or environment changed; use a new output directory');
- if(report.error){report.interruptions=[...(report.interruptions??[]),{error:report.error,resumedAt:new Date().toISOString()}];delete report.error;}
+ if(report.error){report.interruptions=[...(report.interruptions??[]),{error:report.error,category:report.failureCategory,resumedAt:new Date().toISOString()}];delete report.error;delete report.failureCategory;}
  report.contract=contract;report.environment=environment;report.status='running';await save();
  const journal=new Checkpoints(root,contract,name=>{if(process.env.FIDELITY_INTERRUPT_AFTER===name)throw Error('Injected interruption after '+name);});
  const ocr=await journal.stage('ocr-tool',async()=>{const path=join(root,'recognize-text');await command('xcrun',['swiftc',join(here,'RecognizeText.swift'),'-o',path]);return {value:path,files:[path]};});
+ report.phase='simulator-setup';await save();
  udid=await command('xcrun',['simctl','create',`ios-agent-fidelity-${Date.now()}`,profile.deviceType,profile.runtime]);
  report.simulator=udid;await save();
  await command('xcrun',['simctl','boot',udid]);await command('xcrun',['simctl','bootstatus',udid,'-b']);
  await command('xcrun',['simctl','ui',udid,'appearance',profile.appearance]);await command('xcrun',['simctl','ui',udid,'content_size',profile.contentSize]);
  await command('xcrun',['simctl','status_bar',udid,'override','--time','9:41','--dataNetwork','wifi','--wifiMode','active','--wifiBars','3','--batteryState','charged','--batteryLevel','100']);
+ report.phase='app-verification';await save();
  const recognize=async path=>{try{const result=await runner.run(ocr,[path],{timeoutMs:30000});if(result.exitCode!==0)throw Error('OCR failed');return JSON.parse(result.stdout);}catch{return {unavailable:true,reason:'Local Vision text recognition failed or exceeded 30 seconds; no typography pass inferred'};}};
  const ir=await importHTML(join(fixture,'index.html'),'FieldNotes');
  const normalize=async(input,rect,output)=>{const png=PNG.sync.read(await readFile(input)),out=new PNG({width:rect.width,height:rect.height});PNG.bitblt(png,out,rect.x,rect.y,rect.width,rect.height,0,0);await writeFile(output,PNG.sync.write(out));};
@@ -131,5 +134,5 @@ try{
  if(report.repair.acceptedAttempt){const candidate=report.repair.attempts.find(a=>a.number===report.repair.acceptedAttempt).evidence;report.knownGood=report.knownGood?advanceKnownGood(report.knownGood,candidate,profile.policy,referenceApproval).baseline:seedKnownGood(candidate,profile.policy,referenceApproval);}
  report.status=report.repair.outcome;report.limitations=['Typography is restricted to traced plain-text LTR English regions at default text size; OCR is supporting evidence only.','Probe pixels must match normal rendering exactly; otherwise region measurements remain provisional.','Geometry covers text frames and Apple text-clipping audit, not arbitrary images, shadows or occlusion.','Known-good requires every quality gate plus a matching manual reference approval; no approval is generated automatically.'];await save();
  process.exitCode=report.status==='accepted'?0:report.status==='requires-review'?2:1;
-}catch(error){report.status='failed';report.error=error.message;process.exitCode=1;}
+}catch(error){report.status='failed';report.failureCategory=classifyRunFailure(report.phase,error.message,process.env.FIDELITY_INTERRUPT_AFTER);report.error=error.message;process.exitCode=1;}
 finally{if(browser)await browser.close();if(udid){await runner.run('xcrun',['simctl','shutdown',udid]);await runner.run('xcrun',['simctl','delete',udid]);}await save();await unlink(lockPath);console.log(JSON.stringify({status:report.status,report:join(root,'report.json')},null,2));}
