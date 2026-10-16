@@ -1,7 +1,8 @@
+import {runSetupCommand} from './commands.mjs';
 // One local HTML adapter; evidence, checkpoint and acceptance contracts are framework-independent.
 import {annotateTextRegions,compareTextRegions} from '../../../mcp-server/dist/app-ir/typography.js';
 import {captureDOMTypography} from './dom-typography.mjs';
-import {readFile,writeFile,mkdir,copyFile,rename,readdir,open,unlink} from 'node:fs/promises';
+import {appendFile,readFile,writeFile,mkdir,copyFile,rename,readdir,open,unlink} from 'node:fs/promises';
 import {join,resolve,dirname} from 'node:path';
 import {randomUUID} from 'node:crypto';
 import {fileURLToPath,pathToFileURL} from 'node:url';
@@ -36,7 +37,7 @@ try{lock=await open(lockPath,'wx');}catch(e){
 }
 await lock.writeFile(JSON.stringify({pid:process.pid}));await lock.close();
 const runner=new ProcessRunner();
-const command=async(c,args)=>{const r=await runner.run(c,args,{timeoutMs:120000});if(r.exitCode!==0)throw Error(`${c} failed: ${r.stderr.slice(0,1000)}`);return r.stdout.trim();};
+const command=(c,args)=>runSetupCommand(runner,c,args,evidence=>appendFile(join(root,'setup-commands.jsonl'),JSON.stringify(evidence)+'\n'));
 const atomic=async(path,value)=>{const tmp=path+'.'+randomUUID()+'.tmp';await writeFile(tmp,JSON.stringify(value,null,2));await rename(tmp,path);};
 const report=resume?JSON.parse(await readFile(join(root,'report.json'),'utf8')):{version:2,profile,startedAt:new Date().toISOString(),status:'running',runs:[]};
 const save=()=>atomic(join(root,'report.json'),report);

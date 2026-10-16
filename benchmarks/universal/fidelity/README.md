@@ -89,3 +89,9 @@ The probe changed some text pixels by one channel level (mean absolute channel e
 The new hosted branch workflow executes the same adapter and interruption/resume path. Hosted results must be reported separately after completion. M2.1 is a draft measurement foundation, not a visual-fidelity pass, and does not authorize release or npm publication.
 
 Final local portable validation: 658 passed, zero failures, one skipped; 45 focused gate/typography/capture tests passed, and the DOM geometry/pixel-invariance test passed. Repository consistency and local-library checks passed. An earlier load-sensitive process-interruption test passed on isolated rerun; the final lower-concurrency full suite passed. No historical scores were changed.
+
+### M2.1 hosted setup failure (not a fidelity verdict)
+
+[Run 38847195825](https://github.com/Nagarjuna2997/ios-agent-skill/actions/runs/38847195825), PR head `b3e82c8`, passed the portable and DOM tests but failed during simulator setup before generation or native builds. Its [preserved report](../evidence/typography-hosted-setup/report.json) has an empty `runs` array and `xcrun failed: ` with no diagnostic text. A boot timeout is a hypothesis, not established by that report. The failure must not be described as regression rejection or passing native verification.
+
+The setup wrapper now records bounded command arguments/output, exit code, timeout, spawn error and duration in `setup-commands.jsonl`, uploaded even on failure. Its existing 120-second timeout is unchanged. Three portable tests cover successful recording, empty-stderr failure/timeout/spawn cases and bounded output. This diagnostic correction does not resolve measurement interference or authorize baseline promotion.
