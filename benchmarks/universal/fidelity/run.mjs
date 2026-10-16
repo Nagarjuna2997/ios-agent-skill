@@ -1,4 +1,4 @@
-import {runSetupCommand,classifyRunFailure} from './commands.mjs';
+import {runSetupCommand,classifyRunFailure,withSimulatorDiscoveryEvidence,candidateFailureEvidence} from './commands.mjs';
 // One local HTML adapter; evidence, checkpoint and acceptance contracts are framework-independent.
 import {annotateTextRegions,compareTextRegions} from '../../../mcp-server/dist/app-ir/typography.js';
 import {captureDOMTypography} from './dom-typography.mjs';
@@ -39,7 +39,7 @@ try{lock=await open(lockPath,'wx');}catch(e){
  await unlink(lockPath);lock=await open(lockPath,'wx');
 }
 await lock.writeFile(JSON.stringify({pid:process.pid}));await lock.close();
-const runner=new ProcessRunner();
+const runner=withSimulatorDiscoveryEvidence(new ProcessRunner(),evidence=>appendFile(join(root,'simulator-discovery.jsonl'),JSON.stringify(evidence)+'\n'));
 const command=(c,args)=>runSetupCommand(runner,c,args,evidence=>appendFile(join(root,'setup-commands.jsonl'),JSON.stringify(evidence)+'\n'));
 const atomic=async(path,value)=>{const tmp=path+'.'+randomUUID()+'.tmp';await writeFile(tmp,JSON.stringify(value,null,2));await rename(tmp,path);};
 const report=resume?JSON.parse(await readFile(join(root,'report.json'),'utf8')):{version:2,profile,startedAt:new Date().toISOString(),status:'running',runs:[]};
@@ -135,9 +135,9 @@ try{
  }
  const baseline=await makeCandidate('baseline','platform');report.baseline=baseline;
  try{report.knownGood=seedKnownGood(baseline,profile.policy,referenceApproval);}catch{report.knownGood=null;}
- report.repair=await repairWithGate({directory:join(root,'repairs'),referenceApproval,baseline,policy:profile.policy,maxAttempts:1,resumeInterrupted:true,verifySavedEvidence:async saved=>{const current=await makeCandidate('candidate-1','leading');if(JSON.stringify(VisualEvidenceSchema.parse(current))!==JSON.stringify(VisualEvidenceSchema.parse(saved)))throw Error('Saved candidate evidence differs from verified checkpoints');},verifyCandidate:async()=>{try{return await makeCandidate('candidate-1','leading');}catch(error){report.candidateFailure={phase:'verification',message:String(error.message).slice(0,2000)};await save();throw error;}}});
+ report.repair=await repairWithGate({directory:join(root,'repairs'),referenceApproval,baseline,policy:profile.policy,maxAttempts:1,resumeInterrupted:true,verifySavedEvidence:async saved=>{const current=await makeCandidate('candidate-1','leading');if(JSON.stringify(VisualEvidenceSchema.parse(current))!==JSON.stringify(VisualEvidenceSchema.parse(saved)))throw Error('Saved candidate evidence differs from verified checkpoints');},verifyCandidate:async()=>{try{return await makeCandidate('candidate-1','leading');}catch(error){report.candidateFailure=candidateFailureEvidence(error);await save();throw error;}}});
  if(report.repair.acceptedAttempt){const candidate=report.repair.attempts.find(a=>a.number===report.repair.acceptedAttempt).evidence;report.knownGood=report.knownGood?advanceKnownGood(report.knownGood,candidate,profile.policy,referenceApproval).baseline:seedKnownGood(candidate,profile.policy,referenceApproval);}
  report.status=report.repair.outcome;report.limitations=['Typography is restricted to traced plain-text LTR English regions at default text size; OCR is supporting evidence only.','Probe pixels must match normal rendering exactly; otherwise region measurements remain provisional.','Geometry covers text frames and Apple text-clipping audit, not arbitrary images, shadows or occlusion.','Known-good requires every quality gate plus a matching manual reference approval; no approval is generated automatically.'];await save();
  process.exitCode=report.status==='accepted'?0:report.status==='requires-review'?2:1;
-}catch(error){report.status='failed';report.failureCategory=classifyRunFailure(report.phase,error.message,process.env.FIDELITY_INTERRUPT_AFTER);report.error=error.message;process.exitCode=1;}
+}catch(error){report.status='failed';report.failureCategory=classifyRunFailure(report.phase,error.message,process.env.FIDELITY_INTERRUPT_AFTER,error.code);report.error=error.message;process.exitCode=1;}
 finally{if(browser)await browser.close();if(udid){await runner.run('xcrun',['simctl','shutdown',udid]);await runner.run('xcrun',['simctl','delete',udid]);}await save();await unlink(lockPath);console.log(JSON.stringify({status:report.status,report:join(root,'report.json')},null,2));}
