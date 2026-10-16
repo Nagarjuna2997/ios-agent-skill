@@ -1,0 +1,192 @@
+{
+  "comparison": {
+    "schemaVersion": 1,
+    "referenceHash": "399655fb5bc9f92b75374a06da5f72a8e17a268fc27ae2794fbd20565cdf7b9c",
+    "nativeHash": "c36a2db4ea2c3ed45ac5d1fdb51fd802436edc5a12c3825261458c0838897a2b",
+    "referenceRegion": {
+      "x": 0,
+      "y": 0,
+      "width": 1206,
+      "height": 2334
+    },
+    "nativeRegion": {
+      "x": 0,
+      "y": 186,
+      "width": 1206,
+      "height": 2334
+    },
+    "meanAbsoluteChannelError": 0.01849445108858762,
+    "changedPixelFraction": 0.0704759549865639,
+    "channelThreshold": 8,
+    "verdict": "requires-review",
+    "limitations": [
+      "Pixel differences include font rasterization and native control rendering.",
+      "No functional, accessibility or perceptual equivalence inferred.",
+      "No resizing, registration or hidden cropping performed."
+    ]
+  },
+  "typography": {
+    "status": "unavailable",
+    "mismatches": null,
+    "reason": "Recognized transcript differs from expected visible source"
+  },
+  "geometry": [
+    {
+      "status": "passed",
+      "clippedElements": 0,
+      "regions": [],
+      "audit": "passed"
+    },
+    {
+      "status": "passed",
+      "clippedElements": 0,
+      "regions": [],
+      "audit": "passed"
+    }
+  ],
+  "recognized": {
+    "lines": [
+      {
+        "box": {
+          "height": 34.343023300170685,
+          "width": 701.2415771484375,
+          "x": 71.1404415371577,
+          "y": 81.00000052447777
+        },
+        "confidence": 1,
+        "text": "FIELD NOTES • WEEKEND EDITION"
+      },
+      {
+        "box": {
+          "height": 88.21802139282237,
+          "width": 657.2022094726562,
+          "x": 71.14047011823641,
+          "y": 173.00000001898835
+        },
+        "confidence": 1,
+        "text": "A little closer"
+      },
+      {
+        "box": {
+          "height": 82.15568161010751,
+          "width": 489.54037475585943,
+          "x": 67.11193837655321,
+          "y": 310.1795799765754
+        },
+        "confidence": 1,
+        "text": "to nature."
+      },
+      {
+        "box": {
+          "height": 55.00000000000007,
+          "width": 1029.8426513671875,
+          "x": 71.14046961317592,
+          "y": 443.9999998800632
+        },
+        "confidence": 1,
+        "text": "Three quiet trails, one good weekend. Your"
+      },
+      {
+        "box": {
+          "height": 53.520107269287,
+          "width": 515.8449707031251,
+          "x": 70.81059779037622,
+          "y": 503.1223524959331
+        },
+        "confidence": 1,
+        "text": "next walk starts here."
+      },
+      {
+        "box": {
+          "height": 37.33720970153801,
+          "width": 413.2921142578125,
+          "x": 142.28091329614983,
+          "y": 708.9999992980944
+        },
+        "confidence": 1,
+        "text": "THIS WEEK'S WALK"
+      },
+      {
+        "box": {
+          "height": 74.6337203979489,
+          "width": 453.94381713867193,
+          "x": 142.28089663656294,
+          "y": 810.7936049738454
+        },
+        "confidence": 1,
+        "text": "Cedar Loop"
+      },
+      {
+        "box": {
+          "height": 55.00000000000007,
+          "width": 687.6909790039062,
+          "x": 142.2809081155189,
+          "y": 935.999999136353
+        },
+        "confidence": 1,
+        "text": "4.2 miles • Easy • 90 minutes"
+      },
+      {
+        "box": {
+          "height": 54.366279602050945,
+          "width": 887.5617675781251,
+          "x": 142.28092006149916,
+          "y": 1037.9999991233685
+        },
+        "confidence": 1,
+        "text": "A shaded path through tall cedars, with a"
+      },
+      {
+        "box": {
+          "height": 47.49418640136722,
+          "width": 514.9213256835938,
+          "x": 145.66854820224808,
+          "y": 1095.758720277863
+        },
+        "confidence": 1,
+        "text": "quiet river stop halfway."
+      },
+      {
+        "box": {
+          "height": 47.49418640136722,
+          "width": 315.05056762695307,
+          "x": 132.117972284487,
+          "y": 1370.546510856802
+        },
+        "confidence": 1,
+        "text": "Before you go"
+      },
+      {
+        "box": {
+          "height": 40.70930099487305,
+          "width": 37.26404571533201,
+          "x": 1040.005617857944,
+          "y": 1370.5465120994072
+        },
+        "confidence": 1,
+        "text": ">"
+      },
+      {
+        "box": {
+          "height": 41.0000000000001,
+          "width": 924.8258056640625,
+          "x": 71.14047951480848,
+          "y": 1574.0000004513752
+        },
+        "confidence": 1,
+        "text": "Synthetic demo content. No account or location"
+      },
+      {
+        "box": {
+          "height": 41.02034759521477,
+          "width": 382.8033752441406,
+          "x": 71.14045103742399,
+          "y": 1624.979651828145
+        },
+        "confidence": 1,
+        "text": "permission needed."
+      }
+    ],
+    "version": 1
+  }
+}

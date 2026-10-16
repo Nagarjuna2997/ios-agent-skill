@@ -1,0 +1,77 @@
+{
+  "note": "Offline evaluation of preserved run metrics; not a new simulator run",
+  "baseline": {
+    "version": 1,
+    "sourceHash": "36faba2d9e00fdbee49f271068fb97c954f1243684a6e34be8eee898b7553395",
+    "referenceHash": "237315be7c347215c39fa487f24bab6b7790a0829bb3d68791718e1978c6f811",
+    "screenshotHash": "1a58d44c1b5c21047285109afb517735e875ffabf780c4c2f19985af7827efa5",
+    "pins": {
+      "device": "com.apple.CoreSimulator.SimDeviceType.iPhone-18-Pro",
+      "os": "com.apple.CoreSimulator.SimRuntime.iOS-27-0 24A434",
+      "xcode": "Xcode 27.0\nBuild version 27A266a",
+      "appearance": "light",
+      "contentSize": "large",
+      "locale": "en_US",
+      "orientation": "portrait",
+      "state": "collapsed",
+      "width": 1206,
+      "height": 2622,
+      "scale": 3,
+      "fontConfiguration": "system-ui browser / SwiftUI system, default weight; Dynamic Type large",
+      "referenceRenderer": "155.0.8059.82 host 26A434",
+      "normalizationHash": "05690da7e6342fe85dd2540e5da46a4a0b7f28038b145b36d001a122edd8b970"
+    },
+    "build": "passed",
+    "functionality": "passed",
+    "accessibility": "passed",
+    "layout": "unavailable",
+    "typography": "unavailable",
+    "testsPassed": 2,
+    "accessibilityIssues": 0,
+    "clippedElements": null,
+    "lineBreakMismatches": null,
+    "meanError": 0.018485192964781638,
+    "changedFraction": 0.07043119165668374,
+    "artifactsHash": "aba0267f35ef21690b26e5902326aee631dd166dd938f6463a90a2dff8223cf3"
+  },
+  "candidate": {
+    "version": 1,
+    "sourceHash": "45ba81fbfe681849662f90637335d23f70ce027cca8657763727af383fde8510",
+    "referenceHash": "237315be7c347215c39fa487f24bab6b7790a0829bb3d68791718e1978c6f811",
+    "screenshotHash": "a41d6335675676a919041596bf7826b1e108cee0bb02f4bec9701d5013c0599f",
+    "pins": {
+      "device": "com.apple.CoreSimulator.SimDeviceType.iPhone-18-Pro",
+      "os": "com.apple.CoreSimulator.SimRuntime.iOS-27-0 24A434",
+      "xcode": "Xcode 27.0\nBuild version 27A266a",
+      "appearance": "light",
+      "contentSize": "large",
+      "locale": "en_US",
+      "orientation": "portrait",
+      "state": "collapsed",
+      "width": 1206,
+      "height": 2622,
+      "scale": 3,
+      "fontConfiguration": "system-ui browser / SwiftUI system, default weight; Dynamic Type large",
+      "referenceRenderer": "155.0.8059.82 host 26A434",
+      "normalizationHash": "05690da7e6342fe85dd2540e5da46a4a0b7f28038b145b36d001a122edd8b970"
+    },
+    "build": "passed",
+    "functionality": "passed",
+    "accessibility": "passed",
+    "layout": "unavailable",
+    "typography": "unavailable",
+    "testsPassed": 2,
+    "accessibilityIssues": 0,
+    "clippedElements": null,
+    "lineBreakMismatches": null,
+    "meanError": 0.0195067456513045,
+    "changedFraction": 0.08857561663263233,
+    "artifactsHash": "424c194d80f5a569a7f6f7a4dcc8a07e01fc77e4a26efc7442dd02ba953bf73a"
+  },
+  "decision": {
+    "outcome": "rejected",
+    "reasons": [
+      "A visual metric regressed"
+    ]
+  }
+}

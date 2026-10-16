@@ -194,3 +194,7 @@ Install the archive in Xcode → Settings → Components → Developer Documenta
 Use `xcode-mcp tools` for discovered Xcode schemas and `doctor xcode` for setup diagnostics.
 
 Use `ios-agent-mcp docs status` and `ios-agent-mcp docs symbol SwiftUI.NavigationStack` for version-aware documentation grounding. The adapter prefers Xcode MCP DocumentationSearch, then bounded SDK evidence. Apple’s archive is never bundled. Bridge authorization is required; retrieval is not automatic code validation. [Setup, tools and limitations](https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-local-apple-documentation.html).
+
+## Experimental native source import
+
+The feature-branch App IR prototype imports a bounded local HTML screen into a validated, source-mapped representation and generates native SwiftUI. It reuses the existing Xcode and simulator tooling. Unsupported markup is reported and blocks generation. This is not universal framework conversion and is not included in npm 2.10.2. See the [architecture and roadmap](docs/architecture/universal-app-engine.md) and [real native prototype evidence](benchmarks/universal/README.md).

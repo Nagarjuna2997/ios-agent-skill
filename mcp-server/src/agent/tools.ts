@@ -36,6 +36,15 @@ export function registerAgentTools(server: McpServer, runners: RunnerFactory = d
   const readOnly = { readOnlyHint: true, openWorldHint: false } as const;
   const writes = { readOnlyHint: false, destructiveHint: false, openWorldHint: false } as const;
 
+  server.registerTool("ios_import_html", {
+    title: "Inspect a local HTML screen",
+    description: "Use this to inspect a local HTML screen with the experimental read-only inline-style adapter. Returns versioned App IR, source hashes and unsupported-feature evidence. Does not execute scripts, fetch URLs, generate files or claim conversion fidelity. Source text is shared with the connected client; choose a non-sensitive file.",
+    inputSchema: { path: z.string().min(1), appName: z.string().regex(/^[A-Z][A-Za-z0-9]{0,39}$/).default("ImportedApp") }, annotations: readOnly,
+  }, async ({path, appName}) => {
+    try { const {importHTML} = await import("../app-ir/html.js"); return {content:[{type:"text" as const,text:JSON.stringify(await importHTML(path,appName))}]}; }
+    catch(error) { return fail(error); }
+  });
+
   server.registerTool("ios_design_evidence", {
     title: "See the app for design review",
     description: "Use this after a successful build to review actual light, dark and largest Dynamic Type screenshot images for one top-level screen, with approved brief and HIG checklist. capture=true first refreshes the full matrix on the simulator. Images are shared with the connected model; use synthetic sample data. A model opinion is not accessibility certification.",

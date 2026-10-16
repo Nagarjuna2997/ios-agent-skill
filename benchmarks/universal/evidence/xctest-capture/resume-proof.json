@@ -1,0 +1,79 @@
+{
+  "checkpointCount": 12,
+  "allCheckpointMtimesUnchanged": true,
+  "finalOutcome": "rejected",
+  "records": [
+    {
+      "checkpoint": "baseline-build.json",
+      "beforeMtimeNs": 1792118741812208804,
+      "afterMtimeNs": 1792118741812208804,
+      "sha256": "6993d3d5ec8345c173e8b8c795b18cf5f6ee8f572fd571900e017af6046c9d8e"
+    },
+    {
+      "checkpoint": "baseline-generate.json",
+      "beforeMtimeNs": 1792118680674335587,
+      "afterMtimeNs": 1792118680674335587,
+      "sha256": "62d3d4784bb826a9f9bc4bd6d4db51ab6f6f0d33aef8df807863019ce1e0b8dc"
+    },
+    {
+      "checkpoint": "baseline-large.json",
+      "beforeMtimeNs": 1792118849961951325,
+      "afterMtimeNs": 1792118849961951325,
+      "sha256": "dfc33e28aa4e6b733f0d189124c7ccce4429ba9f15dec9d3cfb7b75e8241ccd4"
+    },
+    {
+      "checkpoint": "baseline-measurement.json",
+      "beforeMtimeNs": 1792119075796693098,
+      "afterMtimeNs": 1792119075796693098,
+      "sha256": "8eca9f306f507947f2df27f4b406b4869d23de16f0a50563fa990ebac457b975"
+    },
+    {
+      "checkpoint": "baseline-xxxl.json",
+      "beforeMtimeNs": 1792119040552627416,
+      "afterMtimeNs": 1792119040552627416,
+      "sha256": "6b3b058d752a86326a72183c5bd753d26fb40627226c6707e1d44451731055f7"
+    },
+    {
+      "checkpoint": "candidate-1-build.json",
+      "beforeMtimeNs": 1792119100555015647,
+      "afterMtimeNs": 1792119100555015647,
+      "sha256": "0aeadeb51a813a7e8a4e39d41777067f2b1153bc529be43c8769b12dd2546a16"
+    },
+    {
+      "checkpoint": "candidate-1-generate.json",
+      "beforeMtimeNs": 1792119075915880431,
+      "afterMtimeNs": 1792119075915880431,
+      "sha256": "09783f52af5cc0dcedf496a94ee24dc3428ef91b9f31dc5665ae8d7afac989a4"
+    },
+    {
+      "checkpoint": "candidate-1-large.json",
+      "beforeMtimeNs": 1792119154342596630,
+      "afterMtimeNs": 1792119154342596630,
+      "sha256": "0d3d6316bab6b2f4b163116e949e90e54722945bb109ef9ce39e9c4d5db46167"
+    },
+    {
+      "checkpoint": "candidate-1-measurement.json",
+      "beforeMtimeNs": 1792119195107844338,
+      "afterMtimeNs": 1792119195107844338,
+      "sha256": "9f79471e75ed93146de9c51c5d179348f83b09d3f1442f562f2ebb2953f01683"
+    },
+    {
+      "checkpoint": "candidate-1-xxxl.json",
+      "beforeMtimeNs": 1792119194238241228,
+      "afterMtimeNs": 1792119194238241228,
+      "sha256": "1a4575ec1bd36ef7ca7046914d76aeea2eddea28ff5409df91013fe8285ee257"
+    },
+    {
+      "checkpoint": "ocr-tool.json",
+      "beforeMtimeNs": 1792118630213726333,
+      "afterMtimeNs": 1792118630213726333,
+      "sha256": "331c1a17c93d51b20929fda4f47c5f2ee095bba60bf1c2d5de595d3e901d2cd0"
+    },
+    {
+      "checkpoint": "reference.json",
+      "beforeMtimeNs": 1792119074592574104,
+      "afterMtimeNs": 1792119074592574104,
+      "sha256": "7bcfc5eb6fed80e9ad565fbe28e6b4fdd07273360ab51d0d8d05097d5c6740fd"
+    }
+  ]
+}

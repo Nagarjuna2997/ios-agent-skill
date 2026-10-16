@@ -2431,6 +2431,13 @@
       "hash": "80d0ab6a3f2e0d37b1ddb735453e8150e0a4251acc4aa0283ef47ce901821970"
     },
     {
+      "path": "docs/architecture/universal-app-engine.md",
+      "title": "Universal App Engine: architecture and implementation record",
+      "kind": "guide",
+      "characters": 11067,
+      "hash": "3f1872d7f80d16dbca0fd462bad221122906917a78f0a325e96e3c62a5ff3b39"
+    },
+    {
       "path": "docs/backend/app-architectures.md",
       "title": "Backend architectures by app workflow",
       "kind": "guide",

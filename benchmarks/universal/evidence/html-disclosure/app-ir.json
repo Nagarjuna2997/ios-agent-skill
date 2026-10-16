@@ -1,0 +1,331 @@
+{
+  "schemaVersion": "1.0.0",
+  "mode": "faithful",
+  "name": "FieldNotes",
+  "sources": [
+    {
+      "id": "source",
+      "path": "index.html",
+      "sha256": "f81a25680653a8a1e472f645776fbe90fc78c23c661c51a395e3b700f01a33cb",
+      "bytes": 1414,
+      "adapter": "html-inline@1"
+    }
+  ],
+  "screens": [
+    {
+      "id": "home",
+      "title": "Field Notes",
+      "root": "node-1"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "node-4",
+      "kind": "text",
+      "text": "FIELD NOTES · WEEKEND EDITION",
+      "children": [],
+      "style": {
+        "fontSize": 14,
+        "bold": true
+      },
+      "evidence": [
+        {
+          "source": "source",
+          "start": 369,
+          "end": 454,
+          "certainty": "extracted"
+        }
+      ]
+    },
+    {
+      "id": "node-5",
+      "kind": "text",
+      "text": "A little closer to nature.",
+      "children": [],
+      "style": {
+        "fontSize": 36,
+        "bold": true
+      },
+      "evidence": [
+        {
+          "source": "source",
+          "start": 454,
+          "end": 537,
+          "certainty": "extracted"
+        }
+      ]
+    },
+    {
+      "id": "node-6",
+      "kind": "text",
+      "text": "Three quiet trails, one good weekend. Your next walk starts here.",
+      "children": [],
+      "style": {
+        "fontSize": 18
+      },
+      "evidence": [
+        {
+          "source": "source",
+          "start": 537,
+          "end": 641,
+          "certainty": "extracted"
+        }
+      ]
+    },
+    {
+      "id": "node-3",
+      "kind": "column",
+      "children": [
+        "node-4",
+        "node-5",
+        "node-6"
+      ],
+      "style": {
+        "gap": 8
+      },
+      "evidence": [
+        {
+          "source": "source",
+          "start": 310,
+          "end": 650,
+          "certainty": "extracted"
+        }
+      ]
+    },
+    {
+      "id": "node-8",
+      "kind": "text",
+      "text": "THIS WEEK'S WALK",
+      "children": [],
+      "style": {
+        "fontSize": 14,
+        "bold": true
+      },
+      "evidence": [
+        {
+          "source": "source",
+          "start": 769,
+          "end": 840,
+          "certainty": "extracted"
+        }
+      ]
+    },
+    {
+      "id": "node-9",
+      "kind": "text",
+      "text": "Cedar Loop",
+      "children": [],
+      "style": {
+        "fontSize": 28,
+        "bold": true
+      },
+      "evidence": [
+        {
+          "source": "source",
+          "start": 840,
+          "end": 907,
+          "certainty": "extracted"
+        }
+      ]
+    },
+    {
+      "id": "node-10",
+      "kind": "text",
+      "text": "4.2 miles · Easy · 90 minutes",
+      "children": [],
+      "style": {
+        "fontSize": 18
+      },
+      "evidence": [
+        {
+          "source": "source",
+          "start": 907,
+          "end": 977,
+          "certainty": "extracted"
+        }
+      ]
+    },
+    {
+      "id": "node-11",
+      "kind": "text",
+      "text": "A shaded path through tall cedars, with a quiet river stop halfway.",
+      "children": [],
+      "style": {
+        "fontSize": 16
+      },
+      "evidence": [
+        {
+          "source": "source",
+          "start": 977,
+          "end": 1083,
+          "certainty": "extracted"
+        }
+      ]
+    },
+    {
+      "id": "node-7",
+      "kind": "column",
+      "children": [
+        "node-8",
+        "node-9",
+        "node-10",
+        "node-11"
+      ],
+      "style": {
+        "background": "#DDE8D6",
+        "padding": 24,
+        "gap": 12,
+        "radius": 24
+      },
+      "evidence": [
+        {
+          "source": "source",
+          "start": 651,
+          "end": 1093,
+          "certainty": "extracted"
+        }
+      ]
+    },
+    {
+      "id": "node-13",
+      "kind": "text",
+      "text": "Bring water, comfortable shoes, and a light jacket.",
+      "children": [],
+      "style": {},
+      "evidence": [
+        {
+          "source": "source",
+          "start": 1200,
+          "end": 1276,
+          "certainty": "extracted"
+        }
+      ]
+    },
+    {
+      "id": "node-12",
+      "kind": "disclosure",
+      "text": "Before you go",
+      "children": [
+        "node-13"
+      ],
+      "style": {
+        "background": "#FFFFFF",
+        "padding": 20,
+        "radius": 20
+      },
+      "evidence": [
+        {
+          "source": "source",
+          "start": 1094,
+          "end": 1286,
+          "certainty": "extracted"
+        }
+      ]
+    },
+    {
+      "id": "node-14",
+      "kind": "text",
+      "text": "Synthetic demo content. No account or location permission needed.",
+      "children": [],
+      "style": {
+        "fontSize": 14
+      },
+      "evidence": [
+        {
+          "source": "source",
+          "start": 1287,
+          "end": 1391,
+          "certainty": "extracted"
+        }
+      ]
+    },
+    {
+      "id": "node-2",
+      "kind": "column",
+      "children": [
+        "node-3",
+        "node-7",
+        "node-12",
+        "node-14"
+      ],
+      "style": {
+        "gap": 24
+      },
+      "evidence": [
+        {
+          "source": "source",
+          "start": 251,
+          "end": 1399,
+          "certainty": "extracted"
+        }
+      ]
+    },
+    {
+      "id": "node-1",
+      "kind": "column",
+      "children": [
+        "node-2"
+      ],
+      "style": {
+        "foreground": "#243D35",
+        "background": "#F4F1EB",
+        "padding": 24,
+        "gap": 24,
+        "fontSize": 17
+      },
+      "evidence": [
+        {
+          "source": "source",
+          "start": 94,
+          "end": 1406,
+          "certainty": "extracted"
+        }
+      ]
+    }
+  ],
+  "requirements": [
+    {
+      "id": "review-api",
+      "area": "api",
+      "status": "unknown",
+      "description": "No api behavior inferred from static HTML. Developer review required.",
+      "evidence": []
+    },
+    {
+      "id": "review-auth",
+      "area": "auth",
+      "status": "unknown",
+      "description": "No auth behavior inferred from static HTML. Developer review required.",
+      "evidence": []
+    },
+    {
+      "id": "review-data",
+      "area": "data",
+      "status": "unknown",
+      "description": "No data behavior inferred from static HTML. Developer review required.",
+      "evidence": []
+    },
+    {
+      "id": "review-assets",
+      "area": "assets",
+      "status": "unknown",
+      "description": "No assets behavior inferred from static HTML. Developer review required.",
+      "evidence": []
+    },
+    {
+      "id": "review-appearance",
+      "area": "appearance",
+      "status": "unknown",
+      "description": "No appearance behavior inferred from static HTML. Developer review required.",
+      "evidence": []
+    },
+    {
+      "id": "review-responsive",
+      "area": "responsive",
+      "status": "unknown",
+      "description": "No responsive behavior inferred from static HTML. Developer review required.",
+      "evidence": []
+    }
+  ],
+  "limitations": []
+}

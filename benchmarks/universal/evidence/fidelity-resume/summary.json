@@ -1,0 +1,12 @@
+{
+  "sourceCommit": "9682582a579f5318557d90c023fb1fb8e5c473bb",
+  "nativeBuildsPassed": 2,
+  "nativeTestExecutionsPassed": 12,
+  "nativeTestFailures": 0,
+  "completedCheckpointCount": 12,
+  "completedResumeReusedEveryCheckpoint": true,
+  "outcome": "rejected",
+  "knownGood": null,
+  "typography": "unavailable",
+  "note": "The retained report.error is the earlier injected interruption, not a new error after resume. Native artifacts and report are unmodified."
+}

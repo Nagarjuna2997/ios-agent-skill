@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "xcode": "26.5",
+  "sdk": "26.5",
+  "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-26-5",
+  "deviceType": "com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro",
+  "appearance": "light",
+  "contentSize": "large",
+  "locale": "en_US",
+  "scale": 3,
+  "safeAreaTop": 62,
+  "safeAreaBottom": 34,
+  "state": "collapsed",
+  "fontConfiguration": "system-ui browser / SwiftUI system, default weight; Dynamic Type large",
+  "policy": {
+    "version": 1,
+    "maxMeanError": 0.02,
+    "maxChangedFraction": 0.1,
+    "maxLineBreakMismatches": 0,
+    "minimumImprovement": 0.001
+  },
+  "xcodeBuild": "17F42"
+}

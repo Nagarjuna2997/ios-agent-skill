@@ -4069,6 +4069,37 @@
         "idempotentHint": false,
         "openWorldHint": true
       }
+    },
+    {
+      "name": "ios_import_html",
+      "title": "Inspect a local HTML screen",
+      "description": "Use this to inspect a local HTML screen with the experimental read-only inline-style adapter. Returns versioned App IR, source hashes and unsupported-feature evidence. Does not execute scripts, fetch URLs, generate files or claim conversion fidelity. Source text is shared with the connected client; choose a non-sensitive file.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "appName": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Za-z0-9]{0,39}$",
+            "default": "ImportedApp"
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
     }
   ],
   "resources": [
