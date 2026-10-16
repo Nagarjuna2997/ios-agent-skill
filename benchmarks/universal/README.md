@@ -36,3 +36,7 @@ The browser reference was captured using headless Google Chrome via Playwright a
 ## Next verification work
 
 Pin capture appearance/text size/browser version in the runner, normalize safe-area regions explicitly, add dark/XXL and accessibility checks, and make stage checkpoints atomically resumable with code/input/evidence hash validation. Connect a bounded reference-driven repair only after those gates are reliable. Keep raw visual differences and unsupported cases separate from build and behavior success.
+
+## M2 visual gate
+
+The experimental [M2 benchmark](fidelity/README.md) adds a framework-independent evidence contract, bounded repair decisions, a dedicated simulator capture protocol and accessibility audits. Its first native repair regressed the measured visual differences and was not accepted. M2 remains partial; automated layout and line-break measurements are still missing. The M1 evidence above is unchanged.

@@ -1,0 +1,56 @@
+name: Experimental native conversion fidelity
+on:
+  pull_request:
+    paths: ['mcp-server/src/app-ir/**', 'benchmarks/universal/**', '.github/workflows/universal-fidelity.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: universal-fidelity-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+jobs:
+  portable:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci --prefix mcp-server
+      - run: npm run build --prefix mcp-server
+      - run: node --test mcp-server/test/app-ir.test.js mcp-server/test/visual-gate.test.js
+  simulator:
+    runs-on: macos-26
+    timeout-minutes: 35
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.5.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci --prefix mcp-server
+      - run: npm run build --prefix mcp-server
+      - run: npm ci --prefix benchmarks/universal/fidelity
+      - run: benchmarks/universal/fidelity/node_modules/.bin/playwright install chromium
+      - name: Run the native gate (review-required is not a pass)
+        run: node benchmarks/universal/fidelity/run.mjs benchmarks/universal/fidelity/ci.json "$RUNNER_TEMP/fidelity-evidence"
+      - name: Preserve results and actual logs even on failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-fidelity-${{ github.sha }}
+          include-hidden-files: true
+          path: |
+            ${{ runner.temp }}/fidelity-evidence/report.json
+            ${{ runner.temp }}/fidelity-evidence/reference.png
+            ${{ runner.temp }}/fidelity-evidence/repairs/
+            ${{ runner.temp }}/fidelity-evidence/*/difference.png
+            ${{ runner.temp }}/fidelity-evidence/*/.ios-agent/logs/
+            ${{ runner.temp }}/fidelity-evidence/*/.ios-agent/screenshots/
+            ${{ runner.temp }}/fidelity-evidence/*/.ios-agent/test-results/
