@@ -22,3 +22,7 @@ test('audit failure and missing audit cannot pass geometry',()=>{
 test('meaningful punctuation loss cannot pass as matching text',()=>{
  assert.equal(measureLineBreaks(capture(['Balance: -5']),capture(['Balance: 5']),'Balance: -5').status,'unavailable');
 });
+
+test('empty and malformed OCR is unavailable, not a verifier crash',()=>{
+ for(const value of [{version:1,lines:[]},null,{version:1,lines:[{text:'x'}]}])assert.equal(measureLineBreaks(capture(['Hello']),value,'Hello').status,'unavailable');
+});

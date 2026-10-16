@@ -16,7 +16,7 @@ import {readSpec,writeSpec,regenerate} from '../../../mcp-server/dist/agent/proj
 import {ProcessRunner} from '../../../mcp-server/dist/agent/runner.js';
 import {buildProject} from '../../../mcp-server/dist/agent/build.js';
 import {testProject} from '../../../mcp-server/dist/agent/testing.js';
-import {runApp,screenshot} from '../../../mcp-server/dist/agent/simulator.js';
+import {selectVerifiedCapture} from '../../../mcp-server/dist/app-ir/test-capture.js';
 const require=createRequire(new URL('../../../mcp-server/package.json',import.meta.url));const {PNG}=require('pngjs');
 const [profilePath,output,flag]=process.argv.slice(2);const resume=flag==='--resume';
 if(!profilePath||!output||(flag&&!resume))throw Error('Usage: run.mjs PROFILE_JSON OUTPUT [--resume]');
@@ -51,6 +51,7 @@ try{
  const inputHashes=[];for(const f of inputs)inputHashes.push([f.slice(resolve(here,'../../..').length),sha256(await readFile(f))]);
  const contract=sha256(JSON.stringify({profile,environment,inputHashes}));
  if(resume&&report.contract!==contract)throw Error('Run inputs, verifier or environment changed; use a new output directory');
+ if(report.error){report.interruptions=[...(report.interruptions??[]),{error:report.error,resumedAt:new Date().toISOString()}];delete report.error;}
  report.contract=contract;report.environment=environment;report.status='running';await save();
  const journal=new Checkpoints(root,contract,name=>{if(process.env.FIDELITY_INTERRUPT_AFTER===name)throw Error('Injected interruption after '+name);});
  const ocr=await journal.stage('ocr-tool',async()=>{const path=join(root,'recognize-text');await command('xcrun',['swiftc',join(here,'RecognizeText.swift'),'-o',path]);return {value:path,files:[path]};});
@@ -78,11 +79,14 @@ try{
    await command('xcrun',['simctl','ui',udid,'content_size',size]);
    row[suffix]=await journal.stage(name+'-'+suffix,async()=>{
     const tests=await testProject(folder,runner,udid);const log=join(folder,tests.logPath);
-    await runApp(folder,runner,{udid,launchArguments:['-AppleLanguages','(en)','-AppleLocale','en_US']});await new Promise(r=>setTimeout(r,1500));
-    const shot=await screenshot(folder,runner,udid,'collapsed-'+suffix);
+    const exports=join(folder,'.ios-agent/screenshots',suffix+'-'+randomUUID());
+    await command('xcrun',['xcresulttool','export','attachments','--path',join(folder,tests.resultBundle),'--output-path',exports]);
+    const manifest=join(exports,'manifest.json');
+    const capture=selectVerifiedCapture(JSON.parse(await readFile(manifest,'utf8')),udid,tests.status);
+    const shot={path:join(exports,capture),source:'XCTest runningForeground collapsed-state attachment'};
     const text=await readFile(log,'utf8'),match=text.match(/IOS_AGENT_GEOMETRY:(\{[^\n]+\})/);
     let geometry=null;if(match)geometry=measureClipping(JSON.parse(match[1]));
-    return {value:{tests,shot,geometry},files:[log,shot.path]};
+    return {value:{tests,shot,geometry},files:[log,manifest,shot.path]};
    });await save();
   }
   await command('xcrun',['simctl','ui',udid,'content_size','large']);
@@ -114,7 +118,7 @@ try{
  }
  const baseline=await makeCandidate('baseline','platform');report.baseline=baseline;
  try{report.knownGood=seedKnownGood(baseline,profile.policy);}catch{report.knownGood=null;}
- report.repair=await repairWithGate({directory:join(root,'repairs'),baseline,policy:profile.policy,maxAttempts:1,resumeInterrupted:true,verifySavedEvidence:async saved=>{const current=await makeCandidate('candidate-1','leading');if(JSON.stringify(VisualEvidenceSchema.parse(current))!==JSON.stringify(VisualEvidenceSchema.parse(saved)))throw Error('Saved candidate evidence differs from verified checkpoints');},verifyCandidate:()=>makeCandidate('candidate-1','leading')});
+ report.repair=await repairWithGate({directory:join(root,'repairs'),baseline,policy:profile.policy,maxAttempts:1,resumeInterrupted:true,verifySavedEvidence:async saved=>{const current=await makeCandidate('candidate-1','leading');if(JSON.stringify(VisualEvidenceSchema.parse(current))!==JSON.stringify(VisualEvidenceSchema.parse(saved)))throw Error('Saved candidate evidence differs from verified checkpoints');},verifyCandidate:async()=>{try{return await makeCandidate('candidate-1','leading');}catch(error){report.candidateFailure={phase:'verification',message:String(error.message).slice(0,2000)};await save();throw error;}}});
  if(report.repair.acceptedAttempt){const candidate=report.repair.attempts.find(a=>a.number===report.repair.acceptedAttempt).evidence;report.knownGood=report.knownGood?advanceKnownGood(report.knownGood,candidate,profile.policy).baseline:seedKnownGood(candidate,profile.policy);}
  report.status=report.repair.outcome;report.limitations=['OCR cannot establish wrapping when source transcript or confidence differs.','Geometry covers text frames and Apple text-clipping audit, not arbitrary images, shadows or occlusion.','Known-good is null until baseline meets every quality requirement.'];await save();
  process.exitCode=report.status==='accepted'?0:report.status==='requires-review'?2:1;

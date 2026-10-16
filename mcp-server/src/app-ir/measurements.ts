@@ -7,7 +7,9 @@ const words=(s:string)=>s.normalize('NFKC').trim().split(/\s+/u).filter(Boolean)
  * A missing/uncertain word is unknown, not a wrapping mismatch or proof of clipping.
  */
 export function measureLineBreaks(reference:unknown,native:unknown,expected:string){
- const a=TextCaptureSchema.parse(reference),b=TextCaptureSchema.parse(native),tokens=words(expected);
+ const parsedA=TextCaptureSchema.safeParse(reference),parsedB=TextCaptureSchema.safeParse(native);
+ if(!parsedA.success||!parsedB.success)return {status:'unavailable' as const,mismatches:null,reason:'Missing or malformed text recognition'};
+ const a=parsedA.data,b=parsedB.data,tokens=words(expected);
  if(!tokens.length)throw Error('Expected visible text is empty');
  for(const capture of [a,b]){
   if(capture.lines.some(l=>l.confidence<0.8))return {status:'unavailable' as const,mismatches:null,reason:'Low-confidence text recognition'};

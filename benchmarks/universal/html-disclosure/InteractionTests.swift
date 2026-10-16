@@ -20,6 +20,12 @@ import XCTest
         app.launchArguments = ["-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
         app.launch()
         XCTAssertTrue(app.staticTexts["Cedar Loop"].waitForExistence(timeout: 15))
+        XCTAssertEqual(app.state, .runningForeground)
+        XCTAssertFalse(app.staticTexts["Bring water, comfortable shoes, and a light jacket."].exists)
+        let collapsed = XCTAttachment(screenshot: app.screenshot())
+        collapsed.name = "verified-collapsed"
+        collapsed.lifetime = .keepAlways
+        add(collapsed)
         let frame = app.frame
         let elements = app.staticTexts.allElementsBoundByIndex.filter { $0.frame.width > 0 && $0.frame.height > 0 }.map { element -> [String: Any] in
             let f = element.frame
