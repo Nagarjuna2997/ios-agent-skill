@@ -6,6 +6,9 @@ on:
   pull_request:
     paths: ['mcp-server/src/app-ir/**', 'benchmarks/universal/**', '.github/workflows/universal-fidelity.yml']
   workflow_dispatch:
+defaults:
+  run:
+    shell: bash
 permissions:
   contents: read
 concurrency:
