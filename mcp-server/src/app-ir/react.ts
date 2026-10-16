@@ -45,7 +45,17 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
     return decoded;
   };
   type Literal = {value:string|number; origins:ts.Node[]};
-  type Scope = Map<string, Literal|Map<string,Literal>>;
+  type Children = {kind:'children'; nodes:readonly ts.JsxChild[]; scope:Scope; stack:string[]; origins:ts.Node[]};
+  type Binding = Literal|Children;
+  type Props = Map<string,Binding>;
+  type Scope = Map<string, Binding|Props>;
+  const binding=(node:ts.Expression,scope:Scope):Binding|undefined=>{
+    if(ts.isIdentifier(node)){const value=scope.get(node.text);return value instanceof Map?undefined:value;}
+    if(ts.isPropertyAccessExpression(node)&&ts.isIdentifier(node.expression)){
+      const value=scope.get(node.expression.text);if(value instanceof Map)return value.get(node.name.text);
+    }
+    return undefined;
+  };
   let expressionSteps=0;
   function literal(node:ts.Expression,scope:Scope,depth=0):Literal {
     if(++expressionSteps>4096)fail(node,'static expression work budget exceeded');
@@ -59,10 +69,7 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
     };
     if(ts.isParenthesizedExpression(node))return literal(node.expression,scope,depth+1);
     if(ts.isStringLiteral(node)||ts.isNoSubstitutionTemplateLiteral(node)||ts.isNumericLiteral(node))return checked(ts.isNumericLiteral(node)?Number(node.text):node.text,[node]);
-    if(ts.isIdentifier(node)){const value=scope.get(node.text);if(value && !(value instanceof Map))return value;}
-    if(ts.isPropertyAccessExpression(node)&&ts.isIdentifier(node.expression)){
-      const object=scope.get(node.expression.text);if(object instanceof Map&&object.has(node.name.text))return object.get(node.name.text)!;
-    }
+    const resolved=binding(node,scope);if(resolved&&'value' in resolved)return resolved;
     if(ts.isPrefixUnaryExpression(node)&&[ts.SyntaxKind.PlusToken,ts.SyntaxKind.MinusToken].includes(node.operator)){
       const operand=literal(node.operand,scope,depth+1);if(typeof operand.value!=='number')fail(node,'unary arithmetic requires a number');
       return checked(node.operator===ts.SyntaxKind.MinusToken?-operand.value:+operand.value,[node,...operand.origins]);
@@ -91,7 +98,7 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
   const spans: Array<{start:number;end:number;node:ts.Node}> = [];
   const append = (text: string) => { html += text; if (Buffer.byteLength(html)>262144) throw Error('Expanded React exceeds 256 KiB'); };
   function unwrap(node: ts.Expression): ts.Expression { return ts.isParenthesizedExpression(node) ? unwrap(node.expression) : node; }
-  function component(node: ts.FunctionDeclaration, stack: string[], props=new Map<string,Literal>(), origins:ts.Node[] = []) {
+  function component(node: ts.FunctionDeclaration, stack: string[], props:Props=new Map(), origins:ts.Node[] = []) {
     const scope:Scope=new Map();
     const param=node.parameters[0];
     if(param){
@@ -115,6 +122,14 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
     render(unwrap((statements[0] as ts.ReturnStatement).expression!), [...stack,key],scope);
     if(origins.length)dependencies.push({start,end:html.length,nodes:origins});
   }
+  // React constructs supplied children before calling a component, even if discarded.
+  // Reuse the syntax-only lowering checks, then discard the temporary markup/evidence.
+  // Work budgets are deliberately not restored. No application code is executed.
+  function validateChildren(nodes:readonly ts.JsxChild[],stack:string[],scope:Scope){
+    const savedHTML=html,savedSpans=spans.length,savedDependencies=dependencies.length;
+    try{html='';for(const child of nodes)render(child,stack,scope);}
+    finally{html=savedHTML;spans.length=savedSpans;dependencies.length=savedDependencies;}
+  }
   function render(node: ts.Node, stack: string[], scope:Scope) {
     if (++count > 400) fail(node, 'expanded component count exceeds limit');
     if (ts.isJsxFragment(node)) { for (const child of node.children) render(child,stack,scope); return; }
@@ -126,6 +141,8 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
     }
     if (ts.isJsxExpression(node)) {
       if(!node.expression)fail(node,'empty JSX expressions are unsupported');
+      const slot=binding(unwrap(node.expression),scope);
+      if(slot&&'kind' in slot){for(const child of slot.nodes)render(child,slot.stack,slot.scope);return;}
       const value=literal(node.expression,scope);const start=html.length;
       const text=String(value.value);if(/[\u00a0\u2000-\u200b\u202f\u3000]/.test(text))fail(node,'special whitespace requires explicit layout support');
       append(escape(text));spans.push({start,end:html.length,node});dependencies.push({start,end:html.length,nodes:value.origins});return;
@@ -134,8 +151,8 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
     const opening = ts.isJsxElement(node) ? node.openingElement : node;
     const tag=opening.tagName.getText(file);
     if (/^[A-Z]/.test(tag)) {
-      if(ts.isJsxElement(node)&&node.children.some(c=>!ts.isJsxText(c)||c.text.trim()))fail(node,'component children are unsupported');
-      const props=new Map<string,Literal>();
+      const props:Props=new Map();
+      if(ts.isJsxElement(node)&&node.children.length)props.set('children',{kind:'children',nodes:node.children,scope,stack:[...stack],origins:[node]});
       for(const attr of opening.attributes.properties){
         if(!ts.isJsxAttribute(attr)||!ts.isIdentifier(attr.name))fail(attr,'spread/namespaced props are unsupported');
         const key=attr.name.getText(file);if(['key','ref','children'].includes(key)||props.has(key))fail(attr,'reserved or duplicate prop');
@@ -145,6 +162,7 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
         props.set(key,value);
       }
       const target=components.get(tag);if(!target)fail(node,`unresolved component ${tag}`);
+      if(ts.isJsxElement(node))validateChildren(node.children,stack,scope);
       const start=html.length;component(target!,stack,props,props.size?[node,...[...props.values()].flatMap(v=>v.origins)]:[]);spans.push({start,end:html.length,node});return;
     }
     if (!/^[a-z][a-z0-9]*$/.test(tag)) fail(node,'namespaced or member elements are unsupported');
