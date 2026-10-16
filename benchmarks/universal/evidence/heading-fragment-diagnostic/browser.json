@@ -1,0 +1,76 @@
+{
+  "browser": "155.0.8059.82",
+  "viewport": {
+    "width": 402,
+    "height": 874,
+    "scale": 3
+  },
+  "words": [
+    {
+      "word": "A",
+      "rects": [
+        {
+          "x": 24,
+          "y": 49,
+          "width": 25.296875,
+          "height": 43
+        }
+      ]
+    },
+    {
+      "word": "little",
+      "rects": [
+        {
+          "x": 56.78125,
+          "y": 49,
+          "width": 73.90625,
+          "height": 43
+        }
+      ]
+    },
+    {
+      "word": "closer",
+      "rects": [
+        {
+          "x": 138.15625,
+          "y": 49,
+          "width": 102.796875,
+          "height": 43
+        }
+      ]
+    },
+    {
+      "word": "to",
+      "rects": [
+        {
+          "x": 248.4375,
+          "y": 49,
+          "width": 33.890625,
+          "height": 43
+        }
+      ]
+    },
+    {
+      "word": "nature.",
+      "rects": [
+        {
+          "x": 24,
+          "y": 92,
+          "width": 117.703125,
+          "height": 43
+        }
+      ]
+    }
+  ],
+  "width": 354,
+  "contentWidth": 354,
+  "height": 86,
+  "font": "700 36px system-ui",
+  "family": "system-ui",
+  "size": "36px",
+  "weight": "700",
+  "letterSpacing": "normal",
+  "phrase": "A little closer to",
+  "phraseAdvance": 258.328125,
+  "fontEvidence": "Computed CSS system font; concrete fallback face is not exposed by computed style"
+}

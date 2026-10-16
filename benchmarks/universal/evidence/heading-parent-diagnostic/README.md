@@ -1,0 +1,11 @@
+# Heading parent-width diagnostic (local, not a fidelity fix)
+
+Xcode 27.0 (27A266a), iOS 27.0, iPhone 18 Pro, English US, light appearance, Large Dynamic Type. One XCTest passed. The exact experimental view and test are retained here; the production generator is unchanged.
+
+The heading frame after `frame(maxWidth: .infinity)` measures 354 points, matching the HTML content width. The scaled native size is 36; CSS is 700 36px system-ui. Browser phrase advance is 258.328125; the UIKit system-bold proxy is 258.2666015625. UIKit's `.SFUI-Bold` identity is **not** a measurement of SwiftUI's resolved font. Browser computed CSS likewise does not expose the concrete fallback font. Do not present either as proof of exact cross-platform font equivalence.
+
+The geometry background is conditional on `-heading-diagnostics`, hidden from accessibility and hit testing. It writes measurements to the app sandbox, rather than changing accessibility values. Enabled and disabled captures have identical PNG hashes and zero decoded pixel error. This verifies noninterference for this fixture and configuration only. The test checks app launch and collapsed content; it does not perform a full accessibility audit or interaction regression suite.
+
+The narrower-parent hypothesis is unsupported. Comparable proxy advances suggest wrapping policy warrants investigation, but the exact SwiftUI font/layout cause remains unproven. No line breaks, generator rules, fidelity thresholds, or approvals changed. No known-good baseline was promoted.
+
+To reproduce: generate the existing FieldNotes HTML benchmark project, replace its RootView.swift and InteractionTests.swift with these snapshots, then run its unsigned simulator XCTest scheme under the environment above. Export xcresult attachments, compare normal and diagnostic PNGs with `comparePNGs`, and read Documents/heading-diagnostics.json from the app data container before deleting the simulator. The browser capture uses the unchanged html-disclosure/index.html fixture at 402 × 874 CSS pixels, scale 3, Chrome 155.0.8059.82, English US, light appearance. Browser canvas measureText uses computed heading font. Full raw native log and SHA-256 hashes are retained.

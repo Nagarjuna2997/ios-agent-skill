@@ -1,0 +1,18 @@
+{
+  "InteractionTests.swift": "890fc4864f8819aa306e4382274568a44a949d8b4e7a1bab12610c9d7d1c2f4d",
+  "README.md": "41a9232c02a02aa068555c72415c56562a41d0d54b7010200050c12717ae6f79",
+  "RootView.swift": "353607798fed6bd1ec1a6783a738b8a7a0003e83b0dea18b9c9cffbe892cf69a",
+  "comparison.json": "3fcb148e14102280977b62e50b82d774c80e4050ebf48e3ccc2fc34700473288",
+  "greedy-measured.png": "55e04712b53efe05643f3fe8bd3bc296afc49e5b960c8f9090b3baf2872914d8",
+  "greedy.png": "55e04712b53efe05643f3fe8bd3bc296afc49e5b960c8f9090b3baf2872914d8",
+  "heading-strategies-color.log.gz": "56b74a9f22bea1ab4d4b383c4269e5486d6637111be3b510d27273135bc1ad95",
+  "heading-strategies-width.log.gz": "585b8f8a566c8c2632a7da04490f7cc655a132d4fe81006bedeb4e74c699553c",
+  "heading-strategies.log.gz": "c9afc999b7591f658f7e0eb81aa42aad2ebfd1438e1a24626bd69187200cfc50",
+  "native-greedy.json": "019155da73258b1f683b9bbe7c3ec4a07914bbea96e9bc7a469543d83125a8fd",
+  "normal.png": "366a9c1778bdd2ff77f8f371cdb9c440d31d013c7b50f3362e028f09e0764afd",
+  "proposal.json": "447de05eea43dcda506af1bd0eab74d5d79db8e4167b2f19acef1a2f05307398",
+  "proposal.png": "366a9c1778bdd2ff77f8f371cdb9c440d31d013c7b50f3362e028f09e0764afd",
+  "reference.png": "237315be7c347215c39fa487f24bab6b7790a0829bb3d68791718e1978c6f811",
+  "trailing.png": "366a9c1778bdd2ff77f8f371cdb9c440d31d013c7b50f3362e028f09e0764afd",
+  "width-only-confounded-comparison.json": "47318931a79963fdb5500c45e0a95edb3d15be271b67eb8fc18d8e11bf06fdd9"
+}

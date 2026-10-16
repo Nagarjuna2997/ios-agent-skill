@@ -1,0 +1,19 @@
+{
+  "browser": "155.0.8059.82",
+  "viewport": {
+    "width": 402,
+    "height": 874,
+    "scale": 3
+  },
+  "width": 354,
+  "contentWidth": 354,
+  "height": 86,
+  "font": "700 36px system-ui",
+  "family": "system-ui",
+  "size": "36px",
+  "weight": "700",
+  "letterSpacing": "normal",
+  "phrase": "A little closer to",
+  "phraseAdvance": 258.328125,
+  "fontEvidence": "Computed CSS system font; concrete fallback face is not exposed by computed style"
+}
