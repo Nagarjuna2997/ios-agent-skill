@@ -7,6 +7,7 @@ import {join,resolve,dirname} from 'node:path';
 import {randomUUID} from 'node:crypto';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 import {createRequire} from 'node:module';
+import {importReact} from '../../../mcp-server/dist/app-ir/react.js';
 import {importHTML} from '../../../mcp-server/dist/app-ir/html.js';
 import {generateProject} from '../../../mcp-server/dist/app-ir/swiftui.js';
 import {sha256} from '../../../mcp-server/dist/app-ir/schema.js';
@@ -25,6 +26,8 @@ const [profilePath,output,flag]=process.argv.slice(2);const resume=flag==='--res
 if(!profilePath||!output||(flag&&!resume))throw Error('Usage: run.mjs PROFILE_JSON OUTPUT [--resume]');
 const profile=JSON.parse(await readFile(resolve(profilePath),'utf8'));
 if(profile.version!==1||profile.state!=='collapsed'||profile.locale!=='en_US'||profile.appearance!=='light'||profile.contentSize!=='large')throw Error('Unsupported capture profile');
+const adapter=process.env.FIDELITY_ADAPTER??'html';
+if(!['html','react-static'].includes(adapter))throw Error('Unsupported adapter');
 const referenceApproval=process.env.FIDELITY_REFERENCE_APPROVAL?JSON.parse(await readFile(resolve(process.env.FIDELITY_REFERENCE_APPROVAL),'utf8')):null;
 const root=resolve(output);if(!resume)await mkdir(root,{recursive:false});
 // Only one runner may update a journal. A dead owner can be reclaimed on explicit resume.
@@ -54,7 +57,7 @@ try{
  const environment={xcode,sdk,runtimeBuild:runtime.buildversion,browser:browser.version(),host:await command('sw_vers',['-buildVersion'])};
  const inputs=[...await files(resolve(here,'../../../mcp-server/dist')),...await files(fixture),...await files(here)].filter(f=>!f.includes('/node_modules/'));
  const inputHashes=[];for(const f of inputs)inputHashes.push([f.slice(resolve(here,'../../..').length),sha256(await readFile(f))]);
- const contract=sha256(JSON.stringify({profile,environment,inputHashes,referenceApproval}));
+ const contract=sha256(JSON.stringify({profile,environment,inputHashes,referenceApproval,adapter}));
  if(resume&&report.contract!==contract)throw Error('Run inputs, verifier or environment changed; use a new output directory');
  if(report.error){report.interruptions=[...(report.interruptions??[]),{error:report.error,category:report.failureCategory,resumedAt:new Date().toISOString()}];delete report.error;delete report.failureCategory;}
  report.contract=contract;report.environment=environment;report.status='running';await save();
@@ -68,7 +71,9 @@ try{
  await command('xcrun',['simctl','status_bar',udid,'override','--time','9:41','--dataNetwork','wifi','--wifiMode','active','--wifiBars','3','--batteryState','charged','--batteryLevel','100']);
  report.phase='app-verification';await save();
  const recognize=async path=>{try{const result=await runner.run(ocr,[path],{timeoutMs:30000});if(result.exitCode!==0)throw Error('OCR failed');return JSON.parse(result.stdout);}catch{return {unavailable:true,reason:'Local Vision text recognition failed or exceeded 30 seconds; no typography pass inferred'};}};
- const ir=await importHTML(join(fixture,'index.html'),'FieldNotes');
+ report.adapter=adapter;
+ const ir=adapter==='react-static'?await importReact(join(fixture,'App.tsx'),'FieldNotes'):await importHTML(join(fixture,'index.html'),'FieldNotes');
+ const referenceIR=await importHTML(join(fixture,'index.html'),'FieldNotes');
  const normalize=async(input,rect,output)=>{const png=PNG.sync.read(await readFile(input)),out=new PNG({width:rect.width,height:rect.height});PNG.bitblt(png,out,rect.x,rect.y,rect.width,rect.height,0,0);await writeFile(output,PNG.sync.write(out));};
  async function makeCandidate(name,disclosureStyle){
   const generated=await journal.stage(name+'-generate',async()=>{
@@ -107,7 +112,7 @@ try{
    if(!Number.isInteger(cropHeight)||cropHeight<=0)throw Error('Invalid crop');
    const crops={reference:{x:0,y:0,width,height:cropHeight},native:{x:0,y:profile.safeAreaTop*profile.scale,width,height:cropHeight}};
    const page=await browser.newPage({viewport:{width:width/profile.scale,height:cropHeight/profile.scale},deviceScaleFactor:profile.scale,locale:'en-US',colorScheme:'light',reducedMotion:'reduce'});
-   await page.route('**/*',r=>r.request().url().startsWith('file:')?r.continue():r.abort());await page.setContent(annotateTextRegions(await readFile(join(fixture,'index.html'),'utf8'),ir));await page.evaluate(()=>document.fonts.ready);
+   await page.route('**/*',r=>r.request().url().startsWith('file:')?r.continue():r.abort());await page.setContent(annotateTextRegions(await readFile(join(fixture,'index.html'),'utf8'),referenceIR));await page.evaluate(()=>document.fonts.ready);
    const path=join(root,'reference.png');await page.screenshot({path});
    const expected=await page.locator('body').innerText();const regions=await captureDOMTypography(page);await page.close();
    const recognized=await recognize(path);const ocrPath=join(root,'reference-text.json');await atomic(ocrPath,recognized);
