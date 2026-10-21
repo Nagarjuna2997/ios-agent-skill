@@ -252,6 +252,10 @@ jobs:
                           # Series Markdown is rendered into site/series; its
                           # relative links intentionally target the website tree.
                           link_root = "site/series" if os.path.normpath(root) == "content/series" else root
+                          # This hash-preserved input is a snapshot of fidelity/README.md.
+                          # Validate its links at the original base without rewriting evidence.
+                          if os.path.normpath(path) == "benchmarks/universal/evidence/xctest-capture/input-fidelity-readme.md":
+                              link_root = "benchmarks/universal/fidelity"
                           resolved = os.path.normpath(os.path.join(link_root, target))
                           if not (os.path.isfile(resolved) or os.path.isdir(resolved)):
                               broken.append(f"{path}:{number}: [{text}]({target})")
