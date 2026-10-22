@@ -45,7 +45,7 @@ The experimental [M2 benchmark](fidelity/README.md) adds a framework-independent
 
 The same FieldNotes fixture now has a static JSX counterpart in `html-disclosure/App.tsx`. It contains same-file component composition and native disclosure behavior. Inspect with `app-ir inspect-react`; run the shared fidelity runner with `FIDELITY_ADAPTER=react-static`. The adapter is read-only and rejects executable/dynamic React rather than guessing. See the [architecture](../../docs/architecture/universal-app-engine.md#static-react-adapter-experimental-not-general-reactnextjs-support) for supported syntax and limits.
 
-To review an extracted GitHub Actions artifact or local fidelity output without a server:
+To review an extracted GitHub Actions artifact, local fidelity output, or React boolean-state output without a server:
 
 ```sh
 node benchmarks/universal/render-evidence.mjs /path/to/evidence /tmp/review.html
@@ -69,3 +69,5 @@ See [react-state/README.md](react-state/README.md) for entry-component boolean s
 explicit button transitions, independent state and relaunch tests. It uses the
 same App IR and native generator, with a separate pinned, resumable runner.
 This fixture does not contribute to HTML or React visual-fidelity scores.
+
+Native behavior reports have their own view with recorded build status, separate Large/XXXL test counts, and labelled XCTest screenshots. They never appear as visual fidelity results. Missing screenshots stay unavailable; contradictory completion counts are rejected. The viewer does not rerun verification or authenticate checkpoint hashes.
