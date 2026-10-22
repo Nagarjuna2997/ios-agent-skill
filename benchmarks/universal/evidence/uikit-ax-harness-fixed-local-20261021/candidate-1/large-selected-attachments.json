@@ -1,0 +1,30 @@
+[
+  {
+    "testIdentifier": "LiveTextUpdateTests/testAccessibilityTypeSizesAndRestore()",
+    "attachments": [
+      {
+        "configurationName": "Test Scheme Action",
+        "deviceId": "D7024066-AAA5-4984-B5D9-20CB53DC8B46",
+        "deviceName": "ios-agent-fidelity-1792628849763",
+        "exportedFileName": "57D8E0F3-678C-483E-AA03-239138CAE5B2.png",
+        "isAssociatedWithFailure": false,
+        "suggestedHumanReadableName": "accessibility-size-5-updated-content_0_7DF48C34-B99C-42F9-8FC7-354B80B96D31.png",
+        "timestamp": 1792629227.021
+      }
+    ]
+  },
+  {
+    "testIdentifier": "LiveTextUpdateTests/testLiveTypeAndContentUpdates()",
+    "attachments": [
+      {
+        "configurationName": "Test Scheme Action",
+        "deviceId": "D7024066-AAA5-4984-B5D9-20CB53DC8B46",
+        "deviceName": "ios-agent-fidelity-1792628849763",
+        "exportedFileName": "99F073E9-AC95-406D-854C-3860FD48CB82.png",
+        "isAssociatedWithFailure": false,
+        "suggestedHumanReadableName": "live-type-and-content-updated_0_CC52417B-333A-48CE-A1BB-E0D4739B8EBF.png",
+        "timestamp": 1792629245.913
+      }
+    ]
+  }
+]

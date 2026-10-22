@@ -128,3 +128,11 @@ The completed run used the recorded executed scripts; afterward, the runner was 
 ## Reference approval is not promotion authorization
 
 The runner defaults to evidence collection and gate evaluation only. A matching independently supplied `FIDELITY_REFERENCE_APPROVAL` can permit an accepted fidelity decision, but does not create a known-good baseline. Promotion additionally requires an explicit authorized invocation with `FIDELITY_PROMOTE_KNOWN_GOOD=1`; quality and reference checks still apply. Never set this flag on the user's behalf without their authorization. The choice is hashed into the resume contract, so it cannot be changed during resume. Reports distinguish `not-requested`, `blocked`, and `promoted`. Hosted workflows do not request promotion.
+
+### Accessibility-size harness validation (2026-10-21 local)
+
+The [local failure](../evidence/uikit-ax-controls-failure-local-20261021/README.md) and [explicit hosted HTML/UIKit failure](../evidence/uikit-ax-controls-failure-hosted-39697488404/README.md) exposed clipping in the test controls at larger sizes. The control labels now retain their natural height and a 44-point target; the heading, tests and audits are unchanged. The [completed corrected local run](../evidence/uikit-ax-harness-fixed-local-20261021/README.md) passed both builds and all 16 native test executions, including accessibility sizes 1–5 and in-place content/type changes. Candidate typography has zero mismatches and all four normal/probe comparisons have zero changed pixels.
+
+The candidate improves measured visual metrics, but the complete decision remains `requires-review`: the current Chrome .85 reference/environment lacks matching independent approval. The earlier .82 reference approval does not cover it. No baseline promotion, production integration or hosted validation of the corrected controls is claimed.
+
+The user subsequently approved the recorded .85 reference only. A separate post-run evaluation now matches that approval, but remains `requires-review` because the original baseline fails typography and does not qualify as known-good. The original run report stays unchanged. The improved candidate has not been promoted, and this approval does not authorize production integration.
