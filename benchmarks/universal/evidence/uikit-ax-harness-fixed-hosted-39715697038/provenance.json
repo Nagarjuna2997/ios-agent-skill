@@ -1,0 +1,13 @@
+{
+  "workflowRun": "https://github.com/Nagarjuna2997/ios-agent-skill/actions/runs/39715697038",
+  "head": "a0de220b8690068595df635e13a3193645308402",
+  "adapter": "html",
+  "textStrategy": "uikit",
+  "artifactId": 12400240019,
+  "artifactSha256": "fde1a658b19dbcd2bad3d22140e65f9f59d5f03747072aecf2e5014791e7585f",
+  "artifactSizeBytes": 9349745,
+  "downloadHashVerified": true,
+  "rawArtifactPath": "/tmp/universal-uikit-hosted-39715697038/artifact",
+  "knownGoodPromoted": false,
+  "referenceApproved": false
+}

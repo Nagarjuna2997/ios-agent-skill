@@ -1,0 +1,48 @@
+{
+  "contract": "04fc23fcb1a44dd09861d20cd0dceadac4eeae5b8e5bc176a7808d5bfc4d8daa",
+  "attempt": {
+    "number": 1,
+    "status": "finished",
+    "evidence": {
+      "version": 1,
+      "sourceHash": "52bd600cc8c48a64fe0c5d64440a815a7cd9f7feda86236b291b8bf9abd76949",
+      "referenceHash": "399655fb5bc9f92b75374a06da5f72a8e17a268fc27ae2794fbd20565cdf7b9c",
+      "screenshotHash": "13aada3f31ef50803c0bca064d5e89628add4ecef9b9d3aaf19179d701d6ff45",
+      "pins": {
+        "device": "com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro",
+        "os": "com.apple.CoreSimulator.SimRuntime.iOS-26-5 23F77",
+        "xcode": "Xcode 26.5\nBuild version 17F42",
+        "appearance": "light",
+        "contentSize": "large",
+        "locale": "en_US",
+        "orientation": "portrait",
+        "state": "collapsed",
+        "width": 1206,
+        "height": 2622,
+        "scale": 3,
+        "fontConfiguration": "system-ui browser / SwiftUI system, default weight; Dynamic Type large",
+        "referenceRenderer": "151.0.7922.34 host 25G83",
+        "normalizationHash": "05690da7e6342fe85dd2540e5da46a4a0b7f28038b145b36d001a122edd8b970"
+      },
+      "build": "passed",
+      "functionality": "passed",
+      "accessibility": "passed",
+      "layout": "passed",
+      "typography": "passed",
+      "testsPassed": 5,
+      "accessibilityIssues": 0,
+      "clippedElements": 0,
+      "lineBreakMismatches": 0,
+      "meanError": 0.015599234701703607,
+      "changedFraction": 0.06528127713332793,
+      "artifactsHash": "a7e75e7fb82bf3cec2c689d2c62e420e2d3d0cdfd0659266372f48c6b5976dfd"
+    },
+    "decision": {
+      "outcome": "requires-review",
+      "reasons": [
+        "Reference fixture lacks matching manual approval"
+      ]
+    }
+  },
+  "hash": "7c75e1313e088abdbbdbbee27d9df722831fb6e06c175fdb8b68b6ca15816f7f"
+}

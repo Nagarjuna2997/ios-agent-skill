@@ -136,3 +136,9 @@ The [local failure](../evidence/uikit-ax-controls-failure-local-20261021/README.
 The candidate improves measured visual metrics, but the complete decision remains `requires-review`: the current Chrome .85 reference/environment lacks matching independent approval. The earlier .82 reference approval does not cover it. No baseline promotion, production integration or hosted validation of the corrected controls is claimed.
 
 The user subsequently approved the recorded .85 reference only. A separate post-run evaluation now matches that approval, but remains `requires-review` because the original baseline fails typography and does not qualify as known-good. The original run report stays unchanged. The improved candidate has not been promoted, and this approval does not authorize production integration.
+
+### Corrected hosted UIKit verification
+
+The explicit HTML/UIKit [run 39715697038](https://github.com/Nagarjuna2997/ios-agent-skill/actions/runs/39715697038) at `a0de220` completed both builds and all 16 native test executions on Xcode 26.5 / iOS 26.5. All four ordinary/probe capture pairs are pixel-identical; the candidate has nine measured regions and zero line-boundary mismatches. Mean pixel error improves 0.01849445 → 0.01559923 (15.65%). The control-sizing correction passes the unchanged live-update and accessibility-size checks. See the [hashed hosted evidence](../evidence/uikit-ax-harness-fixed-hosted-39715697038/README.md).
+
+The portable job passes; the simulator job remains red with `requires-review` because this hosted reference lacks matching independent approval. Local reference approval does not cover it, and the original baseline still fails typography. Neither a known-good baseline nor production UIKit integration is authorized by this result. The interrupted checkpoint resume succeeded; React verification remains separate.

@@ -1,0 +1,135 @@
+{
+  "lines": [
+    {
+      "box": {
+        "height": 34.18895339965816,
+        "width": 701.2415771484375,
+        "x": 71.1404415371577,
+        "y": 84.81104628203745
+      },
+      "confidence": 1,
+      "text": "FIELD NOTES • WEEKEND EDITION"
+    },
+    {
+      "box": {
+        "height": 88.21802139282237,
+        "width": 775.7696533203124,
+        "x": 71.14045019237193,
+        "y": 172.9999989776973
+      },
+      "confidence": 1,
+      "text": "A little closer to"
+    },
+    {
+      "box": {
+        "height": 81.27979278564463,
+        "width": 358.064697265625,
+        "x": 73.83939691546828,
+        "y": 312.9498554031094
+      },
+      "confidence": 1,
+      "text": "nature."
+    },
+    {
+      "box": {
+        "height": 61.374999999999794,
+        "width": 1033.2303466796875,
+        "x": 71.14044270672935,
+        "y": 437.62500065499654
+      },
+      "confidence": 1,
+      "text": "Three quiet trails, one good weekend. Your"
+    },
+    {
+      "box": {
+        "height": 53.5214157104493,
+        "width": 512.552734375,
+        "x": 74.10283927081196,
+        "y": 499.775710510979
+      },
+      "confidence": 1,
+      "text": "next walk starts here."
+    },
+    {
+      "box": {
+        "height": 40.70930099487305,
+        "width": 413.2921142578125,
+        "x": 142.28090984075664,
+        "y": 705.6279071332322
+      },
+      "confidence": 1,
+      "text": "THIS WEEK'S WALK"
+    },
+    {
+      "box": {
+        "height": 79.40248870849604,
+        "width": 454.17904663085943,
+        "x": 142.16328834256365,
+        "y": 806.7130003113691
+      },
+      "confidence": 1,
+      "text": "Cedar Loop"
+    },
+    {
+      "box": {
+        "height": 51.078487396240405,
+        "width": 684.3033447265624,
+        "x": 142.28090506334803,
+        "y": 932.9215120845356
+      },
+      "confidence": 1,
+      "text": "4.2 miles • Easy • 90 minutes"
+    },
+    {
+      "box": {
+        "height": 51.18895339965829,
+        "width": 887.5617675781251,
+        "x": 142.28092006149916,
+        "y": 1031.0000002427244
+      },
+      "confidence": 1,
+      "text": "A shaded path through tall cedars, with a"
+    },
+    {
+      "box": {
+        "height": 51.07558250427261,
+        "width": 518.3089599609376,
+        "x": 142.28091967212947,
+        "y": 1081.9999991723037
+      },
+      "confidence": 1,
+      "text": "quiet river stop halfway."
+    },
+    {
+      "box": {
+        "height": 47.99999999999996,
+        "width": 376.028076171875,
+        "x": 128.73034769681527,
+        "y": 1342.9999997312316
+      },
+      "confidence": 1,
+      "text": "• Before you go"
+    },
+    {
+      "box": {
+        "height": 40.70930099487305,
+        "width": 924.8258056640626,
+        "x": 71.14045965476669,
+        "y": 1536.7761638631453
+      },
+      "confidence": 1,
+      "text": "Synthetic demo content. No account or location"
+    },
+    {
+      "box": {
+        "height": 40.70930099487305,
+        "width": 382.8033752441406,
+        "x": 71.1404499437001,
+        "y": 1587.6627913145653
+      },
+      "confidence": 1,
+      "text": "permission needed."
+    }
+  ],
+  "version": 1
+}
