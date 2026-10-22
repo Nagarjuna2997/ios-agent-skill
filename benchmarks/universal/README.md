@@ -71,3 +71,13 @@ same App IR and native generator, with a separate pinned, resumable runner.
 This fixture does not contribute to HTML or React visual-fidelity scores.
 
 Native behavior reports have their own view with recorded build status, separate Large/XXXL test counts, and labelled XCTest screenshots. They never appear as visual fidelity results. Missing screenshots stay unavailable; contradictory completion counts are rejected. The viewer does not rerun verification or authenticate checkpoint hashes.
+
+The native evidence viewer also accepts the separately recorded
+`react-memory-router` navigation fixture. It displays that fixture's own identity,
+Large/XXXL tests and captured screens. For the two supported native fixtures, a
+completed report requires exactly three passing tests per size, zero failures or
+skips, a successful build and no recorded execution error. A report with a reduced
+passing subset or an inconsistent declared test count is rejected. Failed reports
+can still show the actual partial results. Unknown fixture IDs are rejected.
+These checks validate report consistency; they do not authenticate evidence,
+rerun tests, approve a reference or establish visual fidelity.

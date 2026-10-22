@@ -84,3 +84,18 @@ test('native viewer labels an absent attachment manifest unavailable',async()=>n
  const output=join(root,'missing.html');await renderEvidence(root,output);
  const html=await readFile(output,'utf8');assert.ok(html.includes('Screenshots unavailable'));assert.ok(!html.includes('data:image/png'));
 }));
+
+test('navigation reports show their own fixture identity and exact native counts',async()=>nativeFixture(async({report,render})=>{
+ report.fixture='react-memory-router';report.expectedTests=3;
+ const {html,summary}=await render();assert.equal(summary.kind,'native-behavior');
+ assert.ok(html.includes('react-memory-router'));assert.ok(html.includes('Expected tests per size'));
+ assert.ok(html.includes('Visual fidelity was not evaluated'));assert.ok(!html.includes('Source reference'));
+}));
+test('known fixtures reject reduced passing subsets and unknown fixture claims',async()=>nativeFixture(async({report,render})=>{
+ for(const fixture of ['react-boolean-state','react-memory-router']){
+  report.fixture=fixture;report.large.tests={...result(),passed:1};
+  await assert.rejects(render(),/Contradictory native completion/);
+  report.large.tests=result();report.expectedTests=1;await assert.rejects(render(),/test-count contract/);delete report.expectedTests;
+ }
+ report.fixture='arbitrary-react';await assert.rejects(render(),/Unsupported native fixture/);
+}));
