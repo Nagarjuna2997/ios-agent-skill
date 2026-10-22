@@ -7,12 +7,16 @@ on:
       - 'mcp-server/package*.json'
       - 'mcp-server/test/react-state.test.js'
       - 'benchmarks/universal/react-state/**'
+      - 'benchmarks/universal/native-behavior/**'
       - 'benchmarks/universal/fidelity/ci.json'
       - 'benchmarks/universal/fidelity/commands.mjs'
       - '.github/workflows/universal-react-state.yml'
   workflow_dispatch:
 permissions:
   contents: read
+defaults:
+  run:
+    shell: bash
 concurrency:
   group: universal-react-state-${{ github.head_ref || github.ref_name }}
   cancel-in-progress: true

@@ -3,6 +3,7 @@ import ts from 'typescript';
 import { basename } from 'node:path';
 import { htmlToIR, readBoundedFile } from './html.js';
 import { AppIRSchema, sha256, type AppIR } from './schema.js';
+import { absoluteRoute, readRoutes, routerNames } from './react-routes.js';
 
 export async function importReact(file: string, name = 'ImportedApp'): Promise<AppIR> {
   const bytes = await readBoundedFile(file);
@@ -18,6 +19,7 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
   if (diagnostics.length) throw Error('Invalid TSX syntax');
   const components = new Map<string, ts.FunctionDeclaration>();
   let hasStateImport = false;
+  let hasRouterImport = false;
   let entry: ts.FunctionDeclaration | undefined;
   const fail: (node: ts.Node, reason: string) => never = (node, reason) => {
     const pos = file.getLineAndCharacterOfPosition(node.getStart(file));
@@ -27,6 +29,12 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
     if (ts.isExpressionStatement(node) && ts.isStringLiteral(node.expression) && node.expression.text === 'use client') continue;
     if (ts.isImportDeclaration(node)) {
       const clause = node.importClause, imports = clause?.namedBindings;
+      if (ts.isStringLiteral(node.moduleSpecifier) && node.moduleSpecifier.text === 'react-router-dom') {
+        if (hasRouterImport || !clause || clause.isTypeOnly || clause.name || !imports || !ts.isNamedImports(imports) || node.attributes ||
+            imports.elements.length !== routerNames.length || new Set(imports.elements.map(e => e.name.text)).size !== routerNames.length ||
+            imports.elements.some(e => e.propertyName || e.isTypeOnly || !routerNames.includes(e.name.text as typeof routerNames[number]))) fail(node, 'router import must explicitly name MemoryRouter, Routes, Route and Link without aliases');
+        hasRouterImport = true; continue;
+      }
       if (hasStateImport || !ts.isStringLiteral(node.moduleSpecifier) || node.moduleSpecifier.text !== 'react' ||
           !clause || clause.isTypeOnly || clause.name || !imports || !ts.isNamedImports(imports) ||
           imports.elements.length !== 1 || imports.elements[0]!.name.text !== 'useState' ||
@@ -46,6 +54,7 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
   }
   if (!entry) throw Error('React input needs a default-exported named function component');
   if (hasStateImport && components.has('useState')) fail(components.get('useState')!, 'useState import is shadowed');
+  if (hasRouterImport) for (const name of routerNames) if (components.has(name)) fail(components.get(name)!, 'router import is shadowed');
   if(entry.parameters.length)fail(entry,'entry component cannot receive external props');
   const escape = (s: string) => s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
   const jsxText = (value: string, node: ts.Node) => {
@@ -110,6 +119,9 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
   const states:Array<{id:string; initial:boolean; origin:ts.Node}>=[];
   type Mapping = {start:number; end:number; textBinding?:AppIR['nodes'][number]['textBinding']; action?:AppIR['nodes'][number]['action']; origins:ts.Node[]};
   const stateMappings:Mapping[]=[];
+  const routeSpans:Array<{id:string;path:string;start:number;end:number;origin:ts.Node}>=[];
+  let initialPath:string|undefined, currentPath:string|undefined, inRoute=false;
+  let declaredPaths = new Set<string>();
   let html = '', count = 0, textElementDepth = 0;
   const spans: Array<{start:number;end:number;node:ts.Node}> = [];
   const append = (text: string) => { html += text; if (Buffer.byteLength(html)>262144) throw Error('Expanded React exceeds 256 KiB'); };
@@ -151,13 +163,22 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
       const id = `state-${states.length + 1}`;
       for (const [index, element] of [...declaration.name.elements].entries()) {
         if (!ts.isBindingElement(element) || !ts.isIdentifier(element.name) || element.initializer || element.dotDotDotToken || element.propertyName) fail(element, 'state bindings require two distinct identifiers');
-        if (scope.has(element.name.text) || components.has(element.name.text) || element.name.text === 'useState') fail(element, 'state binding shadows another name');
+        if (scope.has(element.name.text) || components.has(element.name.text) || element.name.text === 'useState' || hasRouterImport && routerNames.includes(element.name.text as typeof routerNames[number])) fail(element, 'state binding shadows another name');
         scope.set(element.name.text, {kind:index === 0 ? 'state' : 'setter', id, origins:[statement]});
       }
       states.push({id,initial:call.arguments[0]!.kind === ts.SyntaxKind.TrueKeyword,origin:statement});
     }
     const start=html.length;
-    render(unwrap(returned.expression), [...stack,key],scope);
+    if (node === entry && hasRouterImport) {
+      const router=readRoutes(unwrap(returned.expression),file,fail);initialPath=router.initialPath;
+      declaredPaths = new Set(router.routes.map(r=>r.path));
+      for (const route of router.routes) {
+        const start=html.length;inRoute=true;currentPath=route.path;
+        try { render(unwrap(route.element), [...stack,key],scope); } finally { inRoute=false;currentPath=undefined; }
+        routeSpans.push({...route,start,end:html.length});
+        dependencies.push({start,end:html.length,nodes:[route.origin]});
+      }
+    } else render(unwrap(returned.expression), [...stack,key],scope);
     if(origins.length)dependencies.push({start,end:html.length,nodes:origins});
   }
   // React constructs supplied children before calling a component, even if discarded.
@@ -187,9 +208,12 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
     }
     if (!ts.isJsxElement(node) && !ts.isJsxSelfClosingElement(node)) fail(node, 'expected JSX element');
     const opening = ts.isJsxElement(node) ? node.openingElement : node;
-    const tag=opening.tagName.getText(file);
-    if(tag==='button'&&textElementDepth>0)fail(node,'inline buttons inside text elements require explicit mixed-content layout');
-    if (/^[A-Z]/.test(tag)) {
+    const tag=opening.tagName.getText(file), isLink=hasRouterImport&&tag==='Link';
+    if (hasRouterImport && scope.has(tag)) fail(node,'local binding shadows a router/component element');
+    if (hasRouterImport && routerNames.includes(tag as typeof routerNames[number]) && !isLink) fail(node,'router containers are allowed only at the entry root');
+    if (isLink && !inRoute) fail(node,'Link requires a mapped route');
+    if((tag==='button'||isLink)&&textElementDepth>0)fail(node,'inline buttons or links inside text elements require explicit mixed-content layout');
+    if (/^[A-Z]/.test(tag) && !isLink) {
       const props:Props=new Map();
       if(ts.isJsxElement(node)&&node.children.length)props.set('children',{kind:'children',nodes:node.children,scope,stack:[...stack],origins:[node]});
       for(const attr of opening.attributes.properties){
@@ -204,7 +228,8 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
       if(ts.isJsxElement(node))validateChildren(node.children,stack,scope);
       const start=html.length;component(target!,stack,props,props.size?[node,...[...props.values()].flatMap(v=>v.origins)]:[]);spans.push({start,end:html.length,node});return;
     }
-    if (!/^[a-z][a-z0-9]*$/.test(tag)) fail(node,'namespaced or member elements are unsupported');
+    if (!isLink && !/^[a-z][a-z0-9]*$/.test(tag)) fail(node,'namespaced or member elements are unsupported');
+    if (inRoute && tag === 'details') fail(node,'disclosure lifecycle inside routed screens is not mapped');
     let action:Mapping['action'], textBinding:Mapping['textBinding'];
     const stateOrigins:ts.Node[]=[];
     const visibleChildren=ts.isJsxElement(node)?node.children.filter(c=>!ts.isJsxText(c)||c.text.trim()):[];
@@ -222,14 +247,20 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
     }
     // Lower to a plain text element only as an intermediate representation. The exact
     // source span below must resolve back to one IR node before an action is attached.
-    const loweredTag=tag==='button'?'p':tag;
+    const loweredTag=tag==='button'||isLink?'p':tag;
     const start=html.length;append('<'+loweredTag);
     const attributes=new Set<string>();
     for(const attr of opening.attributes.properties) {
       if (!ts.isJsxAttribute(attr)) fail(attr,'spread attributes are unsupported');
       const key=attr.name.getText(file),value=attr.initializer;
       if(attributes.has(key))fail(attr,'duplicate attribute');attributes.add(key);
-      if(key==='onClick') {
+      if(isLink && key==='to') {
+        if(!value || !ts.isStringLiteral(value) || !absoluteRoute(value.text)) fail(attr,'Link requires a canonical absolute literal destination');
+        if(!declaredPaths.has(value.text)) fail(attr,'Link destination must match a declared route exactly');
+        if(value.text===currentPath) fail(attr,'same-route Link replacement is not mapped');
+        action={operation:'navigate',screen:value.text};stateOrigins.push(attr);
+      } else if (isLink && key !== 'style') fail(attr,'Link supports only to and literal style; replace, state, reload and events are unsupported');
+      else if(key==='onClick') {
         if(tag!=='button'||!value||!ts.isJsxExpression(value)||!value.expression)fail(attr,'events require a supported button action');
         const callback=unwrap(value.expression);
         if(!ts.isArrowFunction(callback)||callback.parameters.length||callback.modifiers?.length||callback.typeParameters?.length||callback.type||ts.isBlock(callback.body))fail(attr,'onClick must be a parameterless arrow containing one state setter');
@@ -264,6 +295,7 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
       }
     }
     if(tag==='button'&&(!action||visibleChildren.some(c=>!ts.isJsxText(c))))fail(node,'button requires one state action and a plain text label');
+    if(isLink&&(!action||visibleChildren.some(c=>!ts.isJsxText(c))))fail(node,'Link requires one destination and a plain text label');
     append('>');
     if(textBinding){const state=states.find(s=>s.id===textBinding.state)!;append(escape(state.initial?textBinding.whenTrue:textBinding.whenFalse));}
     else if(ts.isJsxElement(node)){
@@ -276,13 +308,29 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
     if(action||textBinding)stateMappings.push({start,end:html.length,action,textBinding,origins:stateOrigins});
   }
   component(entry,[]);
-  const ir=htmlToIR(html,'intermediate.html',name);
+  const segments=routeSpans.length?routeSpans:[{id:'home',path:'/',start:0,end:html.length,origin:entry}];
+  const converted=segments.map(segment=>{
+    const ir=htmlToIR(html.slice(segment.start,segment.end),'intermediate.html',name);
+    const prefix=routeSpans.length?segment.id+'-':'';
+    const offset=Buffer.byteLength(html.slice(0,segment.start));
+    for(const n of ir.nodes){n.id=prefix+n.id;n.children=n.children.map(c=>prefix+c);}
+    for(const row of [...ir.nodes,...ir.requirements,...ir.limitations])for(const e of row.evidence){e.start+=offset;e.end+=offset;}
+    for(const r of ir.requirements)r.id=prefix+r.id;
+    ir.screens=[{id:segment.id,title:ir.screens[0]!.title,root:prefix+ir.screens[0]!.root}];
+    return ir;
+  });
+  const ir=converted[0]!;
+  for(const part of converted.slice(1)){ir.nodes.push(...part.nodes);ir.screens.push(...part.screens);ir.requirements.push(...part.requirements);ir.limitations.push(...part.limitations);}
   for(const mapping of stateMappings){
     const start=Buffer.byteLength(html.slice(0,mapping.start)),end=Buffer.byteLength(html.slice(0,mapping.end));
     const matches=ir.nodes.filter(n=>n.kind==='text'&&n.evidence.length===1&&n.evidence[0]!.start===start&&n.evidence[0]!.end===end);
     if(matches.length!==1)throw Error('State mapping has no unambiguous source element');
     const node=matches[0]!;
-    if(mapping.action){node.kind='button';node.action=mapping.action;}
+    if(mapping.action?.operation==='navigate') {
+      const path=mapping.action.screen, destination=routeSpans.find(r=>r.path===path);
+      if(!destination)throw Error('Unsupported React: Link destination must match a declared route exactly');
+      node.kind='link';node.action={operation:'navigate',screen:destination.id};
+    } else if(mapping.action){node.kind='button';node.action=mapping.action;}
     if(mapping.textBinding)node.textBinding=mapping.textBinding;
     dependencies.push({start:mapping.start,end:mapping.end,nodes:mapping.origins});
   }
@@ -296,8 +344,12 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
   if(states.length){
     ir.schemaVersion='1.1.0';
     ir.states=states.map(s=>({id:s.id,initial:s.initial,evidence:[{source:'source',start:Buffer.byteLength(source.slice(0,s.origin.getStart(file))),end:Buffer.byteLength(source.slice(0,s.origin.end)),certainty:'extracted'}]}));
-    ir.requirements.push({id:'local-boolean-state',area:'state',status:'extracted',description:'Entry-component boolean state, literal text branches and single-step button transitions. No effects, persistence, async events or navigation.',evidence:ir.states.flatMap(s=>s.evidence)});
+    ir.requirements.push({id:'local-boolean-state',area:'state',status:'extracted',description:'Entry-component boolean state, literal text branches and single-step button transitions. No effects, persistence or async events.',evidence:ir.states.flatMap(s=>s.evidence)});
   }
-  ir.sources=[{id:'source',path:sourcePath,sha256:sha256(source),bytes:Buffer.byteLength(source),adapter:states.length?'react-boolean-state@1':'react-static@1'}];
+  if(routeSpans.length){
+    ir.schemaVersion='1.2.0';ir.navigation={initialScreen:routeSpans.find(r=>r.path===initialPath)!.id,routes:routeSpans.map(r=>({screen:r.id,path:r.path}))};
+    ir.requirements.push({id:'native-route-stack',area:'navigation',status:'inferred',description:'Explicit MemoryRouter routes and Link pushes become a native stack with a platform Back control. No browser URL, forward history, scroll restoration or deep-link synchronization.',evidence:[{source:'source',start:Buffer.byteLength(source.slice(0,entry.getStart(file))),end:Buffer.byteLength(source.slice(0,entry.end)),certainty:'inferred',note:'Native Back navigation substitutes for router-history back; exact web navigation chrome and scroll restoration are not inferred.'}]});
+  }
+  ir.sources=[{id:'source',path:sourcePath,sha256:sha256(source),bytes:Buffer.byteLength(source),adapter:routeSpans.length?'react-memory-router@1':states.length?'react-boolean-state@1':'react-static@1'}];
   return AppIRSchema.parse(ir);
 }

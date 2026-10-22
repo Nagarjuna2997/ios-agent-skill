@@ -1,0 +1,74 @@
+name: Experimental React navigation
+on:
+  pull_request:
+    paths:
+      - 'mcp-server/src/app-ir/**'
+      - 'mcp-server/src/agent/**'
+      - 'mcp-server/package*.json'
+      - 'mcp-server/test/react-state.test.js'
+      - 'mcp-server/test/react-navigation.test.js'
+      - 'benchmarks/universal/react-state/**'
+      - 'benchmarks/universal/react-navigation/**'
+      - 'benchmarks/universal/native-behavior/**'
+      - 'benchmarks/universal/fidelity/ci.json'
+      - 'benchmarks/universal/fidelity/commands.mjs'
+      - '.github/workflows/universal-react-navigation.yml'
+  push:
+    branches: [feat/universal-react-navigation]
+  workflow_dispatch:
+permissions:
+  contents: read
+defaults:
+  run:
+    shell: bash
+concurrency:
+  group: universal-react-navigation-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+jobs:
+  portable:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci --prefix mcp-server
+      - run: npm run build --prefix mcp-server
+      - run: node --test mcp-server/test/react-navigation.test.js mcp-server/test/react-state.test.js mcp-server/test/react-ir.test.js mcp-server/test/app-ir.test.js benchmarks/universal/react-state/evidence.test.mjs
+  simulator:
+    runs-on: macos-26
+    timeout-minutes: 30
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.5.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci --prefix mcp-server
+      - run: npm run build --prefix mcp-server
+      - name: Build and test actual native route transitions
+        run: node benchmarks/universal/react-navigation/run.mjs benchmarks/universal/fidelity/ci.json "$RUNNER_TEMP/react-navigation-evidence"
+      - name: Verify completed evidence can resume
+        run: node benchmarks/universal/react-navigation/run.mjs benchmarks/universal/fidelity/ci.json "$RUNNER_TEMP/react-navigation-evidence" --resume
+      - name: Preserve actual results even on failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: react-navigation-${{ github.sha }}
+          include-hidden-files: true
+          path: |
+            ${{ runner.temp }}/react-navigation-evidence/report.json
+            ${{ runner.temp }}/react-navigation-evidence/checkpoints/
+            ${{ runner.temp }}/react-navigation-evidence/*-attachments-*/
+            ${{ runner.temp }}/react-navigation-evidence/app-*/.ios-agent/app-ir.json
+            ${{ runner.temp }}/react-navigation-evidence/app-*/.ios-agent/source-map.json
+            ${{ runner.temp }}/react-navigation-evidence/app-*/.ios-agent/logs/
+            ${{ runner.temp }}/react-navigation-evidence/app-*/.ios-agent/test-results/
+            ${{ runner.temp }}/react-navigation-evidence/app-*/TrailRoutes/Views/RootView.swift
+            ${{ runner.temp }}/react-navigation-evidence/app-*/TrailRoutesUITests/InteractionTests.swift

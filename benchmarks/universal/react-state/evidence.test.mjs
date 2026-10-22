@@ -39,3 +39,9 @@ test('a crash after export creates a new attachment destination on retry',async 
  await assert.rejects(testEvidence({...context.options,exportAttachments}),/interrupted/);
  await testEvidence({...context.options,exportAttachments});assert.equal(context.runs(),2);assert.notEqual(destinations[0],destinations[1]);
 });
+test('a reduced passing subset cannot satisfy the declared fixture test count',async t=>{
+ const context=await setup(t);
+ await assert.rejects(testEvidence({...context.options,expectedTests:4}),/test count differs/);
+ await assert.rejects(readFile(join(context.root,'checkpoints/large.json')),/ENOENT/);
+ await testEvidence({...context.options,expectedTests:3});
+});

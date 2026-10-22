@@ -69,3 +69,12 @@ See [react-state/README.md](react-state/README.md) for entry-component boolean s
 explicit button transitions, independent state and relaunch tests. It uses the
 same App IR and native generator, with a separate pinned, resumable runner.
 This fixture does not contribute to HTML or React visual-fidelity scores.
+
+## React memory routes (separate native behavior fixture)
+
+The [three-screen navigation fixture](react-navigation/README.md) exercises an
+explicit MemoryRouter/Routes/Route/Link subset, reusable components, entry-state
+retention, native Back and relaunch. It shares the boolean-state runner's hashed
+checkpoints and native evidence export. General React routing, Next.js and visual
+fidelity are not inferred from this fixture. Local and hosted results are recorded
+separately after execution.
