@@ -58,3 +58,15 @@ test('inline controls cannot be reparented by intermediate HTML and silently los
  for(const tag of ['p','h1','h2','h3','span','strong'])assert.throws(()=>reactToIR(app(`<${tag} style={{color:'#FF0000'}}><button onClick={()=>setSaved(true)}>Save</button></${tag}>`)),/inline buttons/);
  assert.throws(()=>reactToIR(`import {useState} from 'react';function Label(p){return <p>{p.children}</p>}export default function App(){const [saved,setSaved]=useState(false);return <Label><button onClick={()=>setSaved(true)}>Save</button></Label>}`),/inline buttons/);
 });
+test('installed CLI exposes state through the same inspect and validation path',async()=>{
+ const {spawnSync}=await import('node:child_process');
+ const {mkdtemp,writeFile,rm}=await import('node:fs/promises');const {tmpdir}=await import('node:os');const {join}=await import('node:path');
+ const root=await mkdtemp(join(tmpdir(),'react-state-cli-'));
+ try{
+  const cli=new URL('../dist/unified.js',import.meta.url).pathname;
+  const result=spawnSync(process.execPath,[cli,'app-ir','inspect-react',new URL('../../benchmarks/universal/react-state/App.tsx',import.meta.url).pathname,'TripChecklist'],{encoding:'utf8',timeout:10000});
+  assert.equal(result.status,0,result.stderr);const ir=JSON.parse(result.stdout);assert.equal(ir.sources[0].adapter,'react-boolean-state@1');assert.equal(ir.states.length,2);
+  const path=join(root,'ir.json');await writeFile(path,result.stdout);
+  const validated=spawnSync(process.execPath,[cli,'app-ir','validate',path],{encoding:'utf8',timeout:10000});assert.equal(validated.status,0,validated.stderr);
+ }finally{await rm(root,{recursive:true,force:true});}
+});

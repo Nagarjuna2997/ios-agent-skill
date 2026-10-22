@@ -69,7 +69,7 @@ The renderer emits SwiftUI Text, VStack, ScrollView and DisclosureGroup with loc
 | 3. HTML vertical prototype | 2 + local Xcode | Real native build, launch, disclosure interaction test, captures and comparison | Experimental; evidence in benchmark README |
 | 4. Reliable reference verification | 3 | Pinned capture conditions, aligned regions, state variants, accessibility checks, atomic resumable checkpoints and independently reviewed fixes | Partial: bounded repair, hashed checkpoints and regression rejection implemented; trusted typography still blocked |
 | 5. CSS/assets/routes | 4 | Golden layouts, no silently dropped declarations, local asset hashes and licensing review, functional navigation tests | Planned |
-| 6. React/Next adapters | 5 for full completion | AST/static evidence only; backend stays server-side; fixture builds/tests/captures; dynamic ambiguity reported | Partial: bounded static React, literal props, constant expressions and children composition; Next.js/state/events/navigation unsupported |
+| 6. React/Next adapters | 5 for full completion | AST/static evidence only; backend stays server-side; fixture builds/tests/captures; dynamic ambiguity reported | Partial: static React, literal props, constant expressions, children composition and bounded entry-component boolean state/button transitions; Next.js, general state/events and navigation unsupported |
 | 7. Screenshot/Figma ingestion | 4 | Authorized image/design snapshots, visible facts separated from hidden requirements, traceable reconstruction | Planned |
 | 8. Flutter/React Native/other adapters | 6 | Per-adapter independent fixtures and native replacement mapping | Planned |
 | 9. Source synchronization | Stable node identity | Three-way source/IR/native diff, no overwrites on conflicts, regression tests | Planned |
@@ -165,6 +165,12 @@ checks toggling, assignments, state isolation, relaunch, clipping and accessibil
 at Large/XXXL. Its resumable raw evidence is separate from the HTML fidelity gate.
 Do not count a native behavior pass as visual acceptance or support for arbitrary
 React applications.
+
+The [recorded local run](../../benchmarks/universal/evidence/react-boolean-state-local-20261021/README.md)
+contains an unsigned build and three native tests executed at each of Large and
+XXXL, followed by a completed-run resume that reused all four checkpoints. It
+does not establish hosted success, crash recovery during an active native test,
+or visual-fidelity acceptance.
 
 ### Optional local evidence viewer
 
