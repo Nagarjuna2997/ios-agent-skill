@@ -340,6 +340,186 @@
       "url": "https://anclum.com/en/s/nagarjuna2997-ios-agent-skill/",
       "verifiedOn": "2026-10-22",
       "evidence": "Opened the public English listing and confirmed its exact GitHub source link and attribution to punkpeye/awesome-mcp-servers. It identifies its install skeleton as generated from the repository name; that skeleton names ios-agent-skill rather than the published ios-agent-mcp package. Source counts, rankings and copied README claims are not adopted. The Chinese page is the same listing, not additional coverage."
+    },
+    {
+      "id": "complete-ai-training",
+      "platform": "Complete AI Training",
+      "kind": "directory",
+      "category": "MCP catalog \u00b7 explanatory overview",
+      "description": "Explains the project\u2019s local Apple references, Swift review and Xcode simulator workflow, with a source-repository link.",
+      "url": "https://completeaitraining.com/mcp-servers/nagarjuna2997-ios-agent-skill/",
+      "verifiedOn": "2026-10-22",
+      "evidence": "Opened the public catalog overview and confirmed its View on GitHub link targets Nagarjuna2997/ios-agent-skill. It identifies the maintainer and describes the MCP workflow. The member-only install prompt was not tested; catalog inclusion is not an independent execution review."
+    },
+    {
+      "id": "ai-agent-radar",
+      "platform": "AI Agent Radar",
+      "kind": "directory",
+      "category": "Developer report \u00b7 automated",
+      "description": "Includes ios-agent-skill in its October 9 automated developer-project report, based on repository metadata.",
+      "url": "https://github.com/apiiskan/ai-agent-radar/issues/90",
+      "verifiedOn": "2026-10-22",
+      "evidence": "Read issue 90 and its GitHub API body. The github-actions bot report dated 2026-10-09 directly links Nagarjuna2997/ios-agent-skill in the Codex section. Automated ranking and repository signals are not human recommendation or usage evidence."
+    },
+    {
+      "id": "tensorblock",
+      "platform": "TensorBlock",
+      "kind": "directory",
+      "category": "Developer resource collection",
+      "description": "Lists ios-agent-skill in its developer-productivity collection, with a source link and a summary of its local MCP workflow.",
+      "url": "https://github.com/TensorBlock/awesome-mcp-servers/blob/main/docs/developer-productivity--utilities.md",
+      "verifiedOn": "2026-10-22",
+      "evidence": "Opened the GitHub collection and raw Markdown; its exact Nagarjuna2997/ios-agent-skill entry links the source repository and describes local reviews and reference retrieval. The separate TensorBlock server profile was also verified but is represented by this single publisher card. Historical version and tool-count claims are not repeated."
+    },
+    {
+      "id": "mcp-market",
+      "platform": "MCP Market",
+      "kind": "directory",
+      "category": "MCP directory",
+      "description": "Lists iOS Agent with a Swift and Xcode workflow summary, maintainer attribution and a source-repository link.",
+      "url": "https://mcpmarket.com/server/ios-agent",
+      "verifiedOn": "2026-10-22",
+      "evidence": "Fetched the dedicated public listing successfully. Its iOS Agent heading attributes Nagarjuna2997 and its repository link targets github.com/nagarjuna2997/ios-agent-skill. Directory descriptions and popularity counts are not independent testing or endorsement."
+    },
+    {
+      "id": "socketlist",
+      "platform": "Socketlist",
+      "kind": "directory",
+      "category": "MCP directory \u00b7 registry index",
+      "description": "Indexes the project\u2019s MCP Registry entry and provides a source link and install information. The directory says it has not tested the server.",
+      "url": "https://socketlist.com/server/io-github-nagarjuna2997-ios-agent-skill/",
+      "verifiedOn": "2026-10-22",
+      "evidence": "Opened the dedicated listing: it identifies io.github.Nagarjuna2997/ios-agent-skill, the ios-agent-mcp package and the exact GitHub repository. The description is explicitly publisher-supplied and the page says We have not tested this server. Its score is not adopted."
+    },
+    {
+      "id": "plado",
+      "platform": "Plado",
+      "kind": "directory",
+      "category": "MCP directory \u00b7 aggregated index",
+      "description": "Indexes the project from the MCP Registry and provides client installation examples with a source-repository link.",
+      "url": "https://plado.pages.dev/e/mcp-io-github-nagarjuna2997-ios-agent-skill/",
+      "verifiedOn": "2026-10-22",
+      "evidence": "Opened the project listing and confirmed Nagarjuna2997/ios-agent-skill, ios-agent-mcp and the exact GitHub link. Plado names the Official MCP Registry as its source. Its scan, ranking and installation signals are not treated as independent runtime evidence."
+    },
+    {
+      "id": "agentuni",
+      "platform": "AgentUni",
+      "kind": "directory",
+      "category": "MCP directory \u00b7 registry index",
+      "description": "Lists the server\u2019s npm package and local stdio connection settings alongside its source repository.",
+      "url": "https://agentuni.ai/servers/io-github-nagarjuna2997-ios-agent-skill/",
+      "verifiedOn": "2026-10-22",
+      "evidence": "Opened the dedicated listing and confirmed the maintainer, registry namespace, ios-agent-mcp command and exact GitHub source link. Configuration is directory information, not a tested installation or endorsement."
+    },
+    {
+      "id": "mcp-sift",
+      "platform": "MCP Sift",
+      "kind": "directory",
+      "category": "MCP directory \u00b7 repository index",
+      "description": "Summarizes the project\u2019s Swift review and simulator workflows and includes a repository README snapshot.",
+      "url": "https://mcpsift.com/servers/nagarjuna2997-ios-agent-skill/",
+      "verifiedOn": "2026-10-22",
+      "evidence": "Opened the dedicated iOS Agent Skill listing attributed to Nagarjuna2997 with the exact source-repository link and a copied README. README release numbers and historical verification claims are not adopted as current facts or independent coverage."
+    },
+    {
+      "id": "mcp-harbor",
+      "platform": "MCP Harbor",
+      "kind": "directory",
+      "category": "MCP directory \u00b7 aggregated index",
+      "description": "Provides a dedicated project listing with repository and npm links, install examples and client categories.",
+      "url": "https://mcpharbor.app/tools/nagarjuna2997-ios-agent-skill/",
+      "verifiedOn": "2026-10-22",
+      "evidence": "Followed the supplied GitHub-category listing to its dedicated project page. The public page identifies Nagarjuna2997/ios-agent-skill and links the exact GitHub repository, project website and ios-agent-mcp npm package. It says data is collected from registries, GitHub and npm; rankings are not endorsements."
+    },
+    {
+      "id": "pickmcp",
+      "platform": "PickMCP",
+      "kind": "directory",
+      "category": "MCP directory",
+      "description": "Lists the repository with an iOS tooling overview and a direct source link.",
+      "url": "https://pickmcp.com/servers/Nagarjuna2997/ios-agent-skill",
+      "verifiedOn": "2026-10-22",
+      "evidence": "The formerly inaccessible candidate now opens successfully. Its heading and View on GitHub link identify the exact Nagarjuna2997/ios-agent-skill repository. Historical tool counts and production-readiness wording are not repeated."
+    },
+    {
+      "id": "agent-ready-directory",
+      "platform": "Agent-Ready Directory",
+      "kind": "directory",
+      "category": "MCP directory \u00b7 registry index",
+      "description": "Lists registry-declared package and connection information, with source links and a note that the configuration is untested.",
+      "url": "https://www.agent-ready-directory.com/server/gh-nagarjuna2997-ios-agent-skill",
+      "verifiedOn": "2026-10-22",
+      "evidence": "Opened the dedicated page and confirmed io.github.Nagarjuna2997/ios-agent-skill, ios-agent-mcp and exact GitHub and npm links. The registry facts are publisher declarations and the connection example is explicitly marked not tested here. No execution evidence or endorsement is inferred."
+    },
+    {
+      "id": "datoka",
+      "platform": "Datoka",
+      "kind": "directory",
+      "category": "MCP directory \u00b7 registry index",
+      "description": "Indexes the server\u2019s declared MCP package and source record, with explicit limits on what its listing checks establish.",
+      "url": "https://datoka.dev/tools/mcp:io.github.Nagarjuna2997%2Fios-agent-skill",
+      "verifiedOn": "2026-10-22",
+      "evidence": "Opened the listing and confirmed the exact io.github.Nagarjuna2997/ios-agent-skill source record, a direct Official MCP Registry record link and npm package ios-agent-mcp. The page labels its data publisher-supplied, says it does not execute the package and distinguishes listing completeness from safety or performance."
+    },
+    {
+      "id": "electra-index",
+      "platform": "Electra Index",
+      "kind": "directory",
+      "category": "MCP directory \u00b7 registry index",
+      "description": "Shows registry-declared package, repository and connection information, with a dated evidence table.",
+      "url": "https://electraindex.com/mcp/ios-agent-skill",
+      "verifiedOn": "2026-10-22",
+      "evidence": "Opened the listing and confirmed the exact GitHub repository in its facts table, the registry namespace and ios-agent-mcp package. It explicitly says capabilities are matched automatically at low confidence and connections are untested. Those inferred capabilities are not adopted."
+    },
+    {
+      "id": "baselion",
+      "platform": "Baselion",
+      "kind": "directory",
+      "category": "Package discovery directory",
+      "description": "Indexes ios-agent-mcp in its Portuguese-language developer-tools catalog with publisher attribution and a project website link.",
+      "url": "https://baselion.ai/product/ios-agent-mcp",
+      "verifiedOn": "2026-10-22",
+      "evidence": "Opened the dedicated ios-agent-mcp listing. It attributes npm publisher nagarjuna2002, quotes the package description and identifies nagarjuna2997.github.io as the project website. Automated interface and security labels are not treated as independent validation or endorsement."
+    },
+    {
+      "id": "agentrigs",
+      "platform": "AgentRigs",
+      "kind": "directory",
+      "category": "Agent-configuration index",
+      "description": "Indexes ios-agent-mcp from the project\u2019s own public agent configuration. This listing does not establish third-party adoption.",
+      "url": "https://agentrigs.dev/c/mcp/npm-ios-agent-mcp/",
+      "verifiedOn": "2026-10-22",
+      "evidence": "Opened the package listing and confirmed its npm project-home link. The only displayed rig is Nagarjuna2997/ios-agent-skill itself, so its rig count is not evidence of an independent user. Historical install versions and token estimates are not repeated."
+    },
+    {
+      "id": "npm-io",
+      "platform": "npm.io",
+      "kind": "directory",
+      "category": "Package index",
+      "description": "Indexes the published ios-agent-mcp package metadata and README, with links to its source.",
+      "url": "https://npm.io/package/ios-agent-mcp",
+      "verifiedOn": "2026-10-22",
+      "evidence": "Opened the package page and confirmed ios-agent-mcp and the exact source-repository link. It republishes package metadata and README content, not an independent article or review; its cached release number and download statistics are not repeated."
+    },
+    {
+      "id": "mcp-servers-live",
+      "platform": "MCP Servers Live",
+      "kind": "directory",
+      "category": "MCP directory \u00b7 repository index",
+      "description": "Provides a dedicated repository entry with source links and recorded project metadata.",
+      "url": "https://linny006.github.io/mcp-servers-live/r/Nagarjuna2997/ios-agent-skill/",
+      "verifiedOn": "2026-10-22",
+      "evidence": "Opened the public entry and confirmed its exact Nagarjuna2997/ios-agent-skill heading and GitHub repository links. Repository statistics and generated installation hints are not independent usage or execution evidence."
+    },
+    {
+      "id": "mcp-changefeed",
+      "platform": "MCP Changefeed",
+      "kind": "directory",
+      "category": "Registry index \u00b7 public source record",
+      "description": "Contains a generated registry record for the server in its public site source, including package metadata and repository links.",
+      "url": "https://github.com/rogerchappel/mcpchangefeed/blob/main/site/servers/io-github-nagarjuna2997-ios-agent-skill/index.html",
+      "verifiedOn": "2026-10-22",
+      "evidence": "Opened the GitHub source file and read its raw HTML. It names io.github.Nagarjuna2997/ios-agent-skill and ios-agent-mcp and links the exact repository. This is a generated public source record, not a verified deployed directory or review; placeholder sponsor text, trust scores and missing metadata signals are not adopted."
     }
   ]
 }
