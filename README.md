@@ -198,3 +198,5 @@ Use `ios-agent-mcp docs status` and `ios-agent-mcp docs symbol SwiftUI.Navigatio
 ## Experimental native source import
 
 The feature-branch App IR prototype imports a bounded local HTML screen into a validated, source-mapped representation and generates native SwiftUI. It reuses the existing Xcode and simulator tooling. Unsupported markup is reported and blocks generation. This is not universal framework conversion and is not included in npm 2.10.2. See the [architecture and roadmap](docs/architecture/universal-app-engine.md) and [real native prototype evidence](benchmarks/universal/README.md).
+
+Experimental native conversion work, including the static React subset and saved-evidence review, is documented in the [Universal App Engine architecture](docs/architecture/universal-app-engine.md). These prototypes do not establish general React/Next.js compatibility or accepted visual fidelity.

@@ -2434,8 +2434,8 @@
       "path": "docs/architecture/universal-app-engine.md",
       "title": "Universal App Engine: architecture and implementation record",
       "kind": "guide",
-      "characters": 11067,
-      "hash": "3f1872d7f80d16dbca0fd462bad221122906917a78f0a325e96e3c62a5ff3b39"
+      "characters": 22871,
+      "hash": "f7726aab53d090b9d3e74a372223746e7c7c0f2402f3d10fd0700b189d4e609a"
     },
     {
       "path": "docs/backend/app-architectures.md",
@@ -3113,8 +3113,8 @@
       "path": "docs/mcp/tools.md",
       "title": "MCP Tool Reference",
       "kind": "guide",
-      "characters": 24022,
-      "hash": "6ca0d02b10ca8275d6ac2adf127beb78c96d12a8bbeb40ef6ace9e1dde95dd48"
+      "characters": 24086,
+      "hash": "6237cecb1f48dbf9a5e1389b67527230c8fe2c56b50ebd6f67c65c4789a30866"
     },
     {
       "path": "docs/mcp/vnext-analysis-tools.md",

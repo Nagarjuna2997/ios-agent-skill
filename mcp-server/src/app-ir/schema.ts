@@ -14,12 +14,19 @@ export const StyleSchema = z.object({
   radius: z.number().min(0).max(100).optional(), centered: z.boolean().optional(),
 }).strict();
 export const AppIRSchema = z.object({
-  schemaVersion: z.literal('1.0.0'),
+  schemaVersion: z.enum(['1.0.0', '1.1.0']),
   mode: z.enum(['faithful', 'creative']),
   name: z.string().regex(/^[A-Z][A-Za-z0-9]{0,39}$/),
   sources: z.array(z.object({ id, path, sha256: z.string().regex(/^[a-f0-9]{64}$/), bytes: z.number().int().min(0).max(262144), adapter: z.string().min(1).max(80) }).strict()).min(1).max(100),
   screens: z.array(z.object({ id, title: z.string().min(1).max(80), root: id }).strict()).min(1).max(30),
-  nodes: z.array(z.object({ id, kind: z.enum(['column', 'text', 'disclosure']), text: text.optional(), children: z.array(id).max(200), style: StyleSchema, evidence: z.array(evidence).min(1).max(20) }).strict()).min(1).max(500),
+  states: z.array(z.object({ id, initial: z.boolean(), evidence: z.array(evidence).min(1).max(20) }).strict()).max(16).optional(),
+  nodes: z.array(z.object({ id, kind: z.enum(['column', 'text', 'disclosure', 'button']), text: text.optional(),
+    textBinding: z.object({ state: id, whenTrue: text, whenFalse: text }).strict().optional(),
+    action: z.discriminatedUnion('operation', [
+      z.object({ operation: z.literal('toggle'), state: id }).strict(),
+      z.object({ operation: z.literal('set'), state: id, value: z.boolean() }).strict(),
+    ]).optional(),
+    children: z.array(id).max(200), style: StyleSchema, evidence: z.array(evidence).min(1).max(20) }).strict()).min(1).max(500),
   requirements: z.array(z.object({ id, area: z.enum(['navigation','assets','motion','state','data','api','auth','native','accessibility','responsive','appearance']), status: z.enum(['extracted','inferred','unknown']), description: text, evidence: z.array(evidence).max(20) }).strict()).max(200),
   limitations: z.array(z.object({ code: id, message: text, evidence: z.array(evidence).max(20) }).strict()).max(500),
 }).strict().superRefine((ir, ctx) => {
@@ -28,7 +35,10 @@ export const AppIRSchema = z.object({
     if (new Set(rows.map(r => r.id)).size !== rows.length) fail(`Duplicate ${label} ID`);
   }
   const sources = new Map(ir.sources.map(s => [s.id,s]));
-  for (const row of [...ir.nodes, ...ir.requirements, ...ir.limitations]) for (const e of row.evidence) {
+  const states = new Map((ir.states ?? []).map(s => [s.id,s]));
+  if (states.size !== (ir.states ?? []).length) fail('Duplicate state ID');
+  if (ir.schemaVersion === '1.0.0' && (ir.states !== undefined || ir.nodes.some(n => n.action || n.textBinding || n.kind === 'button'))) fail('State and event mappings require schema 1.1.0');
+  for (const row of [...ir.nodes, ...ir.requirements, ...ir.limitations, ...(ir.states ?? [])]) for (const e of row.evidence) {
     const source = sources.get(e.source);
     if (!source || e.end > source.bytes) fail(`Evidence outside source: ${e.source}`);
     if (e.certainty === 'inferred' && !e.note) fail('Inferences require an explanation');
@@ -43,6 +53,12 @@ export const AppIRSchema = z.object({
     if (!node) { fail(`Missing node ${key}`); return; }
     reached.add(key);
     if (node.kind === 'text' && (node.children.length || node.text === undefined)) fail(`Invalid text node ${key}`);
+    if (node.kind === 'button' && (!node.text?.trim() || node.children.length || !node.action || node.textBinding)) fail(`Invalid button node ${key}`);
+    if (node.action && (node.kind !== 'button' || !states.has(node.action.state))) fail(`Invalid action ${key}`);
+    if (node.textBinding) {
+      const state = states.get(node.textBinding.state);
+      if (node.kind !== 'text' || !state || node.text !== (state.initial ? node.textBinding.whenTrue : node.textBinding.whenFalse)) fail(`Invalid text binding ${key}`);
+    }
     if (node.kind === 'disclosure' && !node.text) fail(`Missing disclosure label ${key}`);
     const next = new Set([...ancestors,key]);
     for (const child of node.children) visit(child,next,depth+1);

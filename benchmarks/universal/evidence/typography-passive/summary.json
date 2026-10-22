@@ -1,0 +1,43 @@
+{
+  "status": "local-passive-observation-verified",
+  "xcode": "27.0 (27A266a)",
+  "sdk": "27.0",
+  "device": "iPhone 18 Pro",
+  "runtime": "iOS 27.0",
+  "appearance": "light",
+  "contentSize": "large",
+  "locale": "en_US",
+  "state": "collapsed",
+  "scale": 3,
+  "nativeTestsPassed": 1,
+  "observedRegions": 9,
+  "resultsComparedTo": "normal-1",
+  "results": {
+    "probe": {
+      "pixelsChanged": 0,
+      "maxChannelDelta": 0
+    },
+    "renderer": {
+      "pixelsChanged": 24541,
+      "maxChannelDelta": 1
+    },
+    "attributes": {
+      "pixelsChanged": 0,
+      "maxChannelDelta": 0
+    },
+    "normal-2": {
+      "pixelsChanged": 0,
+      "maxChannelDelta": 0
+    },
+    "normal-1": {
+      "pixelsChanged": 0,
+      "maxChannelDelta": 0
+    }
+  },
+  "limitations": [
+    "One fixture, default text size, local SDK only",
+    "Not a complete fidelity pass or reference approval",
+    "Custom-renderer control retained only in experimental source"
+  ],
+  "knownGood": null
+}

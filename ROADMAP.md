@@ -66,3 +66,9 @@ for one gate before broadening the tool inventory.
 - `review_foundation_models`, `review_core_ai` and the remaining [analysis tool contracts](docs/mcp/vnext-analysis-tools.md).
 - Simulator video/log streaming, UI automation backend and visual review.
 - Measured token/context savings on reproducible tasks.
+
+## Universal App Engine — current experimental work
+
+- Passive typography observation has local and hosted pixel-invariance evidence; the heading still differs from the HTML reference. Draft PR #23 remains gated on fidelity and independent reference review.
+- A static same-file React JSX adapter and optional saved-evidence viewer are under development on a follow-up branch. See [architecture and limits](docs/architecture/universal-app-engine.md#static-react-adapter-experimental-not-general-reactnextjs-support). This is not general React, Next.js or full-app migration support.
+- Next: fix the measured heading boundary, obtain reviewed reference evidence, then extend explicit state/navigation contracts. Keep multi-framework expansion behind tests rather than feature-count claims.

@@ -1,0 +1,4 @@
+{
+  "unavailable": true,
+  "reason": "Local Vision text recognition failed or exceeded 30 seconds; no typography pass inferred"
+}
