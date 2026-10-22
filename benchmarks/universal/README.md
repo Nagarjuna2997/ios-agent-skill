@@ -80,3 +80,5 @@ fidelity are not inferred from this fixture. Local and hosted results are record
 separately after execution.
 
 Local navigation evidence is archived in [react-navigation-local-20261022](evidence/react-navigation-local-20261022/README.md): one native build, six passing native test executions across Large/XXXL, eight screenshots, and unchanged reuse of four checkpoints. This is native behavior evidence; browser fidelity was not evaluated. Hosted navigation execution remains separate.
+
+[Existing state compatibility evidence](evidence/react-state-shared-runner-local-20261022/README.md) records another native build and six passing test executions through the shared runner, with byte-identical pre-navigation SwiftUI output.

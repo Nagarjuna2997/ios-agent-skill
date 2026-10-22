@@ -15,6 +15,18 @@ on:
       - '.github/workflows/universal-react-navigation.yml'
   push:
     branches: [feat/universal-react-navigation]
+    # Evidence-only archives must not start another expensive simulator run.
+    paths:
+      - 'mcp-server/src/**'
+      - 'mcp-server/package*.json'
+      - 'mcp-server/test/react-navigation.test.js'
+      - 'mcp-server/test/react-state.test.js'
+      - 'benchmarks/universal/react-state/**'
+      - 'benchmarks/universal/react-navigation/**'
+      - 'benchmarks/universal/native-behavior/**'
+      - 'benchmarks/universal/fidelity/ci.json'
+      - 'benchmarks/universal/fidelity/commands.mjs'
+      - '.github/workflows/universal-react-navigation.yml'
   workflow_dispatch:
 permissions:
   contents: read
