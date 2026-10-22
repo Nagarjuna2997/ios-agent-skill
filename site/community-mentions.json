@@ -320,6 +320,26 @@
       "url": "https://aaa.jeremyfhall.com/repo/nagarjuna2997/ios-agent-skill/",
       "verifiedOn": "2026-10-16",
       "evidence": "Opened the project page and confirmed the exact GitHub repository and clone URL. The atlas credits Gemini CLI Ecosystem and punkpeye MCP Servers as sources; platform assessments are inferred from repository metadata, not execution. A distinct aggregated directory, not independent coverage."
+    },
+    {
+      "id": "swiftskills",
+      "platform": "SwiftSkills",
+      "kind": "directory",
+      "category": "Apple-development tool directory",
+      "description": "Lists the MCP server and Claude Code command in its Xcode and builds catalog, with installation instructions and a source-repository link.",
+      "url": "https://swiftskills.dev/skills/ios-agent-skill",
+      "verifiedOn": "2026-10-22",
+      "evidence": "Opened the dedicated listing and followed its Open on GitHub link to Nagarjuna2997/ios-agent-skill. It names the maintainer, ios-agent-mcp and /ios-build, and records an October 17 catalog date. Directory inclusion and source checking are not independent execution evidence or endorsement."
+    },
+    {
+      "id": "anclum",
+      "platform": "Anclum",
+      "kind": "directory",
+      "category": "MCP directory \u00b7 aggregated index",
+      "description": "Indexes the repository from public MCP lists and links to its source. Its generated install example is not the project\u2019s verified setup command.",
+      "url": "https://anclum.com/en/s/nagarjuna2997-ios-agent-skill/",
+      "verifiedOn": "2026-10-22",
+      "evidence": "Opened the public English listing and confirmed its exact GitHub source link and attribution to punkpeye/awesome-mcp-servers. It identifies its install skeleton as generated from the repository name; that skeleton names ios-agent-skill rather than the published ios-agent-mcp package. Source counts, rankings and copied README claims are not adopted. The Chinese page is the same listing, not additional coverage."
     }
   ]
 }
