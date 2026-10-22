@@ -7,7 +7,7 @@ with base `e5d6258`. It ran the dedicated React state fixture, not the default
 HTML fidelity workflow.
 
 VERIFIED: one unsigned build, Xcode 26.5 (17F42), SDK 26.5, iOS 26.5 runtime
-23F77, iPhone 18 Pro, host 25G83, light appearance, English, portrait. Native logs:
+23F77, iPhone 17 Pro, host 25G83, light appearance, English, portrait. Native logs:
 
 ```text
 Large: Executed 3 tests, with 0 failures (0 unexpected) in 134.995 (135.002) seconds
