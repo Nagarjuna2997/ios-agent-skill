@@ -1,0 +1,299 @@
+{
+  "version": 1,
+  "status": "native-behavior-passed",
+  "fixture": "react-boolean-state",
+  "profile": {
+    "version": 1,
+    "xcode": "26.5",
+    "sdk": "26.5",
+    "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-26-5",
+    "deviceType": "com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro",
+    "appearance": "light",
+    "contentSize": "large",
+    "locale": "en_US",
+    "scale": 3,
+    "safeAreaTop": 62,
+    "safeAreaBottom": 34,
+    "state": "collapsed",
+    "fontConfiguration": "system-ui browser / SwiftUI system, default weight; Dynamic Type large",
+    "policy": {
+      "version": 1,
+      "maxMeanError": 0.02,
+      "maxChangedFraction": 0.1,
+      "maxLineBreakMismatches": 0,
+      "minimumImprovement": 0.001
+    },
+    "xcodeBuild": "17F42"
+  },
+  "startedAt": "2026-10-22T00:08:11.512Z",
+  "commands": [
+    {
+      "command": "xcodebuild",
+      "args": [
+        "-version"
+      ],
+      "timeoutMs": 120000,
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 2178,
+      "spawnError": null,
+      "stdout": "Xcode 26.5\nBuild version 17F42\n",
+      "stderr": ""
+    },
+    {
+      "command": "xcrun",
+      "args": [
+        "--sdk",
+        "iphonesimulator",
+        "--show-sdk-version"
+      ],
+      "timeoutMs": 120000,
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 2368,
+      "spawnError": null,
+      "stdout": "26.5\n",
+      "stderr": ""
+    },
+    {
+      "command": "xcrun",
+      "args": [
+        "simctl",
+        "list",
+        "runtimes",
+        "--json"
+      ],
+      "timeoutMs": 120000,
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 6194,
+      "spawnError": null,
+      "stdout": "       \"productFamily\" : \"Apple Watch\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/Apple Watch Ultra 2 (49mm).simdevicetype\",\n          \"name\" : \"Apple Watch Ultra 2 (49mm)\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.Apple-Watch-Ultra-2-49mm\",\n          \"productFamily\" : \"Apple Watch\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/Apple Watch SE 3 (44mm).simdevicetype\",\n          \"name\" : \"Apple Watch SE 3 (44mm)\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.Apple-Watch-SE-3-44mm\",\n          \"productFamily\" : \"Apple Watch\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/Apple Watch SE 3 (40mm).simdevicetype\",\n          \"name\" : \"Apple Watch SE 3 (40mm)\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.Apple-Watch-SE-3-40mm\",\n          \"productFamily\" : \"Apple Watch\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/Apple Watch Series 8 (45mm).simdevicetype\",\n          \"name\" : \"Apple Watch Series 8 (45mm)\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.Apple-Watch-Series-8-45mm\",\n          \"productFamily\" : \"Apple Watch\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/Apple Watch Series 8 (41mm).simdevicetype\",\n          \"name\" : \"Apple Watch Series 8 (41mm)\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.Apple-Watch-Series-8-41mm\",\n          \"productFamily\" : \"Apple Watch\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/Apple Watch Ultra (49mm).simdevicetype\",\n          \"name\" : \"Apple Watch Ultra (49mm)\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.Apple-Watch-Ultra-49mm\",\n          \"productFamily\" : \"Apple Watch\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/Apple Watch SE (44mm) (2nd generation).simdevicetype\",\n          \"name\" : \"Apple Watch SE (44mm) (2nd generation)\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.Apple-Watch-SE-44mm-2nd-generation\",\n          \"productFamily\" : \"Apple Watch\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/Apple Watch SE (40mm) (2nd generation).simdevicetype\",\n          \"name\" : \"Apple Watch SE (40mm) (2nd generation)\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.Apple-Watch-SE-40mm-2nd-generation\",\n          \"productFamily\" : \"Apple Watch\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/Apple Watch Series 7 (45mm).simdevicetype\",\n          \"name\" : \"Apple Watch Series 7 (45mm)\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.Apple-Watch-Series-7-45mm\",\n          \"productFamily\" : \"Apple Watch\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/Apple Watch Series 7 (41mm).simdevicetype\",\n          \"name\" : \"Apple Watch Series 7 (41mm)\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.Apple-Watch-Series-7-41mm\",\n          \"productFamily\" : \"Apple Watch\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/Apple Watch Series 6 (44mm).simdevicetype\",\n          \"name\" : \"Apple Watch Series 6 (44mm)\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.Apple-Watch-Series-6-44mm\",\n          \"productFamily\" : \"Apple Watch\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/Apple Watch Series 6 (40mm).simdevicetype\",\n          \"name\" : \"Apple Watch Series 6 (40mm)\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.Apple-Watch-Series-6-40mm\",\n          \"productFamily\" : \"Apple Watch\"\n        }\n      ],\n      \"identifier\" : \"com.apple.CoreSimulator.SimRuntime.watchOS-26-5\",\n      \"platform\" : \"watchOS\",\n      \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Volumes\\/watchOS_23T570\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/Runtimes\\/watchOS 26.5.simruntime\",\n      \"runtimeRoot\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Volumes\\/watchOS_23T570\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/Runtimes\\/watchOS 26.5.simruntime\\/Contents\\/Resources\\/RuntimeRoot\",\n      \"lastUsage\" : {\n        \"arm64\" : \"0001-01-01T00:00:00Z\",\n        \"x86_64\" : \"0001-01-01T00:00:00Z\"\n      },\n      \"name\" : \"watchOS 26.5\"\n    },\n    {\n      \"isAvailable\" : true,\n      \"version\" : \"26.2\",\n      \"isInternal\" : false,\n      \"buildversion\" : \"23N301\",\n      \"supportedArchitectures\" : [\n        \"arm64\"\n      ],\n      \"supportedDeviceTypes\" : [\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/Apple Vision Pro.simdevicetype\",\n          \"name\" : \"Apple Vision Pro\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.Apple-Vision-Pro-4K\",\n          \"productFamily\" : \"Apple Vision\"\n        }\n      ],\n      \"identifier\" : \"com.apple.CoreSimulator.SimRuntime.xrOS-26-2\",\n      \"platform\" : \"xrOS\",\n      \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Volumes\\/xrOS_23N301\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/Runtimes\\/xrOS 26.2.simruntime\",\n      \"runtimeRoot\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Volumes\\/xrOS_23N301\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/Runtimes\\/xrOS 26.2.simruntime\\/Contents\\/Resources\\/RuntimeRoot\",\n      \"lastUsage\" : {\n        \"arm64\" : \"0001-01-01T00:00:00Z\"\n      },\n      \"name\" : \"visionOS 26.2\"\n    },\n    {\n      \"isAvailable\" : true,\n      \"version\" : \"26.4.1\",\n      \"isInternal\" : false,\n      \"buildversion\" : \"23O249a\",\n      \"supportedArchitectures\" : [\n        \"arm64\"\n      ],\n      \"supportedDeviceTypes\" : [\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/Apple Vision Pro.simdevicetype\",\n          \"name\" : \"Apple Vision Pro\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.Apple-Vision-Pro-4K\",\n          \"productFamily\" : \"Apple Vision\"\n        }\n      ],\n      \"identifier\" : \"com.apple.CoreSimulator.SimRuntime.xrOS-26-4\",\n      \"platform\" : \"xrOS\",\n      \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Volumes\\/xrOS_23O249a\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/Runtimes\\/xrOS 26.4.simruntime\",\n      \"runtimeRoot\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Volumes\\/xrOS_23O249a\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/Runtimes\\/xrOS 26.4.simruntime\\/Contents\\/Resources\\/RuntimeRoot\",\n      \"lastUsage\" : {\n        \"arm64\" : \"0001-01-01T00:00:00Z\"\n      },\n      \"name\" : \"visionOS 26.4\"\n    },\n    {\n      \"isAvailable\" : true,\n      \"version\" : \"26.5\",\n      \"isInternal\" : false,\n      \"buildversion\" : \"23O470\",\n      \"supportedArchitectures\" : [\n        \"arm64\"\n      ],\n      \"supportedDeviceTypes\" : [\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/Apple Vision Pro.simdevicetype\",\n          \"name\" : \"Apple Vision Pro\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.Apple-Vision-Pro-4K\",\n          \"productFamily\" : \"Apple Vision\"\n        }\n      ],\n      \"identifier\" : \"com.apple.CoreSimulator.SimRuntime.xrOS-26-5\",\n      \"platform\" : \"xrOS\",\n      \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Volumes\\/xrOS_23O470\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/Runtimes\\/xrOS 26.5.simruntime\",\n      \"runtimeRoot\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Volumes\\/xrOS_23O470\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/Runtimes\\/xrOS 26.5.simruntime\\/Contents\\/Resources\\/RuntimeRoot\",\n      \"lastUsage\" : {\n        \"arm64\" : \"0001-01-01T00:00:00Z\"\n      },\n      \"name\" : \"visionOS 26.5\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "command": "sw_vers",
+      "args": [
+        "-buildVersion"
+      ],
+      "timeoutMs": 120000,
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 18,
+      "spawnError": null,
+      "stdout": "25G83\n",
+      "stderr": ""
+    },
+    {
+      "command": "xcrun",
+      "args": [
+        "simctl",
+        "create",
+        "ios-agent-react-state-1792627702414",
+        "com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro",
+        "com.apple.CoreSimulator.SimRuntime.iOS-26-5"
+      ],
+      "timeoutMs": 120000,
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 600,
+      "spawnError": null,
+      "stdout": "3C6CC1A2-ECFB-4536-90E9-7C45DC73F339\n",
+      "stderr": ""
+    },
+    {
+      "command": "xcrun",
+      "args": [
+        "simctl",
+        "boot",
+        "3C6CC1A2-ECFB-4536-90E9-7C45DC73F339"
+      ],
+      "timeoutMs": 120000,
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 2213,
+      "spawnError": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": "xcrun",
+      "args": [
+        "simctl",
+        "bootstatus",
+        "3C6CC1A2-ECFB-4536-90E9-7C45DC73F339",
+        "-b"
+      ],
+      "timeoutMs": 300000,
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 117509,
+      "spawnError": null,
+      "stdout": "Monitoring boot status for ios-agent-react-state-1792627702414 (3C6CC1A2-ECFB-4536-90E9-7C45DC73F339).\nDevice already booted, nothing to do.\n\n",
+      "stderr": ""
+    },
+    {
+      "command": "xcrun",
+      "args": [
+        "simctl",
+        "ui",
+        "3C6CC1A2-ECFB-4536-90E9-7C45DC73F339",
+        "appearance",
+        "light"
+      ],
+      "timeoutMs": 120000,
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 35329,
+      "spawnError": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": "xcrun",
+      "args": [
+        "simctl",
+        "status_bar",
+        "3C6CC1A2-ECFB-4536-90E9-7C45DC73F339",
+        "override",
+        "--time",
+        "9:41",
+        "--batteryState",
+        "charged",
+        "--batteryLevel",
+        "100"
+      ],
+      "timeoutMs": 120000,
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 2433,
+      "spawnError": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": "xcrun",
+      "args": [
+        "simctl",
+        "ui",
+        "3C6CC1A2-ECFB-4536-90E9-7C45DC73F339",
+        "content_size",
+        "large"
+      ],
+      "timeoutMs": 120000,
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 24412,
+      "spawnError": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": "xcrun",
+      "args": [
+        "xcresulttool",
+        "export",
+        "attachments",
+        "--path",
+        "/Users/runner/work/_temp/react-state-evidence/app-12542ef1-ea81-4ffd-b41d-b4d95177f81e/.ios-agent/test-results/f8ba0eeb-0128-48b6-90d4-979d78b6b82f.xcresult",
+        "--output-path",
+        "/Users/runner/work/_temp/react-state-evidence/large-attachments-a1c213e4-cb05-4b2b-89dd-f36e8bc3fa2c"
+      ],
+      "timeoutMs": 120000,
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 80,
+      "spawnError": null,
+      "stdout": "Exported 2 attachments for: BooleanStateTests/testBooleanTransitionsAndIndependentState():\nFile: C2771A19-4752-4A3B-BD14-16F4BB9FCC5C.png, suggested name: \"changed-state_0_1B2B1978-8663-4D34-AC7C-3E70BE5610FD.png\"\nFile: F6EB6A15-0F63-4EA6-8D82-FA1DF8904134.png, suggested name: \"initial-state_0_5406853A-2885-4387-BCFB-AA5A8C0A7686.png\"\n\nExported 2 attachments for: BooleanStateTests/testNativeAccessibilityAndClipping():\nFile: A3250899-9493-4652-87AC-793EF1A5DB1C.png, suggested name: \"accessibility-changed_0_FD2197B7-EAB6-4E1E-8F25-D4BCE0974746.png\"\nFile: 715D3EA1-1649-4D3A-941D-5774C7FDC1D0.png, suggested name: \"accessibility-initial_0_E45A824B-7593-44E8-AD6E-0B5DEB650C4B.png\"\n\nSkipped export for BooleanStateTests/testRelaunchRestoresInitialState(): no matching attachments\n\nGenerated manifest file with attachment details: /Users/runner/work/_temp/react-state-evidence/large-attachments-a1c213e4-cb05-4b2b-89dd-f36e8bc3fa2c/manifest.json\n",
+      "stderr": ""
+    },
+    {
+      "command": "xcrun",
+      "args": [
+        "simctl",
+        "ui",
+        "3C6CC1A2-ECFB-4536-90E9-7C45DC73F339",
+        "content_size",
+        "extra-extra-extra-large"
+      ],
+      "timeoutMs": 120000,
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 3812,
+      "spawnError": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": "xcrun",
+      "args": [
+        "xcresulttool",
+        "export",
+        "attachments",
+        "--path",
+        "/Users/runner/work/_temp/react-state-evidence/app-12542ef1-ea81-4ffd-b41d-b4d95177f81e/.ios-agent/test-results/1b1ca3ee-0cdf-4003-991d-4388496191de.xcresult",
+        "--output-path",
+        "/Users/runner/work/_temp/react-state-evidence/xxxl-attachments-b19730d6-d580-484e-99ea-56efd9290745"
+      ],
+      "timeoutMs": 120000,
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 124,
+      "spawnError": null,
+      "stdout": "Exported 2 attachments for: BooleanStateTests/testBooleanTransitionsAndIndependentState():\nFile: 8214659D-FD26-4F33-8CCB-4430A1EE268A.png, suggested name: \"changed-state_0_52B15EAD-DF98-4E34-B5C2-36E26C74DCF0.png\"\nFile: A0304A80-B35A-4158-9296-E11ED2270E56.png, suggested name: \"initial-state_0_5337CB72-C6CB-42F7-976D-13FF0002BEB2.png\"\n\nExported 2 attachments for: BooleanStateTests/testNativeAccessibilityAndClipping():\nFile: 9322DF02-CA18-46D7-8BD7-AB0843DCFD1F.png, suggested name: \"accessibility-changed_0_57E5AABE-F55D-4574-B1C5-064139455A1C.png\"\nFile: 9DD984F8-BA8D-4C7F-B6A2-0B62E3499147.png, suggested name: \"accessibility-initial_0_048CD9E0-C7E7-4FFA-83FA-5F9565945092.png\"\n\nSkipped export for BooleanStateTests/testRelaunchRestoresInitialState(): no matching attachments\n\nGenerated manifest file with attachment details: /Users/runner/work/_temp/react-state-evidence/xxxl-attachments-b19730d6-d580-484e-99ea-56efd9290745/manifest.json\n",
+      "stderr": ""
+    }
+  ],
+  "phase": "tests",
+  "contract": "f7e2654a0100395592e5dfd28b96c556677c75a01b8625f81e5c7464858569b8",
+  "environment": {
+    "xcode": "Xcode 26.5\nBuild version 17F42",
+    "sdk": "26.5",
+    "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-26-5",
+    "runtimeBuild": "23F77",
+    "host": "25G83"
+  },
+  "simulator": "3C6CC1A2-ECFB-4536-90E9-7C45DC73F339",
+  "project": {
+    "folder": "/Users/runner/work/_temp/react-state-evidence/app-12542ef1-ea81-4ffd-b41d-b4d95177f81e",
+    "sourceHash": "b35e23695aa530e9ba6dd04997194996e26c6c6043cd552d44acd8e9ddc69b59",
+    "irHash": "4e76b933be3fae63d2f5f711c563a44e42d821826ec89da0c6a8935aec9ce35b"
+  },
+  "build": {
+    "success": true,
+    "errors": [],
+    "warnings": [],
+    "durationMs": 93598,
+    "scheme": "TripChecklist",
+    "destination": "platform=iOS Simulator,id=3C6CC1A2-ECFB-4536-90E9-7C45DC73F339",
+    "appPath": "/Users/runner/work/_temp/react-state-evidence/app-12542ef1-ea81-4ffd-b41d-b4d95177f81e/.ios-agent/DerivedData/Build/Products/Debug-iphonesimulator/TripChecklist.app",
+    "logPath": "/Users/runner/work/_temp/react-state-evidence/app-12542ef1-ea81-4ffd-b41d-b4d95177f81e/.ios-agent/logs/build-1792627861417.log"
+  },
+  "large": {
+    "tests": {
+      "sourceHash": "d9af66f09e1ce0eb15f0a2a1354c87097f59185adde5747f113a5cdbe59c0784",
+      "at": "2026-10-22T00:17:10.452Z",
+      "logPath": ".ios-agent/logs/test-f8ba0eeb-0128-48b6-90d4-979d78b6b82f.log",
+      "resultBundle": ".ios-agent/test-results/f8ba0eeb-0128-48b6-90d4-979d78b6b82f.xcresult",
+      "status": "passed",
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    "attachments": "/Users/runner/work/_temp/react-state-evidence/large-attachments-a1c213e4-cb05-4b2b-89dd-f36e8bc3fa2c"
+  },
+  "xxxl": {
+    "tests": {
+      "sourceHash": "d9af66f09e1ce0eb15f0a2a1354c87097f59185adde5747f113a5cdbe59c0784",
+      "at": "2026-10-22T00:19:17.598Z",
+      "logPath": ".ios-agent/logs/test-1b1ca3ee-0cdf-4003-991d-4388496191de.log",
+      "resultBundle": ".ios-agent/test-results/1b1ca3ee-0cdf-4003-991d-4388496191de.xcresult",
+      "status": "passed",
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    "attachments": "/Users/runner/work/_temp/react-state-evidence/xxxl-attachments-b19730d6-d580-484e-99ea-56efd9290745"
+  },
+  "visualFidelity": "not-evaluated"
+}

@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "recordedAt": "2026-10-22T04:16:34.438489+00:00",
+  "sourceCommit": "9b5a69b5b17d302cc5c118e06a487229a35d16e3",
+  "sourceBranch": "feat/universal-react-navigation",
+  "executedBeforeCommit": true,
+  "rawEvidenceDirectory": "/tmp/universal-react-navigation-native-20261022",
+  "environment": {
+    "xcode": "Xcode 27.0\nBuild version 27A266a",
+    "sdk": "27.0",
+    "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-27-0",
+    "runtimeBuild": "24A434",
+    "host": "26A434"
+  },
+  "contract": "3c3219ed9fd007b7f726751d0d2a03d197bfa6c07b02a2f1b3721e9134c6c24f",
+  "fixture": "react-memory-router",
+  "buildsPassed": 1,
+  "testsPassed": 6,
+  "testsFailed": 0,
+  "testsSkipped": 0,
+  "checkpointResume": "4/4 unchanged",
+  "visualFidelity": "not-evaluated",
+  "hostedVerification": "not-yet-run",
+  "baselinePromotion": "not-requested",
+  "archivalPolicy": "Raw reports, checkpoints, source, manifests and PNG files preserved unchanged; logs losslessly gzip-compressed. Compiled products and raw xcresult bundles remain in local evidence directory and are not committed. Original checkpoint hashes include them.",
+  "logWarning": "Metadata extraction skipped, no AppIntents.framework dependency found"
+}

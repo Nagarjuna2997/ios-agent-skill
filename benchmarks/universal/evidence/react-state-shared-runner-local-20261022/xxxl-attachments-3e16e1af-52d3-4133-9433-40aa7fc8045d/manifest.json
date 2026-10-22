@@ -1,0 +1,50 @@
+[
+  {
+    "attachments" : [
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "395A9B0A-AC29-470C-B779-6033B9F76923",
+        "deviceName" : "ios-agent-react-boolean-state-1792642545015",
+        "exportedFileName" : "E18519B0-402E-448D-97D8-E887D16103E0.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "changed-state_0_F0207528-354A-4FF5-8CCD-999A3119F1A2.png",
+        "timestamp" : 1792642723.509
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "395A9B0A-AC29-470C-B779-6033B9F76923",
+        "deviceName" : "ios-agent-react-boolean-state-1792642545015",
+        "exportedFileName" : "840978CF-93AA-459B-8AF0-253C499FA527.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "initial-state_0_2AD34513-F285-42D0-A620-23050AC9C349.png",
+        "timestamp" : 1792642714.09
+      }
+    ],
+    "testIdentifier" : "BooleanStateTests/testBooleanTransitionsAndIndependentState()",
+    "testIdentifierURL" : "test://com.apple.xcode/TripChecklist/TripChecklistUITests/BooleanStateTests/testBooleanTransitionsAndIndependentState"
+  },
+  {
+    "attachments" : [
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "395A9B0A-AC29-470C-B779-6033B9F76923",
+        "deviceName" : "ios-agent-react-boolean-state-1792642545015",
+        "exportedFileName" : "36B73E95-D888-492D-9FE0-5D3907EF769B.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "accessibility-changed_0_C4653A4E-B804-405A-86BA-5BA261825D31.png",
+        "timestamp" : 1792642737.071
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "395A9B0A-AC29-470C-B779-6033B9F76923",
+        "deviceName" : "ios-agent-react-boolean-state-1792642545015",
+        "exportedFileName" : "5BBACC72-3273-4684-8CC4-E881EBE0AA1D.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "accessibility-initial_0_A84B8F70-FC50-4AB7-97D4-F5933D6BDB01.png",
+        "timestamp" : 1792642734.756
+      }
+    ],
+    "testIdentifier" : "BooleanStateTests/testNativeAccessibilityAndClipping()",
+    "testIdentifierURL" : "test://com.apple.xcode/TripChecklist/TripChecklistUITests/BooleanStateTests/testNativeAccessibilityAndClipping"
+  }
+]

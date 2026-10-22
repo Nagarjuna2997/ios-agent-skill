@@ -1,0 +1,9 @@
+{
+  "run": "https://github.com/Nagarjuna2997/ios-agent-skill/actions/runs/39697794137",
+  "headCommit": "cb6ef7a259c176f1625b7d288e2c5fadad22d3d3",
+  "testedMergeCommit": "67b1fa6e2169673122d3ef5ff9fffe93fcd73bae",
+  "artifactId": 12392191314,
+  "artifactSha256": "4d8763ba27f2f99f4909295de25f3da0d045c67904450a805c3ee5f02adc453a",
+  "result": "native-behavior-passed",
+  "visualFidelity": "not-evaluated"
+}
