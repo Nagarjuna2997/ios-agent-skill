@@ -1,0 +1,50 @@
+[
+  {
+    "attachments" : [
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "D3BD22ED-FB24-4429-BB1E-394B1529E7A4",
+        "deviceName" : "ios-agent-react-memory-router-1792642169848",
+        "exportedFileName" : "14D06D6E-C7AA-4342-A693-4CA332CE616B.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "audited-notes_0_E9E2E23F-B072-4B2B-82A5-18309CD49B86.png",
+        "timestamp" : 1792642352.275
+      }
+    ],
+    "testIdentifier" : "RouteTests/testNativeSemanticsAndAccessibilityOnEveryScreen()",
+    "testIdentifierURL" : "test://com.apple.xcode/TrailRoutes/TrailRoutesUITests/RouteTests/testNativeSemanticsAndAccessibilityOnEveryScreen"
+  },
+  {
+    "attachments" : [
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "D3BD22ED-FB24-4429-BB1E-394B1529E7A4",
+        "deviceName" : "ios-agent-react-memory-router-1792642169848",
+        "exportedFileName" : "38A35B45-DC02-4C6A-BB13-F5D67524F5F7.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "notes_0_FFB9EBBE-32D9-49E3-A2BA-5809F567A714.png",
+        "timestamp" : 1792642365.781
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "D3BD22ED-FB24-4429-BB1E-394B1529E7A4",
+        "deviceName" : "ios-agent-react-memory-router-1792642169848",
+        "exportedFileName" : "2826428C-2D2E-4991-8B10-F74C6173FA7E.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "walk_0_C28D1C12-1F8E-45C4-8CE6-5E7D1756C748.png",
+        "timestamp" : 1792642363.971
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "D3BD22ED-FB24-4429-BB1E-394B1529E7A4",
+        "deviceName" : "ios-agent-react-memory-router-1792642169848",
+        "exportedFileName" : "CF8AE07D-EB67-4319-8651-843C6557486A.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "home-saved_0_91D5DD82-4913-4CC7-AE8E-88D5F4AAA79F.png",
+        "timestamp" : 1792642359.955
+      }
+    ],
+    "testIdentifier" : "RouteTests/testPushPopAndEntryStateRetention()",
+    "testIdentifierURL" : "test://com.apple.xcode/TrailRoutes/TrailRoutesUITests/RouteTests/testPushPopAndEntryStateRetention"
+  }
+]

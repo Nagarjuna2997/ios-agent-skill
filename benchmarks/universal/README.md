@@ -78,3 +78,5 @@ retention, native Back and relaunch. It shares the boolean-state runner's hashed
 checkpoints and native evidence export. General React routing, Next.js and visual
 fidelity are not inferred from this fixture. Local and hosted results are recorded
 separately after execution.
+
+Local navigation evidence is archived in [react-navigation-local-20261022](evidence/react-navigation-local-20261022/README.md): one native build, six passing native test executions across Large/XXXL, eight screenshots, and unchanged reuse of four checkpoints. This is native behavior evidence; browser fidelity was not evaluated. Hosted navigation execution remains separate.
