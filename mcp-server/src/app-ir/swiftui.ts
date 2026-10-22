@@ -13,12 +13,16 @@ export function renderSwiftUI(value: unknown, options: { disclosureStyle?: "plat
   if (ir.screens.length !== 1) throw Error('SwiftUI prototype supports one screen; multiple-screen navigation is not implemented');
   if (ir.limitations.length) throw Error('Resolve unsupported input before generating. Inspect IR limitations; no lossy conversion is implicit.');
   const symbol = (id: string) => 'node_' + id.replaceAll('-','_');
-  const state = ir.nodes.filter(n => n.kind === 'disclosure').map(n => `    @State private var expanded_${symbol(n.id)} = false;`).join('\n');
+  const state = [...ir.nodes.filter(n => n.kind === 'disclosure').map(n => `    @State private var expanded_${symbol(n.id)} = false;`),
+    ...(ir.states ?? []).map(s => `    @State private var state_${symbol(s.id)} = ${s.initial};`)].join('\n');
   const views = ir.nodes.map(n => {
     const s = n.style;
     const children = n.children.map(c => `            ${symbol(c)}`).join('\n');
-    const textView = options.instrumentTypography ? `MeasuredText(nodeID: ${swiftString(n.id)}, content: ${swiftString(n.text ?? '')})` : `Text(verbatim: ${swiftString(n.text ?? '')})`;
-    let view = n.kind === 'text' ? textView : n.kind === 'disclosure'
+    const content = n.textBinding ? `(state_${symbol(n.textBinding.state)} ? ${swiftString(n.textBinding.whenTrue)} : ${swiftString(n.textBinding.whenFalse)})` : swiftString(n.text ?? '');
+    const textView = options.instrumentTypography ? `MeasuredText(nodeID: ${swiftString(n.id)}, content: ${content})` : `Text(verbatim: ${content})`;
+    const action = n.action?.operation === 'toggle' ? `state_${symbol(n.action.state)}.toggle()` : n.action?.operation === 'set' ? `state_${symbol(n.action.state)} = ${n.action.value}` : '';
+    let view = n.kind === 'text' ? textView : n.kind === 'button'
+      ? `Button { ${action} } label: { ${textView} }\n        .buttonStyle(.bordered)\n        .frame(minHeight: 44)` : n.kind === 'disclosure'
       ? `DisclosureGroup(isExpanded: $expanded_${symbol(n.id)}) {\n${children}\n        } label: { ${textView} }`
       : `VStack(alignment: ${s.centered ? '.center' : '.leading'}, spacing: ${s.gap ?? 12}) {\n${children}\n        }`;
     if (n.kind === 'disclosure' && options.disclosureStyle === 'leading') view += '\n        .disclosureGroupStyle(ImportedDisclosureStyle())';

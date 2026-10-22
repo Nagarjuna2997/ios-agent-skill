@@ -2,7 +2,7 @@
 
 Experimental, unscored prototype; not a skill-vs-baseline comparison. No historical benchmark data changes.
 
-The implemented fixture is `html-disclosure/index.html`: a synthetic trail recommendation screen with explicit inline design tokens and a real HTML details/summary interaction. The pipeline maps it to a native SwiftUI DisclosureGroup, not a WebView. React, Next.js, Flutter, screenshot reconstruction and existing SwiftUI redesign fixtures remain planned; they are not included in a claimed pass count.
+The implemented fixture is `html-disclosure/index.html`: a synthetic trail recommendation screen with explicit inline design tokens and a real HTML details/summary interaction. The pipeline maps it to a native SwiftUI DisclosureGroup, not a WebView. Additional fixtures are described below. Next.js, Flutter, screenshot reconstruction and existing SwiftUI redesign remain planned; they are not included in a claimed pass count.
 
 ## Actual evidence — October 15, 2026 (America/Chicago)
 
@@ -62,3 +62,10 @@ The first setup attempt could not find Playwright's downloaded browser. A fresh 
 ### Heading sizing investigation
 
 A separate local native experiment added `.fixedSize(horizontal: false, vertical: true)` only to the heading. One XCTest passed, but the measured heading still wrapped after word index 2 rather than reference index 3. [Source, observations and logs](evidence/heading-sizing-experiment/summary.json) are retained with hashes. The hypothesis was not supported, so this change was **not** added to the generator. No source font, spacing or gate tolerance was changed to hide the mismatch. Heading repair remains open.
+
+## Boolean React state (separate native behavior fixture)
+
+See [react-state/README.md](react-state/README.md) for entry-component boolean state,
+explicit button transitions, independent state and relaunch tests. It uses the
+same App IR and native generator, with a separate pinned, resumable runner.
+This fixture does not contribute to HTML or React visual-fidelity scores.

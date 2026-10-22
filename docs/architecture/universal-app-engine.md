@@ -48,7 +48,7 @@ The original source remains read-only. Output must be a new directory. Import ne
 
 `mcp-server/src/app-ir/schema.ts` is the executable schema. Unknown properties and schema versions fail validation. `sources` carry relative paths, SHA-256 hashes, byte counts and adapter versions. Node evidence references UTF-8 byte ranges in those sources; inferred evidence needs an explanation. Sources, screens and nodes have unique IDs; missing nodes, cycles, duplicate parents, orphan nodes and excessive depth are rejected.
 
-Implemented node kinds: column, text and disclosure. Implemented style fields: six-digit colors, padding, gap, scaled system font size, bold, corner radius and centered text. Requirements explicitly classify navigation/assets/motion/state/data/API/auth/native/accessibility/responsiveness/appearance as extracted, inferred or unknown. The current HTML adapter leaves hidden behavior unknown. This is a small typed IR, not a complete representation of every framework.
+Implemented node kinds: column, text, disclosure and explicit state-transition buttons. Implemented style fields: six-digit colors, padding, gap, scaled system font size, bold, corner radius and centered text. Requirements explicitly classify navigation/assets/motion/state/data/API/auth/native/accessibility/responsiveness/appearance as extracted, inferred or unknown. The current HTML adapter leaves hidden behavior unknown. This is a small typed IR, not a complete representation of every framework.
 
 Node IDs currently depend on traversal order. Source maps include generated Swift symbols and hashes; these enable inspection, **not safe incremental synchronization yet**. Stable semantic identity and a three-way merge are prerequisites for sync. New node kinds require renderer support, fixtures, schema evolution and a compatibility decision. Do not append arbitrary unvalidated payloads to bypass the schema.
 
@@ -123,7 +123,7 @@ This is syntax inspection, not TypeScript type-checking or a React runtime. Only
 
 Same-file components now accept literal string/number props, one props identifier or shallow named destructuring (including aliases), direct prop reads, forwarding, and literal style values. Explicit JSX children slots can be read as `children` or `props.children`, forwarded through wrappers, and rendered repeatedly with distinct native node IDs. Slots retain the caller’s lexical props; finite nested instances are distinguished from recursive component definitions. Missing accessed slots, render callbacks, and explicit `children=` attributes are rejected. Supplied children are syntax-validated even when a component discards them, because React constructs child expressions eagerly. Validation consumes the shared expansion budget; deeply nested wrappers can therefore reach the explicit limit before emitting 400 nodes. The entry remains parameterless. Each expanded node retains definition and invocation/value evidence. This is bounded syntax lowering, not JavaScript evaluation. Primitive template interpolation, numeric unary signs, and `+`, `-`, `*`, `/`, `%` over resolved literal operands are supported. Addition follows string/number operand semantics; other arithmetic requires numbers. Calls, implicit numeric string coercion, non-finite results, control characters, and excessive expression depth/output/work are rejected. No imported code executes.
 
-Imports, hooks, arbitrary expressions, object/boolean props, defaults/rest bindings, reserved key/ref props, spread attributes, async components, event handlers and unresolved components are rejected. Unsupported HTML elements/CSS remain limitations that block generation. This does not implement Next.js routing/server components, runtime React state, API calls, external stylesheets, images or arbitrary project conversion. A `use client` directive is accepted as syntax only; it does not enable client execution. The TypeScript parser is a runtime dependency because installed CLI users need it.
+Apart from the bounded boolean-state mapping below, imports, hooks, arbitrary expressions, object/boolean props, defaults/rest bindings, reserved key/ref props, spread attributes, async components, event handlers and unresolved components are rejected. Unsupported HTML elements/CSS remain limitations that block generation. This does not implement Next.js routing/server components, general React state, API calls, external stylesheets, images or arbitrary project conversion. A `use client` directive is accepted as syntax only; it does not enable client execution. The TypeScript parser is a runtime dependency because installed CLI users need it.
 
 The shared fixture `benchmarks/universal/html-disclosure/App.tsx` is structurally equivalent to its HTML reference; a regression test requires identical native nodes/styles and generated SwiftUI. Run the same native verification protocol with `FIDELITY_ADAPTER=react-static`; the adapter choice is included in the resume contract. The HTML reference still comes from independently authored HTML, not a screenshot generated by the SwiftUI renderer. Do not describe this as a React browser runtime equivalence test.
 
@@ -136,6 +136,36 @@ FIDELITY_ADAPTER=react-static node benchmarks/universal/fidelity/run.mjs benchma
 # its actual browser version enters the pinned evidence contract.
 ```
 
+### Boolean state and button transitions (experimental)
+
+The same importer accepts `import {useState} from 'react'` as a syntax marker;
+it never loads React. Only the parameterless entry component may declare up to
+16 `const [value, setter] = useState(true/false)` bindings. A dedicated text
+element may contain `value ? literalExpression : literalExpression`. A plain-text
+`button` may use `onClick={() => setter(true)}`, `setter(false)` or `setter(!value)`.
+State and setters remain lexical bindings, including children passed through
+same-file wrappers. Inline controls inside text elements are rejected to avoid
+HTML parser reparenting or loss of inherited style.
+
+Stateful input emits App IR 1.1.0 with boolean state records, text bindings and
+validated set/toggle actions; static input retains 1.0.0. The parser rejects
+missing state references, invalid defaults, wrong node/action combinations and
+state fields falsely labelled 1.0.0. Generated SwiftUI uses native `@State`,
+`Button` and dynamic `Text`, with stable accessibility IDs and Dynamic Type.
+The native button appearance is a platform mapping, not a browser fidelity claim.
+
+Number/object state, functional updater callbacks, state in reusable component
+instances, effects, async events, event parameters, callback props, conditional
+view trees, persistence and navigation remain unsupported. No state is inferred
+from names or comments. Source ranges include declarations, text branches and
+handlers. Unsupported behavior fails before project generation.
+
+[The independent native fixture](../../benchmarks/universal/react-state/README.md)
+checks toggling, assignments, state isolation, relaunch, clipping and accessibility
+at Large/XXXL. Its resumable raw evidence is separate from the HTML fidelity gate.
+Do not count a native behavior pass as visual acceptance or support for arbitrary
+React applications.
+
 ### Optional local evidence viewer
 
 `node benchmarks/universal/render-evidence.mjs EVIDENCE_DIRECTORY NEW_HTML_FILE` creates a standalone offline review page from a saved fidelity artifact: source reference, native captures, differences, environment, tests and repair outcomes. It works with HTML or React runs, is optional for CLI/MCP users, does not expose a network service, and cannot approve or promote a baseline. It escapes report content, embeds only bounded local PNG evidence and refuses overwrite/path escape. Missing evidence is labelled unavailable. This is saved-result review, not live simulator streaming or a Studio build backend.
@@ -144,7 +174,7 @@ FIDELITY_ADAPTER=react-static node benchmarks/universal/fidelity/run.mjs benchma
 
 1. Resolve the heading's actual wrap mismatch without changing source typography merely to fit the fixture; repeat local/hosted comparison. Passive observation itself now has hosted zero-difference evidence.
 2. Obtain independent human reference approval only after reviewing source, images, word boundaries and capture pins. Approval cannot override a failed gate.
-3. Extend React through explicit IR contracts for props/state/navigation, with unsupported-feature tests before adding other frameworks. Current implementation handles static components, bounded literal props and primitive constant expressions; state and navigation remain unsupported.
+3. Extend React through explicit IR contracts for props/state/navigation, with unsupported-feature tests before adding other frameworks. Current implementation handles static components, bounded literal props and primitive constant expressions; general state, effects and navigation remain unsupported. The boolean-state fixture below is a separate, narrowly bounded native behavior benchmark.
 4. Connect the saved-evidence viewer to the optional Studio UI after its artifact boundary is established. Keep CLI use independent.
 5. Add native dark-mode, responsive/multi-screen and asset fixtures before making wider design-quality claims. No backend contract, animation or framework support is implied by this prototype.
 

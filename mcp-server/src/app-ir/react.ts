@@ -17,6 +17,7 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
   const diagnostics = (file as ts.SourceFile & {parseDiagnostics: readonly ts.Diagnostic[]}).parseDiagnostics;
   if (diagnostics.length) throw Error('Invalid TSX syntax');
   const components = new Map<string, ts.FunctionDeclaration>();
+  let hasStateImport = false;
   let entry: ts.FunctionDeclaration | undefined;
   const fail: (node: ts.Node, reason: string) => never = (node, reason) => {
     const pos = file.getLineAndCharacterOfPosition(node.getStart(file));
@@ -24,6 +25,16 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
   };
   for (const node of file.statements) {
     if (ts.isExpressionStatement(node) && ts.isStringLiteral(node.expression) && node.expression.text === 'use client') continue;
+    if (ts.isImportDeclaration(node)) {
+      const clause = node.importClause, imports = clause?.namedBindings;
+      if (hasStateImport || !ts.isStringLiteral(node.moduleSpecifier) || node.moduleSpecifier.text !== 'react' ||
+          !clause || clause.isTypeOnly || clause.name || !imports || !ts.isNamedImports(imports) ||
+          imports.elements.length !== 1 || imports.elements[0]!.name.text !== 'useState' ||
+          imports.elements[0]!.propertyName || imports.elements[0]!.isTypeOnly || node.attributes) {
+        fail(node, 'only the named useState import from react is supported; input modules are never loaded');
+      }
+      hasStateImport = true; continue;
+    }
     if (!ts.isFunctionDeclaration(node) || !node.body || !node.name) fail(node, 'only named, static function components are supported; no imports or module side effects');
     if (node.parameters.length > 1 || node.typeParameters?.length || node.asteriskToken || node.modifiers?.some(m => m.kind === ts.SyntaxKind.AsyncKeyword)) fail(node, 'multiple parameters, generics, generators and async components require explicit mapping');
     if (components.has(node.name!.text)) fail(node, 'duplicate component');
@@ -34,6 +45,7 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
     }
   }
   if (!entry) throw Error('React input needs a default-exported named function component');
+  if (hasStateImport && components.has('useState')) fail(components.get('useState')!, 'useState import is shadowed');
   if(entry.parameters.length)fail(entry,'entry component cannot receive external props');
   const escape = (s: string) => s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
   const jsxText = (value: string, node: ts.Node) => {
@@ -46,7 +58,8 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
   };
   type Literal = {value:string|number; origins:ts.Node[]};
   type Children = {kind:'children'; nodes:readonly ts.JsxChild[]; scope:Scope; stack:string[]; origins:ts.Node[]};
-  type Binding = Literal|Children;
+  type StateBinding = {kind:'state'|'setter'; id:string; origins:ts.Node[]};
+  type Binding = Literal|Children|StateBinding;
   type Props = Map<string,Binding>;
   type Scope = Map<string, Binding|Props>;
   const binding=(node:ts.Expression,scope:Scope):Binding|undefined=>{
@@ -94,7 +107,10 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
     return fail(node,'only bounded literal expressions and direct prop reads are supported');
   }
   const dependencies:Array<{start:number;end:number;nodes:ts.Node[]}>=[];
-  let html = '', count = 0;
+  const states:Array<{id:string; initial:boolean; origin:ts.Node}>=[];
+  type Mapping = {start:number; end:number; textBinding?:AppIR['nodes'][number]['textBinding']; action?:AppIR['nodes'][number]['action']; origins:ts.Node[]};
+  const stateMappings:Mapping[]=[];
+  let html = '', count = 0, textElementDepth = 0;
   const spans: Array<{start:number;end:number;node:ts.Node}> = [];
   const append = (text: string) => { html += text; if (Buffer.byteLength(html)>262144) throw Error('Expanded React exceeds 256 KiB'); };
   function unwrap(node: ts.Expression): ts.Expression { return ts.isParenthesizedExpression(node) ? unwrap(node.expression) : node; }
@@ -117,18 +133,40 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
     const key = node.name!.text;
     if (stack.includes(key) || stack.length >= 30) fail(node, 'recursive or excessively deep component hierarchy');
     const statements = node.body!.statements;
-    if (statements.length !== 1 || !ts.isReturnStatement(statements[0]!) || !statements[0]!.expression) fail(node, 'component must contain only a JSX return; hooks and executable state are unsupported');
+    const returned = statements[statements.length - 1];
+    if (!returned || !ts.isReturnStatement(returned) || !returned.expression) fail(node, 'component must end with a JSX return');
+    for (const statement of statements.slice(0,-1)) {
+      if (node !== entry || !hasStateImport || !ts.isVariableStatement(statement) || statement.modifiers?.length ||
+          statement.declarationList.flags !== ts.NodeFlags.Const || statement.declarationList.declarations.length !== 1) {
+        fail(statement, 'only top-level const boolean useState bindings in the entry component are supported');
+      }
+      const declaration = statement.declarationList.declarations[0]!, call = declaration.initializer;
+      if (!ts.isArrayBindingPattern(declaration.name) || declaration.name.elements.length !== 2 || declaration.type ||
+          !call || !ts.isCallExpression(call) || !ts.isIdentifier(call.expression) || call.expression.text !== 'useState' ||
+          call.typeArguments?.length || call.arguments.length !== 1 ||
+          ![ts.SyntaxKind.TrueKeyword,ts.SyntaxKind.FalseKeyword].includes(call.arguments[0]!.kind)) {
+        fail(declaration, 'useState requires a literal boolean and a [value, setter] binding');
+      }
+      if (states.length >= 16) fail(declaration, 'state count exceeds 16');
+      const id = `state-${states.length + 1}`;
+      for (const [index, element] of [...declaration.name.elements].entries()) {
+        if (!ts.isBindingElement(element) || !ts.isIdentifier(element.name) || element.initializer || element.dotDotDotToken || element.propertyName) fail(element, 'state bindings require two distinct identifiers');
+        if (scope.has(element.name.text) || components.has(element.name.text) || element.name.text === 'useState') fail(element, 'state binding shadows another name');
+        scope.set(element.name.text, {kind:index === 0 ? 'state' : 'setter', id, origins:[statement]});
+      }
+      states.push({id,initial:call.arguments[0]!.kind === ts.SyntaxKind.TrueKeyword,origin:statement});
+    }
     const start=html.length;
-    render(unwrap((statements[0] as ts.ReturnStatement).expression!), [...stack,key],scope);
+    render(unwrap(returned.expression), [...stack,key],scope);
     if(origins.length)dependencies.push({start,end:html.length,nodes:origins});
   }
   // React constructs supplied children before calling a component, even if discarded.
   // Reuse the syntax-only lowering checks, then discard the temporary markup/evidence.
   // Work budgets are deliberately not restored. No application code is executed.
   function validateChildren(nodes:readonly ts.JsxChild[],stack:string[],scope:Scope){
-    const savedHTML=html,savedSpans=spans.length,savedDependencies=dependencies.length;
+    const savedHTML=html,savedSpans=spans.length,savedDependencies=dependencies.length,savedMappings=stateMappings.length;
     try{html='';for(const child of nodes)render(child,stack,scope);}
-    finally{html=savedHTML;spans.length=savedSpans;dependencies.length=savedDependencies;}
+    finally{html=savedHTML;spans.length=savedSpans;dependencies.length=savedDependencies;stateMappings.length=savedMappings;}
   }
   function render(node: ts.Node, stack: string[], scope:Scope) {
     if (++count > 400) fail(node, 'expanded component count exceeds limit');
@@ -142,7 +180,7 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
     if (ts.isJsxExpression(node)) {
       if(!node.expression)fail(node,'empty JSX expressions are unsupported');
       const slot=binding(unwrap(node.expression),scope);
-      if(slot&&'kind' in slot){for(const child of slot.nodes)render(child,slot.stack,slot.scope);return;}
+      if(slot&&'kind' in slot&&slot.kind==='children'){for(const child of slot.nodes)render(child,slot.stack,slot.scope);return;}
       const value=literal(node.expression,scope);const start=html.length;
       const text=String(value.value);if(/[\u00a0\u2000-\u200b\u202f\u3000]/.test(text))fail(node,'special whitespace requires explicit layout support');
       append(escape(text));spans.push({start,end:html.length,node});dependencies.push({start,end:html.length,nodes:value.origins});return;
@@ -150,6 +188,7 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
     if (!ts.isJsxElement(node) && !ts.isJsxSelfClosingElement(node)) fail(node, 'expected JSX element');
     const opening = ts.isJsxElement(node) ? node.openingElement : node;
     const tag=opening.tagName.getText(file);
+    if(tag==='button'&&textElementDepth>0)fail(node,'inline buttons inside text elements require explicit mixed-content layout');
     if (/^[A-Z]/.test(tag)) {
       const props:Props=new Map();
       if(ts.isJsxElement(node)&&node.children.length)props.set('children',{kind:'children',nodes:node.children,scope,stack:[...stack],origins:[node]});
@@ -166,13 +205,47 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
       const start=html.length;component(target!,stack,props,props.size?[node,...[...props.values()].flatMap(v=>v.origins)]:[]);spans.push({start,end:html.length,node});return;
     }
     if (!/^[a-z][a-z0-9]*$/.test(tag)) fail(node,'namespaced or member elements are unsupported');
-    const start=html.length;append('<'+tag);
+    let action:Mapping['action'], textBinding:Mapping['textBinding'];
+    const stateOrigins:ts.Node[]=[];
+    const visibleChildren=ts.isJsxElement(node)?node.children.filter(c=>!ts.isJsxText(c)||c.text.trim()):[];
+    const conditional=visibleChildren.length===1&&ts.isJsxExpression(visibleChildren[0]!)?visibleChildren[0].expression:undefined;
+    if (conditional && ts.isConditionalExpression(unwrap(conditional))) {
+      if (!['p','h1','h2','h3','span','strong'].includes(tag)) fail(node, 'state text requires a dedicated text element');
+      const expression=unwrap(conditional) as ts.ConditionalExpression;
+      const state=binding(unwrap(expression.condition),scope);
+      if (!state || !('kind' in state) || state.kind !== 'state') fail(expression, 'conditional text requires a supported boolean state');
+      const yes=literal(expression.whenTrue,scope),no=literal(expression.whenFalse,scope);
+      const values=[yes,no].map(v=>String(v.value));
+      if(values.some(v=>v.trim()!==v||/\s{2}|[\u00a0\u2000-\u200b\u202f\u3000]/.test(v))) fail(expression,'state text must use normalized ordinary spaces');
+      textBinding={state:state.id,whenTrue:values[0]!,whenFalse:values[1]!};
+      stateOrigins.push(...state.origins,...yes.origins,...no.origins);
+    }
+    // Lower to a plain text element only as an intermediate representation. The exact
+    // source span below must resolve back to one IR node before an action is attached.
+    const loweredTag=tag==='button'?'p':tag;
+    const start=html.length;append('<'+loweredTag);
     const attributes=new Set<string>();
     for(const attr of opening.attributes.properties) {
       if (!ts.isJsxAttribute(attr)) fail(attr,'spread attributes are unsupported');
       const key=attr.name.getText(file),value=attr.initializer;
       if(attributes.has(key))fail(attr,'duplicate attribute');attributes.add(key);
-      if(key==='style') {
+      if(key==='onClick') {
+        if(tag!=='button'||!value||!ts.isJsxExpression(value)||!value.expression)fail(attr,'events require a supported button action');
+        const callback=unwrap(value.expression);
+        if(!ts.isArrowFunction(callback)||callback.parameters.length||callback.modifiers?.length||callback.typeParameters?.length||callback.type||ts.isBlock(callback.body))fail(attr,'onClick must be a parameterless arrow containing one state setter');
+        const call=unwrap(callback.body);
+        if(!ts.isCallExpression(call)||call.typeArguments?.length||call.arguments.length!==1)fail(attr,'event must contain exactly one state assignment');
+        const setter=binding(call.expression,scope);
+        if(!setter||!('kind' in setter)||setter.kind!=='setter')fail(attr,'unresolved state setter');
+        const argument=unwrap(call.arguments[0]!);
+        if([ts.SyntaxKind.TrueKeyword,ts.SyntaxKind.FalseKeyword].includes(argument.kind))action={operation:'set',state:setter.id,value:argument.kind===ts.SyntaxKind.TrueKeyword};
+        else if(ts.isPrefixUnaryExpression(argument)&&argument.operator===ts.SyntaxKind.ExclamationToken){
+          const value=binding(unwrap(argument.operand),scope);
+          if(!value||!('kind' in value)||value.kind!=='state'||value.id!==setter.id)fail(argument,'toggle must reference its own boolean state');
+          action={operation:'toggle',state:setter.id};
+        }else fail(argument,'state action supports literal true/false or negation of its own value');
+        stateOrigins.push(attr,...setter.origins);
+      } else if(key==='style') {
         if(!value||!ts.isJsxExpression(value)||!value.expression||!ts.isObjectLiteralExpression(value.expression))fail(attr,'style must be a literal object');
         const declarations:string[]=[];const seen=new Set<string>();
         for(const prop of value.expression.properties) {
@@ -190,11 +263,29 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
         append(' '+key+'="'+escape(jsxText(value.text,attr))+'"');
       }
     }
-    append('>');if(ts.isJsxElement(node))for(const child of node.children)render(child,stack,scope);append('</'+tag+'>');
+    if(tag==='button'&&(!action||visibleChildren.some(c=>!ts.isJsxText(c))))fail(node,'button requires one state action and a plain text label');
+    append('>');
+    if(textBinding){const state=states.find(s=>s.id===textBinding.state)!;append(escape(state.initial?textBinding.whenTrue:textBinding.whenFalse));}
+    else if(ts.isJsxElement(node)){
+      const textElement=['p','h1','h2','h3','span','strong'].includes(tag);
+      if(textElement)textElementDepth++;
+      try{for(const child of node.children)render(child,stack,scope);}finally{if(textElement)textElementDepth--;}
+    }
+    append('</'+loweredTag+'>');
     spans.push({start,end:html.length,node});
+    if(action||textBinding)stateMappings.push({start,end:html.length,action,textBinding,origins:stateOrigins});
   }
   component(entry,[]);
   const ir=htmlToIR(html,'intermediate.html',name);
+  for(const mapping of stateMappings){
+    const start=Buffer.byteLength(html.slice(0,mapping.start)),end=Buffer.byteLength(html.slice(0,mapping.end));
+    const matches=ir.nodes.filter(n=>n.kind==='text'&&n.evidence.length===1&&n.evidence[0]!.start===start&&n.evidence[0]!.end===end);
+    if(matches.length!==1)throw Error('State mapping has no unambiguous source element');
+    const node=matches[0]!;
+    if(mapping.action){node.kind='button';node.action=mapping.action;}
+    if(mapping.textBinding)node.textBinding=mapping.textBinding;
+    dependencies.push({start:mapping.start,end:mapping.end,nodes:mapping.origins});
+  }
   const origin=(start:number,end:number) => spans.filter(s=>Buffer.byteLength(html.slice(0,s.start))<=start&&Buffer.byteLength(html.slice(0,s.end))>=end).sort((a,b)=>(a.end-a.start)-(b.end-b.start))[0];
   for(const row of [...ir.nodes,...ir.requirements,...ir.limitations])row.evidence=row.evidence.flatMap(e=>{
     const span=origin(e.start,e.end);const node=span?.node??entry!;
@@ -202,6 +293,11 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
     const nodes=[node,...deps];const seen=new Set<string>();
     return nodes.flatMap(n=>{const start=Buffer.byteLength(source.slice(0,n.getStart(file))),end=Buffer.byteLength(source.slice(0,n.end));const key=`${start}:${end}`;if(seen.has(key))return [];seen.add(key);return [{source:'source',start,end,certainty:'extracted' as const,...(!span?{note:'Synthetic root corresponds to the default component'}:{})}];});
   });
-  ir.sources=[{id:'source',path:sourcePath,sha256:sha256(source),bytes:Buffer.byteLength(source),adapter:'react-static@1'}];
+  if(states.length){
+    ir.schemaVersion='1.1.0';
+    ir.states=states.map(s=>({id:s.id,initial:s.initial,evidence:[{source:'source',start:Buffer.byteLength(source.slice(0,s.origin.getStart(file))),end:Buffer.byteLength(source.slice(0,s.origin.end)),certainty:'extracted'}]}));
+    ir.requirements.push({id:'local-boolean-state',area:'state',status:'extracted',description:'Entry-component boolean state, literal text branches and single-step button transitions. No effects, persistence, async events or navigation.',evidence:ir.states.flatMap(s=>s.evidence)});
+  }
+  ir.sources=[{id:'source',path:sourcePath,sha256:sha256(source),bytes:Buffer.byteLength(source),adapter:states.length?'react-boolean-state@1':'react-static@1'}];
   return AppIRSchema.parse(ir);
 }
