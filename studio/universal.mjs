@@ -79,5 +79,27 @@ export class UniversalStudio {
     const bytes=await fs.readFile(real);const {sha256}=await this.module('app-ir/schema');
     if(sha256(bytes)!==row.capture.sha256)throw Error('Capture changed');return bytes;
   }
+  async exportProject(id){
+    if(this.jobs.has(id))throw Error('Wait for this conversion to finish');
+    this.jobs.set(id,true);let staging;
+    try{
+      const row=await this.get(id);
+      const {snapshotFiles,snapshotHash}=await this.module('agent/remote');
+      const files=await snapshotFiles(path.join(this.dir(id),'project'));const hash=snapshotHash(files);
+      staging=await fs.mkdtemp(path.join(this.dir(id),'export-'));
+      const target=path.join(staging,'NativeProject');await fs.mkdir(target);
+      for(const file of files){
+        if(path.isAbsolute(file.path)||file.path.split('/').includes('..'))throw Error('Unsafe export path');
+        const out=path.join(target,file.path);await fs.mkdir(path.dirname(out),{recursive:true});await fs.writeFile(out,file.content,{flag:'wx'});
+      }
+      await fs.writeFile(path.join(target,'UNIVERSAL-EXPORT.json'),JSON.stringify({name:row.name,adapter:row.adapter,sourceHash:hash,tests:row.tests,visualFidelity:row.visualFidelity},null,2));
+      const {ProcessRunner}=await this.module('agent/runner');
+      const archive=path.join(staging,'project.zip');
+      const result=await new ProcessRunner().run('ditto',['-c','-k','--norsrc','--keepParent',target,archive],{timeoutMs:60000});
+      if(result.exitCode!==0||result.timedOut||result.spawnError)throw Error('Project ZIP export requires macOS ditto: '+(result.spawnError??result.stderr));
+      if(await this.fingerprint(id)!==hash)throw Error('Source changed during export; retry');
+      return await fs.readFile(archive);
+    }finally{try{if(staging)await fs.rm(staging,{recursive:true,force:true});}finally{this.jobs.delete(id);}}
+  }
   async source(id){const row=await this.get(id),dir=this.dir(id);let swift=null;try{swift=await fs.readFile(path.join(dir,'project',row.name,'Views/RootView.swift'),'utf8');}catch(e){if(e.code!=='ENOENT')throw e;}return {input:await fs.readFile(path.join(dir,'input.txt'),'utf8'),ir:JSON.parse(await fs.readFile(path.join(dir,'ir.json'),'utf8')),swift};}
 }

@@ -71,3 +71,10 @@ test('server shares native reservation with existing Studio actions and live pre
  await assert.rejects(app.live.start('anything'),/active task/);await assert.rejects(app.studio.exclusive(()=>{}),/active task/);
  const job=app.universal.jobs.get(row.id);app.universal.cancel(row.id);await job;assert.equal(app.studio.reserved,false);
 });
+test('project export contains editable source and excludes local secrets and evidence', {skip:process.platform!=='darwin'},async t=>{
+ const {u}=await workspace(t);const r=await u.create({adapter:'html',name:'ExportApp',source:'<main><p>Export</p></main>'});await u.generate(r.id);
+ const {mkdir,writeFile}=await import('node:fs/promises');const project=join(u.dir(r.id),'project');await writeFile(join(project,'ExportApp','.env'),'PRIVATE');await mkdir(join(project,'.ios-agent','screenshots'),{recursive:true});await writeFile(join(project,'.ios-agent','screenshots','secret.png'),'PRIVATE');
+ const zip=await u.exportProject(r.id);const file=join(u.dir(r.id),'check.zip');await writeFile(file,zip);
+ const {ProcessRunner}=await u.module('agent/runner');const listing=await new ProcessRunner().run('unzip',['-Z1',file]);assert.equal(listing.exitCode,0);assert.match(listing.stdout,/ExportApp\/Views\/RootView.swift/);assert.match(listing.stdout,/project.yml/);assert.match(listing.stdout,/UNIVERSAL-EXPORT.json/);assert.doesNotMatch(listing.stdout,/\.env|secret.png|DerivedData/);
+ assert.equal(u.jobs.size,0);u.jobs.set(r.id,true);await assert.rejects(u.exportProject(r.id),/finish/);u.jobs.delete(r.id);
+});

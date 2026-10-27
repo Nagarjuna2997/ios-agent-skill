@@ -99,6 +99,7 @@ export async function serve({
         const body=JSON.parse((await readBody(300000)).toString('utf8'));
         if(parts.length===2)return send(201,await universal.create(body));
         if(parts.length===4 && parts[3]==='generate')return send(200,await universal.generate(parts[2]));
+        if(parts.length===4 && parts[3]==='export')return send(200,await universal.exportProject(parts[2]),'application/zip');
         if(parts.length===4 && parts[3]==='build')return send(202,await universal.startBuild(parts[2]));
         if(parts.length===4 && parts[3]==='cancel'){universal.cancel(parts[2]);return send(200,{ok:true});}
         return send(404,{error:'Unknown conversion route'});
