@@ -247,3 +247,12 @@ slots and custom template languages remain unsupported and block generation.
 The CLI and Studio share this implementation. See the [fixture and exact scope](../../benchmarks/universal/vue-static/README.md).
 Portable conversion is tested; native execution and visual fidelity for Vue are
 not yet established. Other framework adapters are still unfinished.
+
+### Connected MCP clients
+
+The existing `ios_import_html` tool retains its name for client compatibility and
+accepts optional `adapter: "html" | "react" | "vue"` (default HTML). All three use
+the same bounded local-file readers and importers as the CLI. Unsupported adapters
+are rejected by the tool schema. This read-only tool returns IR and limitations;
+it does not generate, execute, build, score or publish an app. Source content is
+returned to the connected client, so choose non-sensitive files.

@@ -37,11 +37,16 @@ export function registerAgentTools(server: McpServer, runners: RunnerFactory = d
   const writes = { readOnlyHint: false, destructiveHint: false, openWorldHint: false } as const;
 
   server.registerTool("ios_import_html", {
-    title: "Inspect a local HTML screen",
-    description: "Use this to inspect a local HTML screen with the experimental read-only inline-style adapter. Returns versioned App IR, source hashes and unsupported-feature evidence. Does not execute scripts, fetch URLs, generate files or claim conversion fidelity. Source text is shared with the connected client; choose a non-sensitive file.",
-    inputSchema: { path: z.string().min(1), appName: z.string().regex(/^[A-Z][A-Za-z0-9]{0,39}$/).default("ImportedApp") }, annotations: readOnly,
-  }, async ({path, appName}) => {
-    try { const {importHTML} = await import("../app-ir/html.js"); return {content:[{type:"text" as const,text:JSON.stringify(await importHTML(path,appName))}]}; }
+    title: "Inspect local source through Universal App IR",
+    description: "Use this to inspect local HTML, supported React TSX or a static Vue template. The historical tool name is retained; select adapter html (default), react or vue. Experimental syntax-only subsets reject unsupported behavior. Returns versioned App IR, source hashes and unsupported-feature evidence. Does not execute scripts, fetch URLs, generate files or claim conversion fidelity. Source text is shared with the connected client; choose a non-sensitive file.",
+    inputSchema: { path: z.string().min(1), adapter: z.enum(["html","react","vue"]).default("html"), appName: z.string().regex(/^[A-Z][A-Za-z0-9]{0,39}$/).default("ImportedApp") }, annotations: readOnly,
+  }, async ({path, appName, adapter}) => {
+    try {
+      const ir = adapter === 'react' ? await (await import('../app-ir/react.js')).importReact(path,appName)
+        : adapter === 'vue' ? await (await import('../app-ir/vue.js')).importVue(path,appName)
+        : await (await import('../app-ir/html.js')).importHTML(path,appName);
+      return ok(ir);
+    }
     catch(error) { return fail(error); }
   });
 

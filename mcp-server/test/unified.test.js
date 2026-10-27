@@ -25,6 +25,14 @@ test('single connection exposes reviews, knowledge, simulator and safe app creat
   assert.equal(JSON.parse(imported.content[0].text).schemaVersion,'1.0.0');
   assert.ok(JSON.parse(imported.content[0].text).nodes.some(n=>n.text==='Imported screen'));
   assert.equal((await client.callTool({name:'ios_import_html',arguments:{path:join(root,'missing.html')}})).isError,true);
+  for(const [adapter,source] of [['react','export default function App(){return <main><h1>React import</h1></main>}'],['vue','<template><main><h1>Vue import</h1></main></template>']]){
+   const path=join(root,'source.'+(adapter==='react'?'tsx':'vue'));await writeFile(path,source);
+   const response=await client.callTool({name:'ios_import_html',arguments:{path,adapter}});assert.notEqual(response.isError,true,JSON.stringify(response));
+   assert.equal(JSON.parse(response.content[0].text).sources[0].adapter,adapter+'-static@1');
+  }
+  assert.equal((await client.callTool({name:'ios_import_html',arguments:{path:join(root,'screen.html'),adapter:'angular'}})).isError,true);
+  await writeFile(join(root,'unsafe.vue'),'<template><p>{{ fetch("https://invalid.example") }}</p></template>');
+  assert.equal((await client.callTool({name:'ios_import_html',arguments:{path:join(root,'unsafe.vue'),adapter:'vue'}})).isError,true);
   const backend=await client.callTool({name:'review_backend_integration',arguments:{path:root}});
   assert.notEqual(backend.isError,true);assert.equal(JSON.parse(backend.content[0].text).services.length,0);
   const colors=await client.callTool({name:'generate_color_system',arguments:{primaryColor:'#145AC8',appearance:'oled'}});
