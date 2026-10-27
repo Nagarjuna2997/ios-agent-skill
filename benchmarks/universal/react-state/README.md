@@ -45,3 +45,11 @@ has no independent browser reference or approved visual baseline and reports
 `visualFidelity: not-evaluated`. It must not be combined with HTML fidelity scores.
 Hosted and local results must be reported separately. See evidence records for
 actual results; the presence of this fixture or workflow is not a passing run.
+
+## Review saved evidence
+
+```sh
+node benchmarks/universal/render-evidence.mjs /absolute/evidence-directory /absolute/new/review.html
+```
+
+Open the standalone HTML locally. Use the full local output or extracted workflow artifact: the viewer reads `report.json` and the attachment directories named there. It displays saved build/tests and initial/changed screenshots with their test identities, without a server or scripts. Missing artifacts are labelled unavailable. It does not check integrity hashes or turn native behavior into a fidelity pass.

@@ -45,7 +45,7 @@ The experimental [M2 benchmark](fidelity/README.md) adds a framework-independent
 
 The same FieldNotes fixture now has a static JSX counterpart in `html-disclosure/App.tsx`. It contains same-file component composition and native disclosure behavior. Inspect with `app-ir inspect-react`; run the shared fidelity runner with `FIDELITY_ADAPTER=react-static`. The adapter is read-only and rejects executable/dynamic React rather than guessing. See the [architecture](../../docs/architecture/universal-app-engine.md#static-react-adapter-experimental-not-general-reactnextjs-support) for supported syntax and limits.
 
-To review an extracted GitHub Actions artifact or local fidelity output without a server:
+To review an extracted GitHub Actions artifact, local fidelity output, or React boolean-state output without a server:
 
 ```sh
 node benchmarks/universal/render-evidence.mjs /path/to/evidence /tmp/review.html
@@ -82,3 +82,14 @@ separately after execution.
 Local navigation evidence is archived in [react-navigation-local-20261022](evidence/react-navigation-local-20261022/README.md): one native build, six passing native test executions across Large/XXXL, eight screenshots, and unchanged reuse of four checkpoints. This is native behavior evidence; browser fidelity was not evaluated. Hosted navigation execution remains separate.
 
 [Existing state compatibility evidence](evidence/react-state-shared-runner-local-20261022/README.md) records another native build and six passing test executions through the shared runner, with byte-identical pre-navigation SwiftUI output.
+Native behavior reports have their own view with recorded build status, separate Large/XXXL test counts, and labelled XCTest screenshots. They never appear as visual fidelity results. Missing screenshots stay unavailable; contradictory completion counts are rejected. The viewer does not rerun verification or authenticate checkpoint hashes.
+
+The native evidence viewer also accepts the separately recorded
+`react-memory-router` navigation fixture. It displays that fixture's own identity,
+Large/XXXL tests and captured screens. For the two supported native fixtures, a
+completed report requires exactly three passing tests per size, zero failures or
+skips, a successful build and no recorded execution error. A report with a reduced
+passing subset or an inconsistent declared test count is rejected. Failed reports
+can still show the actual partial results. Unknown fixture IDs are rejected.
+These checks validate report consistency; they do not authenticate evidence,
+rerun tests, approve a reference or establish visual fidelity.
