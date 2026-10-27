@@ -1,3 +1,4 @@
+import {referenceApproved} from './reference-approval.js';
 import { z } from 'zod';
 import { mkdir, readFile, writeFile, rename, lstat } from 'node:fs/promises';
 import { join } from 'node:path';
@@ -32,7 +33,7 @@ export type GatePolicy = z.infer<typeof GatePolicySchema>;
 export interface Decision { outcome: 'accepted'|'rejected'|'requires-review'; reasons: string[] }
 const equal = (a: unknown,b: unknown) => JSON.stringify(a) === JSON.stringify(b);
 /** Framework-independent gate. Evidence must be produced by trusted verifiers, never model self-ratings. */
-export function evaluateVisualRepair(baselineValue: unknown, candidateValue: unknown, policyValue: unknown): Decision {
+export function evaluateVisualRepair(baselineValue: unknown, candidateValue: unknown, policyValue: unknown, referenceApproval?:unknown): Decision {
   const a=VisualEvidenceSchema.parse(baselineValue),b=VisualEvidenceSchema.parse(candidateValue),p=GatePolicySchema.parse(policyValue);
   if (!equal(a.pins,b.pins) || a.referenceHash!==b.referenceHash) return {outcome:'requires-review',reasons:['Capture conditions or reference changed; results are not comparable']};
   const failed=['build','functionality','accessibility','layout','typography'].filter(k=>b[k as keyof VisualEvidence]==='failed');
@@ -50,6 +51,8 @@ export function evaluateVisualRepair(baselineValue: unknown, candidateValue: unk
   if(b.sourceHash===a.sourceHash)return {outcome:'requires-review',reasons:['Source is unchanged; pixel changes may be capture noise']};
   if(b.meanError>p.maxMeanError || b.changedFraction>p.maxChangedFraction)return {outcome:'requires-review',reasons:['Visual difference exceeds the predeclared acceptance thresholds']};
   if(a.meanError-b.meanError<p.minimumImprovement)return {outcome:'requires-review',reasons:['Improvement is below the predeclared noise tolerance']};
+  if(!referenceApproved(referenceApproval,a))return {outcome:'requires-review',reasons:['Reference fixture lacks matching manual approval']};
+  if(['build','functionality','accessibility','layout','typography'].some(k=>a[k as keyof VisualEvidence]!=='passed')||a.accessibilityIssues!==0||a.clippedElements!==0||a.lineBreakMismatches===null||a.lineBreakMismatches>p.maxLineBreakMismatches||a.testsPassed<1||a.meanError>p.maxMeanError||a.changedFraction>p.maxChangedFraction)return {outcome:'requires-review',reasons:['Baseline does not qualify as known-good']};
   return {outcome:'accepted',reasons:['All required checks passed, no measured regression, and visual thresholds met']};
 }
 
@@ -60,7 +63,7 @@ interface Attempt { number: number; status: 'reserved'|'finished'; decision?: De
  * The caller must use a dedicated local directory; only this coordinator writes its ledger.
  */
 export async function repairWithGate(options: {
-  directory: string; baseline: VisualEvidence; policy: GatePolicy; maxAttempts?: number; resumeInterrupted?: boolean;
+  directory: string; referenceApproval?:unknown; baseline: VisualEvidence; policy: GatePolicy; maxAttempts?: number; resumeInterrupted?: boolean;
   verifySavedEvidence?: (evidence: VisualEvidence, attempt: number) => Promise<void>;
   verifyCandidate: (attempt: number, baseline: VisualEvidence) => Promise<VisualEvidence>;
 }): Promise<{outcome: Decision['outcome']; attempts: Attempt[]; acceptedAttempt?: number}> {
@@ -68,7 +71,7 @@ export async function repairWithGate(options: {
   const maxAttempts=z.number().int().min(1).max(3).parse(options.maxAttempts ?? 3);
   await mkdir(options.directory,{recursive:true});
   if((await lstat(options.directory)).isSymbolicLink())throw Error('Repair ledger cannot be a symlink');
-  const contract=sha256(JSON.stringify({baseline,policy,maxAttempts}));
+  const contract=sha256(JSON.stringify({baseline,policy,maxAttempts,referenceApproval:options.referenceApproval??null}));
   const attempts: Attempt[]=[];
   for(let number=1;number<=maxAttempts;number++) {
     const dir=join(options.directory,`attempt-${number}`),file=join(dir,'result.json');
@@ -84,7 +87,7 @@ export async function repairWithGate(options: {
       const row=SavedAttemptSchema.parse(record.attempt);
       if(row.number!==number || row.status!=='finished' || !row.decision)throw Error('Invalid repair ledger');
       if(!row.evidence && (row.decision.outcome!=='requires-review'||row.error!=='verification-failed'))throw Error('Missing verifier evidence');
-      if(row.evidence && !equal(row.decision,evaluateVisualRepair(baseline,row.evidence,policy)))throw Error('Decision does not match evidence');
+      if(row.evidence && !equal(row.decision,evaluateVisualRepair(baseline,row.evidence,policy,options.referenceApproval)))throw Error('Decision does not match evidence');
       if(row.evidence && options.verifySavedEvidence)await options.verifySavedEvidence(row.evidence,number);
       attempts.push(row);
       if(row.decision.outcome!=='rejected')return {outcome:row.decision.outcome,attempts,...(row.decision.outcome==='accepted'?{acceptedAttempt:number}:{})};
@@ -94,7 +97,7 @@ export async function repairWithGate(options: {
     let attempt: Attempt;
     try {
       const evidence=VisualEvidenceSchema.parse(await options.verifyCandidate(number,structuredClone(baseline)));
-      attempt={number,status:'finished',evidence,decision:evaluateVisualRepair(baseline,evidence,policy)};
+      attempt={number,status:'finished',evidence,decision:evaluateVisualRepair(baseline,evidence,policy,options.referenceApproval)};
     }catch{
       // Provider/build failures must remain visible; do not persist raw exceptions containing credentials.
       attempt={number,status:'finished',decision:{outcome:'requires-review',reasons:['Candidate verification failed; inspect the isolated attempt logs']},error:'verification-failed'};
