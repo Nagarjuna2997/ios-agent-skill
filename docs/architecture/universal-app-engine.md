@@ -235,3 +235,15 @@ supported. Async/block callbacks, defaults, destructuring, captured state,
 side effects and other expressions fail explicitly. This is a syntax mapping,
 not a JavaScript evaluator. Portable tests compare its output with the existing
 toggle and verify byte provenance; no new native runtime result is claimed.
+
+### Vue static SFC adapter (experimental)
+
+`app-ir inspect-vue App.vue` maps a single static template through the existing
+HTML adapter into App IR. UTF-8 ranges and source hashes point into the original
+SFC, including non-ASCII prefixes. HTML normalization cannot silently turn a
+PascalCase Vue component into a native HTML mapping: those tags are rejected.
+Scripts, style blocks, imports, interpolation, directives, component instances,
+slots and custom template languages remain unsupported and block generation.
+The CLI and Studio share this implementation. See the [fixture and exact scope](../../benchmarks/universal/vue-static/README.md).
+Portable conversion is tested; native execution and visual fidelity for Vue are
+not yet established. Other framework adapters are still unfinished.

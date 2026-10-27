@@ -81,3 +81,9 @@ The new orchestration is covered by portable tests with injected native helpers;
 Optional browser smoke check (install the fidelity benchmark's Playwright dependency first): `node studio/check-universal-ui.mjs`. Set `CHROME_BIN` to an installed Chromium/Chrome executable if Playwright's bundled browser is unavailable. It exercises actual import/generation and rapid conversion switching, then saves a narrow-viewport screenshot in the OS temporary directory.
 
 **Download editable project ZIP** exports the selected generated project using the shared bounded source snapshot. It includes Swift, assets, Xcode settings and a source-hash manifest; it excludes derived data, screenshots, Git metadata, `.env`, private-key files and user Xcode data. It refuses symbolic links and concurrent conversion jobs, and checks for source changes before delivering the archive. Requires macOS `ditto`. Review source before sharing: a key hardcoded inside Swift is still source, not automatically redacted. The export manifest preserves unverified test/fidelity status.
+
+The import selector also accepts the **Vue static template** subset: one plain
+`<template>` block using the supported HTML elements and inline styles. Scripts,
+interpolation, directives and component imports are explicitly unsupported.
+The same IR/generator and evidence status rules apply; Vue native execution has
+not been verified. See `benchmarks/universal/vue-static/README.md` for scope.

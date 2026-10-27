@@ -12,9 +12,9 @@ export class UniversalStudio {
   async get(id){const dir=this.dir(id);if((await fs.lstat(dir)).isSymbolicLink())throw Error('Invalid conversion directory');return JSON.parse(await fs.readFile(path.join(dir,'report.json'),'utf8'));}
   async list(){const rows=[];for(const e of await fs.readdir(this.root,{withFileTypes:true}))if(e.isDirectory())rows.push(await this.get(e.name));return rows.sort((a,b)=>b.created.localeCompare(a.created));}
   async create({adapter,name,source}){
-    if(!['html','react'].includes(adapter)||typeof name!=='string'||!/^[A-Z][A-Za-z0-9]{0,39}$/.test(name)||typeof source!=='string'||Buffer.byteLength(source)>262144)throw Error('Choose HTML or React, a simple app name and source under 256 KiB');
-    const parser=await this.module('app-ir/'+(adapter==='html'?'html':'react'));
-    const ir=adapter==='html'?parser.htmlToIR(source,'input.html',name):parser.reactToIR(source,'input.tsx',name);
+    if(!['html','react','vue'].includes(adapter)||typeof name!=='string'||!/^[A-Z][A-Za-z0-9]{0,39}$/.test(name)||typeof source!=='string'||Buffer.byteLength(source)>262144)throw Error('Choose HTML, React or Vue, a simple app name and source under 256 KiB');
+    const parser=await this.module('app-ir/'+adapter);
+    const ir=adapter==='html'?parser.htmlToIR(source,'input.html',name):adapter==='react'?parser.reactToIR(source,'input.tsx',name):parser.vueToIR(source,'input.vue',name);
     const id=randomUUID(),dir=this.dir(id);await fs.mkdir(dir,{recursive:false});
     const row={id,name,adapter,created:new Date().toISOString(),status:'inspected',limitations:ir.limitations,tests:'not-run',visualFidelity:'not-evaluated'};
     await this.save(row);await fs.writeFile(path.join(dir,'input.txt'),source,{flag:'wx'});await fs.writeFile(path.join(dir,'ir.json'),JSON.stringify(ir,null,2),{flag:'wx'});return row;

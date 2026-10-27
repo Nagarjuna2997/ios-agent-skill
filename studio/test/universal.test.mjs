@@ -15,7 +15,7 @@ test('Studio imports actual React IR and generates editable SwiftUI without clai
 test('unsupported source remains inspectable but cannot produce a plausible native project',async t=>{
  const {u}=await workspace(t);const r=await u.create({adapter:'html',name:'Unsupported',source:'<main><script>throw Error("must never execute")</script><p>Hello</p></main>'});
  assert.ok(r.limitations.length);assert.equal((await u.generate(r.id)).status,'failed');assert.equal((await u.source(r.id)).swift,null);
- await assert.rejects(u.create({adapter:'vue',name:'App',source:'<p>Hello</p>'}));await assert.rejects(u.create({adapter:'html',name:'../outside',source:'test'}));await assert.rejects(u.get('../outside'));
+ await assert.rejects(u.create({adapter:'angular',name:'App',source:'<p>Hello</p>'}));await assert.rejects(u.create({adapter:'html',name:'../outside',source:'test'}));await assert.rejects(u.get('../outside'));
 });
 test('restart marks interrupted work honestly and retains inspected source',async t=>{
  const {u,root}=await workspace(t);const r=await u.create({adapter:'html',name:'Recover',source:'<main><p>Kept</p></main>'});r.status='generating';await u.save(r);const next=new UniversalStudio(root,resolve('.'));await next.init();assert.equal((await next.get(r.id)).status,'interrupted');assert.match((await next.source(r.id)).input,/Kept/);
@@ -77,4 +77,8 @@ test('project export contains editable source and excludes local secrets and evi
  const zip=await u.exportProject(r.id);const file=join(u.dir(r.id),'check.zip');await writeFile(file,zip);
  const {ProcessRunner}=await u.module('agent/runner');const listing=await new ProcessRunner().run('unzip',['-Z1',file]);assert.equal(listing.exitCode,0);assert.match(listing.stdout,/ExportApp\/Views\/RootView.swift/);assert.match(listing.stdout,/project.yml/);assert.match(listing.stdout,/UNIVERSAL-EXPORT.json/);assert.doesNotMatch(listing.stdout,/\.env|secret.png|DerivedData/);
  assert.equal(u.jobs.size,0);u.jobs.set(r.id,true);await assert.rejects(u.exportProject(r.id),/finish/);u.jobs.delete(r.id);
+});
+test('Studio Vue import shares generator and refuses unsupported template behavior',async t=>{
+ const {u}=await workspace(t);const r=await u.create({adapter:'vue',name:'VueSample',source:'<template><main><h1>From Vue</h1></main></template>'});assert.equal((await u.generate(r.id)).status,'generated-unverified');assert.match((await u.source(r.id)).swift,/From Vue/);
+ await assert.rejects(u.create({adapter:'vue',name:'VueUnsafe',source:'<template><p>{{ secret }}</p></template>'}),/interpolation/);
 });
