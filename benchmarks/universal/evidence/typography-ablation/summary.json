@@ -1,0 +1,43 @@
+{
+  "status": "experimental-untrusted",
+  "xcode": "27.0 (27A266a)",
+  "sdk": "27.0",
+  "device": "iPhone 18 Pro",
+  "runtime": "iOS 27.0",
+  "appearance": "light",
+  "contentSize": "large",
+  "locale": "en_US",
+  "state": "collapsed",
+  "scale": 3,
+  "nativeTestsPassed": 1,
+  "resultsComparedTo": "normal-1",
+  "results": {
+    "probe": {
+      "pixelsChanged": 24541,
+      "maxChannelDelta": 1,
+      "meanRGBError": 1.3298713520403117e-05
+    },
+    "renderer": {
+      "pixelsChanged": 24541,
+      "maxChannelDelta": 1,
+      "meanRGBError": 1.3298713520403117e-05
+    },
+    "attributes": {
+      "pixelsChanged": 0,
+      "maxChannelDelta": 0,
+      "meanRGBError": 0
+    },
+    "normal-2": {
+      "pixelsChanged": 0,
+      "maxChannelDelta": 0,
+      "meanRGBError": 0
+    },
+    "normal-1": {
+      "pixelsChanged": 0,
+      "maxChannelDelta": 0,
+      "meanRGBError": 0
+    }
+  },
+  "conclusion": "Renderer-only and full probe change identical pixel counts and max channel deltas; attributes-only and repeated normal match exactly. This isolates the custom drawing path for this fixture, not all SwiftUI text.",
+  "knownGood": null
+}

@@ -1,0 +1,477 @@
+{
+  "version": 1,
+  "status": "native-behavior-passed",
+  "fixture": "react-boolean-state",
+  "profile": {
+    "version": 1,
+    "xcode": "27.0",
+    "sdk": "27.0",
+    "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-27-0",
+    "deviceType": "com.apple.CoreSimulator.SimDeviceType.iPhone-18-Pro",
+    "appearance": "light",
+    "contentSize": "large",
+    "locale": "en_US",
+    "scale": 3,
+    "safeAreaTop": 62,
+    "safeAreaBottom": 34,
+    "state": "collapsed",
+    "fontConfiguration": "system-ui browser / SwiftUI system, default weight; Dynamic Type large",
+    "policy": {
+      "version": 1,
+      "maxMeanError": 0.02,
+      "maxChangedFraction": 0.1,
+      "maxLineBreakMismatches": 0,
+      "minimumImprovement": 0.001
+    },
+    "xcodeBuild": "27A266a"
+  },
+  "startedAt": "2026-10-22T00:07:01.312Z",
+  "commands": [
+    {
+      "command": "xcodebuild",
+      "args": [
+        "-version"
+      ],
+      "timeoutMs": 120000,
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 819,
+      "spawnError": null,
+      "stdout": "Xcode 27.0\nBuild version 27A266a\n",
+      "stderr": ""
+    },
+    {
+      "command": "xcrun",
+      "args": [
+        "--sdk",
+        "iphonesimulator",
+        "--show-sdk-version"
+      ],
+      "timeoutMs": 120000,
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 6,
+      "spawnError": null,
+      "stdout": "27.0\n",
+      "stderr": ""
+    },
+    {
+      "command": "xcrun",
+      "args": [
+        "simctl",
+        "list",
+        "runtimes",
+        "--json"
+      ],
+      "timeoutMs": 120000,
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 1156,
+      "spawnError": null,
+      "stdout": "ad\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.iPad-Pro-13-inch-M4-16GB\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/iPad Pro 13-inch (M4).simdevicetype\",\n          \"name\" : \"iPad Pro 13-inch (M4)\",\n          \"productFamily\" : \"iPad\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.iPad-Pro-13-inch-M4-8GB\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/iPad Air 13-inch (M4).simdevicetype\",\n          \"name\" : \"iPad Air 13-inch (M4)\",\n          \"productFamily\" : \"iPad\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.iPad-Air-13-inch-M4\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/iPad Air 11-inch (M4).simdevicetype\",\n          \"name\" : \"iPad Air 11-inch (M4)\",\n          \"productFamily\" : \"iPad\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.iPad-Air-11-inch-M4\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/iPad (A16).simdevicetype\",\n          \"name\" : \"iPad (A16)\",\n          \"productFamily\" : \"iPad\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.iPad-A16\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/iPad Air 13-inch (M3).simdevicetype\",\n          \"name\" : \"iPad Air 13-inch (M3)\",\n          \"productFamily\" : \"iPad\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.iPad-Air-13-inch-M3\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/iPad Air 11-inch (M3).simdevicetype\",\n          \"name\" : \"iPad Air 11-inch (M3)\",\n          \"productFamily\" : \"iPad\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.iPad-Air-11-inch-M3\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/iPad Air 11-inch (M2).simdevicetype\",\n          \"name\" : \"iPad Air 11-inch (M2)\",\n          \"productFamily\" : \"iPad\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.iPad-Air-11-inch-M2\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/iPad Air 13-inch (M2).simdevicetype\",\n          \"name\" : \"iPad Air 13-inch (M2)\",\n          \"productFamily\" : \"iPad\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.iPad-Air-13-inch-M2\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/iPad mini (A17 Pro).simdevicetype\",\n          \"name\" : \"iPad mini (A17 Pro)\",\n          \"productFamily\" : \"iPad\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.iPad-mini-A17-Pro\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/iPad Pro (11-inch) (4th generation) (16GB).simdevicetype\",\n          \"name\" : \"iPad Pro (11-inch) (4th generation) (16GB)\",\n          \"productFamily\" : \"iPad\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.iPad-Pro-11-inch-4th-generation-16GB\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/iPad Pro (11-inch) (4th generation).simdevicetype\",\n          \"name\" : \"iPad Pro (11-inch) (4th generation)\",\n          \"productFamily\" : \"iPad\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.iPad-Pro-11-inch-4th-generation-8GB\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/iPad Pro (12.9-inch) (6th generation) (16GB).simdevicetype\",\n          \"name\" : \"iPad Pro (12.9-inch) (6th generation) (16GB)\",\n          \"productFamily\" : \"iPad\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.iPad-Pro-12-9-inch-6th-generation-16GB\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/iPad Pro (12.9-inch) (6th generation).simdevicetype\",\n          \"name\" : \"iPad Pro (12.9-inch) (6th generation)\",\n          \"productFamily\" : \"iPad\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.iPad-Pro-12-9-inch-6th-generation-8GB\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/iPad (10th generation).simdevicetype\",\n          \"name\" : \"iPad (10th generation)\",\n          \"productFamily\" : \"iPad\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.iPad-10th-generation\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/iPad Air (5th generation).simdevicetype\",\n          \"name\" : \"iPad Air (5th generation)\",\n          \"productFamily\" : \"iPad\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.iPad-Air-5th-generation\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/iPad mini (6th generation).simdevicetype\",\n          \"name\" : \"iPad mini (6th generation)\",\n          \"productFamily\" : \"iPad\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.iPad-mini-6th-generation\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/iPad Pro (11-inch) (3rd generation).simdevicetype\",\n          \"name\" : \"iPad Pro (11-inch) (3rd generation)\",\n          \"productFamily\" : \"iPad\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.iPad-Pro-11-inch-3rd-generation\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/iPad Pro (12.9-inch) (5th generation).simdevicetype\",\n          \"name\" : \"iPad Pro (12.9-inch) (5th generation)\",\n          \"productFamily\" : \"iPad\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.iPad-Pro-12-9-inch-5th-generation\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/iPad (9th generation).simdevicetype\",\n          \"name\" : \"iPad (9th generation)\",\n          \"productFamily\" : \"iPad\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.iPad-9th-generation\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/iPad Air (4th generation).simdevicetype\",\n          \"name\" : \"iPad Air (4th generation)\",\n          \"productFamily\" : \"iPad\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.iPad-Air--4th-generation-\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/iPad Pro (11-inch) (2nd generation).simdevicetype\",\n          \"name\" : \"iPad Pro (11-inch) (2nd generation)\",\n          \"productFamily\" : \"iPad\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.iPad-Pro--11-inch---2nd-generation-\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/iPad Pro (12.9-inch) (4th generation).simdevicetype\",\n          \"name\" : \"iPad Pro (12.9-inch) (4th generation)\",\n          \"productFamily\" : \"iPad\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.iPad-Pro--12-9-inch---4th-generation-\"\n        }\n      ],\n      \"identifier\" : \"com.apple.CoreSimulator.SimRuntime.iOS-27-0\",\n      \"platform\" : \"iOS\",\n      \"bundlePath\" : \"\\/private\\/var\\/run\\/com.apple.security.cryptexd\\/mnt\\/com.apple.iPhoneOS.SimulatorRuntime-v24.1.434.0.e7vI9f\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/Runtimes\\/iOS 27.0.simruntime\",\n      \"runtimeRoot\" : \"\\/private\\/var\\/run\\/com.apple.security.cryptexd\\/mnt\\/com.apple.iPhoneOS.SimulatorRuntime-v24.1.434.0.e7vI9f\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/Runtimes\\/iOS 27.0.simruntime\\/Contents\\/Resources\\/RuntimeRoot\",\n      \"lastUsage\" : {\n        \"arm64\" : \"2026-10-22T00:06:50Z\"\n      },\n      \"name\" : \"iOS 27.0\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "command": "sw_vers",
+      "args": [
+        "-buildVersion"
+      ],
+      "timeoutMs": 120000,
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 12,
+      "spawnError": null,
+      "stdout": "26A434\n",
+      "stderr": ""
+    },
+    {
+      "command": "xcrun",
+      "args": [
+        "simctl",
+        "create",
+        "ios-agent-react-state-1792627623348",
+        "com.apple.CoreSimulator.SimDeviceType.iPhone-18-Pro",
+        "com.apple.CoreSimulator.SimRuntime.iOS-27-0"
+      ],
+      "timeoutMs": 120000,
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 279,
+      "spawnError": null,
+      "stdout": "92D4F2B4-7105-4088-86B2-D70B5DCF7082\n",
+      "stderr": ""
+    },
+    {
+      "command": "xcrun",
+      "args": [
+        "simctl",
+        "boot",
+        "92D4F2B4-7105-4088-86B2-D70B5DCF7082"
+      ],
+      "timeoutMs": 120000,
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 1262,
+      "spawnError": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": "xcrun",
+      "args": [
+        "simctl",
+        "bootstatus",
+        "92D4F2B4-7105-4088-86B2-D70B5DCF7082",
+        "-b"
+      ],
+      "timeoutMs": 300000,
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 48303,
+      "spawnError": null,
+      "stdout": "rvicesMigrator.migrator, user-agnostic)\n\t\tMigration Elapsed:00:08 seconds\n\n[2026-10-22 00:07:18 +0000] Status=2, isTerminal=NO, Elapsed=00:13.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)\n\t\tMigration Elapsed:00:09 seconds\n\n[2026-10-22 00:07:19 +0000] Status=2, isTerminal=NO, Elapsed=00:14.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)\n\t\tMigration Elapsed:00:10 seconds\n\n[2026-10-22 00:07:19 +0000] Status=2, isTerminal=NO, Elapsed=00:15.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)\n\t\tMigration Elapsed:00:11 seconds\n\n[2026-10-22 00:07:21 +0000] Status=2, isTerminal=NO, Elapsed=00:16.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)\n\t\tMigration Elapsed:00:12 seconds\n\n[2026-10-22 00:07:22 +0000] Status=2, isTerminal=NO, Elapsed=00:17.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)\n\t\tMigration Elapsed:00:13 seconds\n\n[2026-10-22 00:07:22 +0000] Status=2, isTerminal=NO, Elapsed=00:18.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)\n\t\tMigration Elapsed:00:14 seconds\n\n[2026-10-22 00:07:24 +0000] Status=2, isTerminal=NO, Elapsed=00:19.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)\n\t\tMigration Elapsed:00:15 seconds\n\n[2026-10-22 00:07:24 +0000] Status=2, isTerminal=NO, Elapsed=00:20.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)\n\t\tMigration Elapsed:00:16 seconds\n\n[2026-10-22 00:07:26 +0000] Status=2, isTerminal=NO, Elapsed=00:21.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)\n\t\tMigration Elapsed:00:17 seconds\n\n[2026-10-22 00:07:26 +0000] Status=2, isTerminal=NO, Elapsed=00:22.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)\n\t\tMigration Elapsed:00:18 seconds\n\n[2026-10-22 00:07:27 +0000] Status=2, isTerminal=NO, Elapsed=00:23.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)\n\t\tMigration Elapsed:00:19 seconds\n\n[2026-10-22 00:07:28 +0000] Status=2, isTerminal=NO, Elapsed=00:24.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)\n\t\tMigration Elapsed:00:20 seconds\n\n[2026-10-22 00:07:29 +0000] Status=2, isTerminal=NO, Elapsed=00:25.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)\n\t\tMigration Elapsed:00:21 seconds\n\n[2026-10-22 00:07:31 +0000] Status=2, isTerminal=NO, Elapsed=00:26.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)\n\t\tMigration Elapsed:00:22 seconds\n\n[2026-10-22 00:07:32 +0000] Status=2, isTerminal=NO, Elapsed=00:27.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)\n\t\tMigration Elapsed:00:23 seconds\n\n[2026-10-22 00:07:32 +0000] Status=2, isTerminal=NO, Elapsed=00:28.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)\n\t\tMigration Elapsed:00:24 seconds\n\n[2026-10-22 00:07:33 +0000] Status=2, isTerminal=NO, Elapsed=00:29.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)\n\t\tMigration Elapsed:00:25 seconds\n\n[2026-10-22 00:07:36 +0000] Status=2, isTerminal=NO, Elapsed=00:31.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.securityd.KeychainMigrator (KeychainMigrator.migrator, user-agnostic) (Concurrent: Running plugin com.apple.appleaccount.mergebuddyprovisioningresponse.migrator (MergeBuddyProvisioningResponse.migrator, concurrent after com.apple.-0LaunchServicesMigrator))\n\t\tMigration Elapsed:00:26 seconds\n\n[2026-10-22 00:07:36 +0000] Status=2, isTerminal=NO, Elapsed=00:32.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.managedconfiguration.migrator (MCProfile.migrator, user-agnostic)\n\t\tMigration Elapsed:00:27 seconds\n\n[2026-10-22 00:07:37 +0000] Status=2, isTerminal=NO, Elapsed=00:32.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.managedconfiguration.migrator (MCProfile.migrator, user-agnostic)\n\t\tMigration Elapsed:00:28 seconds\n\n[2026-10-22 00:07:38 +0000] Status=2, isTerminal=NO, Elapsed=00:33.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.managedconfiguration.migrator (MCProfile.migrator, user-agnostic)\n\t\tMigration Elapsed:00:29 seconds\n\n[2026-10-22 00:07:41 +0000] Status=2, isTerminal=NO, Elapsed=00:36.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.managedconfiguration.migrator (MCProfile.migrator, user-agnostic)\n\t\tMigration Elapsed:00:30 seconds\n\n[2026-10-22 00:07:42 +0000] Status=2, isTerminal=NO, Elapsed=00:37.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.managedconfiguration.migrator (MCProfile.migrator, user-agnostic)\n\t\tMigration Elapsed:00:33 seconds\n\n[2026-10-22 00:07:42 +0000] Status=2, isTerminal=NO, Elapsed=00:38.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.managedconfiguration.migrator (MCProfile.migrator, user-agnostic)\n\t\tMigration Elapsed:00:33 seconds\n\n[2026-10-22 00:07:43 +0000] Status=2, isTerminal=NO, Elapsed=00:38.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.managedconfiguration.migrator (MCProfile.migrator, user-agnostic)\n\t\tMigration Elapsed:00:34 seconds\n\n[2026-10-22 00:07:45 +0000] Status=2, isTerminal=NO, Elapsed=00:40.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.managedconfiguration.migrator (MCProfile.migrator, user-agnostic)\n\t\tMigration Elapsed:00:35 seconds\n\n[2026-10-22 00:07:47 +0000] Status=2, isTerminal=NO, Elapsed=00:42.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.managedconfiguration.migrator (MCProfile.migrator, user-agnostic)\n\t\tMigration Elapsed:00:37 seconds\n\n[2026-10-22 00:07:48 +0000] Status=2, isTerminal=NO, Elapsed=00:43.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.MobileSafari.migrator (MobileSafari.migrator)\n\t\tMigration Elapsed:00:39 seconds\n\n[2026-10-22 00:07:48 +0000] Status=2, isTerminal=NO, Elapsed=00:43.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.MobileSafari.migrator (MobileSafari.migrator)\n\t\tMigration Elapsed:00:40 seconds\n\n[2026-10-22 00:07:48 +0000] Status=2, isTerminal=NO, Elapsed=00:44.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.MobileSafari.migrator (MobileSafari.migrator)\n\t\tMigration Elapsed:00:40 seconds\n\n[2026-10-22 00:07:49 +0000] Status=2, isTerminal=NO, Elapsed=00:45.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.MobileSafari.migrator (MobileSafari.migrator)\n\t\tMigration Elapsed:00:41 seconds\n\n[2026-10-22 00:07:52 +0000] Status=2, isTerminal=NO, Elapsed=00:47.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.MobileSafari.migrator (MobileSafari.migrator)\n\t\tMigration Elapsed:00:42 seconds\n\n[2026-10-22 00:07:52 +0000] Status=2, isTerminal=NO, Elapsed=00:47.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.PreferencesMigrator (PreferencesMigrator.migrator)\n\t\tMigration Elapsed:00:43 seconds\n\n[2026-10-22 00:07:53 +0000] Status=4294967295, isTerminal=YES, Elapsed=00:48.\n\tFinished\n\n",
+      "stderr": ""
+    },
+    {
+      "command": "xcrun",
+      "args": [
+        "simctl",
+        "ui",
+        "92D4F2B4-7105-4088-86B2-D70B5DCF7082",
+        "appearance",
+        "light"
+      ],
+      "timeoutMs": 120000,
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 312,
+      "spawnError": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": "xcrun",
+      "args": [
+        "simctl",
+        "status_bar",
+        "92D4F2B4-7105-4088-86B2-D70B5DCF7082",
+        "override",
+        "--time",
+        "9:41",
+        "--batteryState",
+        "charged",
+        "--batteryLevel",
+        "100"
+      ],
+      "timeoutMs": 120000,
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 424,
+      "spawnError": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": "xcrun",
+      "args": [
+        "simctl",
+        "ui",
+        "92D4F2B4-7105-4088-86B2-D70B5DCF7082",
+        "content_size",
+        "large"
+      ],
+      "timeoutMs": 120000,
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 953,
+      "spawnError": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": "xcrun",
+      "args": [
+        "xcresulttool",
+        "export",
+        "attachments",
+        "--path",
+        "/Users/nagarjunareddy/Documents/Codex/universal-react-state-evidence-20261021/app-1f761a5d-77c2-4219-b68b-10df4632057d/.ios-agent/test-results/30702bfb-be39-4edc-9b56-02a039253e84.xcresult",
+        "--output-path",
+        "/Users/nagarjunareddy/Documents/Codex/universal-react-state-evidence-20261021/large-attachments-29f9f0bc-1497-4416-9b20-9cd3a2972631"
+      ],
+      "timeoutMs": 120000,
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 90,
+      "spawnError": null,
+      "stdout": "Exported 2 attachments for: BooleanStateTests/testBooleanTransitionsAndIndependentState():\nFile: 9F48C99D-2EC0-43D0-8C12-1707B01E002E.png, suggested name: \"changed-state_0_A9F1C012-2F6B-4FB7-9A47-B9C49A991740.png\"\nFile: A936E88D-FDDC-413F-864A-308E4FE325DC.png, suggested name: \"initial-state_0_AFF9074E-746E-4582-827D-DF21D08A43E0.png\"\n\nExported 2 attachments for: BooleanStateTests/testNativeAccessibilityAndClipping():\nFile: 3FD6E335-E937-4CC1-AF79-32F59039E1BB.png, suggested name: \"accessibility-changed_0_CBD3B674-ADE9-45E1-8ABE-5D960251DE12.png\"\nFile: DEA61FAF-8DA3-4DDE-AE9D-217F2D2CEE0D.png, suggested name: \"accessibility-initial_0_DD322346-B170-40C8-9649-07D0B04B5F8A.png\"\n\nSkipped export for BooleanStateTests/testRelaunchRestoresInitialState(): no matching attachments\n\nGenerated manifest file with attachment details: /Users/nagarjunareddy/Documents/Codex/universal-react-state-evidence-20261021/large-attachments-29f9f0bc-1497-4416-9b20-9cd3a2972631/manifest.json\n",
+      "stderr": ""
+    },
+    {
+      "command": "xcrun",
+      "args": [
+        "simctl",
+        "ui",
+        "92D4F2B4-7105-4088-86B2-D70B5DCF7082",
+        "content_size",
+        "extra-extra-extra-large"
+      ],
+      "timeoutMs": 120000,
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 1563,
+      "spawnError": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": "xcrun",
+      "args": [
+        "xcresulttool",
+        "export",
+        "attachments",
+        "--path",
+        "/Users/nagarjunareddy/Documents/Codex/universal-react-state-evidence-20261021/app-1f761a5d-77c2-4219-b68b-10df4632057d/.ios-agent/test-results/f0a51303-553d-48f6-9417-eeb61e8da0b2.xcresult",
+        "--output-path",
+        "/Users/nagarjunareddy/Documents/Codex/universal-react-state-evidence-20261021/xxxl-attachments-035a2c4c-ea87-4d02-855b-0c9d1bf3c6a5"
+      ],
+      "timeoutMs": 120000,
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 83,
+      "spawnError": null,
+      "stdout": "Exported 2 attachments for: BooleanStateTests/testBooleanTransitionsAndIndependentState():\nFile: 4BD14F27-0E55-44A5-B4A2-F5434A91EB50.png, suggested name: \"changed-state_0_F7B026DA-3075-4BD8-967D-6BE9721AA336.png\"\nFile: 2D410687-7012-4A1C-9C72-6ECC87929997.png, suggested name: \"initial-state_0_49A2B565-051D-44EB-8738-FBD0882D3551.png\"\n\nExported 2 attachments for: BooleanStateTests/testNativeAccessibilityAndClipping():\nFile: 3A59D4E8-A54B-406A-A5C3-3AAFA0494E4F.png, suggested name: \"accessibility-changed_0_AB906819-4202-4703-9188-30781436E83B.png\"\nFile: 2B373E30-91CF-46B3-9E7D-144E73CF4682.png, suggested name: \"accessibility-initial_0_E5D6D4AE-CF11-4FD5-AB92-5F76DFCA057C.png\"\n\nSkipped export for BooleanStateTests/testRelaunchRestoresInitialState(): no matching attachments\n\nGenerated manifest file with attachment details: /Users/nagarjunareddy/Documents/Codex/universal-react-state-evidence-20261021/xxxl-attachments-035a2c4c-ea87-4d02-855b-0c9d1bf3c6a5/manifest.json\n",
+      "stderr": ""
+    },
+    {
+      "command": "xcodebuild",
+      "args": [
+        "-version"
+      ],
+      "timeoutMs": 120000,
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 358,
+      "spawnError": null,
+      "stdout": "Xcode 27.0\nBuild version 27A266a\n",
+      "stderr": ""
+    },
+    {
+      "command": "xcrun",
+      "args": [
+        "--sdk",
+        "iphonesimulator",
+        "--show-sdk-version"
+      ],
+      "timeoutMs": 120000,
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 6,
+      "spawnError": null,
+      "stdout": "27.0\n",
+      "stderr": ""
+    },
+    {
+      "command": "xcrun",
+      "args": [
+        "simctl",
+        "list",
+        "runtimes",
+        "--json"
+      ],
+      "timeoutMs": 120000,
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 301,
+      "spawnError": null,
+      "stdout": "ad\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.iPad-Pro-13-inch-M4-16GB\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/iPad Pro 13-inch (M4).simdevicetype\",\n          \"name\" : \"iPad Pro 13-inch (M4)\",\n          \"productFamily\" : \"iPad\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.iPad-Pro-13-inch-M4-8GB\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/iPad Air 13-inch (M4).simdevicetype\",\n          \"name\" : \"iPad Air 13-inch (M4)\",\n          \"productFamily\" : \"iPad\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.iPad-Air-13-inch-M4\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/iPad Air 11-inch (M4).simdevicetype\",\n          \"name\" : \"iPad Air 11-inch (M4)\",\n          \"productFamily\" : \"iPad\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.iPad-Air-11-inch-M4\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/iPad (A16).simdevicetype\",\n          \"name\" : \"iPad (A16)\",\n          \"productFamily\" : \"iPad\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.iPad-A16\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/iPad Air 13-inch (M3).simdevicetype\",\n          \"name\" : \"iPad Air 13-inch (M3)\",\n          \"productFamily\" : \"iPad\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.iPad-Air-13-inch-M3\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/iPad Air 11-inch (M3).simdevicetype\",\n          \"name\" : \"iPad Air 11-inch (M3)\",\n          \"productFamily\" : \"iPad\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.iPad-Air-11-inch-M3\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/iPad Air 11-inch (M2).simdevicetype\",\n          \"name\" : \"iPad Air 11-inch (M2)\",\n          \"productFamily\" : \"iPad\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.iPad-Air-11-inch-M2\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/iPad Air 13-inch (M2).simdevicetype\",\n          \"name\" : \"iPad Air 13-inch (M2)\",\n          \"productFamily\" : \"iPad\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.iPad-Air-13-inch-M2\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/iPad mini (A17 Pro).simdevicetype\",\n          \"name\" : \"iPad mini (A17 Pro)\",\n          \"productFamily\" : \"iPad\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.iPad-mini-A17-Pro\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/iPad Pro (11-inch) (4th generation) (16GB).simdevicetype\",\n          \"name\" : \"iPad Pro (11-inch) (4th generation) (16GB)\",\n          \"productFamily\" : \"iPad\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.iPad-Pro-11-inch-4th-generation-16GB\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/iPad Pro (11-inch) (4th generation).simdevicetype\",\n          \"name\" : \"iPad Pro (11-inch) (4th generation)\",\n          \"productFamily\" : \"iPad\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.iPad-Pro-11-inch-4th-generation-8GB\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/iPad Pro (12.9-inch) (6th generation) (16GB).simdevicetype\",\n          \"name\" : \"iPad Pro (12.9-inch) (6th generation) (16GB)\",\n          \"productFamily\" : \"iPad\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.iPad-Pro-12-9-inch-6th-generation-16GB\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/iPad Pro (12.9-inch) (6th generation).simdevicetype\",\n          \"name\" : \"iPad Pro (12.9-inch) (6th generation)\",\n          \"productFamily\" : \"iPad\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.iPad-Pro-12-9-inch-6th-generation-8GB\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/iPad (10th generation).simdevicetype\",\n          \"name\" : \"iPad (10th generation)\",\n          \"productFamily\" : \"iPad\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.iPad-10th-generation\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/iPad Air (5th generation).simdevicetype\",\n          \"name\" : \"iPad Air (5th generation)\",\n          \"productFamily\" : \"iPad\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.iPad-Air-5th-generation\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/iPad mini (6th generation).simdevicetype\",\n          \"name\" : \"iPad mini (6th generation)\",\n          \"productFamily\" : \"iPad\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.iPad-mini-6th-generation\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/iPad Pro (11-inch) (3rd generation).simdevicetype\",\n          \"name\" : \"iPad Pro (11-inch) (3rd generation)\",\n          \"productFamily\" : \"iPad\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.iPad-Pro-11-inch-3rd-generation\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/iPad Pro (12.9-inch) (5th generation).simdevicetype\",\n          \"name\" : \"iPad Pro (12.9-inch) (5th generation)\",\n          \"productFamily\" : \"iPad\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.iPad-Pro-12-9-inch-5th-generation\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/iPad (9th generation).simdevicetype\",\n          \"name\" : \"iPad (9th generation)\",\n          \"productFamily\" : \"iPad\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.iPad-9th-generation\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/iPad Air (4th generation).simdevicetype\",\n          \"name\" : \"iPad Air (4th generation)\",\n          \"productFamily\" : \"iPad\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.iPad-Air--4th-generation-\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/iPad Pro (11-inch) (2nd generation).simdevicetype\",\n          \"name\" : \"iPad Pro (11-inch) (2nd generation)\",\n          \"productFamily\" : \"iPad\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.iPad-Pro--11-inch---2nd-generation-\"\n        },\n        {\n          \"bundlePath\" : \"\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/DeviceTypes\\/iPad Pro (12.9-inch) (4th generation).simdevicetype\",\n          \"name\" : \"iPad Pro (12.9-inch) (4th generation)\",\n          \"productFamily\" : \"iPad\",\n          \"identifier\" : \"com.apple.CoreSimulator.SimDeviceType.iPad-Pro--12-9-inch---4th-generation-\"\n        }\n      ],\n      \"identifier\" : \"com.apple.CoreSimulator.SimRuntime.iOS-27-0\",\n      \"platform\" : \"iOS\",\n      \"bundlePath\" : \"\\/private\\/var\\/run\\/com.apple.security.cryptexd\\/mnt\\/com.apple.iPhoneOS.SimulatorRuntime-v24.1.434.0.e7vI9f\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/Runtimes\\/iOS 27.0.simruntime\",\n      \"runtimeRoot\" : \"\\/private\\/var\\/run\\/com.apple.security.cryptexd\\/mnt\\/com.apple.iPhoneOS.SimulatorRuntime-v24.1.434.0.e7vI9f\\/Library\\/Developer\\/CoreSimulator\\/Profiles\\/Runtimes\\/iOS 27.0.simruntime\\/Contents\\/Resources\\/RuntimeRoot\",\n      \"lastUsage\" : {\n        \"arm64\" : \"2026-10-22T00:12:15Z\"\n      },\n      \"name\" : \"iOS 27.0\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "command": "sw_vers",
+      "args": [
+        "-buildVersion"
+      ],
+      "timeoutMs": 120000,
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 9,
+      "spawnError": null,
+      "stdout": "26A434\n",
+      "stderr": ""
+    },
+    {
+      "command": "xcrun",
+      "args": [
+        "simctl",
+        "create",
+        "ios-agent-react-state-1792627975596",
+        "com.apple.CoreSimulator.SimDeviceType.iPhone-18-Pro",
+        "com.apple.CoreSimulator.SimRuntime.iOS-27-0"
+      ],
+      "timeoutMs": 120000,
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 192,
+      "spawnError": null,
+      "stdout": "A8503832-FDE4-49C2-972F-53FAA023DDAF\n",
+      "stderr": ""
+    },
+    {
+      "command": "xcrun",
+      "args": [
+        "simctl",
+        "boot",
+        "A8503832-FDE4-49C2-972F-53FAA023DDAF"
+      ],
+      "timeoutMs": 120000,
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 462,
+      "spawnError": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": "xcrun",
+      "args": [
+        "simctl",
+        "bootstatus",
+        "A8503832-FDE4-49C2-972F-53FAA023DDAF",
+        "-b"
+      ],
+      "timeoutMs": 300000,
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 36834,
+      "spawnError": null,
+      "stdout": "Monitoring boot status for ios-agent-react-state-1792627975596 (A8503832-FDE4-49C2-972F-53FAA023DDAF).\n[2026-10-22 00:12:57 +0000] Status=1, isTerminal=NO, Elapsed=00:01.\n\tWaiting on BackBoard\n\n[2026-10-22 00:12:58 +0000] Status=2, isTerminal=NO, Elapsed=00:02.\n\tWaiting on Data Migration\n\t\tReason:(null)\n\t\tMigration Elapsed:00:00 seconds\n\n[2026-10-22 00:13:00 +0000] Status=2, isTerminal=NO, Elapsed=00:04.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)\n\t\tMigration Elapsed:00:01 seconds\n\n[2026-10-22 00:13:01 +0000] Status=2, isTerminal=NO, Elapsed=00:05.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)\n\t\tMigration Elapsed:00:02 seconds\n\n[2026-10-22 00:13:02 +0000] Status=2, isTerminal=NO, Elapsed=00:06.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)\n\t\tMigration Elapsed:00:03 seconds\n\n[2026-10-22 00:13:03 +0000] Status=2, isTerminal=NO, Elapsed=00:07.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)\n\t\tMigration Elapsed:00:04 seconds\n\n[2026-10-22 00:13:04 +0000] Status=2, isTerminal=NO, Elapsed=00:08.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)\n\t\tMigration Elapsed:00:05 seconds\n\n[2026-10-22 00:13:05 +0000] Status=2, isTerminal=NO, Elapsed=00:09.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)\n\t\tMigration Elapsed:00:06 seconds\n\n[2026-10-22 00:13:06 +0000] Status=2, isTerminal=NO, Elapsed=00:10.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)\n\t\tMigration Elapsed:00:07 seconds\n\n[2026-10-22 00:13:07 +0000] Status=2, isTerminal=NO, Elapsed=00:11.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)\n\t\tMigration Elapsed:00:08 seconds\n\n[2026-10-22 00:13:08 +0000] Status=2, isTerminal=NO, Elapsed=00:12.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)\n\t\tMigration Elapsed:00:09 seconds\n\n[2026-10-22 00:13:09 +0000] Status=2, isTerminal=NO, Elapsed=00:13.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)\n\t\tMigration Elapsed:00:10 seconds\n\n[2026-10-22 00:13:10 +0000] Status=2, isTerminal=NO, Elapsed=00:14.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)\n\t\tMigration Elapsed:00:11 seconds\n\n[2026-10-22 00:13:11 +0000] Status=2, isTerminal=NO, Elapsed=00:15.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)\n\t\tMigration Elapsed:00:12 seconds\n\n[2026-10-22 00:13:12 +0000] Status=2, isTerminal=NO, Elapsed=00:16.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)\n\t\tMigration Elapsed:00:13 seconds\n\n[2026-10-22 00:13:13 +0000] Status=2, isTerminal=NO, Elapsed=00:17.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)\n\t\tMigration Elapsed:00:14 seconds\n\n[2026-10-22 00:13:14 +0000] Status=2, isTerminal=NO, Elapsed=00:18.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)\n\t\tMigration Elapsed:00:15 seconds\n\n[2026-10-22 00:13:15 +0000] Status=2, isTerminal=NO, Elapsed=00:19.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)\n\t\tMigration Elapsed:00:16 seconds\n\n[2026-10-22 00:13:16 +0000] Status=2, isTerminal=NO, Elapsed=00:20.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)\n\t\tMigration Elapsed:00:17 seconds\n\n[2026-10-22 00:13:17 +0000] Status=2, isTerminal=NO, Elapsed=00:21.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)\n\t\tMigration Elapsed:00:18 seconds\n\n[2026-10-22 00:13:18 +0000] Status=2, isTerminal=NO, Elapsed=00:22.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)\n\t\tMigration Elapsed:00:19 seconds\n\n[2026-10-22 00:13:19 +0000] Status=2, isTerminal=NO, Elapsed=00:23.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.-0LaunchServicesMigrator (00LaunchServicesMigrator.migrator, user-agnostic)\n\t\tMigration Elapsed:00:20 seconds\n\n[2026-10-22 00:13:21 +0000] Status=2, isTerminal=NO, Elapsed=00:25.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.securityd.KeychainMigrator (KeychainMigrator.migrator, user-agnostic) (Concurrent: Running plugin com.apple.appleaccount.mergebuddyprovisioningresponse.migrator (MergeBuddyProvisioningResponse.migrator, concurrent after com.apple.-0LaunchServicesMigrator))\n\t\tMigration Elapsed:00:21 seconds\n\n[2026-10-22 00:13:21 +0000] Status=2, isTerminal=NO, Elapsed=00:25.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.managedconfiguration.migrator (MCProfile.migrator, user-agnostic)\n\t\tMigration Elapsed:00:23 seconds\n\n[2026-10-22 00:13:22 +0000] Status=2, isTerminal=NO, Elapsed=00:26.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.managedconfiguration.migrator (MCProfile.migrator, user-agnostic)\n\t\tMigration Elapsed:00:23 seconds\n\n[2026-10-22 00:13:23 +0000] Status=2, isTerminal=NO, Elapsed=00:27.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.managedconfiguration.migrator (MCProfile.migrator, user-agnostic)\n\t\tMigration Elapsed:00:24 seconds\n\n[2026-10-22 00:13:24 +0000] Status=2, isTerminal=NO, Elapsed=00:28.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.MobileSafari.migrator (MobileSafari.migrator)\n\t\tMigration Elapsed:00:25 seconds\n\n[2026-10-22 00:13:25 +0000] Status=2, isTerminal=NO, Elapsed=00:29.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.MobileSafari.migrator (MobileSafari.migrator)\n\t\tMigration Elapsed:00:26 seconds\n\n[2026-10-22 00:13:26 +0000] Status=2, isTerminal=NO, Elapsed=00:30.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.MobileSafari.migrator (MobileSafari.migrator)\n\t\tMigration Elapsed:00:27 seconds\n\n[2026-10-22 00:13:30 +0000] Status=2, isTerminal=NO, Elapsed=00:34.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.keyboards.migrator (KeyboardMigrator.migrator)\n\t\tMigration Elapsed:00:30 seconds\n\n[2026-10-22 00:13:30 +0000] Status=2, isTerminal=NO, Elapsed=00:34.\n\tWaiting on Data Migration\n\t\tReason:Running plugin com.apple.PreferencesMigrator (PreferencesMigrator.migrator)\n\t\tMigration Elapsed:00:31 seconds\n\n[2026-10-22 00:13:33 +0000] Status=4294967295, isTerminal=YES, Elapsed=00:36.\n\tFinished\n\n",
+      "stderr": ""
+    },
+    {
+      "command": "xcrun",
+      "args": [
+        "simctl",
+        "ui",
+        "A8503832-FDE4-49C2-972F-53FAA023DDAF",
+        "appearance",
+        "light"
+      ],
+      "timeoutMs": 120000,
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 780,
+      "spawnError": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": "xcrun",
+      "args": [
+        "simctl",
+        "status_bar",
+        "A8503832-FDE4-49C2-972F-53FAA023DDAF",
+        "override",
+        "--time",
+        "9:41",
+        "--batteryState",
+        "charged",
+        "--batteryLevel",
+        "100"
+      ],
+      "timeoutMs": 120000,
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 321,
+      "spawnError": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": "xcrun",
+      "args": [
+        "simctl",
+        "ui",
+        "A8503832-FDE4-49C2-972F-53FAA023DDAF",
+        "content_size",
+        "large"
+      ],
+      "timeoutMs": 120000,
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 265,
+      "spawnError": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": "xcrun",
+      "args": [
+        "simctl",
+        "ui",
+        "A8503832-FDE4-49C2-972F-53FAA023DDAF",
+        "content_size",
+        "extra-extra-extra-large"
+      ],
+      "timeoutMs": 120000,
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 326,
+      "spawnError": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "phase": "tests",
+  "contract": "9880b8378a3287271885abd6f666415d24f4220f8f3d059a0909957bdfd2efe4",
+  "environment": {
+    "xcode": "Xcode 27.0\nBuild version 27A266a",
+    "sdk": "27.0",
+    "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-27-0",
+    "runtimeBuild": "24A434",
+    "host": "26A434"
+  },
+  "simulator": "A8503832-FDE4-49C2-972F-53FAA023DDAF",
+  "project": {
+    "folder": "/Users/nagarjunareddy/Documents/Codex/universal-react-state-evidence-20261021/app-1f761a5d-77c2-4219-b68b-10df4632057d",
+    "sourceHash": "b35e23695aa530e9ba6dd04997194996e26c6c6043cd552d44acd8e9ddc69b59",
+    "irHash": "4e76b933be3fae63d2f5f711c563a44e42d821826ec89da0c6a8935aec9ce35b"
+  },
+  "build": {
+    "success": true,
+    "errors": [],
+    "warnings": [],
+    "durationMs": 73425,
+    "scheme": "TripChecklist",
+    "destination": "platform=iOS Simulator,id=92D4F2B4-7105-4088-86B2-D70B5DCF7082",
+    "appPath": "/Users/nagarjunareddy/Documents/Codex/universal-react-state-evidence-20261021/app-1f761a5d-77c2-4219-b68b-10df4632057d/.ios-agent/DerivedData/Build/Products/Debug-iphonesimulator/TripChecklist.app",
+    "logPath": "/Users/nagarjunareddy/Documents/Codex/universal-react-state-evidence-20261021/app-1f761a5d-77c2-4219-b68b-10df4632057d/.ios-agent/logs/build-1792627674075.log"
+  },
+  "large": {
+    "tests": {
+      "sourceHash": "d9af66f09e1ce0eb15f0a2a1354c87097f59185adde5747f113a5cdbe59c0784",
+      "at": "2026-10-22T00:10:53.053Z",
+      "logPath": ".ios-agent/logs/test-30702bfb-be39-4edc-9b56-02a039253e84.log",
+      "resultBundle": ".ios-agent/test-results/30702bfb-be39-4edc-9b56-02a039253e84.xcresult",
+      "status": "passed",
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    "attachments": "/Users/nagarjunareddy/Documents/Codex/universal-react-state-evidence-20261021/large-attachments-29f9f0bc-1497-4416-9b20-9cd3a2972631"
+  },
+  "xxxl": {
+    "tests": {
+      "sourceHash": "d9af66f09e1ce0eb15f0a2a1354c87097f59185adde5747f113a5cdbe59c0784",
+      "at": "2026-10-22T00:12:24.665Z",
+      "logPath": ".ios-agent/logs/test-f0a51303-553d-48f6-9417-eeb61e8da0b2.log",
+      "resultBundle": ".ios-agent/test-results/f0a51303-553d-48f6-9417-eeb61e8da0b2.xcresult",
+      "status": "passed",
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    "attachments": "/Users/nagarjunareddy/Documents/Codex/universal-react-state-evidence-20261021/xxxl-attachments-035a2c4c-ea87-4d02-855b-0c9d1bf3c6a5"
+  },
+  "visualFidelity": "not-evaluated"
+}

@@ -1,0 +1,461 @@
+{
+  "schemaVersion": "1.1.0",
+  "mode": "faithful",
+  "name": "TripChecklist",
+  "sources": [
+    {
+      "id": "source",
+      "path": "App.tsx",
+      "sha256": "b35e23695aa530e9ba6dd04997194996e26c6c6043cd552d44acd8e9ddc69b59",
+      "bytes": 872,
+      "adapter": "react-boolean-state@1"
+    }
+  ],
+  "screens": [
+    {
+      "id": "home",
+      "title": "TripChecklist",
+      "root": "node-1"
+    }
+  ],
+  "states": [
+    {
+      "id": "state-1",
+      "initial": false,
+      "evidence": [
+        {
+          "source": "source",
+          "start": 193,
+          "end": 234,
+          "certainty": "extracted"
+        }
+      ]
+    },
+    {
+      "id": "state-2",
+      "initial": true,
+      "evidence": [
+        {
+          "source": "source",
+          "start": 237,
+          "end": 281,
+          "certainty": "extracted"
+        }
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "id": "node-3",
+      "kind": "text",
+      "text": "Trip checklist",
+      "children": [],
+      "style": {
+        "fontSize": 32,
+        "bold": true
+      },
+      "evidence": [
+        {
+          "source": "source",
+          "start": 372,
+          "end": 417,
+          "certainty": "extracted"
+        }
+      ]
+    },
+    {
+      "id": "node-5",
+      "kind": "text",
+      "text": "Packing incomplete",
+      "textBinding": {
+        "state": "state-1",
+        "whenTrue": "Pack ready",
+        "whenFalse": "Packing incomplete"
+      },
+      "children": [],
+      "style": {},
+      "evidence": [
+        {
+          "source": "source",
+          "start": 436,
+          "end": 489,
+          "certainty": "extracted"
+        },
+        {
+          "source": "source",
+          "start": 422,
+          "end": 700,
+          "certainty": "extracted"
+        },
+        {
+          "source": "source",
+          "start": 193,
+          "end": 234,
+          "certainty": "extracted"
+        },
+        {
+          "source": "source",
+          "start": 449,
+          "end": 461,
+          "certainty": "extracted"
+        },
+        {
+          "source": "source",
+          "start": 464,
+          "end": 484,
+          "certainty": "extracted"
+        }
+      ]
+    },
+    {
+      "id": "node-6",
+      "kind": "button",
+      "text": "Toggle pack",
+      "action": {
+        "operation": "toggle",
+        "state": "state-1"
+      },
+      "children": [],
+      "style": {},
+      "evidence": [
+        {
+          "source": "source",
+          "start": 496,
+          "end": 557,
+          "certainty": "extracted"
+        },
+        {
+          "source": "source",
+          "start": 422,
+          "end": 700,
+          "certainty": "extracted"
+        },
+        {
+          "source": "source",
+          "start": 504,
+          "end": 536,
+          "certainty": "extracted"
+        },
+        {
+          "source": "source",
+          "start": 193,
+          "end": 234,
+          "certainty": "extracted"
+        }
+      ]
+    },
+    {
+      "id": "node-7",
+      "kind": "button",
+      "text": "Mark packed",
+      "action": {
+        "operation": "set",
+        "state": "state-1",
+        "value": true
+      },
+      "children": [],
+      "style": {},
+      "evidence": [
+        {
+          "source": "source",
+          "start": 564,
+          "end": 622,
+          "certainty": "extracted"
+        },
+        {
+          "source": "source",
+          "start": 422,
+          "end": 700,
+          "certainty": "extracted"
+        },
+        {
+          "source": "source",
+          "start": 572,
+          "end": 601,
+          "certainty": "extracted"
+        },
+        {
+          "source": "source",
+          "start": 193,
+          "end": 234,
+          "certainty": "extracted"
+        }
+      ]
+    },
+    {
+      "id": "node-8",
+      "kind": "button",
+      "text": "Reset pack",
+      "action": {
+        "operation": "set",
+        "state": "state-1",
+        "value": false
+      },
+      "children": [],
+      "style": {},
+      "evidence": [
+        {
+          "source": "source",
+          "start": 629,
+          "end": 687,
+          "certainty": "extracted"
+        },
+        {
+          "source": "source",
+          "start": 422,
+          "end": 700,
+          "certainty": "extracted"
+        },
+        {
+          "source": "source",
+          "start": 637,
+          "end": 667,
+          "certainty": "extracted"
+        },
+        {
+          "source": "source",
+          "start": 193,
+          "end": 234,
+          "certainty": "extracted"
+        }
+      ]
+    },
+    {
+      "id": "node-4",
+      "kind": "column",
+      "children": [
+        "node-5",
+        "node-6",
+        "node-7",
+        "node-8"
+      ],
+      "style": {
+        "gap": 12
+      },
+      "evidence": [
+        {
+          "source": "source",
+          "start": 71,
+          "end": 155,
+          "certainty": "extracted"
+        },
+        {
+          "source": "source",
+          "start": 422,
+          "end": 700,
+          "certainty": "extracted"
+        }
+      ]
+    },
+    {
+      "id": "node-10",
+      "kind": "text",
+      "text": "Reminder on",
+      "textBinding": {
+        "state": "state-2",
+        "whenTrue": "Reminder on",
+        "whenFalse": "Reminder off"
+      },
+      "children": [],
+      "style": {},
+      "evidence": [
+        {
+          "source": "source",
+          "start": 719,
+          "end": 769,
+          "certainty": "extracted"
+        },
+        {
+          "source": "source",
+          "start": 705,
+          "end": 858,
+          "certainty": "extracted"
+        },
+        {
+          "source": "source",
+          "start": 237,
+          "end": 281,
+          "certainty": "extracted"
+        },
+        {
+          "source": "source",
+          "start": 734,
+          "end": 747,
+          "certainty": "extracted"
+        },
+        {
+          "source": "source",
+          "start": 750,
+          "end": 764,
+          "certainty": "extracted"
+        }
+      ]
+    },
+    {
+      "id": "node-11",
+      "kind": "button",
+      "text": "Toggle reminder",
+      "action": {
+        "operation": "toggle",
+        "state": "state-2"
+      },
+      "children": [],
+      "style": {},
+      "evidence": [
+        {
+          "source": "source",
+          "start": 776,
+          "end": 845,
+          "certainty": "extracted"
+        },
+        {
+          "source": "source",
+          "start": 705,
+          "end": 858,
+          "certainty": "extracted"
+        },
+        {
+          "source": "source",
+          "start": 784,
+          "end": 820,
+          "certainty": "extracted"
+        },
+        {
+          "source": "source",
+          "start": 237,
+          "end": 281,
+          "certainty": "extracted"
+        }
+      ]
+    },
+    {
+      "id": "node-9",
+      "kind": "column",
+      "children": [
+        "node-10",
+        "node-11"
+      ],
+      "style": {
+        "gap": 12
+      },
+      "evidence": [
+        {
+          "source": "source",
+          "start": 71,
+          "end": 155,
+          "certainty": "extracted"
+        },
+        {
+          "source": "source",
+          "start": 705,
+          "end": 858,
+          "certainty": "extracted"
+        }
+      ]
+    },
+    {
+      "id": "node-2",
+      "kind": "column",
+      "children": [
+        "node-3",
+        "node-4",
+        "node-9"
+      ],
+      "style": {
+        "foreground": "#142017",
+        "background": "#FFFFFF",
+        "padding": 24,
+        "gap": 16
+      },
+      "evidence": [
+        {
+          "source": "source",
+          "start": 291,
+          "end": 868,
+          "certainty": "extracted"
+        }
+      ]
+    },
+    {
+      "id": "node-1",
+      "kind": "column",
+      "children": [
+        "node-2"
+      ],
+      "style": {},
+      "evidence": [
+        {
+          "source": "source",
+          "start": 291,
+          "end": 868,
+          "certainty": "extracted"
+        }
+      ]
+    }
+  ],
+  "requirements": [
+    {
+      "id": "review-api",
+      "area": "api",
+      "status": "unknown",
+      "description": "No api behavior inferred from static HTML. Developer review required.",
+      "evidence": []
+    },
+    {
+      "id": "review-auth",
+      "area": "auth",
+      "status": "unknown",
+      "description": "No auth behavior inferred from static HTML. Developer review required.",
+      "evidence": []
+    },
+    {
+      "id": "review-data",
+      "area": "data",
+      "status": "unknown",
+      "description": "No data behavior inferred from static HTML. Developer review required.",
+      "evidence": []
+    },
+    {
+      "id": "review-assets",
+      "area": "assets",
+      "status": "unknown",
+      "description": "No assets behavior inferred from static HTML. Developer review required.",
+      "evidence": []
+    },
+    {
+      "id": "review-appearance",
+      "area": "appearance",
+      "status": "unknown",
+      "description": "No appearance behavior inferred from static HTML. Developer review required.",
+      "evidence": []
+    },
+    {
+      "id": "review-responsive",
+      "area": "responsive",
+      "status": "unknown",
+      "description": "No responsive behavior inferred from static HTML. Developer review required.",
+      "evidence": []
+    },
+    {
+      "id": "local-boolean-state",
+      "area": "state",
+      "status": "extracted",
+      "description": "Entry-component boolean state, literal text branches and single-step button transitions. No effects, persistence or async events.",
+      "evidence": [
+        {
+          "source": "source",
+          "start": 193,
+          "end": 234,
+          "certainty": "extracted"
+        },
+        {
+          "source": "source",
+          "start": 237,
+          "end": 281,
+          "certainty": "extracted"
+        }
+      ]
+    }
+  ],
+  "limitations": []
+}

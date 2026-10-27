@@ -66,3 +66,10 @@ for one gate before broadening the tool inventory.
 - `review_foundation_models`, `review_core_ai` and the remaining [analysis tool contracts](docs/mcp/vnext-analysis-tools.md).
 - Simulator video/log streaming, UI automation backend and visual review.
 - Measured token/context savings on reproducible tasks.
+
+## Universal App Engine — current experimental work
+
+- Passive typography observation has local and hosted pixel-invariance evidence; complete HTML visual fidelity remains unresolved. Reference approval is separate from baseline promotion.
+- Experimental React import supports same-file components, literal props, bounded expressions/children, boolean state/button actions and explicit flat MemoryRouter navigation. Existing native evidence is retained; new simulator verification is deferred during integration.
+- The offline viewer displays saved evidence. General React, Next.js and other framework adapters remain incomplete.
+- Next: finish fidelity and conditional UI before expanding adapters. Source integration does not promote a baseline or publish npm.

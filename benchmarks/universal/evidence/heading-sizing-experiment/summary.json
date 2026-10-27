@@ -1,0 +1,30 @@
+{
+  "status": "hypothesis-not-supported",
+  "change": "fixedSize(horizontal: false, vertical: true) on heading only",
+  "toolchain": "Xcode 27.0 (27A266a), iOS 27.0, iPhone 18 Pro",
+  "nativeTestsPassed": 1,
+  "observedHeadingLines": [
+    [
+      0,
+      1,
+      2
+    ],
+    [
+      3,
+      4
+    ]
+  ],
+  "referenceHeadingLines": [
+    [
+      0,
+      1,
+      2,
+      3
+    ],
+    [
+      4
+    ]
+  ],
+  "conclusion": "Intrinsic vertical sizing did not fix heading wrapping. Not applied to the generator.",
+  "knownGood": null
+}

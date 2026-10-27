@@ -1,0 +1,55 @@
+{
+  "version": 2,
+  "profile": {
+    "version": 1,
+    "xcode": "27.0",
+    "sdk": "27.0",
+    "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-27-0",
+    "deviceType": "com.apple.CoreSimulator.SimDeviceType.iPhone-18-Pro",
+    "appearance": "light",
+    "contentSize": "large",
+    "locale": "en_US",
+    "scale": 3,
+    "safeAreaTop": 62,
+    "safeAreaBottom": 34,
+    "state": "collapsed",
+    "fontConfiguration": "system-ui browser / SwiftUI system, default weight; Dynamic Type large",
+    "policy": {
+      "version": 1,
+      "maxMeanError": 0.02,
+      "maxChangedFraction": 0.1,
+      "maxLineBreakMismatches": 0,
+      "minimumImprovement": 0.001
+    },
+    "xcodeBuild": "27A266a"
+  },
+  "startedAt": "2026-10-16T03:31:36.842Z",
+  "status": "failed",
+  "runs": [
+    {
+      "name": "baseline",
+      "folder": "/tmp/ios-m21-regions-final/baseline-4ee43fb9-bf26-403b-b0a3-a69bf48c61b3",
+      "sourceHash": "1dd65e665c77c4c35bb96cc1cb8c191b637c4782fa71e5b9a8263fec3079eb19",
+      "build": {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "durationMs": 88765,
+        "scheme": "FieldNotes",
+        "destination": "platform=iOS Simulator,id=268BF7AB-8E19-4193-93B6-EE92DE2A45E1",
+        "appPath": "/tmp/ios-m21-regions-final/baseline-4ee43fb9-bf26-403b-b0a3-a69bf48c61b3/.ios-agent/DerivedData/Build/Products/Debug-iphonesimulator/FieldNotes.app",
+        "logPath": "/tmp/ios-m21-regions-final/baseline-4ee43fb9-bf26-403b-b0a3-a69bf48c61b3/.ios-agent/logs/build-1792121535336.log"
+      }
+    }
+  ],
+  "contract": "d50d41b67a00c664bbbc00fb1908ecca4283ff3a4615c2c27835ec3582192771",
+  "environment": {
+    "xcode": "Xcode 27.0\nBuild version 27A266a",
+    "sdk": "27.0",
+    "runtimeBuild": "24A434",
+    "browser": "155.0.8059.82",
+    "host": "26A434"
+  },
+  "simulator": "268BF7AB-8E19-4193-93B6-EE92DE2A45E1",
+  "error": "Injected interruption after baseline-large"
+}

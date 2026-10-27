@@ -1,0 +1,47 @@
+{
+  "recordedAt": "2026-10-22T04:15:44.598412+00:00",
+  "status": "passed",
+  "checkpointCount": 4,
+  "checkpointsBefore": {
+    "checkpoints/build.json": {
+      "sha256": "4073856e0ad084552e79cf41a44e53f752230a3197c61fd6ec4a30b50dfab7cb",
+      "mtime_ns": 1792642221523300971
+    },
+    "checkpoints/generate.json": {
+      "sha256": "9e11f03ec0f28dfefe3f3813e046cb12441c2e43d8a75d747f150b7cdba38165",
+      "mtime_ns": 1792642195854316378
+    },
+    "checkpoints/large.json": {
+      "sha256": "c0b8143fac4d365e0299925d620c8ff62cea61da70f543431d3a896b3c2f0d2f",
+      "mtime_ns": 1792642328272087997
+    },
+    "checkpoints/xxxl.json": {
+      "sha256": "9440a2fbaf8d2266c98a03bc5b5f27809522ae697335824b02fc1c62db64b51f",
+      "mtime_ns": 1792642388959192599
+    }
+  },
+  "checkpointsAfter": {
+    "checkpoints/build.json": {
+      "sha256": "4073856e0ad084552e79cf41a44e53f752230a3197c61fd6ec4a30b50dfab7cb",
+      "mtime_ns": 1792642221523300971
+    },
+    "checkpoints/generate.json": {
+      "sha256": "9e11f03ec0f28dfefe3f3813e046cb12441c2e43d8a75d747f150b7cdba38165",
+      "mtime_ns": 1792642195854316378
+    },
+    "checkpoints/large.json": {
+      "sha256": "c0b8143fac4d365e0299925d620c8ff62cea61da70f543431d3a896b3c2f0d2f",
+      "mtime_ns": 1792642328272087997
+    },
+    "checkpoints/xxxl.json": {
+      "sha256": "9440a2fbaf8d2266c98a03bc5b5f27809522ae697335824b02fc1c62db64b51f",
+      "mtime_ns": 1792642388959192599
+    }
+  },
+  "sameCheckpointBytesAndModificationTimes": true,
+  "unchangedBuildAndTestRecords": true,
+  "contract": "3c3219ed9fd007b7f726751d0d2a03d197bfa6c07b02a2f1b3721e9134c6c24f",
+  "originalReportSha256": "1887a06023efc5dfc6b423c637623aa6be733c0e0caa7b7786b480b05d665167",
+  "resumedReportSha256": "920af5895cf2387ed34fd2b7b30fd392a0cfc51a78b43cb8bb1cf143f5b530b8",
+  "note": "Completed resume reused all four stages; dedicated simulator setup still ran."
+}

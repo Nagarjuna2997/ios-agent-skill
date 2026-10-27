@@ -48,7 +48,7 @@ The original source remains read-only. Output must be a new directory. Import ne
 
 `mcp-server/src/app-ir/schema.ts` is the executable schema. Unknown properties and schema versions fail validation. `sources` carry relative paths, SHA-256 hashes, byte counts and adapter versions. Node evidence references UTF-8 byte ranges in those sources; inferred evidence needs an explanation. Sources, screens and nodes have unique IDs; missing nodes, cycles, duplicate parents, orphan nodes and excessive depth are rejected.
 
-Implemented node kinds: column, text and disclosure. Implemented style fields: six-digit colors, padding, gap, scaled system font size, bold, corner radius and centered text. Requirements explicitly classify navigation/assets/motion/state/data/API/auth/native/accessibility/responsiveness/appearance as extracted, inferred or unknown. The current HTML adapter leaves hidden behavior unknown. This is a small typed IR, not a complete representation of every framework.
+Implemented node kinds: column, text, disclosure, explicit state-transition buttons and route links. Implemented style fields: six-digit colors, padding, gap, scaled system font size, bold, corner radius and centered text. Requirements explicitly classify navigation/assets/motion/state/data/API/auth/native/accessibility/responsiveness/appearance as extracted, inferred or unknown. The current HTML adapter leaves hidden behavior unknown. This is a small typed IR, not a complete representation of every framework.
 
 Node IDs currently depend on traversal order. Source maps include generated Swift symbols and hashes; these enable inspection, **not safe incremental synchronization yet**. Stable semantic identity and a three-way merge are prerequisites for sync. New node kinds require renderer support, fixtures, schema evolution and a compatibility decision. Do not append arbitrary unvalidated payloads to bypass the schema.
 
@@ -67,13 +67,13 @@ The renderer emits SwiftUI Text, VStack, ScrollView and DisclosureGroup with loc
 | 1. Audit/reuse plan | Existing main | Concrete reuse map, gaps, risks and compatibility contract | Complete |
 | 2. IR foundation | 1 | Versioned schema, provenance, graph validation, adversarial fixtures | Implemented for a bounded subset |
 | 3. HTML vertical prototype | 2 + local Xcode | Real native build, launch, disclosure interaction test, captures and comparison | Experimental; evidence in benchmark README |
-| 4. Reliable reference verification | 3 | Pinned capture conditions, aligned regions, state variants, accessibility checks, atomic resumable checkpoints and independently reviewed fixes | Partial: explicit crops and raw metric implemented; repair loop not connected |
+| 4. Reliable reference verification | 3 | Pinned capture conditions, aligned regions, state variants, accessibility checks, atomic resumable checkpoints and independently reviewed fixes | Partial: bounded repair, hashed checkpoints and regression rejection implemented; trusted typography still blocked |
 | 5. CSS/assets/routes | 4 | Golden layouts, no silently dropped declarations, local asset hashes and licensing review, functional navigation tests | Planned |
-| 6. React/Next adapters | 5 | AST/static evidence only; backend stays server-side; fixture builds/tests/captures; dynamic ambiguity reported | Planned |
+| 6. React/Next adapters | 5 for full completion | AST/static evidence only; backend stays server-side; fixture builds/tests/captures; dynamic ambiguity reported | Partial: static React, literal props, constant expressions, children composition and bounded entry-component boolean state/button transitions; bounded flat MemoryRouter navigation added; Next.js and general state/events/routing unsupported |
 | 7. Screenshot/Figma ingestion | 4 | Authorized image/design snapshots, visible facts separated from hidden requirements, traceable reconstruction | Planned |
 | 8. Flutter/React Native/other adapters | 6 | Per-adapter independent fixtures and native replacement mapping | Planned |
 | 9. Source synchronization | Stable node identity | Three-way source/IR/native diff, no overwrites on conflicts, regression tests | Planned |
-| 10. Studio/roles/provider expansion | Proven contracts | Real events and evidence, provider capability negotiation, cancellation, shared checkpoints | Planned |
+| 10. Studio/roles/provider expansion | Proven contracts | Real events and evidence, provider capability negotiation, cancellation, shared checkpoints | Partial: offline evidence viewer only; live Studio orchestration remains planned |
 | 11. Release preparation | Independent review and E2E gates | Compatibility documentation, truthful support matrix, explicit release authorization | Not requested for this branch |
 
 The next milestone is verification and CSS/layout correctness, not adding framework names. No universal-support, production-readiness or fidelity claim is justified by this prototype.
@@ -95,3 +95,112 @@ npm test --prefix mcp-server
 The MCP `ios_import_html` tool performs the same read-only inspection. No `/ios-create` alias replaces `/ios-build`. No account, model subscription or network is needed for the adapter/renderer/benchmark; development dependency installation and optional XcodeGen are separate tool setup.
 
 Every new adapter must include unsupported-feature and malicious-input fixtures. Every renderer change requires compilation and meaningful behavior tests on macOS before being described as verified. Record skipped/unavailable checks separately. Keep before/after captures, source hashes and unresolved differences. Do not retune historical benchmark evidence or manufacture a visual pass.
+
+
+## M2.1 — deterministic typography verification (experimental)
+
+The shared `app-ir/typography.ts` contract compares visible region IDs and word-index line boundaries. The HTML adapter annotates original source byte ranges, then measures DOM word ranges without inserting layout-changing spans. The native benchmark uses opt-in SwiftUI `Text.LayoutKey` observations / `TextAttribute` word identities (iOS 18+) and XCTest accessibility values. Container IDs are deliberately omitted because they propagate to descendants in SwiftUI; leaf IDs retain App IR traceability. Ordinary generated apps do not contain the probe.
+
+Disclosure markers are not words: only the summary label enters the transcript. Closed disclosure body text is excluded. Exact visible text, unique IDs and complete ordered word coverage are mandatory. Split words, unsupported scripts/whitespace, missing regions and changed instrumentation remain unavailable. Current coverage is plain-text LTR English plus middot at the default text size; XXXL receives interaction and clipping checks, not a source typography equivalence claim. OCR is retained solely as supporting evidence.
+
+The measurement probe must render pixel-identically to the ordinary app. A different image makes all probe conclusions provisional, including apparent text/truncation failures. No pixel tolerance has been relaxed. The original drawing-based probe caused one-level channel differences. A controlled experiment isolated the custom drawing path. Its passive replacement produced identical pixels and nine complete regions locally and on hosted Xcode 26.5. Hosted default-size measurements expose the remaining heading-wrap mismatch; independent reference approval and a passing complete gate remain required. Neither experiment constitutes an accepted repair.
+
+Known-good promotion additionally requires an independently reviewed reference. A human reviews the original source, reference image, native image, region mapping and capture conditions, then supplies a JSON file through `FIDELITY_REFERENCE_APPROVAL`:
+
+```json
+{"version":1,"referenceHash":"<sha256 of reference.png>","pinsHash":"<sha256 of JSON.stringify(evidence.pins)>","reviewer":"<reviewer's name>","reviewedAt":"<ISO 8601 UTC timestamp>","decision":"approved"}
+```
+
+This is trusted local input, not authentication or a cryptographic signature. The agent must not manufacture approval. The approval content is bound into the resume contract; adding or changing it requires a new run directory. Approval alone never overrides failed, unavailable or regressed quality checks. No reviewed reference or known-good baseline is claimed in this milestone.
+
+Reproduce with the existing fidelity runner and `local.json` or `ci.json`; run the DOM test with `node --test benchmarks/universal/fidelity/dom-typography.test.mjs`. The hosted workflow installs its pinned Playwright dependency and executes the same protocol. The benchmark remains independent of future framework adapters. Keep prior M1/M2 evidence immutable and record new runs separately.
+
+## Static React adapter (experimental, not general React/Next.js support)
+
+`app-ir inspect-react App.tsx AppName` parses a bounded UTF-8 file with the pinned TypeScript parser. It never imports the application, executes JavaScript, installs its dependencies or contacts a backend. Named, parameterless function components with a single JSX return may compose other same-file components. Literal inline style objects and plain JSX text lower through the existing HTML subset into the same versioned App IR and SwiftUI renderer. Original TSX hashes and UTF-8 byte ranges are retained; repeated component instances have distinct native node IDs while sharing definition ranges.
+
+This is syntax inspection, not TypeScript type-checking or a React runtime. Only the five basic XML entities are decoded; other entity references and nonbreaking/special whitespace are rejected rather than silently changing wrapping.
+
+Same-file components now accept literal string/number props, one props identifier or shallow named destructuring (including aliases), direct prop reads, forwarding, and literal style values. Explicit JSX children slots can be read as `children` or `props.children`, forwarded through wrappers, and rendered repeatedly with distinct native node IDs. Slots retain the caller’s lexical props; finite nested instances are distinguished from recursive component definitions. Missing accessed slots, render callbacks, and explicit `children=` attributes are rejected. Supplied children are syntax-validated even when a component discards them, because React constructs child expressions eagerly. Validation consumes the shared expansion budget; deeply nested wrappers can therefore reach the explicit limit before emitting 400 nodes. The entry remains parameterless. Each expanded node retains definition and invocation/value evidence. This is bounded syntax lowering, not JavaScript evaluation. Primitive template interpolation, numeric unary signs, and `+`, `-`, `*`, `/`, `%` over resolved literal operands are supported. Addition follows string/number operand semantics; other arithmetic requires numbers. Calls, implicit numeric string coercion, non-finite results, control characters, and excessive expression depth/output/work are rejected. No imported code executes.
+
+Apart from the bounded boolean-state and MemoryRouter mappings below, imports, hooks, arbitrary expressions, object/boolean props, defaults/rest bindings, reserved key/ref props, spread attributes, async components, event handlers and unresolved components are rejected. Unsupported HTML elements/CSS remain limitations that block generation. This does not implement Next.js routing/server components, general React state, API calls, external stylesheets, images or arbitrary project conversion. A `use client` directive is accepted as syntax only; it does not enable client execution. The TypeScript parser is a runtime dependency because installed CLI users need it.
+
+The shared fixture `benchmarks/universal/html-disclosure/App.tsx` is structurally equivalent to its HTML reference; a regression test requires identical native nodes/styles and generated SwiftUI. Run the same native verification protocol with `FIDELITY_ADAPTER=react-static`; the adapter choice is included in the resume contract. The HTML reference still comes from independently authored HTML, not a screenshot generated by the SwiftUI renderer. Do not describe this as a React browser runtime equivalence test.
+
+```sh
+node mcp-server/dist/unified.js app-ir inspect-react benchmarks/universal/html-disclosure/App.tsx FieldNotes > /tmp/react-ir.json
+node mcp-server/dist/unified.js app-ir validate /tmp/react-ir.json
+node mcp-server/dist/unified.js app-ir generate /tmp/react-ir.json /tmp/new-react-native
+FIDELITY_ADAPTER=react-static node benchmarks/universal/fidelity/run.mjs benchmarks/universal/fidelity/local.json /tmp/new-react-evidence
+# If Playwright's browser is unavailable, an explicit CHROME_PATH is supported;
+# its actual browser version enters the pinned evidence contract.
+```
+
+### Boolean state and button transitions (experimental)
+
+The same importer accepts `import {useState} from 'react'` as a syntax marker;
+it never loads React. Only the parameterless entry component may declare up to
+16 `const [value, setter] = useState(true/false)` bindings. A dedicated text
+element may contain `value ? literalExpression : literalExpression`. A plain-text
+`button` may use `onClick={() => setter(true)}`, `setter(false)` or `setter(!value)`.
+State and setters remain lexical bindings, including children passed through
+same-file wrappers. Inline controls inside text elements are rejected to avoid
+HTML parser reparenting or loss of inherited style.
+
+Stateful input emits App IR 1.1.0 with boolean state records, text bindings and
+validated set/toggle actions; static input retains 1.0.0. The parser rejects
+missing state references, invalid defaults, wrong node/action combinations and
+state fields falsely labelled 1.0.0. Generated SwiftUI uses native `@State`,
+`Button` and dynamic `Text`, with stable accessibility IDs and Dynamic Type.
+The native button appearance is a platform mapping, not a browser fidelity claim.
+
+Number/object state, functional updater callbacks, state in reusable component
+instances, effects, async events, event parameters, callback props, conditional
+view trees and persistence remain unsupported; navigation is a separate bounded mapping below. No state is inferred
+from names or comments. Source ranges include declarations, text branches and
+handlers. Unsupported behavior fails before project generation.
+
+[The independent native fixture](../../benchmarks/universal/react-state/README.md)
+checks toggling, assignments, state isolation, relaunch, clipping and accessibility
+at Large/XXXL. Its resumable raw evidence is separate from the HTML fidelity gate.
+Do not count a native behavior pass as visual acceptance or support for arbitrary
+React applications.
+
+The [recorded local run](../../benchmarks/universal/evidence/react-boolean-state-local-20261021/README.md)
+contains an unsigned build and three native tests executed at each of Large and
+XXXL, followed by a completed-run resume that reused all four checkpoints. It
+does not establish hosted success, crash recovery during an active native test,
+or visual-fidelity acceptance.
+
+### Optional local evidence viewer
+
+`node benchmarks/universal/render-evidence.mjs EVIDENCE_DIRECTORY NEW_HTML_FILE` creates a standalone offline review page from a saved fidelity artifact: source reference, native captures, differences, environment, tests and repair outcomes. It works with HTML or React runs, is optional for CLI/MCP users, does not expose a network service, and cannot approve or promote a baseline. It escapes report content, embeds only bounded local PNG evidence and refuses overwrite/path escape. Missing evidence is labelled unavailable. This is saved-result review, not live simulator streaming or a Studio build backend.
+
+### Next milestones and completion gates
+
+1. Resolve the heading's actual wrap mismatch without changing source typography merely to fit the fixture; repeat local/hosted comparison. Passive observation itself now has hosted zero-difference evidence.
+2. Obtain independent human reference approval only after reviewing source, images, word boundaries and capture pins. Approval cannot override a failed gate.
+3. Extend React through explicit IR contracts for props/state/navigation, with unsupported-feature tests before adding other frameworks. Current implementation handles static components, bounded literal props and primitive constant expressions; general state, effects and arbitrary routing remain unsupported. Boolean-state and memory-route fixtures are separate native behavior benchmarks.
+4. Connect the saved-evidence viewer to the optional Studio UI after its artifact boundary is established. Keep CLI use independent.
+5. Add native dark-mode, responsive/multi-screen and asset fixtures before making wider design-quality claims. No backend contract, animation or framework support is implied by this prototype.
+
+Literal-prop fixture verification uses `FIDELITY_ADAPTER=react-literal-props` with `App.props.tsx`. Portable tests require identical generated native source to the independent HTML fixture; this equivalence is not a new native execution claim. The hosted workflow exposes this adapter explicitly and preserves separate evidence.
+
+### Explicit React memory routes (experimental)
+
+The syntax-only adapter recognizes an explicit `react-router-dom` MemoryRouter,
+flat Routes/Route declarations and literal Link pushes. It records an App IR 1.2.0
+navigation table, validates every destination and preserves entry-owned boolean
+state across screens. Node IDs and byte provenance remain distinct when components
+are reused. The generator maps this contract to NavigationStack/NavigationLink
+with native Back, without executing the imported project. Existing non-routed
+1.0.0/1.1.0 generation stays unchanged. This does not enable general routing,
+Next.js, nested/parameterized paths, redirects, history-forward synchronization,
+component-local lifecycle or browser scroll restoration.
+
+The [three-screen native benchmark](../../benchmarks/universal/react-navigation/README.md)
+uses the same checkpointed runner as the boolean-state benchmark, with a separate
+fixture/contract and three required tests at each text size. It records actual
+stack transitions, state retention, accessibility audits and relaunch. No HTML
+fidelity score, reference approval or known-good promotion is implied. See its
+README for the exact supported grammar, unsupported behavior and reproduction.

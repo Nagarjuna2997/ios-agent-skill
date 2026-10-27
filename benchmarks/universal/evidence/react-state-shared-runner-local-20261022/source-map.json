@@ -1,0 +1,276 @@
+{
+  "schemaVersion": 1,
+  "irHash": "f5df450ee84bf374e86e0d03df23b7404fdcc5df4d3e5470feea245adfa7cbbc",
+  "files": [
+    {
+      "path": "TripChecklist/Views/RootView.swift",
+      "sha256": "9fbdccaec6bc415c1db9eab7f39f06e0a3de30828aacb1fcd18a2d57fb1d6e07",
+      "mappings": [
+        {
+          "node": "node-3",
+          "symbol": "node_node_3",
+          "evidence": [
+            {
+              "source": "source",
+              "start": 372,
+              "end": 417,
+              "certainty": "extracted"
+            }
+          ]
+        },
+        {
+          "node": "node-5",
+          "symbol": "node_node_5",
+          "evidence": [
+            {
+              "source": "source",
+              "start": 436,
+              "end": 489,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 422,
+              "end": 700,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 193,
+              "end": 234,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 449,
+              "end": 461,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 464,
+              "end": 484,
+              "certainty": "extracted"
+            }
+          ]
+        },
+        {
+          "node": "node-6",
+          "symbol": "node_node_6",
+          "evidence": [
+            {
+              "source": "source",
+              "start": 496,
+              "end": 557,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 422,
+              "end": 700,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 504,
+              "end": 536,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 193,
+              "end": 234,
+              "certainty": "extracted"
+            }
+          ]
+        },
+        {
+          "node": "node-7",
+          "symbol": "node_node_7",
+          "evidence": [
+            {
+              "source": "source",
+              "start": 564,
+              "end": 622,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 422,
+              "end": 700,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 572,
+              "end": 601,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 193,
+              "end": 234,
+              "certainty": "extracted"
+            }
+          ]
+        },
+        {
+          "node": "node-8",
+          "symbol": "node_node_8",
+          "evidence": [
+            {
+              "source": "source",
+              "start": 629,
+              "end": 687,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 422,
+              "end": 700,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 637,
+              "end": 667,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 193,
+              "end": 234,
+              "certainty": "extracted"
+            }
+          ]
+        },
+        {
+          "node": "node-4",
+          "symbol": "node_node_4",
+          "evidence": [
+            {
+              "source": "source",
+              "start": 71,
+              "end": 155,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 422,
+              "end": 700,
+              "certainty": "extracted"
+            }
+          ]
+        },
+        {
+          "node": "node-10",
+          "symbol": "node_node_10",
+          "evidence": [
+            {
+              "source": "source",
+              "start": 719,
+              "end": 769,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 705,
+              "end": 858,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 237,
+              "end": 281,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 734,
+              "end": 747,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 750,
+              "end": 764,
+              "certainty": "extracted"
+            }
+          ]
+        },
+        {
+          "node": "node-11",
+          "symbol": "node_node_11",
+          "evidence": [
+            {
+              "source": "source",
+              "start": 776,
+              "end": 845,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 705,
+              "end": 858,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 784,
+              "end": 820,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 237,
+              "end": 281,
+              "certainty": "extracted"
+            }
+          ]
+        },
+        {
+          "node": "node-9",
+          "symbol": "node_node_9",
+          "evidence": [
+            {
+              "source": "source",
+              "start": 71,
+              "end": 155,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 705,
+              "end": 858,
+              "certainty": "extracted"
+            }
+          ]
+        },
+        {
+          "node": "node-2",
+          "symbol": "node_node_2",
+          "evidence": [
+            {
+              "source": "source",
+              "start": 291,
+              "end": 868,
+              "certainty": "extracted"
+            }
+          ]
+        },
+        {
+          "node": "node-1",
+          "symbol": "node_node_1",
+          "evidence": [
+            {
+              "source": "source",
+              "start": 291,
+              "end": 868,
+              "certainty": "extracted"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
