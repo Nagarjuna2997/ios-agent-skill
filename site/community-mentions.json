@@ -520,6 +520,16 @@
       "url": "https://github.com/rogerchappel/mcpchangefeed/blob/main/site/servers/io-github-nagarjuna2997-ios-agent-skill/index.html",
       "verifiedOn": "2026-10-22",
       "evidence": "Opened the GitHub source file and read its raw HTML. It names io.github.Nagarjuna2997/ios-agent-skill and ios-agent-mcp and links the exact repository. This is a generated public source record, not a verified deployed directory or review; placeholder sponsor text, trust scores and missing metadata signals are not adopted."
+    },
+    {
+      "id": "swiftagents",
+      "platform": "SwiftAgents",
+      "kind": "directory",
+      "category": "Apple-development tool directory",
+      "description": "Lists the project\u2019s MCP server and Claude Code command with installation guidance and direct source links. Inclusion does not imply testing or endorsement.",
+      "url": "https://swiftagents.app/tools/ios-agent-skill/",
+      "verifiedOn": "2026-10-27",
+      "evidence": "Opened canonical tool profile via HTTPS and confirmed the exact Nagarjuna2997/ios-agent-skill GitHub link and ios-agent-mcp install command. Distinct profile from the existing SwiftSkills listing, which it credits as a source. Directory overview, not an independent review or endorsement."
     }
   ]
 }
