@@ -1,0 +1,10 @@
+{
+  "sourceHash": "03e3b8c947327c884950367e4bbcb0c3a5e8b356661e3bb4ec9b7a69427a2eae",
+  "at": "2026-10-22T03:33:56.039Z",
+  "logPath": ".ios-agent/logs/test-53c305b2-5804-4a47-94f2-a9e5ca404b8a.log",
+  "resultBundle": ".ios-agent/test-results/53c305b2-5804-4a47-94f2-a9e5ca404b8a.xcresult",
+  "status": "passed",
+  "passed": 5,
+  "failed": 0,
+  "skipped": 0
+}

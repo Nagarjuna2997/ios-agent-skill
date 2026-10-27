@@ -1,0 +1,1044 @@
+{
+  "version": 2,
+  "profile": {
+    "version": 1,
+    "xcode": "27.0",
+    "sdk": "27.0",
+    "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-27-0",
+    "deviceType": "com.apple.CoreSimulator.SimDeviceType.iPhone-18-Pro",
+    "appearance": "light",
+    "contentSize": "large",
+    "locale": "en_US",
+    "scale": 3,
+    "safeAreaTop": 62,
+    "safeAreaBottom": 34,
+    "state": "collapsed",
+    "fontConfiguration": "system-ui browser / SwiftUI system, default weight; Dynamic Type large",
+    "policy": {
+      "version": 1,
+      "maxMeanError": 0.02,
+      "maxChangedFraction": 0.1,
+      "maxLineBreakMismatches": 0,
+      "minimumImprovement": 0.001
+    },
+    "xcodeBuild": "27A266a"
+  },
+  "startedAt": "2026-10-22T00:22:38.972Z",
+  "status": "requires-review",
+  "runs": [
+    {
+      "name": "baseline",
+      "folder": "/Users/nagarjunareddy/Documents/Codex/universal-ax-harness-fixed-20261021/baseline-f2776545-5169-4235-b4a5-925f5b25abca",
+      "sourceHash": "4002c3ab7b6556b5eecd50de59243de8f60ccd15b379c24354a9985d336d00be",
+      "build": {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "durationMs": 30037,
+        "scheme": "FieldNotes",
+        "destination": "platform=iOS Simulator,id=D7024066-AAA5-4984-B5D9-20CB53DC8B46",
+        "appPath": "/Users/nagarjunareddy/Documents/Codex/universal-ax-harness-fixed-20261021/baseline-f2776545-5169-4235-b4a5-925f5b25abca/.ios-agent/DerivedData/Build/Products/Debug-iphonesimulator/FieldNotes.app",
+        "logPath": "/Users/nagarjunareddy/Documents/Codex/universal-ax-harness-fixed-20261021/baseline-f2776545-5169-4235-b4a5-925f5b25abca/.ios-agent/logs/build-1792628886715.log"
+      },
+      "large": {
+        "tests": {
+          "sourceHash": "a7d0b1adbc1500ca34aae30f3609c1d60028c10bfedd558dccbac6f07656beb7",
+          "at": "2026-10-22T00:30:22.834Z",
+          "logPath": ".ios-agent/logs/test-17327bbf-dada-4825-bb06-99b7ad2b19dd.log",
+          "resultBundle": ".ios-agent/test-results/17327bbf-dada-4825-bb06-99b7ad2b19dd.xcresult",
+          "status": "passed",
+          "passed": 3,
+          "failed": 0,
+          "skipped": 0
+        },
+        "shot": {
+          "path": "/Users/nagarjunareddy/Documents/Codex/universal-ax-harness-fixed-20261021/baseline-f2776545-5169-4235-b4a5-925f5b25abca/.ios-agent/screenshots/large-870e7471-5bbd-412f-8120-a7bb4e2db340/5B8F96A4-7DF2-4179-8C3E-B03290F8A99B.png",
+          "source": "XCTest runningForeground collapsed-state attachment"
+        },
+        "geometry": {
+          "status": "passed",
+          "clippedElements": 0,
+          "regions": [],
+          "audit": "passed"
+        },
+        "typography": {
+          "regions": [
+            {
+              "id": "node-4",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4
+                ]
+              ],
+              "text": "FIELD NOTES · WEEKEND EDITION",
+              "truncated": false
+            },
+            {
+              "id": "node-5",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2
+                ],
+                [
+                  3,
+                  4
+                ]
+              ],
+              "text": "A little closer to nature.",
+              "truncated": false
+            },
+            {
+              "id": "node-6",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6
+                ],
+                [
+                  7,
+                  8,
+                  9,
+                  10
+                ]
+              ],
+              "text": "Three quiet trails, one good weekend. Your next walk starts here.",
+              "truncated": false
+            },
+            {
+              "id": "node-8",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ],
+              "text": "THIS WEEK'S WALK",
+              "truncated": false
+            },
+            {
+              "id": "node-9",
+              "lines": [
+                [
+                  0,
+                  1
+                ]
+              ],
+              "text": "Cedar Loop",
+              "truncated": false
+            },
+            {
+              "id": "node-10",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6
+                ]
+              ],
+              "text": "4.2 miles · Easy · 90 minutes",
+              "truncated": false
+            },
+            {
+              "id": "node-11",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6,
+                  7
+                ],
+                [
+                  8,
+                  9,
+                  10,
+                  11
+                ]
+              ],
+              "text": "A shaded path through tall cedars, with a quiet river stop halfway.",
+              "truncated": false
+            },
+            {
+              "id": "node-14",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6
+                ],
+                [
+                  7,
+                  8
+                ]
+              ],
+              "text": "Synthetic demo content. No account or location permission needed.",
+              "truncated": false
+            },
+            {
+              "id": "node-12",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ],
+              "text": "Before you go",
+              "truncated": false
+            }
+          ],
+          "version": 1
+        },
+        "probe": "/Users/nagarjunareddy/Documents/Codex/universal-ax-harness-fixed-20261021/baseline-f2776545-5169-4235-b4a5-925f5b25abca/.ios-agent/screenshots/large-870e7471-5bbd-412f-8120-a7bb4e2db340/274363F8-11AD-49AC-82A2-CEA38C8D5843.png",
+        "probeComparison": {
+          "schemaVersion": 1,
+          "referenceHash": "366a9c1778bdd2ff77f8f371cdb9c440d31d013c7b50f3362e028f09e0764afd",
+          "nativeHash": "366a9c1778bdd2ff77f8f371cdb9c440d31d013c7b50f3362e028f09e0764afd",
+          "referenceRegion": {
+            "x": 0,
+            "y": 0,
+            "width": 1206,
+            "height": 2622
+          },
+          "nativeRegion": {
+            "x": 0,
+            "y": 0,
+            "width": 1206,
+            "height": 2622
+          },
+          "meanAbsoluteChannelError": 0,
+          "changedPixelFraction": 0,
+          "channelThreshold": 8,
+          "verdict": "requires-review",
+          "limitations": [
+            "Pixel differences include font rasterization and native control rendering.",
+            "No functional, accessibility or perceptual equivalence inferred.",
+            "No resizing, registration or hidden cropping performed."
+          ]
+        }
+      },
+      "xxxl": {
+        "tests": {
+          "sourceHash": "a7d0b1adbc1500ca34aae30f3609c1d60028c10bfedd558dccbac6f07656beb7",
+          "at": "2026-10-22T00:31:23.859Z",
+          "logPath": ".ios-agent/logs/test-7d7942c8-a785-43aa-a879-d69ea2f21de7.log",
+          "resultBundle": ".ios-agent/test-results/7d7942c8-a785-43aa-a879-d69ea2f21de7.xcresult",
+          "status": "passed",
+          "passed": 3,
+          "failed": 0,
+          "skipped": 0
+        },
+        "shot": {
+          "path": "/Users/nagarjunareddy/Documents/Codex/universal-ax-harness-fixed-20261021/baseline-f2776545-5169-4235-b4a5-925f5b25abca/.ios-agent/screenshots/xxxl-6b0aa714-123d-4751-b22e-c2adb4635015/E5457582-57AF-4721-BB5D-8657DA5DEF90.png",
+          "source": "XCTest runningForeground collapsed-state attachment"
+        },
+        "geometry": {
+          "status": "passed",
+          "clippedElements": 0,
+          "regions": [],
+          "audit": "passed"
+        },
+        "typography": {
+          "regions": [
+            {
+              "id": "node-4",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4
+                ]
+              ],
+              "text": "FIELD NOTES · WEEKEND EDITION",
+              "truncated": false
+            },
+            {
+              "id": "node-5",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2
+                ],
+                [
+                  3,
+                  4
+                ]
+              ],
+              "text": "A little closer to nature.",
+              "truncated": false
+            },
+            {
+              "id": "node-6",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4
+                ],
+                [
+                  5,
+                  6,
+                  7,
+                  8,
+                  9
+                ],
+                [
+                  10
+                ]
+              ],
+              "text": "Three quiet trails, one good weekend. Your next walk starts here.",
+              "truncated": false
+            },
+            {
+              "id": "node-8",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ],
+              "text": "THIS WEEK'S WALK",
+              "truncated": false
+            },
+            {
+              "id": "node-9",
+              "lines": [
+                [
+                  0,
+                  1
+                ]
+              ],
+              "text": "Cedar Loop",
+              "truncated": false
+            },
+            {
+              "id": "node-10",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6
+                ]
+              ],
+              "text": "4.2 miles · Easy · 90 minutes",
+              "truncated": false
+            },
+            {
+              "id": "node-11",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4
+                ],
+                [
+                  5,
+                  6,
+                  7,
+                  8,
+                  9,
+                  10
+                ],
+                [
+                  11
+                ]
+              ],
+              "text": "A shaded path through tall cedars, with a quiet river stop halfway.",
+              "truncated": false
+            },
+            {
+              "id": "node-14",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5
+                ],
+                [
+                  6,
+                  7,
+                  8
+                ]
+              ],
+              "text": "Synthetic demo content. No account or location permission needed.",
+              "truncated": false
+            },
+            {
+              "id": "node-12",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ],
+              "text": "Before you go",
+              "truncated": false
+            }
+          ],
+          "version": 1
+        },
+        "probe": "/Users/nagarjunareddy/Documents/Codex/universal-ax-harness-fixed-20261021/baseline-f2776545-5169-4235-b4a5-925f5b25abca/.ios-agent/screenshots/xxxl-6b0aa714-123d-4751-b22e-c2adb4635015/76CEC788-BABE-41DB-884F-17174DB3AFCA.png",
+        "probeComparison": {
+          "schemaVersion": 1,
+          "referenceHash": "ca9308c1f164f9ae7e97b1f01071306860a00d15dd6335def0ad22a6821f2f79",
+          "nativeHash": "ca9308c1f164f9ae7e97b1f01071306860a00d15dd6335def0ad22a6821f2f79",
+          "referenceRegion": {
+            "x": 0,
+            "y": 0,
+            "width": 1206,
+            "height": 2622
+          },
+          "nativeRegion": {
+            "x": 0,
+            "y": 0,
+            "width": 1206,
+            "height": 2622
+          },
+          "meanAbsoluteChannelError": 0,
+          "changedPixelFraction": 0,
+          "channelThreshold": 8,
+          "verdict": "requires-review",
+          "limitations": [
+            "Pixel differences include font rasterization and native control rendering.",
+            "No functional, accessibility or perceptual equivalence inferred.",
+            "No resizing, registration or hidden cropping performed."
+          ]
+        }
+      },
+      "evidence": {
+        "version": 1,
+        "sourceHash": "4002c3ab7b6556b5eecd50de59243de8f60ccd15b379c24354a9985d336d00be",
+        "referenceHash": "237315be7c347215c39fa487f24bab6b7790a0829bb3d68791718e1978c6f811",
+        "screenshotHash": "366a9c1778bdd2ff77f8f371cdb9c440d31d013c7b50f3362e028f09e0764afd",
+        "pins": {
+          "device": "com.apple.CoreSimulator.SimDeviceType.iPhone-18-Pro",
+          "os": "com.apple.CoreSimulator.SimRuntime.iOS-27-0 24A434",
+          "xcode": "Xcode 27.0\nBuild version 27A266a",
+          "appearance": "light",
+          "contentSize": "large",
+          "locale": "en_US",
+          "orientation": "portrait",
+          "state": "collapsed",
+          "width": 1206,
+          "height": 2622,
+          "scale": 3,
+          "fontConfiguration": "system-ui browser / SwiftUI system, default weight; Dynamic Type large",
+          "referenceRenderer": "155.0.8059.85 host 26A434",
+          "normalizationHash": "05690da7e6342fe85dd2540e5da46a4a0b7f28038b145b36d001a122edd8b970"
+        },
+        "build": "passed",
+        "functionality": "passed",
+        "accessibility": "passed",
+        "layout": "passed",
+        "typography": "failed",
+        "testsPassed": 3,
+        "accessibilityIssues": 0,
+        "clippedElements": 0,
+        "lineBreakMismatches": 2,
+        "meanError": 0.018485192964781638,
+        "changedFraction": 0.07043119165668374,
+        "artifactsHash": "d0dd39fe94a0632d92eefcee6f1a49d72f91532f24514ed23253dc3278488817"
+      }
+    },
+    {
+      "name": "candidate-1",
+      "folder": "/Users/nagarjunareddy/Documents/Codex/universal-ax-harness-fixed-20261021/candidate-1-e7170ed7-6e5a-4369-810b-bd7eff286759",
+      "sourceHash": "52bd600cc8c48a64fe0c5d64440a815a7cd9f7feda86236b291b8bf9abd76949",
+      "build": {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "durationMs": 10559,
+        "scheme": "FieldNotes",
+        "destination": "platform=iOS Simulator,id=D7024066-AAA5-4984-B5D9-20CB53DC8B46",
+        "appPath": "/Users/nagarjunareddy/Documents/Codex/universal-ax-harness-fixed-20261021/candidate-1-e7170ed7-6e5a-4369-810b-bd7eff286759/.ios-agent/DerivedData/Build/Products/Debug-iphonesimulator/FieldNotes.app",
+        "logPath": "/Users/nagarjunareddy/Documents/Codex/universal-ax-harness-fixed-20261021/candidate-1-e7170ed7-6e5a-4369-810b-bd7eff286759/.ios-agent/logs/build-1792629140740.log"
+      },
+      "large": {
+        "tests": {
+          "sourceHash": "03e3b8c947327c884950367e4bbcb0c3a5e8b356661e3bb4ec9b7a69427a2eae",
+          "at": "2026-10-22T00:34:06.642Z",
+          "logPath": ".ios-agent/logs/test-68178de1-638b-4beb-b0c7-926a97956fab.log",
+          "resultBundle": ".ios-agent/test-results/68178de1-638b-4beb-b0c7-926a97956fab.xcresult",
+          "status": "passed",
+          "passed": 5,
+          "failed": 0,
+          "skipped": 0
+        },
+        "shot": {
+          "path": "/Users/nagarjunareddy/Documents/Codex/universal-ax-harness-fixed-20261021/candidate-1-e7170ed7-6e5a-4369-810b-bd7eff286759/.ios-agent/screenshots/large-fae3f14a-07f4-4da6-97fa-05eda32755f7/A08EB053-A531-42BC-B1B9-D21E674E6EEA.png",
+          "source": "XCTest runningForeground collapsed-state attachment"
+        },
+        "geometry": {
+          "status": "passed",
+          "clippedElements": 0,
+          "regions": [],
+          "audit": "passed"
+        },
+        "typography": {
+          "regions": [
+            {
+              "id": "node-4",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4
+                ]
+              ],
+              "text": "FIELD NOTES · WEEKEND EDITION",
+              "truncated": false
+            },
+            {
+              "id": "node-5",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  4
+                ]
+              ],
+              "text": "A little closer to nature.",
+              "truncated": false
+            },
+            {
+              "id": "node-6",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6
+                ],
+                [
+                  7,
+                  8,
+                  9,
+                  10
+                ]
+              ],
+              "text": "Three quiet trails, one good weekend. Your next walk starts here.",
+              "truncated": false
+            },
+            {
+              "id": "node-8",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ],
+              "text": "THIS WEEK'S WALK",
+              "truncated": false
+            },
+            {
+              "id": "node-9",
+              "lines": [
+                [
+                  0,
+                  1
+                ]
+              ],
+              "text": "Cedar Loop",
+              "truncated": false
+            },
+            {
+              "id": "node-10",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6
+                ]
+              ],
+              "text": "4.2 miles · Easy · 90 minutes",
+              "truncated": false
+            },
+            {
+              "id": "node-11",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6,
+                  7
+                ],
+                [
+                  8,
+                  9,
+                  10,
+                  11
+                ]
+              ],
+              "text": "A shaded path through tall cedars, with a quiet river stop halfway.",
+              "truncated": false
+            },
+            {
+              "id": "node-14",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6
+                ],
+                [
+                  7,
+                  8
+                ]
+              ],
+              "text": "Synthetic demo content. No account or location permission needed.",
+              "truncated": false
+            },
+            {
+              "id": "node-12",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ],
+              "text": "Before you go",
+              "truncated": false
+            }
+          ],
+          "version": 1
+        },
+        "probe": "/Users/nagarjunareddy/Documents/Codex/universal-ax-harness-fixed-20261021/candidate-1-e7170ed7-6e5a-4369-810b-bd7eff286759/.ios-agent/screenshots/large-fae3f14a-07f4-4da6-97fa-05eda32755f7/D9B94E1E-1557-4C2A-AECC-2CB18AD2DDD3.png",
+        "probeComparison": {
+          "schemaVersion": 1,
+          "referenceHash": "55e04712b53efe05643f3fe8bd3bc296afc49e5b960c8f9090b3baf2872914d8",
+          "nativeHash": "55e04712b53efe05643f3fe8bd3bc296afc49e5b960c8f9090b3baf2872914d8",
+          "referenceRegion": {
+            "x": 0,
+            "y": 0,
+            "width": 1206,
+            "height": 2622
+          },
+          "nativeRegion": {
+            "x": 0,
+            "y": 0,
+            "width": 1206,
+            "height": 2622
+          },
+          "meanAbsoluteChannelError": 0,
+          "changedPixelFraction": 0,
+          "channelThreshold": 8,
+          "verdict": "requires-review",
+          "limitations": [
+            "Pixel differences include font rasterization and native control rendering.",
+            "No functional, accessibility or perceptual equivalence inferred.",
+            "No resizing, registration or hidden cropping performed."
+          ]
+        }
+      },
+      "xxxl": {
+        "tests": {
+          "sourceHash": "03e3b8c947327c884950367e4bbcb0c3a5e8b356661e3bb4ec9b7a69427a2eae",
+          "at": "2026-10-22T00:38:34.047Z",
+          "logPath": ".ios-agent/logs/test-ef807dc8-2859-4f04-bb63-94d7aca33e88.log",
+          "resultBundle": ".ios-agent/test-results/ef807dc8-2859-4f04-bb63-94d7aca33e88.xcresult",
+          "status": "passed",
+          "passed": 5,
+          "failed": 0,
+          "skipped": 0
+        },
+        "shot": {
+          "path": "/Users/nagarjunareddy/Documents/Codex/universal-ax-harness-fixed-20261021/candidate-1-e7170ed7-6e5a-4369-810b-bd7eff286759/.ios-agent/screenshots/xxxl-4edae5b5-8c8e-49bc-a272-fa5c56809692/CA2DDCA7-C04F-4976-8D54-0746AB01F10A.png",
+          "source": "XCTest runningForeground collapsed-state attachment"
+        },
+        "geometry": {
+          "status": "passed",
+          "clippedElements": 0,
+          "regions": [],
+          "audit": "passed"
+        },
+        "typography": {
+          "regions": [
+            {
+              "id": "node-4",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4
+                ]
+              ],
+              "text": "FIELD NOTES · WEEKEND EDITION",
+              "truncated": false
+            },
+            {
+              "id": "node-5",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  4
+                ]
+              ],
+              "text": "A little closer to nature.",
+              "truncated": false
+            },
+            {
+              "id": "node-6",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4
+                ],
+                [
+                  5,
+                  6,
+                  7,
+                  8,
+                  9
+                ],
+                [
+                  10
+                ]
+              ],
+              "text": "Three quiet trails, one good weekend. Your next walk starts here.",
+              "truncated": false
+            },
+            {
+              "id": "node-8",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ],
+              "text": "THIS WEEK'S WALK",
+              "truncated": false
+            },
+            {
+              "id": "node-9",
+              "lines": [
+                [
+                  0,
+                  1
+                ]
+              ],
+              "text": "Cedar Loop",
+              "truncated": false
+            },
+            {
+              "id": "node-10",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6
+                ]
+              ],
+              "text": "4.2 miles · Easy · 90 minutes",
+              "truncated": false
+            },
+            {
+              "id": "node-11",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4
+                ],
+                [
+                  5,
+                  6,
+                  7,
+                  8,
+                  9,
+                  10
+                ],
+                [
+                  11
+                ]
+              ],
+              "text": "A shaded path through tall cedars, with a quiet river stop halfway.",
+              "truncated": false
+            },
+            {
+              "id": "node-14",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5
+                ],
+                [
+                  6,
+                  7,
+                  8
+                ]
+              ],
+              "text": "Synthetic demo content. No account or location permission needed.",
+              "truncated": false
+            },
+            {
+              "id": "node-12",
+              "lines": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ],
+              "text": "Before you go",
+              "truncated": false
+            }
+          ],
+          "version": 1
+        },
+        "probe": "/Users/nagarjunareddy/Documents/Codex/universal-ax-harness-fixed-20261021/candidate-1-e7170ed7-6e5a-4369-810b-bd7eff286759/.ios-agent/screenshots/xxxl-4edae5b5-8c8e-49bc-a272-fa5c56809692/ADE55282-4D62-43DA-9A10-3769F9B3D852.png",
+        "probeComparison": {
+          "schemaVersion": 1,
+          "referenceHash": "1969dc966c46d83c7dfb1b128bf1abe3a354d5f2c91421f756718ba08dca231f",
+          "nativeHash": "1969dc966c46d83c7dfb1b128bf1abe3a354d5f2c91421f756718ba08dca231f",
+          "referenceRegion": {
+            "x": 0,
+            "y": 0,
+            "width": 1206,
+            "height": 2622
+          },
+          "nativeRegion": {
+            "x": 0,
+            "y": 0,
+            "width": 1206,
+            "height": 2622
+          },
+          "meanAbsoluteChannelError": 0,
+          "changedPixelFraction": 0,
+          "channelThreshold": 8,
+          "verdict": "requires-review",
+          "limitations": [
+            "Pixel differences include font rasterization and native control rendering.",
+            "No functional, accessibility or perceptual equivalence inferred.",
+            "No resizing, registration or hidden cropping performed."
+          ]
+        }
+      },
+      "evidence": {
+        "version": 1,
+        "sourceHash": "52bd600cc8c48a64fe0c5d64440a815a7cd9f7feda86236b291b8bf9abd76949",
+        "referenceHash": "237315be7c347215c39fa487f24bab6b7790a0829bb3d68791718e1978c6f811",
+        "screenshotHash": "55e04712b53efe05643f3fe8bd3bc296afc49e5b960c8f9090b3baf2872914d8",
+        "pins": {
+          "device": "com.apple.CoreSimulator.SimDeviceType.iPhone-18-Pro",
+          "os": "com.apple.CoreSimulator.SimRuntime.iOS-27-0 24A434",
+          "xcode": "Xcode 27.0\nBuild version 27A266a",
+          "appearance": "light",
+          "contentSize": "large",
+          "locale": "en_US",
+          "orientation": "portrait",
+          "state": "collapsed",
+          "width": 1206,
+          "height": 2622,
+          "scale": 3,
+          "fontConfiguration": "system-ui browser / SwiftUI system, default weight; Dynamic Type large",
+          "referenceRenderer": "155.0.8059.85 host 26A434",
+          "normalizationHash": "05690da7e6342fe85dd2540e5da46a4a0b7f28038b145b36d001a122edd8b970"
+        },
+        "build": "passed",
+        "functionality": "passed",
+        "accessibility": "passed",
+        "layout": "passed",
+        "typography": "passed",
+        "testsPassed": 5,
+        "accessibilityIssues": 0,
+        "clippedElements": 0,
+        "lineBreakMismatches": 0,
+        "meanError": 0.015590419613655544,
+        "changedFraction": 0.06523686906797063,
+        "artifactsHash": "ad5b5db60351c2de316d6d9d181af69e444ed0d6bf0ff2fd2cd0fa264f51ec52"
+      }
+    }
+  ],
+  "phase": "app-verification",
+  "contract": "ccd87e936b57a33fe6cd74ecc8c4ae04688126ab31f71bde08847e025b7af8e5",
+  "environment": {
+    "xcode": "Xcode 27.0\nBuild version 27A266a",
+    "sdk": "27.0",
+    "runtimeBuild": "24A434",
+    "browser": "155.0.8059.85",
+    "host": "26A434"
+  },
+  "simulator": "D7024066-AAA5-4984-B5D9-20CB53DC8B46",
+  "adapter": "html",
+  "experimentalTextNodes": [
+    "node-5"
+  ],
+  "baseline": {
+    "version": 1,
+    "sourceHash": "4002c3ab7b6556b5eecd50de59243de8f60ccd15b379c24354a9985d336d00be",
+    "referenceHash": "237315be7c347215c39fa487f24bab6b7790a0829bb3d68791718e1978c6f811",
+    "screenshotHash": "366a9c1778bdd2ff77f8f371cdb9c440d31d013c7b50f3362e028f09e0764afd",
+    "pins": {
+      "device": "com.apple.CoreSimulator.SimDeviceType.iPhone-18-Pro",
+      "os": "com.apple.CoreSimulator.SimRuntime.iOS-27-0 24A434",
+      "xcode": "Xcode 27.0\nBuild version 27A266a",
+      "appearance": "light",
+      "contentSize": "large",
+      "locale": "en_US",
+      "orientation": "portrait",
+      "state": "collapsed",
+      "width": 1206,
+      "height": 2622,
+      "scale": 3,
+      "fontConfiguration": "system-ui browser / SwiftUI system, default weight; Dynamic Type large",
+      "referenceRenderer": "155.0.8059.85 host 26A434",
+      "normalizationHash": "05690da7e6342fe85dd2540e5da46a4a0b7f28038b145b36d001a122edd8b970"
+    },
+    "build": "passed",
+    "functionality": "passed",
+    "accessibility": "passed",
+    "layout": "passed",
+    "typography": "failed",
+    "testsPassed": 3,
+    "accessibilityIssues": 0,
+    "clippedElements": 0,
+    "lineBreakMismatches": 2,
+    "meanError": 0.018485192964781638,
+    "changedFraction": 0.07043119165668374,
+    "artifactsHash": "d0dd39fe94a0632d92eefcee6f1a49d72f91532f24514ed23253dc3278488817"
+  },
+  "knownGood": null,
+  "repair": {
+    "outcome": "requires-review",
+    "attempts": [
+      {
+        "number": 1,
+        "status": "finished",
+        "evidence": {
+          "version": 1,
+          "sourceHash": "52bd600cc8c48a64fe0c5d64440a815a7cd9f7feda86236b291b8bf9abd76949",
+          "referenceHash": "237315be7c347215c39fa487f24bab6b7790a0829bb3d68791718e1978c6f811",
+          "screenshotHash": "55e04712b53efe05643f3fe8bd3bc296afc49e5b960c8f9090b3baf2872914d8",
+          "pins": {
+            "device": "com.apple.CoreSimulator.SimDeviceType.iPhone-18-Pro",
+            "os": "com.apple.CoreSimulator.SimRuntime.iOS-27-0 24A434",
+            "xcode": "Xcode 27.0\nBuild version 27A266a",
+            "appearance": "light",
+            "contentSize": "large",
+            "locale": "en_US",
+            "orientation": "portrait",
+            "state": "collapsed",
+            "width": 1206,
+            "height": 2622,
+            "scale": 3,
+            "fontConfiguration": "system-ui browser / SwiftUI system, default weight; Dynamic Type large",
+            "referenceRenderer": "155.0.8059.85 host 26A434",
+            "normalizationHash": "05690da7e6342fe85dd2540e5da46a4a0b7f28038b145b36d001a122edd8b970"
+          },
+          "build": "passed",
+          "functionality": "passed",
+          "accessibility": "passed",
+          "layout": "passed",
+          "typography": "passed",
+          "testsPassed": 5,
+          "accessibilityIssues": 0,
+          "clippedElements": 0,
+          "lineBreakMismatches": 0,
+          "meanError": 0.015590419613655544,
+          "changedFraction": 0.06523686906797063,
+          "artifactsHash": "ad5b5db60351c2de316d6d9d181af69e444ed0d6bf0ff2fd2cd0fa264f51ec52"
+        },
+        "decision": {
+          "outcome": "requires-review",
+          "reasons": [
+            "Reference fixture lacks matching manual approval"
+          ]
+        }
+      }
+    ]
+  },
+  "promotion": {
+    "requested": false,
+    "status": "not-requested"
+  },
+  "limitations": [
+    "Typography is restricted to traced plain-text LTR English regions at default text size; OCR is supporting evidence only.",
+    "Probe pixels must match normal rendering exactly; otherwise region measurements remain provisional.",
+    "Geometry covers text frames and Apple text-clipping audit, not arbitrary images, shadows or occlusion.",
+    "Known-good requires every quality gate plus a matching manual reference approval; no approval is generated automatically."
+  ]
+}

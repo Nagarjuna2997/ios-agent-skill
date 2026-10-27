@@ -99,3 +99,9 @@ test('known fixtures reject reduced passing subsets and unknown fixture claims',
  }
  report.fixture='arbitrary-react';await assert.rejects(render(),/Unsupported native fixture/);
 }));
+test('viewer preserves infrastructure diagnostics even when repair returned requires-review',async()=>{
+ const root=await mkdtemp(join(tmpdir(),'viewer-'));try{
+  await writeFile(join(root,'report.json'),JSON.stringify({status:'requires-review',repair:{outcome:'requires-review',attempts:[]},candidateFailure:{category:'infrastructure_failure',message:'discovery <failed>'},runs:[{folder:'/runner/candidate',name:'candidate',build:{success:true,logPath:'build.log'}}]}));
+  await renderEvidence(root,join(root,'view.html'));const html=await readFile(join(root,'view.html'),'utf8');assert.match(html,/infrastructure_failure/);assert.match(html,/discovery &lt;failed&gt;/);assert.match(html,/build.log/);assert.match(html,/requires-review/);assert.match(html,/unavailable/);
+ }finally{await rm(root,{recursive:true,force:true});}
+});

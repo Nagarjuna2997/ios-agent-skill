@@ -1,0 +1,13 @@
+{
+  "run": "https://github.com/Nagarjuna2997/ios-agent-skill/actions/runs/39697488404",
+  "head": "59202096df5653f6371dad166b492e53bfaefdaa",
+  "adapter": "html",
+  "textNodes": [
+    "node-5"
+  ],
+  "artifactId": 12391828470,
+  "artifactBytes": 102294816,
+  "artifactSha256": "31ca7d03ff4689d5d4d953462576fcc37ef6262eb3f75b93e2e84cca36e94298",
+  "extractedArtifact": "/Users/nagarjunareddy/Documents/Codex/universal-uikit-hosted-39697488404/artifact",
+  "selectedArtifactsOnly": true
+}

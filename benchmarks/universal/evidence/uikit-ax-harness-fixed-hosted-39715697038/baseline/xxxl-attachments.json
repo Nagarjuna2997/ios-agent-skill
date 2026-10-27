@@ -1,0 +1,41 @@
+[
+  {
+    "attachments" : [
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "887C6632-5A67-4C03-9F11-F1E34455FCCB",
+        "deviceName" : "ios-agent-fidelity-1792639428697",
+        "exportedFileName" : "CCF043F7-5EE6-42D3-8E16-58C53E1A4052.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "expanded-disclosure_0_D1E20330-F966-4A85-8FB9-7D0621CBAB03.png",
+        "timestamp" : 1792639711.821
+      }
+    ],
+    "testIdentifier" : "InteractionTests/testDisclosureAndContent()",
+    "testIdentifierURL" : "test://com.apple.xcode/FieldNotes/FieldNotesUITests/InteractionTests/testDisclosureAndContent"
+  },
+  {
+    "attachments" : [
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "887C6632-5A67-4C03-9F11-F1E34455FCCB",
+        "deviceName" : "ios-agent-fidelity-1792639428697",
+        "exportedFileName" : "AEA4F7AF-15DD-410C-A98D-95D995B0EAB5.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "verified-typography_0_F9F57435-E92F-49E8-AF04-CB423A5B226F.png",
+        "timestamp" : 1792639734.605
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "887C6632-5A67-4C03-9F11-F1E34455FCCB",
+        "deviceName" : "ios-agent-fidelity-1792639428697",
+        "exportedFileName" : "AD2DA2C4-E730-4EA7-B577-BAE7D7094F18.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "verified-collapsed_0_97E31293-32E4-43D6-93EB-5E0863F5ED0F.png",
+        "timestamp" : 1792639718.753
+      }
+    ],
+    "testIdentifier" : "InteractionTests/testMeasuredGeometry()",
+    "testIdentifierURL" : "test://com.apple.xcode/FieldNotes/FieldNotesUITests/InteractionTests/testMeasuredGeometry"
+  }
+]

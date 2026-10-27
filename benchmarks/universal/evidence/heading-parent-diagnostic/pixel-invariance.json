@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "referenceHash": "366a9c1778bdd2ff77f8f371cdb9c440d31d013c7b50f3362e028f09e0764afd",
+  "nativeHash": "366a9c1778bdd2ff77f8f371cdb9c440d31d013c7b50f3362e028f09e0764afd",
+  "referenceRegion": {
+    "x": 0,
+    "y": 0,
+    "width": 1206,
+    "height": 2622
+  },
+  "nativeRegion": {
+    "x": 0,
+    "y": 0,
+    "width": 1206,
+    "height": 2622
+  },
+  "meanAbsoluteChannelError": 0,
+  "changedPixelFraction": 0,
+  "channelThreshold": 8,
+  "verdict": "requires-review",
+  "limitations": [
+    "Pixel differences include font rasterization and native control rendering.",
+    "No functional, accessibility or perceptual equivalence inferred.",
+    "No resizing, registration or hidden cropping performed."
+  ]
+}

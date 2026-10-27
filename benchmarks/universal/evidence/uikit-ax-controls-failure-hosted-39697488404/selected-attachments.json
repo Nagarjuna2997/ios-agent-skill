@@ -1,0 +1,42 @@
+[
+  {
+    "testIdentifier": "LiveTextUpdateTests/testAccessibilityTypeSizesAndRestore()",
+    "attachments": [
+      {
+        "configurationName": "Test Scheme Action",
+        "deviceId": "9E48074A-0B54-4C8B-A3BF-BA0FAE2CC2CE",
+        "deviceName": "ios-agent-fidelity-1792628200886",
+        "exportedFileName": "ADCE7BAB-D928-4165-9185-9CF9ABA85369.png",
+        "isAssociatedWithFailure": false,
+        "suggestedHumanReadableName": "accessibility-size-5-updated-content_0_BE3218F6-7DA5-4A1D-BA1E-6E316177ECF5.png",
+        "timestamp": 1792628802.523
+      },
+      {
+        "configurationName": "Test Scheme Action",
+        "deviceId": "9E48074A-0B54-4C8B-A3BF-BA0FAE2CC2CE",
+        "deviceName": "ios-agent-fidelity-1792628200886",
+        "exportedFileName": "9EDA6FA0-4D59-4ADB-B35B-387B5C84F489.txt",
+        "isAssociatedWithFailure": true,
+        "suggestedHumanReadableName": "Complete Issue Description.txt"
+      },
+      {
+        "configurationName": "Test Scheme Action",
+        "deviceId": "9E48074A-0B54-4C8B-A3BF-BA0FAE2CC2CE",
+        "deviceName": "ios-agent-fidelity-1792628200886",
+        "exportedFileName": "A7A3355F-87A7-489D-BA77-FBE25D65AFEA.png",
+        "isAssociatedWithFailure": true,
+        "suggestedHumanReadableName": "App Screenshot_0_1BAD7161-C86B-4C43-9DC2-C380B9DBB96D.png",
+        "timestamp": 1792628771.386
+      },
+      {
+        "configurationName": "Test Scheme Action",
+        "deviceId": "9E48074A-0B54-4C8B-A3BF-BA0FAE2CC2CE",
+        "deviceName": "ios-agent-fidelity-1792628200886",
+        "exportedFileName": "A7F7AB1C-3838-4EA7-BCD1-1EC43A76290F.png",
+        "isAssociatedWithFailure": true,
+        "suggestedHumanReadableName": "Element Screenshot_1_F57C79AE-3450-426A-8B23-7724641937B2.png",
+        "timestamp": 1792628771.386
+      }
+    ]
+  }
+]

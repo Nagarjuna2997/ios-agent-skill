@@ -1,0 +1,60 @@
+{
+  "devicesAndConfigurations": [
+    {
+      "device": {
+        "architecture": "arm64",
+        "deviceId": "9E48074A-0B54-4C8B-A3BF-BA0FAE2CC2CE",
+        "deviceName": "ios-agent-fidelity-1792628200886",
+        "modelName": "iPhone 17 Pro",
+        "osBuildNumber": "23F77",
+        "osVersion": "26.5",
+        "platform": "iOS Simulator"
+      },
+      "expectedFailures": 0,
+      "failedTests": 2,
+      "passedTests": 3,
+      "skippedTests": 0,
+      "testPlanConfiguration": {
+        "configurationId": "1",
+        "configurationName": "Test Scheme Action"
+      }
+    }
+  ],
+  "environmentDescription": "FieldNotes \u00b7 Built with macOS 26.6.2",
+  "expectedFailures": 0,
+  "failedTests": 2,
+  "finishTime": 1792628878.071,
+  "passedTests": 3,
+  "result": "Failed",
+  "runtimeWarnings": [],
+  "skippedTests": 0,
+  "startTime": 1792628643.291,
+  "statistics": [],
+  "testFailures": [
+    {
+      "failureText": "Text clipped",
+      "targetName": "FieldNotesUITests",
+      "testIdentifier": 4,
+      "testIdentifierString": "LiveTextUpdateTests/testAccessibilityTypeSizesAndRestore()",
+      "testIdentifierURL": "test://com.apple.xcode/FieldNotes/FieldNotesUITests/LiveTextUpdateTests/testAccessibilityTypeSizesAndRestore",
+      "testName": "testAccessibilityTypeSizesAndRestore()"
+    },
+    {
+      "failureText": "Text clipped",
+      "targetName": "FieldNotesUITests",
+      "testIdentifier": 5,
+      "testIdentifierString": "LiveTextUpdateTests/testLiveTypeAndContentUpdates()",
+      "testIdentifierURL": "test://com.apple.xcode/FieldNotes/FieldNotesUITests/LiveTextUpdateTests/testLiveTypeAndContentUpdates",
+      "testName": "testLiveTypeAndContentUpdates()"
+    }
+  ],
+  "title": "Test - FieldNotes",
+  "topInsights": [
+    {
+      "category": "Common Failures",
+      "impact": "100% of failures",
+      "text": "32 runs of 2 tests failed with Text clipped"
+    }
+  ],
+  "totalTestCount": 5
+}

@@ -1,0 +1,61 @@
+{
+  "version": 2,
+  "profile": {
+    "version": 1,
+    "xcode": "26.5",
+    "sdk": "26.5",
+    "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-26-5",
+    "deviceType": "com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro",
+    "appearance": "light",
+    "contentSize": "large",
+    "locale": "en_US",
+    "scale": 3,
+    "safeAreaTop": 62,
+    "safeAreaBottom": 34,
+    "state": "collapsed",
+    "fontConfiguration": "system-ui browser / SwiftUI system, default weight; Dynamic Type large",
+    "policy": {
+      "version": 1,
+      "maxMeanError": 0.02,
+      "maxChangedFraction": 0.1,
+      "maxLineBreakMismatches": 0,
+      "minimumImprovement": 0.001
+    },
+    "xcodeBuild": "17F42"
+  },
+  "startedAt": "2026-10-16T07:48:17.762Z",
+  "status": "failed",
+  "runs": [
+    {
+      "name": "baseline",
+      "folder": "/Users/runner/work/_temp/fidelity-evidence/baseline-571dc7c8-2a9e-4c42-bc48-237e8295031e",
+      "sourceHash": "4002c3ab7b6556b5eecd50de59243de8f60ccd15b379c24354a9985d336d00be",
+      "build": {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "durationMs": 47773,
+        "scheme": "FieldNotes",
+        "destination": "platform=iOS Simulator,id=8E22CFE2-7BD4-4526-B46B-3D4B4214CCB2",
+        "appPath": "/Users/runner/work/_temp/fidelity-evidence/baseline-571dc7c8-2a9e-4c42-bc48-237e8295031e/.ios-agent/DerivedData/Build/Products/Debug-iphonesimulator/FieldNotes.app",
+        "logPath": "/Users/runner/work/_temp/fidelity-evidence/baseline-571dc7c8-2a9e-4c42-bc48-237e8295031e/.ios-agent/logs/build-1792137085244.log"
+      }
+    }
+  ],
+  "phase": "app-verification",
+  "contract": "45a7b6ebddab6216fe4f03ce146947bcfc8dafac609ef5e2b9e4f81722b93c96",
+  "environment": {
+    "xcode": "Xcode 26.5\nBuild version 17F42",
+    "sdk": "26.5",
+    "runtimeBuild": "23F77",
+    "browser": "151.0.7922.34",
+    "host": "25G83"
+  },
+  "simulator": "8E22CFE2-7BD4-4526-B46B-3D4B4214CCB2",
+  "adapter": "html",
+  "experimentalTextNodes": [
+    "node-5"
+  ],
+  "failureCategory": "verification_failure",
+  "error": "Tests need an available simulator"
+}

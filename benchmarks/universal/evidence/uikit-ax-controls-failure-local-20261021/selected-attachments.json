@@ -1,0 +1,32 @@
+[
+  {
+    "testIdentifier": "InteractionTests/testMeasuredGeometry()",
+    "configurationName": "Test Scheme Action",
+    "deviceId": "CF9BE7C9-0780-435F-830C-874C90A953B9",
+    "deviceName": "ios-agent-fidelity-1792627269181",
+    "exportedFileName": "EEA1F389-16BA-4DBB-8EBA-2501A878C459.png",
+    "isAssociatedWithFailure": false,
+    "suggestedHumanReadableName": "verified-collapsed_0_F2EB5B37-88BD-4D45-A1CD-3B55F5D38C90.png",
+    "timestamp": 1792627813.316
+  },
+  {
+    "testIdentifier": "LiveTextUpdateTests/testAccessibilityTypeSizesAndRestore()",
+    "configurationName": "Test Scheme Action",
+    "deviceId": "CF9BE7C9-0780-435F-830C-874C90A953B9",
+    "deviceName": "ios-agent-fidelity-1792627269181",
+    "exportedFileName": "FA51C2D4-0089-4939-99DC-A7881B514BB6.png",
+    "isAssociatedWithFailure": false,
+    "suggestedHumanReadableName": "accessibility-size-5-updated-content_0_88691298-D5F6-4615-A5A9-6CD379570B81.png",
+    "timestamp": 1792627870.854
+  },
+  {
+    "testIdentifier": "LiveTextUpdateTests/testAccessibilityTypeSizesAndRestore()",
+    "configurationName": "Test Scheme Action",
+    "deviceId": "CF9BE7C9-0780-435F-830C-874C90A953B9",
+    "deviceName": "ios-agent-fidelity-1792627269181",
+    "exportedFileName": "97DEC705-2C75-4AE9-859E-E149F03ADFBB.png",
+    "isAssociatedWithFailure": false,
+    "suggestedHumanReadableName": "accessibility-size-5_0_BAFC6C73-6F95-4117-B610-B4E496B6BA16.png",
+    "timestamp": 1792627863.277
+  }
+]

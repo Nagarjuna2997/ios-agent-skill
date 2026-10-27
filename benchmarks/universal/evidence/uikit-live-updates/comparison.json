@@ -1,0 +1,54 @@
+{
+  "probe": {
+    "schemaVersion": 1,
+    "referenceHash": "55e04712b53efe05643f3fe8bd3bc296afc49e5b960c8f9090b3baf2872914d8",
+    "nativeHash": "55e04712b53efe05643f3fe8bd3bc296afc49e5b960c8f9090b3baf2872914d8",
+    "referenceRegion": {
+      "x": 0,
+      "y": 0,
+      "width": 1206,
+      "height": 2622
+    },
+    "nativeRegion": {
+      "x": 0,
+      "y": 0,
+      "width": 1206,
+      "height": 2622
+    },
+    "meanAbsoluteChannelError": 0,
+    "changedPixelFraction": 0,
+    "channelThreshold": 8,
+    "verdict": "requires-review",
+    "limitations": [
+      "Pixel differences include font rasterization and native control rendering.",
+      "No functional, accessibility or perceptual equivalence inferred.",
+      "No resizing, registration or hidden cropping performed."
+    ]
+  },
+  "previous": {
+    "schemaVersion": 1,
+    "referenceHash": "55e04712b53efe05643f3fe8bd3bc296afc49e5b960c8f9090b3baf2872914d8",
+    "nativeHash": "55e04712b53efe05643f3fe8bd3bc296afc49e5b960c8f9090b3baf2872914d8",
+    "referenceRegion": {
+      "x": 0,
+      "y": 0,
+      "width": 1206,
+      "height": 2622
+    },
+    "nativeRegion": {
+      "x": 0,
+      "y": 0,
+      "width": 1206,
+      "height": 2622
+    },
+    "meanAbsoluteChannelError": 0,
+    "changedPixelFraction": 0,
+    "channelThreshold": 8,
+    "verdict": "requires-review",
+    "limitations": [
+      "Pixel differences include font rasterization and native control rendering.",
+      "No functional, accessibility or perceptual equivalence inferred.",
+      "No resizing, registration or hidden cropping performed."
+    ]
+  }
+}

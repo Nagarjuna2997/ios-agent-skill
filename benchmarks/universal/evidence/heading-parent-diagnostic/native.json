@@ -1,0 +1,13 @@
+{
+  "configuredSwiftUIFont" : "system",
+  "configuredWeight" : "bold",
+  "fontEvidence" : "UIKit system-font proxy; not proof of SwiftUI resolved font identity",
+  "parentHeight" : 86,
+  "parentWidth" : 354,
+  "phrase" : "A little closer to",
+  "proxyFamily" : ".AppleSystemUIFont",
+  "proxyFontName" : ".SFUI-Bold",
+  "proxyPhraseAdvance" : 258.2666015625,
+  "proxyPointSize" : 36,
+  "resolvedScaledSize" : 36
+}

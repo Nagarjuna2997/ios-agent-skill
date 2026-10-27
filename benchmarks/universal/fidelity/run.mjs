@@ -1,3 +1,5 @@
+import {allProbeCapturesInvariant} from './probe-integrity.mjs';
+import {applyUIKitCandidate} from './uikit-candidate.mjs';
 import {runSetupCommand,classifyRunFailure,withSimulatorDiscoveryEvidence,candidateFailureEvidence} from './commands.mjs';
 // One local HTML adapter; evidence, checkpoint and acceptance contracts are framework-independent.
 import {annotateTextRegions,compareTextRegions} from '../../../mcp-server/dist/app-ir/typography.js';
@@ -15,7 +17,7 @@ import {comparePNGs} from '../../../mcp-server/dist/app-ir/compare.js';
 import {repairWithGate,VisualEvidenceSchema} from '../../../mcp-server/dist/app-ir/visual-gate.js';
 import {Checkpoints} from '../../../mcp-server/dist/app-ir/checkpoints.js';
 import {measureLineBreaks,measureClipping} from '../../../mcp-server/dist/app-ir/measurements.js';
-import {seedKnownGood,advanceKnownGood} from '../../../mcp-server/dist/app-ir/known-good.js';
+import {promotionRequested,authorizedKnownGood} from './promotion.mjs';
 import {readSpec,writeSpec,regenerate} from '../../../mcp-server/dist/agent/project.js';
 import {ProcessRunner} from '../../../mcp-server/dist/agent/runner.js';
 import {buildProject} from '../../../mcp-server/dist/agent/build.js';
@@ -28,6 +30,9 @@ const profile=JSON.parse(await readFile(resolve(profilePath),'utf8'));
 if(profile.version!==1||profile.state!=='collapsed'||profile.locale!=='en_US'||profile.appearance!=='light'||profile.contentSize!=='large')throw Error('Unsupported capture profile');
 const adapter=process.env.FIDELITY_ADAPTER??'html';
 if(!['html','react-static','react-literal-props'].includes(adapter))throw Error('Unsupported adapter');
+const textNodes=process.env.FIDELITY_UIKIT_TEXT_NODES ? process.env.FIDELITY_UIKIT_TEXT_NODES.split(',') : [];
+if(textNodes.some(id=>!/^node-[0-9]+$/.test(id)))throw Error('Invalid experimental text node ID');
+const promoteBaseline=promotionRequested(process.env.FIDELITY_PROMOTE_KNOWN_GOOD);
 const referenceApproval=process.env.FIDELITY_REFERENCE_APPROVAL?JSON.parse(await readFile(resolve(process.env.FIDELITY_REFERENCE_APPROVAL),'utf8')):null;
 const root=resolve(output);if(!resume)await mkdir(root,{recursive:false});
 // Only one runner may update a journal. A dead owner can be reclaimed on explicit resume.
@@ -57,7 +62,7 @@ try{
  const environment={xcode,sdk,runtimeBuild:runtime.buildversion,browser:browser.version(),host:await command('sw_vers',['-buildVersion'])};
  const inputs=[...await files(resolve(here,'../../../mcp-server/dist')),...await files(fixture),...await files(here)].filter(f=>!f.includes('/node_modules/'));
  const inputHashes=[];for(const f of inputs)inputHashes.push([f.slice(resolve(here,'../../..').length),sha256(await readFile(f))]);
- const contract=sha256(JSON.stringify({profile,environment,inputHashes,referenceApproval,adapter}));
+ const contract=sha256(JSON.stringify({profile,environment,inputHashes,referenceApproval,adapter,textNodes,promoteBaseline}));
  if(resume&&report.contract!==contract)throw Error('Run inputs, verifier or environment changed; use a new output directory');
  if(report.error){report.interruptions=[...(report.interruptions??[]),{error:report.error,category:report.failureCategory,resumedAt:new Date().toISOString()}];delete report.error;delete report.failureCategory;}
  report.contract=contract;report.environment=environment;report.status='running';await save();
@@ -71,16 +76,23 @@ try{
  await command('xcrun',['simctl','status_bar',udid,'override','--time','9:41','--dataNetwork','wifi','--wifiMode','active','--wifiBars','3','--batteryState','charged','--batteryLevel','100']);
  report.phase='app-verification';await save();
  const recognize=async path=>{try{const result=await runner.run(ocr,[path],{timeoutMs:30000});if(result.exitCode!==0)throw Error('OCR failed');return JSON.parse(result.stdout);}catch{return {unavailable:true,reason:'Local Vision text recognition failed or exceeded 30 seconds; no typography pass inferred'};}};
- report.adapter=adapter;
+ report.adapter=adapter;report.experimentalTextNodes=textNodes;
  const ir=adapter!=='html'?await importReact(join(fixture,adapter==='react-literal-props'?'App.props.tsx':'App.tsx'),'FieldNotes'):await importHTML(join(fixture,'index.html'),'FieldNotes');
  const referenceIR=await importHTML(join(fixture,'index.html'),'FieldNotes');
  const normalize=async(input,rect,output)=>{const png=PNG.sync.read(await readFile(input)),out=new PNG({width:rect.width,height:rect.height});PNG.bitblt(png,out,rect.x,rect.y,rect.width,rect.height,0,0);await writeFile(output,PNG.sync.write(out));};
  async function makeCandidate(name,disclosureStyle){
   const generated=await journal.stage(name+'-generate',async()=>{
    const folder=join(root,name+'-'+randomUUID());const generation=await generateProject(ir,folder,{disclosureStyle,instrumentTypography:true});
+   if(name!=='baseline' && textNodes.length){
+    const path=join(folder,ir.name,'Views/RootView.swift');
+    const source=await applyUIKitCandidate(await readFile(path,'utf8'),ir,textNodes);
+    await writeFile(path,source);generation.sourceHash=sha256(source);
+   }
    const spec=await readSpec(folder);spec.tests=true;await writeSpec(folder,spec);
    for(const suffix of ['Tests','UITests'])await mkdir(join(folder,'FieldNotes'+suffix),{recursive:true});
-   await copyFile(join(fixture,'InteractionTests.swift'),join(folder,'FieldNotesUITests/InteractionTests.swift'));await regenerate(folder,spec,runner);
+   await copyFile(join(fixture,'InteractionTests.swift'),join(folder,'FieldNotesUITests/InteractionTests.swift'));
+   if(name!=='baseline'&&textNodes.length)await copyFile(join(here,'LiveTextTests.swift'),join(folder,'FieldNotesUITests/LiveTextTests.swift'));
+   await regenerate(folder,spec,runner);
    const scheme=join(folder,'FieldNotes.xcodeproj/xcshareddata/xcschemes/FieldNotes.xcscheme');
    await writeFile(scheme,(await readFile(scheme,'utf8')).replace(/<TestableReference[^>]*><BuildableReference[^>]*BuildableName="FieldNotesTests.xctest"[^>]*\/><\/TestableReference>/g,''));
    return {value:{folder,sourceHash:generation.sourceHash},files:await files(folder)};
@@ -124,7 +136,7 @@ try{
    const diff=join(folder,'difference.png');await writeFile(diff,comparison.diff);
    const normalized=join(folder,'normalized.png');await normalize(row.large.shot.path,reference.crops.native,normalized);
    const recognized=reference.recognized.unavailable?{unavailable:true,reason:'Reference recognition unavailable'}:await recognize(normalized);const supportingOCR=reference.recognized.unavailable||recognized.unavailable?{status:'unavailable',mismatches:null,reason:'Local OCR unavailable'}:measureLineBreaks(reference.recognized,recognized,reference.expected);
-   const typography=compareTextRegions(reference.regions,row.large.typography,row.large.probeComparison.meanAbsoluteChannelError===0);
+   const typography=compareTextRegions(reference.regions,row.large.typography,allProbeCapturesInvariant(row));
    const geometry=[row.large.geometry,row.xxxl.geometry];const layout=geometry.some(g=>g?.status==='failed')?'failed':geometry.every(g=>g?.status==='passed')?'passed':'unavailable';
    const clipped=geometry.every(g=>g?.clippedElements!==null&&g?.clippedElements!==undefined)?geometry.reduce((n,g)=>n+g.clippedElements,0):null;
    const measurement={comparison:comparison.report,typography,supportingOCR,geometry,recognized,referenceRegions:reference.regions,nativeRegions:row.large.typography,probeComparison:row.large.probeComparison};const measurementPath=join(folder,'measurement.json');await atomic(measurementPath,measurement);
@@ -134,9 +146,10 @@ try{
   });row.evidence=evidence;await save();return evidence;
  }
  const baseline=await makeCandidate('baseline','platform');report.baseline=baseline;
- try{report.knownGood=seedKnownGood(baseline,profile.policy,referenceApproval);}catch{report.knownGood=null;}
- report.repair=await repairWithGate({directory:join(root,'repairs'),referenceApproval,baseline,policy:profile.policy,maxAttempts:1,resumeInterrupted:true,verifySavedEvidence:async saved=>{const current=await makeCandidate('candidate-1','leading');if(JSON.stringify(VisualEvidenceSchema.parse(current))!==JSON.stringify(VisualEvidenceSchema.parse(saved)))throw Error('Saved candidate evidence differs from verified checkpoints');},verifyCandidate:async()=>{try{return await makeCandidate('candidate-1','leading');}catch(error){report.candidateFailure=candidateFailureEvidence(error);await save();throw error;}}});
- if(report.repair.acceptedAttempt){const candidate=report.repair.attempts.find(a=>a.number===report.repair.acceptedAttempt).evidence;report.knownGood=report.knownGood?advanceKnownGood(report.knownGood,candidate,profile.policy,referenceApproval).baseline:seedKnownGood(candidate,profile.policy,referenceApproval);}
+ try{report.knownGood=authorizedKnownGood(promoteBaseline,baseline,profile.policy,referenceApproval);}catch{report.knownGood=null;}
+ report.repair=await repairWithGate({directory:join(root,'repairs'),referenceApproval,baseline,policy:profile.policy,maxAttempts:1,resumeInterrupted:true,verifySavedEvidence:async saved=>{const current=await makeCandidate('candidate-1',textNodes.length?'platform':'leading');if(JSON.stringify(VisualEvidenceSchema.parse(current))!==JSON.stringify(VisualEvidenceSchema.parse(saved)))throw Error('Saved candidate evidence differs from verified checkpoints');},verifyCandidate:async()=>{try{return await makeCandidate('candidate-1',textNodes.length?'platform':'leading');}catch(error){report.candidateFailure=candidateFailureEvidence(error);await save();throw error;}}});
+ if(report.repair.acceptedAttempt){const candidate=report.repair.attempts.find(a=>a.number===report.repair.acceptedAttempt).evidence;report.knownGood=authorizedKnownGood(promoteBaseline,candidate,profile.policy,referenceApproval);}
+ report.promotion={requested:promoteBaseline,status:report.knownGood?'promoted':promoteBaseline?'blocked':'not-requested'};
  report.status=report.repair.outcome;report.limitations=['Typography is restricted to traced plain-text LTR English regions at default text size; OCR is supporting evidence only.','Probe pixels must match normal rendering exactly; otherwise region measurements remain provisional.','Geometry covers text frames and Apple text-clipping audit, not arbitrary images, shadows or occlusion.','Known-good requires every quality gate plus a matching manual reference approval; no approval is generated automatically.'];await save();
  process.exitCode=report.status==='accepted'?0:report.status==='requires-review'?2:1;
 }catch(error){report.status='failed';report.failureCategory=classifyRunFailure(report.phase,error.message,process.env.FIDELITY_INTERRUPT_AFTER,error.code);report.error=error.message;process.exitCode=1;}

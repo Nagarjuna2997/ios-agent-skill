@@ -1,0 +1,1 @@
+Text of this SwiftUI.AccessibilityNode may be clipped at larger Dynamic Type sizes.
