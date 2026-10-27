@@ -119,6 +119,8 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
   const states:Array<{id:string; initial:boolean; origin:ts.Node}>=[];
   type Mapping = {start:number; end:number; textBinding?:AppIR['nodes'][number]['textBinding']; action?:AppIR['nodes'][number]['action']; origins:ts.Node[]};
   const stateMappings:Mapping[]=[];
+  const conditionMappings:Array<{start:number;end:number;state:string;branches:Array<{start:number;end:number}|null>}> = [];
+  let conditionalDepth=0;
   const routeSpans:Array<{id:string;path:string;start:number;end:number;origin:ts.Node}>=[];
   let initialPath:string|undefined, currentPath:string|undefined, inRoute=false;
   let declaredPaths = new Set<string>();
@@ -185,9 +187,37 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
   // Reuse the syntax-only lowering checks, then discard the temporary markup/evidence.
   // Work budgets are deliberately not restored. No application code is executed.
   function validateChildren(nodes:readonly ts.JsxChild[],stack:string[],scope:Scope){
-    const savedHTML=html,savedSpans=spans.length,savedDependencies=dependencies.length,savedMappings=stateMappings.length;
+    const savedHTML=html,savedSpans=spans.length,savedDependencies=dependencies.length,savedMappings=stateMappings.length,savedConditions=conditionMappings.length;
     try{html='';for(const child of nodes)render(child,stack,scope);}
-    finally{html=savedHTML;spans.length=savedSpans;dependencies.length=savedDependencies;stateMappings.length=savedMappings;}
+    finally{html=savedHTML;spans.length=savedSpans;dependencies.length=savedDependencies;stateMappings.length=savedMappings;conditionMappings.length=savedConditions;}
+  }
+  function conditionalTree(expression:ts.Expression, stack:string[], scope:Scope):boolean {
+    const node=unwrap(expression);
+    let test:ts.Expression,yes:ts.Expression,no:ts.Expression|undefined;
+    if(ts.isConditionalExpression(node)){test=node.condition;yes=node.whenTrue;no=node.whenFalse;}
+    else if(ts.isBinaryExpression(node)&&node.operatorToken.kind===ts.SyntaxKind.AmpersandAmpersandToken){test=node.left;yes=node.right;}
+    else return false;
+    if(textElementDepth)fail(node,'conditional view trees cannot appear inside text');
+    test=unwrap(test);let negate=false;
+    if(ts.isPrefixUnaryExpression(test)&&test.operator===ts.SyntaxKind.ExclamationToken){negate=true;test=unwrap(test.operand);}
+    const value=binding(test,scope);
+    if(!value||!('kind' in value)||value.kind!=='state')fail(test,'conditional views require a declared boolean state');
+    const start=html.length;append('<div>');
+    const branches=[yes,no].map(branch=>{
+      if(!branch||unwrap(branch).kind===ts.SyntaxKind.NullKeyword)return null;
+      const root=unwrap(branch);
+      if(!ts.isJsxElement(root)&&!ts.isJsxSelfClosingElement(root))fail(root,'conditional branch requires one JSX element or null');
+      const start=html.length;append('<div>');const contentStart=html.length;
+      conditionalDepth++;try{render(root,stack,scope);}finally{conditionalDepth--;}
+      // Intermediate wrappers must never hide unsupported inline sibling flow.
+      const tag=/^<([a-z0-9]+)/.exec(html.slice(contentStart))?.[1];
+      if(!tag||['span','strong'].includes(tag))fail(root,'conditional branch must have a block root, not inline text');
+      append('</div>');return {start,end:html.length};
+    });
+    append('</div>');const end=html.length;
+    if(negate)branches.reverse();
+    conditionMappings.push({start,end,state:value.id,branches});
+    spans.push({start,end,node});dependencies.push({start,end,nodes:[node,...value.origins]});return true;
   }
   function render(node: ts.Node, stack: string[], scope:Scope) {
     if (++count > 400) fail(node, 'expanded component count exceeds limit');
@@ -200,6 +230,7 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
     }
     if (ts.isJsxExpression(node)) {
       if(!node.expression)fail(node,'empty JSX expressions are unsupported');
+      if(conditionalTree(node.expression,stack,scope))return;
       const slot=binding(unwrap(node.expression),scope);
       if(slot&&'kind' in slot&&slot.kind==='children'){for(const child of slot.nodes)render(child,slot.stack,slot.scope);return;}
       const value=literal(node.expression,scope);const start=html.length;
@@ -229,12 +260,13 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
       const start=html.length;component(target!,stack,props,props.size?[node,...[...props.values()].flatMap(v=>v.origins)]:[]);spans.push({start,end:html.length,node});return;
     }
     if (!isLink && !/^[a-z][a-z0-9]*$/.test(tag)) fail(node,'namespaced or member elements are unsupported');
+    if (conditionalDepth && tag === 'details') fail(node,'disclosure lifecycle inside conditional views is not mapped');
     if (inRoute && tag === 'details') fail(node,'disclosure lifecycle inside routed screens is not mapped');
     let action:Mapping['action'], textBinding:Mapping['textBinding'];
     const stateOrigins:ts.Node[]=[];
     const visibleChildren=ts.isJsxElement(node)?node.children.filter(c=>!ts.isJsxText(c)||c.text.trim()):[];
     const conditional=visibleChildren.length===1&&ts.isJsxExpression(visibleChildren[0]!)?visibleChildren[0].expression:undefined;
-    if (conditional && ts.isConditionalExpression(unwrap(conditional))) {
+    if (conditional && ts.isConditionalExpression(unwrap(conditional)) && ['p','h1','h2','h3','span','strong'].includes(tag)) {
       if (!['p','h1','h2','h3','span','strong'].includes(tag)) fail(node, 'state text requires a dedicated text element');
       const expression=unwrap(conditional) as ts.ConditionalExpression;
       const state=binding(unwrap(expression.condition),scope);
@@ -334,6 +366,23 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
     if(mapping.textBinding)node.textBinding=mapping.textBinding;
     dependencies.push({start:mapping.start,end:mapping.end,nodes:mapping.origins});
   }
+  const intermediateNode=(range:{start:number;end:number})=>{
+    const start=Buffer.byteLength(html.slice(0,range.start)),end=Buffer.byteLength(html.slice(0,range.end));
+    const matches=ir.nodes.filter(n=>n.evidence.length===1&&n.evidence[0]!.start===start&&n.evidence[0]!.end===end);
+    if(matches.length!==1)throw Error('Conditional mapping has no unambiguous source element');return matches[0]!;
+  };
+  for(const mapping of conditionMappings){
+    const outer=intermediateNode(mapping);
+    const children=mapping.branches.map(branch=>{
+      if(!branch)return null;
+      const wrapper=intermediateNode(branch);
+      if(wrapper.kind!=='column'||wrapper.children.length!==1)throw Error('Conditional branch must expand to exactly one root');
+      const root=wrapper.children[0]!;ir.nodes=ir.nodes.filter(n=>n.id!==wrapper.id);return root;
+    });
+    if(!children.some(Boolean))throw Error('Conditional branches cannot both be empty');
+    outer.kind='conditional';outer.style={};outer.children=children.filter((id):id is string=>id!==null);
+    outer.condition={state:mapping.state,whenTrue:children[0]!,whenFalse:children[1]!};
+  }
   const origin=(start:number,end:number) => spans.filter(s=>Buffer.byteLength(html.slice(0,s.start))<=start&&Buffer.byteLength(html.slice(0,s.end))>=end).sort((a,b)=>(a.end-a.start)-(b.end-b.start))[0];
   for(const row of [...ir.nodes,...ir.requirements,...ir.limitations])row.evidence=row.evidence.flatMap(e=>{
     const span=origin(e.start,e.end);const node=span?.node??entry!;
@@ -350,6 +399,7 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
     ir.schemaVersion='1.2.0';ir.navigation={initialScreen:routeSpans.find(r=>r.path===initialPath)!.id,routes:routeSpans.map(r=>({screen:r.id,path:r.path}))};
     ir.requirements.push({id:'native-route-stack',area:'navigation',status:'inferred',description:'Explicit MemoryRouter routes and Link pushes become a native stack with a platform Back control. No browser URL, forward history, scroll restoration or deep-link synchronization.',evidence:[{source:'source',start:Buffer.byteLength(source.slice(0,entry.getStart(file))),end:Buffer.byteLength(source.slice(0,entry.end)),certainty:'inferred',note:'Native Back navigation substitutes for router-history back; exact web navigation chrome and scroll restoration are not inferred.'}]});
   }
-  ir.sources=[{id:'source',path:sourcePath,sha256:sha256(source),bytes:Buffer.byteLength(source),adapter:routeSpans.length?'react-memory-router@1':states.length?'react-boolean-state@1':'react-static@1'}];
+  if(conditionMappings.length)ir.schemaVersion='1.3.0';
+  ir.sources=[{id:'source',path:sourcePath,sha256:sha256(source),bytes:Buffer.byteLength(source),adapter:conditionMappings.length?'react-conditional-views@1':routeSpans.length?'react-memory-router@1':states.length?'react-boolean-state@1':'react-static@1'}];
   return AppIRSchema.parse(ir);
 }

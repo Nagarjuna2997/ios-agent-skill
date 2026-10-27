@@ -14,14 +14,15 @@ export const StyleSchema = z.object({
   radius: z.number().min(0).max(100).optional(), centered: z.boolean().optional(),
 }).strict();
 export const AppIRSchema = z.object({
-  schemaVersion: z.enum(['1.0.0', '1.1.0', '1.2.0']),
+  schemaVersion: z.enum(['1.0.0', '1.1.0', '1.2.0', '1.3.0']),
   mode: z.enum(['faithful', 'creative']),
   name: z.string().regex(/^[A-Z][A-Za-z0-9]{0,39}$/),
   sources: z.array(z.object({ id, path, sha256: z.string().regex(/^[a-f0-9]{64}$/), bytes: z.number().int().min(0).max(262144), adapter: z.string().min(1).max(80) }).strict()).min(1).max(100),
   screens: z.array(z.object({ id, title: z.string().min(1).max(80), root: id }).strict()).min(1).max(30),
   navigation: z.object({ initialScreen: id, routes: z.array(z.object({ screen: id, path: z.string().max(200).regex(/^\/(?:[a-zA-Z0-9_-]+(?:\/[a-zA-Z0-9_-]+)*)?$/) }).strict()).min(1).max(30) }).strict().optional(),
   states: z.array(z.object({ id, initial: z.boolean(), evidence: z.array(evidence).min(1).max(20) }).strict()).max(16).optional(),
-  nodes: z.array(z.object({ id, kind: z.enum(['column', 'text', 'disclosure', 'button', 'link']), text: text.optional(),
+  nodes: z.array(z.object({ id, kind: z.enum(['column', 'text', 'disclosure', 'button', 'link', 'conditional']), text: text.optional(),
+    condition: z.object({state:id, whenTrue:id.nullable(), whenFalse:id.nullable()}).strict().optional(),
     textBinding: z.object({ state: id, whenTrue: text, whenFalse: text }).strict().optional(),
     action: z.discriminatedUnion('operation', [
       z.object({ operation: z.literal('toggle'), state: id }).strict(),
@@ -39,7 +40,7 @@ export const AppIRSchema = z.object({
   const sources = new Map(ir.sources.map(s => [s.id,s]));
   const states = new Map((ir.states ?? []).map(s => [s.id,s]));
   if (states.size !== (ir.states ?? []).length) fail('Duplicate state ID');
-  if (ir.schemaVersion !== '1.2.0' && (ir.navigation || ir.nodes.some(n => n.kind === 'link' || n.action?.operation === 'navigate'))) fail('Navigation requires schema 1.2.0');
+  if (!['1.2.0','1.3.0'].includes(ir.schemaVersion) && (ir.navigation || ir.nodes.some(n => n.kind === 'link' || n.action?.operation === 'navigate'))) fail('Navigation requires schema 1.2.0');
   const screens = new Set(ir.screens.map(s => s.id));
   if (ir.navigation) {
     if (!screens.has(ir.navigation.initialScreen)) fail('Missing initial screen');
@@ -61,6 +62,12 @@ export const AppIRSchema = z.object({
     const node = nodes.get(key);
     if (!node) { fail(`Missing node ${key}`); return; }
     reached.add(key);
+    if(node.kind === 'conditional') {
+      const c=node.condition;
+      if(ir.schemaVersion !== '1.3.0' || !c || !states.has(c.state) || (!c.whenTrue && !c.whenFalse) || node.text !== undefined || node.textBinding || node.action || Object.keys(node.style).length) fail(`Invalid conditional ${key}`);
+      if(c && JSON.stringify(node.children)!==JSON.stringify([c.whenTrue,c.whenFalse].filter(Boolean))) fail(`Conditional branch mismatch ${key}`);
+    } else if(node.condition) fail(`Condition on nonconditional node ${key}`);
+    if(node.kind === 'disclosure' && [...ancestors].some(id=>nodes.get(id)?.kind==='conditional')) fail('Disclosure lifecycle inside conditional views is not mapped');
     if (node.kind === 'text' && (node.children.length || node.text === undefined)) fail(`Invalid text node ${key}`);
     if (['button','link'].includes(node.kind) && (!node.text?.trim() || node.children.length || !node.action || node.textBinding)) fail(`Invalid control node ${key}`);
     if (node.action?.operation === 'navigate') {

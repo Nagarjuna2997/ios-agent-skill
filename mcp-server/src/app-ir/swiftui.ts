@@ -17,6 +17,10 @@ export function renderSwiftUI(value: unknown, options: { disclosureStyle?: "plat
   const state = [...(ir.navigation ? ['    @State private var routePath: [String] = []'] : []), ...ir.nodes.filter(n => n.kind === 'disclosure').map(n => `    @State private var expanded_${symbol(n.id)} = false;`),
     ...(ir.states ?? []).map(s => `    @State private var state_${symbol(s.id)} = ${s.initial};`)].join('\n');
   const views = ir.nodes.map(n => {
+    if(n.kind === 'conditional' && n.condition) {
+      const c=n.condition;
+      return `    @ViewBuilder private var ${symbol(n.id)}: some View {\n        if state_${symbol(c.state)} {\n            ${c.whenTrue ? symbol(c.whenTrue) : 'EmptyView()'}\n        } else {\n            ${c.whenFalse ? symbol(c.whenFalse) : 'EmptyView()'}\n        }\n    }`;
+    }
     const s = n.style;
     const children = n.children.map(c => `            ${symbol(c)}`).join('\n');
     const content = n.textBinding ? `(state_${symbol(n.textBinding.state)} ? ${swiftString(n.textBinding.whenTrue)} : ${swiftString(n.textBinding.whenFalse)})` : swiftString(n.text ?? '');

@@ -204,3 +204,23 @@ fixture/contract and three required tests at each text size. It records actual
 stack transitions, state retention, accessibility audits and relaunch. No HTML
 fidelity score, reference approval or known-good promotion is implied. See its
 README for the exact supported grammar, unsupported behavior and reproduction.
+
+## Conditional React views (source integration; native verification pending)
+
+IR 1.3.0 adds a typed `conditional` node referencing an entry boolean state and up
+to two exclusive child roots. The React importer accepts `state ? <Block/> : null`,
+two JSX branches, `state && <Block/>` and a single `!state` inversion. It validates
+both branches even if one starts inactive. Same-file components and children
+composition reuse the existing bounded syntax importer; input JavaScript never
+executes. The renderer emits native `@ViewBuilder`/`if` branches rather than hiding
+inactive controls with opacity. Older IR schemas keep their existing output.
+
+Each branch must expand to one block root. Inline span/strong roots, fragments,
+unknown conditions, effectful expressions, conditional text mixtures and disclosure
+lifecycle inside conditional views are rejected. The schema also rejects manually
+constructed conditional disclosure trees. Styles belong to the branch roots, not
+the structural conditional node. No local component state or effects are inferred.
+
+See [the generation fixture](../../benchmarks/universal/react-conditional/README.md).
+Portable source tests establish syntax/IR/rendering behavior only. Native execution,
+VoiceOver, Dynamic Type and visual fidelity for this new fixture remain unverified.
