@@ -1,0 +1,73 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {mkdtemp,readFile,rm} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
+import {join,resolve} from 'node:path';
+import {UniversalStudio} from '../universal.mjs';
+import {serve} from '../server.mjs';
+async function workspace(t){const root=await mkdtemp(join(tmpdir(),'universal-studio-'));t.after(()=>rm(root,{recursive:true,force:true}));const u=new UniversalStudio(root,resolve('.'));await u.init();return {u,root};}
+test('Studio imports actual React IR and generates editable SwiftUI without claiming build success',async t=>{
+ const {u}=await workspace(t);const row=await u.create({adapter:'react',name:'StudioSample',source:'export default function App(){return <main><h1>Hello</h1></main>}'});
+ assert.equal(row.status,'inspected');const result=await u.generate(row.id);assert.equal(result.status,'generated-unverified');assert.equal(result.tests,'not-run');
+ const data=await u.source(row.id);assert.match(data.swift,/Text\(verbatim: "Hello"\)/);assert.equal(data.ir.sources[0].adapter,'react-static@1');
+ assert.equal((await u.list()).length,1);await assert.rejects(u.generate(row.id),/preserve/);assert.equal((await u.get(row.id)).status,'generated-unverified');
+});
+test('unsupported source remains inspectable but cannot produce a plausible native project',async t=>{
+ const {u}=await workspace(t);const r=await u.create({adapter:'html',name:'Unsupported',source:'<main><script>throw Error("must never execute")</script><p>Hello</p></main>'});
+ assert.ok(r.limitations.length);assert.equal((await u.generate(r.id)).status,'failed');assert.equal((await u.source(r.id)).swift,null);
+ await assert.rejects(u.create({adapter:'vue',name:'App',source:'<p>Hello</p>'}));await assert.rejects(u.create({adapter:'html',name:'../outside',source:'test'}));await assert.rejects(u.get('../outside'));
+});
+test('restart marks interrupted work honestly and retains inspected source',async t=>{
+ const {u,root}=await workspace(t);const r=await u.create({adapter:'html',name:'Recover',source:'<main><p>Kept</p></main>'});r.status='generating';await u.save(r);const next=new UniversalStudio(root,resolve('.'));await next.init();assert.equal((await next.get(r.id)).status,'interrupted');assert.match((await next.source(r.id)).input,/Kept/);
+});
+test('Universal HTTP endpoints retain Studio authorization and source is not served as executable HTML',async t=>{
+ const {root}=await workspace(t);const app=await serve({port:0,root,repo:resolve('.')});t.after(()=>new Promise(r=>app.server.close(r)));
+ const page=await(await fetch(app.origin+'/universal')).text();const token=/name="studio-token" content="([a-f0-9]+)"/.exec(page)[1];
+ assert.equal((await fetch(app.origin+'/api/universal')).status,403);
+ const headers={'x-studio-token':token,'content-type':'application/json'};
+ assert.equal((await fetch(app.origin+'/api/universal',{headers:{...headers,origin:'https://attacker.example'}})).status,403);
+ const r=await fetch(app.origin+'/api/universal',{method:'POST',headers,body:JSON.stringify({adapter:'html',name:'HTTPApp',source:'<main><p>Actual source</p></main>'})});assert.equal(r.status,201);const row=await r.json();
+ const data=await fetch(app.origin+'/api/universal/'+row.id+'/source',{headers});assert.match(data.headers.get('content-type'),/application\/json/);assert.match((await data.json()).input,/Actual source/);
+ assert.equal((await fetch(app.origin+'/api/universal/'+row.id+'/unknown',{headers})).status,405);
+});
+test('native job records outcomes and refuses stale or modified screenshots',async t=>{
+ const {u}=await workspace(t);const row=await u.create({adapter:'html',name:'CaptureApp',source:'<main><p>Capture</p></main>'});await u.generate(row.id);
+ const original=u.module.bind(u);let launches=0;u.module=async name=>{
+  if(name==='agent/runner')return {ProcessRunner:class{}};
+  if(name==='agent/toolchain')return {detectToolchain:async()=>({testDouble:true,simulators:[{udid:'test-double'}]}),chooseSimulator:s=>s[0]};
+  if(name==='agent/build')return {buildProject:async(root,runner,options)=>{assert.equal(options.udid,'test-double');return {success:true,errors:[]};}};
+  if(name==='agent/simulator')return {runApp:async(root,runner,options)=>{assert.equal(options.udid,'test-double');launches++;return {udid:'test-double'};},screenshot:async root=>{const {mkdir,writeFile}=await import('node:fs/promises');const folder=join(root,'.ios-agent/screenshots');await mkdir(folder,{recursive:true});const file=join(folder,'universal.png');await writeFile(file,'synthetic-image');return {path:file};}};
+  return original(name);
+ };
+ await u.startBuild(row.id);await u.jobs.get(row.id);const done=await u.get(row.id);assert.equal(done.status,'preview-ready');assert.equal(done.tests,'not-run');assert.equal(done.visualFidelity,'not-evaluated');assert.equal(launches,1);assert.equal((await u.image(row.id)).toString(),'synthetic-image');
+ const {appendFile}=await import('node:fs/promises');await appendFile(join(u.dir(row.id),'project','CaptureApp/Views/RootView.swift'),'\n// changed');await assert.rejects(u.image(row.id),/Source changed/);
+});
+test('native build failure cannot launch or produce a preview',async t=>{
+ const {u}=await workspace(t);const row=await u.create({adapter:'html',name:'FailedApp',source:'<main><p>Failed</p></main>'});await u.generate(row.id);
+ const original=u.module.bind(u);u.module=async name=>{
+  if(name==='agent/runner')return {ProcessRunner:class{}};
+  if(name==='agent/toolchain')return {detectToolchain:async()=>({testDouble:true,simulators:[{udid:'test-double'}]}),chooseSimulator:s=>s[0]};
+  if(name==='agent/build')return {buildProject:async()=>({success:false,errors:[{message:'synthetic compiler error'}]})};
+  if(name==='agent/simulator')return {runApp:async()=>{assert.fail('must not launch');}};
+  return original(name);
+ };
+ await u.startBuild(row.id);await u.jobs.get(row.id);const done=await u.get(row.id);assert.equal(done.status,'failed');assert.equal(done.runs[0].build.success,false);assert.equal(done.capture,undefined);await assert.rejects(u.image(row.id),/No verified current capture/);
+});
+test('native ownership excludes other conversions, releases on cancellation and permits retry',async t=>{
+ const {u}=await workspace(t);let leased=false;u.acquireNative=()=>{assert.equal(leased,false);leased=true;return ()=>{leased=false;};};
+ const rows=[];for(const name of ['First','Second']){const r=await u.create({adapter:'html',name,source:'<main><p>Hello</p></main>'});await u.generate(r.id);rows.push(r);}
+ u.executeBuild=async(row,signal)=>{await new Promise(resolve=>signal.addEventListener('abort',resolve,{once:true}));row.status='cancelled';await u.save(row);};
+ await u.startBuild(rows[0].id);assert.equal(leased,true);await assert.rejects(u.startBuild(rows[1].id),/already running/);
+ const job=u.jobs.get(rows[0].id);u.cancel(rows[0].id);await job;assert.equal(leased,false);
+ await u.startBuild(rows[0].id);const retry=u.jobs.get(rows[0].id);u.cancel(rows[0].id);await retry;assert.equal(leased,false);
+ await assert.rejects(u.startBuild('invalid'));assert.equal(leased,false);
+});
+test('server shares native reservation with existing Studio actions and live preview',async t=>{
+ const {root}=await workspace(t);const app=await serve({port:0,root,repo:resolve('.')});t.after(()=>new Promise(r=>app.server.close(r)));
+ const row=await app.universal.create({adapter:'html',name:'Lease',source:'<main><p>Lease</p></main>'});await app.universal.generate(row.id);
+ app.studio.reserved=true;await assert.rejects(app.universal.startBuild(row.id),/active Studio/);app.studio.reserved=false;
+ app.universal.executeBuild=async(r,signal)=>new Promise(resolve=>signal.addEventListener('abort',resolve,{once:true}));
+ await app.universal.startBuild(row.id);assert.equal(app.studio.reserved,true);
+ await assert.rejects(app.live.start('anything'),/active task/);await assert.rejects(app.studio.exclusive(()=>{}),/active task/);
+ const job=app.universal.jobs.get(row.id);app.universal.cancel(row.id);await job;assert.equal(app.studio.reserved,false);
+});

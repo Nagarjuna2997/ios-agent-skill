@@ -1,3 +1,4 @@
+import {UniversalStudio} from './universal.mjs';
 import { LocalBackend } from "./backend.mjs";
 import { LivePreview } from "./live.mjs";
 import http from "node:http";
@@ -19,6 +20,7 @@ export async function serve({
 } = {}) {
   const studio = new Studio(root, repo);
   await studio.init();
+  const universal=new UniversalStudio(root,repo,()=>{if(studio.jobs.size||studio.reserved)throw Error("Stop the active Studio task or live preview first");studio.reserved=true;return ()=>{studio.reserved=false;};});await universal.init();
   studio.backend = new LocalBackend(root);
   const live = new LivePreview(studio);
   const token = randomBytes(32).toString("hex");
@@ -63,19 +65,23 @@ export async function serve({
       if (parts[0] !== "api") {
         const files = {
           "/": "index.html",
+          "/universal": "universal.html",
+          "/universal.js": "universal.js",
           "/app.js": "app.js",
           "/style.css": "style.css",
         };
         const f = files[u.pathname];
         if (!f) return send(404, { error: "Not found" });
         let b = await fs.readFile(path.join(here, "public", f));
-        if (f === "index.html")
+        if (f === "index.html" || f === "universal.html")
           b = Buffer.from(b.toString().replace("__TOKEN__", token));
         return send(
           200,
           b,
           {
             "index.html": "text/html; charset=utf-8",
+            "universal.html": "text/html; charset=utf-8",
+            "universal.js": "text/javascript",
             "app.js": "text/javascript",
             "style.css": "text/css",
           }[f],
@@ -83,6 +89,20 @@ export async function serve({
       }
       if (req.headers["x-studio-token"] !== token)
         return send(403, { error: "Reload Studio to reconnect." });
+      if(parts[1]==='universal') {
+        if(req.method==='GET' && parts.length===2)return send(200,await universal.list());
+        if(req.method==='GET' && parts.length===3)return send(200,await universal.get(parts[2]));
+        if(req.method==='GET' && parts.length===4 && parts[3]==='source')return send(200,await universal.source(parts[2]));
+        if(req.method==='GET' && parts.length===4 && parts[3]==='image')return send(200,await universal.image(parts[2]),'image/png');
+        if(req.method!=='POST')return send(405,{error:'Method not allowed'});
+        if(!req.headers['content-type']?.startsWith('application/json'))return send(415,{error:'JSON required'});
+        const body=JSON.parse((await readBody(300000)).toString('utf8'));
+        if(parts.length===2)return send(201,await universal.create(body));
+        if(parts.length===4 && parts[3]==='generate')return send(200,await universal.generate(parts[2]));
+        if(parts.length===4 && parts[3]==='build')return send(202,await universal.startBuild(parts[2]));
+        if(parts.length===4 && parts[3]==='cancel'){universal.cancel(parts[2]);return send(200,{ok:true});}
+        return send(404,{error:'Unknown conversion route'});
+      }
       if (req.method === "GET") {
         if(parts[1]==="live") {
           if(parts[2]==="frame") {if(!live.session?.frame)return send(404,{error:"No live frame"});return send(200,live.session.frame,"image/png");}
@@ -217,7 +237,7 @@ export async function serve({
   await new Promise((resolve) => server.listen(port, "127.0.0.1", resolve));
   origin = `http://127.0.0.1:${server.address().port}`;
   studio.origin = origin;
-  return { server, studio, live, origin };
+  return { server, studio, universal, live, origin };
 }
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   // Finder and the Mac launcher start Studio with a minimal PATH; use the
@@ -234,6 +254,8 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     process.on(s, async () => {
       for (const id of app.studio.jobs.keys()) app.studio.cancel(id);
       await app.live.stop();
+      for(const id of app.universal.controllers.keys())app.universal.cancel(id);
+      await Promise.allSettled([...app.universal.jobs.values()].filter(v=>v instanceof Promise));
       app.server.close();
       while (app.studio.jobs.size) await new Promise((r) => setTimeout(r, 50));
       process.exit();
