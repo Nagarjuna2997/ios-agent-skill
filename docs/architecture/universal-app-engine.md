@@ -154,7 +154,7 @@ state fields falsely labelled 1.0.0. Generated SwiftUI uses native `@State`,
 `Button` and dynamic `Text`, with stable accessibility IDs and Dynamic Type.
 The native button appearance is a platform mapping, not a browser fidelity claim.
 
-Number/object state, functional updater callbacks, state in reusable component
+Number/object state, general functional updater callbacks, state in reusable component
 instances, effects, async events, event parameters, callback props, conditional
 view trees and persistence remain unsupported; navigation is a separate bounded mapping below. No state is inferred
 from names or comments. Source ranges include declarations, text branches and
@@ -224,3 +224,14 @@ the structural conditional node. No local component state or effects are inferre
 See [the generation fixture](../../benchmarks/universal/react-conditional/README.md).
 Portable source tests establish syntax/IR/rendering behavior only. Native execution,
 VoiceOver, Dynamic Type and visual fidelity for this new fixture remain unverified.
+
+
+### Previous-value boolean updates
+
+The React adapter accepts `setSaved(previous => !previous)` in a supported
+button handler. It maps to the existing native boolean toggle, preserving the
+setter's state identity. Parenthesized expressions and parameter shadowing are
+supported. Async/block callbacks, defaults, destructuring, captured state,
+side effects and other expressions fail explicitly. This is a syntax mapping,
+not a JavaScript evaluator. Portable tests compare its output with the existing
+toggle and verify byte provenance; no new native runtime result is claimed.

@@ -39,7 +39,7 @@ test('unsupported hooks, initializers, bindings and imports fail before generati
  assert.throws(()=>reactToIR(app('<p>Hi</p>',Array.from({length:17},(_,i)=>`const [x${i},s${i}]=useState(false);`).join(''))),/state count/);
 });
 test('unsupported event expressions never become plausible native buttons',()=>{
- for(const callback of ['()=>alert(1)','()=>{setSaved(true);}','async()=>setSaved(true)','event=>setSaved(true)','()=>setSaved(v=>!v)','()=>setSaved(saved)','()=>setSaved(!other)','()=>setSaved(true,false)','()=>setSaved(fetch("https://example.com"))','setSaved(true)'])assert.throws(()=>reactToIR(app(`<button onClick={${callback}}>Save</button>`)));
+ for(const callback of ['()=>alert(1)','()=>{setSaved(true);}','async()=>setSaved(true)','event=>setSaved(true)','()=>setSaved(saved)','()=>setSaved(!other)','()=>setSaved(true,false)','()=>setSaved(fetch("https://example.com"))','setSaved(true)'])assert.throws(()=>reactToIR(app(`<button onClick={${callback}}>Save</button>`)));
  for(const body of ['<button>Save</button>','<button onClick={()=>setSaved(true)}><strong>Save</strong></button>','<button onClick={()=>setSaved(true)}>{"Save"}</button>','<p onClick={()=>setSaved(true)}>Save</p>','<button onClick={()=>setSaved(true)} onClick={()=>setSaved(false)}>Save</button>'])assert.throws(()=>reactToIR(app(body)));
 });
 test('dynamic expressions, branch markup and whitespace normalization cannot silently change state text',()=>{
@@ -69,4 +69,19 @@ test('installed CLI exposes state through the same inspect and validation path',
   const path=join(root,'ir.json');await writeFile(path,result.stdout);
   const validated=spawnSync(process.execPath,[cli,'app-ir','validate',path],{encoding:'utf8',timeout:10000});assert.equal(validated.status,0,validated.stderr);
  }finally{await rm(root,{recursive:true,force:true});}
+});
+
+test('functional boolean updater maps to existing atomic native toggle without executing code',()=>{
+ for(const expression of ['previous=>!previous','(previous)=>(!previous)','saved=>!saved']){
+  const source=app(`<p>{saved?'Saved':'Not saved'}</p><button onClick={()=>setSaved(${expression})}>Toggle</button>`);
+  const ir=reactToIR(source);const button=ir.nodes.find(n=>n.kind==='button');
+  assert.deepEqual(button.action,{operation:'toggle',state:ir.states[0].id});
+  assert.ok(button.evidence.some(e=>Buffer.from(source).subarray(e.start,e.end).toString().includes(expression)));
+  assert.equal(renderSwiftUI(ir).source,renderSwiftUI(reactToIR(source.replace(expression,'!saved'))).source);
+ }
+});
+test('functional updater rejects side effects, captured variables and altered callback semantics',()=>{
+ for(const value of ['p=>!saved','p=>p','p=>!!p','p=>fetch(p)','async p=>!p','(p,q)=>!p','(...p)=>!p','(p=false)=>!p','({p})=>!p','(p:boolean)=>!p','p=>{return !p}','p=>(setSaved(false),!p)','p=>!other','p=>!p.value']){
+  assert.throws(()=>reactToIR(app(`<button onClick={()=>setSaved(${value})}>Toggle</button>`)),undefined,value);
+ }
 });

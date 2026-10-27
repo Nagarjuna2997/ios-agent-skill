@@ -306,7 +306,16 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
           const value=binding(unwrap(argument.operand),scope);
           if(!value||!('kind' in value)||value.kind!=='state'||value.id!==setter.id)fail(argument,'toggle must reference its own boolean state');
           action={operation:'toggle',state:setter.id};
-        }else fail(argument,'state action supports literal true/false or negation of its own value');
+        }else if(ts.isArrowFunction(argument)){
+          if(argument.modifiers?.length||argument.typeParameters?.length||argument.type||argument.parameters.length!==1||ts.isBlock(argument.body))fail(argument,'boolean updater requires one plain parameter and a negation expression');
+          const parameter=argument.parameters[0]!;
+          if(!ts.isIdentifier(parameter.name)||parameter.initializer||parameter.dotDotDotToken||parameter.questionToken||parameter.type||parameter.modifiers?.length)fail(parameter,'boolean updater parameter must be a plain identifier');
+          const body=unwrap(argument.body);
+          if(!ts.isPrefixUnaryExpression(body)||body.operator!==ts.SyntaxKind.ExclamationToken)fail(body,'boolean updater supports only negating its previous value');
+          const operand=unwrap(body.operand);
+          if(!ts.isIdentifier(operand)||operand.text!==parameter.name.text)fail(body,'boolean updater must reference its own parameter, not captured state');
+          action={operation:'toggle',state:setter.id};
+        }else fail(argument,'state action supports literal true/false, own-value negation or previous-value boolean negation');
         stateOrigins.push(attr,...setter.origins);
       } else if(key==='style') {
         if(!value||!ts.isJsxExpression(value)||!value.expression||!ts.isObjectLiteralExpression(value.expression))fail(attr,'style must be a literal object');
