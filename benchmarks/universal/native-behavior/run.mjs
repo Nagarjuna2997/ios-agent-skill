@@ -52,11 +52,17 @@ try{
  if(resume&&contract!==report.contract)throw Error('Inputs or environment changed; use a new output directory');
  report.contract=contract;report.environment=environment;delete report.error;await save();
  const journal=new Checkpoints(root,contract);
+ const ensureSimulator=async()=>{
+  if(udid)return udid;
+  const callerPhase=report.phase;
  report.phase='simulator-setup';await save();
  udid=await command('xcrun',['simctl','create','ios-agent-'+fixture+'-'+Date.now(),profile.deviceType,profile.runtime]);report.simulator=udid;await save();
  await command('xcrun',['simctl','boot',udid]);await command('xcrun',['simctl','bootstatus',udid,'-b']);
  await command('xcrun',['simctl','ui',udid,'appearance',profile.appearance]);
  await command('xcrun',['simctl','status_bar',udid,'override','--time','9:41','--batteryState','charged','--batteryLevel','100']);
+  report.phase=callerPhase;await save();
+  return udid;
+ };
  report.phase='generation';await save();
  const project=await journal.stage('generate',async()=>{
   const ir=await importReact(join(here,'App.tsx'),name),folder=join(root,'app-'+randomUUID());
@@ -68,13 +74,12 @@ try{
   return {value:{folder,sourceHash:ir.sources[0].sha256,irHash:sha256(JSON.stringify(ir))},files:await files(folder)};
  });report.project=project;report.phase='build';await save();
  report.build=await journal.stage('build',async()=>{
-  const value=await buildProject(project.folder,runner,{udid});report.build=value;await save();if(!value.success)throw Error('Native build failed');
+  const value=await buildProject(project.folder,runner,{udid:await ensureSimulator()});report.build=value;await save();if(!value.success)throw Error('Native build failed');
   return {value,files:[value.logPath,...await files(value.appPath)]};
  });await save();report.phase='tests';await save();
  for(const [key,size] of [['large','large'],['xxxl','extra-extra-extra-large']]){
-  await command('xcrun',['simctl','ui',udid,'content_size',size]);
   report[key]=await testEvidence({root,folder:project.folder,key,journal,files,expectedTests,
-   runTests:()=>testProject(project.folder,runner,udid),record:async tests=>{report[key]={tests};await save();},
+   runTests:async()=>{await ensureSimulator();await command('xcrun',['simctl','ui',udid,'content_size',size]);return testProject(project.folder,runner,udid);},record:async tests=>{report[key]={tests};await save();},
    exportAttachments:(bundle,destination)=>command('xcrun',['xcresulttool','export','attachments','--path',bundle,'--output-path',destination]),
   });await save();
  }

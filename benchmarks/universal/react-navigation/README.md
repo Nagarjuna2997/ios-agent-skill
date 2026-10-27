@@ -69,3 +69,12 @@ Syntax references: [MemoryRouter](https://reactrouter.com/6.30.6/router-componen
 [Link](https://reactrouter.com/6.30.6/components/link), and
 [Apple NavigationStack](https://developer.apple.com/documentation/swiftui/navigationstack).
 The adapter recognizes only the explicit subset above, not the full APIs.
+
+## Completed-run resume
+
+Completed checkpoints still verify their contract and artifact hashes, but no longer
+create or boot a simulator solely to reuse build and test results. An unfinished
+build or test stage initializes the simulator when needed and sets the test size
+before execution. Changing runner code changes the contract: use a new output
+directory for the first run after this update. Portable checkpoint tests passed;
+a fresh hosted/native run of this startup change remains to be verified.
