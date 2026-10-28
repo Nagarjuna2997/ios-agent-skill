@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "kind": "authorized-archived-candidate-seed",
+  "recordedOn": "2026-10-28",
+  "archive": "uikit-ax-harness-fixed-local-20261021",
+  "archiveManifestHash": "4282efce1eddb3a688ede7ebca1986e85e6a69c78c975e293288fb8f5dd339b2",
+  "archiveFilesVerified": 44,
+  "originalReportHash": "41339fe1c7e00ed7eb367396d2e0ac7166d5e1f0c6898418f586b9e7c79543a1",
+  "referenceApprovalHash": "0346524ed8e7e0276a21ea912cefbad170a6426a8e510862c5528121c5429238",
+  "candidateAttempt": 1,
+  "policy": {
+    "version": 1,
+    "maxMeanError": 0.02,
+    "maxChangedFraction": 0.1,
+    "maxLineBreakMismatches": 0,
+    "minimumImprovement": 0.001
+  },
+  "originalRepairOutcome": "requires-review",
+  "promotion": {
+    "requested": true,
+    "status": "promoted",
+    "scope": "local archived fixture only"
+  },
+  "newNativeExecution": false,
+  "originalArchiveModified": false,
+  "productionIntegration": false,
+  "hostedBaselineApproved": false
+}

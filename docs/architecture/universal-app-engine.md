@@ -280,3 +280,14 @@ HTML nodes before lowering. Source code is never compiled or executed. Scripts,
 stylesheets, expressions, blocks, runes, directives, components and SvelteKit are
 unsupported; this is not general Svelte support. See the [fixture](../../benchmarks/universal/svelte-static/README.md).
 Native execution and fidelity remain unverified for this new adapter.
+
+### Authorized local initial baseline (October 28, 2026)
+
+The user separately authorized the archived, verified UIKit candidate as an
+initial known-good baseline for the exact approved local HTML capture. The
+[baseline record](../../benchmarks/universal/evidence/local-known-good-20261028/README.md)
+links the unchanged evidence, reference approval, policy and explicit permission.
+All 44 archived hashes were rechecked; no native execution was repeated. The
+original failed-baseline repair verdict is preserved. This does not enable the
+UIKit production renderer, approve hosted captures or publish npm. Future repairs
+still require complete verification against matching pins and reference.

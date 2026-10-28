@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "decision": "authorized",
+  "kind": "initial-local-baseline",
+  "authorizedBy": "Nagarjuna — explicit user response in Codex",
+  "authorizedOn": "2026-10-28",
+  "response": "Authorize this local baseline only",
+  "scope": {
+    "archive": "uikit-ax-harness-fixed-local-20261021",
+    "attempt": 1,
+    "sourceHash": "52bd600cc8c48a64fe0c5d64440a815a7cd9f7feda86236b291b8bf9abd76949",
+    "referenceHash": "237315be7c347215c39fa487f24bab6b7790a0829bb3d68791718e1978c6f811",
+    "pinsHash": "85e9ca912ebadddb8cfe3692a7050e071b5353b656cb517186fe5676ea46f4f2",
+    "evidenceHash": "0694ab70d55c6d84c6d81034976646876b8cad26ef9dc8a91ba05e871740d1c7"
+  },
+  "excludes": [
+    "production integration",
+    "hosted-baseline approval",
+    "npm publication"
+  ]
+}
