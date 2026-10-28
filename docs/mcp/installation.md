@@ -6,7 +6,7 @@
 claude mcp add ios-agent -- npx -y ios-agent-mcp@latest
 ```
 
-The published 2.9.0 server exposes 67 tools, including review/metadata, Apple reference and documentation, simulator, app scaffolding and the local `prepare_issue_report` tools. App scaffolding and simulator packages install automatically as dependencies; no separate installation or MCP connection is needed. Remove the separate knowledge/simulator connections if you previously configured them to avoid duplicate tools.
+The published 2.10.3 server exposes 82 tools, including review/metadata, Apple reference and documentation, simulator, app scaffolding and the local `prepare_issue_report` tools. App scaffolding and simulator packages install automatically as dependencies; no separate installation or MCP connection is needed. Remove the separate knowledge/simulator connections if you previously configured them to avoid duplicate tools.
 
 Create a starter directly:
 
@@ -14,7 +14,7 @@ Create a starter directly:
 npx -y ios-agent-mcp@latest new MyApp --brief "A reading list with local storage" --xcodegen
 ```
 
-Requires Node.js 20+. Simulator operations require macOS and Xcode. `new` writes a starter only: XcodeGen turns its `project.yml` into an Xcode project. To have an agent plan, write, build and screenshot a whole app from one sentence, use the [`/ios-build` agent](../tooling/ios-build-agent.md) (2.10.0, from a checkout until it is on npm); it needs Xcode 16 or later and treats XcodeGen as optional. The default connection includes tools that write files and operate the simulator; review and reference tools remain read-only.
+Requires Node.js 20+. Simulator operations require macOS and Xcode. `new` writes a starter only: XcodeGen turns its `project.yml` into an Xcode project. To have an agent plan, write, build and screenshot a whole app from one sentence, use the [`/ios-build` agent](../tooling/ios-build-agent.md) (available in the published npm package); it needs Xcode 16 or later and treats XcodeGen as optional. The default connection includes tools that write files and operate the simulator; review and reference tools remain read-only.
 
 **Load this when:** setting up `ios-agent-mcp` in Claude Code, Claude Desktop,
 ChatGPT/Codex, Gemini, or another MCP-capable client.
@@ -49,6 +49,7 @@ Worked sessions: `examples.md`.
 | Codex | Codex MCP CLI/config or the release plugin ZIP | Local analysis, knowledge and app-building skill |
 | ChatGPT | Portable skills-only plugin ZIP; optional hosted knowledge MCP | Bundled workflows/references; implementation needs a coding environment |
 | Muse Code | Local stdio setup below; existing AGENTS.md and Claude-format skills | MCP discovery and Stop command hook verified; model session unverified |
+| Grok Build | [Local stdio setup](grok.md) | 82-tool discovery verified with Grok Build 1.0.70; model session unverified |
 | Gemini CLI | GitHub extension or local MCP configuration | GEMINI instructions, analysis and knowledge tools |
 
 ## Codex

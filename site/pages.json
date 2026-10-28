@@ -488,8 +488,8 @@
     "description": "Build an iOS app from one sentence with the /ios-build agent, plus Swift reviews, Apple guides and Simulator tools for Claude, Codex, Gemini and Muse."
   },
   "install.html": {
-    "title": "Install iOS Agent MCP — Claude, Codex, Gemini CLI & Muse",
-    "description": "Install and use iOS Agent Skill with Claude, Codex, ChatGPT, Gemini CLI and Muse Code."
+    "title": "Install iOS Agent MCP — client setup guides",
+    "description": "Connect iOS Agent MCP to Claude, Codex, ChatGPT, Gemini CLI, Muse or Grok Build, with setup steps and verification limits."
   },
   "library.html": {
     "title": "Apple development guide library",
@@ -1062,5 +1062,9 @@
   "guides/tooling-app-store-readiness.html": {
     "title": "Review App Store readiness with local evidence",
     "description": "Check target-specific permissions, privacy reasons, entitlements and metadata before separately approved signing and upload."
+  },
+  "guides/mcp-grok.html": {
+    "title": "Grok Build connection",
+    "description": "Connect Grok Build to iOS Agent MCP with local stdio configuration, recorded tool discovery and explicit verification limits."
   }
 }

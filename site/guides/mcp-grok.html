@@ -1,0 +1,69 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/mcp-grok.html"><meta property="og:title" content="Grok Build connection"><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/mcp-grok.html"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css?v=guide-visuals-3"><link rel="stylesheet" href="../navigation.css?v=2"><script src="../appearance.js?v=2" defer=""></script><title>Grok Build connection</title><meta name="description" content="Connect Grok Build to iOS Agent MCP with local stdio configuration, recorded tool discovery and explicit verification limits."><meta property="og:description" content="Connect Grok Build to iOS Agent MCP with local stdio configuration, recorded tool discovery and explicit verification limits."><meta property="og:type" content="article"><meta property="og:site_name" content="iOS Agent Skill"><meta name="twitter:title" content="Grok Build connection"><meta name="twitter:description" content="Connect Grok Build to iOS Agent MCP with local stdio configuration, recorded tool discovery and explicit verification limits."><meta name="twitter:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/mcp-grok.html"><meta name="robots" content="index,follow"><link rel="alternate" type="application/atom+xml" href="/ios-agent-skill/feed.xml" title="iOS Agent Skill"><script id="site-discovery-schema" type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Grok Build connection","image":"https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg","datePublished":"2026-09-16T20:25:44-05:00","dateModified":"2026-10-11T03:24:39-05:00","author":{"@type":"Person","name":"Nagarjuna"},"mainEntityOfPage":"https://nagarjuna2997.github.io/ios-agent-skill/guides/mcp-grok.html","url":"https://nagarjuna2997.github.io/ios-agent-skill/guides/mcp-grok.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../series.html">Guided series</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a><!-- release-link:start --><a class="release-link" href="../releases.html">What’s new <span aria-hidden="true">↗</span></a><!-- release-link:end --></div><button class="appearance-toggle" type="button" aria-label="Use dark appearance" aria-pressed="false"><span aria-hidden="true">☾</span><span class="appearance-label">Dark mode</span></button></nav><main id="main"><div class="article-back"><a class="btn secondary" href="../library.html">← Back to all frameworks &amp; guides</a><a class="btn secondary" href="../blog.html">All articles →</a></div><article class="blog-article"><header class="page-intro"><p class="eyebrow">Mcp · Reference guide</p><h1>Grok Build connection</h1><p class="lead">Repository guidance for Grok Build connection. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/mcp/grok.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><p><a href="#visual-overview">Visual overview: workflow and architecture</a></p><div class="toc">
+<ul>
+<li><a href="#connect">Connect</a></li>
+<li><a href="#first-task">First task</a></li>
+<li><a href="#other-grok-environments">Other Grok environments</a></li>
+<li><a href="#sources">Sources</a></li>
+<li><a href="#recorded-verification">Recorded verification</a></li>
+</ul>
+</div>
+</aside><section class="guide-visuals" aria-labelledby="visual-overview"><h2 id="visual-overview">Visual overview</h2>
+<p>Use the workflow to follow the task, and the architecture map to separate responsibilities. These are conceptual maps; the guide below defines implementation details and verification limits.</p>
+<figure class="guide-flow"><figcaption><span class="guide-visual-kicker">01 / Workflow</span>From intent to a checked result</figcaption><ol role="list"><li><span class="guide-step-number" aria-hidden="true">1</span><span>Install Grok Build and Node.js</span><span class="guide-flow-arrow" aria-hidden="true">↓</span></li><li><span class="guide-step-number" aria-hidden="true">2</span><span>Register the local MCP server</span><span class="guide-flow-arrow" aria-hidden="true">↓</span></li><li><span class="guide-step-number" aria-hidden="true">3</span><span>Review workspace trust</span><span class="guide-flow-arrow" aria-hidden="true">↓</span></li><li><span class="guide-step-number" aria-hidden="true">4</span><span>Run MCP doctor and inspect tools</span></li></ol></figure>
+<figure class="guide-architecture"><figcaption><span class="guide-visual-kicker">02 / Architecture</span>Responsibility boundaries</figcaption><ol role="list"><li><span class="guide-boundary-label">Boundary 1</span><strong>Grok Build client</strong></li><li><span class="guide-boundary-label">Boundary 2</span><strong>Local stdio MCP connection</strong></li><li><span class="guide-boundary-label">Boundary 3</span><strong>iOS Agent tools and Mac/Xcode</strong></li></ol><p class="guide-visual-note">Connected responsibilities, not a required class hierarchy or an execution trace.</p></figure></section><p>Grok Build can use the existing iOS Agent MCP server over local stdio. There is no
+separate Grok server, duplicated tool catalog or required inference-provider change.
+This setup is for the official <code>grok</code> coding CLI, not an assertion that Grok web
+chat or every Grok bot can launch a process on your Mac.</p>
+<h2 id="connect">Connect</h2>
+<p>Install Grok Build using its <a href="https://docs.x.ai/build/overview">official setup instructions</a>,
+then run from your app folder:</p>
+<pre><code class="language-sh">grok mcp add ios-agent -- npx -y ios-agent-mcp@latest
+grok mcp doctor ios-agent --json
+</code></pre>
+<p>Node.js 20+ is required. Local Xcode builds and simulator tools require macOS and
+Xcode. Grok account access and model charges are separate from this open-source
+package. Authenticate directly with Grok; never put account keys in this repository.</p>
+<p>The equivalent table is in <a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/templates/clients/grok-config.toml">grok-config.toml</a>.
+Merge it into <code>~/.grok/config.toml</code> without replacing existing settings. Its longer
+startup timeout allows an initial npm download. To share only with a project, use
+<code>grok mcp add --scope project ios-agent -- npx -y ios-agent-mcp@latest</code>.</p>
+<p>Grok can import Claude/Cursor MCP configuration too. Run <code>grok inspect</code> and
+<code>grok mcp list --json</code> before adding a duplicate connection. In the TUI, <code>/mcps</code>
+shows connections. Use <code>grok mcp remove ios-agent</code> to remove the registered entry.</p>
+<h2 id="first-task">First task</h2>
+<p>Ask Grok to list the <code>ios-agent</code> tools, call <code>search_local_references</code> for a narrow
+Swift topic, and review a small synthetic Swift file. Do not interpret tool discovery
+as a successful model-driven build. Review write operations before allowing source
+changes, simulator actions or distribution workflows.</p>
+<p>The repository's existing <code>AGENTS.md</code> supplies project instructions when working
+in this checkout. Grok also supports skills in <code>.grok/skills/</code> and extra skill paths;
+use the existing skill with its referenced docs/templates, not a detached copy of
+SKILL.md. Installing the MCP connection alone does not install a slash command.
+The package's <code>install-command</code> command currently targets Claude Code.</p>
+<h2 id="other-grok-environments">Other Grok environments</h2>
+<p>The xAI Responses API supports <strong>remote</strong> MCP over HTTP/SSE. It cannot reach this
+local stdio process directly. This project does not deploy an authenticated public
+Mac endpoint for you. Do not expose the write-capable local server as an unauthenticated
+public service. API remote-MCP setup and live Grok bot sessions require separate
+verification; this change does not add them or add Grok to <code>ai ask</code> provider routing.</p>
+<h2 id="sources">Sources</h2>
+<p>Checked October 28, 2026:</p>
+<ul>
+<li><a href="https://docs.x.ai/build/features/mcp-servers">Grok MCP configuration and diagnostics</a></li>
+<li><a href="https://docs.x.ai/build/features/skills-plugins-marketplaces">Grok skills and plugin discovery</a></li>
+<li><a href="https://docs.x.ai/developers/tools/remote-mcp">xAI remote MCP API</a></li>
+</ul>
+<h2 id="recorded-verification">Recorded verification</h2>
+<p>Grok Build 1.0.70 connected to ios-agent-mcp 2.10.3, negotiated MCP 2025-11-25 and
+discovered 82 tools on October 28, 2026. This is an actual Grok <code>mcp doctor</code> result,
+not a mock client. See <a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/examples/client-verification/grok-1.0.70.json">the bounded evidence record</a>.
+No model-driven session or tool execution is claimed by that discovery check.</p>
+<p>Repeat on macOS/Linux against installed binaries and a built checkout (the helper
+requires POSIX process-group cleanup; on Windows use <code>grok mcp doctor</code> directly):</p>
+<pre><code class="language-sh">node scripts/verify-grok.mjs /absolute/path/to/grok /absolute/path/to/mcp-server/dist/unified.js
+</code></pre>
+<p>The probe trusts only its own temporary project configuration for the invocation,
+uses the existing server, and deletes the temporary workspace. It does not call a
+model, configure your app, register a permanent MCP server or print credentials.
+Project-scoped configurations outside this probe may require Grok's workspace trust
+approval; review them before granting it.</p></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><!-- discovery-nav:start --><div role="navigation" aria-label="Site discovery"><a href="../">Home</a> · <a href="../install.html">Install</a> · <a href="../community.html">Community</a> · <a href="../blog.html">Blog</a> · <a href="../docs-index.html">Docs index</a> · <a href="../pages.html">Site map</a> · <a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a> · <a href="https://www.npmjs.com/package/ios-agent-mcp">npm</a></div><!-- discovery-nav:end --></footer></div></body></html>

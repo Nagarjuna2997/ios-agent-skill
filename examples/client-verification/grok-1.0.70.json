@@ -1,0 +1,12 @@
+{
+  "checkedAt": "2026-10-28T08:00:08.747Z",
+  "grokVersion": "grok 1.0.70 (f50904eaee6c)",
+  "serverVersion": "2.10.3",
+  "transport": "stdio",
+  "protocol": "protocol 2025-11-25",
+  "toolCount": 82,
+  "healthy": true,
+  "modelSessionVerified": false,
+  "toolExecutionVerified": false,
+  "notes": "Temporary local server configuration; doctor only. No model prompt or provider request."
+}

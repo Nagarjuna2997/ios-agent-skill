@@ -1,0 +1,6 @@
+# Merge this table into ~/.grok/config.toml; preserve other settings.
+# Use one ios-agent entry: Grok may also discover Claude/Cursor MCP configs.
+[mcp_servers.ios-agent]
+command = "npx"
+args = ["-y", "ios-agent-mcp@latest"]
+startup_timeout_sec = 120

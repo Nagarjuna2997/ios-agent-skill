@@ -1673,7 +1673,7 @@
     "architecture": [
       "Model-independent MCP / CLI",
       "Version-keyed bounded memory cache",
-      "Xcode bridge and SDK excerpts \u2014 no archive copying"
+      "Xcode bridge and SDK excerpts — no archive copying"
     ]
   },
   "docs/tooling/ios-build-agent.md": {
@@ -1752,6 +1752,19 @@
       "Selected source, plist, entitlements and resource evidence",
       "Read-only checks with explicit uncertainty",
       "Developer review before separately approved signing and upload"
+    ]
+  },
+  "docs/mcp/grok.md": {
+    "flow": [
+      "Install Grok Build and Node.js",
+      "Register the local MCP server",
+      "Review workspace trust",
+      "Run MCP doctor and inspect tools"
+    ],
+    "architecture": [
+      "Grok Build client",
+      "Local stdio MCP connection",
+      "iOS Agent tools and Mac/Xcode"
     ]
   }
 }

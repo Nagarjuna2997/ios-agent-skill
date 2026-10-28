@@ -3089,11 +3089,18 @@
       "hash": "9ec7fcee2147e4731e5b047b71c9c0def9feb31794d8938010f34596600cecff"
     },
     {
+      "path": "docs/mcp/grok.md",
+      "title": "Grok Build connection",
+      "kind": "guide",
+      "characters": 3882,
+      "hash": "3dcb8b7cd89e601d1ffa17b82d9f0707dc8e4b728ab28bb8c03db1cfa707a6ec"
+    },
+    {
       "path": "docs/mcp/installation.md",
       "title": "Installing the iOS Agent MCP Server",
       "kind": "guide",
-      "characters": 15233,
-      "hash": "5a12fb1f4997f40a22ec09f2bb181c616f2c2c42152b6ee000c745bd9af8f670"
+      "characters": 15354,
+      "hash": "c71072a89df7305b092a77e21971749818db9c60038e45822c6287e721357e54"
     },
     {
       "path": "docs/mcp/knowledge-server.md",

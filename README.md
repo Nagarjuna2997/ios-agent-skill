@@ -158,9 +158,10 @@ Included as an experimental tool in 2.7.1: optional `private_feedback` keeps app
 | Claude | Local MCP and source skill; your Claude client supplies the coding agent. |
 | ChatGPT / Codex | Codex local MCP; ChatGPT skills package or a separately configured HTTPS/private-tunnel MCP connection. Availability depends on account/workspace policy. |
 | Gemini CLI | Extension configuration and local MCP connection verified. |
+| Grok Build | [Local MCP setup](docs/mcp/grok.md) using the existing server. Grok web/API connections are separate. |
 | Muse Code | Skill discovery, MCP discovery (the 36-tool 2.7.0 server) and a Stop hook verified; model sessions and observer behavior remain unverified. |
 
-The project focuses on these four families. For another client, [open a client-support request](https://github.com/Nagarjuna2997/ios-agent-skill/issues/new?template=client_support.md) or add a 👍 to an existing request. Votes inform priorities alongside feasibility and testing; they do not guarantee delivery. Existing experimental adapters are not actively maintained.
+The project focuses on these five families. For another client, [open a client-support request](https://github.com/Nagarjuna2997/ios-agent-skill/issues/new?template=client_support.md) or add a 👍 to an existing request. Votes inform priorities alongside feasibility and testing; they do not guarantee delivery. Existing experimental adapters are not actively maintained.
 
 `install.sh` is optional: it installs source guidance for a chosen local client, not the MCP server or a browser plugin. Run `bash install.sh --help` after cloning. Most users should use the client setup guide above.
 
