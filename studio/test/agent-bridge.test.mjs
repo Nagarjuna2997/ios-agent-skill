@@ -43,10 +43,10 @@ test('verify-only shared action runs native tests without restarting generation 
   await writeFile(path.join(modules,'loop.js'),'export async function runAgent(){throw Error("unexpected generation");}');
   await writeFile(path.join(modules,'brain.js'),'export class ClaudeCodeBrain {}');
   await writeFile(path.join(modules,'runner.js'),'export class ProcessRunner {}');
-  await writeFile(path.join(modules,'state.js'),'export async function loadState(){return null;}');
+  await writeFile(path.join(modules,'state.js'),'export async function loadState(){return {status:"stopped",failure:"Visual repair budget exhausted"};}');
   await writeFile(path.join(modules,'testing.js'),'export async function testProject(root,runner,udid){if(udid!=="chosen")throw Error("wrong device");return {status:"passed",passed:3,failed:0,skipped:0};}');
   const studio={repo:dir,dir:()=>dir,async save(){}};const p={id:'p',provider:'codex',simulator:'chosen',messages:[],evidence:{scope:'visual review unresolved'}};
   await executeAgent(studio,p,'verify','',new AbortController().signal);
-  assert.equal(p.status,'verified');assert.equal(p.verification.passed,3);assert.equal(p.evidence.scope,'visual review unresolved');
+  assert.equal(p.status,'tests-passed');assert.match(p.error,/Visual repair budget exhausted/);assert.equal(p.verification.passed,3);assert.equal(p.evidence.scope,'visual review unresolved');
  } finally {await rm(dir,{recursive:true,force:true});}
 });

@@ -33,12 +33,15 @@ export async function executeAgent(studio, p, kind, message, signal) {
     },
   };
   if (kind === "verify") {
+    const workflow = await loadState(root);
     const { testProject } = await moduleFrom(studio, "testing");
     const tests = await testProject(root, runner, p.simulator, { id: studio.tasks?.active ?? randomUUID(), timeoutMs: Math.min(15, studio.settings?.taskTimeoutMinutes ?? 15) * 60000 });
     if (signal.aborted) throw Error("Cancelled");
     p.verification = { ...tests, scope: "Native unit/UI test execution only. Visual findings remain separate." };
-    p.status = tests.status === "passed" ? "verified" : "failed";
-    p.error = tests.status === "passed" ? null : tests.reason ?? "Native tests failed; inspect recorded test evidence";
+    p.status = tests.status === "passed" ? "tests-passed" : "failed";
+    p.error = tests.status === "passed"
+      ? (["stopped", "failed"].includes(workflow?.status) ? `Build workflow remains ${workflow.status}: ${workflow.failure || "review its saved evidence"}` : null)
+      : tests.reason ?? "Native tests failed; inspect recorded test evidence";
     p.messages.push({ role: "assistant", text: `Native tests: ${tests.passed} passed, ${tests.failed} failed, ${tests.skipped} skipped (${tests.status}). Visual review findings are unchanged.` });
     await studio.save(p);
     return;

@@ -174,3 +174,21 @@ The feature-branch hosted Linux Studio job and macOS Studio/launcher job passed.
 The explicit counter refinement preserved the test sources and added an accessibility container, rebuilt and recaptured the app. It still stopped at its visual-repair cap with an XXL button-label wrapping finding. A separate native rerun again reported 15 passed, 3 failed, 0 skipped. Both failed runs and their xcresults are retained; neither is counted as successful native app acceptance. This limits claims about autonomous generation quality even though the workspace infrastructure checks pass.
 
 XcodeGen 2.46.0 was installed in the developer's user-local bin/share directories without overwriting an existing installation. Claude account access was left unchanged as requested.
+
+## Native selector diagnosis and verification scope (2026-10-28)
+
+The counter's failed UI assertions were reproduced with an accessibility-tree
+diagnostic. The tree contained `ScrollView ... identifier: 'screen-counter'`;
+the generated interaction tests queried `app.otherElements["screen-counter"]`.
+The diagnostic logging was removed and the original test file restored byte for
+byte before repair verification. A manually assisted application-source repair
+moved the identifier onto the inner content container, without changing tests.
+This is separate from the earlier autonomous repair attempts and their failures.
+
+The test-generation prompt now follows the engine's existing type-independent
+screen-root lookup. Button/text-field interaction queries remain typed. A new
+regression checks this contract. An independent review also found that verify-only
+was replacing unresolved workflow status with `verified`. It now reports
+`tests-passed` and retains the saved workflow blocker; task events preserve both.
+The focused 12 bridge/task tests and 6 generated-test tests pass. The MCP suite
+reports 832 passed, zero failures, and one skipped. No release gates were relaxed.

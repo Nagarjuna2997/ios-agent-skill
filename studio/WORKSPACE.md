@@ -67,7 +67,7 @@ Existing tests run with unsigned simulator builds and automatic package resoluti
 disabled. Uncached dependencies, private packages and unsupported workspace layouts
 can block verification. Review build scripts before approving execution.
 
-Native tests and capture are separate outcomes. A failed capture does not erase a
+Native tests and capture are separate outcomes. Shared-agent verify-only tasks report `tests-passed`, never overall `verified`; an unresolved saved build/visual workflow blocker remains visible even when the native tests pass. A failed capture does not erase a
 passing test record or reuse an old capture as current. All bounded build inputs,
 including image resources and large files, contribute to the imported fingerprint.
 A launch screenshot uses a settling delay, not an assertion of visual fidelity.

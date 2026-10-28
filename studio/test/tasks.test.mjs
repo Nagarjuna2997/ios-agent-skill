@@ -162,3 +162,14 @@ test('changed approved inputs fail before dispatch', async t => {
   const task=await tasks.enqueue('project',{kind:'build',requestId:'approval_hash_test'});await tasks.approve(task.id);
   hash='changed';await tasks.pump();assert.equal(calls,0);assert.equal(tasks.get(task.id).status,'failed');
 });
+
+test("native test completion preserves the separate workflow blocker", async (t) => {
+ const {tasks,studio,p}=await setup(t);
+ studio.action=async()=>{p.status="tests-passed";p.error="Build workflow remains stopped: visual findings";};
+ const task=await tasks.enqueue("project",{kind:"verify",requestId:"verify_123"});
+ await tasks.pump();
+ assert.equal(tasks.get(task.id).status,"completed");
+ const result=tasks.replay(task.id,0).events.at(-1);
+ assert.equal(result.data.projectStatus,"tests-passed");
+ assert.match(result.data.error,/visual findings/);
+});

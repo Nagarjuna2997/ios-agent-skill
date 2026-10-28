@@ -52,3 +52,14 @@ test('explicit verification gets a separate bounded budget without rewriting his
  assert.throws(()=>testBudget(before,{id:'bad',timeoutMs:9999999}),/Invalid/);
  assert.throws(()=>testBudget({...before,tests:Array(3).fill({verificationRequest:'new_request'})},{id:'new_request',timeoutMs:60000}),/cap/);
 });
+
+// Screen roots retain their actual native accessibility type.
+test('generated interaction-test instructions locate screens independently of native element type', async () => {
+ const {ClaudeCodeBrain}=await import('../dist/agent/brain.js');
+ let prompt;
+ const brain=new ClaudeCodeBrain({runner:{},requestJSON:async text=>{prompt=text;return {files:[]};}});
+ await brain.generateTests({plan:{},spec:{name:'Probe'},files:[]});
+ assert.match(prompt,/descendants\(matching: \.any\)/);
+ assert.match(prompt,/do not assume app.otherElements/);
+ assert.match(prompt,/Keep typed queries for actual buttons and text fields/);
+});

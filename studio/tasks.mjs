@@ -265,6 +265,7 @@ export class TaskManager {
             : [
                   "planned",
                   "verified",
+                  "tests-passed",
                   "complete",
                   "answered",
                   "reviewed",
