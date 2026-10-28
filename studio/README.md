@@ -147,3 +147,11 @@ import. Multi-file revisions use the authenticated
 payload; the single-file editor intentionally cannot flatten a component folder.
 This is revision lineage, not automatic migration of manual Swift edits. Use
 `app-ir reconcile` for a separate conservative three-way source review.
+
+After generating a revision, **Compare with parent edits** shows three sources:
+the parent's original generated root view, its current developer-edited root view,
+and the revision's original generated root view. Conflict-free candidates are
+shown for review; neither project is modified. The saved generation hashes and
+parent IR hash must still match. Older conversions without the original snapshot
+cannot supply a trustworthy base and are refused. This compares `RootView.swift`
+only and does not merge other project files or later edits to the child revision.

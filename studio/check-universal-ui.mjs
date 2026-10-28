@@ -6,6 +6,11 @@ try{const page=await browser.newPage({viewport:{width:1200,height:900}});await p
 await page.locator('#name').fill('RevisedApp');await page.locator('#source').fill('<main><h1>Revised source</h1></main>');
 await page.getByRole('button',{name:'Inspect source',exact:true}).click();
 await page.waitForFunction(()=>document.getElementById('title').textContent==='RevisedApp'&&document.getElementById('lineage').textContent.startsWith('Source revision of'));
+await page.getByRole('button',{name:'Generate new Xcode project',exact:true}).click();
+await page.waitForFunction(()=>!document.getElementById('compare-revision').disabled);
+await page.getByRole('button',{name:'Compare with parent edits',exact:true}).click();
+await page.waitForFunction(()=>!document.getElementById('reconciliation').hidden&&document.getElementById('reconciliation-result').textContent.startsWith('use-generated'));
+if(!(await page.locator('#reconciliation-candidate').textContent()).includes('Revised source'))throw Error('Revision candidate missing');
 const originalRow=(await app.universal.list()).find(r=>r.name==='ImportedApp');if(!(await app.universal.source(originalRow.id)).input.includes('Hello native'))throw Error('Revision overwrote original');
 if(!(await page.locator('#revision-context').isHidden()))throw Error('Revision mode remained active after import');
 await page.locator('#name').fill('SecondApp');await page.getByRole('button',{name:'Inspect source',exact:true}).click();await page.waitForFunction(()=>document.getElementById('title').textContent==='SecondApp');

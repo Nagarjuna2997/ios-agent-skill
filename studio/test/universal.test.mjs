@@ -214,3 +214,20 @@ test('revision API requires authorization and uses immutable parent identity',as
  assert.equal((await fetch(url,{method:'POST',body})).status,403);
  const response=await fetch(url,{method:'POST',headers:{'x-studio-token':token,'content-type':'application/json'},body});assert.equal(response.status,201);assert.equal((await response.json()).revisionOf.id,parent.id);
 });
+test('revision comparison uses immutable generation bases and preserves conflicting user edits',async t=>{
+ const {u}=await workspace(t);const parent=await u.create({adapter:'html',name:'Original',source:'<p>Before</p>'});await u.generate(parent.id);
+ const child=await u.createRevision(parent.id,{adapter:'html',name:'Revised',source:'<p>After</p>'});await u.generate(child.id);
+ const first=await u.compareRevision(child.id);assert.equal(first.outcome,'use-generated');assert.match(first.candidate,/After/);
+ const {appendFile,writeFile}=await import('node:fs/promises');const local=join(u.dir(parent.id),'project/Original/Views/RootView.swift');await appendFile(local,'\n// local customization');
+ const conflict=await u.compareRevision(child.id);assert.equal(conflict.outcome,'conflict');assert.equal(conflict.candidate,null);assert.match(conflict.local,/local customization/);assert.doesNotMatch(conflict.base,/local customization/);
+ assert.match(await readFile(local,'utf8'),/local customization/);assert.equal((await u.get(child.id)).status,'generated-unverified');
+ await appendFile(join(u.dir(child.id),'project/Revised/Views/RootView.swift'),'\n// child edit');assert.doesNotMatch((await u.compareRevision(child.id)).generated,/child edit/);
+ await writeFile(join(u.dir(parent.id),'generated-root.swift'),'tamper');await assert.rejects(u.compareRevision(child.id),/snapshot changed/);
+});
+test('comparison refuses missing historical base and changed parent identity rather than guessing',async t=>{
+ const {u}=await workspace(t);const parent=await u.create({adapter:'html',name:'Parent',source:'<p>A</p>'});await u.generate(parent.id);
+ const child=await u.createRevision(parent.id,{adapter:'html',name:'Child',source:'<p>B</p>'});await u.generate(child.id);
+ const p=await u.get(parent.id);delete p.generatedRootSHA256;await u.save(p);await assert.rejects(u.compareRevision(child.id),/snapshot unavailable/);
+ const {appendFile}=await import('node:fs/promises');await appendFile(join(u.dir(parent.id),'ir.json'),' ');await assert.rejects(u.compareRevision(child.id),/Parent IR changed/);
+ await assert.rejects(u.compareRevision(parent.id),/no parent/);
+});

@@ -66,9 +66,36 @@ export class UniversalStudio {
       const {generateProject}=await this.module('app-ir/swiftui');
       const ir=JSON.parse(await fs.readFile(path.join(this.dir(id),'ir.json'),'utf8'));
       await generateProject(ir,path.join(this.dir(id),'project'));
+      const {sha256}=await this.module('app-ir/schema');
+      const original=await fs.readFile(path.join(this.dir(id),'project',row.name,'Views','RootView.swift'));
+      await fs.writeFile(path.join(this.dir(id),'generated-root.swift'),original,{flag:'wx'});
+      row.generatedRootSHA256=sha256(original);
       row.status='generated-unverified';
     }catch(error){if(row && row.status==='generating'){row.status='failed';row.error=error.message;}else throw error;}finally{try{if(row)await this.save(row);}finally{this.jobs.delete(id);}}
     return row;
+  }
+  async compareRevision(id){
+    const child=await this.get(id);
+    if(!child.revisionOf)throw Error('This conversion has no parent revision');
+    const parent=await this.get(child.revisionOf.id);
+    if(this.jobs.has(id)||this.jobs.has(parent.id))throw Error('Wait for both conversions to finish');
+    const [{sha256},{readBoundedFile},{snapshotFiles},{reconcileSource}]=await Promise.all(['app-ir/schema','app-ir/html','agent/remote','app-ir/reconcile'].map(n=>this.module(n)));
+    if(sha256(await fs.readFile(path.join(this.dir(parent.id),'ir.json')))!==child.revisionOf.irHash)throw Error('Parent IR changed since revision creation');
+    const original=async row=>{
+      if(!row.generatedRootSHA256)throw Error('Original generation snapshot unavailable; do not infer a merge base from current source');
+      const file=path.join(this.dir(row.id),'generated-root.swift');
+      if(!(await fs.realpath(file)).startsWith(await fs.realpath(this.dir(row.id))+path.sep))throw Error('Generation snapshot escapes workspace');
+      const bytes=await readBoundedFile(file);
+      if(sha256(bytes)!==row.generatedRootSHA256)throw Error('Original generation snapshot changed');
+      return bytes;
+    };
+    const [base,generated,localFiles]=await Promise.all([original(parent),original(child),snapshotFiles(path.join(this.dir(parent.id),'project'))]);
+    const local=localFiles.find(f=>f.path===parent.name+'/Views/RootView.swift')?.content;
+    if(!local)throw Error('Parent root view is missing');
+    const {candidate,...report}=reconcileSource(base,local,generated);
+    return {...report,parentId:parent.id,revisionId:child.id,status:'requires-review',
+      scope:'RootView.swift only; original revision generation, not subsequent child edits',
+      base:base.toString('utf8'),local:local.toString('utf8'),generated:generated.toString('utf8'),candidate:candidate?.toString('utf8')??null};
   }
   async fingerprint(id){const {snapshotFiles,snapshotHash}=await this.module('agent/remote');return snapshotHash(await snapshotFiles(path.join(this.dir(id),'project')));}
   async simulators(){
