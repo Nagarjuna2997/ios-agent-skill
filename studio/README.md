@@ -135,3 +135,15 @@ same hashed project snapshot. Selecting history exposes that root view separatel
 from current source. Both files are checked for tampering; earlier history without
 source snapshots is labelled unavailable. This is a source/evidence comparison,
 not automatic repair or a snapshot of dependencies outside the generated project.
+
+### Source revisions
+
+**Revise this source** loads a single-file import into the editor as a new revision.
+Inspecting it creates a separate conversion with the prior conversion ID and IR
+hash recorded. Generation, builds, captures, approvals and test results are not
+inherited. The original is untouched. Cancel revision mode to start an independent
+import. Multi-file revisions use the authenticated
+`POST /api/universal/:id/revision` endpoint with a complete `{name, entry, files}`
+payload; the single-file editor intentionally cannot flatten a component folder.
+This is revision lineage, not automatic migration of manual Swift edits. Use
+`app-ir reconcile` for a separate conservative three-way source review.

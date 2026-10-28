@@ -13,15 +13,15 @@ export class UniversalStudio {
   async init(){await fs.mkdir(this.root,{recursive:true});for(const entry of await fs.readdir(this.root,{withFileTypes:true})){if(!entry.isDirectory()||entry.name.startsWith('.pending-'))continue;const r=await this.get(entry.name);if(['generating','building','launching','capturing'].includes(r.status)){r.status='interrupted';r.error='Studio stopped before this operation completed. No success inferred.';await this.save(r);}}}
   async get(id){const dir=this.dir(id);if((await fs.lstat(dir)).isSymbolicLink())throw Error('Invalid conversion directory');return JSON.parse(await fs.readFile(path.join(dir,'report.json'),'utf8'));}
   async list(){const rows=[];for(const e of await fs.readdir(this.root,{withFileTypes:true}))if(e.isDirectory()&&!e.name.startsWith('.pending-'))rows.push(await this.get(e.name));return rows.sort((a,b)=>b.created.localeCompare(a.created));}
-  async create({adapter,name,source}){
+  async create({adapter,name,source},revisionOf){
     if(!['html','react','vue','svelte'].includes(adapter)||typeof name!=='string'||!/^[A-Z][A-Za-z0-9]{0,39}$/.test(name)||typeof source!=='string'||Buffer.byteLength(source)>262144)throw Error('Choose HTML, React, Vue or Svelte, a simple app name and source under 256 KiB');
     const parser=await this.module('app-ir/'+adapter);
     const ir=adapter==='html'?parser.htmlToIR(source,'input.html',name):adapter==='react'?parser.reactToIR(source,'input.tsx',name):adapter==='vue'?parser.vueToIR(source,'input.vue',name):parser.svelteToIR(source,'input.svelte',name);
-    return this.persist(ir,adapter,name,source);
+    return this.persist(ir,adapter,name,source,undefined,revisionOf);
   }
-  async persist(ir,adapter,name,source,files){
+  async persist(ir,adapter,name,source,files,revisionOf){
     const id=randomUUID(),dir=this.dir(id),staging=await fs.mkdtemp(path.join(this.root,'.pending-'));
-    const row={id,name,adapter,created:new Date().toISOString(),status:'inspected',limitations:ir.limitations,tests:'not-run',visualFidelity:'not-evaluated'};
+    const row={id,name,adapter,created:new Date().toISOString(),status:'inspected',limitations:ir.limitations,tests:'not-run',visualFidelity:'not-evaluated',...(revisionOf?{revisionOf}:{})};
     try{
       await fs.writeFile(path.join(staging,'input.txt'),source,{flag:'wx'});
       await fs.writeFile(path.join(staging,'ir.json'),JSON.stringify(ir,null,2),{flag:'wx'});
@@ -30,7 +30,7 @@ export class UniversalStudio {
       await fs.rename(staging,dir);return row;
     }finally{await fs.rm(staging,{recursive:true,force:true});}
   }
-  async createProject({name,entry,files}){
+  async createProject({name,entry,files},revisionOf){
     if(typeof name!=='string'||!/^[A-Z][A-Za-z0-9]{0,39}$/.test(name)||typeof entry!=='string'||!Array.isArray(files)||!files.length||files.length>32)throw Error('Choose an app name, entry path and 1–32 TSX files');
     const names=new Set();let size=0;
     for(const file of files){
@@ -44,8 +44,18 @@ export class UniversalStudio {
       const {importReact}=await this.module('app-ir/react');const ir=await importReact(path.join(staging,entry),name);
       const base=path.posix.dirname(entry);
       for(const source of ir.sources)source.path=path.posix.join(base,source.path);
-      return await this.persist(ir,'react',name,files.find(f=>f.path===entry).source,files);
+      return await this.persist(ir,'react',name,files.find(f=>f.path===entry).source,files,revisionOf);
     }finally{await fs.rm(staging,{recursive:true,force:true});}
+  }
+  async createRevision(id,input){
+    if(this.jobs.has(id))throw Error('Wait for the parent conversion to finish');
+    const parent=await this.get(id);
+    if(!input||typeof input!=='object'||Array.isArray(input))throw Error('Revision requires source input');
+    const {sha256}=await this.module('app-ir/schema');
+    const revisionOf={id:parent.id,irHash:sha256(await fs.readFile(path.join(this.dir(id),'ir.json')))};
+    // The existing atomic importer stores lineage before publishing the new row.
+    // No tests, native runs, captures, or approvals are inherited.
+    return input.files!==undefined?this.createProject(input,revisionOf):this.create(input,revisionOf);
   }
   async generate(id){
     if(this.jobs.has(id))throw Error('Conversion already running');

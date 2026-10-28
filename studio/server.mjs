@@ -102,6 +102,7 @@ export async function serve({
         const body=JSON.parse((await readBody(1600000)).toString('utf8'));
         if(parts.length===2)return send(201,await universal.create(body));
         if(parts.length===3&&parts[2]==='project')return send(201,await universal.createProject(body));
+        if(parts.length===4 && parts[3]==='revision')return send(201,await universal.createRevision(parts[2],body));
         if(parts.length===4 && parts[3]==='generate')return send(200,await universal.generate(parts[2]));
         if(parts.length===4 && parts[3]==='export')return send(200,await universal.exportProject(parts[2]),'application/zip');
         if(parts.length===4 && parts[3]==='build')return send(202,await universal.startBuild(parts[2],body));

@@ -189,3 +189,28 @@ test('archived capture HTTP route requires authentication and forwards the run I
  app.universal.capturedSource=async(id,run)=>({source:'Recorded <Swift>',id,run});assert.equal((await fetch(url+'/source')).status,403);
  const sourceResponse=await fetch(url+'/source',{headers:{'x-studio-token':token}});assert.equal(sourceResponse.status,200);assert.deepEqual(await sourceResponse.json(),{source:'Recorded <Swift>',id:'conversion',run:'run'});
 });
+test('source revisions preserve parent bytes and never inherit execution or approval evidence',async t=>{
+ const {u}=await workspace(t);const parent=await u.create({adapter:'html',name:'Original',source:'<main><p>Original</p></main>'});await u.generate(parent.id);
+ const before=await readFile(join(u.dir(parent.id),'report.json'));const baseIR=await readFile(join(u.dir(parent.id),'ir.json'));
+ const child=await u.createRevision(parent.id,{adapter:'html',name:'Revised',source:'<main><p>Revised</p></main>',revisionOf:{id:'forged'}});
+ const {sha256}=await u.module('app-ir/schema');assert.deepEqual(child.revisionOf,{id:parent.id,irHash:sha256(baseIR)});assert.notEqual(child.id,parent.id);
+ assert.equal(child.status,'inspected');assert.equal(child.tests,'not-run');assert.equal(child.capture,undefined);assert.equal(child.runs,undefined);assert.equal(child.visualFidelity,'not-evaluated');
+ assert.deepEqual(await readFile(join(u.dir(parent.id),'report.json')),before);assert.match((await u.source(parent.id)).input,/Original/);
+ await u.generate(child.id);assert.match((await u.source(child.id)).swift,/Revised/);
+ const count=(await u.list()).length;await assert.rejects(u.createRevision(parent.id,{adapter:'bad',name:'Invalid',source:'bad'}));assert.equal((await u.list()).length,count);
+ u.jobs.set(parent.id,true);await assert.rejects(u.createRevision(parent.id,{}),/Wait/);u.jobs.delete(parent.id);
+});
+test('multi-file revisions retain separate complete source sets',async t=>{
+ const {u}=await workspace(t);const files=[{path:'App.tsx',source:'import Card from "./Card"; export default function App(){return <main><Card/></main>}'},{path:'Card.tsx',source:'export default function Card(){return <p>Before</p>}'}];
+ const parent=await u.createProject({name:'Original',entry:'App.tsx',files});
+ const child=await u.createRevision(parent.id,{name:'After',entry:'App.tsx',files:[files[0],{...files[1],source:'export default function Card(){return <p>After</p>}'}]});
+ assert.equal(child.revisionOf.id,parent.id);assert.match((await u.source(parent.id)).files[1].source,/Before/);assert.match((await u.source(child.id)).files[1].source,/After/);
+});
+test('revision API requires authorization and uses immutable parent identity',async t=>{
+ const {root,u}=await workspace(t);const parent=await u.create({adapter:'html',name:'Parent',source:'<p>Before</p>'});
+ const app=await serve({port:0,root,repo:resolve('.')});t.after(()=>new Promise(r=>app.server.close(r)));
+ const page=await(await fetch(app.origin+'/universal')).text();const token=/name="studio-token" content="([a-f0-9]+)"/.exec(page)[1];
+ const url=app.origin+'/api/universal/'+parent.id+'/revision',body=JSON.stringify({adapter:'html',name:'Child',source:'<p>After</p>'});
+ assert.equal((await fetch(url,{method:'POST',body})).status,403);
+ const response=await fetch(url,{method:'POST',headers:{'x-studio-token':token,'content-type':'application/json'},body});assert.equal(response.status,201);assert.equal((await response.json()).revisionOf.id,parent.id);
+});
