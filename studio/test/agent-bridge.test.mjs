@@ -8,7 +8,8 @@ test('shared-agent Studio projects persist the explicit provider without legacy 
  const dir = await mkdtemp(path.join(tmpdir(),'studio-shared-'));
  try {
  const studio = new Studio(dir, process.cwd());
- await assert.rejects(studio.create('Example','A sample app','codex','agent'), /requires Claude/);
+ const codex = await studio.create('Example','A sample app','codex','agent');
+ assert.equal(codex.provider,'codex');
  const p = await studio.create('Example','A sample app','claude','agent');
  assert.equal(p.template,'agent'); assert.equal((await studio.get(p.id)).provider,'claude');
  assert.equal(p.plan,null);
@@ -31,5 +32,21 @@ test('shared bridge resumes created projects without reselecting design', async 
  const p = {id:'test',provider:'claude',brief:'Sample',messages:[]};
  await executeAgent(studio,p,'build',undefined,new AbortController().signal);
  assert.equal(p.status,'stopped');
+ } finally {await rm(dir,{recursive:true,force:true});}
+});
+
+test('verify-only shared action runs native tests without restarting generation or visual repairs', async () => {
+ const {mkdir,writeFile}=await import('node:fs/promises');const {executeAgent}=await import('../agent-bridge.mjs');
+ const dir=await mkdtemp(path.join(tmpdir(),'studio-agent-tests-'));
+ try {
+  const modules=path.join(dir,'mcp-server/dist/agent');await mkdir(modules,{recursive:true});await writeFile(path.join(dir,'package.json'),'{"type":"module"}');
+  await writeFile(path.join(modules,'loop.js'),'export async function runAgent(){throw Error("unexpected generation");}');
+  await writeFile(path.join(modules,'brain.js'),'export class ClaudeCodeBrain {}');
+  await writeFile(path.join(modules,'runner.js'),'export class ProcessRunner {}');
+  await writeFile(path.join(modules,'state.js'),'export async function loadState(){return null;}');
+  await writeFile(path.join(modules,'testing.js'),'export async function testProject(root,runner,udid){if(udid!=="chosen")throw Error("wrong device");return {status:"passed",passed:3,failed:0,skipped:0};}');
+  const studio={repo:dir,dir:()=>dir,async save(){}};const p={id:'p',provider:'codex',simulator:'chosen',messages:[],evidence:{scope:'visual review unresolved'}};
+  await executeAgent(studio,p,'verify','',new AbortController().signal);
+  assert.equal(p.status,'verified');assert.equal(p.verification.passed,3);assert.equal(p.evidence.scope,'visual review unresolved');
  } finally {await rm(dir,{recursive:true,force:true});}
 });

@@ -9,7 +9,7 @@ import { snapshotFiles, snapshotHash } from './remote.js';
 import { loadState, saveState } from './state.js';
 
 export interface TestEvidence {
-  cycle?: number; sourceHash: string; at: string; status: 'passed' | 'failed' | 'unavailable';
+  cycle?: number; verificationRequest?: string; sourceHash: string; at: string; status: 'passed' | 'failed' | 'unavailable';
   passed: number; failed: number; skipped: number; logPath: string; resultBundle: string; reason?: string;
 }
 export function classifyTestSummary(exitCode: number | null, value: unknown): Pick<TestEvidence, 'status' | 'passed' | 'failed' | 'skipped' | 'reason'> {
@@ -18,7 +18,19 @@ export function classifyTestSummary(exitCode: number | null, value: unknown): Pi
   const passed = Number(s.passedTests), failed = Number(s.failedTests), skipped = Number(s.skippedTests);
   return {status: exitCode === 0 && passed > 0 && failed === 0 && skipped === 0 ? 'passed' : 'failed', passed, failed, skipped, ...(passed === 0 ? {reason: 'No passing tests recorded'} : {})};
 }
-export async function testProject(root: string, runner: CommandRunner, udid?: string): Promise<TestEvidence> {
+export interface VerificationRequest { id: string; timeoutMs: number }
+export function testBudget(before: { cycle: number; deadlineAt: string; tests?: TestEvidence[] } | null | undefined, request?: VerificationRequest, now = Date.now()): number {
+  if (request) {
+    if (!/^[a-zA-Z0-9_-]{8,80}$/.test(request.id) || !Number.isInteger(request.timeoutMs) || request.timeoutMs < 1000 || request.timeoutMs > 15 * 60_000) throw new Error("Invalid explicit verification budget");
+    if ((before?.tests ?? []).filter(t => t.verificationRequest === request.id).length >= 3) throw new Error("Test attempt cap reached for this verification request");
+    return request.timeoutMs;
+  }
+  if (before && (before.tests ?? []).filter(t => !t.verificationRequest && t.cycle === before.cycle).length >= 3) throw new Error("Test attempt cap reached for this cycle");
+  const timeout = Math.min(15 * 60_000, before ? Date.parse(before.deadlineAt) - now : 15 * 60_000);
+  if (timeout <= 0) throw new Error("Test wall-clock budget exhausted");
+  return timeout;
+}
+export async function testProject(root: string, runner: CommandRunner, udid?: string, request?: VerificationRequest): Promise<TestEvidence> {
   const spec = await readSpec(root);
   if (!spec.tests) throw new Error('Project has no configured test targets');
   const sourceHash = snapshotHash(await snapshotFiles(root));
@@ -29,15 +41,13 @@ export async function testProject(root: string, runner: CommandRunner, udid?: st
   const destination = await resolveDestination(runner, udid);
   if (destination.startsWith('generic/')) throw new Error('Tests need an available simulator');
   const before = await loadState(root);
-  if (before && (before.tests ?? []).filter(t => t.cycle === before.cycle).length >= 3) throw new Error("Test attempt cap reached for this cycle");
-  const timeoutMs = Math.min(15 * 60_000, before ? Date.parse(before.deadlineAt) - Date.now() : 15 * 60_000);
-  if (timeoutMs <= 0) throw new Error("Test wall-clock budget exhausted");
+  const timeoutMs = testBudget(before, request);
   const result = await runner.run('xcodebuild', ['-project', `${spec.name}.xcodeproj`, '-scheme', spec.name, '-configuration', 'Debug', '-destination', destination, '-derivedDataPath', projectPaths(root).derivedData, '-resultBundlePath', join(root, resultBundle), 'CODE_SIGNING_ALLOWED=NO', 'test'], {cwd: root, timeoutMs});
   await writeFile(join(root, logPath), result.stdout + '\n' + result.stderr);
   const summary = await runner.run('xcrun', ['xcresulttool', 'get', 'test-results', 'summary', '--path', join(root, resultBundle)], {cwd: root, timeoutMs: 60_000});
   let value: unknown;
   if (summary.exitCode === 0) { try { value = JSON.parse(summary.stdout); } catch { /* unknown, not passed */ } }
-  const evidence: TestEvidence = {...(before ? {cycle:before.cycle} : {}), sourceHash, at: new Date().toISOString(), logPath, resultBundle, ...classifyTestSummary(result.exitCode, value)};
+  const evidence: TestEvidence = {...(request ? {verificationRequest:request.id} : {}), ...(before ? {cycle:before.cycle} : {}), sourceHash, at: new Date().toISOString(), logPath, resultBundle, ...classifyTestSummary(result.exitCode, value)};
   if (snapshotHash(await snapshotFiles(root)) !== sourceHash) { evidence.status = 'unavailable'; evidence.reason = 'Source changed during test execution'; }
   const state = await loadState(root);
   if (state) { state.tests = [...(state.tests ?? []), evidence]; await saveState(root, state); }

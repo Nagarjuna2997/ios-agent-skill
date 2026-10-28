@@ -42,3 +42,13 @@ test('refine transports actual screenshot blocks with their screen labels', asyn
  assert.match(content[0].text,/home: light/);
  assert.ok(sent.args.includes('stream-json'));
 });
+
+test('explicit verification gets a separate bounded budget without rewriting historical cycles', async () => {
+ const {testBudget}=await import('../dist/agent/testing.js');
+ const before={cycle:1,deadlineAt:'2000-01-01T00:00:00Z',tests:[{cycle:1},{cycle:1},{cycle:1}]};
+ assert.throws(()=>testBudget(before),/cap/);
+ assert.equal(testBudget(before,{id:'new_request',timeoutMs:60000}),60000);
+ assert.equal(before.tests.length,3);
+ assert.throws(()=>testBudget(before,{id:'bad',timeoutMs:9999999}),/Invalid/);
+ assert.throws(()=>testBudget({...before,tests:Array(3).fill({verificationRequest:'new_request'})},{id:'new_request',timeoutMs:60000}),/cap/);
+});

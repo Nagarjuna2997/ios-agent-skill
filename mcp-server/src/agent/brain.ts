@@ -93,6 +93,8 @@ export interface ClaudeBrainOptions {
   model?: string;
   timeoutMs?: number;
   command?: string;
+  /** Validated JSON transport supplied by local hosts; keeps shared prompts and validators. */
+  requestJSON?: (prompt: string, images?: VisualInput["images"]) => Promise<unknown>;
 }
 
 /** Calls `claude -p` with tools disabled; prompts and image blocks travel on stdin. */
@@ -100,6 +102,7 @@ export class ClaudeCodeBrain implements Brain {
   constructor(private readonly options: ClaudeBrainOptions) {}
 
   private async ask(prompt: string): Promise<unknown> {
+    if (this.options.requestJSON) return this.options.requestJSON(prompt);
     const { mkdtemp, rm } = await import("node:fs/promises");
     const { tmpdir } = await import("node:os");
     const { join } = await import("node:path");
@@ -149,6 +152,7 @@ Do not invent costs.`);
   }
 
   private async askImages(prompt: string, images: VisualInput["images"]): Promise<unknown> {
+    if (this.options.requestJSON) return this.options.requestJSON(prompt, images);
     const { mkdtemp, rm } = await import("node:fs/promises");
     const { tmpdir } = await import("node:os");
     const dir = await mkdtemp((await import("node:path")).join(tmpdir(), "ios-agent-vision-"));

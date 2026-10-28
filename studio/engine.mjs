@@ -1,3 +1,6 @@
+import { archiveEvidence } from "./artifacts.mjs";
+import {requestJSON} from './providers.mjs';
+import {executeImported,importedHash} from "./imported.mjs";
 import { executeAgent, agentFingerprint } from "./agent-bridge.mjs";
 import {
   createCustom,
@@ -146,6 +149,7 @@ export async function run(
     let out = "",
       err = "",
       reason;
+    let outputBytes = 0;
     const stop = () => {
       try {
         process.kill(-child.pid, "SIGTERM");
@@ -175,10 +179,13 @@ export async function run(
     };
     signal?.addEventListener("abort", hardStop, { once: true });
     function collect(chunk, isErr) {
+      outputBytes += chunk.length;
+      if (reason === "Command output limit exceeded") return;
+      if (outputBytes > 2000000) { reason = "Command output limit exceeded"; stop(); hardStop(); return; }
       const s = chunk.toString();
       if (isErr) err = (err + s).slice(-120000);
       else out += s;
-      onText(s);
+      try { onText(s); } catch { reason="Output handler failed"; stop(); hardStop(); }
       if (out.length > 2000000) {
         out = out.slice(-2000000);
         reason = "Command output limit exceeded";
@@ -226,8 +233,12 @@ export class Studio {
   async init() {
     await fs.mkdir(this.root, { recursive: true });
     for (const p of await this.list()) {
-      if (p.template === "custom") await recoverCustom(this, p);
+      if (["custom","imported"].includes(p.template)) await recoverCustom(this, p);
       if (p.busy) {
+        if (p.release?.operation?.status === "running") {
+          p.release.operation.status = "interrupted";
+          p.release.operation.message = "Studio restarted. Inspect the private receipt before retrying; no operation was replayed.";
+        }
         p.busy = false;
         p.status = "interrupted";
         p.error =
@@ -252,7 +263,19 @@ export class Studio {
       await fs.readFile(path.join(this.dir(id), "state.json"), "utf8"),
     );
   }
+  async approvalFingerprint(id) {
+    const p = await this.get(id);
+    const controls = {};
+    for (const name of ["plan.json", "spec.json"]) {
+      try { controls[name] = await fs.readFile(path.join(this.dir(id), "project/.ios-agent", name), "utf8"); }
+      catch (e) { if (e.code !== "ENOENT") throw e; }
+    }
+    return digest(JSON.stringify({ source: await importedHash(this, id), plan: p.plan, agentPlan: p.agentPlan,
+      provider: p.provider, scheme: p.scheme, simulator: p.simulator, template: p.template, controls }));
+  }
   async save(p) {
+    if (p.simulator === undefined) p.simulator = this.settings?.defaultSimulator || null;
+    await archiveEvidence(this, p);
     p.updated = new Date().toISOString();
     await atomic(path.join(this.dir(p.id), "state.json"), p);
   }
@@ -271,7 +294,7 @@ export class Studio {
       throw Error("Enter an app name and a brief (up to 10,000 characters).");
     if (!["claude", "codex"].includes(provider))
       throw Error("Unsupported client");
-    if (template === "agent" && provider !== "claude") throw Error("Shared agent requires Claude Code; choose it explicitly.");
+
     const id = randomUUID(),
       dir = this.dir(id);
     await fs.mkdir(dir);
@@ -343,8 +366,10 @@ export class Studio {
     p.events.push({ time: new Date().toISOString(), text: text.slice(-5000) });
     p.events = p.events.slice(-160);
     await this.save(p);
+    await this.tasks?.record(p.id,"activity",{text:text.slice(-5000)});
   }
   async fingerprint(id) {
+    if ((await this.get(id)).template === "imported") return importedHash(this,id);
     if ((await this.get(id)).template === "agent") return agentFingerprint(this,id);
     if ((await this.get(id)).template === "custom")
       return customFingerprint(path.join(this.dir(id), "project"));
@@ -395,6 +420,8 @@ export class Studio {
   }
   async restoreUnlocked(id) {
     const p = await this.get(id);
+    if (p.undoHash && p.undoHash !== await this.fingerprint(id)) throw Error("Source changed since the revision; undo refused to preserve external edits");
+    if (p.template === "imported") return this.restoreImported(p);
     if (p.template === "custom") return restoreCustom(this, p);
     if (!p.lastRevision) throw Error("No previous revision.");
     if (!/^\d+$/.test(p.lastRevision)) throw Error("Invalid revision");
@@ -427,10 +454,11 @@ export class Studio {
       const target = path.join(staging, "AppProject");
       await fs.cp(path.join(dir, "project"), target, {
         recursive: true,
-        filter: (p) =>
-          !p
-            .split(path.sep)
-            .some((x) => [".build", ".ios-agent", "xcuserdata", ".env", "Secrets.xcconfig"].includes(x)),
+        filter: async (p) => {
+          if(p.split(path.sep).some(x=>[".git",".build",".ios-agent","xcuserdata","DerivedData"].includes(x)||/^\.env(?:\.|$)|secret|credential|\.(pem|key|p12|mobileprovision)$/i.test(x)))return false;
+          if((await fs.lstat(p)).isSymbolicLink())throw Error("Export refuses symbolic links");
+          return true;
+        },
       });
       const zip = path.join(staging, "project.zip");
       await this.runner("ditto", ["-c", "-k", "--norsrc", "--keepParent", target, zip]);
@@ -442,6 +470,7 @@ export class Studio {
     }
   }
   async client(prompt, signal, provider = "codex") {
+    if(this.tasks?.active)return requestJSON(this,provider,prompt,signal);
     if (provider === "claude")
       return parseAnswer(
         await this.runner(
@@ -508,7 +537,7 @@ export class Studio {
       throw Error(
         "Another task is running. Stop it or wait before starting a new task.",
       );
-    if (!["plan", "build", "refine", "verify"].includes(kind))
+    if (!["plan", "build", "refine", "verify", "ask", "review", "readiness"].includes(kind))
       throw Error("Unknown action");
     this.reserved = true;
     let p;
@@ -536,8 +565,8 @@ export class Studio {
     p.messages.push({
       role: "user",
       text:
-        kind === "refine"
-          ? message
+        ["refine","ask","review","readiness"].includes(kind)
+          ? message || kind
           : {
               plan: "Plan my app",
               build: "Build this plan",
@@ -574,6 +603,8 @@ export class Studio {
     this.jobs.get(id)?.abort();
   }
   async execute(p, kind, message, signal, attempt = 0) {
+    if (["ask","review","readiness"].includes(kind)) return this.inspectRequest(p,kind,message,signal);
+    if (p.template === "imported") return executeImported(this,p,kind,message,signal);
     if (p.template === "agent") return executeAgent(this,p,kind,message,signal);
     if (p.template === "custom")
       return executeCustom(this, p, kind, message, signal, attempt);
@@ -645,6 +676,7 @@ export class Studio {
       await this.save(p);
       for (const file of answer.files)
         await fs.writeFile(path.join(project, file.path), file.content);
+      p.undoHash = await this.fingerprint(p.id); await this.save(p);
       p.messages.push({ role: "assistant", text: answer.summary });
       await this.log(
         p,
@@ -679,7 +711,7 @@ export class Studio {
       await writes;
     } catch (e) {
       await writes;
-      if (kind !== "verify" && attempt < 1 && !signal.aborted) {
+      if (kind !== "verify" && attempt < (this.settings?.repairLimit??1) && !signal.aborted) {
         await this.log(
           p,
           "Verification failed. Attempting one bounded repair, keeping the tests unchanged.",
@@ -742,13 +774,13 @@ export class Studio {
   async screenshot(id, name) {
     const p = await this.get(id);
     const names =
-      p.template === "agent" ? Object.keys(p.evidence?.screens ?? {}) : p.template === "custom"
+      ["agent","imported"].includes(p.template) ? Object.keys(p.evidence?.screens ?? {}) : p.template === "custom"
         ? (p.plan?.journeys ?? []).map((j) => j.screen)
         : ["empty", "add", "library", "detail", "search-empty", "error"];
     if (!names.includes(name)) throw Error("Unknown screenshot");
     if (!p.evidence || p.evidence.sourceHash !== (await this.fingerprint(id)))
       throw Error("Preview is stale. Verify again.");
-    if (p.template === "agent") {
+    if (["agent","imported"].includes(p.template)) {
       const file = p.evidence.paths[name];
       if (typeof file !== "string" || !/^\.ios-agent\/screenshots\/[a-zA-Z0-9_.-]+\.png$/.test(file)) throw Error("Invalid screenshot path");
       const root = await fs.realpath(path.join(this.dir(id), "project"));
@@ -756,7 +788,7 @@ export class Studio {
       if (!actual.startsWith(root + path.sep)) throw Error("Screenshot escapes project");
     }
     const b = await fs.readFile(
-      p.template === "agent" ? path.join(this.dir(id), "project", p.evidence.paths[name]) : path.join(this.dir(id), "project/.ios-agent/evidence", name + ".png"),
+      ["agent","imported"].includes(p.template) ? path.join(this.dir(id), "project", p.evidence.paths[name]) : path.join(this.dir(id), "project/.ios-agent/evidence", name + ".png"),
     );
     if (digest(b) !== p.evidence.screens[name])
       throw Error("Preview hash mismatch");

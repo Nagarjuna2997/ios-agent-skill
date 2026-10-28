@@ -131,3 +131,38 @@ A stale launcher process from an earlier packaging run (still running from a sin
 The browser interface was restyled to share the project website’s design system (light and dark tokens, system typography, floating frosted header, pill buttons, rounded cards). The workspace is now a chat column on the left beside the live simulator on the right, and saved projects appear as chips under the header on every screen. Element ids were kept, so the existing app logic and the 41 regression tests were unchanged and still pass.
 
 Checked in Chrome against the running server: welcome and workspace screens in light and dark, the Studio Notes workspace with its verified capture, chat bubbles, plan summary, workflow buttons, composer, backend panel and build activity. At 390px (headless Chrome with device emulation) the document scroll width equalled the viewport on both screens; the only elements beyond the edge belong to the intentionally scrollable project switcher and header action row. No console errors were logged.
+
+## Studio workspace branch — 2026-10-28
+
+Local development evidence, not a public release:
+
+- Full Studio suite: 99 passed, zero failed; subsequent release-draft regression suite: 8 passed, zero failed.
+- MCP build passed; MCP suite: 830 passed, zero failed, one skipped.
+- Real imported ReadingList: three unit tests and two UI tests passed on Xcode 27 / iOS 27, iPhone 18 Pro. Launch capture inspected. A separate live driver tapped Add and displayed the real add-book sheet.
+- Real Codex JSON transport and persisted read-only task completed. Claude execution failed despite CLI authentication; no Claude generation success claimed.
+- Browser check before release-panel addition passed creation, settings, source inspection, search, pinning, approval cancellation and desktop/narrow layouts. The approval test uses a synthetic plan, not fabricated generation evidence.
+- Capture archive regression covers immutable copies, stale source labels, traversal rejection and tamper detection. Release draft regression rejects credential fields and refuses reports before preparation.
+- Final independent review could not run because the reviewer hit an account usage limit. Latest archive/release changes are not independently reviewed. Native release preparation, complete shared-provider generation, signed packaging and the complete product acceptance matrix remain unverified.
+
+No merge, npm publication, deployment, signing or Apple upload performed.
+
+### Packaging follow-up
+
+Full Studio suite rerun: 100 passed, zero failures/skips. Local arm64 macOS preview packaging passed compilation, ad-hoc signing and strict deep signature verification after preserving relative dependency symlinks during copy. ZIP SHA-256: `2adf8003a880d86512ff396598e6877c8c02c798607b5795c2ecc45c1a9d212f`. This is not notarization or a clean-machine launch test. Independent review remains blocked by the reviewer account limit.
+
+### Launcher entry point
+
+Runtime smoke checking found silent exit through a symlinked checkout path. Entry-point detection now compares real paths. The server starts through the symbolic checkout, covered by a new process-level regression test. The preceding full 100-test suite passed; the additional launch test passed independently.
+
+## Connected workspace verification — 2026-10-28 follow-up
+
+- Studio: **112 passed, zero failures, zero skips** (`node --test --test-concurrency=1 --test-timeout=30000 studio/test/*.test.mjs`).
+- MCP: **831 passed, zero failures, one skipped**, after a successful TypeScript/data build.
+- Browser workflow check passed creation, source browsing, project settings/search/pinning, approval/cancellation and desktop/narrow layout without console errors. Synthetic plan use remains explicitly labeled.
+- Latest arm64 preview built and passed strict deep ad-hoc signature verification. ZIP SHA-256: `3549525e78a3890b7a369150e717ef22cf1dd7ce2cd7dc246e445742dceedeea`. Bundled runtime startup was also exercised independently of the checkout runtime. Not notarized; no clean-machine certification.
+- Existing sample release preparation generated metadata, readiness, analysis and screenshot-set artifacts. Prepared preview retrieval passed hash checks. No signing, provisioning, archive or upload was executed.
+- Real Codex shared-agent run generated a counter app, built it twice, launched it, captured iPhone/iPad light/dark/XXL screenshots and attempted a visual repair. It correctly stopped with unresolved visual findings at the configured repair limit. Native tests subsequently reported 15 passed, 3 failed, 0 skipped; this is **not** a passing end-to-end app result. A further explicit refinement was started against the unchanged tests; results must be reported separately.
+- Claude remains blocked by an authentication/account restriction; the maintainer chose to leave that account issue alone. No fallback or subscription change was made.
+- Independent read-only review found approval, input-confinement, output-limit, product-integrity, history-access and undo issues. These were corrected with regressions. Follow-up reviews found scheme-script/large-config validation and explicit-test-budget issues, also corrected. Final focused review reported no blocking findings in those paths; this is source-review evidence, not additional native execution.
+
+Explicit Verify requests have their own bounded budget and preserve historical build-cycle evidence. Verify runs tests without re-entering generation or treating unresolved visual findings as passed. Imported repair preserves the original task undo snapshot and cannot edit tests, project configuration or external dependencies. Release operations require separate exact-plan approval and retain uncertain-upload receipts across restart.

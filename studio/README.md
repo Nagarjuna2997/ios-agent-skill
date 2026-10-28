@@ -1,4 +1,9 @@
-# iOS Agent Studio — local preview
+# iOS Agent Studio — local workspace
+
+The feature-branch workspace adds durable tasks, project management, native-project
+imports, source inspection and a shared Codex/Claude transport. Read
+[WORKSPACE.md](WORKSPACE.md) for current launch instructions, scope and remaining gaps.
+The historical preview details below describe the engines this workspace reuses.
 
 A local browser workspace that turns a small app idea into a multi-file SwiftUI project, then builds it and runs planned UI journeys on your Mac. It also keeps the original reading-list starter available. This is a local preview, not a hosted app builder.
 
@@ -26,7 +31,7 @@ Open http://127.0.0.1:8844. Requires Node 20+, macOS, Xcode, an installed iOS si
 - Briefs, app source and bounded failure diagnostics go to the explicitly selected, locally authenticated coding client. Provider billing and data policies apply. Provider credentials are not collected. Local backend keys stay outside app source and exports; test runners inject them at launch.
 - The server binds to loopback only and checks Host, Origin and a per-launch request token. This is a single-user local tool, not a multi-user security boundary. Generated Swift executes on your simulator; review it before using sensitive data. Do not expose this server to a network.
 - Codex runs in read-only mode with user configuration excluded; Claude has no tools or external MCP servers. Returned file content is validated and written by Studio. The existing simulator runner remains the authority for tests.
-- The browser UI shares the project website’s design: the same light and dark color tokens, system typography, floating frosted header, pill buttons and rounded cards. The workspace is a chat column beside the live simulator. It works at narrow and wide widths with a persistent light/dark preference, visible errors and keyboard controls.
+- The browser UI reuses the project website’s design: the same light and dark color tokens, system typography, floating frosted header, pill buttons and rounded cards. The workspace is a chat column beside the live simulator. It works at narrow and wide widths with a persistent light/dark preference, visible errors and keyboard controls.
 
 ## Checks
 
