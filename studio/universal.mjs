@@ -97,6 +97,19 @@ export class UniversalStudio {
       scope:'RootView.swift only; original revision generation, not subsequent child edits',
       base:base.toString('utf8'),local:local.toString('utf8'),generated:generated.toString('utf8'),candidate:candidate?.toString('utf8')??null};
   }
+  async compareCaptures(id){
+    const child=await this.get(id);if(!child.revisionOf)throw Error('This conversion has no parent revision');
+    const parent=await this.get(child.revisionOf.id);
+    const latest=row=>[...(row.runs??[])].reverse().find(r=>typeof r.id==='string'&&r.status==='preview-ready'&&r.capture?.runId===r.id);
+    const before=latest(parent),after=latest(child);
+    if(!before||!after)throw Error('Both conversions need an archived native capture');
+    const [a,b]=await Promise.all([this.image(parent.id,before.id),this.image(child.id,after.id)]);
+    const {comparePNGs}=await this.module('app-ir/compare');const result=comparePNGs(a,b);
+    const describe=(row,run)=>({conversionId:row.id,runId:run.id,started:run.started,sourceHash:run.sourceHash,udid:run.udid,xcode:run.environment?.xcode??null,sdk:run.environment?.iosSimulatorSdk??null});
+    return {baseline:describe(parent,before),candidate:describe(child,after),report:result.report,diff:result.diff.toString('base64'),
+      status:'requires-review',comparison:'latest archived parent and revision captures; native-to-native only',
+      conditions:'Appearance, Dynamic Type, orientation and UI state are not pinned by these Studio runs. Pixel differences are exploratory and cannot pass the fidelity gate.'};
+  }
   async fingerprint(id){const {snapshotFiles,snapshotHash}=await this.module('agent/remote');return snapshotHash(await snapshotFiles(path.join(this.dir(id),'project')));}
   async simulators(){
     const [{ProcessRunner},{detectToolchain}]=await Promise.all(['agent/runner','agent/toolchain'].map(n=>this.module(n)));

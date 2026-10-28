@@ -155,3 +155,11 @@ shown for review; neither project is modified. The saved generation hashes and
 parent IR hash must still match. Older conversions without the original snapshot
 cannot supply a trustworthy base and are refused. This compares `RootView.swift`
 only and does not merge other project files or later edits to the child revision.
+
+**Compare latest captures with parent** computes a raw native-to-native pixel diff
+using the latest archived successful capture on each conversion. It verifies image
+hashes and refuses mismatched dimensions rather than resizing. The report identifies
+both run/source hashes and retains `requires-review`, even for identical pixels.
+Studio capture conditions do not yet pin appearance, text size, orientation or UI
+state, so this exploratory diff cannot satisfy the visual-fidelity gate or approve
+a repair. It does not compare against an HTML/browser reference.

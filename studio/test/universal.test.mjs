@@ -231,3 +231,15 @@ test('comparison refuses missing historical base and changed parent identity rat
  const {appendFile}=await import('node:fs/promises');await appendFile(join(u.dir(parent.id),'ir.json'),' ');await assert.rejects(u.compareRevision(child.id),/Parent IR changed/);
  await assert.rejects(u.compareRevision(parent.id),/no parent/);
 });
+test('capture comparison uses verified archived pixels and never upgrades review status',async t=>{
+ const {u}=await workspace(t);const parent=await u.create({adapter:'html',name:'Parent',source:'<p>A</p>'});const child=await u.createRevision(parent.id,{adapter:'html',name:'Child',source:'<p>B</p>'});
+ const {createRequire}=await import('node:module');const require=createRequire(new URL('../../mcp-server/package.json',import.meta.url));const {PNG}=require('pngjs');
+ const {mkdir,writeFile}=await import('node:fs/promises');const {sha256}=await u.module('app-ir/schema');
+ async function capture(row,id,value,width=2){const png=new PNG({width,height:2});png.data.fill(value);const bytes=PNG.sync.write(png);await mkdir(join(u.dir(row.id),'captures'),{recursive:true});await writeFile(join(u.dir(row.id),'captures',id+'.png'),bytes);row.runs=[{id,status:'preview-ready',sourceHash:sha256(row.name),capture:{runId:id,sourceHash:sha256(row.name),sha256:sha256(bytes)}}];await u.save(row);}
+ await assert.rejects(u.compareCaptures(child.id),/Both conversions/);
+ await capture(parent,'11111111-1111-4111-8111-111111111111',255);await capture(child,'22222222-2222-4222-8222-222222222222',0);
+ const result=await u.compareCaptures(child.id);assert.equal(result.report.changedPixelFraction,1);assert.equal(result.report.verdict,'requires-review');assert.match(result.conditions,/not pinned/);assert.equal(result.baseline.conversionId,parent.id);assert.equal(PNG.sync.read(Buffer.from(result.diff,'base64')).width,2);
+ assert.equal((await u.get(child.id)).visualFidelity,'not-evaluated');
+ await capture(child,'33333333-3333-4333-8333-333333333333',0,3);await assert.rejects(u.compareCaptures(child.id),/differ in dimensions/);
+ await writeFile(join(u.dir(parent.id),'captures','11111111-1111-4111-8111-111111111111.png'),'tamper');await assert.rejects(u.compareCaptures(child.id),/Capture changed/);
+});
