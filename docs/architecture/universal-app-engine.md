@@ -73,7 +73,7 @@ The renderer emits SwiftUI Text, VStack, ScrollView and DisclosureGroup with loc
 | 7. Screenshot/Figma ingestion | 4 | Authorized image/design snapshots, visible facts separated from hidden requirements, traceable reconstruction | Planned |
 | 8. Flutter/React Native/other adapters | 6 | Per-adapter independent fixtures and native replacement mapping | Partial: static Vue/Svelte imports with rejection tests; native verification pending. Flutter, React Native and Angular remain planned |
 | 9. Source synchronization | Stable node identity | Three-way source/IR/native diff, no overwrites on conflicts, regression tests | Planned |
-| 10. Studio/roles/provider expansion | Proven contracts | Real events and evidence, provider capability negotiation, cancellation, shared checkpoints | Partial: offline evidence viewer plus local Studio import/generation, folder import, build/launch/capture controls and project ZIP export; actual native Studio E2E verification and autonomous repair integration remain open |
+| 10. Studio/roles/provider expansion | Proven contracts | Real events and evidence, provider capability negotiation, cancellation, shared checkpoints | Partial: offline evidence viewer plus local Studio import/generation, folder import, build/launch/capture controls and project ZIP export; selected-device local HTTP build/launch/capture/export verified for one reusable React fixture; browser-native interaction, fidelity and autonomous repair integration remain open |
 | 11. Release preparation | Independent review and E2E gates | Compatibility documentation, truthful support matrix, explicit release authorization | Not requested for this branch |
 
 The next milestone is verification and CSS/layout correctness, not adding framework names. No universal-support, production-readiness or fidelity claim is justified by this prototype.
@@ -318,3 +318,16 @@ children as at the entry. Arbitrary callback props, computed state references an
 component-local hooks remain unsupported. Inline and composed equivalents are
 checked for identical generated SwiftUI. Native evidence for reset inputs must
 not be represented as native verification of arbitrary reusable components.
+
+### Studio native evidence (2026-10-28)
+
+The authenticated local HTTP path imported a two-file React fixture, generated
+SwiftUI, built and launched on the explicitly selected iPhone 18 Pro / iOS 27
+simulator, captured the populated screen and exported an editable Xcode ZIP.
+The first capture was a blank launch transition; both captures are retained in
+[the evidence archive](../../benchmarks/universal/evidence/studio-native-local-20261028/README.md).
+A cancellable two-second delay reduces that race but does not prove readiness.
+The Studio smoke did not run native interactions or establish visual fidelity.
+Separate input tests passed typing, reset and state retention at Large and XXXL;
+the accessibility audit still failed at both sizes. Those failures are preserved
+and do not become passing checkpoints.

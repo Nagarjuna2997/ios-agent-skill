@@ -1,0 +1,1 @@
+Text of this SwiftUI.UIKitTextField may be clipped at larger Dynamic Type sizes.
