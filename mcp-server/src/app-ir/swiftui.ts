@@ -16,6 +16,11 @@ export function renderSwiftUI(value: unknown, options: { disclosureStyle?: "plat
   const symbol = (id: string) => 'node_' + id.replaceAll('-','_');
   const state = [...(ir.navigation ? ['    @State private var routePath: [String] = []'] : []), ...ir.nodes.filter(n => n.kind === 'disclosure').map(n => `    @State private var expanded_${symbol(n.id)} = false;`),
     ...(ir.states ?? []).map(s => `    @State private var state_${symbol(s.id)} = ${typeof s.initial==='string'?swiftString(s.initial):s.initial};`)].join('\n');
+  const rowChildren=new Set(ir.nodes.filter(n=>n.kind==='row').flatMap(n=>n.children));
+  // Conditional wrappers have no native layout of their own. Their visible
+  // branch roots inherit the same horizontal sizing proposal.
+  for(const id of rowChildren){const node=ir.nodes.find(n=>n.id===id);if(node?.kind==='conditional')for(const child of node.children)rowChildren.add(child);}
+  for(const id of rowChildren){const node=ir.nodes.find(n=>n.id===id)!;if(!['text','button','link','conditional'].includes(node.kind))throw Error('Unsupported row child: only text, buttons, links and conditional leaf branches have verified sizing mappings');}
   const views = ir.nodes.map(n => {
     if(n.kind === 'conditional' && n.condition) {
       const c=n.condition;
@@ -28,8 +33,9 @@ export function renderSwiftUI(value: unknown, options: { disclosureStyle?: "plat
     const action = n.action?.operation === 'toggle' ? `state_${symbol(n.action.state)}.toggle()` : n.action?.operation === 'set' ? `state_${symbol(n.action.state)} = ${typeof n.action.value==='string'?swiftString(n.action.value):n.action.value}` : '';
     let view = n.kind === 'textfield' && n.stringBinding ? `TextField("", text: $state_${symbol(n.stringBinding)}, prompt: Text(verbatim: ${swiftString(n.placeholder??'')}))\n        .accessibilityLabel(Text(verbatim: ${swiftString(n.text??'')}))\n        .textFieldStyle(ImportedTextFieldStyle())` : n.kind === 'text' ? textView : n.kind === 'link' && n.action?.operation === 'navigate'
       ? `NavigationLink(value: ${swiftString(n.action.screen)}) { ${textView}.frame(minHeight: 44) }\n        .buttonStyle(.bordered)` : n.kind === 'button'
-      ? `Button { ${action} } label: { ${textView}${ir.schemaVersion==='1.4.0'&&s.foreground&&s.background?`.frame(maxWidth: .infinity, minHeight: 44, alignment: ${s.centered?'.center':'.leading'}).contentShape(Rectangle())`:''} }\n        .buttonStyle(${ir.schemaVersion==='1.4.0'&&s.foreground&&s.background?'.plain':'.bordered'})\n        .frame(minHeight: 44)` : n.kind === 'disclosure'
+      ? `Button { ${action} } label: { ${textView}${['1.4.0','1.5.0'].includes(ir.schemaVersion)&&s.foreground&&s.background?`.frame(${rowChildren.has(n.id)?'':'maxWidth: .infinity, '}minHeight: 44, alignment: ${s.centered?'.center':'.leading'}).contentShape(Rectangle())`:''} }\n        .buttonStyle(${['1.4.0','1.5.0'].includes(ir.schemaVersion)&&s.foreground&&s.background?'.plain':'.bordered'})\n        .frame(minHeight: 44)` : n.kind === 'disclosure'
       ? `DisclosureGroup(isExpanded: $expanded_${symbol(n.id)}) {\n${children}\n        } label: { ${textView} }`
+      : n.kind==='row' ? `HStack(alignment: .center, spacing: ${s.gap ?? 0}) {\n${children}\n        }`
       : `VStack(alignment: ${s.centered ? '.center' : '.leading'}, spacing: ${s.gap ?? 12}) {\n${children}\n        }`;
     if (n.kind === 'disclosure' && options.disclosureStyle === 'leading') view += '\n        .disclosureGroupStyle(ImportedDisclosureStyle())';
     if (s.fontSize) view += `\n        .font(.system(size: scaled_${symbol(n.id)}, weight: ${s.bold ? '.bold' : '.regular'}))`;
@@ -37,11 +43,11 @@ export function renderSwiftUI(value: unknown, options: { disclosureStyle?: "plat
     if (s.foreground) view += `\n        .foregroundStyle(${color(s.foreground)})`;
     if (s.centered !== undefined) view += `\n        .multilineTextAlignment(${s.centered ? '.center' : '.leading'})`;
     if (s.padding !== undefined) view += `\n        .padding(${s.padding})`;
-    view += `\n        .frame(maxWidth: .infinity, alignment: ${s.centered ? '.center' : '.leading'})`;
+    if(!rowChildren.has(n.id))view += `\n        .frame(maxWidth: .infinity, alignment: ${n.kind!=='row'&&s.centered ? '.center' : '.leading'})`;
     if (s.background) view += `\n        .background(${color(s.background)})`;
     if (s.radius) view += `\n        .clipShape(RoundedRectangle(cornerRadius: ${s.radius}))`;
     // Container identifiers propagate to descendants in XCTest; identify leaf controls only.
-    if (n.kind !== 'column') view += `\n        .accessibilityIdentifier(${swiftString(n.id)})`;
+    if (!['column','row'].includes(n.kind)) view += `\n        .accessibilityIdentifier(${swiftString(n.id)})`;
     return `    private var ${symbol(n.id)}: some View {\n        ${view}\n    }`;
   }).join('\n\n');
   const root = ir.nodes.find(n => n.id === ir.screens[0]!.root)!;

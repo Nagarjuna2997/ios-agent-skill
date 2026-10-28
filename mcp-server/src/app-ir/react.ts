@@ -463,6 +463,7 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
   }
   if(conditionMappings.length)ir.schemaVersion='1.3.0';
   if(states.some(s=>typeof s.initial==='string'))ir.schemaVersion='1.4.0';
+  if(ir.nodes.some(n=>n.kind==='row'))ir.schemaVersion='1.5.0';
   ir.sources=[{id:'source',path:sourcePath,sha256:sha256(source),bytes:Buffer.byteLength(source),adapter:states.some(s=>typeof s.initial==='string')?'react-controlled-text@1':conditionMappings.length?'react-conditional-views@1':routeSpans.length?'react-memory-router@1':states.length?'react-boolean-state@1':'react-static@1'}];
   return AppIRSchema.parse(ir);
 }

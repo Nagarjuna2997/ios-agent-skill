@@ -39,7 +39,10 @@ export function htmlToIR(html: string, sourcePath = 'index.html', name = 'Import
   const style = (el: Element): AppIR['nodes'][number]['style'] => {
     const out: AppIR['nodes'][number]['style'] = {};
     const rawStyle = (el.attrs.find(a => a.name === 'style')?.value ?? '').toLowerCase();
-    if (/display\s*:\s*flex\s*(?:;|$)/.test(rawStyle) && !/flex-direction\s*:\s*column\s*(?:;|$)/.test(rawStyle)) limitation('unsupported-flex-direction','Flex rows are not supported; explicit column direction is required',el);
+    const isRow=/display\s*:\s*flex\s*(?:;|$)/.test(rawStyle)&&/flex-direction\s*:\s*row\s*(?:;|$)/.test(rawStyle);
+    if(isRow&&['display','flex-direction'].some(key=>rawStyle.split(';').filter(part=>part.trim().startsWith(key+':')||new RegExp('^\\s*'+key+'\\s*:').test(part)).length>1))limitation('ambiguous-row-layout','Repeated row layout declarations require explicit resolution',el);
+    if(isRow&&!/align-items\s*:\s*center\s*(?:;|$)/.test(rawStyle))limitation('unsupported-row-alignment','Rows require explicit align-items:center; stretch and baseline layout are not mapped',el);
+    if (!isRow && /display\s*:\s*flex\s*(?:;|$)/.test(rawStyle) && !/flex-direction\s*:\s*column\s*(?:;|$)/.test(rawStyle)) limitation('unsupported-flex-direction','Flex rows are not supported; explicit column direction is required',el);
     for (const part of (el.attrs.find(a => a.name === 'style')?.value ?? '').split(';').filter(s => s.trim())) {
       const i = part.indexOf(':'); const key = part.slice(0,i).trim().toLowerCase(); const value = part.slice(i+1).trim();
       if (['color','background-color'].includes(key) && /^#[0-9a-fA-F]{6}$/.test(value)) out[key === 'color' ? 'foreground' : 'background'] = value;
@@ -51,7 +54,7 @@ export function htmlToIR(html: string, sourcePath = 'index.html', name = 'Import
       } else if (key === 'font-weight' && ['400','600','700','normal','bold'].includes(value)) out.bold = ['600','700','bold'].includes(value);
       else if (key === 'text-align' && ['left','center'].includes(value)) out.centered = value === 'center';
       else if ((key === 'margin' && value === '0') || (key === 'font-family' && ['-apple-system','system-ui'].includes(value))) { /* native defaults */ }
-      else if ((key === 'display' && value === 'flex') || (key === 'flex-direction' && value === 'column')) { /* native column */ }
+      else if ((key === 'display' && value === 'flex') || (key === 'flex-direction' && ['column','row'].includes(value)) || (key === 'align-items' && value === 'center' && isRow)) { /* native column */ }
       else limitation('unsupported-css',`CSS declaration is not mapped: ${key || part}`,el);
     }
     for (const attr of el.attrs) if (!['style','id','lang'].includes(attr.name)) limitation('unsupported-attribute',`Attribute ${attr.name} is not mapped`,el);
@@ -73,6 +76,10 @@ export function htmlToIR(html: string, sourcePath = 'index.html', name = 'Import
       limitation('unsupported-element',`<${n.tagName}> is not converted`,n); return [];
     }
     const id = `node-${++count}`; const appearance = style(n);
+    const rawStyle=(n.attrs.find(a=>a.name==='style')?.value??'').toLowerCase();
+    const row=/display\s*:\s*flex\s*(?:;|$)/.test(rawStyle)&&/flex-direction\s*:\s*row\s*(?:;|$)/.test(rawStyle);
+    if(row&&['p','h1','h2','h3','span','strong','details','summary'].includes(n.tagName))limitation('unsupported-row-element','Rows require a plain container element',n);
+    if(row){ir.schemaVersion='1.5.0';appearance.gap??=0;}
     if (['p','h1','h2','h3','span','strong'].includes(n.tagName)) {
       if (n.childNodes.some(element)) limitation('inline-markup',`Nested markup in <${n.tagName}> is flattened; inspect its semantics`,n);
       ir.nodes.push({id,kind:'text',text:content(n).replace(/\s+/g,' ').trim(),children:[],style:{...(n.tagName==='strong'?{bold:true}:{}),...(/^h[1-3]$/.test(n.tagName)?{bold:true,fontSize:n.tagName==='h1'?32:24}:{}),...appearance},evidence:evidence(n)}); return [id];
@@ -86,7 +93,7 @@ export function htmlToIR(html: string, sourcePath = 'index.html', name = 'Import
     const explicitColumn = /display\s*:\s*flex/i.test(n.attrs.find(a => a.name === 'style')?.value ?? '');
     if (!explicitColumn && visibleChildren.length > 1 && visibleChildren.some(c => !element(c) || ['span','strong'].includes(c.tagName))) limitation('unsupported-inline-flow','Inline siblings require line-flow layout, which is not mapped',n);
     const children = n.childNodes.filter(c => c !== summary).flatMap(c => visit(c,depth+1));
-    ir.nodes.push({id,kind:summary?'disclosure':'column',...(summary?{text:content(summary).trim()}:{}),children,style:appearance,evidence:evidence(n)});
+    ir.nodes.push({id,kind:summary?'disclosure':row?'row':'column',...(summary?{text:content(summary).trim()}:{}),children,style:appearance,evidence:evidence(n)});
     return [id];
   };
   const htmlEl = doc.childNodes.find(n => element(n) && n.tagName === 'html') as Element;

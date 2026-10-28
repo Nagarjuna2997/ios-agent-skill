@@ -384,3 +384,16 @@ Component instances have separate scopes. This does not execute JavaScript or ad
 reactive derived state: calls, mutable declarations, objects, booleans, destructuring,
 forward references, shadowing and state-derived constants fail explicitly, even
 when unused. Existing entry boolean/string hooks continue to use their own IR mapping.
+
+### Explicit horizontal rows (IR 1.5)
+
+Plain container elements with `display:flex; flex-direction:row; align-items:center`
+map to native `HStack` rows, preserving explicit gaps (zero if omitted) and intrinsic
+leaf widths. Rows support text, buttons, links and conditional branches of those
+leaves; nested containers, disclosures and input sizing remain blocked. HTML, static React, Vue and Svelte share this mapping. Row containers
+do not add accessibility identifiers that could override descendant identifiers.
+Existing IR versions retain their previous output; state and navigation contracts
+remain available in 1.5. This is not a CSS flexbox engine: stretch/baseline alignment,
+wrapping, distributed justification, flex factors and ambiguous repeated layout
+declarations remain blocked. Native compression/line wrapping may differ from a
+browser, so successful generation/build does not establish visual fidelity.
