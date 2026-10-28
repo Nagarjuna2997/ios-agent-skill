@@ -27,4 +27,15 @@ class Tests(unittest.TestCase):
   cells=[cell('baseline'),cell('optimized')];warm=deepcopy(cells)
   for c in warm:c.update(condition='warm',training_tasks=['training-only'],state_id=c['state_id']+'-warm')
   self.assertEqual(compare(cells+warm)['counts']['tie_pass'],2)
+
+class NativeEvidence(unittest.TestCase):
+ def test_committed_native_log_integrity(self):
+  import gzip
+  base=pathlib.Path(__file__).parent/'evidence'
+  data=json.loads((base/'native-compiler.json').read_text())
+  for row in data['brokenBuilds']+data['referenceBuilds']:
+   self.assertEqual(hashlib.sha256(gzip.decompress((base/row['log']).read_bytes())).hexdigest(),row['sha256'])
+  self.assertEqual([r['action'] for r in data['brokenBuilds']],['continue','strategy','stop'])
+  self.assertTrue(all(r['success'] for r in data['referenceBuilds']))
+
 if __name__=='__main__':unittest.main()

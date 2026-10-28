@@ -511,7 +511,7 @@ Search offline with `node scripts/query-library.mjs search "SwiftData"`. Read a 
 | [docs/tooling/remote-macos-build.md](../../docs/tooling/remote-macos-build.md) | guide | 6245 |
 | [docs/tooling/september-2026-distribution.md](../../docs/tooling/september-2026-distribution.md) | guide | 4820 |
 | [docs/tooling/ship-testflight.md](../../docs/tooling/ship-testflight.md) | guide | 6303 |
-| [docs/tooling/token-efficiency.md](../../docs/tooling/token-efficiency.md) | guide | 11020 |
+| [docs/tooling/token-efficiency.md](../../docs/tooling/token-efficiency.md) | guide | 11574 |
 | [docs/tooling/visual-iteration-loop.md](../../docs/tooling/visual-iteration-loop.md) | guide | 3160 |
 | [docs/tooling/xcode-27-2.md](../../docs/tooling/xcode-27-2.md) | guide | 3221 |
 | [docs/tooling/xcode-27-agents.md](../../docs/tooling/xcode-27-agents.md) | guide | 10425 |

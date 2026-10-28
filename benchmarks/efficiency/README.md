@@ -18,3 +18,15 @@ Each JSON cell must contain:
 `save_cell(directory, cell)` atomically retains each completed receipt; replaying identical evidence is idempotent, and a conflicting replay fails without overwriting it. The evaluator reports each pair's quality and metrics plus signed optimized-minus-baseline deltas. It does not turn incomplete/failed/provider runs into successful savings or pool cold/warm conditions. Contract unit tests use synthetic receipts; they are not scored model results.
 
 No paired authenticated model comparison has been run for this change. The independently measured component result is serialized MCP schema size, recorded in [the implementation guide](../../docs/tooling/token-efficiency.md). A narrower schema is not proof of lower billed tokens or improved task success. Existing hidden-oracle isolation requirements still apply before any scored run.
+
+## Real Xcode integration check (no model)
+
+On a Mac with Xcode and an installed iOS Simulator SDK:
+
+```sh
+node mcp-server/scripts/verify-native-efficiency.mjs --out /tmp/efficiency-native-fresh
+```
+
+The output directory must not exist. This uses the existing project generator and recorded build pipeline, three intentional Swift compilation failures, a correct reference source, and two independent verification processes. It asserts the bounded intervention sequence and memory promotion. Unsigned simulator builds run locally; no provider, network dependency or app submission is involved. Logs remain under the selected output directory with SHA-256 digests in `verification.json`. It does not launch the simulator or test UI behavior, and it is not an isolated model comparison.
+
+Recorded Xcode 27.0 (27A266a), Simulator SDK 27.0: **three expected failed compiler builds, then two passing repaired builds**; intervention sequence **continue / strategy / stop**, memory **candidate / promoted**. [Committed summary](evidence/native-compiler.json). An earlier fixture missing AppIcon setup failed before the intended Swift diagnostics; it was corrected, not counted as a successful result.
