@@ -1,0 +1,48 @@
+{
+  "registrySha256": "1914be4963006c4982e4fa29a21ef39262473ad372a2762ef803ba13b1c6b5c4",
+  "kind": "component-schema-measurement",
+  "node": "v24.15.0",
+  "results": [
+    {
+      "profile": "all",
+      "tools": 82,
+      "schemaBytes": 79729,
+      "connectionMs": 516,
+      "modelTokens": null,
+      "cost": null
+    },
+    {
+      "profile": "build",
+      "tools": 47,
+      "schemaBytes": 32213,
+      "connectionMs": 429,
+      "modelTokens": null,
+      "cost": null
+    },
+    {
+      "profile": "review",
+      "tools": 31,
+      "schemaBytes": 33575,
+      "connectionMs": 429,
+      "modelTokens": null,
+      "cost": null
+    },
+    {
+      "profile": "docs",
+      "tools": 19,
+      "schemaBytes": 10632,
+      "connectionMs": 411,
+      "modelTokens": null,
+      "cost": null
+    },
+    {
+      "profile": "design",
+      "tools": 21,
+      "schemaBytes": 21478,
+      "connectionMs": 426,
+      "modelTokens": null,
+      "cost": null
+    }
+  ],
+  "notice": "Serialized UTF-8 schema bytes, not token usage. Connection includes all child discovery. No scored model comparison performed."
+}
