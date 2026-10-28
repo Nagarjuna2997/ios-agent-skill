@@ -226,3 +226,37 @@ served `/_studio` using its bundled Node runtime (`iOS Agent Studio`, protocol 1
 Preview SHA-256: `dcf68c192428cded06c2d0fdec455f9bb9cefffea7b2b6b3852b8639cdddea2e`.
 It is a local preview, not a notarized public distribution. No Apple upload, npm
 publication, merge, or baseline promotion was performed.
+
+### Additional accessibility verification and remaining visual boundary
+
+After adding two separate native checks, the largest accessibility profile passed
+19 tests and failed one audit. Its footer-reachability test passed and retained a
+scrolled screenshot. Apple identified a partially unsupported Dynamic Type heading.
+Removing font-size caps and the heading's accessibility-only text-style switch
+resolved that finding. A standard-size audit then identified three marginal
+secondary-label contrasts and an Increment text-layout identity issue. Using
+primary text colors and a stable text element in AnyLayout resolved them: the
+standard-size native accessibility audit passed (1 test, 0 failures, 0 skipped).
+
+The final largest-size full run still records **19 passed, 1 failed, 0 skipped**:
+its contrast audit flags the partially offscreen Reset control at the initial
+viewport. Interaction and footer-reachability checks pass. This is retained as an
+unresolved audit result, not relabeled as a complete accessibility or visual pass.
+The source hash for that run is
+`e97306ece8c5764e1423fd094755e9787145ba4faed87723fbb54e749f926c27`;
+result bundle `4b65cd46-8733-483c-b03f-1455ba01d0d5.xcresult`. Simulator settings
+were verified restored to light/large afterward. Earlier failed bundles and logs
+remain unchanged. Slow optional simctl diagnostic collection was terminated after
+two completed failed test runs; their test summaries/attachments were preserved.
+
+An editable counter project was exported through Studio's actual export operation.
+The archive excludes `.ios-agent`, DerivedData, `.build`, and `.git`. This sample
+includes manually assisted repairs; it is not evidence of fully autonomous success.
+
+A controlled follow-up scrolled until Reset and the footer were fully in bounds,
+then repeated the same unfiltered Apple audit. It failed on the partially
+ offscreen `Simple Counter` heading instead of Reset. This supports a viewport-
+dependent measurement limitation; it does not establish a universal false-positive
+rule or justify excluding audit findings. Both failed audits remain available.
+The standard-size audit passes, and all original interaction tests pass at the
+largest recorded size. Full visual/accessibility certification remains unclaimed.
