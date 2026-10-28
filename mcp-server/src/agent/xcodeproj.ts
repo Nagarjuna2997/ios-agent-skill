@@ -300,7 +300,8 @@ export async function renderXcodeProject(root: string, spec: AppSpec): Promise<P
     SDKROOT: "iphoneos",
     SWIFT_VERSION: spec.swiftVersion,
     TARGETED_DEVICE_FAMILY: "1,2",
-    ...(spec.appIconName ? { ASSETCATALOG_COMPILER_APPICON_NAME: spec.appIconName } : {}),
+    // Match the YAML writer: icon-free projects must not select a missing set.
+    ASSETCATALOG_COMPILER_APPICON_NAME: spec.appIconName ?? "",
     ...(Object.keys(spec.entitlements).length ? { CODE_SIGN_ENTITLEMENTS: `Config/${spec.name}.entitlements` } : {}),
   };
   add(`${APP_DEBUG} = {isa = XCBuildConfiguration; baseConfigurationReference = ${XCCONFIG}; buildSettings = ${settingsBlock(appSettings)}; name = Debug; };`);

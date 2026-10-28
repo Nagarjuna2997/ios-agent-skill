@@ -441,3 +441,16 @@ test("diagnostics resolve workspace directory aliases without relativizing exter
     assert.equal(result.errors[1].file, outside);
   } finally { await rm(base, { recursive: true, force: true }); }
 });
+
+
+test('icon-free projects explicitly suppress XcodeGen AppIcon defaults; configured icons remain selected',()=>{
+ const spec=newAppSpec({name:'Imported',deploymentTarget:'17.0'});
+ assert.equal(YAML.parse(renderProjectYml(spec)).targets.Imported.settings.base.ASSETCATALOG_COMPILER_APPICON_NAME,'');
+ spec.appIconName='CustomIcon';assert.equal(YAML.parse(renderProjectYml(spec)).targets.Imported.settings.base.ASSETCATALOG_COMPILER_APPICON_NAME,'CustomIcon');
+});
+test('asset compiler failures retain resource path and message without invented source lines',()=>{
+ const d=parseBuildOutput('/workspace/Imported/Resources/Assets.xcassets: error: No app icon set named AppIcon.\n/workspace/Config/Info.plist: warning: Missing value.','/workspace');
+ assert.deepEqual(d.errors,[{severity:'error',file:'Imported/Resources/Assets.xcassets',message:'No app icon set named AppIcon.'}]);
+ assert.deepEqual(d.warnings,[{severity:'warning',file:'Config/Info.plist',message:'Missing value.'}]);
+ assert.deepEqual(parseBuildOutput('Unrelated text: error: not a resource diagnostic'),{errors:[],warnings:[]});
+});

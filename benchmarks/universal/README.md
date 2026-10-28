@@ -93,3 +93,13 @@ passing subset or an inconsistent declared test count is rejected. Failed report
 can still show the actual partial results. Unknown fixture IDs are rejected.
 These checks validate report consistency; they do not authenticate evidence,
 rerun tests, approve a reference or establish visual fidelity.
+
+## Icon-free import projects
+
+Universal imports do not invent an app icon. Both Xcode project writers explicitly
+leave the app-icon selection empty when no icon capability has been applied,
+preventing XcodeGen's default `AppIcon` setting from referencing a missing asset
+set. A configured icon name remains selected. This permits unsigned simulator
+builds; it does not satisfy App Store icon requirements or certify release readiness.
+Asset-catalog and Interface Builder diagnostics retain their file and message even
+when Xcode supplies no source line number, so repair reports expose the actual error.

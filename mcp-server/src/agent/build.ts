@@ -39,7 +39,8 @@ export function parseBuildOutput(text: string, root?: string): { errors: Diagnos
   for (const raw of text.split(/\r?\n/)) {
     const line = raw.trimEnd();
     let diagnostic: Diagnostic | undefined;
-    const located = line.match(LOCATED);
+    const resource = line.match(/^(.+\.(?:xcassets|storyboard|xib|plist)):\s+(error|warning):\s+(.+)$/);
+    const located = line.match(LOCATED) ?? (resource ? [resource[0],resource[1],undefined,undefined,resource[2],resource[3]] : null);
     if (located && !/^\s/.test(line)) {
       let file = located[1]!;
       if (root && isAbsolute(file)) {
@@ -55,7 +56,7 @@ export function parseBuildOutput(text: string, root?: string): { errors: Diagnos
       diagnostic = {
         severity: located[4] === "warning" ? "warning" : "error",
         file,
-        line: Number(located[2]),
+        ...(located[2] ? {line: Number(located[2])} : {}),
         ...(located[3] ? { column: Number(located[3]) } : {}),
         message: located[5]!.trim(),
       };

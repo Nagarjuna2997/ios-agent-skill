@@ -196,7 +196,8 @@ export function renderProjectYml(spec: AppSpec): string {
         GENERATE_INFOPLIST_FILE: "NO",
         ENABLE_PREVIEWS: "YES",
         CODE_SIGN_STYLE: "Automatic",
-        ...(spec.appIconName ? { ASSETCATALOG_COMPILER_APPICON_NAME: spec.appIconName } : {}),
+        // Explicit empty selection suppresses XcodeGen's nonexistent AppIcon preset.
+        ASSETCATALOG_COMPILER_APPICON_NAME: spec.appIconName ?? "",
       },
     },
   };

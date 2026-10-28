@@ -87,3 +87,12 @@ describe("built-in project writer", () => {
     assert.match(created.generateError, /xcodegen/);
   });
 });
+
+
+test('built-in project leaves the app icon selection empty when no icon capability was applied',async t=>{
+ const work=await mkdtemp(join(tmpdir(),'no-icon-'));t.after(()=>rm(work,{recursive:true,force:true}));
+ const root=join(work,'Imported');
+ await createProject({projectDir:root,name:'Imported',capabilities:[]},new ProcessRunner({PATH:'/nonexistent'}));
+ const pbx=await readFile(join(root,'Imported.xcodeproj/project.pbxproj'),'utf8');
+ assert.match(pbx,/ASSETCATALOG_COMPILER_APPICON_NAME = "";/);
+});
