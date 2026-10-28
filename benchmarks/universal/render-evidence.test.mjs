@@ -110,3 +110,9 @@ test('controlled inputs retain a distinct native fixture identity without claimi
  report.fixture='react-controlled-text';report.expectedTests=3;
  const {html,summary}=await render();assert.equal(summary.kind,'native-behavior');assert.ok(html.includes('react-controlled-text'));assert.ok(html.includes('Visual fidelity was not evaluated'));
 }));
+test('reset-input fixture requires four native tests and preserves the prior three-test fixture',async()=>nativeFixture(async({report,render})=>{
+ report.fixture='react-controlled-text-reset';report.expectedTests=4;
+ await assert.rejects(render(),/Contradictory native completion/);
+ report.large.tests.passed=4;report.xxxl.tests.passed=4;
+ const {html}=await render();assert.ok(html.includes('react-controlled-text-reset'));
+}));

@@ -1,6 +1,6 @@
 // Render recorded native behavior results; never infer browser fidelity or approve a baseline.
 import {basename,join} from 'node:path';
-export const nativeFixtures = new Map([['react-boolean-state',3],['react-memory-router',3],['react-controlled-text',3]]);
+export const nativeFixtures = new Map([['react-boolean-state',3],['react-memory-router',3],['react-controlled-text',3],['react-controlled-text-reset',4]]);
 const leaf=value=>{
  if(typeof value!=='string'||!value||value.includes('\\'))throw Error('Invalid attachment path');
  const name=basename(value);if(!name||name==='.'||name==='..')throw Error('Invalid attachment path');return name;

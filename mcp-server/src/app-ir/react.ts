@@ -240,7 +240,7 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
     if (!ts.isJsxElement(node) && !ts.isJsxSelfClosingElement(node)) fail(node, 'expected JSX element');
     const opening = ts.isJsxElement(node) ? node.openingElement : node;
     const tag=opening.tagName.getText(file), isLink=hasRouterImport&&tag==='Link';
-    if (hasRouterImport && scope.has(tag)) fail(node,'local binding shadows a router/component element');
+    if (/^[A-Z]/.test(tag) && scope.has(tag)) fail(node,'local binding shadows a router/component element');
     if (hasRouterImport && routerNames.includes(tag as typeof routerNames[number]) && !isLink) fail(node,'router containers are allowed only at the entry root');
     if (isLink && !inRoute) fail(node,'Link requires a mapped route');
     if((tag==='button'||isLink)&&textElementDepth>0)fail(node,'inline buttons or links inside text elements require explicit mixed-content layout');
@@ -251,9 +251,14 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
         if(!ts.isJsxAttribute(attr)||!ts.isIdentifier(attr.name))fail(attr,'spread/namespaced props are unsupported');
         const key=attr.name.getText(file);if(['key','ref','children'].includes(key)||props.has(key))fail(attr,'reserved or duplicate prop');
         const init=attr.initializer;if(!init)fail(attr,'boolean props are unsupported');
-        const value=ts.isStringLiteral(init)?{value:jsxText(init.text,attr),origins:[attr]}:ts.isJsxExpression(init)&&init.expression?literal(init.expression,scope):fail(attr,'unsupported prop value');
-        if(typeof value.value==='string'&&/[\u0000-\u001f\u007f-\u009f\u2028\u2029]/.test(value.value))fail(attr,'control characters and line separators are unsupported');
-        props.set(key,value);
+        const direct=ts.isJsxExpression(init)&&init.expression?binding(unwrap(init.expression),scope):undefined;
+        if(direct&&'kind' in direct&&(direct.kind==='state'||direct.kind==='setter')){
+          props.set(key,{...direct,origins:[attr,...direct.origins]});
+        }else{
+          const value=ts.isStringLiteral(init)?{value:jsxText(init.text,attr),origins:[attr]}:ts.isJsxExpression(init)&&init.expression?literal(init.expression,scope):fail(attr,'unsupported prop value');
+          if(typeof value.value==='string'&&/[\u0000-\u001f\u007f-\u009f\u2028\u2029]/.test(value.value))fail(attr,'control characters and line separators are unsupported');
+          props.set(key,value);
+        }
       }
       const target=components.get(tag);if(!target)fail(node,`unresolved component ${tag}`);
       if(ts.isJsxElement(node))validateChildren(node.children,stack,scope);
@@ -274,7 +279,8 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
       const fn=unwrap(handler.expression);if(!ts.isArrowFunction(fn)||fn.modifiers?.length||fn.typeParameters?.length||fn.type||fn.parameters.length!==1||ts.isBlock(fn.body))fail(node,'input event requires a single expression callback');
       const param=fn.parameters[0]!;if(!ts.isIdentifier(param.name)||param.type||param.initializer||param.dotDotDotToken||param.questionToken||param.modifiers?.length)fail(node,'input event requires one plain identifier');
       const call=unwrap(fn.body);if(!ts.isCallExpression(call)||call.questionDotToken||call.typeArguments?.length||call.arguments.length!==1)fail(node,'input event requires one setter call');
-      if(ts.isIdentifier(call.expression)&&call.expression.text===param.name.text)fail(node,'input event parameter shadows its setter');
+      const setterExpression=unwrap(call.expression);
+      if((ts.isIdentifier(setterExpression)&&setterExpression.text===param.name.text)||(ts.isPropertyAccessExpression(setterExpression)&&ts.isIdentifier(setterExpression.expression)&&setterExpression.expression.text===param.name.text))fail(node,'input event parameter shadows its setter');
       const setter=binding(call.expression,scope);if(!setter||!('kind' in setter)||setter.kind!=='setter'||setter.id!==state.id)fail(node,'input setter must update its bound state');
       const arg=unwrap(call.arguments[0]!);if(!ts.isPropertyAccessExpression(arg)||arg.questionDotToken||arg.name.text!=='value'||!ts.isPropertyAccessExpression(arg.expression)||arg.expression.questionDotToken||!['target','currentTarget'].includes(arg.expression.name.text)||!ts.isIdentifier(arg.expression.expression)||arg.expression.expression.text!==param.name.text)fail(node,'input setter must receive its event target value');
       const start=html.length;append('<p>'+escape(label)+'</p>');spans.push({start,end:html.length,node});stateMappings.push({start,end:html.length,stringBinding:state.id,input:true,placeholder:attrs.has('placeholder')?stringAttr('placeholder'):undefined,origins:[node,...state.origins,...setter.origins]});return;
@@ -318,11 +324,14 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
         const callback=unwrap(value.expression);
         if(!ts.isArrowFunction(callback)||callback.parameters.length||callback.modifiers?.length||callback.typeParameters?.length||callback.type||ts.isBlock(callback.body))fail(attr,'onClick must be a parameterless arrow containing one state setter');
         const call=unwrap(callback.body);
-        if(!ts.isCallExpression(call)||call.typeArguments?.length||call.arguments.length!==1)fail(attr,'event must contain exactly one state assignment');
+        if(!ts.isCallExpression(call)||call.questionDotToken||call.typeArguments?.length||call.arguments.length!==1)fail(attr,'event must contain exactly one state assignment');
         const setter=binding(call.expression,scope);
-        if(!setter||!('kind' in setter)||setter.kind!=='setter'||typeof states.find(s=>s.id===setter.id)?.initial!=='boolean')fail(attr,'unresolved state setter');
+        if(!setter||!('kind' in setter)||setter.kind!=='setter')fail(attr,'unresolved state setter');
         const argument=unwrap(call.arguments[0]!);
-        if([ts.SyntaxKind.TrueKeyword,ts.SyntaxKind.FalseKeyword].includes(argument.kind))action={operation:'set',state:setter.id,value:argument.kind===ts.SyntaxKind.TrueKeyword};
+        if(typeof states.find(s=>s.id===setter.id)?.initial==='string'){
+          if(!ts.isStringLiteral(argument)||argument.text.length>4000||/[\u0000-\u001f]/.test(argument.text))fail(argument,'string assignment requires a bounded single-line literal');
+          action={operation:'set',state:setter.id,value:argument.text};
+        }else if([ts.SyntaxKind.TrueKeyword,ts.SyntaxKind.FalseKeyword].includes(argument.kind))action={operation:'set',state:setter.id,value:argument.kind===ts.SyntaxKind.TrueKeyword};
         else if(ts.isPrefixUnaryExpression(argument)&&argument.operator===ts.SyntaxKind.ExclamationToken){
           const value=binding(unwrap(argument.operand),scope);
           if(!value||!('kind' in value)||value.kind!=='state'||value.id!==setter.id)fail(argument,'toggle must reference its own boolean state');

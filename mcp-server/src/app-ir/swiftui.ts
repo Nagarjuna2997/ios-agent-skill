@@ -25,10 +25,10 @@ export function renderSwiftUI(value: unknown, options: { disclosureStyle?: "plat
     const children = n.children.map(c => `            ${symbol(c)}`).join('\n');
     const content = n.stringBinding && n.kind==='text' ? `collapsedInputText(state_${symbol(n.stringBinding)})` : n.textBinding ? `(state_${symbol(n.textBinding.state)} ? ${swiftString(n.textBinding.whenTrue)} : ${swiftString(n.textBinding.whenFalse)})` : swiftString(n.text ?? '');
     const textView = options.instrumentTypography ? `MeasuredText(nodeID: ${swiftString(n.id)}, content: ${content})` : `Text(verbatim: ${content})`;
-    const action = n.action?.operation === 'toggle' ? `state_${symbol(n.action.state)}.toggle()` : n.action?.operation === 'set' ? `state_${symbol(n.action.state)} = ${n.action.value}` : '';
+    const action = n.action?.operation === 'toggle' ? `state_${symbol(n.action.state)}.toggle()` : n.action?.operation === 'set' ? `state_${symbol(n.action.state)} = ${typeof n.action.value==='string'?swiftString(n.action.value):n.action.value}` : '';
     let view = n.kind === 'textfield' && n.stringBinding ? `TextField("", text: $state_${symbol(n.stringBinding)}, prompt: Text(verbatim: ${swiftString(n.placeholder??'')}))\n        .accessibilityLabel(Text(verbatim: ${swiftString(n.text??'')}))\n        .textFieldStyle(ImportedTextFieldStyle())` : n.kind === 'text' ? textView : n.kind === 'link' && n.action?.operation === 'navigate'
       ? `NavigationLink(value: ${swiftString(n.action.screen)}) { ${textView}.frame(minHeight: 44) }\n        .buttonStyle(.bordered)` : n.kind === 'button'
-      ? `Button { ${action} } label: { ${textView} }\n        .buttonStyle(.bordered)\n        .frame(minHeight: 44)` : n.kind === 'disclosure'
+      ? `Button { ${action} } label: { ${textView}${ir.schemaVersion==='1.4.0'&&s.foreground&&s.background?`.frame(maxWidth: .infinity, minHeight: 44, alignment: ${s.centered?'.center':'.leading'}).contentShape(Rectangle())`:''} }\n        .buttonStyle(${ir.schemaVersion==='1.4.0'&&s.foreground&&s.background?'.plain':'.bordered'})\n        .frame(minHeight: 44)` : n.kind === 'disclosure'
       ? `DisclosureGroup(isExpanded: $expanded_${symbol(n.id)}) {\n${children}\n        } label: { ${textView} }`
       : `VStack(alignment: ${s.centered ? '.center' : '.leading'}, spacing: ${s.gap ?? 12}) {\n${children}\n        }`;
     if (n.kind === 'disclosure' && options.disclosureStyle === 'leading') view += '\n        .disclosureGroupStyle(ImportedDisclosureStyle())';

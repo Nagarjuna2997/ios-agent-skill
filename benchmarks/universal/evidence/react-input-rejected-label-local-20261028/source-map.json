@@ -1,0 +1,210 @@
+{
+  "schemaVersion": 1,
+  "irHash": "88d4e20b336388899c60ecdfd8769d0f5ceee54d69ea0bdc3e457b70b859bab2",
+  "files": [
+    {
+      "path": "WalkForm/Views/RootView.swift",
+      "sha256": "8769960c06319e1b4c1dc3c54ddc2c7b6a899ff20a8207e79b57ae692e4a53c7",
+      "mappings": [
+        {
+          "node": "node-3",
+          "symbol": "node_node_3",
+          "evidence": [
+            {
+              "source": "source",
+              "start": 248,
+              "end": 271,
+              "certainty": "extracted"
+            }
+          ]
+        },
+        {
+          "node": "node-4",
+          "symbol": "node_node_4",
+          "evidence": [
+            {
+              "source": "source",
+              "start": 276,
+              "end": 408,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 66,
+              "end": 100,
+              "certainty": "extracted"
+            }
+          ]
+        },
+        {
+          "node": "node-5",
+          "symbol": "node_node_5",
+          "evidence": [
+            {
+              "source": "source",
+              "start": 413,
+              "end": 426,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 66,
+              "end": 100,
+              "certainty": "extracted"
+            }
+          ]
+        },
+        {
+          "node": "node-9",
+          "symbol": "node_node_9",
+          "evidence": [
+            {
+              "source": "source",
+              "start": 456,
+              "end": 581,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 432,
+              "end": 628,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 164,
+              "end": 206,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 103,
+              "end": 161,
+              "certainty": "extracted"
+            }
+          ]
+        },
+        {
+          "node": "node-10",
+          "symbol": "node_node_10",
+          "evidence": [
+            {
+              "source": "source",
+              "start": 588,
+              "end": 608,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 432,
+              "end": 628,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 164,
+              "end": 206,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 103,
+              "end": 161,
+              "certainty": "extracted"
+            }
+          ]
+        },
+        {
+          "node": "node-8",
+          "symbol": "node_node_8",
+          "evidence": [
+            {
+              "source": "source",
+              "start": 440,
+              "end": 623,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 432,
+              "end": 628,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 164,
+              "end": 206,
+              "certainty": "extracted"
+            }
+          ]
+        },
+        {
+          "node": "node-6",
+          "symbol": "node_node_6",
+          "evidence": [
+            {
+              "source": "source",
+              "start": 432,
+              "end": 628,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 164,
+              "end": 206,
+              "certainty": "extracted"
+            }
+          ]
+        },
+        {
+          "node": "node-11",
+          "symbol": "node_node_11",
+          "evidence": [
+            {
+              "source": "source",
+              "start": 634,
+              "end": 773,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 694,
+              "end": 739,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 164,
+              "end": 206,
+              "certainty": "extracted"
+            }
+          ]
+        },
+        {
+          "node": "node-2",
+          "symbol": "node_node_2",
+          "evidence": [
+            {
+              "source": "source",
+              "start": 216,
+              "end": 783,
+              "certainty": "extracted"
+            }
+          ]
+        },
+        {
+          "node": "node-1",
+          "symbol": "node_node_1",
+          "evidence": [
+            {
+              "source": "source",
+              "start": 216,
+              "end": 783,
+              "certainty": "extracted"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

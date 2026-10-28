@@ -27,3 +27,37 @@ test('controlled input state survives route mappings without changing ownership'
  const source=`import {useState} from 'react';import {MemoryRouter,Routes,Route,Link} from 'react-router-dom';export default function App(){const [name,setName]=useState('');return <MemoryRouter initialEntries={["/"]}><Routes><Route path="/" element={<main>${input}<Link to="/preview">Preview</Link></main>}/><Route path="/preview" element={<main><p>{name}</p></main>}/></Routes></MemoryRouter>}`;
  const ir=reactToIR(source);assert.equal(ir.schemaVersion,'1.4.0');assert.equal(ir.screens.length,2);assert.equal(ir.states.length,1);assert.equal(ir.nodes.filter(n=>n.stringBinding===ir.states[0].id).length,2);assert.match(renderSwiftUI(ir).source,/NavigationStack/);
 });
+test('literal reset buttons preserve string types, escaping and state provenance',()=>{
+ const ir=reactToIR(app(input+'<button onClick={()=>setName("")}>Clear name</button><button onClick={()=>setName("Café")}>Reset name</button>'));
+ const buttons=ir.nodes.filter(n=>n.kind==='button');assert.deepEqual(buttons.map(n=>n.action.value),['','Café']);assert.ok(buttons.every(n=>n.action.state===ir.states[0].id));
+ const swift=renderSwiftUI(ir).source;assert.match(swift,/state_node_state_1 = ""/);assert.match(swift,/state_node_state_1 = "Café"/);
+ const escaped=reactToIR(app('<button onClick={()=>setName(\'say "hello"\')}>Set</button>'));
+ assert.ok(renderSwiftUI(escaped).source.includes('state_node_state_1 = "say \\"hello\\""'));
+});
+test('string assignment rejects computed values, wrong types, control characters and optional calls',()=>{
+ for(const expr of ['setName(name)','setName(prev=>prev+"!")','setReady("bad")','setName("a\\nb")','setName?.("")','setName(12)'])assert.throws(()=>reactToIR(app(`<button onClick={()=>${expr}}>Reset</button>`)));
+ const ir=reactToIR(app('<button onClick={()=>setName("")}>Clear</button>'));
+ for(const value of [true,'a\nb']){const bad=structuredClone(ir);bad.nodes.find(n=>n.action).action.value=value;assert.throws(()=>AppIRSchema.parse(bad));}
+});
+test('reusable controlled fields borrow entry state and setter identity without creating component state',()=>{
+ const source=`import {useState} from 'react';function Field({value,change}){return <section><input type="text" aria-label="Name" value={value} onChange={e=>change(e.target.value)}/><p>{value}</p><button onClick={()=>change("")}>Clear</button></section>}export default function App(){const [name,setName]=useState("Maya");return <main><Field value={name} change={setName}/></main>}`;
+ const inline=`import {useState} from 'react';export default function App(){const [name,setName]=useState("Maya");return <main><section><input type="text" aria-label="Name" value={name} onChange={e=>setName(e.target.value)}/><p>{name}</p><button onClick={()=>setName("")}>Clear</button></section></main>}`;
+ assert.equal(renderSwiftUI(reactToIR(source)).source,renderSwiftUI(reactToIR(inline)).source);
+ const ir=reactToIR(source);assert.equal(ir.states.length,1);assert.ok(ir.nodes.filter(n=>n.stringBinding).every(n=>n.stringBinding===ir.states[0].id));assert.equal(ir.nodes.find(n=>n.kind==='button').action.state,ir.states[0].id);
+ const field=ir.nodes.find(n=>n.kind==='textfield');assert.ok(field.evidence.some(e=>Buffer.from(source).subarray(e.start,e.end).toString().includes('value={name}')));
+ assert.throws(()=>reactToIR(source.replace('change={setName}','change={value=>setName(value)}')));
+ assert.throws(()=>reactToIR(source.replace('useState("Maya")','useState(false)')));
+});
+test('borrowed setters preserve explicit boolean actions and cannot cross state identities',()=>{
+ const source=`import {useState} from 'react';function Toggle(props){return <button onClick={()=>props.update(!props.value)}>Toggle</button>}export default function App(){const [saved,setSaved]=useState(false);const [other,setOther]=useState(false);return <main><Toggle value={saved} update={setSaved}/></main>}`;
+ const ir=reactToIR(source);assert.equal(ir.nodes.find(n=>n.kind==='button').action.state,ir.states[0].id);
+ assert.throws(()=>reactToIR(source.replace('update={setSaved}','update={setOther}')));
+});
+test('borrowed setter resolution respects event-parameter and component-name shadowing',()=>{
+ const source=`import {useState} from 'react';function Field(props){return <input type="text" aria-label="Name" value={props.value} onChange={props=>props.change(props.target.value)}/>}export default function App(){const [name,setName]=useState("");return <main><Field value={name} change={setName}/></main>}`;
+ assert.throws(()=>reactToIR(source),/shadows its setter/);
+ assert.throws(()=>reactToIR(source.replace('props.change(props.target','(props.change)(props.target')),/shadows its setter/);
+ assert.doesNotThrow(()=>reactToIR(source.replace('props=>props.change(props.target.value)','event=>props.change(event.target.value)')));
+ const shadow=`import {useState} from 'react';function Child(){return <p>Global</p>}function Wrapper({Child}){return <Child/>}export default function App(){const [name,setName]=useState("");return <main><Wrapper Child={name}/></main>}`;
+ assert.throws(()=>reactToIR(shadow),/shadows a router\/component/);
+});

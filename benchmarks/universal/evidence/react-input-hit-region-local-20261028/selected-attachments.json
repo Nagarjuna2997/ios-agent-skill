@@ -1,0 +1,32 @@
+[
+  {
+    "test": "InputTests/testAccessibleNativeFieldsAtConfiguredTextSize()",
+    "configurationName": "Test Scheme Action",
+    "deviceId": "D1675D81-9770-4620-A119-99FB272711C4",
+    "deviceName": "ios-agent-react-controlled-text-reset-1793168957346",
+    "exportedFileName": "95A465BA-66D2-4F5E-BEA9-4F01EBAE4F36.png",
+    "isAssociatedWithFailure": false,
+    "suggestedHumanReadableName": "accessible-fields_0_CE881AAF-4D87-46A2-B41A-EAE46A647ECA.png",
+    "timestamp": 1793169087.366
+  },
+  {
+    "test": "InputTests/testClearAndResetButtonsUpdateTheNativeBinding()",
+    "configurationName": "Test Scheme Action",
+    "deviceId": "D1675D81-9770-4620-A119-99FB272711C4",
+    "deviceName": "ios-agent-react-controlled-text-reset-1793168957346",
+    "exportedFileName": "DC221C19-8040-4246-AD04-B4C62882C4F7.png",
+    "isAssociatedWithFailure": false,
+    "suggestedHumanReadableName": "reset-by-button_0_554DC01A-E907-48C6-90DE-7A37A7A608E1.png",
+    "timestamp": 1793169109.959
+  },
+  {
+    "test": "InputTests/testTypingUpdatesIndependentStateAndRetainsHiddenValue()",
+    "configurationName": "Test Scheme Action",
+    "deviceId": "D1675D81-9770-4620-A119-99FB272711C4",
+    "deviceName": "ios-agent-react-controlled-text-reset-1793168957346",
+    "exportedFileName": "2383DC9A-505A-4DE1-9703-2DCC3A87F6F3.png",
+    "isAssociatedWithFailure": false,
+    "suggestedHumanReadableName": "typed-and-restored_0_DDA6FA4F-86D6-46FB-9379-10312D29F941.png",
+    "timestamp": 1793169147.309
+  }
+]

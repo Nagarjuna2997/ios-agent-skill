@@ -22,6 +22,9 @@ Unsupported: uncontrolled/default values, password/number/file fields, validatio
 maxLength, arbitrary styles/attributes, handler transformations/side effects,
 async handlers, form submission, component-local state, persistence or server APIs.
 String values cannot be used as boolean conditions or passed to boolean actions.
+A button may assign a bounded single-line string literal to its own string state
+(e.g. clearing or resetting a field). Computed values, updater functions, optional
+calls and cross-type assignments are rejected; emitted Swift strings are escaped.
 
 Portable checks establish syntax, type-safe IR, source provenance and generated
 code. On 2026-10-28 the generated project built unsigned with Xcode 27.0
@@ -44,8 +47,22 @@ node benchmarks/universal/react-input/run.mjs benchmarks/universal/fidelity/loca
 ```
 
 The shared runner pins the toolchain, hashes source and artifacts, checkpoints
-completed cells and preserves failed attempts. Three UI tests run at Large and
+completed cells and preserves failed attempts. Four UI tests run at Large and
 XXXL Dynamic Type: independent typing/echo plus hide/show retention, native field
-labels and Apple's accessibility audit, and reset on relaunch. The existing React
+labels and Apple's accessibility audit, reset on relaunch, and explicit clear/reset button assignments. The reset variant
+uses fixture ID `react-controlled-text-reset` with four required tests; archived
+`react-controlled-text` evidence retains its original three-test contract. The existing React
 state workflow has a separate input matrix cell; it does not combine scores or
 establish HTML fidelity. The workflow remains PR/manual-triggered.
+
+## Latest four-test result
+
+The 2026-10-28 hit-region run built successfully and passed 3/4 Large tests:
+typing/retention, clear/reset actions and relaunch reset. The accessibility test
+still fails on placeholder clipping; it no longer reports button contrast or
+44-point field geometry failures. XXXL did not run after the Large failure.
+See [the exact report, logs and screenshots](../evidence/react-input-hit-region-local-20261028/README.md).
+The rejected native-label experiment and the earlier missing-hit-region run are
+also archived separately. This remains incomplete native acceptance, not a
+fidelity pass. The borrowed-component fixture has separate portable/compiler
+evidence and must not inherit these native results.

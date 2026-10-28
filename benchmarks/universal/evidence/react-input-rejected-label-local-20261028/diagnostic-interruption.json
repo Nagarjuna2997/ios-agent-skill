@@ -1,0 +1,4 @@
+{
+  "reason": "Stopped only the prolonged simulator diagnostics collection after confirmed missing-label test failures; no passing result inferred.",
+  "pid": 93556
+}

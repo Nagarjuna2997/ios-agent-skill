@@ -27,7 +27,7 @@ export const AppIRSchema = z.object({
     textBinding: z.object({ state: id, whenTrue: text, whenFalse: text }).strict().optional(),
     action: z.discriminatedUnion('operation', [
       z.object({ operation: z.literal('toggle'), state: id }).strict(),
-      z.object({ operation: z.literal('set'), state: id, value: z.boolean() }).strict(),
+      z.object({ operation: z.literal('set'), state: id, value: z.union([z.boolean(),text]) }).strict(),
       z.object({ operation: z.literal('navigate'), screen: id }).strict(),
     ]).optional(),
     children: z.array(id).max(200), style: StyleSchema, evidence: z.array(evidence).min(1).max(20) }).strict()).min(1).max(500),
@@ -75,7 +75,13 @@ export const AppIRSchema = z.object({
     if (['button','link'].includes(node.kind) && (!node.text?.trim() || node.children.length || !node.action || node.textBinding)) fail(`Invalid control node ${key}`);
     if (node.action?.operation === 'navigate') {
       if (node.kind !== 'link' || !ir.navigation || !screens.has(node.action.screen)) fail(`Invalid navigation ${key}`);
-    } else if (node.action && (node.kind !== 'button' || typeof states.get(node.action.state)?.initial!=='boolean')) fail(`Invalid action ${key}`);
+    } else if (node.action) {
+      const initial=states.get(node.action.state)?.initial;
+      if(node.kind!=='button'||initial===undefined||
+        (node.action.operation==='toggle' ? typeof initial!=='boolean' : typeof initial!==typeof node.action.value))fail(`Invalid action ${key}`);
+      if(node.action.operation==='set'&&typeof node.action.value==='string'&&
+        (ir.schemaVersion!=='1.4.0'||/[\u0000-\u001f]/.test(node.action.value)))fail(`Invalid string assignment ${key}`);
+    }
     if (node.kind === 'link' && node.action?.operation !== 'navigate') fail(`Invalid link ${key}`);
     if (node.textBinding) {
       const state = states.get(node.textBinding.state);

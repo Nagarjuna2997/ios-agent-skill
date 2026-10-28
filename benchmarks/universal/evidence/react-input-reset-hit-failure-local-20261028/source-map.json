@@ -1,0 +1,258 @@
+{
+  "schemaVersion": 1,
+  "irHash": "b7ec66d205a7207eb0676c6df3874382613e324f48db9b08318bbdd93d76af7f",
+  "files": [
+    {
+      "path": "WalkForm/Views/RootView.swift",
+      "sha256": "6fca3a816cbc9c97817c1b062ce127078e35a4d4467434b2f21c3b0bfc0e80f8",
+      "mappings": [
+        {
+          "node": "node-3",
+          "symbol": "node_node_3",
+          "evidence": [
+            {
+              "source": "source",
+              "start": 248,
+              "end": 271,
+              "certainty": "extracted"
+            }
+          ]
+        },
+        {
+          "node": "node-4",
+          "symbol": "node_node_4",
+          "evidence": [
+            {
+              "source": "source",
+              "start": 276,
+              "end": 408,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 66,
+              "end": 100,
+              "certainty": "extracted"
+            }
+          ]
+        },
+        {
+          "node": "node-5",
+          "symbol": "node_node_5",
+          "evidence": [
+            {
+              "source": "source",
+              "start": 413,
+              "end": 426,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 66,
+              "end": 100,
+              "certainty": "extracted"
+            }
+          ]
+        },
+        {
+          "node": "node-6",
+          "symbol": "node_node_6",
+          "evidence": [
+            {
+              "source": "source",
+              "start": 431,
+              "end": 536,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 491,
+              "end": 516,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 66,
+              "end": 100,
+              "certainty": "extracted"
+            }
+          ]
+        },
+        {
+          "node": "node-7",
+          "symbol": "node_node_7",
+          "evidence": [
+            {
+              "source": "source",
+              "start": 541,
+              "end": 654,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 601,
+              "end": 634,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 66,
+              "end": 100,
+              "certainty": "extracted"
+            }
+          ]
+        },
+        {
+          "node": "node-11",
+          "symbol": "node_node_11",
+          "evidence": [
+            {
+              "source": "source",
+              "start": 684,
+              "end": 809,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 660,
+              "end": 856,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 164,
+              "end": 206,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 103,
+              "end": 161,
+              "certainty": "extracted"
+            }
+          ]
+        },
+        {
+          "node": "node-12",
+          "symbol": "node_node_12",
+          "evidence": [
+            {
+              "source": "source",
+              "start": 816,
+              "end": 836,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 660,
+              "end": 856,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 164,
+              "end": 206,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 103,
+              "end": 161,
+              "certainty": "extracted"
+            }
+          ]
+        },
+        {
+          "node": "node-10",
+          "symbol": "node_node_10",
+          "evidence": [
+            {
+              "source": "source",
+              "start": 668,
+              "end": 851,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 660,
+              "end": 856,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 164,
+              "end": 206,
+              "certainty": "extracted"
+            }
+          ]
+        },
+        {
+          "node": "node-8",
+          "symbol": "node_node_8",
+          "evidence": [
+            {
+              "source": "source",
+              "start": 660,
+              "end": 856,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 164,
+              "end": 206,
+              "certainty": "extracted"
+            }
+          ]
+        },
+        {
+          "node": "node-13",
+          "symbol": "node_node_13",
+          "evidence": [
+            {
+              "source": "source",
+              "start": 862,
+              "end": 1001,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 922,
+              "end": 967,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source",
+              "start": 164,
+              "end": 206,
+              "certainty": "extracted"
+            }
+          ]
+        },
+        {
+          "node": "node-2",
+          "symbol": "node_node_2",
+          "evidence": [
+            {
+              "source": "source",
+              "start": 216,
+              "end": 1011,
+              "certainty": "extracted"
+            }
+          ]
+        },
+        {
+          "node": "node-1",
+          "symbol": "node_node_1",
+          "evidence": [
+            {
+              "source": "source",
+              "start": 216,
+              "end": 1011,
+              "certainty": "extracted"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

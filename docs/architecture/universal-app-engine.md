@@ -303,3 +303,18 @@ versions carrying the new fields. Existing IR 1.0–1.3 output is preserved.
 See [the input fixture](../../benchmarks/universal/react-input/README.md) for exact
 syntax, limitations and outstanding native acceptance. This is not general forms,
 authentication, validation or persistence support.
+
+String-state buttons may assign a bounded literal (including an empty string),
+providing clear/reset behavior through the same IR. The validator rejects type
+mismatches and control characters; Swift assignments escape source values.
+Explicit foreground/background button styles in IR 1.4 use plain native styling
+rather than adding a translucent system fill. Older schema output is unchanged.
+
+Reusable React components may borrow direct references to entry-owned states and
+setters as props. These references retain their original state IDs and source
+provenance; they do not instantiate component-local state or execute callbacks.
+Controlled fields and explicit boolean/string actions use the same validation in
+children as at the entry. Arbitrary callback props, computed state references and
+component-local hooks remain unsupported. Inline and composed equivalents are
+checked for identical generated SwiftUI. Native evidence for reset inputs must
+not be represented as native verification of arbitrary reusable components.

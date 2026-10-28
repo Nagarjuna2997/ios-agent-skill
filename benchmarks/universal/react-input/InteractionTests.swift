@@ -38,6 +38,21 @@ import XCTest
         XCTAssertEqual(destination.value as? String, "River walk trail")
         capture(app, "typed-and-restored")
     }
+    func testClearAndResetButtonsUpdateTheNativeBinding() {
+        let app = launch()
+        let field = app.textFields["Your name"]
+        field.tap(); field.typeText("Maya")
+        XCTAssertTrue(app.staticTexts["Maya"].waitForExistence(timeout: 5))
+        let clear = app.buttons["Clear name"]
+        reveal(clear, in: app); clear.tap()
+        XCTAssertFalse(app.staticTexts["Maya"].exists)
+        let reset = app.buttons["Reset name"]
+        reveal(reset, in: app); reset.tap()
+        XCTAssertTrue(app.staticTexts["Explorer"].waitForExistence(timeout: 5))
+        XCTAssertEqual(field.value as? String, "Explorer")
+        XCTAssertEqual(app.textFields["Destination"].value as? String, "River walk")
+        capture(app, "reset-by-button")
+    }
     func testAccessibleNativeFieldsAtConfiguredTextSize() throws {
         let app = launch()
         for label in ["Your name", "Destination"] {
