@@ -1766,5 +1766,18 @@
       "Local stdio MCP connection",
       "iOS Agent tools and Mac/Xcode"
     ]
+  },
+  "docs/tooling/token-efficiency.md": {
+    "flow": [
+      "Select tool groups; all tools remain the default",
+      "Enable project-local memory and bounded repair checks",
+      "Verify results before promoting reusable build facts",
+      "Report measured usage; leave unknown tokens unavailable"
+    ],
+    "architecture": [
+      "Single tool registry and per-connection selection",
+      "Local evidence, environment fingerprints and repair limits",
+      "Build verification and isolated benchmark receipts"
+    ]
   }
 }

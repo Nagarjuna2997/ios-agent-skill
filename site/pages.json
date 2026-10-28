@@ -1066,5 +1066,10 @@
   "guides/mcp-grok.html": {
     "title": "Grok Build connection",
     "description": "Connect Grok Build to iOS Agent MCP with local stdio configuration, recorded tool discovery and explicit verification limits."
+  },
+  "guides/tooling-token-efficiency.html": {
+    "title": "Native token-efficiency controls (opt-in)",
+    "description": "Configure opt-in MCP tool groups, local project memory, repeated-failure controls and usage reports with explicit verification limits.",
+    "datePublished": "2026-10-28"
   }
 }
