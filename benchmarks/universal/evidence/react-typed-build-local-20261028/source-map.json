@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "irHash": "5bffb8004dc42d34316c27902f55d2ef5505c072480a172dd173aec460e563b0",
+  "files": [
+    {
+      "path": "TypedCard/Views/RootView.swift",
+      "sha256": "db9d69cdd060c44b4f53edd7f31ebbc2c68f51e57d31b6edd91ce952622e47cb",
+      "mappings": [
+        {
+          "node": "node-4",
+          "symbol": "node_node_4",
+          "evidence": [
+            {
+              "source": "source-2",
+              "start": 275,
+              "end": 291,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source-1",
+              "start": 146,
+              "end": 257,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source-1",
+              "start": 152,
+              "end": 177,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source-1",
+              "start": 178,
+              "end": 255,
+              "certainty": "extracted"
+            }
+          ]
+        },
+        {
+          "node": "node-5",
+          "symbol": "node_node_5",
+          "evidence": [
+            {
+              "source": "source-2",
+              "start": 291,
+              "end": 306,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source-1",
+              "start": 146,
+              "end": 257,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source-1",
+              "start": 152,
+              "end": 177,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source-1",
+              "start": 178,
+              "end": 255,
+              "certainty": "extracted"
+            }
+          ]
+        },
+        {
+          "node": "node-3",
+          "symbol": "node_node_3",
+          "evidence": [
+            {
+              "source": "source-2",
+              "start": 203,
+              "end": 316,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source-1",
+              "start": 146,
+              "end": 257,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source-1",
+              "start": 152,
+              "end": 177,
+              "certainty": "extracted"
+            },
+            {
+              "source": "source-1",
+              "start": 178,
+              "end": 255,
+              "certainty": "extracted"
+            }
+          ]
+        },
+        {
+          "node": "node-2",
+          "symbol": "node_node_2",
+          "evidence": [
+            {
+              "source": "source-1",
+              "start": 119,
+              "end": 264,
+              "certainty": "extracted"
+            }
+          ]
+        },
+        {
+          "node": "node-1",
+          "symbol": "node_node_1",
+          "evidence": [
+            {
+              "source": "source-1",
+              "start": 119,
+              "end": 264,
+              "certainty": "extracted"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

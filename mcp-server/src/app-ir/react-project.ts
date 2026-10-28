@@ -1,3 +1,4 @@
+import {isErasedTypeStatement} from './react-types.js';
 // Bounded local module linking. Imported application JavaScript never executes.
 import ts from 'typescript';
 import {dirname,basename,resolve,relative,isAbsolute,sep} from 'node:path';
@@ -25,6 +26,7 @@ export async function importReactProject(entryPath:string,name='ImportedApp'):Pr
     modules.set(path,row);visiting.add(path);
     const edits:Array<{start:number;end:number}>=[];
     for(const statement of file.statements){
+      if(isErasedTypeStatement(statement))continue;
       if(ts.isFunctionDeclaration(statement)&&statement.name){
         const id=statement.name.text;row.functions.add(id);
         if(statement.modifiers?.some(m=>m.kind===ts.SyntaxKind.ExportKeyword))row.exports.add(id);

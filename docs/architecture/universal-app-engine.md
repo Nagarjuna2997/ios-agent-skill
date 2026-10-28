@@ -349,3 +349,17 @@ was produced, not compilation or acceptance. Inputs must be bounded UTF-8 text
 files; symlink leaves and existing output directories are refused. Developers
 must keep the correct prior base; hashes identify supplied bytes but do not prove
 their provenance. No source/IR stable-identity synchronization is claimed yet.
+
+### Erased React type syntax
+
+Local component interfaces/type aliases and explicit type-only imports are now
+accepted without loading type dependencies. Type annotations do not authorize new
+runtime behavior: props, state, events and expressions still use the existing
+bounded mappings. This is not TypeScript type checking; runtime imports, enums,
+namespaces and mixed value/type import lists remain unsupported. See
+[the typed component fixture](../../benchmarks/universal/react-typed/README.md).
+
+Matching primitive `useState<string>`/`useState<boolean>` annotations and input
+event parameter/return annotations are supported without changing emitted Swift.
+Inline `import {type T}` is rejected because compiler settings can preserve its
+module evaluation. Full declaration-level `import type` is the supported form.

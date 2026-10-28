@@ -1,3 +1,4 @@
+import {isErasedTypeStatement} from './react-types.js';
 // Static syntax adapter. Never imports, evaluates, bundles or installs the input project.
 import ts from 'typescript';
 import { htmlToIR } from './html.js';
@@ -24,6 +25,7 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
     throw Error(`Unsupported React at ${pos.line+1}:${pos.character+1}: ${reason}`);
   };
   for (const node of file.statements) {
+    if(isErasedTypeStatement(node))continue;
     if (ts.isExpressionStatement(node) && ts.isStringLiteral(node.expression) && node.expression.text === 'use client') continue;
     if (ts.isImportDeclaration(node)) {
       const clause = node.importClause, imports = clause?.namedBindings;
@@ -155,7 +157,7 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
       const declaration = statement.declarationList.declarations[0]!, call = declaration.initializer;
       if (!ts.isArrayBindingPattern(declaration.name) || declaration.name.elements.length !== 2 || declaration.type ||
           !call || !ts.isCallExpression(call) || !ts.isIdentifier(call.expression) || call.expression.text !== 'useState' ||
-          call.typeArguments?.length || call.arguments.length !== 1 ||
+          (call.typeArguments?.length!==undefined&&(call.typeArguments.length!==1||![ts.SyntaxKind.BooleanKeyword,ts.SyntaxKind.StringKeyword].includes(call.typeArguments[0]!.kind))) || call.arguments.length !== 1 ||
           !ts.isStringLiteral(call.arguments[0]!)&&![ts.SyntaxKind.TrueKeyword,ts.SyntaxKind.FalseKeyword].includes(call.arguments[0]!.kind)) {
         fail(declaration, 'useState requires a literal boolean or string and a [value, setter] binding');
       }
@@ -167,6 +169,7 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
         scope.set(element.name.text, {kind:index === 0 ? 'state' : 'setter', id, origins:[statement]});
       }
       const initial=ts.isStringLiteral(call.arguments[0]!)?call.arguments[0]!.text:call.arguments[0]!.kind===ts.SyntaxKind.TrueKeyword;
+      if(call.typeArguments?.length&&call.typeArguments[0]!.kind!==(typeof initial==='string'?ts.SyntaxKind.StringKeyword:ts.SyntaxKind.BooleanKeyword))fail(call,'useState type must match its literal initializer');
       if(typeof initial==='string'&&(initial.length>4000||/[\r\n\u0000-\u001f]/.test(initial)))fail(call,'string state must be bounded single-line text');
       states.push({id,initial,origin:statement});
     }
@@ -276,8 +279,8 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
       const valueAttr=attrs.get('value')?.initializer,handler=attrs.get('onChange')?.initializer;
       if(!valueAttr||!ts.isJsxExpression(valueAttr)||!valueAttr.expression||!handler||!ts.isJsxExpression(handler)||!handler.expression)fail(node,'input needs controlled value and onChange');
       const state=binding(unwrap(valueAttr.expression),scope);if(!state||!('kind' in state)||state.kind!=='state'||typeof states.find(s=>s.id===state.id)?.initial!=='string')fail(node,'input value must reference string state');
-      const fn=unwrap(handler.expression);if(!ts.isArrowFunction(fn)||fn.modifiers?.length||fn.typeParameters?.length||fn.type||fn.parameters.length!==1||ts.isBlock(fn.body))fail(node,'input event requires a single expression callback');
-      const param=fn.parameters[0]!;if(!ts.isIdentifier(param.name)||param.type||param.initializer||param.dotDotDotToken||param.questionToken||param.modifiers?.length)fail(node,'input event requires one plain identifier');
+      const fn=unwrap(handler.expression);if(!ts.isArrowFunction(fn)||fn.modifiers?.length||fn.typeParameters?.length||fn.parameters.length!==1||ts.isBlock(fn.body))fail(node,'input event requires a single expression callback');
+      const param=fn.parameters[0]!;if(!ts.isIdentifier(param.name)||param.initializer||param.dotDotDotToken||param.questionToken||param.modifiers?.length)fail(node,'input event requires one plain identifier');
       const call=unwrap(fn.body);if(!ts.isCallExpression(call)||call.questionDotToken||call.typeArguments?.length||call.arguments.length!==1)fail(node,'input event requires one setter call');
       const setterExpression=unwrap(call.expression);
       if((ts.isIdentifier(setterExpression)&&setterExpression.text===param.name.text)||(ts.isPropertyAccessExpression(setterExpression)&&ts.isIdentifier(setterExpression.expression)&&setterExpression.expression.text===param.name.text))fail(node,'input event parameter shadows its setter');

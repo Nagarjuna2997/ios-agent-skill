@@ -1,0 +1,217 @@
+{
+  "schemaVersion": "1.0.0",
+  "mode": "faithful",
+  "name": "TypedCard",
+  "sources": [
+    {
+      "id": "source-1",
+      "path": "App.tsx",
+      "sha256": "4784813a51b1f88e322316942d5b5fae5a6a9c2ca4ced970d7ef02aee01a67d2",
+      "bytes": 268,
+      "adapter": "react-local-modules@1"
+    },
+    {
+      "id": "source-2",
+      "path": "Card.tsx",
+      "sha256": "d79023783edf3092c850b56e185275dcfc0a9b55af0340a04d35ae04b9dec545",
+      "bytes": 320,
+      "adapter": "react-local-modules@1"
+    }
+  ],
+  "screens": [
+    {
+      "id": "home",
+      "title": "TypedCard",
+      "root": "node-1"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "node-4",
+      "kind": "text",
+      "text": "Typed native card",
+      "children": [],
+      "style": {
+        "fontSize": 32,
+        "bold": true
+      },
+      "evidence": [
+        {
+          "source": "source-2",
+          "start": 275,
+          "end": 291,
+          "certainty": "extracted"
+        },
+        {
+          "source": "source-1",
+          "start": 146,
+          "end": 257,
+          "certainty": "extracted"
+        },
+        {
+          "source": "source-1",
+          "start": 152,
+          "end": 177,
+          "certainty": "extracted"
+        },
+        {
+          "source": "source-1",
+          "start": 178,
+          "end": 255,
+          "certainty": "extracted"
+        }
+      ]
+    },
+    {
+      "id": "node-5",
+      "kind": "text",
+      "text": "Types stay in source; behavior comes from the supported expressions.",
+      "children": [],
+      "style": {},
+      "evidence": [
+        {
+          "source": "source-2",
+          "start": 291,
+          "end": 306,
+          "certainty": "extracted"
+        },
+        {
+          "source": "source-1",
+          "start": 146,
+          "end": 257,
+          "certainty": "extracted"
+        },
+        {
+          "source": "source-1",
+          "start": 152,
+          "end": 177,
+          "certainty": "extracted"
+        },
+        {
+          "source": "source-1",
+          "start": 178,
+          "end": 255,
+          "certainty": "extracted"
+        }
+      ]
+    },
+    {
+      "id": "node-3",
+      "kind": "column",
+      "children": [
+        "node-4",
+        "node-5"
+      ],
+      "style": {
+        "background": "#eef4ee",
+        "padding": 16,
+        "radius": 12
+      },
+      "evidence": [
+        {
+          "source": "source-2",
+          "start": 203,
+          "end": 316,
+          "certainty": "extracted"
+        },
+        {
+          "source": "source-1",
+          "start": 146,
+          "end": 257,
+          "certainty": "extracted"
+        },
+        {
+          "source": "source-1",
+          "start": 152,
+          "end": 177,
+          "certainty": "extracted"
+        },
+        {
+          "source": "source-1",
+          "start": 178,
+          "end": 255,
+          "certainty": "extracted"
+        }
+      ]
+    },
+    {
+      "id": "node-2",
+      "kind": "column",
+      "children": [
+        "node-3"
+      ],
+      "style": {
+        "padding": 24
+      },
+      "evidence": [
+        {
+          "source": "source-1",
+          "start": 119,
+          "end": 264,
+          "certainty": "extracted"
+        }
+      ]
+    },
+    {
+      "id": "node-1",
+      "kind": "column",
+      "children": [
+        "node-2"
+      ],
+      "style": {},
+      "evidence": [
+        {
+          "source": "source-1",
+          "start": 119,
+          "end": 264,
+          "certainty": "extracted"
+        }
+      ]
+    }
+  ],
+  "requirements": [
+    {
+      "id": "review-api",
+      "area": "api",
+      "status": "unknown",
+      "description": "No api behavior inferred from static HTML. Developer review required.",
+      "evidence": []
+    },
+    {
+      "id": "review-auth",
+      "area": "auth",
+      "status": "unknown",
+      "description": "No auth behavior inferred from static HTML. Developer review required.",
+      "evidence": []
+    },
+    {
+      "id": "review-data",
+      "area": "data",
+      "status": "unknown",
+      "description": "No data behavior inferred from static HTML. Developer review required.",
+      "evidence": []
+    },
+    {
+      "id": "review-assets",
+      "area": "assets",
+      "status": "unknown",
+      "description": "No assets behavior inferred from static HTML. Developer review required.",
+      "evidence": []
+    },
+    {
+      "id": "review-appearance",
+      "area": "appearance",
+      "status": "unknown",
+      "description": "No appearance behavior inferred from static HTML. Developer review required.",
+      "evidence": []
+    },
+    {
+      "id": "review-responsive",
+      "area": "responsive",
+      "status": "unknown",
+      "description": "No responsive behavior inferred from static HTML. Developer review required.",
+      "evidence": []
+    }
+  ],
+  "limitations": []
+}

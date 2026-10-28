@@ -26,6 +26,9 @@ await page.getByRole('button',{name:'Inspect React project',exact:true}).click()
 await page.waitForFunction(()=>document.getElementById('title').textContent==='FolderApp');
 await page.getByRole('button',{name:'Generate new Xcode project',exact:true}).click();
 await page.waitForFunction(()=>document.getElementById('status').textContent.startsWith('generated-unverified')&&document.getElementById('swift').textContent.includes('Weekend walk'));
+await page.locator('#name').fill('TypedApp');await page.locator('#folder').setInputFiles(resolve('benchmarks/universal/react-typed'));
+await page.getByRole('button',{name:'Inspect React project',exact:true}).click();await page.waitForFunction(()=>document.getElementById('title').textContent==='TypedApp');
+await page.getByRole('button',{name:'Generate new Xcode project',exact:true}).click();await page.waitForFunction(()=>document.getElementById('status').textContent.startsWith('generated-unverified')&&document.getElementById('swift').textContent.includes('Typed native card'));
 let deviceRows=[{udid:'11111111-1111-1111-1111-111111111111',name:'Synthetic selection fixture',runtime:'test-runtime',state:'Shutdown'}];
 await page.route('**/api/universal/simulators',route=>route.fulfill({json:deviceRows}));
 await page.getByRole('button',{name:'Refresh devices',exact:true}).click();
