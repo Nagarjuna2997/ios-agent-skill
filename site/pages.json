@@ -925,7 +925,7 @@
   },
   "releases.html": {
     "title": "Release notes — iOS Agent Skill",
-    "description": "What's new: the /ios-build agent, an audit of fixes and replacements, and earlier ios-agent-mcp releases with their verification limits."
+    "description": "Release notes for ios-agent-mcp 2.10.3: experimental native conversion, supported inputs, verification results and remaining limitations."
   },
   "guides/tooling-launch-screen-review.html": {
     "title": "Review iOS launch-screen configuration",

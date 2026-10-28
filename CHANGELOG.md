@@ -6,7 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
-### npm 2.10.3 — release preparation 2026-10-28
+### npm 2.10.3 — published 2026-10-28
+
+- Verified the public registry version, latest tag and tarball integrity against the tested package. Release tests: 828 passed, zero failed, one skipped.
 
 - Package the experimental Universal App IR, bounded HTML/React/TSX/static Vue/Svelte importers and native SwiftUI generator. React supports primitive constants, prop defaults, erased types and explicitly mapped state/events/navigation.
 - Add shared IR 1.5 horizontal rows with conservative sizing checks. Unsupported flex behavior and nested row layouts remain blocked.
