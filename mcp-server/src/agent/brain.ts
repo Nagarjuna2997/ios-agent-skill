@@ -93,6 +93,8 @@ export interface ClaudeBrainOptions {
   model?: string;
   timeoutMs?: number;
   command?: string;
+  context?: () => Promise<string>;
+  onUsage?: (envelope: unknown) => void | Promise<void>;
   /** Validated JSON transport supplied by local hosts; keeps shared prompts and validators. */
   requestJSON?: (prompt: string, images?: VisualInput["images"]) => Promise<unknown>;
 }
@@ -102,20 +104,28 @@ export class ClaudeCodeBrain implements Brain {
   constructor(private readonly options: ClaudeBrainOptions) {}
 
   private async ask(prompt: string): Promise<unknown> {
-    if (this.options.requestJSON) return this.options.requestJSON(prompt);
+    const context=await this.options.context?.();
+    if(context)prompt+=`\n\n${context}`;
+    if (this.options.requestJSON) {
+      try { return await this.options.requestJSON(prompt); }
+      finally { await this.options.onUsage?.(undefined); }
+    }
     const { mkdtemp, rm } = await import("node:fs/promises");
     const { tmpdir } = await import("node:os");
     const { join } = await import("node:path");
     const dir = await mkdtemp(join(tmpdir(), "ios-agent-brain-"));
+    let reported=false;
     try {
       const result = await this.options.runner.run(this.options.command ?? "claude", ["-p", "--output-format", "json", "--max-turns", "1", "--no-session-persistence", "--tools", "", "--strict-mcp-config", "--mcp-config", '{"mcpServers":{}}', ...(this.options.model ? ["--model", this.options.model] : [])], {
         cwd: dir, timeoutMs: this.options.timeoutMs ?? 15 * 60_000, input: prompt,
       });
       if (result.exitCode !== 0) throw new Error(`claude exited with ${result.exitCode}: ${(result.stderr || result.stdout).slice(-600)}`);
       const envelope = JSON.parse(result.stdout) as { result?: string; is_error?: boolean; subtype?: string };
+      reported=true;await this.options.onUsage?.(envelope);
       if (envelope.is_error || typeof envelope.result !== "string") throw new Error(`claude returned no result (${envelope.subtype ?? "error"}).`);
       return extractJson(envelope.result);
     } finally {
+      if(!reported)await this.options.onUsage?.(undefined);
       await rm(dir, { recursive: true, force: true });
     }
   }
@@ -152,18 +162,23 @@ Do not invent costs.`);
   }
 
   private async askImages(prompt: string, images: VisualInput["images"]): Promise<unknown> {
-    if (this.options.requestJSON) return this.options.requestJSON(prompt, images);
+    if (this.options.requestJSON) {
+      try { return await this.options.requestJSON(prompt, images); }
+      finally { await this.options.onUsage?.(undefined); }
+    }
     const { mkdtemp, rm } = await import("node:fs/promises");
     const { tmpdir } = await import("node:os");
     const dir = await mkdtemp((await import("node:path")).join(tmpdir(), "ios-agent-vision-"));
     const message = { type: "user", message: { role: "user", content: [{type: "text", text: prompt}, ...images.map(i => ({type: "image", source: {type: "base64", media_type: "image/png", data: i.data}}))] } };
+    let reported=false;
     try {
       const result = await this.options.runner.run(this.options.command ?? "claude", ["-p", "--input-format", "stream-json", "--output-format", "stream-json", "--verbose", "--max-turns", "1", "--no-session-persistence", "--tools", "", "--strict-mcp-config", "--mcp-config", '{"mcpServers":{}}', ...(this.options.model ? ["--model", this.options.model] : [])], {cwd: dir, timeoutMs: this.options.timeoutMs ?? 120_000, input: JSON.stringify(message) + "\n"});
       if (result.exitCode !== 0) throw new Error(`Visual provider failed (exit ${result.exitCode}); review incomplete.`);
       const envelope = result.stdout.trim().split("\n").map(line => JSON.parse(line)).find(e => e.type === "result");
+      reported=true;await this.options.onUsage?.(envelope);
       if (!envelope || envelope.is_error || typeof envelope.result !== "string") throw new Error("Visual provider returned no successful result; review incomplete.");
       return extractJson(envelope.result);
-    } finally { await rm(dir, { recursive: true, force: true }); }
+    } finally { if(!reported)await this.options.onUsage?.(undefined);await rm(dir, { recursive: true, force: true }); }
   }
 
   async repairDesign(input: { plan: Plan; spec: AppSpec; files: SourceFile[]; review: VisualRound }): Promise<FileChangeInput[]> {
@@ -196,13 +211,15 @@ ${OUTPUT}`),
     );
   }
 
-  async fix(input: { plan: Plan; spec: AppSpec; errors: Diagnostic[]; files: SourceFile[]; attempt: number; maxAttempts: number }): Promise<FileChangeInput[]> {
+  async fix(input: { plan: Plan; spec: AppSpec; errors: Diagnostic[]; files: SourceFile[]; attempt: number; maxAttempts: number; strategy?: string }): Promise<FileChangeInput[]> {
     return filesFrom(
       await this.ask(`${SWIFT_RULES}
 
 ${ROOT_CONTRACT(input.spec)}
 
 Build attempt ${input.attempt} of ${input.maxAttempts} failed. Fix every error with the smallest correct change. Do not remove planned features to make it compile unless no correct fix exists. Do not edit files under ${input.spec.name}/Capabilities/ unless an error is in them.
+
+${input.strategy ?? ""}
 
 Errors:
 ${input.errors.map((e) => `- ${e.file ? `${e.file}:${e.line ?? "?"}:${e.column ?? "?"}: ` : ""}${e.message}`).join("\n")}

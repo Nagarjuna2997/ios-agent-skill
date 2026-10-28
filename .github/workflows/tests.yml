@@ -137,6 +137,7 @@ jobs:
 
       - name: Benchmark harness regression tests (no provider calls)
         run: |
+          python3 -m unittest discover -s ../benchmarks/efficiency -p 'test_*.py'
           python3 ../benchmarks/test_run.py
           python3 ../benchmarks/launch-screen/test_runner.py
           node ../benchmarks/launch-screen/validate.mjs

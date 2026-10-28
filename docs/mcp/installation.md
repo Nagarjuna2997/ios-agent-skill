@@ -344,3 +344,7 @@ the expected origin, a clean worktree and the main branch.
 ## Local color-system tools
 
 Source builds add `generate_color_system` and `review_color_system` to the existing stdio connection. They use no client-specific APIs and make no network calls or file writes. No new Claude, Codex, Gemini or Muse runtime verification is implied. The remote knowledge-only server does not run project analyzers. See [palette generation](../design/palette-generation.md). Not yet published to npm.
+
+## Optional context controls
+
+The source checkout supports [native token-efficiency controls](../tooling/token-efficiency.md): tool profiles, bounded reference retrieval, local usage recommendations, and opt-in build memory/intervention. The full MCP tool set remains the default. See the guide for exact CLI/environment options, compatibility limits and unreleased-branch installation instructions.

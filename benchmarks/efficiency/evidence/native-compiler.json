@@ -1,0 +1,59 @@
+{
+  "kind": "native-compiler-integration-NOT-model-benchmark",
+  "environment": {
+    "xcode": {
+      "version": "27.0",
+      "build": "27A266a"
+    },
+    "sdk": "27.0"
+  },
+  "brokenBuilds": [
+    {
+      "buildPassed": false,
+      "action": "continue",
+      "errors": 1,
+      "log": "native-logs/build-1.log.gz",
+      "sha256": "d6db5b8ce696b32e38c34b9b8f7609a05a37029e6658005a9afd54ade1696dcc",
+      "hashAppliesTo": "decompressed log"
+    },
+    {
+      "buildPassed": false,
+      "action": "strategy",
+      "errors": 1,
+      "log": "native-logs/build-2.log.gz",
+      "sha256": "6d12ac016808b504edd5b3fa760b57b80fadf02cb2765148dd7a15b846b66676",
+      "hashAppliesTo": "decompressed log"
+    },
+    {
+      "buildPassed": false,
+      "action": "stop",
+      "errors": 1,
+      "log": "native-logs/build-3.log.gz",
+      "sha256": "7245ae76172a9b014f096dc700c6d48df9411d4ecbb264e02e0719eb71924e21",
+      "hashAppliesTo": "decompressed log"
+    }
+  ],
+  "referenceBuilds": [
+    {
+      "success": true,
+      "log": "native-logs/build-4.log.gz",
+      "sha256": "bdaf3499d16ffc941031e9959a20319014b77844d25a0c45456b4cfbe759b690",
+      "hashAppliesTo": "decompressed log"
+    },
+    {
+      "success": true,
+      "log": "native-logs/build-5.log.gz",
+      "sha256": "2952ecde1fa5019d67d84273ec85edd8cfffc797f7cc531dd68a67cb129ad02a",
+      "hashAppliesTo": "decompressed log"
+    }
+  ],
+  "memoryState": "promoted",
+  "modelTokens": null,
+  "cost": null,
+  "limitations": [
+    "No model inference",
+    "No simulator launch or UI verification",
+    "No savings or model-quality comparison"
+  ],
+  "earlierAttempt": "Initial fixture omitted required AppIcon setup and failed before intended Swift diagnostics; evidence retained locally, not counted as intervention verification."
+}

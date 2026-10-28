@@ -24,12 +24,39 @@ Every tool the unified server exposes, grouped by area, with a link to the guide
 
 The unified `ios-agent-mcp` server registers 82 tools. "Access" repeats each tool's declared `readOnlyHint` annotation; "not declared" means the tool does not state it.
 
-### iOS build agent (15)
+Profiles (full set remains the default):
+
+- `all`: screenshots, build, design, integrations, review, apple-docs, simulator, feedback, other
+- `build`: build, simulator, apple-docs
+- `review`: review, apple-docs
+- `docs`: apple-docs
+- `design`: design, screenshots, integrations
+
+### Screenshot Studio (11)
+
+Guide: [../screenshots/README.md](../screenshots/README.md)
+
+| Tool | Access | Purpose |
+|---|---|---|
+| `export_screenshot_set` | writes or runs | Copy validated PNG files and export metadata to a NEW directory, refusing invalid or modified outputs. |
+| `generate_screenshot_set` | writes or runs | Render supplied PNG/JPEG captures offline into NEW local directories with neutral frames, supplied copy, hashed metadata and a gallery. |
+| `generate_screenshot_variants` | writes or runs | Render supplied PNG/JPEG captures offline into NEW local directories with neutral frames, supplied copy, hashed metadata and a gallery. |
+| `get_screenshot_template` | read-only | Choose a Screenshot Studio layout. |
+| `inspect_screenshot_set` | read-only | Verify dimensions, RGB PNG format, hashes, recorded bounds, text contrast and duplicate sources. |
+| `ios_screenshot` | writes or runs | Screenshot the simulator |
+| `list_screenshot_templates` | read-only | List structurally distinct layouts and dated output profiles. |
+| `localize_screenshot_set` | writes or runs | Render a new locale from supplied translated copy, preserving screen order and templates. |
+| `preview_screenshot_set` | read-only | Locate the generated local contact sheet and HTML gallery after validating a screenshot set. |
+| `render_app_store_screenshot` | writes or runs | Render supplied PNG/JPEG captures offline into NEW local directories with neutral frames, supplied copy, hashed metadata and a gallery. |
+| `screenshot` | not declared | Capture a simulator screenshot |
+
+### Build and app creation (15)
 
 Guide: [../tooling/ios-build-agent.md](../tooling/ios-build-agent.md)
 
 | Tool | Access | Purpose |
 |---|---|---|
+| `create_app` | not declared | Create an editable Swift app starter, implementation brief and optional XcodeGen specification/icon layers. |
 | `ios_add_capabilities` | writes or runs | Add capabilities to the project |
 | `ios_add_package` | writes or runs | Add a Swift package |
 | `ios_build` | writes or runs | Build the app |
@@ -43,8 +70,31 @@ Guide: [../tooling/ios-build-agent.md](../tooling/ios-build-agent.md)
 | `ios_progress` | writes or runs | Record a progress line |
 | `ios_report` | writes or runs | Write the run report |
 | `ios_run` | writes or runs | Run the app in the simulator |
-| `ios_screenshot` | writes or runs | Screenshot the simulator |
 | `ios_write_files` | writes or runs | Write app source files |
+
+### Color and backend (3)
+
+Guide: [../backend/overview.md](../backend/overview.md)
+
+| Tool | Access | Purpose |
+|---|---|---|
+| `generate_color_system` | read-only | Generate an iOS color system preview |
+| `review_backend_integration` | read-only | Review iOS backend integration |
+| `review_color_system` | read-only | Review an iOS color system |
+
+### Apple integrations (7)
+
+Guide: [../integrations/README.md](../integrations/README.md)
+
+| Tool | Access | Purpose |
+|---|---|---|
+| `check_apple_capabilities` | read-only | Check selected entitlements separately from usage descriptions for concrete HealthKit, Apple Pay, CloudKit and push usage. |
+| `check_apple_permissions` | read-only | Report required versus detected privacy keys for concrete API operations. |
+| `get_system_integration` | read-only | Get a supported integration’s APIs, guide routes, operations, permissions and device verification requirements. |
+| `list_system_integrations` | read-only | List supported Apple system integration workflows, conditional permissions and verification limits. |
+| `recommend_system_integrations` | read-only | Suggest verification of integrations already evidenced in source. |
+| `review_system_integrations` | read-only | Review concrete API usage, selected privacy configuration and entitlements; reuse App Intents checks. |
+| `scaffold_system_integration` | read-only | Return a reusable Swift file preview for a supported system integration. |
 
 ### Source reviews (12)
 
@@ -65,48 +115,9 @@ Guide: [this page](#choosing-a-tool)
 | `review_swift_testing` | not declared | Review test suite quality |
 | `review_swiftui` | not declared | Review SwiftUI views and state |
 
-### Color and backend (3)
-
-Guide: [../backend/overview.md](../backend/overview.md)
-
-| Tool | Access | Purpose |
-|---|---|---|
-| `generate_color_system` | read-only | Generate an iOS color system preview |
-| `review_backend_integration` | read-only | Review iOS backend integration |
-| `review_color_system` | read-only | Review an iOS color system |
-
-### Apple system integrations (7)
-
-Guide: [../integrations/README.md](../integrations/README.md)
-
-| Tool | Access | Purpose |
-|---|---|---|
-| `check_apple_capabilities` | read-only | Check selected entitlements separately from usage descriptions for concrete HealthKit, Apple Pay, CloudKit and push usage. |
-| `check_apple_permissions` | read-only | Report required versus detected privacy keys for concrete API operations. |
-| `get_system_integration` | read-only | Get a supported integration’s APIs, guide routes, operations, permissions and device verification requirements. |
-| `list_system_integrations` | read-only | List supported Apple system integration workflows, conditional permissions and verification limits. |
-| `recommend_system_integrations` | read-only | Suggest verification of integrations already evidenced in source. |
-| `review_system_integrations` | read-only | Review concrete API usage, selected privacy configuration and entitlements; reuse App Intents checks. |
-| `scaffold_system_integration` | read-only | Return a reusable Swift file preview for a supported system integration. |
-
-### Apple references and local library (8)
+### Apple documentation and local references (19)
 
 Guide: [knowledge-server.md](knowledge-server.md)
-
-| Tool | Access | Purpose |
-|---|---|---|
-| `get_apple_technology` | read-only | Read Apple technology guide |
-| `get_apple_updates` | read-only | Find Apple updates and release notes |
-| `get_reference_outline` | read-only | Outline a local guide |
-| `plan_app_icon` | read-only | Plan layered Icon Composer artwork |
-| `plan_ios_app` | read-only | Plan an iOS app from a brief |
-| `read_local_reference` | read-only | Read local source or guide |
-| `search_apple_technologies` | read-only | Search Apple technologies |
-| `search_local_references` | read-only | Search bundled source and guides |
-
-### Installed Apple documentation (11)
-
-Guide: [../tooling/local-apple-documentation.md](../tooling/local-apple-documentation.md)
 
 | Tool | Access | Purpose |
 |---|---|---|
@@ -119,10 +130,18 @@ Guide: [../tooling/local-apple-documentation.md](../tooling/local-apple-document
 | `apple_docs_sdk_diff` | not declared | Compare installed Xcode SDK inventories; not a symbol-level API diff. |
 | `apple_docs_search` | not declared | Retrieve bounded Apple documentation evidence for search. |
 | `apple_docs_status` | not declared | Discover installed Xcode, SDKs and local Apple documentation; does not prove bridge authorization. |
+| `get_apple_technology` | read-only | Read Apple technology guide |
+| `get_apple_updates` | read-only | Find Apple updates and release notes |
+| `get_reference_outline` | read-only | Outline a local guide |
+| `plan_app_icon` | read-only | Plan layered Icon Composer artwork |
+| `plan_ios_app` | read-only | Plan an iOS app from a brief |
+| `read_local_reference` | read-only | Read local source or guide |
+| `search_apple_technologies` | read-only | Search Apple technologies |
+| `search_local_references` | read-only | Search bundled source and guides |
 | `xcode_mcp_status` | not declared | Discover Xcode MCP bridge, handshake and capabilities; discovery does not prove authorization. |
 | `xcode_mcp_tools` | not declared | Discover actual Xcode tools, schemas, resources and prompts with category hints; unknown tools remain visible. |
 
-### Simulator and Xcode (14)
+### Simulator and Xcode (13)
 
 Guide: [../tooling/ios-simulator-mcp.md](../tooling/ios-simulator-mcp.md)
 
@@ -133,7 +152,6 @@ Guide: [../tooling/ios-simulator-mcp.md](../tooling/ios-simulator-mcp.md)
 | `launch_app` | not declared | Launch an installed app |
 | `open_deep_link` | not declared | Open a deep link |
 | `run_tests` | not declared | Run Xcode tests |
-| `screenshot` | not declared | Capture a simulator screenshot |
 | `simulator_boot` | not declared | Boot an iOS simulator |
 | `simulator_environment` | not declared | Installed Xcode and device support |
 | `simulator_list` | not declared | List available iOS simulators |
@@ -142,30 +160,6 @@ Guide: [../tooling/ios-simulator-mcp.md](../tooling/ios-simulator-mcp.md)
 | `simulator_show` | not declared | Show native Simulator |
 | `simulator_shutdown` | not declared | Shut down an iOS simulator |
 | `terminate_app` | not declared | Terminate an app |
-
-### Screenshot Studio (9)
-
-Guide: [../screenshots/README.md](../screenshots/README.md)
-
-| Tool | Access | Purpose |
-|---|---|---|
-| `export_screenshot_set` | writes or runs | Copy validated PNG files and export metadata to a NEW directory, refusing invalid or modified outputs. |
-| `generate_screenshot_set` | writes or runs | Render supplied PNG/JPEG captures offline into NEW local directories with neutral frames, supplied copy, hashed metadata and a gallery. |
-| `generate_screenshot_variants` | writes or runs | Render supplied PNG/JPEG captures offline into NEW local directories with neutral frames, supplied copy, hashed metadata and a gallery. |
-| `get_screenshot_template` | read-only | Choose a Screenshot Studio layout. |
-| `inspect_screenshot_set` | read-only | Verify dimensions, RGB PNG format, hashes, recorded bounds, text contrast and duplicate sources. |
-| `list_screenshot_templates` | read-only | List structurally distinct layouts and dated output profiles. |
-| `localize_screenshot_set` | writes or runs | Render a new locale from supplied translated copy, preserving screen order and templates. |
-| `preview_screenshot_set` | read-only | Locate the generated local contact sheet and HTML gallery after validating a screenshot set. |
-| `render_app_store_screenshot` | writes or runs | Render supplied PNG/JPEG captures offline into NEW local directories with neutral frames, supplied copy, hashed metadata and a gallery. |
-
-### App creation (1)
-
-Guide: [../tooling/project-scaffolding.md](../tooling/project-scaffolding.md)
-
-| Tool | Access | Purpose |
-|---|---|---|
-| `create_app` | not declared | Create an editable Swift app starter, implementation brief and optional XcodeGen specification/icon layers. |
 
 ### Failure reports (2)
 

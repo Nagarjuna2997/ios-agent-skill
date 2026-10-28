@@ -1,3 +1,6 @@
+import { newUsage, modelUsage, saveUsage } from '../efficiency/usage.js';
+import { fingerprint, memoryContext, setMemory } from '../efficiency/memory.js';
+import { appendFile } from 'node:fs/promises';
 // `ios-agent-mcp build "<description>"` and companions:
 //   build "<description>" [--out DIR] [--max-attempts N] [--minutes N] [--udid UDID] [--model M] [--plan-only] [--design ID]
 //   build --resume --out DIR
@@ -27,7 +30,7 @@ function parse(args: string[]): { positional: string[]; flags: Map<string, strin
     const arg = args[i]!;
     if (arg.startsWith("--")) {
       const next = args[i + 1];
-      if (next !== undefined && !next.startsWith("--") && !["--remote", "--remote-retry", "--resume", "--plan-only", "--all", "--global", "--keep"].includes(arg)) {
+      if (next !== undefined && !next.startsWith("--") && !["--memory", "--efficiency-report", "--remote", "--remote-retry", "--resume", "--plan-only", "--all", "--global", "--keep"].includes(arg)) {
         flags.set(arg.slice(2), next);
         i++;
       } else flags.set(arg.slice(2), true);
@@ -59,7 +62,7 @@ ios-agent-mcp install-command [--global | --project DIR]
 build plans the app (PLAN.md), creates the Xcode project (XcodeGen when installed, otherwise the built-in writer),
 applies capabilities, writes SwiftUI with headless Claude Code (claude -p), builds and fixes errors (capped),
 launches in the simulator, screenshots each top-level screen and writes RUN_REPORT.md.
-Local verification requires macOS, Xcode 16 or later, an iOS simulator and a signed-in Claude Code CLI. XcodeGen is optional.`;
+Opt-in efficiency: --memory (enable verified project memory), --repeat-threshold 3 (2–10), --efficiency-report (local usage).\nDisable memory: ios-agent-mcp memory disable --project DIR. Omit --repeat-threshold to disable intervention.\nLocal verification requires macOS, Xcode 16 or later, an iOS simulator and a signed-in Claude Code CLI. XcodeGen is optional.`;
 
 export async function buildCLI(args: string[]): Promise<number> {
   const { positional, flags } = parse(args);
@@ -77,7 +80,13 @@ export async function buildCLI(args: string[]): Promise<number> {
   }
   const out = resolve(str(flags, "out") ?? join(process.cwd(), "ios-agent-apps", slug(description)));
   const runner = new LoggingRunner(new ProcessRunner(), projectPaths(out).toolLog);
-  const brain = new ClaudeCodeBrain({ runner: new ProcessRunner(), ...(str(flags, "model") ? { model: str(flags, "model")! } : {}) });
+  const enabled=flags.has('memory')||flags.has('repeat-threshold')||flags.has('efficiency-report');
+  const usage=newUsage(),started=Date.now();usage.toolCalls=null;usage.responseBytes=null;usage.resourceReads=null;usage.resourceBytes=null;
+  const threshold=flags.has('repeat-threshold')?Number(str(flags,'repeat-threshold')):undefined;
+  if(threshold!==undefined&&(!Number.isInteger(threshold)||threshold<2||threshold>10))throw Error('--repeat-threshold must be 2–10');
+  if(flags.has('memory'))await setMemory(out,true);
+  const context=async()=>{const t=Date.now();try{const state=await loadState(out);const text=await memoryContext(out,await fingerprint(out,state?.toolchain));usage.memoryCharacters+=text.length;return text;}catch{console.error('Memory unavailable; continuing without learned context.');return '';}finally{usage.overheadMs+=Date.now()-t;}};
+  const brain = new ClaudeCodeBrain({ ...(flags.has('memory')?{context}:{}), ...(enabled?{onUsage:async(e:unknown)=>{modelUsage(usage,e);const t=Date.now();try{usage.elapsedMs=Date.now()-started;await saveUsage(out,usage);}catch{console.error('Usage checkpoint unavailable; provider outcome preserved.');}finally{usage.overheadMs+=Date.now()-t;}}}:{}), runner: new ProcessRunner(), ...(str(flags, "model") ? { model: str(flags, "model")! } : {}) });
   const maxAttempts = Number(str(flags, "max-attempts") ?? 8);
   const minutes = Number(str(flags, "minutes") ?? (flags.has("remote") ? 60 : 25));
   if (!Number.isInteger(maxAttempts) || maxAttempts < 1 || maxAttempts > 20) throw new Error("--max-attempts must be 1-20");
@@ -90,8 +99,10 @@ export async function buildCLI(args: string[]): Promise<number> {
   if (remote) console.log(`Remote build uploads generated app source to ${str(flags, "remote-repo")}. Check repository visibility and Actions billing. Only source/configuration is selected; .env and Secrets.xcconfig are excluded.`);
   console.log("Visual review sends synthetic simulator screenshots and the design brief to your configured Claude model; one repair pass plus verification. Review PLAN.md before continuing.");
   console.log(`Project folder: ${out}`);
+  const priorBuilds=enabled?(await loadState(out))?.builds.length??0:0;
   const result = await runAgent({
     projectDir: out,
+    ...(enabled?{efficiency:{invocation:usage.session,memory:flags.has('memory'),threshold,onOverhead:(ms:number)=>{usage.overheadMs+=ms;},onIntervention:()=>{usage.interventions++;}}}:{}),
     ...(description ? { description } : {}),
     brain,
     runner,
@@ -106,6 +117,7 @@ export async function buildCLI(args: string[]): Promise<number> {
     planOnly: flags.has("plan-only"),
     ...(str(flags, "design") ? { design: str(flags, "design")! } : {}),
   });
+  if(enabled){usage.buildAttempts=Math.max(0,result.state.builds.length-priorBuilds);usage.buildRetries=Math.max(0,usage.buildAttempts-1);usage.status=result.state.status;usage.elapsedMs=Date.now()-started;await saveUsage(out,usage);await appendFile(result.reportPath,`\n## Efficiency (opt-in)\n\nMeasured model calls: ${usage.modelCalls}; completed builds: ${result.state.builds.length}; interventions: ${usage.interventions}; elapsed: ${usage.elapsedMs} ms (includes overhead).\n\nInput/output/cache-read tokens: ${usage.inputTokens??'unavailable'}/${usage.outputTokens??'unavailable'}/${usage.cachedInputTokens??'unavailable'}. Cost unavailable. MCP calls are not observable in this CLI path. Details: .ios-agent/efficiency/usage.json.\n`);}
   console.log(`\n${result.state.status === "complete" ? "Done" : `Stopped (${result.state.failure ?? result.state.status})`}. Report: ${result.reportPath}`);
   return result.state.status === "complete" || result.state.failure?.startsWith("Choose a design direction") || (flags.has("plan-only") && result.state.failure === "plan only") ? 0 : 1;
 }

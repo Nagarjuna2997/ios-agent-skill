@@ -3099,8 +3099,8 @@
       "path": "docs/mcp/installation.md",
       "title": "Installing the iOS Agent MCP Server",
       "kind": "guide",
-      "characters": 15354,
-      "hash": "c71072a89df7305b092a77e21971749818db9c60038e45822c6287e721357e54"
+      "characters": 15755,
+      "hash": "a7a2067ba4dddabecc72a4ebb7f0d6647e7d0c315cc85ae047669ff9389c55f5"
     },
     {
       "path": "docs/mcp/knowledge-server.md",
@@ -3120,8 +3120,8 @@
       "path": "docs/mcp/tools.md",
       "title": "MCP Tool Reference",
       "kind": "guide",
-      "characters": 24104,
-      "hash": "3768b2d1b113f2fbb54bf1f8519e13c655ed9f776b7e4a4897b27836f178dd4c"
+      "characters": 24073,
+      "hash": "6e0126fe8b19d148ce7503c570ee0c0de614a6c236bc01fcb1194373c1ba00ef"
     },
     {
       "path": "docs/mcp/vnext-analysis-tools.md",
@@ -3521,6 +3521,13 @@
       "kind": "guide",
       "characters": 6303,
       "hash": "b8a39e2455b8efe35a9506adff1d5bfa5cb215c997c2be6949b5688df9a44723"
+    },
+    {
+      "path": "docs/tooling/token-efficiency.md",
+      "title": "Native token-efficiency controls (opt-in)",
+      "kind": "guide",
+      "characters": 11574,
+      "hash": "2495138faa572efe247cafc87d0f9521d1b5d390417c9b0b89426cf725fda23a"
     },
     {
       "path": "docs/tooling/visual-iteration-loop.md",

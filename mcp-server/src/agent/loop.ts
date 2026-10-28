@@ -1,3 +1,6 @@
+import { progressCheck } from '../efficiency/progress.js';
+import { observeBuild, fingerprint } from '../efficiency/memory.js';
+import { ignore } from '../efficiency/store.js';
 import { testProject, screenSmokeTests } from "./testing.js";
 import { snapshotFiles, snapshotHash } from "./remote.js";
 // The autonomous build loop used by `ios-agent-mcp build`:
@@ -41,12 +44,13 @@ export interface Brain {
   repairDesign?(input: { plan: Plan; spec: AppSpec; files: SourceFile[]; review: VisualRound }): Promise<FileChangeInput[]>;
   plan(input: { description: string; capabilities: CapabilityBrief[]; catalog: Array<{ id: string; name: string; category: string }>; deploymentFloor: string }): Promise<unknown>;
   generate(input: { plan: Plan; spec: AppSpec; capabilities: CapabilityBrief[]; files: SourceFile[] }): Promise<FileChangeInput[]>;
-  fix(input: { plan: Plan; spec: AppSpec; errors: Diagnostic[]; files: SourceFile[]; attempt: number; maxAttempts: number }): Promise<FileChangeInput[]>;
+  fix(input: { plan: Plan; spec: AppSpec; errors: Diagnostic[]; files: SourceFile[]; attempt: number; maxAttempts: number; strategy?: string }): Promise<FileChangeInput[]>;
   refine(input: { plan: Plan; spec: AppSpec; change: string; screenshots?: VisualInput[]; capabilities: CapabilityBrief[]; files: SourceFile[] }): Promise<{ files: FileChangeInput[]; capabilities?: string[]; design?: Plan["design"] }>;
 }
 
 export interface LoopOptions {
   projectDir: string;
+  efficiency?: { memory?: boolean; threshold?: number; invocation: string; onOverhead?: (ms:number) => void; onIntervention?: () => void };
   remoteRetry?: boolean;
   remote?: { id?: string; build(root: string): ReturnType<typeof recordedBuild> };
   description?: string;
@@ -159,6 +163,11 @@ async function buildAndFix(root: string, options: LoopOptions, state: StateWithM
       return false;
     }
     const result = options.remote ? await options.remote.build(root) : await recordedBuild(root, options.runner, { ...(options.udid ? { udid: options.udid } : {}), ...(sink ? { sink } : {}) });
+    const infrastructure=result.toolError||result.errors.some(e=>/timed out|without a parseable diagnostic|could not start/.test(e.message));
+    if(options.efficiency?.memory&&!options.remote&&!infrastructure){
+      const memoryStart=Date.now();
+      try{const spec=await readSpec(root);await observeBuild(root,{scheme:spec.name,fingerprint:await fingerprint(root,fresh.toolchain),receipt:options.efficiency.invocation,success:result.success,destination:result.destination});}catch{sink?.('Local memory unavailable; compiler result remains authoritative.');}finally{options.efficiency.onOverhead?.(Date.now()-memoryStart);}
+    }
     if (result.success) {
       const after = ((await loadState(root)) ?? fresh) as StateWithMilestones;
       delete after.visualRepairPending;
@@ -180,7 +189,19 @@ async function buildAndFix(root: string, options: LoopOptions, state: StateWithM
     const after = (await loadState(root)) ?? fresh;
     progress(after, "fixing", `Fixing ${result.errors.length} error(s) for attempt ${result.attempt + 1} of ${result.cap}.`, sink);
     await saveState(root, after);
-    const changes = await options.brain.fix({ plan, spec, errors: result.errors, files, attempt: result.attempt, maxAttempts: result.cap });
+    let strategy:string|undefined;
+    if(options.efficiency?.threshold&&!infrastructure){
+      const detectionStart=Date.now();
+      await ignore(root);
+      const decision=await progressCheck(root,{cycle:`${fresh.startedAt}:${fresh.cycle}`,receipt:`${fresh.cycle}:${result.attempt}`,errors:result.errors,source:files,threshold:options.efficiency.threshold});
+      options.efficiency.onOverhead?.(Date.now()-detectionStart);
+      if(decision.action!=='continue'){
+        options.efficiency.onIntervention?.();progress(after,'fixing',decision.reason,sink);await saveState(root,after);
+        if(decision.action==='stop')return false;
+        strategy=decision.reason;
+      }
+    }
+    const changes = await options.brain.fix({ plan, spec, errors: result.errors, files, attempt: result.attempt, maxAttempts: result.cap, ...(strategy?{strategy}:{}) });
     if (!changes.length || (options.remote && changes.every(c => files.some(f => f.path === c.path && f.content === c.content)))) {
       const stuck = (await loadState(root)) ?? after;
       progress(stuck, "fixing", "The model proposed no changes; stopping.", sink);
@@ -346,6 +367,7 @@ export async function runAgent(options: LoopOptions): Promise<LoopResult> {
   const simulator = chooseSimulator(check.toolchain.simulators, options.udid);
   state = (await loadState(root)) as StateWithMilestones;
   if (!options.remote) state.toolchain = {
+    ...(options.efficiency?.memory&&check.toolchain.iosSimulatorSdk?{sdk:check.toolchain.iosSimulatorSdk}:{}),
     ...(check.toolchain.xcode ? { xcode: `Xcode ${check.toolchain.xcode.version}${check.toolchain.xcode.build ? ` (${check.toolchain.xcode.build})` : ""}` } : {}),
     ...(simulator ? { simulator: `${simulator.name} (iOS ${simulator.runtimeVersion.join(".")})` } : {}),
   };
@@ -525,7 +547,14 @@ export async function runAgent(options: LoopOptions): Promise<LoopResult> {
         if (!tests || (options.remote && tests.sourceHash !== hash) || tests.status === "unavailable" || attempt === 3 || timeLeft(fresh) <= 0) return await finish(root, "failed", "Tests did not pass; inspect the recorded test evidence.", sink);
         const files = await sourceFiles(root, finalSpec);
         const errors = parseBuildOutput(await readFile(join(root, tests.logPath), "utf8"), root).errors;
-        const changes = await options.brain.fix({plan, spec: finalSpec, files, errors: errors.length ? errors : [{severity: "error", message: `Test run failed (${tests.failed} failures, ${tests.skipped} skipped). Preserve tests and repair app behavior.`}], attempt, maxAttempts: 3});
+        let strategy:string|undefined;
+        if(options.efficiency?.threshold&&(!tests.reason||tests.failed>0)){
+          const t=Date.now();await ignore(root);
+          const decision=await progressCheck(root,{phase:'tests',cycle:`${fresh.startedAt}:${fresh.cycle}`,receipt:tests.logPath,errors:[...errors,{message:`Acceptance: ${tests.passed} passed; ${tests.failed} failed; ${tests.skipped} skipped`}],source:files,threshold:options.efficiency.threshold});
+          options.efficiency.onOverhead?.(Date.now()-t);
+          if(decision.action!=='continue'){options.efficiency.onIntervention?.();progress(fresh,'fixing',decision.reason,sink);await saveState(root,fresh);if(decision.action==='stop')return await finish(root,'failed','Repeated acceptance failure after strategy intervention.',sink);strategy=decision.reason;}
+        }
+        const changes = await options.brain.fix({plan, spec: finalSpec, files, ...(strategy?{strategy}:{}), errors: errors.length ? errors : [{severity: "error", message: `Test run failed (${tests.failed} failures, ${tests.skipped} skipped). Preserve tests and repair app behavior.`}], attempt, maxAttempts: 3});
         // Runtime assertion diagnostics include test-file paths too. Once any test
         // executed, those paths must never authorize rewriting the acceptance tests.
         const executedTests = tests.passed + tests.failed + tests.skipped > 0;

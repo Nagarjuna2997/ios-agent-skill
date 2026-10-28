@@ -380,6 +380,13 @@ test('generated tests run before completion and test failures repair application
   assert.equal(executions,3);
 });
 
+test('opt-in intervention uses existing bounded loop and records unchanged diagnostics', async t => {
+ const {projectDir,runner}=await setup(t);
+ const brain=scriptedBrain({fix:(_calls,input)=>[{path:'HabitTracker/Views/RootView.swift',content:`struct RootView { let broken = AGENT_TEST_ERROR } // edit ${input.attempt}\n`}]});
+ const result=await runAgent({projectDir,description:'Track habits',brain,runner,maxBuildAttempts:8,screenshotDelayMs:0,efficiency:{invocation:'test-independent-run',threshold:2}});
+ assert.equal(result.state.status,'failed');assert.ok(result.state.builds.length<8);assert.ok(brain.calls.filter(c=>c[0]==='fix').length<=2);
+ const progress=JSON.parse(await readFile(join(projectDir,'.ios-agent/efficiency/progress.json'),'utf8'));assert.deepEqual(progress.events.map(e=>e.action),['strategy','stop']);
+});
 
 test('runtime assertion locations never authorize rewriting tests with equally many assertions', async t => {
  const {projectDir,runner:base}=await setup(t);

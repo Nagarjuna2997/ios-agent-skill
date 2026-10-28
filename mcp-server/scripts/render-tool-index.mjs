@@ -18,19 +18,7 @@ const DOC = new URL("../../docs/mcp/tools.md", import.meta.url);
 const START = "<!-- tool-index:start -->";
 const END = "<!-- tool-index:end -->";
 
-// Ordered groups: the first matching rule wins. Guides are relative to docs/mcp/.
-const GROUPS = [
-  { name: "iOS build agent", guide: "../tooling/ios-build-agent.md", test: (n) => /^ios_/.test(n) },
-  { name: "Source reviews", guide: "#choosing-a-tool", test: (n) => /^(review_|analyze_|check_availability|audit_|lint_skill)/.test(n) && !/system_integrations|color_system|backend/.test(n) },
-  { name: "Color and backend", guide: "../backend/overview.md", test: (n) => /color_system|backend_integration/.test(n) },
-  { name: "Apple system integrations", guide: "../integrations/README.md", test: (n) => /system_integration|apple_permissions|apple_capabilities/.test(n) },
-  { name: "Apple references and local library", guide: "knowledge-server.md", test: (n) => /^(search_apple|get_apple|plan_ios_app|plan_app_icon|search_local|read_local|get_reference)/.test(n) },
-  { name: "Installed Apple documentation", guide: "../tooling/local-apple-documentation.md", test: (n) => /^(apple_docs_|xcode_mcp_)/.test(n) },
-  { name: "Simulator and Xcode", guide: "../tooling/ios-simulator-mcp.md", test: (n) => /^(simulator_|install_app|launch_app|terminate_app|open_deep_link|screenshot$|build_project|run_tests)/.test(n) },
-  { name: "Screenshot Studio", guide: "../screenshots/README.md", test: (n) => /screenshot/.test(n) },
-  { name: "App creation", guide: "../tooling/project-scaffolding.md", test: (n) => n === "create_app" },
-  { name: "Failure reports", guide: "../tooling/issue-reporting.md", test: (n) => /issue_report|private_feedback/.test(n) },
-];
+import { GROUPS, PROFILES } from '../dist/efficiency/registry.js';
 
 const sentences = (text = "") => text.replace(/\s+/g, " ").trim().match(/[^.!?]+[.!?]?(?=\s|$)/g) ?? [];
 // Prefer the tool's title. Otherwise use the first descriptive sentence:
@@ -48,7 +36,7 @@ const access = (tool) =>
 const client = new Client({ name: "tool-index", version: "1" });
 let tools;
 try {
-  await client.connect(new StdioClientTransport({ command: process.execPath, args: ["dist/unified.js"] }));
+  await client.connect(new StdioClientTransport({ command: process.execPath, args: ["dist/unified.js", "--tool-profile", "all"] }));
   ({ tools } = await client.listTools());
 } finally {
   await client.close();
@@ -68,6 +56,7 @@ const lines = [
   `The unified \`ios-agent-mcp\` server registers ${tools.length} tools. "Access" repeats each tool's declared \`readOnlyHint\` annotation; "not declared" means the tool does not state it.`,
   "",
 ];
+lines.push('Profiles (full set remains the default):', '', ...Object.entries(PROFILES).map(([id,groups])=>`- \`${id}\`: ${groups.join(', ')}`), '');
 for (const [group, members] of grouped) {
   if (!members.length) continue;
   lines.push(`### ${group.name} (${members.length})`, "", `Guide: [${group.guide.startsWith("#") ? "this page" : group.guide}](${group.guide})`, "", "| Tool | Access | Purpose |", "|---|---|---|");
