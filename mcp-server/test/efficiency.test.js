@@ -98,3 +98,18 @@ test('actual MCP budget exposes retrievable original and records failed calls',a
  const bounded=JSON.parse(result.content[0].text);assert.equal(bounded.truncated,true);let uri=bounded.details.uri,full='';while(uri){const page=JSON.parse((await client.readResource({uri})).contents[0].text);full+=page.text;uri=page.next;}assert.ok(JSON.parse(full).content.length);
  await client.callTool({name:'read_local_reference',arguments:{}}).catch(()=>{});const usage=JSON.parse(await readFile(join(p,'.ios-agent/efficiency/usage.json'),'utf8'));assert.equal(usage.toolCalls,2);assert.equal(usage.modelCalls,null);assert.ok(usage.resourceReads>0);assert.ok(usage.resourceBytes>Buffer.byteLength(full));assert.ok(usage.responseBytes===null||usage.responseBytes>=usage.resourceBytes);
 });
+
+
+test('injected Studio transport retains memory context and counts unavailable usage on success and failure', async () => {
+ const {ClaudeCodeBrain}=await import('../dist/agent/brain.js');
+ for(const fails of [false,true]) {
+  const usage=[];const prompts=[];
+  const brain=new ClaudeCodeBrain({runner:{run(){throw Error('unexpected CLI');}},context:async()=> 'verified project context',onUsage:value=>usage.push(value),requestJSON:async(prompt)=>{prompts.push(prompt);if(fails)throw Error('provider unavailable');return {files:[]};}});
+  const input={plan:{},spec:{name:'Sample',screens:[]},files:[],errors:[],attempt:1,maxAttempts:3};
+  if(fails)await assert.rejects(brain.fix(input),/provider unavailable/);else await brain.fix(input);
+  assert.match(prompts[0],/verified project context/);assert.deepEqual(usage,[undefined]);
+  const visual=brain.reviewDesign({plan:{},screen:{id:'home'},images:[]});
+  await assert.rejects(visual); // Invalid assessment or provider failure still counts a request.
+  assert.deepEqual(usage,[undefined,undefined]);
+ }
+});

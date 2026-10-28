@@ -11,7 +11,7 @@ final class AcceptanceTests: XCTestCase {
             XCTFail("Live preview configuration missing")
             return
         }
-        let app = XCUIApplication()
+        let app = ProcessInfo.processInfo.environment["STUDIO_TARGET_BUNDLE"].map { XCUIApplication(bundleIdentifier: $0) } ?? XCUIApplication()
         for key in ["STUDIO_BACKEND_URL", "STUDIO_BACKEND_TOKEN", "STUDIO_BACKEND_NAMESPACE"] {
             app.launchEnvironment[key] = ProcessInfo.processInfo.environment[key]
         }

@@ -8,12 +8,20 @@ const output=path.resolve(process.argv[2]??path.join(repo,'../studio-distributio
 if(process.platform!=='darwin')throw Error('Package on macOS with Xcode.');
 await fs.mkdir(output,{recursive:true});
 const stage=await fs.mkdtemp(path.join(os.tmpdir(),'studio-bundle-'));
+try {
 const app=path.join(stage,'iOS Agent Studio.app'),contents=path.join(app,'Contents'),resources=path.join(contents,'Resources');
 await fs.mkdir(path.join(contents,'MacOS'),{recursive:true});await fs.mkdir(path.join(resources,'bin'),{recursive:true});
 const bundledRepo=path.join(resources,'repo');await fs.mkdir(bundledRepo,{recursive:true});
 await fs.cp(path.join(repo,'studio'),path.join(bundledRepo,'studio'),{recursive:true,filter:f=>!f.split(path.sep).some(p=>['test','distribution','.DS_Store'].includes(p))});
 await fs.cp(path.join(repo,'samples/ReadingList'),path.join(bundledRepo,'samples/ReadingList'),{recursive:true,filter:f=>!f.split(path.sep).some(p=>['.build','.ios-agent','xcuserdata','.DS_Store'].includes(p))});
 await fs.copyFile(path.join(repo,'LICENSE'),path.join(bundledRepo,'LICENSE'));
+// The shared build loop and Universal adapters are runtime dependencies, not website assets.
+for(const name of ['dist','data','node_modules','package.json']) {
+  const source=path.join(repo,'mcp-server',name);
+  try{await fs.access(source);}catch{throw Error('Build mcp-server and install dependencies before packaging: missing '+name);}
+  await fs.cp(source,path.join(bundledRepo,'mcp-server',name),{recursive:true,verbatimSymlinks:true,filter:f=>!f.split(path.sep).some(p=>['.DS_Store','.cache'].includes(p))});
+}
+
 const libraries=execFileSync('otool',['-L',process.execPath],{encoding:'utf8'});
 if(libraries.split('\n').filter(l=>l.startsWith('\t')).some(l=>!l.trim().startsWith('/usr/lib/')&&!l.trim().startsWith('/System/Library/')))throw Error('Node runtime has non-system dependencies; use a standalone official Node runtime.');
 await fs.copyFile(process.execPath,path.join(resources,'bin/node'));await fs.chmod(path.join(resources,'bin/node'),0o755);
@@ -27,7 +35,9 @@ execFileSync('codesign',['--force','--deep','--sign','-',app],{stdio:'inherit'})
 execFileSync('codesign',['--verify','--deep','--strict',app],{stdio:'inherit'});
 const zip=path.join(output,'iOS-Agent-Studio-Mac-preview.zip');execFileSync('ditto',['-c','-k','--norsrc','--keepParent',app,zip]);
 const sha=createHash('sha256').update(await fs.readFile(zip)).digest('hex');await fs.writeFile(zip+'.sha256',sha+'  '+path.basename(zip)+'\n');
-await fs.writeFile(path.join(output,'INSTALL.txt'),'iOS Agent Studio — local Mac preview\n\nExtract the ZIP and move iOS Agent Studio.app to Applications. Xcode with an iOS Simulator and a signed-in Codex or Claude Code CLI are required. Node is bundled. Open the app, then use the browser workspace. Projects stay in ~/Library/Application Support/iOS Agent Studio. This preview is ad-hoc signed, NOT Developer ID signed or notarized. Downloaded copies may be blocked by Gatekeeper; do not disable macOS security. A signed/notarized public release remains pending.\n\nQuit Studio to stop a server it started. If another Studio server was already running, it is reused and left running.\n');
+await fs.writeFile(path.join(output,'INSTALL.txt'),'iOS Agent Studio — local Mac preview\n\nExtract the ZIP and move iOS Agent Studio.app to Applications. Xcode with an iOS Simulator and a signed-in Codex or Claude Code CLI are required. Node is bundled. XcodeGen is required for shared-agent generation and must be available on PATH. Open the app, then use the browser workspace. Projects stay in ~/Library/Application Support/iOS Agent Studio. This preview is ad-hoc signed, NOT Developer ID signed or notarized. Downloaded copies may be blocked by Gatekeeper; do not disable macOS security. A signed/notarized public release remains pending.\n\nQuit Studio to stop a server it started. If another Studio server was already running, it is reused and left running.\n');
 // Remove the temporary staging bundle; the ZIP is the deliverable.
 await fs.rm(stage,{recursive:true,force:true});
 console.log(JSON.stringify({zip,sha256:sha,runtime:process.version,architecture:process.arch},null,2));
+
+} finally { await fs.rm(stage,{recursive:true,force:true}); }
