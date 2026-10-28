@@ -1,0 +1,105 @@
+{
+  "version": 1,
+  "status": "failed",
+  "fixture": "react-boolean-state",
+  "expectedTests": 3,
+  "profile": {
+    "version": 1,
+    "xcode": "27.0",
+    "sdk": "0.0",
+    "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-27-0",
+    "deviceType": "com.apple.CoreSimulator.SimDeviceType.iPhone-18-Pro",
+    "appearance": "light",
+    "contentSize": "large",
+    "locale": "en_US",
+    "scale": 3,
+    "safeAreaTop": 62,
+    "safeAreaBottom": 34,
+    "state": "collapsed",
+    "fontConfiguration": "system-ui browser / SwiftUI system, default weight; Dynamic Type large",
+    "policy": {
+      "version": 1,
+      "maxMeanError": 0.02,
+      "maxChangedFraction": 0.1,
+      "maxLineBreakMismatches": 0,
+      "minimumImprovement": 0.001
+    },
+    "xcodeBuild": "27A266a"
+  },
+  "startedAt": "2026-10-28T21:10:25.670Z",
+  "commands": [
+    {
+      "command": "xcodebuild",
+      "args": [
+        "-version"
+      ],
+      "timeoutMs": 120000,
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 209,
+      "spawnError": null,
+      "stdout": "Xcode 27.0\nBuild version 27A266a\n",
+      "stderr": ""
+    },
+    {
+      "command": "xcrun",
+      "args": [
+        "--sdk",
+        "iphonesimulator",
+        "--show-sdk-version"
+      ],
+      "timeoutMs": 120000,
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 13,
+      "spawnError": null,
+      "stdout": "27.0\n",
+      "stderr": ""
+    },
+    {
+      "command": "xcodebuild",
+      "args": [
+        "-version"
+      ],
+      "timeoutMs": 120000,
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 107,
+      "spawnError": null,
+      "stdout": "Xcode 27.0\nBuild version 27A266a\n",
+      "stderr": ""
+    },
+    {
+      "command": "xcrun",
+      "args": [
+        "--sdk",
+        "iphonesimulator",
+        "--show-sdk-version"
+      ],
+      "timeoutMs": 120000,
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 9,
+      "spawnError": null,
+      "stdout": "27.0\n",
+      "stderr": ""
+    }
+  ],
+  "phase": "environment-setup",
+  "error": "Pinned Xcode/SDK unavailable",
+  "failureCategory": "infrastructure_failure",
+  "failures": [
+    {
+      "phase": "environment-setup",
+      "category": "infrastructure_failure",
+      "message": "Pinned Xcode/SDK unavailable",
+      "at": "2026-10-28T21:10:25.895Z"
+    },
+    {
+      "phase": "environment-setup",
+      "category": "infrastructure_failure",
+      "message": "Pinned Xcode/SDK unavailable",
+      "at": "2026-10-28T21:10:31.353Z"
+    }
+  ]
+}
