@@ -38,11 +38,12 @@ export function registerAgentTools(server: McpServer, runners: RunnerFactory = d
 
   server.registerTool("ios_import_html", {
     title: "Inspect local source through Universal App IR",
-    description: "Use this to inspect local HTML, supported React TSX or a static Vue template. The historical tool name is retained; select adapter html (default), react or vue. Experimental syntax-only subsets reject unsupported behavior. Returns versioned App IR, source hashes and unsupported-feature evidence. Does not execute scripts, fetch URLs, generate files or claim conversion fidelity. Source text is shared with the connected client; choose a non-sensitive file.",
-    inputSchema: { path: z.string().min(1), adapter: z.enum(["html","react","vue"]).default("html"), appName: z.string().regex(/^[A-Z][A-Za-z0-9]{0,39}$/).default("ImportedApp") }, annotations: readOnly,
+    description: "Use this to inspect local HTML, supported React TSX or static Vue/Svelte markup. The historical tool name is retained; select adapter html (default), react, vue or svelte. Experimental syntax-only subsets reject unsupported behavior. Returns versioned App IR, source hashes and unsupported-feature evidence. Does not execute scripts, fetch URLs, generate files or claim conversion fidelity. Source text is shared with the connected client; choose a non-sensitive file.",
+    inputSchema: { path: z.string().min(1), adapter: z.enum(["html","react","vue","svelte"]).default("html"), appName: z.string().regex(/^[A-Z][A-Za-z0-9]{0,39}$/).default("ImportedApp") }, annotations: readOnly,
   }, async ({path, appName, adapter}) => {
     try {
-      const ir = adapter === 'react' ? await (await import('../app-ir/react.js')).importReact(path,appName)
+      const ir = adapter === 'svelte' ? await (await import('../app-ir/svelte.js')).importSvelte(path,appName)
+        : adapter === 'react' ? await (await import('../app-ir/react.js')).importReact(path,appName)
         : adapter === 'vue' ? await (await import('../app-ir/vue.js')).importVue(path,appName)
         : await (await import('../app-ir/html.js')).importHTML(path,appName);
       return ok(ir);

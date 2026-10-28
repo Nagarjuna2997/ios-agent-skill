@@ -99,3 +99,8 @@ Original files remain visible beside the generated native source. Creating the
 conversion is atomic, so a stopped import cannot appear as a completed workspace.
 Folder selection works in Chromium browsers supporting directory file inputs;
 other browsers can use the CLI. Pasted source remains available for single files.
+
+The Svelte selector accepts only static markup and supported inline styles.
+Expressions, scripts, stylesheets, directives, components and SvelteKit remain
+unsupported. It uses the shared IR/generator; no Svelte code is executed and no
+native test/fidelity result is inferred from generation.

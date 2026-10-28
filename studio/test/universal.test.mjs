@@ -106,3 +106,7 @@ test('nested uploaded entries retain IR paths matching their original files',asy
  const {sha256}=await u.module('app-ir/schema');for(const s of data.ir.sources){const original=data.files.find(f=>f.path===s.path);assert.ok(original,s.path);assert.equal(s.sha256,sha256(original.source));}
  assert.deepEqual(data.ir.sources.map(s=>s.path),['src/App.tsx','src/Card.tsx']);
 });
+test('Studio Svelte uses shared IR and native generation without executing expressions',async t=>{
+ const {u}=await workspace(t);const r=await u.create({adapter:'svelte',name:'SvelteSample',source:'<main><h1>From Svelte</h1></main>'});assert.equal((await u.generate(r.id)).status,'generated-unverified');assert.match((await u.source(r.id)).swift,/From Svelte/);
+ await assert.rejects(u.create({adapter:'svelte',name:'UnsafeSvelte',source:'<p>{fetch("https://invalid.example")}</p>'}),/expressions/);
+});

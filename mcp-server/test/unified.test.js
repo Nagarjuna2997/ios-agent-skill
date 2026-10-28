@@ -25,7 +25,7 @@ test('single connection exposes reviews, knowledge, simulator and safe app creat
   assert.equal(JSON.parse(imported.content[0].text).schemaVersion,'1.0.0');
   assert.ok(JSON.parse(imported.content[0].text).nodes.some(n=>n.text==='Imported screen'));
   assert.equal((await client.callTool({name:'ios_import_html',arguments:{path:join(root,'missing.html')}})).isError,true);
-  for(const [adapter,source] of [['react','export default function App(){return <main><h1>React import</h1></main>}'],['vue','<template><main><h1>Vue import</h1></main></template>']]){
+  for(const [adapter,source] of [['react','export default function App(){return <main><h1>React import</h1></main>}'],['vue','<template><main><h1>Vue import</h1></main></template>'],['svelte','<main><h1>Svelte import</h1></main>']]){
    const path=join(root,'source.'+(adapter==='react'?'tsx':'vue'));await writeFile(path,source);
    const response=await client.callTool({name:'ios_import_html',arguments:{path,adapter}});assert.notEqual(response.isError,true,JSON.stringify(response));
    assert.equal(JSON.parse(response.content[0].text).sources[0].adapter,adapter+'-static@1');

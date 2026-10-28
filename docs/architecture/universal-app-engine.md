@@ -270,3 +270,13 @@ retain their previous IR. Studio pasted source remains single-file.
 See [the module fixture](../../benchmarks/universal/react-modules/README.md) for
 supported grammar and limits. This is not a bundler, Next.js adapter or package
 resolver. Native execution and fidelity of the new fixture remain unverified.
+
+### Svelte static markup (experimental)
+
+`app-ir inspect-svelte App.svelte`, the existing MCP import tool's `svelte`
+adapter, and Studio map the bounded static-markup subset through the same IR.
+The shared Vue/Svelte structural validator rejects implied, discarded or reparented
+HTML nodes before lowering. Source code is never compiled or executed. Scripts,
+stylesheets, expressions, blocks, runes, directives, components and SvelteKit are
+unsupported; this is not general Svelte support. See the [fixture](../../benchmarks/universal/svelte-static/README.md).
+Native execution and fidelity remain unverified for this new adapter.
