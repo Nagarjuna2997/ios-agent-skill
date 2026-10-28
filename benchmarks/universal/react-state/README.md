@@ -53,3 +53,14 @@ node benchmarks/universal/render-evidence.mjs /absolute/evidence-directory /abso
 ```
 
 Open the standalone HTML locally. Use the full local output or extracted workflow artifact: the viewer reads `report.json` and the attachment directories named there. It displays saved build/tests and initial/changed screenshots with their test identities, without a server or scripts. Missing artifacts are labelled unavailable. It does not check integrity hashes or turn native behavior into a fidelity pass.
+
+## Simulator startup recovery
+
+The shared native runner records every setup command. A timed-out five-minute
+`simctl bootstatus` wait permits exactly one further five-minute wait on the same
+owned simulator; it does not recreate the device, repeat a build, or retry failed
+assertions. Both command records and the recovery reason remain in the report.
+Nonzero exits, spawn failures and evidence-write failures are not retried.
+Environment/setup failures are reported as `infrastructure_failure`, separately
+from `verification_failure`; resume retains the failure history. The setup code
+is part of the checkpoint contract, so changing it requires a fresh evidence run.

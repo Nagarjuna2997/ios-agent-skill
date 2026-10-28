@@ -1,6 +1,6 @@
 import {allProbeCapturesInvariant} from './probe-integrity.mjs';
 import {applyUIKitCandidate} from './uikit-candidate.mjs';
-import {runSetupCommand,classifyRunFailure,withSimulatorDiscoveryEvidence,candidateFailureEvidence} from './commands.mjs';
+import {runSetupCommand,waitForSimulator,classifyRunFailure,withSimulatorDiscoveryEvidence,candidateFailureEvidence} from './commands.mjs';
 // One local HTML adapter; evidence, checkpoint and acceptance contracts are framework-independent.
 import {annotateTextRegions,compareTextRegions} from '../../../mcp-server/dist/app-ir/typography.js';
 import {captureDOMTypography} from './dom-typography.mjs';
@@ -71,7 +71,7 @@ try{
  report.phase='simulator-setup';await save();
  udid=await command('xcrun',['simctl','create',`ios-agent-fidelity-${Date.now()}`,profile.deviceType,profile.runtime]);
  report.simulator=udid;await save();
- await command('xcrun',['simctl','boot',udid]);await command('xcrun',['simctl','bootstatus',udid,'-b']);
+ await command('xcrun',['simctl','boot',udid]);await waitForSimulator(command,udid,async recovery=>{(report.setupRecoveries??=[]).push(recovery);await save();});
  await command('xcrun',['simctl','ui',udid,'appearance',profile.appearance]);await command('xcrun',['simctl','ui',udid,'content_size',profile.contentSize]);
  await command('xcrun',['simctl','status_bar',udid,'override','--time','9:41','--dataNetwork','wifi','--wifiMode','active','--wifiBars','3','--batteryState','charged','--batteryLevel','100']);
  report.phase='app-verification';await save();

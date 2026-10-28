@@ -11,7 +11,7 @@ import {readSpec,writeSpec,regenerate} from '../../../mcp-server/dist/agent/proj
 import {ProcessRunner} from '../../../mcp-server/dist/agent/runner.js';
 import {buildProject} from '../../../mcp-server/dist/agent/build.js';
 import {testProject} from '../../../mcp-server/dist/agent/testing.js';
-import {runSetupCommand} from '../fidelity/commands.mjs';
+import {runSetupCommand,classifyRunFailure,waitForSimulator} from '../fidelity/commands.mjs';
 import {testEvidence,verifyNativeSizes} from '../react-state/evidence.mjs';
 
 // The caller chooses a repository-owned fixture, never a path from imported app code.
@@ -40,7 +40,7 @@ const command=(c,args)=>runSetupCommand(runner,c,args,async value=>{report.comma
 async function files(dir){const result=[];for(const e of await readdir(dir,{withFileTypes:true})){if(e.isDirectory())result.push(...await files(join(dir,e.name)));else if(e.isFile())result.push(join(dir,e.name));else throw Error('Unexpected symlink');}return result.sort();}
 let udid;
 try{
- report.status='running';report.phase='environment';await save();
+ report.status='running';report.phase='environment-setup';await save();
  const xcode=await command('xcodebuild',['-version']),sdk=await command('xcrun',['--sdk','iphonesimulator','--show-sdk-version']);
  if(xcode!==`Xcode ${profile.xcode}\nBuild version ${profile.xcodeBuild}`||sdk!==profile.sdk)throw Error('Pinned Xcode/SDK unavailable');
  const runtimes=JSON.parse(await command('xcrun',['simctl','list','runtimes','--json']));
@@ -50,14 +50,14 @@ try{
  const environment={xcode,sdk,runtime:runtime.identifier,runtimeBuild:runtime.buildversion,host:await command('sw_vers',['-buildVersion'])};
  const contract=sha256(JSON.stringify({profile,environment,hashes,name,fixture,expectedTests}));
  if(resume&&contract!==report.contract)throw Error('Inputs or environment changed; use a new output directory');
- report.contract=contract;report.environment=environment;delete report.error;await save();
+ report.contract=contract;report.environment=environment;delete report.error;delete report.failureCategory;await save();
  const journal=new Checkpoints(root,contract);
  const ensureSimulator=async()=>{
   if(udid)return udid;
   const callerPhase=report.phase;
  report.phase='simulator-setup';await save();
  udid=await command('xcrun',['simctl','create','ios-agent-'+fixture+'-'+Date.now(),profile.deviceType,profile.runtime]);report.simulator=udid;await save();
- await command('xcrun',['simctl','boot',udid]);await command('xcrun',['simctl','bootstatus',udid,'-b']);
+ await command('xcrun',['simctl','boot',udid]);await waitForSimulator(command,udid,async recovery=>{(report.setupRecoveries??=[]).push(recovery);await save();});
  await command('xcrun',['simctl','ui',udid,'appearance',profile.appearance]);
  await command('xcrun',['simctl','status_bar',udid,'override','--time','9:41','--batteryState','charged','--batteryLevel','100']);
   report.phase=callerPhase;await save();
@@ -84,7 +84,7 @@ try{
   });await save();
  },async(key,error)=>{report[key]={...report[key],error:error.message};await save();});
  report.status='native-behavior-passed';report.visualFidelity='not-evaluated';
-}catch(error){report.status='failed';report.error=error.message;process.exitCode=1;}
+}catch(error){report.status='failed';report.error=error.message;report.failureCategory=classifyRunFailure(report.phase,error.message,null,error.code);(report.failures??=[]).push({phase:report.phase,category:report.failureCategory,message:error.message,at:new Date().toISOString()});process.exitCode=1;}
 finally{
  if(udid){await runner.run('xcrun',['simctl','shutdown',udid]);await runner.run('xcrun',['simctl','delete',udid]);}
  await save();await unlink(lockPath);console.log(JSON.stringify({status:report.status,report:join(root,'report.json')}));

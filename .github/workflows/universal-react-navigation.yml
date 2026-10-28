@@ -49,7 +49,7 @@ jobs:
           node-version: '22'
       - run: npm ci --prefix mcp-server
       - run: npm run build --prefix mcp-server
-      - run: node --test mcp-server/test/react-navigation.test.js mcp-server/test/react-state.test.js mcp-server/test/react-ir.test.js mcp-server/test/app-ir.test.js benchmarks/universal/react-state/evidence.test.mjs
+      - run: node --test mcp-server/test/react-navigation.test.js mcp-server/test/react-state.test.js mcp-server/test/react-ir.test.js mcp-server/test/app-ir.test.js benchmarks/universal/react-state/evidence.test.mjs benchmarks/universal/fidelity/commands.test.mjs
   simulator:
     runs-on: macos-26
     timeout-minutes: 30

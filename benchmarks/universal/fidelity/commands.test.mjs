@@ -51,3 +51,24 @@ test('candidate evidence retains infrastructure category before the repair gate 
  assert.equal(candidateFailureEvidence(new Error('Build failed')).category,'verification_failure');
  assert.equal(candidateFailureEvidence(new Error('x'.repeat(3000))).message.length,2000);
 });
+
+
+test('cold simulator timeout gets one recorded wait on the same device',async()=>{
+ const {waitForSimulator}=await import('./commands.mjs');const records=[],recoveries=[];let calls=0;
+ const command=(c,a)=>runSetupCommand({run:async()=>++calls===1?{...base,timedOut:true,exitCode:null}:base},c,a,e=>records.push(e));
+ assert.equal(await waitForSimulator(command,'owned-device',e=>recoveries.push(e)),'ready');
+ assert.equal(calls,2);assert.equal(records[0].timedOut,true);assert.equal(records[1].timedOut,false);
+ assert.deepEqual(records[0].args,records[1].args);assert.equal(recoveries[0].maxAttempts,2);
+});
+test('boot recovery remains bounded and never retries exit, spawn, or recording errors',async()=>{
+ const {waitForSimulator}=await import('./commands.mjs');
+ for(const result of [{...base,timedOut:true,exitCode:null},{...base,exitCode:1},{...base,spawnError:'ENOENT',exitCode:null}]){
+  let calls=0;const records=[];
+  const command=(c,a)=>runSetupCommand({run:async()=>{calls++;return result;}},c,a,e=>records.push(e));
+  await assert.rejects(waitForSimulator(command,'owned-device',async()=>{}),/Setup command failed/);
+  assert.equal(calls,result.timedOut?2:1);assert.equal(records.length,calls);
+ }
+ let calls=0;
+ await assert.rejects(waitForSimulator(async()=>{calls++;throw Error('evidence write failed');},'owned-device',async()=>{}),/evidence write failed/);
+ assert.equal(calls,1);
+});

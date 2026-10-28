@@ -4,7 +4,7 @@ export async function runSetupCommand(runner,command,args,record){
  const result=await runner.run(command,args,{timeoutMs});
  const evidence={command,args,timeoutMs,exitCode:result.exitCode,timedOut:result.timedOut,durationMs:result.durationMs,spawnError:result.spawnError??null,stdout:result.stdout.slice(-8000),stderr:result.stderr.slice(-8000)};
  await record(evidence);
- if(result.timedOut||result.spawnError||result.exitCode!==0)throw Error(`Setup command failed: ${JSON.stringify(evidence)}`);
+ if(result.timedOut||result.spawnError||result.exitCode!==0)throw Object.assign(new Error(`Setup command failed: ${JSON.stringify(evidence)}`),{setupEvidence:evidence});
  return result.stdout.trim();
 }
 
@@ -31,4 +31,17 @@ export function withSimulatorDiscoveryEvidence(runner,record){
 
 export function candidateFailureEvidence(error){
  return {phase:'verification',category:classifyRunFailure('app-verification',error.message,null,error.code),message:String(error.message).slice(0,2000)};
+}
+
+// A cold simulator can still be migrating when the first bounded wait expires.
+// Wait once more on the SAME owned device; never retry app builds or assertions.
+export async function waitForSimulator(command,udid,recordRecovery){
+ const args=['simctl','bootstatus',udid,'-b'];
+ try{return await command('xcrun',args);}
+ catch(error){
+  const e=error.setupEvidence;
+  if(!e?.timedOut||e.spawnError||e.command!=='xcrun'||JSON.stringify(e.args)!==JSON.stringify(args))throw error;
+  await recordRecovery({kind:'simulator-boot-wait',reason:'initial-bootstatus-timeout',simulator:udid,attempt:2,maxAttempts:2});
+  return await command('xcrun',args);
+ }
 }
