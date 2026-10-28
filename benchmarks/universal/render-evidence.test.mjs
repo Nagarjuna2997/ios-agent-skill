@@ -120,3 +120,10 @@ test('capture export errors remain explicit and escaped in the viewer',async()=>
  report.status='failed';report.large={tests:{...result(),status:'failed',passed:2,failed:1},attachmentError:'<script>export unavailable</script>'};
  const {html}=await render();assert.ok(html.includes('Capture export'));assert.ok(html.includes('&lt;script&gt;export unavailable&lt;/script&gt;'));assert.ok(!html.includes('<script>export unavailable</script>'));
 }));
+test('a failed size checkpoint or export cannot be presented as native completion',async()=>nativeFixture(async({report,render})=>{
+ for(const key of ['error','attachmentError']){
+  report.large[key]='Artifact unavailable';await assert.rejects(render(),/Contradictory native completion/);delete report.large[key];
+ }
+ report.status='failed';report.large.error='<b>Artifact changed</b>';
+ const {html}=await render();assert.ok(html.includes('&lt;b&gt;Artifact changed&lt;/b&gt;'));
+}));

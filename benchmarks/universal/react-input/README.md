@@ -71,3 +71,10 @@ Failed native tests now attempt to export their screenshot attachments before
 returning a failure. A successful export does not create a passing checkpoint;
 missing result bundles or export errors are retained as `attachmentError` and
 shown by the evidence viewer. The original failed test verdict remains primary.
+
+The runner now executes Large and XXXL as independent cells after a successful
+build. A failing Large cell no longer prevents gathering XXXL evidence; the overall
+run still fails if either cell fails. Successful cells remain resumable through
+the existing artifact-hash checks. Cell/export errors are visible in the viewer
+and contradict any claimed `native-behavior-passed` status. Historical reports
+above retain their original fail-fast behavior and are not rewritten.

@@ -25,3 +25,14 @@ export async function testEvidence({root,folder,key,journal,runTests,record,expo
   return {value:{tests,attachments},files:[join(folder,tests.logPath),...await files(resultBundle),...await files(attachments)]};
  });
 }
+
+// Independent size cells retain their own evidence. A failed cell must not hide
+// results for another size, and a later pass must never erase the overall failure.
+export async function verifyNativeSizes(run,recordFailure) {
+ const failed=[];
+ for(const [key,size] of [['large','large'],['xxxl','extra-extra-extra-large']]) {
+  try{await run(key,size);}
+  catch(error){failed.push(key);await recordFailure(key,error);}
+ }
+ if(failed.length)throw Error('Native verification failed for size cells: '+failed.join(', '));
+}

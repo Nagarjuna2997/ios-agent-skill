@@ -19,7 +19,7 @@ export async function nativeEvidencePanels(report,{read,image,escape}){
  const expected=nativeFixtures.get(report.fixture);
  if(report.expectedTests!==undefined&&report.expectedTests!==expected)throw Error('Fixture test-count contract does not match report');
  const results=Object.fromEntries(['large','xxxl'].map(key=>[key,testResult(report[key]?.tests)]));
- if(report.status==='native-behavior-passed'&&(report.build?.success!==true||report.error!=null||(report.build.errors!==undefined&&(!Array.isArray(report.build.errors)||report.build.errors.length!==0))||Object.values(results).some(r=>r?.status!=='passed'||r.passed!==expected)))throw Error('Contradictory native completion status');
+ if(report.status==='native-behavior-passed'&&(report.build?.success!==true||report.error!=null||['large','xxxl'].some(key=>report[key]?.error!=null||report[key]?.attachmentError!=null)||(report.build.errors!==undefined&&(!Array.isArray(report.build.errors)||report.build.errors.length!==0))||Object.values(results).some(r=>r?.status!=='passed'||r.passed!==expected)))throw Error('Contradictory native completion status');
  const panels=[];
  for(const [key,label] of [['large','Large'],['xxxl','XXXL']]){
   const row=report[key],tests=results[key],captures=[];
@@ -46,7 +46,7 @@ export async function nativeEvidencePanels(report,{read,image,escape}){
     }
    }
   }
-  panels.push(`<section><h2>${label} native tests</h2><dl><dt>Recorded status</dt><dd>${escape(tests?.status)}</dd>${['passed','failed','skipped'].map(k=>`<dt>${k}</dt><dd>${escape(tests?.[k])}</dd>`).join('')}<dt>Capture export</dt><dd>${escape(row?.attachmentError??(row?.attachments?'recorded':'unavailable'))}</dd></dl><div class="images">${captures.length?captures.join(''):'<p>Screenshots unavailable</p>'}</div><details><summary>Recorded test evidence</summary><pre>${escape(JSON.stringify(tests??{status:'unavailable'},null,2))}</pre></details></section>`);
+  panels.push(`<section><h2>${label} native tests</h2><dl><dt>Recorded status</dt><dd>${escape(tests?.status)}</dd>${['passed','failed','skipped'].map(k=>`<dt>${k}</dt><dd>${escape(tests?.[k])}</dd>`).join('')}<dt>Cell verification error</dt><dd>${escape(row?.error??'none recorded')}</dd><dt>Capture export</dt><dd>${escape(row?.attachmentError??(row?.attachments?'recorded':'unavailable'))}</dd></dl><div class="images">${captures.length?captures.join(''):'<p>Screenshots unavailable</p>'}</div><details><summary>Recorded test evidence</summary><pre>${escape(JSON.stringify(tests??{status:'unavailable'},null,2))}</pre></details></section>`);
  }
  return `<section><h2>Native behavior evidence</h2><p>Visual fidelity was not evaluated. This viewer displays saved results; it does not rerun tests or verify checkpoint hashes. Missing artifacts remain unavailable.</p><dl><dt>Fixture</dt><dd>${escape(report.fixture)}</dd><dt>Expected tests per size</dt><dd>${expected}</dd><dt>Recorded build</dt><dd>${report.build?.success===true?'passed':report.build?.success===false?'failed':'unavailable'}</dd><dt>Phase</dt><dd>${escape(report.phase)}</dd><dt>Recorded error</dt><dd>${escape(report.error??'none recorded')}</dd></dl></section>${panels.join('')}`;
 }

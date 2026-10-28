@@ -12,7 +12,7 @@ import {ProcessRunner} from '../../../mcp-server/dist/agent/runner.js';
 import {buildProject} from '../../../mcp-server/dist/agent/build.js';
 import {testProject} from '../../../mcp-server/dist/agent/testing.js';
 import {runSetupCommand} from '../fidelity/commands.mjs';
-import {testEvidence} from '../react-state/evidence.mjs';
+import {testEvidence,verifyNativeSizes} from '../react-state/evidence.mjs';
 
 // The caller chooses a repository-owned fixture, never a path from imported app code.
 export async function runNativeFixture({here,name,fixture,expectedTests}, args=process.argv.slice(2)) {
@@ -77,12 +77,12 @@ try{
   const value=await buildProject(project.folder,runner,{udid:await ensureSimulator()});report.build=value;await save();if(!value.success)throw Error('Native build failed');
   return {value,files:[value.logPath,...await files(value.appPath)]};
  });await save();report.phase='tests';await save();
- for(const [key,size] of [['large','large'],['xxxl','extra-extra-extra-large']]){
+ await verifyNativeSizes(async(key,size)=>{
   report[key]=await testEvidence({root,folder:project.folder,key,journal,files,expectedTests,
    runTests:async()=>{await ensureSimulator();await command('xcrun',['simctl','ui',udid,'content_size',size]);return testProject(project.folder,runner,udid);},record:async(tests,artifacts={})=>{report[key]={tests,...artifacts};await save();},
    exportAttachments:(bundle,destination)=>command('xcrun',['xcresulttool','export','attachments','--path',bundle,'--output-path',destination]),
   });await save();
- }
+ },async(key,error)=>{report[key]={...report[key],error:error.message};await save();});
  report.status='native-behavior-passed';report.visualFidelity='not-evaluated';
 }catch(error){report.status='failed';report.error=error.message;process.exitCode=1;}
 finally{

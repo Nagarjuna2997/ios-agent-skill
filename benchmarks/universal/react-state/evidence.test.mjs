@@ -4,7 +4,7 @@ import {mkdtemp,mkdir,writeFile,readFile,readdir,rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {Checkpoints} from '../../../mcp-server/dist/app-ir/checkpoints.js';
-import {testEvidence} from './evidence.mjs';
+import {testEvidence,verifyNativeSizes} from './evidence.mjs';
 async function setup(t){
  const root=await mkdtemp(join(tmpdir(),'state-evidence-'));t.after(()=>rm(root,{recursive:true,force:true}));
  await mkdir(join(root,'result.xcresult'));await writeFile(join(root,'result.xcresult','data'),'native result');await writeFile(join(root,'test.log'),'3 tests passed');
@@ -59,4 +59,15 @@ test('missing or failed exports stay explicit and never mask failed test outcome
   assert.match(records.at(-1).attachmentError,/export interrupted|bundle unavailable/);
  }
  await assert.rejects(readFile(join(context.root,'checkpoints/large.json')),/ENOENT/);
+});
+
+test('independent sizes retain failures while collecting and resuming a successful sibling',async t=>{
+ const context=await setup(t),calls=[],failures=[];let failLarge=true;
+ const run=async(key,size)=>testEvidence({...context.options,key,runTests:async()=>{calls.push([key,size]);const tests=await context.options.runTests();return failLarge&&key==='large'?{...tests,status:'failed',passed:2,failed:1}:tests;}});
+ await assert.rejects(verifyNativeSizes(run,async(key,error)=>failures.push({key,message:error.message})),/size cells: large/);
+ assert.deepEqual(calls.map(x=>x[0]),['large','xxxl']);assert.equal(failures[0].key,'large');
+ await assert.rejects(readFile(join(context.root,'checkpoints/large.json')),/ENOENT/);
+ assert.ok(JSON.parse(await readFile(join(context.root,'checkpoints/xxxl.json'),'utf8')).payload);
+ failLarge=false;await verifyNativeSizes(run,async()=>assert.fail('unexpected failure'));
+ assert.deepEqual(calls.map(x=>x[0]),['large','xxxl','large']);
 });
