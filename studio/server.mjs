@@ -96,8 +96,9 @@ export async function serve({
         if(req.method==='GET' && parts.length===4 && parts[3]==='image')return send(200,await universal.image(parts[2]),'image/png');
         if(req.method!=='POST')return send(405,{error:'Method not allowed'});
         if(!req.headers['content-type']?.startsWith('application/json'))return send(415,{error:'JSON required'});
-        const body=JSON.parse((await readBody(300000)).toString('utf8'));
+        const body=JSON.parse((await readBody(1600000)).toString('utf8'));
         if(parts.length===2)return send(201,await universal.create(body));
+        if(parts.length===3&&parts[2]==='project')return send(201,await universal.createProject(body));
         if(parts.length===4 && parts[3]==='generate')return send(200,await universal.generate(parts[2]));
         if(parts.length===4 && parts[3]==='export')return send(200,await universal.exportProject(parts[2]),'application/zip');
         if(parts.length===4 && parts[3]==='build')return send(202,await universal.startBuild(parts[2]));

@@ -1,6 +1,7 @@
 // Local Universal IR workspace. Imported source is parsed, never executed.
 import {promises as fs} from 'node:fs';
 import path from 'node:path';
+import {tmpdir} from 'node:os';
 import {randomUUID} from 'node:crypto';
 import {pathToFileURL} from 'node:url';
 export class UniversalStudio {
@@ -8,16 +9,42 @@ export class UniversalStudio {
   async module(name){return import(pathToFileURL(path.join(this.repo,'mcp-server/dist',name+'.js')).href);}
   dir(id){if(typeof id!=='string'||!/^[a-f0-9-]{36}$/.test(id))throw Error('Invalid conversion ID');return path.join(this.root,id);}
   async save(row){const dir=this.dir(row.id),tmp=path.join(dir,randomUUID()+'.tmp');await fs.writeFile(tmp,JSON.stringify(row,null,2),{flag:'wx'});await fs.rename(tmp,path.join(dir,'report.json'));}
-  async init(){await fs.mkdir(this.root,{recursive:true});for(const entry of await fs.readdir(this.root,{withFileTypes:true})){if(!entry.isDirectory())continue;const r=await this.get(entry.name);if(['generating','building','launching','capturing'].includes(r.status)){r.status='interrupted';r.error='Studio stopped before this operation completed. No success inferred.';await this.save(r);}}}
+  async init(){await fs.mkdir(this.root,{recursive:true});for(const entry of await fs.readdir(this.root,{withFileTypes:true})){if(!entry.isDirectory()||entry.name.startsWith('.pending-'))continue;const r=await this.get(entry.name);if(['generating','building','launching','capturing'].includes(r.status)){r.status='interrupted';r.error='Studio stopped before this operation completed. No success inferred.';await this.save(r);}}}
   async get(id){const dir=this.dir(id);if((await fs.lstat(dir)).isSymbolicLink())throw Error('Invalid conversion directory');return JSON.parse(await fs.readFile(path.join(dir,'report.json'),'utf8'));}
-  async list(){const rows=[];for(const e of await fs.readdir(this.root,{withFileTypes:true}))if(e.isDirectory())rows.push(await this.get(e.name));return rows.sort((a,b)=>b.created.localeCompare(a.created));}
+  async list(){const rows=[];for(const e of await fs.readdir(this.root,{withFileTypes:true}))if(e.isDirectory()&&!e.name.startsWith('.pending-'))rows.push(await this.get(e.name));return rows.sort((a,b)=>b.created.localeCompare(a.created));}
   async create({adapter,name,source}){
     if(!['html','react','vue'].includes(adapter)||typeof name!=='string'||!/^[A-Z][A-Za-z0-9]{0,39}$/.test(name)||typeof source!=='string'||Buffer.byteLength(source)>262144)throw Error('Choose HTML, React or Vue, a simple app name and source under 256 KiB');
     const parser=await this.module('app-ir/'+adapter);
     const ir=adapter==='html'?parser.htmlToIR(source,'input.html',name):adapter==='react'?parser.reactToIR(source,'input.tsx',name):parser.vueToIR(source,'input.vue',name);
-    const id=randomUUID(),dir=this.dir(id);await fs.mkdir(dir,{recursive:false});
+    return this.persist(ir,adapter,name,source);
+  }
+  async persist(ir,adapter,name,source,files){
+    const id=randomUUID(),dir=this.dir(id),staging=await fs.mkdtemp(path.join(this.root,'.pending-'));
     const row={id,name,adapter,created:new Date().toISOString(),status:'inspected',limitations:ir.limitations,tests:'not-run',visualFidelity:'not-evaluated'};
-    await this.save(row);await fs.writeFile(path.join(dir,'input.txt'),source,{flag:'wx'});await fs.writeFile(path.join(dir,'ir.json'),JSON.stringify(ir,null,2),{flag:'wx'});return row;
+    try{
+      await fs.writeFile(path.join(staging,'input.txt'),source,{flag:'wx'});
+      await fs.writeFile(path.join(staging,'ir.json'),JSON.stringify(ir,null,2),{flag:'wx'});
+      if(files)await fs.writeFile(path.join(staging,'inputs.json'),JSON.stringify(files),{flag:'wx'});
+      await fs.writeFile(path.join(staging,'report.json'),JSON.stringify(row,null,2),{flag:'wx'});
+      await fs.rename(staging,dir);return row;
+    }finally{await fs.rm(staging,{recursive:true,force:true});}
+  }
+  async createProject({name,entry,files}){
+    if(typeof name!=='string'||!/^[A-Z][A-Za-z0-9]{0,39}$/.test(name)||typeof entry!=='string'||!Array.isArray(files)||!files.length||files.length>32)throw Error('Choose an app name, entry path and 1–32 TSX files');
+    const names=new Set();let size=0;
+    for(const file of files){
+      if(!file||typeof file.path!=='string'||!/^[A-Za-z0-9_-]+(?:\/[A-Za-z0-9_-]+)*\.tsx$/.test(file.path)||typeof file.source!=='string')throw Error('Uploaded files require simple relative .tsx paths');
+      const key=file.path.toLowerCase();if(names.has(key))throw Error('Duplicate or case-ambiguous source paths');names.add(key);size+=Buffer.byteLength(file.source);
+    }
+    if(size>262144||!files.some(f=>f.path===entry))throw Error('Entry must match an uploaded file and total source must be under 256 KiB');
+    const staging=await fs.mkdtemp(path.join(tmpdir(),'ios-universal-input-'));
+    try{
+      for(const file of files){const target=path.join(staging,file.path);await fs.mkdir(path.dirname(target),{recursive:true});await fs.writeFile(target,file.source,{flag:'wx'});}
+      const {importReact}=await this.module('app-ir/react');const ir=await importReact(path.join(staging,entry),name);
+      const base=path.posix.dirname(entry);
+      for(const source of ir.sources)source.path=path.posix.join(base,source.path);
+      return await this.persist(ir,'react',name,files.find(f=>f.path===entry).source,files);
+    }finally{await fs.rm(staging,{recursive:true,force:true});}
   }
   async generate(id){
     if(this.jobs.has(id))throw Error('Conversion already running');
@@ -101,5 +128,5 @@ export class UniversalStudio {
       return await fs.readFile(archive);
     }finally{try{if(staging)await fs.rm(staging,{recursive:true,force:true});}finally{this.jobs.delete(id);}}
   }
-  async source(id){const row=await this.get(id),dir=this.dir(id);let swift=null;try{swift=await fs.readFile(path.join(dir,'project',row.name,'Views/RootView.swift'),'utf8');}catch(e){if(e.code!=='ENOENT')throw e;}return {input:await fs.readFile(path.join(dir,'input.txt'),'utf8'),ir:JSON.parse(await fs.readFile(path.join(dir,'ir.json'),'utf8')),swift};}
+  async source(id){const row=await this.get(id),dir=this.dir(id);let swift=null;try{swift=await fs.readFile(path.join(dir,'project',row.name,'Views/RootView.swift'),'utf8');}catch(e){if(e.code!=='ENOENT')throw e;}let files;try{files=JSON.parse(await fs.readFile(path.join(dir,'inputs.json'),'utf8'));}catch(e){if(e.code!=='ENOENT')throw e;}return {files,input:await fs.readFile(path.join(dir,'input.txt'),'utf8'),ir:JSON.parse(await fs.readFile(path.join(dir,'ir.json'),'utf8')),swift};}
 }

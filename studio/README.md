@@ -87,3 +87,15 @@ The import selector also accepts the **Vue static template** subset: one plain
 interpolation, directives and component imports are explicitly unsupported.
 The same IR/generator and evidence status rules apply; Vue native execution has
 not been verified. See `benchmarks/universal/vue-static/README.md` for scope.
+
+### Importing a React folder
+
+Expand **Import a local React component folder**, select a small TSX source folder,
+and choose its entry component. The browser sends only `.tsx` files to this local
+server (maximum 32 files / 256 KiB source). Dependencies must be inside the entry
+file's directory. Supported imports and failures match the CLI's local-module
+contract; this does not install dependencies or execute the React application.
+Original files remain visible beside the generated native source. Creating the
+conversion is atomic, so a stopped import cannot appear as a completed workspace.
+Folder selection works in Chromium browsers supporting directory file inputs;
+other browsers can use the CLI. Pasted source remains available for single files.

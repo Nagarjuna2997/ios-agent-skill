@@ -8,4 +8,10 @@ await page.route('**/api/universal/*/source',async route=>{await hold;await rout
 await page.getByRole('button',{name:'ImportedApp · html · generated-unverified',exact:true}).click();
 await page.getByRole('button',{name:'SecondApp · html · inspected',exact:true}).click();release();
 await page.waitForFunction(()=>document.getElementById('title').textContent==='SecondApp'&&!document.getElementById('generate').disabled);await page.unroute('**/api/universal/*/source');
+await page.locator('#name').fill('FolderApp');await page.getByText('Import a local React component folder',{exact:true}).click();
+await page.locator('#folder').setInputFiles(resolve('benchmarks/universal/react-modules'));
+await page.getByRole('button',{name:'Inspect React project',exact:true}).click();
+await page.waitForFunction(()=>document.getElementById('title').textContent==='FolderApp');
+await page.getByRole('button',{name:'Generate new Xcode project',exact:true}).click();
+await page.waitForFunction(()=>document.getElementById('status').textContent.startsWith('generated-unverified')&&document.getElementById('swift').textContent.includes('Weekend walk'));
 await page.setViewportSize({width:390,height:844});await page.screenshot({path:join(tmpdir(),'universal-studio-ui.png'),fullPage:true});console.log('Browser import and real project generation passed');}finally{await browser.close();await new Promise(r=>app.server.close(r));await rm(root,{recursive:true,force:true});}

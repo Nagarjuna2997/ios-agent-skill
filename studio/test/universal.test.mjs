@@ -82,3 +82,27 @@ test('Studio Vue import shares generator and refuses unsupported template behavi
  const {u}=await workspace(t);const r=await u.create({adapter:'vue',name:'VueSample',source:'<template><main><h1>From Vue</h1></main></template>'});assert.equal((await u.generate(r.id)).status,'generated-unverified');assert.match((await u.source(r.id)).swift,/From Vue/);
  await assert.rejects(u.create({adapter:'vue',name:'VueUnsafe',source:'<template><p>{{ secret }}</p></template>'}),/interpolation/);
 });
+test('uploaded React modules produce one native project and preserve each source',async t=>{
+ const {u}=await workspace(t);const files=[{path:'App.tsx',source:'import Card from "./Card";export default function App(){return <main><Card/></main>}'},{path:'Card.tsx',source:'export default function Card(){return <p>Imported module</p>}'}];
+ const r=await u.createProject({name:'Modules',entry:'App.tsx',files});assert.equal((await u.generate(r.id)).status,'generated-unverified');const data=await u.source(r.id);assert.deepEqual(data.files,files);assert.equal(data.ir.sources.length,2);assert.match(data.swift,/Imported module/);
+ for(const paths of [['../App.tsx'],['/App.tsx'],['App.tsx','app.tsx'],['a/../../App.tsx']])await assert.rejects(u.createProject({name:'Modules',entry:paths[0],files:paths.map(path=>({path,source:'export default function App(){return <p>Hi</p>}'}))}));
+ await assert.rejects(u.createProject({name:'Modules',entry:'missing.tsx',files}));
+});
+test('an interrupted import staging directory never becomes a broken saved conversion',async t=>{
+ const {u,root}=await workspace(t);const {mkdir,writeFile}=await import('node:fs/promises');const pending=join(u.root,'.pending-interrupted');await mkdir(pending);await writeFile(join(pending,'input.txt'),'unfinished');const next=new UniversalStudio(root,resolve('.'));await next.init();assert.deepEqual(await next.list(),[]);
+ const r=await next.createProject({name:'Complete',entry:'App.tsx',files:[{path:'App.tsx',source:'export default function App(){return <p>Ready</p>}'}]});assert.match((await next.source(r.id)).input,/Ready/);assert.equal((await next.list()).length,1);
+});
+test('folder upload endpoint requires token and rejects path escape over HTTP',async t=>{
+ const {root}=await workspace(t);const app=await serve({port:0,root,repo:resolve('.')});t.after(()=>new Promise(r=>app.server.close(r)));
+ const page=await(await fetch(app.origin+'/universal')).text();const token=/name="studio-token" content="([a-f0-9]+)"/.exec(page)[1];
+ const body=JSON.stringify({name:'HttpFolder',entry:'App.tsx',files:[{path:'App.tsx',source:'export default function App(){return <p>Folder</p>}'}]});
+ assert.equal((await fetch(app.origin+'/api/universal/project',{method:'POST',headers:{'content-type':'application/json'},body})).status,403);
+ const headers={'content-type':'application/json','x-studio-token':token};
+ const response=await fetch(app.origin+'/api/universal/project',{method:'POST',headers,body});assert.equal(response.status,201);assert.equal((await response.json()).status,'inspected');
+ assert.equal((await fetch(app.origin+'/api/universal/project',{method:'POST',headers,body:body.replaceAll('App.tsx','../App.tsx')})).status,400);
+});
+test('nested uploaded entries retain IR paths matching their original files',async t=>{
+ const {u}=await workspace(t);const files=[{path:'src/App.tsx',source:'import Card from "./Card";export default function App(){return <main><Card/></main>}'},{path:'src/Card.tsx',source:'export default function Card(){return <p>Nested</p>}'}];const r=await u.createProject({name:'Nested',entry:'src/App.tsx',files});const data=await u.source(r.id);
+ const {sha256}=await u.module('app-ir/schema');for(const s of data.ir.sources){const original=data.files.find(f=>f.path===s.path);assert.ok(original,s.path);assert.equal(s.sha256,sha256(original.source));}
+ assert.deepEqual(data.ir.sources.map(s=>s.path),['src/App.tsx','src/Card.tsx']);
+});
