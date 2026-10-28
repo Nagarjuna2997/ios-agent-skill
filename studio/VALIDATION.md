@@ -192,3 +192,17 @@ was replacing unresolved workflow status with `verified`. It now reports
 `tests-passed` and retains the saved workflow blocker; task events preserve both.
 The focused 12 bridge/task tests and 6 generated-test tests pass. The MCP suite
 reports 832 passed, zero failures, and one skipped. No release gates were relaxed.
+
+The manually assisted content-container repair passed all **18 native tests**,
+with zero failures/skips, on iPhone 18 Pro / iOS 27. The unchanged original test
+file was byte-compared before this run. Result bundle: `50b5ee45-d90f-4d69-89f3-258de11d0020.xcresult`;
+source hash: `bbc5bcc4d5a881c438b6ccf9d93f64eb3319c7911458cf87d81826d33e84f77a`.
+This does not convert the earlier failed runs into successes or approve visual
+fidelity. A subsequent layout repair uses ViewThatFits for the large-text button.
+
+The complete Studio regression suite passed **113/113**, and the real HTTP/browser
+workspace check passed again (its approval-cancellation plan remains synthetic).
+An additional repair boundary now distinguishes runtime assertion locations from
+compiler errors: executed tests cannot authorize test-source rewrites. Regression
+coverage attempts an equal-assertion-count weakening and checks unchanged bytes;
+a zero-execution missing-XCTest-import compiler repair remains supported.

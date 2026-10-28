@@ -379,3 +379,41 @@ test('generated tests run before completion and test failures repair application
   assert.equal(resumed.state.status,'complete',resumed.state.failure);
   assert.equal(executions,3);
 });
+
+
+test('runtime assertion locations never authorize rewriting tests with equally many assertions', async t => {
+ const {projectDir,runner:base}=await setup(t);
+ const original='import XCTest\nfinal class Smoke: XCTestCase { func testCounter() { XCTAssertEqual(0, 1) } }';
+ const runner={async run(command,args,options){
+  if(command==='xcodebuild' && args.includes('test')) return {command,args,exitCode:65,stdout:join(projectDir,'HabitTrackerUITests/Smoke.swift')+':2: error: XCTAssertEqual failed',stderr:'',durationMs:1,timedOut:false};
+  if(args.includes('xcresulttool')) return {command,args,exitCode:0,stdout:JSON.stringify({passedTests:0,failedTests:1,skippedTests:0}),stderr:'',durationMs:1,timedOut:false};
+  return base.run(command,args,options);
+ }};
+ const brain=scriptedBrain({generate:()=>[{path:'HabitTracker/Views/RootView.swift',content:'struct RootView {}'}],fix:()=>[{path:'HabitTrackerUITests/Smoke.swift',content:original.replace('0, 1','1, 1')}]});
+ brain.generateTests=async()=>[{path:'HabitTrackerTests/Behavior.swift',content:'import Testing\n@Test func behavior() { #expect(true) }'},{path:'HabitTrackerUITests/Smoke.swift',content:original}];
+ const result=await runAgent({projectDir,runner,brain,description:'habits',screenshotDelayMs:0});
+ assert.equal(result.state.status,'failed');
+ assert.match(result.state.failure,/Test repair may only/);
+ assert.equal(await readFile(join(projectDir,'HabitTrackerUITests/Smoke.swift'),'utf8'),original);
+});
+
+
+test('zero-execution XCTest compiler diagnostics still permit an import-only test repair', async t => {
+ const {projectDir,runner:base}=await setup(t);let attempts=0;
+ const original='final class Smoke: XCTestCase { func testCounter() { XCTAssertEqual(1, 1) } }';
+ const runner={async run(command,args,options){
+  if(command==='xcodebuild' && args.includes('test')) {
+   attempts++;
+   const {mkdir}=await import('node:fs/promises');await mkdir(args[args.indexOf('-resultBundlePath')+1],{recursive:true});
+   return {command,args,exitCode:attempts===1?65:0,stdout:attempts===1?join(projectDir,'HabitTrackerUITests/Smoke.swift')+":1: error: cannot find 'XCTAssertEqual' in scope":'',stderr:'',durationMs:1,timedOut:false};
+  }
+  if(args.includes('xcresulttool')) return {command,args,exitCode:0,stdout:JSON.stringify({passedTests:attempts===1?0:2,failedTests:0,skippedTests:0}),stderr:'',durationMs:1,timedOut:false};
+  return base.run(command,args,options);
+ }};
+ const brain=scriptedBrain({generate:()=>[{path:'HabitTracker/Views/RootView.swift',content:'struct RootView {}'}],fix:()=>[{path:'HabitTrackerUITests/Smoke.swift',content:'import XCTest\n'+original}]});
+ brain.generateTests=async()=>[{path:'HabitTrackerTests/Behavior.swift',content:'import Testing\n@Test func behavior() { #expect(true) }'},{path:'HabitTrackerUITests/Smoke.swift',content:original}];
+ const result=await runAgent({projectDir,runner,brain,description:'habits',screenshotDelayMs:0});
+ assert.equal(result.state.status,'complete',result.state.failure);
+ assert.equal(attempts,2);
+ assert.equal(await readFile(join(projectDir,'HabitTrackerUITests/Smoke.swift'),'utf8'),'import XCTest\n'+original);
+});
