@@ -154,6 +154,20 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
     const returned = statements[statements.length - 1];
     if (!returned || !ts.isReturnStatement(returned) || !returned.expression) fail(node, 'component must end with a JSX return');
     for (const statement of statements.slice(0,-1)) {
+      // Read constant primitive declarations in source order, without executing
+      // application code. Mutable bindings and destructuring are not inferred.
+      if(ts.isVariableStatement(statement)&&!statement.modifiers?.length&&
+          statement.declarationList.flags===ts.NodeFlags.Const&&statement.declarationList.declarations.length===1){
+        const local=statement.declarationList.declarations[0]!;
+        if(ts.isIdentifier(local.name)&&local.initializer){
+          const name=local.name.text;
+          if(scope.has(name)||components.has(name)||name==='useState'||hasRouterImport&&routerNames.includes(name as typeof routerNames[number]))fail(local,'constant shadows another binding');
+          const value=literal(local.initializer,scope);
+          scope.set(name,{value:value.value,origins:[statement,...value.origins]});
+          origins=[...origins,statement,...value.origins];
+          continue;
+        }
+      }
       if (node !== entry || !hasStateImport || !ts.isVariableStatement(statement) || statement.modifiers?.length ||
           statement.declarationList.flags !== ts.NodeFlags.Const || statement.declarationList.declarations.length !== 1) {
         fail(statement, 'only top-level const boolean/string useState bindings in the entry component are supported');

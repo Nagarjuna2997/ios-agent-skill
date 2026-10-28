@@ -373,3 +373,14 @@ and original source evidence are preserved. Defaults are validated even when a
 caller overrides them; calls, dependent defaults, objects, null/undefined values,
 rest bindings and whole-parameter defaults remain unsupported. No imported code
 is evaluated and no React runtime or TypeScript typechecker is invoked.
+
+### React local primitive constants
+
+Function components may declare one `const` string/number binding per statement
+before their return, using the existing bounded arithmetic/template evaluator.
+Bindings resolve in declaration order from literal props or earlier constants,
+retain source evidence, and can supply text, props or mapped inline style values.
+Component instances have separate scopes. This does not execute JavaScript or add
+reactive derived state: calls, mutable declarations, objects, booleans, destructuring,
+forward references, shadowing and state-derived constants fail explicitly, even
+when unused. Existing entry boolean/string hooks continue to use their own IR mapping.
