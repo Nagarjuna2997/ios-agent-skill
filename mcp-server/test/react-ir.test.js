@@ -76,7 +76,7 @@ test('JS expression strings retain literal entities',()=>{
 });
 test('unsupported prop semantics fail closed',()=>{
  for(const [param,value,expression] of [
- ['{x}',null,'x'],['{x="default"}','"a"','x'],['{...rest}','"a"','rest.x'],['p','"a"',"p['x']"],['p','"a"','p.x.toUpperCase()'],['p','{{a:1}}','p.x'],['p','{true}','p.x'],['p','{process.env.SECRET}','p.x']
+ ['{x}',null,'x'],['{x=other}','"a"','x'],['{...rest}','"a"','rest.x'],['p','"a"',"p['x']"],['p','"a"','p.x.toUpperCase()'],['p','{{a:1}}','p.x'],['p','{true}','p.x'],['p','{process.env.SECRET}','p.x']
  ])assert.throws(()=>reactToIR(`function C(${param}){return <p>{${expression}}</p>} export default function App(){return <C ${value===null?'':'x='+value}/>}`));
  for(const attrs of ['x="a" x="b"','key="x" x="a"','ref="x"','{...props}'])assert.throws(()=>reactToIR(`function C(p){return <p>Hi</p>} export default function App(){return <C ${attrs}/>} `));
 });

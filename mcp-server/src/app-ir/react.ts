@@ -136,11 +136,15 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
       if(ts.isIdentifier(param.name))scope.set(param.name.text,props);
       else if(ts.isObjectBindingPattern(param.name)){
         for(const binding of param.name.elements){
-          if(binding.dotDotDotToken||binding.initializer||!ts.isIdentifier(binding.name)||binding.propertyName&&!ts.isIdentifier(binding.propertyName))fail(binding,"only shallow named prop bindings are supported");
+          if(binding.dotDotDotToken||!ts.isIdentifier(binding.name)||binding.propertyName&&!ts.isIdentifier(binding.propertyName))fail(binding,"only shallow named prop bindings are supported");
           const key=binding.propertyName?.getText(file)??binding.name.getText(file);
-          if(!props.has(key))fail(binding,"missing literal prop "+key);
+          // Validate defaults even when overridden: unsupported executable syntax must
+          // never disappear silently. Empty scope deliberately excludes dependent defaults.
+          const fallback=binding.initializer?literal(binding.initializer,new Map()):undefined;
+          if(!props.has(key)&&!fallback)fail(binding,"missing literal prop "+key);
           if(scope.has(binding.name.getText(file)))fail(binding,"duplicate prop binding");
-          scope.set(binding.name.getText(file),props.get(key)!);
+          scope.set(binding.name.getText(file),props.get(key)??fallback!);
+          if(!props.has(key)&&fallback)origins=[...origins,...fallback.origins];
         }
       }else fail(param,"unsupported parameter binding");
     }
