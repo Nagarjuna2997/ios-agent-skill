@@ -30,6 +30,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+      - name: Build shared Universal engine for Studio tests
+        run: |
+          npm ci --prefix mcp-server
+          npm run build --prefix mcp-server
       - run: node --test studio/test/*.test.mjs
       - run: node --test scripts/ios-build-e2e/contracts.test.mjs
 
@@ -41,6 +45,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+      - name: Build shared Universal engine for Studio tests
+        run: |
+          npm ci --prefix mcp-server
+          npm run build --prefix mcp-server
       - name: Regression tests
         run: node --test studio/test/*.test.mjs
       - name: Login-shell PATH resolution
