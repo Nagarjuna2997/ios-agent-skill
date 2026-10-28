@@ -42,3 +42,24 @@ test('refine transports actual screenshot blocks with their screen labels', asyn
  assert.match(content[0].text,/home: light/);
  assert.ok(sent.args.includes('stream-json'));
 });
+
+test('explicit verification gets a separate bounded budget without rewriting historical cycles', async () => {
+ const {testBudget}=await import('../dist/agent/testing.js');
+ const before={cycle:1,deadlineAt:'2000-01-01T00:00:00Z',tests:[{cycle:1},{cycle:1},{cycle:1}]};
+ assert.throws(()=>testBudget(before),/cap/);
+ assert.equal(testBudget(before,{id:'new_request',timeoutMs:60000}),60000);
+ assert.equal(before.tests.length,3);
+ assert.throws(()=>testBudget(before,{id:'bad',timeoutMs:9999999}),/Invalid/);
+ assert.throws(()=>testBudget({...before,tests:Array(3).fill({verificationRequest:'new_request'})},{id:'new_request',timeoutMs:60000}),/cap/);
+});
+
+// Screen roots retain their actual native accessibility type.
+test('generated interaction-test instructions locate screens independently of native element type', async () => {
+ const {ClaudeCodeBrain}=await import('../dist/agent/brain.js');
+ let prompt;
+ const brain=new ClaudeCodeBrain({runner:{},requestJSON:async text=>{prompt=text;return {files:[]};}});
+ await brain.generateTests({plan:{},spec:{name:'Probe'},files:[]});
+ assert.match(prompt,/descendants\(matching: \.any\)/);
+ assert.match(prompt,/do not assume app.otherElements/);
+ assert.match(prompt,/Keep typed queries for actual buttons and text fields/);
+});

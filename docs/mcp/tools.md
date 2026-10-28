@@ -36,7 +36,7 @@ Guide: [../tooling/ios-build-agent.md](../tooling/ios-build-agent.md)
 | `ios_capabilities` | read-only | Search app capabilities |
 | `ios_create_project` | writes or runs | Create the Xcode project |
 | `ios_design_evidence` | writes or runs | See the app for design review |
-| `ios_import_html` | read-only | Inspect a local HTML screen |
+| `ios_import_html` | read-only | Inspect local source through Universal App IR |
 | `ios_logs` | read-only | Read app logs |
 | `ios_plan` | writes or runs | Write the build plan |
 | `ios_preflight` | read-only | Check the Mac before building |

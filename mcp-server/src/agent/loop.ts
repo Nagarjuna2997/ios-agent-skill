@@ -526,7 +526,10 @@ export async function runAgent(options: LoopOptions): Promise<LoopResult> {
         const files = await sourceFiles(root, finalSpec);
         const errors = parseBuildOutput(await readFile(join(root, tests.logPath), "utf8"), root).errors;
         const changes = await options.brain.fix({plan, spec: finalSpec, files, errors: errors.length ? errors : [{severity: "error", message: `Test run failed (${tests.failed} failures, ${tests.skipped} skipped). Preserve tests and repair app behavior.`}], attempt, maxAttempts: 3});
-        const compilerTests = new Set(errors.filter(e => e.file?.startsWith(finalSpec.name + "Tests/") || e.file?.startsWith(finalSpec.name + "UITests/")).map(e => e.file));
+        // Runtime assertion diagnostics include test-file paths too. Once any test
+        // executed, those paths must never authorize rewriting the acceptance tests.
+        const executedTests = tests.passed + tests.failed + tests.skipped > 0;
+        const compilerTests = new Set(errors.filter(e => !executedTests && !/\bXCTAssert\w*\b[^\n]*\bfailed\b|\bXCTFail\b[^\n]*\bfailed\b|expectation failed|assertion failed/i.test(e.message) && (e.file?.startsWith(finalSpec.name + "Tests/") || e.file?.startsWith(finalSpec.name + "UITests/"))).map(e => e.file));
         if (!changes.length || changes.some(c => c.delete || (!c.path.startsWith(finalSpec.name + "/") && !compilerTests.has(c.path)))) throw new Error("Test repair may only replace app source or a test file with a compiler diagnostic");
         for (const change of changes.filter(c => compilerTests.has(c.path))) {
           const original = files.find(f => f.path === change.path)?.content ?? "";

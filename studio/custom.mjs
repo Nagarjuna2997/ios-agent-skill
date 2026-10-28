@@ -192,7 +192,7 @@ export async function recoverCustom(studio, p) {
   await studio.save(p);
   await fs.rm(journal);
 }
-async function transaction(studio, p, changes, update) {
+export async function transaction(studio, p, changes, update, contract = () => customContract(path.join(studio.dir(p.id), "project"))) {
   const base = path.join(studio.dir(p.id), "project");
   const before = {};
   for (const f of Object.keys(changes)) {
@@ -217,7 +217,7 @@ async function transaction(studio, p, changes, update) {
   try {
     await writeFiles(base, changes);
     await update();
-    p.contractHash = await customContract(base);
+    p.contractHash = await contract();
     p.evidence = null;
     await studio.save(p);
     await fs.rm(journal);
@@ -285,6 +285,7 @@ export async function createCustom(studio, id, name, brief, provider, backend = 
 export async function restoreCustom(studio, p) {
   if (!/^\d+$/.test(p.lastRevision ?? "")) throw Error("No previous revision");
   const base = path.join(studio.dir(p.id), "project");
+  if (p.undoHash && p.undoHash !== await customFingerprint(base)) throw Error("Source changed since the revision; undo refused to preserve external edits");
   if (p.contractHash !== (await customContract(base)))
     throw Error("Acceptance files changed. Restore stopped.");
   const sources = JSON.parse(
@@ -417,6 +418,7 @@ export async function executeCustom(
     await transaction(studio, p, changes, async () => {
       p.messages.push({ role: "assistant", text: answer.summary });
     });
+    p.undoHash = await customFingerprint(base); await studio.save(p);
     await studio.log(
       p,
       `${Object.keys(next).length} Swift files saved and registered with Xcode. Running the frozen UI journeys…`,
@@ -444,7 +446,7 @@ export async function executeCustom(
       cwd: base,
       signal,
       timeout: 1200000,
-      env: backendEnv,
+      env: {...backendEnv,...(p.simulator?{IOS_AGENT_SIMULATOR_UDID:p.simulator}:{})},
       onText: (s) => {
         writes = writes.then(() => fs.appendFile(logFile, redact(s)));
       },
@@ -453,7 +455,7 @@ export async function executeCustom(
   } catch (e) {
     await writes;
     e.message = redact(e.message);
-    if (kind !== "verify" && attempt < 1 && !signal.aborted) {
+    if (kind !== "verify" && attempt < (studio.settings?.repairLimit??1) && !signal.aborted) {
       await studio.log(
         p,
         "Checks failed. Trying one source-only repair without changing the test contract.",

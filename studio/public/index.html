@@ -18,7 +18,7 @@
       >
       <div class="header-actions">
         <a class="chip" href="/universal">Import HTML / React / Vue</a>
-        <button id="new" class="chip">＋ New project</button
+        <button id="import-project" class="chip">Import Xcode folder…</button><button id="new" class="chip">＋ New project</button
         ><button id="export" class="chip" hidden>Export ZIP</button
         ><button id="reveal" class="chip" hidden>Project files</button
         ><button id="xcode" class="chip" hidden>Open in Xcode</button
@@ -26,10 +26,19 @@
       </div>
     </header>
     <main id="main" class="wrap">
+      <aside class="studio-sidebar">
+      <label for="project-search">Search projects and conversations</label><input id="project-search" type="search" placeholder="Find a project…" />
+      <label><input id="show-archived" type="checkbox" /> Show archived</label>
       <div class="switcher-row">
         <span class="eyebrow">Your workspace</span>
         <nav id="projects" class="switcher" aria-label="Projects"></nav>
       </div>
+      <details><summary>Capability library</summary><input id="capability-search" type="search" aria-label="Search capabilities" placeholder="Search modules…" /><div id="capability-list"></div></details><details open><summary>Task queue</summary><div id="task-queue" aria-live="polite">No tasks yet.</div></details>
+      <details><summary>Workspace settings</summary>
+      <label for="sidebar-width">Sidebar width</label><input id="sidebar-width" type="range" min="190" max="340" value="240" />
+      <label for="inspector-width">Inspector width</label><input id="inspector-width" type="range" min="300" max="650" value="400" />
+      <label for="task-timeout">Task timeout (minutes)</label><input id="task-timeout" type="number" min="1" max="60" value="20" /><label for="repair-limit">Repair limit</label><input id="repair-limit" type="number" min="0" max="3" value="1" /><label for="capture-limit">Maximum saved capture sets per project</label><input id="capture-limit" type="number" min="1" max="500" value="200"><label for="default-simulator">Default simulator UUID (blank for automatic)</label><input id="default-simulator"><button id="use-project-simulator" class="btn">Use selected project device as default</button><button id="save-execution" class="btn">Save workspace settings</button><button id="clear-tasks" class="btn">Clear completed task history</button><p>Source and build evidence are retained. Credentials stay with your CLI. Project storage is selected with STUDIO_HOME before launch.</p></details>
+      </aside><div class="studio-content">
       <section id="welcome">
         <div class="hero-copy">
           <p class="eyebrow">Your app workshop</p>
@@ -52,7 +61,7 @@
             <div>
               <label for="template">Starting point</label
               ><select id="template">
-                <option value="agent">Shared /ios-build agent · Claude Code</option>
+                <option value="agent">Shared /ios-build agent</option>
                 <option value="custom">Your own app idea</option>
                 <option value="reading-list">Reading-list starter</option>
               </select>
@@ -113,10 +122,14 @@
             </div>
             <span id="state" class="pill">Draft</span>
           </div>
-          <div id="messages" aria-live="polite"></div>
+          <div id="messages" aria-live="polite"></div><details><summary>Live provider response</summary><pre id="stream-response" aria-live="off">Responses appear here during a task. Source proposals are unverified until checks complete.</pre></details>
           <details id="plan" class="plan" hidden></details>
           <div id="notice" role="status" hidden></div>
           <div id="error" role="alert" hidden></div>
+          <details id="project-settings"><summary>Project settings</summary>
+          <label for="project-name">Name</label><input id="project-name" maxlength="60" />
+          <label for="project-provider">Provider</label><select id="project-provider"><option value="codex">Codex</option><option value="claude">Claude Code</option></select>
+          <label for="project-scheme">Imported project scheme</label><select id="project-scheme"><option value="">Not applicable</option></select><label for="project-simulator">Simulator</label><select id="project-simulator"><option value="">Automatic (new apps)</option></select><button id="refresh-simulators" class="btn">Refresh devices</button><pre id="import-info"></pre><button id="save-project" class="btn">Save settings</button><button id="pin-project" class="btn">Pin / unpin</button><button id="archive-project" class="btn">Archive / restore</button><button id="delete-project" class="btn danger">Delete workspace…</button></details>
           <div class="workflow-actions">
             <button id="plan-button" class="btn">Plan app</button
             ><button id="build" class="btn primary">Build plan ↗</button
@@ -125,6 +138,10 @@
             ><button id="stop" class="btn danger" hidden>Stop</button>
           </div>
           <form id="refine" class="composer">
+<label for="preset">Agent preset</label><select id="preset"><option value="builder">Builder</option><option value="debugger">Debugger</option><option value="reviewer">Reviewer · read only</option><option value="designer">Designer</option><option value="release">Release Assistant · drafts only</option></select>
+<label for="message-mode">Request type</label><select id="message-mode"><option value="refine">Change code · approval required</option><option value="ask">Ask a question · read only</option><option value="review">Review code · read only</option><option value="readiness">Prepare readiness report · no upload</option></select>
+<label for="attachment">Save a reference locally (PNG, JPEG, text)</label><input id="attachment" type="file" accept="image/png,image/jpeg,text/plain" /><span id="attachment-status">No reference attached.</span><label><input id="send-attachment" type="checkbox" /> Send this reference to the selected provider with my next request</label>
+
             <label for="change">Your next change</label
             ><textarea
               id="change"
@@ -135,7 +152,7 @@
             ></textarea>
             <div class="composer-bottom">
               <span>Changes → build → acceptance tests</span
-              ><button type="submit" class="btn primary">Make changes ↑</button>
+              ><button type="submit" class="btn primary">Send request ↑</button>
             </div>
           </form>
           <p class="fine" id="scope-note">
@@ -143,6 +160,9 @@
           </p>
         </div>
         <div class="preview">
+          <details><summary>Saved capture history</summary><button id="refresh-artifacts" class="btn">Load captures</button><select id="artifact-select" aria-label="Archived capture"></select><button id="delete-artifact" class="btn">Delete selected archive</button><p id="artifact-info">Historical screenshots are not proof of current functionality.</p><img id="artifact-image" alt="Archived simulator capture" hidden style="max-width:100%;max-height:480px;object-fit:contain"></details>
+          <details><summary>Release preparation</summary><p>Local drafts only. Supply your own app identity, metadata and existing screenshots. Preparation does not sign or upload. Signing and upload require separate explicit approvals below. Upload sends your archive to Apple; it does not submit App Review.</p><button id="load-release" class="btn">Load configuration</button><label for="release-config">Release configuration (JSON)</label><textarea id="release-config" rows="14" spellcheck="false"></textarea><button id="save-release" class="btn">Validate and save draft</button><button id="prepare-release" class="btn">Prepare local release</button><button id="review-release" class="btn">Review prepared documents</button><label for="release-approval">Type archive:APPROVAL_ID or upload:APPROVAL_ID after reviewing the prepared documents</label><input id="release-approval" autocomplete="off"><button id="archive-release" class="btn">Approve signing and archive</button><button id="upload-release" class="btn">Approve Apple upload</button><button id="release-status" class="btn">Refresh release status</button><label for="release-image-select">Prepared screenshot set</label><select id="release-image-select"></select><img id="release-image" alt="Prepared App Store screenshot draft" hidden style="max-width:100%;max-height:480px;object-fit:contain"><pre id="release-output">No release operation performed.</pre></details>
+          <details id="source-inspector"><summary>Project source and revisions</summary><button id="refresh-source" class="btn">Refresh files</button><select id="source-file" aria-label="Project source file"></select><pre id="source-text">Select a source file. Read only.</pre><button id="refresh-revisions" class="btn">Load revisions</button><select id="revision-select" aria-label="Source revision"></select><pre id="revision-diff">Select a revision to compare original and current source.</pre></details>
           <div class="live-actions">
             <button id="live-start" class="btn">▶ Live simulator</button
             ><button id="live-stop" class="btn danger" hidden>Stop preview</button
@@ -192,7 +212,7 @@
           </details>
         </div>
       </section>
-    </main>
+    </div></main>
     <footer id="health" class="wrap">Checking your local tools…</footer>
     <script src="/app.js" type="module"></script>
   </body>

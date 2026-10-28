@@ -93,6 +93,8 @@ export interface ClaudeBrainOptions {
   model?: string;
   timeoutMs?: number;
   command?: string;
+  /** Validated JSON transport supplied by local hosts; keeps shared prompts and validators. */
+  requestJSON?: (prompt: string, images?: VisualInput["images"]) => Promise<unknown>;
 }
 
 /** Calls `claude -p` with tools disabled; prompts and image blocks travel on stdin. */
@@ -100,6 +102,7 @@ export class ClaudeCodeBrain implements Brain {
   constructor(private readonly options: ClaudeBrainOptions) {}
 
   private async ask(prompt: string): Promise<unknown> {
+    if (this.options.requestJSON) return this.options.requestJSON(prompt);
     const { mkdtemp, rm } = await import("node:fs/promises");
     const { tmpdir } = await import("node:os");
     const { join } = await import("node:path");
@@ -149,6 +152,7 @@ Do not invent costs.`);
   }
 
   private async askImages(prompt: string, images: VisualInput["images"]): Promise<unknown> {
+    if (this.options.requestJSON) return this.options.requestJSON(prompt, images);
     const { mkdtemp, rm } = await import("node:fs/promises");
     const { tmpdir } = await import("node:os");
     const dir = await mkdtemp((await import("node:path")).join(tmpdir(), "ios-agent-vision-"));
@@ -167,7 +171,7 @@ Do not invent costs.`);
   }
 
   async generateTests(input: { plan: Plan; spec: AppSpec; files: SourceFile[] }): Promise<FileChangeInput[]> {
-    return filesFrom(await this.ask(`Write meaningful offline tests for this generated app. Return complete files under ${input.spec.name}Tests/ and ${input.spec.name}UITests/ only. Use Swift Testing, @testable import ${input.spec.name}, and @MainActor tests for each view model in a separate <ViewModelType>Tests.swift file with @Test and #expect assertions: initial state, success, empty, error and cancellation where applicable. Inject fake services; no network, credentials or disk. Assert behavior, never tautologies. Do not write PlannedScreenTests.swift; the engine generates it. Additional UI tests may cover interactions. For UI tests: launch with -ios-agent-sample-data YES -ios-agent-screen <id>, wait for accessibility identifier screen-<id>, and assert it exists. Exercise portrait and landscape with XCUIDevice.shared.orientation, restoring portrait in tearDown. Do not modify app files or disable assertions.
+    return filesFrom(await this.ask(`Write meaningful offline tests for this generated app. Return complete files under ${input.spec.name}Tests/ and ${input.spec.name}UITests/ only. Use Swift Testing, @testable import ${input.spec.name}, and @MainActor tests for each view model in a separate <ViewModelType>Tests.swift file with @Test and #expect assertions: initial state, success, empty, error and cancellation where applicable. Inject fake services; no network, credentials or disk. Assert behavior, never tautologies. Do not write PlannedScreenTests.swift; the engine generates it. Additional UI tests may cover interactions. For UI tests: launch with -ios-agent-sample-data YES -ios-agent-screen <id>, wait for accessibility identifier screen-<id> using app.descendants(matching: .any).matching(identifier: "screen-<id>").firstMatch, and assert it exists. A screen root may be a ScrollView, List or another native accessibility type; do not assume app.otherElements for screen identifiers. Keep typed queries for actual buttons and text fields. Exercise portrait and landscape with XCUIDevice.shared.orientation, restoring portrait in tearDown. Do not modify app files or disable assertions.
 Plan: ${JSON.stringify(input.plan)}
 Source: ${filesBlock(input.files)}
 ${OUTPUT}`));
