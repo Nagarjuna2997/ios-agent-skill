@@ -178,3 +178,14 @@ test('old settings migrate with bounded capture retention and simulator defaults
   assert.throws(()=>validateSettings({...old,captureLimit:0}));
   assert.throws(()=>validateSettings({...old,defaultSimulator:'not-a-device'}));
 });
+
+
+test('built product metadata remains project-relative through a workspace alias', async t => {
+ const {builtProduct}=await import('../product-evidence.mjs');
+ const root=await fs.mkdtemp(path.join(os.tmpdir(),'studio-product-alias-'));t.after(()=>fs.rm(root,{recursive:true,force:true}));
+ const project=path.join(root,'real/project');const relative='.ios-agent/DerivedData/Build/Products/Debug-iphonesimulator/Probe.app';
+ await fs.mkdir(path.join(project,relative),{recursive:true});await fs.writeFile(path.join(project,relative,'Probe'),'binary');
+ await fs.symlink(path.join(root,'real'),path.join(root,'alias'),'dir');
+ const result=await builtProduct({dir:()=>path.join(root,'alias')},{id:'test',template:'agent'});
+ assert.equal(result.path,relative);assert.match(result.hash,/^[a-f0-9]{64}$/);
+});

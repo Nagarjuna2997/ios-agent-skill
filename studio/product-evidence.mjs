@@ -20,7 +20,7 @@ export async function productHash(root) {
   return createHash('sha256').update(JSON.stringify(rows.sort((a,b)=>a[0].localeCompare(b[0])))).digest('hex');
 }
 export async function builtProduct(studio,p){
-  const root=path.join(studio.dir(p.id),'project');
+  const root=await fs.realpath(path.join(studio.dir(p.id),'project'));
   const folder=path.join(root,p.template==='agent'?'.ios-agent/DerivedData':'.build','Build/Products/Debug-iphonesimulator');
   const apps=(await fs.readdir(folder,{withFileTypes:true})).filter(e=>e.isDirectory()&&e.name.endsWith('.app')&&!e.name.endsWith('-Runner.app'));
   if(apps.length!==1)throw Error('Expected exactly one built application');

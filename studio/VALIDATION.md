@@ -206,3 +206,23 @@ An additional repair boundary now distinguishes runtime assertion locations from
 compiler errors: executed tests cannot authorize test-source rewrites. Regression
 coverage attempts an equal-assertion-count weakening and checks unchanged bytes;
 a zero-execution missing-XCTest-import compiler repair remains supported.
+
+The final MCP safety suite reports **834 passed, zero failures, one skipped**.
+The Studio suite after the product-path alias regression reports **114 passed,
+zero failures/skips**, and its browser check passes. Built-product metadata now
+canonicalizes the workspace root before computing relative paths, so `/tmp`
+aliases cannot produce a spurious `../../../../private/tmp/...` product path.
+Independent review found no blocking issues in these changes.
+
+The subsequent bounded visual run built the counter twice without warnings or
+errors and retained six iPhone/iPad light/dark/XXL captures. The Increment label
+no longer splits at XXL. The screenshot-only review still reports the footer at
+the viewport edge; it exhausted its configured repair budget and remained
+`stopped`, not passed. This review does not establish whether scrolling reaches
+the footer; separate native reachability/audit verification is recorded below.
+
+The rebuilt arm64 local preview passed strict ad-hoc signature verification and
+served `/_studio` using its bundled Node runtime (`iOS Agent Studio`, protocol 1).
+Preview SHA-256: `dcf68c192428cded06c2d0fdec455f9bb9cefffea7b2b6b3852b8639cdddea2e`.
+It is a local preview, not a notarized public distribution. No Apple upload, npm
+publication, merge, or baseline promotion was performed.
