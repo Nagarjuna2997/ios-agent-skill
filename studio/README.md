@@ -160,6 +160,16 @@ only and does not merge other project files or later edits to the child revision
 using the latest archived successful capture on each conversion. It verifies image
 hashes and refuses mismatched dimensions rather than resizing. The report identifies
 both run/source hashes and retains `requires-review`, even for identical pixels.
-Studio capture conditions do not yet pin appearance, text size, orientation or UI
-state, so this exploratory diff cannot satisfy the visual-fidelity gate or approve
+Studio capture conditions do not pin orientation or UI state, and older/current-setting
+captures also lack appearance/text-size profiles, so this exploratory diff cannot satisfy the visual-fidelity gate or approve
 a repair. It does not compare against an HTML/browser reference.
+
+Optional capture settings select Light/Dark with Large/XXXL Dynamic Type. Studio
+boots the selected simulator, reads its original settings, applies and reads back
+the requested settings, then restores and verifies the originals after capture or
+failure. Unknown original settings block the operation; restoration failures are
+reported as failures, not passing captures. Cancellation uses an independent,
+bounded cleanup runner. Run evidence records requested/original settings and
+restoration. This does not pin orientation, locale or application state, and does
+not establish accessibility or fidelity. Choosing current settings preserves the
+older behavior and records no profile.

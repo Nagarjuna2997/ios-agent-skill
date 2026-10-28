@@ -1,0 +1,104 @@
+{
+  "started": "2026-10-28T07:17:14.425Z",
+  "root": "/tmp/studio-universal-device-evidence-5MCmpO",
+  "status": "native-studio-capture-and-export-passed",
+  "tests": "not-run",
+  "visualFidelity": "not-evaluated",
+  "udid": "16622706-790D-48D1-A381-1F3FB8363BD6",
+  "conversion": "71ec7d51-1d17-44d1-b118-e290973caaa1",
+  "report": {
+    "id": "71ec7d51-1d17-44d1-b118-e290973caaa1",
+    "name": "StudioProfile",
+    "adapter": "react",
+    "created": "2026-10-28T07:17:14.912Z",
+    "status": "preview-ready",
+    "limitations": [],
+    "tests": "not-run",
+    "visualFidelity": "not-evaluated",
+    "generatedRootSHA256": "553d2f20f042cab03808778a8a4b1a40ff56bfee27d51777288874204c3029ef",
+    "runs": [
+      {
+        "id": "b7374e10-d69c-4d4f-9318-4bafce2ad366",
+        "requestedUDID": "16622706-790D-48D1-A381-1F3FB8363BD6",
+        "started": "2026-10-28T07:17:14.924Z",
+        "status": "preview-ready",
+        "tests": "not-run",
+        "visualFidelity": "not-evaluated",
+        "sourceHash": "f85137543d5f5994d3a1d6958f99ee22613bd03cd8174cf46e7868b9b335966d",
+        "environment": {
+          "platform": "darwin",
+          "node": "24.15.0",
+          "simulators": [
+            {
+              "udid": "16622706-790D-48D1-A381-1F3FB8363BD6",
+              "name": "Universal-Studio-verification-1793171834425",
+              "state": "Shutdown",
+              "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-27-0",
+              "runtimeVersion": [
+                27,
+                0
+              ],
+              "deviceType": "com.apple.CoreSimulator.SimDeviceType.iPhone-18-Pro",
+              "isAvailable": true
+            }
+          ],
+          "xcode": {
+            "version": "27.0",
+            "build": "27A266a"
+          },
+          "iosSimulatorSdk": "27.0"
+        },
+        "udid": "16622706-790D-48D1-A381-1F3FB8363BD6",
+        "build": {
+          "success": true,
+          "errors": [],
+          "warnings": [],
+          "durationMs": 7082,
+          "scheme": "StudioProfile",
+          "destination": "platform=iOS Simulator,id=16622706-790D-48D1-A381-1F3FB8363BD6",
+          "appPath": "/tmp/studio-universal-device-evidence-5MCmpO/universal/71ec7d51-1d17-44d1-b118-e290973caaa1/project/.ios-agent/DerivedData/Build/Products/Debug-iphonesimulator/StudioProfile.app",
+          "logPath": "/tmp/studio-universal-device-evidence-5MCmpO/universal/71ec7d51-1d17-44d1-b118-e290973caaa1/project/.ios-agent/logs/build-1793171835064.log"
+        },
+        "captureProfile": {
+          "profile": "dark-xxxl",
+          "requested": {
+            "appearance": "dark",
+            "contentSize": "extra-extra-extra-large"
+          },
+          "original": {
+            "appearance": "light",
+            "contentSize": "large"
+          },
+          "applied": true,
+          "restored": true
+        },
+        "launch": {
+          "udid": "16622706-790D-48D1-A381-1F3FB8363BD6",
+          "simulator": "Universal-Studio-verification-1793171834425",
+          "bundleId": "com.example.studioprofile",
+          "booted": false,
+          "pid": 23432
+        },
+        "captureDelayMs": 2000,
+        "capture": {
+          "runId": "b7374e10-d69c-4d4f-9318-4bafce2ad366",
+          "sourceHash": "f85137543d5f5994d3a1d6958f99ee22613bd03cd8174cf46e7868b9b335966d",
+          "sha256": "a6f2f74a261af8382b27f5d1a141a481d99c434769a6fab82c2db2891e858713",
+          "nativeSourceSHA256": "553d2f20f042cab03808778a8a4b1a40ff56bfee27d51777288874204c3029ef"
+        },
+        "finished": "2026-10-28T07:18:07.607Z"
+      }
+    ],
+    "capture": {
+      "runId": "b7374e10-d69c-4d4f-9318-4bafce2ad366",
+      "sourceHash": "f85137543d5f5994d3a1d6958f99ee22613bd03cd8174cf46e7868b9b335966d",
+      "sha256": "a6f2f74a261af8382b27f5d1a141a481d99c434769a6fab82c2db2891e858713",
+      "nativeSourceSHA256": "553d2f20f042cab03808778a8a4b1a40ff56bfee27d51777288874204c3029ef"
+    }
+  },
+  "captureSHA256": "a6f2f74a261af8382b27f5d1a141a481d99c434769a6fab82c2db2891e858713",
+  "zipSHA256": "625c40fceefae610a34fc53ab75d61f8237ff0d1575c5e62daa11ec2f86915f9",
+  "finished": "2026-10-28T07:18:11.181Z",
+  "evidenceRedaction": "Unrelated simulator inventory omitted; original remains local.",
+  "visualInspection": "Populated dark Walking profile visible with enlarged text; not interaction/accessibility/fidelity verification."
+}

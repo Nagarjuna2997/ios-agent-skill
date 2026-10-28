@@ -27,7 +27,7 @@ function clearRevision(){revisionParent=null;$('revision-context').hidden=true;$
 $('cancel-revision').onclick=clearRevision;
 $('revision').onclick=()=>{if(!revisionInput)return;revisionParent=selected;for(const key of ['name','adapter','source'])$(key).value=revisionInput[key];$('revision-context').textContent='Editing a new revision of '+revisionInput.name+'. Original source and evidence will be preserved.';$('revision-context').hidden=false;$('cancel-revision').hidden=false;$('source').focus();};
 $('generate').onclick=()=>act(async()=>{const id=selected;$('generate').disabled=true;$('status').textContent='Generating project…';await api('/'+id+'/generate',{});await list();await show(id);});
-$('build').onclick=()=>act(async()=>{await api('/'+selected+'/build',$('simulator').value?{udid:$('simulator').value}:{});await show(selected);});
+$('build').onclick=()=>act(async()=>{await api('/'+selected+'/build',{...($('simulator').value?{udid:$('simulator').value}:{}),...($('capture-profile').value?{captureProfile:$('capture-profile').value}:{})});await show(selected);});
 $('cancel').onclick=()=>act(()=>api('/'+selected+'/cancel',{}));
 setInterval(()=>{if(selected&&['building','launching','capturing'].some(s=>$('status').textContent.startsWith(s)))act(()=>show(selected));},2000);
 act(list);

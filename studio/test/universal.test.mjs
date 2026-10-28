@@ -243,3 +243,18 @@ test('capture comparison uses verified archived pixels and never upgrades review
  await capture(child,'33333333-3333-4333-8333-333333333333',0,3);await assert.rejects(u.compareCaptures(child.id),/differ in dimensions/);
  await writeFile(join(u.dir(parent.id),'captures','11111111-1111-4111-8111-111111111111.png'),'tamper');await assert.rejects(u.compareCaptures(child.id),/Capture changed/);
 });
+test('cancellation during profile restoration cannot publish a successful capture',async t=>{
+ const {u}=await workspace(t);const row=await u.create({adapter:'html',name:'CancelledProfile',source:'<p>Capture</p>'});await u.generate(row.id);
+ const originalModule=u.module.bind(u),originalSave=u.save.bind(u);const state={appearance:'dark',content_size:'large'};
+ u.save=async record=>{if(record.runs?.at(-1)?.captureProfile?.restored&&record.status==='capturing'){assert.equal(record.capture,undefined);u.cancel(row.id);}return originalSave(record);};
+ u.module=async name=>{
+  if(name==='agent/runner')return {ProcessRunner:class{async run(c,a){const key=a[3];if(a[4])state[key]=a[4];return {exitCode:0,stdout:a[4]?'':state[key],stderr:''};}}};
+  if(name==='agent/toolchain')return {detectToolchain:async()=>({simulators:[{udid:'owned'}]}),chooseSimulator:s=>s[0]};
+  if(name==='agent/build')return {buildProject:async()=>({success:true})};
+  if(name==='agent/simulator')return {ensureBooted:async()=>{},runApp:async()=>({udid:'owned'}),screenshot:async root=>{const {mkdir,writeFile}=await import('node:fs/promises');const dir=join(root,'.ios-agent/screenshots');await mkdir(dir,{recursive:true});const file=join(dir,'universal.png');await writeFile(file,'test pixels');return {path:file};}};
+  return originalModule(name);
+ };
+ await u.startBuild(row.id,{captureProfile:'light-xxxl'});await u.jobs.get(row.id);const result=await u.get(row.id);
+ assert.equal(result.status,'cancelled');assert.equal(result.runs[0].status,'cancelled');assert.equal(result.capture,undefined);assert.equal(result.runs[0].captureProfile.restored,true);assert.equal(state.appearance,'dark');assert.equal(u.nativeBusy,false);
+ await assert.rejects(u.image(row.id,result.runs[0].id),/No archived/);
+});

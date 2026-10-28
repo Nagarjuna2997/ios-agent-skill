@@ -1,3 +1,4 @@
+import {PNG} from '../mcp-server/node_modules/pngjs/lib/png.js';
 import {chromium} from '../benchmarks/universal/fidelity/node_modules/playwright/index.mjs';
 import {serve} from './server.mjs';
 import {mkdtemp,rm,mkdir,writeFile} from 'node:fs/promises';import {tmpdir} from 'node:os';import {join,resolve} from 'node:path';
@@ -37,7 +38,7 @@ await page.locator('#simulator').selectOption('');
 // Synthetic history fixture exercises UI semantics, not native execution.
 const historyRow=(await app.universal.list()).find(r=>r.name==='FolderApp');
 const runId='22222222-2222-4222-8222-222222222222';
-const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=','base64');
+const syntheticPNG=new PNG({width:2,height:2});syntheticPNG.data.fill(255);const png=PNG.sync.write(syntheticPNG);
 const {sha256}=await app.universal.module('app-ir/schema');
 historyRow.status='failed';historyRow.error='Synthetic later build failure';historyRow.runs=[{status:'preview-ready',started:'legacy',sourceHash:'legacy'},{id:runId,started:'synthetic test',status:'preview-ready',udid:'synthetic',sourceHash:'fixture-hash',capture:{runId,sourceHash:'fixture-hash',sha256:sha256(png),nativeSourceSHA256:sha256('Recorded <Swift> source')}}];
 await mkdir(join(app.universal.dir(historyRow.id),'captures'));await writeFile(join(app.universal.dir(historyRow.id),'captures',runId+'.png'),png);await writeFile(join(app.universal.dir(historyRow.id),'captures',runId+'.swift'),'Recorded <Swift> source');historyRow.revisionOf={id:originalRow.id,irHash:'synthetic fixture'};
@@ -54,4 +55,9 @@ if(!(await page.locator('#status').textContent()).startsWith('failed'))throw Err
 await page.getByRole('button',{name:'Compare latest captures with parent',exact:true}).click();
 await page.waitForFunction(()=>!document.getElementById('capture-comparison').hidden&&document.getElementById('comparison-diff').complete);
 if(!(await page.locator('#comparison-report').textContent()).includes('requires-review'))throw Error('Raw pixel comparison implied acceptance');
+let profileRequest;
+await page.route('**/api/universal/*/build',route=>{profileRequest=route.request().postDataJSON();return route.fulfill({json:{status:'synthetic request only'}});});
+await page.locator('#capture-profile').selectOption('dark-xxxl');const profileResponse=page.waitForResponse(r=>r.url().endsWith('/build'));await page.getByRole('button',{name:'Build, launch and capture on this Mac',exact:true}).click();
+await profileResponse;
+if(profileRequest?.captureProfile!=='dark-xxxl')throw Error('Selected capture profile was not submitted');
 await page.setViewportSize({width:390,height:844});await page.screenshot({path:join(tmpdir(),'universal-studio-ui.png'),fullPage:true});console.log('Browser import and real project generation passed');}finally{await browser.close();await new Promise(r=>app.server.close(r));await rm(root,{recursive:true,force:true});}

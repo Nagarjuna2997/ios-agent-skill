@@ -1,3 +1,4 @@
+import {captureProfiles,withCaptureProfile} from './capture-profile.mjs';
 // Local Universal IR workspace. Imported source is parsed, never executed.
 import {promises as fs} from 'node:fs';
 import path from 'node:path';
@@ -105,10 +106,10 @@ export class UniversalStudio {
     if(!before||!after)throw Error('Both conversions need an archived native capture');
     const [a,b]=await Promise.all([this.image(parent.id,before.id),this.image(child.id,after.id)]);
     const {comparePNGs}=await this.module('app-ir/compare');const result=comparePNGs(a,b);
-    const describe=(row,run)=>({conversionId:row.id,runId:run.id,started:run.started,sourceHash:run.sourceHash,udid:run.udid,xcode:run.environment?.xcode??null,sdk:run.environment?.iosSimulatorSdk??null});
+    const describe=(row,run)=>({conversionId:row.id,runId:run.id,started:run.started,sourceHash:run.sourceHash,udid:run.udid,xcode:run.environment?.xcode??null,sdk:run.environment?.iosSimulatorSdk??null,captureProfile:run.captureProfile??null});
     return {baseline:describe(parent,before),candidate:describe(child,after),report:result.report,diff:result.diff.toString('base64'),
       status:'requires-review',comparison:'latest archived parent and revision captures; native-to-native only',
-      conditions:'Appearance, Dynamic Type, orientation and UI state are not pinned by these Studio runs. Pixel differences are exploratory and cannot pass the fidelity gate.'};
+      conditions:'Recorded appearance/text-size profiles are shown when available. Orientation and UI state are not pinned; older captures may also lack appearance/text-size profiles. Pixel differences are exploratory and cannot pass the fidelity gate.'};
   }
   async fingerprint(id){const {snapshotFiles,snapshotHash}=await this.module('agent/remote');return snapshotHash(await snapshotFiles(path.join(this.dir(id),'project')));}
   async simulators(){
@@ -117,7 +118,7 @@ export class UniversalStudio {
     return environment.simulators.filter(s=>s.isAvailable).map(({udid,name,runtime,state})=>({udid,name,runtime,state}));
   }
   async startBuild(id,options={}){
-    if(!options||typeof options!=='object'||Array.isArray(options)||Object.keys(options).some(k=>k!=='udid')||
+    if(!options||typeof options!=='object'||Array.isArray(options)||Object.keys(options).some(k=>!['udid','captureProfile'].includes(k))||(options.captureProfile!==undefined&&(typeof options.captureProfile!=='string'||!Object.hasOwn(captureProfiles,options.captureProfile)))||
       (options.udid!==undefined&&(typeof options.udid!=='string'||!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(options.udid))))throw Error('Choose an available simulator UUID');
     if(this.nativeBusy)throw Error('A native conversion is already running');
     const release=this.acquireNative?.()??(()=>{});this.nativeBusy=true;
@@ -137,7 +138,7 @@ export class UniversalStudio {
     const run={id:randomUUID(),...(options.udid?{requestedUDID:options.udid}:{}),started:new Date().toISOString(),status:'running',tests:'not-run',visualFidelity:'not-evaluated'};
     row.runs??=[];row.runs.push(run);const project=path.join(this.dir(row.id),'project');
     try{
-      const [{ProcessRunner},{buildProject},{runApp,screenshot},{detectToolchain,chooseSimulator}]=await Promise.all(['agent/runner','agent/build','agent/simulator','agent/toolchain'].map(n=>this.module(n)));
+      const [{ProcessRunner},{buildProject},{runApp,screenshot,ensureBooted},{detectToolchain,chooseSimulator}]=await Promise.all(['agent/runner','agent/build','agent/simulator','agent/toolchain'].map(n=>this.module(n)));
       const processRunner=new ProcessRunner();const runner={run:(c,a,o={})=>{if(signal.aborted)throw Error('Cancelled');return processRunner.run(c,a,{...o,signal});}};
       const {snapshotFiles,snapshotHash}=await this.module('agent/remote');
       const sourceFiles=await snapshotFiles(project);run.sourceHash=snapshotHash(sourceFiles);
@@ -147,6 +148,7 @@ export class UniversalStudio {
       const device=chooseSimulator(run.environment.simulators,options.udid);if(!device)throw Error(options.udid?'The selected simulator is unavailable; refresh the device list':'Install an available iOS simulator runtime');run.udid=device.udid;await this.save(row);
       run.build=await buildProject(project,runner,{udid:run.udid});await this.save(row);
       if(!run.build.success)throw Error(run.build.toolError??'Native build failed; inspect the recorded build diagnostics');
+      const capture=async()=>{
       row.status='launching';await this.save(row);run.launch=await runApp(project,runner,{udid:run.udid});
       if(run.launch.udid!==run.udid)throw Error('Simulator destination changed');
       // simctl launch returns before the first frame. This bounded delay reduces
@@ -162,6 +164,12 @@ export class UniversalStudio {
       await fs.writeFile(path.join(captures,run.id+'.png'),bytes,{flag:'wx'});
       await fs.writeFile(path.join(captures,run.id+'.swift'),nativeSource,{flag:'wx'});
       run.capture={runId:run.id,sourceHash:run.sourceHash,sha256:sha256(bytes),nativeSourceSHA256:sha256(nativeSource)};
+      };
+      if(options.captureProfile){
+        await ensureBooted(runner,run.udid);
+        await withCaptureProfile({runner,cleanupRunner:processRunner,udid:run.udid,profile:options.captureProfile,record:async evidence=>{run.captureProfile=evidence;await this.save(row);}},capture);
+      }else await capture();
+      if(signal.aborted)throw Error('Cancelled');
       row.capture={...run.capture};
       run.status='preview-ready';row.status='preview-ready';
     }catch(error){row.status=signal.aborted?'cancelled':'failed';row.error=error.message;run.status=row.status;run.error=error.message;delete row.capture;}
