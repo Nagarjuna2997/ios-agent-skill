@@ -94,6 +94,7 @@ export async function serve({
         if(req.method==='GET' && parts.length===3&&parts[2]==='simulators')return send(200,await universal.simulators());
         if(req.method==='GET' && parts.length===3)return send(200,await universal.get(parts[2]));
         if(req.method==='GET' && parts.length===4 && parts[3]==='source')return send(200,await universal.source(parts[2]));
+        if(req.method==='GET' && parts.length===6 && parts[3]==='captures'&&parts[5]==='source')return send(200,await universal.capturedSource(parts[2],parts[4]));
         if(req.method==='GET' && parts.length===5 && parts[3]==='captures')return send(200,await universal.image(parts[2],parts[4]),'image/png');
         if(req.method==='GET' && parts.length===4 && parts[3]==='image')return send(200,await universal.image(parts[2]),'image/png');
         if(req.method!=='POST')return send(405,{error:'Method not allowed'});

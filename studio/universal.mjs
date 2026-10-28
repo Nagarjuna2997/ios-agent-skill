@@ -89,7 +89,11 @@ export class UniversalStudio {
     try{
       const [{ProcessRunner},{buildProject},{runApp,screenshot},{detectToolchain,chooseSimulator}]=await Promise.all(['agent/runner','agent/build','agent/simulator','agent/toolchain'].map(n=>this.module(n)));
       const processRunner=new ProcessRunner();const runner={run:(c,a,o={})=>{if(signal.aborted)throw Error('Cancelled');return processRunner.run(c,a,{...o,signal});}};
-      run.sourceHash=await this.fingerprint(row.id);run.environment=await detectToolchain(runner);
+      const {snapshotFiles,snapshotHash}=await this.module('agent/remote');
+      const sourceFiles=await snapshotFiles(project);run.sourceHash=snapshotHash(sourceFiles);
+      const nativeSource=sourceFiles.find(f=>f.path===row.name+'/Views/RootView.swift')?.content;
+      if(!nativeSource)throw Error('Generated root view missing from source snapshot');
+      run.environment=await detectToolchain(runner);
       const device=chooseSimulator(run.environment.simulators,options.udid);if(!device)throw Error(options.udid?'The selected simulator is unavailable; refresh the device list':'Install an available iOS simulator runtime');run.udid=device.udid;await this.save(row);
       run.build=await buildProject(project,runner,{udid:run.udid});await this.save(row);
       if(!run.build.success)throw Error(run.build.toolError??'Native build failed; inspect the recorded build diagnostics');
@@ -106,7 +110,8 @@ export class UniversalStudio {
       const captures=path.join(this.dir(row.id),'captures');await fs.mkdir(captures,{recursive:true});
       if(!(await fs.realpath(captures)).startsWith(await fs.realpath(this.dir(row.id))+path.sep))throw Error('Capture directory escapes workspace');
       await fs.writeFile(path.join(captures,run.id+'.png'),bytes,{flag:'wx'});
-      run.capture={runId:run.id,sourceHash:run.sourceHash,sha256:sha256(bytes)};
+      await fs.writeFile(path.join(captures,run.id+'.swift'),nativeSource,{flag:'wx'});
+      run.capture={runId:run.id,sourceHash:run.sourceHash,sha256:sha256(bytes),nativeSourceSHA256:sha256(nativeSource)};
       row.capture={...run.capture};
       run.status='preview-ready';row.status='preview-ready';
     }catch(error){row.status=signal.aborted?'cancelled':'failed';row.error=error.message;run.status=row.status;run.error=error.message;delete row.capture;}
@@ -132,6 +137,17 @@ export class UniversalStudio {
     const st=await fs.stat(real);if(!st.isFile()||st.size>16000000)throw Error('Invalid capture');
     const bytes=await fs.readFile(real);const {sha256}=await this.module('app-ir/schema');
     if(sha256(bytes)!==capture.sha256)throw Error('Capture changed');return bytes;
+  }
+  async capturedSource(id,runId){
+    if(typeof runId!=='string'||!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(runId))throw Error('Invalid capture run ID');
+    const row=await this.get(id),run=row.runs?.find(r=>r.id===runId);
+    if(run?.status!=='preview-ready'||run.capture?.runId!==runId||!run.capture.nativeSourceSHA256)throw Error('No archived native source for this run');
+    const file=await fs.realpath(path.join(this.dir(id),'captures',runId+'.swift'));
+    if(!file.startsWith(await fs.realpath(this.dir(id))+path.sep))throw Error('Source escapes workspace');
+    const st=await fs.stat(file);if(!st.isFile()||st.size>2000000)throw Error('Invalid archived source');
+    const bytes=await fs.readFile(file);const {sha256}=await this.module('app-ir/schema');
+    if(sha256(bytes)!==run.capture.nativeSourceSHA256)throw Error('Archived source changed');
+    return {source:bytes.toString('utf8'),sourceHash:run.sourceHash,nativeSourceSHA256:run.capture.nativeSourceSHA256};
   }
   async exportProject(id){
     if(this.jobs.has(id))throw Error('Wait for this conversion to finish');

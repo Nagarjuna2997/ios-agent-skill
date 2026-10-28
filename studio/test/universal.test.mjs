@@ -168,15 +168,17 @@ test('immutable capture history survives rebuilding, source changes and later fa
   }};
   return original(name);
  };
- await u.startBuild(row.id);await u.jobs.get(row.id);const first=(await u.get(row.id)).runs[0];
+ await u.startBuild(row.id);await u.jobs.get(row.id);const first=(await u.get(row.id)).runs[0];const recordedSource=await u.capturedSource(row.id,first.id);assert.match(recordedSource.source,/History/);
  await u.startBuild(row.id);await u.jobs.get(row.id);const second=(await u.get(row.id)).runs[1];
  assert.notEqual(first.id,second.id);assert.equal((await u.image(row.id,first.id)).toString(),'capture-1');assert.equal((await u.image(row.id)).toString(),'capture-2');
  const {appendFile,writeFile}=await import('node:fs/promises');await appendFile(join(u.dir(row.id),'project/History/Views/RootView.swift'),'\n// edit');
- await assert.rejects(u.image(row.id),/Source changed/);assert.equal((await u.image(row.id,second.id)).toString(),'capture-2');
+ await assert.rejects(u.image(row.id),/Source changed/);assert.equal((await u.image(row.id,second.id)).toString(),'capture-2');assert.equal((await u.capturedSource(row.id,first.id)).source,recordedSource.source);
  failBuild=true;await u.startBuild(row.id);await u.jobs.get(row.id);assert.equal((await u.get(row.id)).status,'failed');
  assert.equal((await u.image(row.id,first.id)).toString(),'capture-1');await assert.rejects(u.image(row.id),/No verified/);
  const failed=(await u.get(row.id)).runs[2];await assert.rejects(u.image(row.id,failed.id),/No archived/);await assert.rejects(u.image(row.id,'../outside'),/Invalid/);
  await writeFile(join(u.dir(row.id),'captures',first.id+'.png'),'tampered');await assert.rejects(u.image(row.id,first.id),/Capture changed/);
+ await writeFile(join(u.dir(row.id),'captures',first.id+'.swift'),'tampered');await assert.rejects(u.capturedSource(row.id,first.id),/Archived source changed/);
+ await assert.rejects(u.capturedSource(row.id,'../outside'),/Invalid/);
 });
 test('archived capture HTTP route requires authentication and forwards the run ID',async t=>{
  const {root}=await workspace(t);const app=await serve({port:0,root,repo:resolve('.')});t.after(()=>new Promise(r=>app.server.close(r)));
@@ -184,4 +186,6 @@ test('archived capture HTTP route requires authentication and forwards the run I
  let requested;app.universal.image=async(id,run)=>{requested={id,run};return Buffer.from('fixture');};
  const url=app.origin+'/api/universal/conversion/captures/run';assert.equal((await fetch(url)).status,403);
  const response=await fetch(url,{headers:{'x-studio-token':token}});assert.equal(response.status,200);assert.equal(await response.text(),'fixture');assert.deepEqual(requested,{id:'conversion',run:'run'});
+ app.universal.capturedSource=async(id,run)=>({source:'Recorded <Swift>',id,run});assert.equal((await fetch(url+'/source')).status,403);
+ const sourceResponse=await fetch(url+'/source',{headers:{'x-studio-token':token}});assert.equal(sourceResponse.status,200);assert.deepEqual(await sourceResponse.json(),{source:'Recorded <Swift>',id:'conversion',run:'run'});
 });

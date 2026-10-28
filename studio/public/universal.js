@@ -5,7 +5,7 @@ async function show(id){const previousCapture=selected===id?$("capture-history")
 let captureRequest=0;
 async function loadCapture(id,runId,available=true){
  const request=++captureRequest;
- if(captureURL){URL.revokeObjectURL(captureURL);captureURL=null;}$('capture').hidden=true;
+ if(captureURL){URL.revokeObjectURL(captureURL);captureURL=null;}$('capture').hidden=true;$('archived-source').hidden=true;$('archived-swift').textContent='';
  $('capture-context').textContent=runId?'Archived capture from the selected run; may differ from current source. Not a test or fidelity pass.':'Current capture for unchanged source. Not a test or fidelity pass.';
  if(!available)return;
  const r=await fetch('/api/universal/'+id+(runId?'/captures/'+runId:'/image'),{headers:{'x-studio-token':document.querySelector('meta[name="studio-token"]').content}});
@@ -13,6 +13,11 @@ async function loadCapture(id,runId,available=true){
  if(!r.ok)throw Error((await r.json()).error);
  const blob=await r.blob();if(request!==captureRequest||selected!==id)return;
  captureURL=URL.createObjectURL(blob);$('capture').src=captureURL;$('capture').hidden=false;
+ if(runId){
+  const r=await fetch('/api/universal/'+id+'/captures/'+runId+'/source',{headers:{'x-studio-token':document.querySelector('meta[name="studio-token"]').content}});
+  const source=await r.json();if(request!==captureRequest||selected!==id)return;
+  $('archived-source').hidden=false;$('archived-swift').textContent=r.ok?source.source:'Archived source unavailable: '+source.error;
+ }
 }
 $('capture-history').onchange=()=>act(()=>loadCapture(selected,$('capture-history').value));
 

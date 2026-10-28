@@ -28,12 +28,13 @@ const historyRow=(await app.universal.list()).find(r=>r.name==='FolderApp');
 const runId='22222222-2222-4222-8222-222222222222';
 const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=','base64');
 const {sha256}=await app.universal.module('app-ir/schema');
-historyRow.status='failed';historyRow.error='Synthetic later build failure';historyRow.runs=[{status:'preview-ready',started:'legacy',sourceHash:'legacy'},{id:runId,started:'synthetic test',status:'preview-ready',udid:'synthetic',sourceHash:'fixture-hash',capture:{runId,sourceHash:'fixture-hash',sha256:sha256(png)}}];
-await mkdir(join(app.universal.dir(historyRow.id),'captures'));await writeFile(join(app.universal.dir(historyRow.id),'captures',runId+'.png'),png);await app.universal.save(historyRow);
+historyRow.status='failed';historyRow.error='Synthetic later build failure';historyRow.runs=[{status:'preview-ready',started:'legacy',sourceHash:'legacy'},{id:runId,started:'synthetic test',status:'preview-ready',udid:'synthetic',sourceHash:'fixture-hash',capture:{runId,sourceHash:'fixture-hash',sha256:sha256(png),nativeSourceSHA256:sha256('Recorded <Swift> source')}}];
+await mkdir(join(app.universal.dir(historyRow.id),'captures'));await writeFile(join(app.universal.dir(historyRow.id),'captures',runId+'.png'),png);await writeFile(join(app.universal.dir(historyRow.id),'captures',runId+'.swift'),'Recorded <Swift> source');await app.universal.save(historyRow);
 await page.getByRole('button',{name:'FolderApp · react · generated-unverified',exact:true}).click();
 await page.waitForFunction(()=>document.getElementById('status').textContent.startsWith('failed'));
 if(await page.locator('#capture-history option').count()!==2)throw Error('Legacy run incorrectly offered as immutable history');
 await page.locator('#capture-history').selectOption(runId);
 await page.waitForFunction(()=>!document.getElementById('capture').hidden&&document.getElementById('capture-context').textContent.startsWith('Archived capture'));
+await page.waitForFunction(()=>document.getElementById('archived-swift').textContent==='Recorded <Swift> source');
 if(!(await page.locator('#status').textContent()).startsWith('failed'))throw Error('Historical screenshot erased failure status');
 await page.setViewportSize({width:390,height:844});await page.screenshot({path:join(tmpdir(),'universal-studio-ui.png'),fullPage:true});console.log('Browser import and real project generation passed');}finally{await browser.close();await new Promise(r=>app.server.close(r));await rm(root,{recursive:true,force:true});}

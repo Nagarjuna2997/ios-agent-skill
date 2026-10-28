@@ -130,3 +130,8 @@ can display earlier screenshots even after a failed rebuild or source edit; it
 labels these as archived rather than current. Captures remain hash-checked and
 cannot change the run's test/fidelity result. Older workspaces retain their current
 image but cannot recover historical images that were already overwritten.
+The archived capture also retains the generated `RootView.swift` bytes from the
+same hashed project snapshot. Selecting history exposes that root view separately
+from current source. Both files are checked for tampering; earlier history without
+source snapshots is labelled unavailable. This is a source/evidence comparison,
+not automatic repair or a snapshot of dependencies outside the generated project.
