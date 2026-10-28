@@ -1,6 +1,6 @@
 import {chromium} from '../benchmarks/universal/fidelity/node_modules/playwright/index.mjs';
 import {serve} from './server.mjs';
-import {mkdtemp,rm} from 'node:fs/promises';import {tmpdir} from 'node:os';import {join,resolve} from 'node:path';
+import {mkdtemp,rm,mkdir,writeFile} from 'node:fs/promises';import {tmpdir} from 'node:os';import {join,resolve} from 'node:path';
 const root=await mkdtemp(join(tmpdir(),'universal-ui-'));const app=await serve({port:0,root,repo:resolve('.')});const browser=await chromium.launch({...(process.env.CHROME_BIN?{executablePath:process.env.CHROME_BIN}:{}),headless:true});
 try{const page=await browser.newPage({viewport:{width:1200,height:900}});await page.goto(app.origin+'/universal');await page.getByRole('button',{name:'Inspect source',exact:true}).click();await page.getByRole('button',{name:'Generate new Xcode project',exact:true}).click();await page.waitForFunction(()=>document.getElementById('status').textContent.startsWith('generated-unverified'));const downloading=page.waitForEvent('download');await page.getByRole('button',{name:'Download editable project ZIP',exact:true}).click();const download=await downloading;if(await download.failure())throw Error('Project download failed');await page.locator('#name').fill('SecondApp');await page.getByRole('button',{name:'Inspect source',exact:true}).click();await page.waitForFunction(()=>document.getElementById('title').textContent==='SecondApp');
 let release;const hold=new Promise(r=>release=r);
@@ -23,4 +23,17 @@ await page.getByRole('button',{name:'Refresh devices',exact:true}).click();
 await page.waitForFunction(()=>document.querySelector('#simulator option:checked')?.disabled===true);
 if(await page.locator('#simulator').inputValue()!=='11111111-1111-1111-1111-111111111111')throw Error('Unavailable explicit simulator silently changed');
 await page.locator('#simulator').selectOption('');
+// Synthetic history fixture exercises UI semantics, not native execution.
+const historyRow=(await app.universal.list()).find(r=>r.name==='FolderApp');
+const runId='22222222-2222-4222-8222-222222222222';
+const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=','base64');
+const {sha256}=await app.universal.module('app-ir/schema');
+historyRow.status='failed';historyRow.error='Synthetic later build failure';historyRow.runs=[{status:'preview-ready',started:'legacy',sourceHash:'legacy'},{id:runId,started:'synthetic test',status:'preview-ready',udid:'synthetic',sourceHash:'fixture-hash',capture:{runId,sourceHash:'fixture-hash',sha256:sha256(png)}}];
+await mkdir(join(app.universal.dir(historyRow.id),'captures'));await writeFile(join(app.universal.dir(historyRow.id),'captures',runId+'.png'),png);await app.universal.save(historyRow);
+await page.getByRole('button',{name:'FolderApp · react · generated-unverified',exact:true}).click();
+await page.waitForFunction(()=>document.getElementById('status').textContent.startsWith('failed'));
+if(await page.locator('#capture-history option').count()!==2)throw Error('Legacy run incorrectly offered as immutable history');
+await page.locator('#capture-history').selectOption(runId);
+await page.waitForFunction(()=>!document.getElementById('capture').hidden&&document.getElementById('capture-context').textContent.startsWith('Archived capture'));
+if(!(await page.locator('#status').textContent()).startsWith('failed'))throw Error('Historical screenshot erased failure status');
 await page.setViewportSize({width:390,height:844});await page.screenshot({path:join(tmpdir(),'universal-studio-ui.png'),fullPage:true});console.log('Browser import and real project generation passed');}finally{await browser.close();await new Promise(r=>app.server.close(r));await rm(root,{recursive:true,force:true});}

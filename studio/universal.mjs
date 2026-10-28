@@ -84,7 +84,7 @@ export class UniversalStudio {
     }catch(error){this.nativeBusy=false;release();throw error;}
   }
   async executeBuild(row,signal,options={}){
-    const run={...(options.udid?{requestedUDID:options.udid}:{}),started:new Date().toISOString(),status:'running',tests:'not-run',visualFidelity:'not-evaluated'};
+    const run={id:randomUUID(),...(options.udid?{requestedUDID:options.udid}:{}),started:new Date().toISOString(),status:'running',tests:'not-run',visualFidelity:'not-evaluated'};
     row.runs??=[];row.runs.push(run);const project=path.join(this.dir(row.id),'project');
     try{
       const [{ProcessRunner},{buildProject},{runApp,screenshot},{detectToolchain,chooseSimulator}]=await Promise.all(['agent/runner','agent/build','agent/simulator','agent/toolchain'].map(n=>this.module(n)));
@@ -102,20 +102,36 @@ export class UniversalStudio {
       if(signal.aborted)throw Error('Cancelled');
       if(await this.fingerprint(row.id)!==run.sourceHash)throw Error('Source changed during native verification; screenshot is stale');
       const {sha256}=await this.module('app-ir/schema');
-      row.capture={sourceHash:run.sourceHash,sha256:sha256(await fs.readFile(shot.path))};
+      const bytes=await fs.readFile(shot.path);
+      const captures=path.join(this.dir(row.id),'captures');await fs.mkdir(captures,{recursive:true});
+      if(!(await fs.realpath(captures)).startsWith(await fs.realpath(this.dir(row.id))+path.sep))throw Error('Capture directory escapes workspace');
+      await fs.writeFile(path.join(captures,run.id+'.png'),bytes,{flag:'wx'});
+      run.capture={runId:run.id,sourceHash:run.sourceHash,sha256:sha256(bytes)};
+      row.capture={...run.capture};
       run.status='preview-ready';row.status='preview-ready';
     }catch(error){row.status=signal.aborted?'cancelled':'failed';row.error=error.message;run.status=row.status;run.error=error.message;delete row.capture;}
     finally{run.finished=new Date().toISOString();await this.save(row);}
   }
   cancel(id){this.controllers.get(id)?.abort();}
-  async image(id){
-    const row=await this.get(id);if(row.status!=='preview-ready'||!row.capture)throw Error('No verified current capture');
-    if(await this.fingerprint(id)!==row.capture.sourceHash)throw Error('Source changed; rebuild before viewing this capture');
-    const file=path.join(this.dir(id),'project','.ios-agent','screenshots','universal.png');
+  async image(id,runId){
+    const row=await this.get(id);let capture;
+    if(runId!==undefined){
+      if(typeof runId!=='string'||!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(runId))throw Error('Invalid capture run ID');
+      const run=row.runs?.find(r=>r.id===runId);
+      if(run?.status!=='preview-ready'||run.capture?.runId!==runId)throw Error('No archived capture for this run');
+      capture=run.capture;
+    }else{
+      if(row.status!=='preview-ready'||!row.capture)throw Error('No verified current capture');
+      capture=row.capture;
+      if(await this.fingerprint(id)!==capture.sourceHash)throw Error('Source changed; rebuild before viewing this capture');
+    }
+    if(capture.runId!==undefined&&!/^[a-f0-9-]{36}$/.test(capture.runId))throw Error('Invalid capture run ID');
+    // Older records have only the original current screenshot, not immutable history.
+    const file=capture.runId?path.join(this.dir(id),'captures',capture.runId+'.png'):path.join(this.dir(id),'project','.ios-agent','screenshots','universal.png');
     const real=await fs.realpath(file);if(!real.startsWith(await fs.realpath(this.dir(id))+path.sep))throw Error('Capture escapes workspace');
     const st=await fs.stat(real);if(!st.isFile()||st.size>16000000)throw Error('Invalid capture');
     const bytes=await fs.readFile(real);const {sha256}=await this.module('app-ir/schema');
-    if(sha256(bytes)!==row.capture.sha256)throw Error('Capture changed');return bytes;
+    if(sha256(bytes)!==capture.sha256)throw Error('Capture changed');return bytes;
   }
   async exportProject(id){
     if(this.jobs.has(id))throw Error('Wait for this conversion to finish');

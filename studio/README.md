@@ -124,3 +124,9 @@ Local native evidence is archived at
 HTTP import of a reusable React field, selected-device build/launch, populated
 screenshot and editable Xcode ZIP. The earlier blank capture is preserved too.
 This verifies that local API path, not arbitrary React support or a fidelity pass.
+
+Each new successful native capture is retained under its run ID. **Capture history**
+can display earlier screenshots even after a failed rebuild or source edit; it
+labels these as archived rather than current. Captures remain hash-checked and
+cannot change the run's test/fidelity result. Older workspaces retain their current
+image but cannot recover historical images that were already overwritten.
