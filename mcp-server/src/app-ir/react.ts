@@ -114,8 +114,8 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
     return fail(node,'only bounded literal expressions and direct prop reads are supported');
   }
   const dependencies:Array<{start:number;end:number;nodes:ts.Node[]}>=[];
-  const states:Array<{id:string; initial:boolean; origin:ts.Node}>=[];
-  type Mapping = {start:number; end:number; textBinding?:AppIR['nodes'][number]['textBinding']; action?:AppIR['nodes'][number]['action']; origins:ts.Node[]};
+  const states:Array<{id:string; initial:boolean|string; origin:ts.Node}>=[];
+  type Mapping = {start:number; end:number; textBinding?:AppIR['nodes'][number]['textBinding']; action?:AppIR['nodes'][number]['action']; stringBinding?:string; input?:boolean; placeholder?:string; origins:ts.Node[]};
   const stateMappings:Mapping[]=[];
   const conditionMappings:Array<{start:number;end:number;state:string;branches:Array<{start:number;end:number}|null>}> = [];
   let conditionalDepth=0;
@@ -150,14 +150,14 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
     for (const statement of statements.slice(0,-1)) {
       if (node !== entry || !hasStateImport || !ts.isVariableStatement(statement) || statement.modifiers?.length ||
           statement.declarationList.flags !== ts.NodeFlags.Const || statement.declarationList.declarations.length !== 1) {
-        fail(statement, 'only top-level const boolean useState bindings in the entry component are supported');
+        fail(statement, 'only top-level const boolean/string useState bindings in the entry component are supported');
       }
       const declaration = statement.declarationList.declarations[0]!, call = declaration.initializer;
       if (!ts.isArrayBindingPattern(declaration.name) || declaration.name.elements.length !== 2 || declaration.type ||
           !call || !ts.isCallExpression(call) || !ts.isIdentifier(call.expression) || call.expression.text !== 'useState' ||
           call.typeArguments?.length || call.arguments.length !== 1 ||
-          ![ts.SyntaxKind.TrueKeyword,ts.SyntaxKind.FalseKeyword].includes(call.arguments[0]!.kind)) {
-        fail(declaration, 'useState requires a literal boolean and a [value, setter] binding');
+          !ts.isStringLiteral(call.arguments[0]!)&&![ts.SyntaxKind.TrueKeyword,ts.SyntaxKind.FalseKeyword].includes(call.arguments[0]!.kind)) {
+        fail(declaration, 'useState requires a literal boolean or string and a [value, setter] binding');
       }
       if (states.length >= 16) fail(declaration, 'state count exceeds 16');
       const id = `state-${states.length + 1}`;
@@ -166,7 +166,9 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
         if (scope.has(element.name.text) || components.has(element.name.text) || element.name.text === 'useState' || hasRouterImport && routerNames.includes(element.name.text as typeof routerNames[number])) fail(element, 'state binding shadows another name');
         scope.set(element.name.text, {kind:index === 0 ? 'state' : 'setter', id, origins:[statement]});
       }
-      states.push({id,initial:call.arguments[0]!.kind === ts.SyntaxKind.TrueKeyword,origin:statement});
+      const initial=ts.isStringLiteral(call.arguments[0]!)?call.arguments[0]!.text:call.arguments[0]!.kind===ts.SyntaxKind.TrueKeyword;
+      if(typeof initial==='string'&&(initial.length>4000||/[\r\n\u0000-\u001f]/.test(initial)))fail(call,'string state must be bounded single-line text');
+      states.push({id,initial,origin:statement});
     }
     const start=html.length;
     if (node === entry && hasRouterImport) {
@@ -199,7 +201,7 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
     test=unwrap(test);let negate=false;
     if(ts.isPrefixUnaryExpression(test)&&test.operator===ts.SyntaxKind.ExclamationToken){negate=true;test=unwrap(test.operand);}
     const value=binding(test,scope);
-    if(!value||!('kind' in value)||value.kind!=='state')fail(test,'conditional views require a declared boolean state');
+    if(!value||!('kind' in value)||value.kind!=='state'||typeof states.find(s=>s.id===value.id)?.initial!=='boolean')fail(test,'conditional views require a declared boolean state');
     const start=html.length;append('<div>');
     const branches=[yes,no].map(branch=>{
       if(!branch||unwrap(branch).kind===ts.SyntaxKind.NullKeyword)return null;
@@ -260,15 +262,36 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
     if (!isLink && !/^[a-z][a-z0-9]*$/.test(tag)) fail(node,'namespaced or member elements are unsupported');
     if (conditionalDepth && tag === 'details') fail(node,'disclosure lifecycle inside conditional views is not mapped');
     if (inRoute && tag === 'details') fail(node,'disclosure lifecycle inside routed screens is not mapped');
-    let action:Mapping['action'], textBinding:Mapping['textBinding'];
+    if(tag==='input'){
+      if(textElementDepth||!ts.isJsxSelfClosingElement(node))fail(node,'text input must be self-closing outside text content');
+      const attrs=new Map<string,ts.JsxAttribute>();
+      for(const attr of opening.attributes.properties){if(!ts.isJsxAttribute(attr))fail(attr,'input spreads are unsupported');const key=attr.name.getText(file);if(attrs.has(key)||!['type','aria-label','placeholder','value','onChange'].includes(key))fail(attr,'unsupported or duplicate input attribute');attrs.set(key,attr);}
+      const stringAttr=(key:string)=>{const init=attrs.get(key)?.initializer;if(!init||!ts.isStringLiteral(init))fail(node,'input requires literal '+key);const value=jsxText(init.text,node);if(/[\u0000-\u001f]/.test(value))fail(node,'input labels and placeholders must be single-line');return value;};
+      if(stringAttr('type')!=='text')fail(node,'only text input is supported');const label=stringAttr('aria-label');if(!label.trim())fail(node,'input requires an accessible label');
+      const valueAttr=attrs.get('value')?.initializer,handler=attrs.get('onChange')?.initializer;
+      if(!valueAttr||!ts.isJsxExpression(valueAttr)||!valueAttr.expression||!handler||!ts.isJsxExpression(handler)||!handler.expression)fail(node,'input needs controlled value and onChange');
+      const state=binding(unwrap(valueAttr.expression),scope);if(!state||!('kind' in state)||state.kind!=='state'||typeof states.find(s=>s.id===state.id)?.initial!=='string')fail(node,'input value must reference string state');
+      const fn=unwrap(handler.expression);if(!ts.isArrowFunction(fn)||fn.modifiers?.length||fn.typeParameters?.length||fn.type||fn.parameters.length!==1||ts.isBlock(fn.body))fail(node,'input event requires a single expression callback');
+      const param=fn.parameters[0]!;if(!ts.isIdentifier(param.name)||param.type||param.initializer||param.dotDotDotToken||param.questionToken||param.modifiers?.length)fail(node,'input event requires one plain identifier');
+      const call=unwrap(fn.body);if(!ts.isCallExpression(call)||call.questionDotToken||call.typeArguments?.length||call.arguments.length!==1)fail(node,'input event requires one setter call');
+      if(ts.isIdentifier(call.expression)&&call.expression.text===param.name.text)fail(node,'input event parameter shadows its setter');
+      const setter=binding(call.expression,scope);if(!setter||!('kind' in setter)||setter.kind!=='setter'||setter.id!==state.id)fail(node,'input setter must update its bound state');
+      const arg=unwrap(call.arguments[0]!);if(!ts.isPropertyAccessExpression(arg)||arg.questionDotToken||arg.name.text!=='value'||!ts.isPropertyAccessExpression(arg.expression)||arg.expression.questionDotToken||!['target','currentTarget'].includes(arg.expression.name.text)||!ts.isIdentifier(arg.expression.expression)||arg.expression.expression.text!==param.name.text)fail(node,'input setter must receive its event target value');
+      const start=html.length;append('<p>'+escape(label)+'</p>');spans.push({start,end:html.length,node});stateMappings.push({start,end:html.length,stringBinding:state.id,input:true,placeholder:attrs.has('placeholder')?stringAttr('placeholder'):undefined,origins:[node,...state.origins,...setter.origins]});return;
+    }
+    let action:Mapping['action'], textBinding:Mapping['textBinding'], stringBinding:Mapping['stringBinding'];
     const stateOrigins:ts.Node[]=[];
     const visibleChildren=ts.isJsxElement(node)?node.children.filter(c=>!ts.isJsxText(c)||c.text.trim()):[];
     const conditional=visibleChildren.length===1&&ts.isJsxExpression(visibleChildren[0]!)?visibleChildren[0].expression:undefined;
+    if(conditional&&['p','h1','h2','h3','span','strong'].includes(tag)){
+      const value=binding(unwrap(conditional),scope);
+      if(value&&'kind' in value&&value.kind==='state'&&typeof states.find(s=>s.id===value.id)?.initial==='string'){stringBinding=value.id;stateOrigins.push(...value.origins);}
+    }
     if (conditional && ts.isConditionalExpression(unwrap(conditional)) && ['p','h1','h2','h3','span','strong'].includes(tag)) {
       if (!['p','h1','h2','h3','span','strong'].includes(tag)) fail(node, 'state text requires a dedicated text element');
       const expression=unwrap(conditional) as ts.ConditionalExpression;
       const state=binding(unwrap(expression.condition),scope);
-      if (!state || !('kind' in state) || state.kind !== 'state') fail(expression, 'conditional text requires a supported boolean state');
+      if (!state || !('kind' in state) || state.kind !== 'state' || typeof states.find(s=>s.id===state.id)?.initial!=='boolean') fail(expression, 'conditional text requires a supported boolean state');
       const yes=literal(expression.whenTrue,scope),no=literal(expression.whenFalse,scope);
       const values=[yes,no].map(v=>String(v.value));
       if(values.some(v=>v.trim()!==v||/\s{2}|[\u00a0\u2000-\u200b\u202f\u3000]/.test(v))) fail(expression,'state text must use normalized ordinary spaces');
@@ -297,7 +320,7 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
         const call=unwrap(callback.body);
         if(!ts.isCallExpression(call)||call.typeArguments?.length||call.arguments.length!==1)fail(attr,'event must contain exactly one state assignment');
         const setter=binding(call.expression,scope);
-        if(!setter||!('kind' in setter)||setter.kind!=='setter')fail(attr,'unresolved state setter');
+        if(!setter||!('kind' in setter)||setter.kind!=='setter'||typeof states.find(s=>s.id===setter.id)?.initial!=='boolean')fail(attr,'unresolved state setter');
         const argument=unwrap(call.arguments[0]!);
         if([ts.SyntaxKind.TrueKeyword,ts.SyntaxKind.FalseKeyword].includes(argument.kind))action={operation:'set',state:setter.id,value:argument.kind===ts.SyntaxKind.TrueKeyword};
         else if(ts.isPrefixUnaryExpression(argument)&&argument.operator===ts.SyntaxKind.ExclamationToken){
@@ -336,7 +359,8 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
     if(tag==='button'&&(!action||visibleChildren.some(c=>!ts.isJsxText(c))))fail(node,'button requires one state action and a plain text label');
     if(isLink&&(!action||visibleChildren.some(c=>!ts.isJsxText(c))))fail(node,'Link requires one destination and a plain text label');
     append('>');
-    if(textBinding){const state=states.find(s=>s.id===textBinding.state)!;append(escape(state.initial?textBinding.whenTrue:textBinding.whenFalse));}
+    if(stringBinding){append(escape(states.find(s=>s.id===stringBinding)!.initial as string));}
+    else if(textBinding){const state=states.find(s=>s.id===textBinding.state)!;append(escape(state.initial?textBinding.whenTrue:textBinding.whenFalse));}
     else if(ts.isJsxElement(node)){
       const textElement=['p','h1','h2','h3','span','strong'].includes(tag);
       if(textElement)textElementDepth++;
@@ -344,7 +368,7 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
     }
     append('</'+loweredTag+'>');
     spans.push({start,end:html.length,node});
-    if(action||textBinding)stateMappings.push({start,end:html.length,action,textBinding,origins:stateOrigins});
+    if(action||textBinding||stringBinding)stateMappings.push({start,end:html.length,action,textBinding,stringBinding,origins:stateOrigins});
   }
   component(entry,[]);
   const segments=routeSpans.length?routeSpans:[{id:'home',path:'/',start:0,end:html.length,origin:entry}];
@@ -371,6 +395,7 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
       node.kind='link';node.action={operation:'navigate',screen:destination.id};
     } else if(mapping.action){node.kind='button';node.action=mapping.action;}
     if(mapping.textBinding)node.textBinding=mapping.textBinding;
+    if(mapping.stringBinding){node.stringBinding=mapping.stringBinding;if(mapping.input){node.kind='textfield';if(mapping.placeholder!==undefined)node.placeholder=mapping.placeholder;}else node.text=states.find(s=>s.id===mapping.stringBinding)!.initial as string;}
     dependencies.push({start:mapping.start,end:mapping.end,nodes:mapping.origins});
   }
   const intermediateNode=(range:{start:number;end:number})=>{
@@ -400,13 +425,14 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
   if(states.length){
     ir.schemaVersion='1.1.0';
     ir.states=states.map(s=>({id:s.id,initial:s.initial,evidence:[{source:'source',start:Buffer.byteLength(source.slice(0,s.origin.getStart(file))),end:Buffer.byteLength(source.slice(0,s.origin.end)),certainty:'extracted'}]}));
-    ir.requirements.push({id:'local-boolean-state',area:'state',status:'extracted',description:'Entry-component boolean state, literal text branches and single-step button transitions. No effects, persistence or async events.',evidence:ir.states.flatMap(s=>s.evidence)});
+    ir.requirements.push({id:'local-boolean-state',area:'state',status:'extracted',description:states.some(s=>typeof s.initial==='string')?'Entry-owned boolean/string state, controlled text fields and direct text bindings. No form submission, effects, persistence or async events.':'Entry-component boolean state, literal text branches and single-step button transitions. No effects, persistence or async events.',evidence:ir.states.flatMap(s=>s.evidence)});
   }
   if(routeSpans.length){
     ir.schemaVersion='1.2.0';ir.navigation={initialScreen:routeSpans.find(r=>r.path===initialPath)!.id,routes:routeSpans.map(r=>({screen:r.id,path:r.path}))};
     ir.requirements.push({id:'native-route-stack',area:'navigation',status:'inferred',description:'Explicit MemoryRouter routes and Link pushes become a native stack with a platform Back control. No browser URL, forward history, scroll restoration or deep-link synchronization.',evidence:[{source:'source',start:Buffer.byteLength(source.slice(0,entry.getStart(file))),end:Buffer.byteLength(source.slice(0,entry.end)),certainty:'inferred',note:'Native Back navigation substitutes for router-history back; exact web navigation chrome and scroll restoration are not inferred.'}]});
   }
   if(conditionMappings.length)ir.schemaVersion='1.3.0';
-  ir.sources=[{id:'source',path:sourcePath,sha256:sha256(source),bytes:Buffer.byteLength(source),adapter:conditionMappings.length?'react-conditional-views@1':routeSpans.length?'react-memory-router@1':states.length?'react-boolean-state@1':'react-static@1'}];
+  if(states.some(s=>typeof s.initial==='string'))ir.schemaVersion='1.4.0';
+  ir.sources=[{id:'source',path:sourcePath,sha256:sha256(source),bytes:Buffer.byteLength(source),adapter:states.some(s=>typeof s.initial==='string')?'react-controlled-text@1':conditionMappings.length?'react-conditional-views@1':routeSpans.length?'react-memory-router@1':states.length?'react-boolean-state@1':'react-static@1'}];
   return AppIRSchema.parse(ir);
 }

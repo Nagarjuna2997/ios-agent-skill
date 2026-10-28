@@ -291,3 +291,15 @@ All 44 archived hashes were rechecked; no native execution was repeated. The
 original failed-baseline repair verdict is preserved. This does not enable the
 UIKit production renderer, approve hosted captures or publish npm. Future repairs
 still require complete verification against matching pins and reference.
+
+### Controlled React text input (IR 1.4.0)
+
+Entry-owned string state now supports controlled text inputs and dedicated text
+bindings. The importer validates a single event-target-value assignment to the
+same state as the field, with explicit accessible labels and no executed code.
+The generator emits SwiftUI TextField bindings and preserves boolean transitions.
+Schema validation rejects mismatched state types, invalid controls and older
+versions carrying the new fields. Existing IR 1.0–1.3 output is preserved.
+See [the input fixture](../../benchmarks/universal/react-input/README.md) for exact
+syntax, limitations and outstanding native acceptance. This is not general forms,
+authentication, validation or persistence support.

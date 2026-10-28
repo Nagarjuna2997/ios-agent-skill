@@ -15,7 +15,7 @@ export function renderSwiftUI(value: unknown, options: { disclosureStyle?: "plat
   if (ir.limitations.length) throw Error('Resolve unsupported input before generating. Inspect IR limitations; no lossy conversion is implicit.');
   const symbol = (id: string) => 'node_' + id.replaceAll('-','_');
   const state = [...(ir.navigation ? ['    @State private var routePath: [String] = []'] : []), ...ir.nodes.filter(n => n.kind === 'disclosure').map(n => `    @State private var expanded_${symbol(n.id)} = false;`),
-    ...(ir.states ?? []).map(s => `    @State private var state_${symbol(s.id)} = ${s.initial};`)].join('\n');
+    ...(ir.states ?? []).map(s => `    @State private var state_${symbol(s.id)} = ${typeof s.initial==='string'?swiftString(s.initial):s.initial};`)].join('\n');
   const views = ir.nodes.map(n => {
     if(n.kind === 'conditional' && n.condition) {
       const c=n.condition;
@@ -23,10 +23,10 @@ export function renderSwiftUI(value: unknown, options: { disclosureStyle?: "plat
     }
     const s = n.style;
     const children = n.children.map(c => `            ${symbol(c)}`).join('\n');
-    const content = n.textBinding ? `(state_${symbol(n.textBinding.state)} ? ${swiftString(n.textBinding.whenTrue)} : ${swiftString(n.textBinding.whenFalse)})` : swiftString(n.text ?? '');
+    const content = n.stringBinding && n.kind==='text' ? `collapsedInputText(state_${symbol(n.stringBinding)})` : n.textBinding ? `(state_${symbol(n.textBinding.state)} ? ${swiftString(n.textBinding.whenTrue)} : ${swiftString(n.textBinding.whenFalse)})` : swiftString(n.text ?? '');
     const textView = options.instrumentTypography ? `MeasuredText(nodeID: ${swiftString(n.id)}, content: ${content})` : `Text(verbatim: ${content})`;
     const action = n.action?.operation === 'toggle' ? `state_${symbol(n.action.state)}.toggle()` : n.action?.operation === 'set' ? `state_${symbol(n.action.state)} = ${n.action.value}` : '';
-    let view = n.kind === 'text' ? textView : n.kind === 'link' && n.action?.operation === 'navigate'
+    let view = n.kind === 'textfield' && n.stringBinding ? `TextField("", text: $state_${symbol(n.stringBinding)}, prompt: Text(verbatim: ${swiftString(n.placeholder??'')}))\n        .accessibilityLabel(Text(verbatim: ${swiftString(n.text??'')}))\n        .textFieldStyle(.roundedBorder)\n        .frame(minHeight: 44)` : n.kind === 'text' ? textView : n.kind === 'link' && n.action?.operation === 'navigate'
       ? `NavigationLink(value: ${swiftString(n.action.screen)}) { ${textView}.frame(minHeight: 44) }\n        .buttonStyle(.bordered)` : n.kind === 'button'
       ? `Button { ${action} } label: { ${textView} }\n        .buttonStyle(.bordered)\n        .frame(minHeight: 44)` : n.kind === 'disclosure'
       ? `DisclosureGroup(isExpanded: $expanded_${symbol(n.id)}) {\n${children}\n        } label: { ${textView} }`
@@ -73,7 +73,12 @@ private struct ImportedDisclosureStyle: DisclosureGroupStyle {
     }
 }
 ` : '';
-  return {source:`import SwiftUI\n\nstruct RootView: View {\n${state}\n${scales}\n    var body: some View {\n        ${body}\n    }\n${routedViews}\n${views}\n}\n\n${disclosureStyle}\n${options.instrumentTypography ? typographyProbeSwift : ''}\n#Preview { RootView() }\n`,mappings:ir.nodes.map(n => ({node:n.id,symbol:symbol(n.id),evidence:n.evidence}))};
+  const stringTextHelper=ir.nodes.some(n=>n.kind==='text'&&n.stringBinding)?`
+private func collapsedInputText(_ value: String) -> String {
+    value.split(whereSeparator: { [" ", "\\t", "\\n", "\\r", "\\u{c}"].contains(String($0)) }).joined(separator: " ")
+}
+`:'';
+  return {source:`import SwiftUI\n\nstruct RootView: View {\n${state}\n${scales}\n    var body: some View {\n        ${body}\n    }\n${routedViews}\n${views}\n}\n\n${disclosureStyle}${stringTextHelper}\n${options.instrumentTypography ? typographyProbeSwift : ''}\n#Preview { RootView() }\n`,mappings:ir.nodes.map(n => ({node:n.id,symbol:symbol(n.id),evidence:n.evidence}))};
 }
 export async function generateProject(value: unknown, output: string, options: { disclosureStyle?: "platform" | "leading"; instrumentTypography?: boolean } = {}): Promise<{project: string; sourceHash: string; status: 'generated-unverified'}> {
   const ir = AppIRSchema.parse(value);
