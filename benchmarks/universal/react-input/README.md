@@ -66,3 +66,8 @@ The rejected native-label experiment and the earlier missing-hit-region run are
 also archived separately. This remains incomplete native acceptance, not a
 fidelity pass. The borrowed-component fixture has separate portable/compiler
 evidence and must not inherit these native results.
+
+Failed native tests now attempt to export their screenshot attachments before
+returning a failure. A successful export does not create a passing checkpoint;
+missing result bundles or export errors are retained as `attachmentError` and
+shown by the evidence viewer. The original failed test verdict remains primary.

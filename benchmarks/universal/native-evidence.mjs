@@ -46,7 +46,7 @@ export async function nativeEvidencePanels(report,{read,image,escape}){
     }
    }
   }
-  panels.push(`<section><h2>${label} native tests</h2><dl><dt>Recorded status</dt><dd>${escape(tests?.status)}</dd>${['passed','failed','skipped'].map(k=>`<dt>${k}</dt><dd>${escape(tests?.[k])}</dd>`).join('')}</dl><div class="images">${captures.length?captures.join(''):'<p>Screenshots unavailable</p>'}</div><details><summary>Recorded test evidence</summary><pre>${escape(JSON.stringify(tests??{status:'unavailable'},null,2))}</pre></details></section>`);
+  panels.push(`<section><h2>${label} native tests</h2><dl><dt>Recorded status</dt><dd>${escape(tests?.status)}</dd>${['passed','failed','skipped'].map(k=>`<dt>${k}</dt><dd>${escape(tests?.[k])}</dd>`).join('')}<dt>Capture export</dt><dd>${escape(row?.attachmentError??(row?.attachments?'recorded':'unavailable'))}</dd></dl><div class="images">${captures.length?captures.join(''):'<p>Screenshots unavailable</p>'}</div><details><summary>Recorded test evidence</summary><pre>${escape(JSON.stringify(tests??{status:'unavailable'},null,2))}</pre></details></section>`);
  }
  return `<section><h2>Native behavior evidence</h2><p>Visual fidelity was not evaluated. This viewer displays saved results; it does not rerun tests or verify checkpoint hashes. Missing artifacts remain unavailable.</p><dl><dt>Fixture</dt><dd>${escape(report.fixture)}</dd><dt>Expected tests per size</dt><dd>${expected}</dd><dt>Recorded build</dt><dd>${report.build?.success===true?'passed':report.build?.success===false?'failed':'unavailable'}</dd><dt>Phase</dt><dd>${escape(report.phase)}</dd><dt>Recorded error</dt><dd>${escape(report.error??'none recorded')}</dd></dl></section>${panels.join('')}`;
 }

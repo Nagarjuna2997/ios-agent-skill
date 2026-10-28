@@ -116,3 +116,7 @@ test('reset-input fixture requires four native tests and preserves the prior thr
  report.large.tests.passed=4;report.xxxl.tests.passed=4;
  const {html}=await render();assert.ok(html.includes('react-controlled-text-reset'));
 }));
+test('capture export errors remain explicit and escaped in the viewer',async()=>nativeFixture(async({report,render})=>{
+ report.status='failed';report.large={tests:{...result(),status:'failed',passed:2,failed:1},attachmentError:'<script>export unavailable</script>'};
+ const {html}=await render();assert.ok(html.includes('Capture export'));assert.ok(html.includes('&lt;script&gt;export unavailable&lt;/script&gt;'));assert.ok(!html.includes('<script>export unavailable</script>'));
+}));

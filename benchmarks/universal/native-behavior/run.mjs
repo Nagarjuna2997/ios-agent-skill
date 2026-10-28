@@ -79,7 +79,7 @@ try{
  });await save();report.phase='tests';await save();
  for(const [key,size] of [['large','large'],['xxxl','extra-extra-extra-large']]){
   report[key]=await testEvidence({root,folder:project.folder,key,journal,files,expectedTests,
-   runTests:async()=>{await ensureSimulator();await command('xcrun',['simctl','ui',udid,'content_size',size]);return testProject(project.folder,runner,udid);},record:async tests=>{report[key]={tests};await save();},
+   runTests:async()=>{await ensureSimulator();await command('xcrun',['simctl','ui',udid,'content_size',size]);return testProject(project.folder,runner,udid);},record:async(tests,artifacts={})=>{report[key]={tests,...artifacts};await save();},
    exportAttachments:(bundle,destination)=>command('xcrun',['xcresulttool','export','attachments','--path',bundle,'--output-path',destination]),
   });await save();
  }

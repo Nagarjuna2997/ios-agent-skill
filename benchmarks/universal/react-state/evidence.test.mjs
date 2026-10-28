@@ -45,3 +45,18 @@ test('a reduced passing subset cannot satisfy the declared fixture test count',a
  await assert.rejects(readFile(join(context.root,'checkpoints/large.json')),/ENOENT/);
  await testEvidence({...context.options,expectedTests:3});
 });
+test('failed native tests export reviewable captures but cannot checkpoint a pass',async t=>{
+ const context=await setup(t),records=[];
+ await assert.rejects(testEvidence({...context.options,runTests:async()=>({...await context.options.runTests(),status:'failed',passed:2,failed:1}),record:async(tests,artifacts)=>records.push({tests,...artifacts})}),/failed or unavailable/);
+ const last=records.at(-1);assert.equal(last.tests.failed,1);assert.ok(last.attachments);
+ assert.equal(await readFile(join(last.attachments,'screenshot.png'),'utf8'),'synthetic test artifact');
+ await assert.rejects(readFile(join(context.root,'checkpoints/large.json')),/ENOENT/);
+});
+test('missing or failed exports stay explicit and never mask failed test outcomes',async t=>{
+ const context=await setup(t),records=[];
+ for(const bundle of ['result.xcresult',undefined]){
+  await assert.rejects(testEvidence({...context.options,runTests:async()=>({...await context.options.runTests(),status:'failed',resultBundle:bundle}),exportAttachments:async()=>{throw Error('export interrupted');},record:async(tests,artifacts)=>records.push({tests,...artifacts})}),/failed or unavailable/);
+  assert.match(records.at(-1).attachmentError,/export interrupted|bundle unavailable/);
+ }
+ await assert.rejects(readFile(join(context.root,'checkpoints/large.json')),/ENOENT/);
+});
