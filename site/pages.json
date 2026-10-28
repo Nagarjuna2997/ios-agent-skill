@@ -1071,5 +1071,9 @@
     "title": "Native token-efficiency controls (opt-in)",
     "description": "Configure opt-in MCP tool groups, local project memory, repeated-failure controls and usage reports with explicit verification limits.",
     "datePublished": "2026-10-28"
+  },
+  "guides/mcp-aimlapi.html": {
+    "title": "AI/ML API connection",
+    "description": "Run the hosted AI/ML API model gateway beside iOS Agent MCP on your own account for icon and asset concepts, with clear boundaries and no verification claims."
   }
 }

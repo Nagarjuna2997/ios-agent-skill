@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "ios-agent": {
+      "command": "npx",
+      "args": ["-y", "ios-agent-mcp@latest"]
+    },
+    "aimlapi": {
+      "url": "https://mcp.aimlapi.com/mcp"
+    }
+  }
+}

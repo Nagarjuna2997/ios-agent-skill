@@ -51,6 +51,7 @@ Worked sessions: `examples.md`.
 | Muse Code | Local stdio setup below; existing AGENTS.md and Claude-format skills | MCP discovery and Stop command hook verified; model session unverified |
 | Grok Build | [Local stdio setup](grok.md) | 82-tool discovery verified with Grok Build 1.0.70; model session unverified |
 | Gemini CLI | GitHub extension or local MCP configuration | GEMINI instructions, analysis and knowledge tools |
+| AI/ML API (optional companion) | [Hosted connector beside the local server](aimlapi.md) | Model gateway on the user's own account for icon and asset concepts; unverified here |
 
 ## Codex
 

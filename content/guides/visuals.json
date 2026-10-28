@@ -1779,5 +1779,18 @@
       "Local evidence, environment fingerprints and repair limits",
       "Build verification and isolated benchmark receipts"
     ]
+  },
+  "docs/mcp/aimlapi.md": {
+    "flow": [
+      "Connect the local iOS Agent server",
+      "Add the hosted AI/ML API connector",
+      "Sign in with your own account",
+      "Generate concepts, then build assets locally"
+    ],
+    "architecture": [
+      "Your MCP client",
+      "iOS Agent MCP (local)",
+      "AI/ML API MCP (hosted, user account)"
+    ]
   }
 }

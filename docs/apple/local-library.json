@@ -3082,6 +3082,13 @@
       "hash": "1dc85cf83e1903fa48115aa954963898d1be85494f1fecfb5cab00b5e2697863"
     },
     {
+      "path": "docs/mcp/aimlapi.md",
+      "title": "AI/ML API connection",
+      "kind": "guide",
+      "characters": 4324,
+      "hash": "f6331f3773c1fc01a58f8d04fa2aa515259692447e6811a8e005a06b5c9558d2"
+    },
+    {
       "path": "docs/mcp/examples.md",
       "title": "MCP Usage Examples",
       "kind": "guide",
@@ -3099,8 +3106,8 @@
       "path": "docs/mcp/installation.md",
       "title": "Installing the iOS Agent MCP Server",
       "kind": "guide",
-      "characters": 15755,
-      "hash": "a7a2067ba4dddabecc72a4ebb7f0d6647e7d0c315cc85ae047669ff9389c55f5"
+      "characters": 15934,
+      "hash": "df69d99b28db6d0210a71ad07b3fa568abef88700235e6d0b09bfe38bdb9a166"
     },
     {
       "path": "docs/mcp/knowledge-server.md",
@@ -4578,6 +4585,13 @@
       "kind": "source",
       "characters": 1621,
       "hash": "748ce8ad3627f9f37f4f9cbb8467fe390dc9bac14dd2fcd4febebfa0234615d9"
+    },
+    {
+      "path": "templates/clients/aimlapi-cursor.json",
+      "title": "aimlapi-cursor.json",
+      "kind": "source",
+      "characters": 187,
+      "hash": "d2d1fdc16533edfed9d0c7c37eef7becba482838d03fd6c6795f88119067ca68"
     },
     {
       "path": "templates/clients/muse-settings.json",

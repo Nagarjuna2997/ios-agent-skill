@@ -161,6 +161,8 @@ Included as an experimental tool in 2.7.1: optional `private_feedback` keeps app
 | Grok Build | [Local MCP setup](docs/mcp/grok.md) using the existing server. Grok web/API connections are separate. |
 | Muse Code | Skill discovery, MCP discovery (the 36-tool 2.7.0 server) and a Stop hook verified; model sessions and observer behavior remain unverified. |
 
+Optional companion: an [AI/ML API connector](docs/mcp/aimlapi.md) can run beside the local server for icon and asset concepts on the user's own account. It is not bundled, called or verified by this project.
+
 The project focuses on these five families. For another client, [open a client-support request](https://github.com/Nagarjuna2997/ios-agent-skill/issues/new?template=client_support.md) or add a 👍 to an existing request. Votes inform priorities alongside feasibility and testing; they do not guarantee delivery. Existing experimental adapters are not actively maintained.
 
 `install.sh` is optional: it installs source guidance for a chosen local client, not the MCP server or a browser plugin. Run `bash install.sh --help` after cloning. Most users should use the client setup guide above.
