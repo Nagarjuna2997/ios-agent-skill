@@ -256,3 +256,17 @@ the same bounded local-file readers and importers as the CLI. Unsupported adapte
 are rejected by the tool schema. This read-only tool returns IR and limitations;
 it does not generate, execute, build, score or publish an app. Source content is
 returned to the connected client, so choose non-sensitive files.
+
+### Local React modules
+
+The CLI/MCP file importer now resolves a bounded tree of relative `.tsx` component
+imports. It reads each source once, rejects cycles/escapes/aliases/name collisions,
+and verifies that JSX components are visible in their original module before
+linking through the existing parser. Imported JavaScript is never executed.
+Source hashes and UTF-8 provenance remain tied to each original file, including
+non-ASCII comments in removed import declarations. Existing single-file imports
+retain their previous IR. Studio pasted source remains single-file.
+
+See [the module fixture](../../benchmarks/universal/react-modules/README.md) for
+supported grammar and limits. This is not a bundler, Next.js adapter or package
+resolver. Native execution and fidelity of the new fixture remain unverified.

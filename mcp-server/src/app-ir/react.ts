@@ -1,13 +1,11 @@
 // Static syntax adapter. Never imports, evaluates, bundles or installs the input project.
 import ts from 'typescript';
-import { basename } from 'node:path';
-import { htmlToIR, readBoundedFile } from './html.js';
+import { htmlToIR } from './html.js';
 import { AppIRSchema, sha256, type AppIR } from './schema.js';
 import { absoluteRoute, readRoutes, routerNames } from './react-routes.js';
 
 export async function importReact(file: string, name = 'ImportedApp'): Promise<AppIR> {
-  const bytes = await readBoundedFile(file);
-  return reactToIR(new TextDecoder('utf-8', {fatal:true}).decode(bytes), basename(file), name);
+  return (await import('./react-project.js')).importReactProject(file,name);
 }
 /** One parameterless entry and same-file components with bounded literal props.
  * Unsupported executable constructs fail closed rather than yielding misleading native output.
