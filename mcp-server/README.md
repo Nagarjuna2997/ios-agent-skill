@@ -2,9 +2,11 @@
 
 [Explore the website](https://nagarjuna2997.github.io/ios-agent-skill/) · [Choose your AI and install](https://nagarjuna2997.github.io/ios-agent-skill/install.html)
 
-## Version 2.10.2: design workflows and project readiness
+## Version 2.10.3: experimental native conversion
 
-2.10.2 includes plan-driven design, sample data, screenshot critique/refinement, generated-app tests, iPad evidence, remote build support and separately approved shipping steps. Availability and App Store readiness reviews now use target-specific evidence. Runtime and provider limitations remain explicit; live signed Apple distribution is unverified.
+Adds the experimental Universal App IR pipeline: bounded HTML, React/TSX, static Vue and Svelte inputs can generate editable native SwiftUI projects. React includes supported literal props/defaults, primitive constants, typed syntax, controlled state/events and flat memory routes. Explicit centered horizontal rows share one native layout mapping. Unsupported syntax fails explicitly; imported application code is never executed.
+
+Evidence comparison, resumable checks, reference approval and separately authorized baseline promotion remain distinct. This is not arbitrary framework conversion or a completed visual-fidelity/repair system. Native builds and simulator evidence cover specific fixtures, not every supported combination. Existing iOS build, review and readiness workflows remain available.
 
 2.10.0 adds the `/ios-build` agent. Describe an app in one sentence and it plans the screens and capabilities, writes PLAN.md with a budget, creates the Xcode project, writes the SwiftUI code, builds and fixes errors (at most 8 attempts and 25 minutes per cycle), launches the app in the iOS Simulator, screenshots each screen and writes RUN_REPORT.md. Thirteen `ios_*` tools drive it, and 41 capability modules supply sign-in, payments, maps, charts, widgets and more. Every module is marked `untested` until its own verify run passes on a Mac. [How the agent works and what has been verified](https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/tooling/ios-build-agent.md).
 

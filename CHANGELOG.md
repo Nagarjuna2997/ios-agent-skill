@@ -6,7 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
-### Experimental Universal App IR foundation (not published)
+### npm 2.10.3 — release preparation 2026-10-28
+
+- Package the experimental Universal App IR, bounded HTML/React/TSX/static Vue/Svelte importers and native SwiftUI generator. React supports primitive constants, prop defaults, erased types and explicitly mapped state/events/navigation.
+- Add shared IR 1.5 horizontal rows with conservative sizing checks. Unsupported flex behavior and nested row layouts remain blocked.
+- Include evidence comparison, resumable verification and separate reference/baseline authorization controls. Full fidelity, arbitrary framework conversion and autonomous repair are not claimed complete.
+- Refresh six compatible dependency versions from npm audit. Two high-severity audit findings remain for Zod and its simulator-package dependency path; npm reports no fix within current constraints. A Zod major-version migration needs separate compatibility validation.
+- Studio remains a repository application; it is not bundled as an npm-hosted service. Native compilation and simulator claims are fixture-specific.
+
+
+### Experimental Universal App IR foundation
 
 - Add a versioned, bounded IR with source hashes/ranges, graph validation and explicit unsupported/missing requirements.
 - Add read-only local HTML inspection through CLI/MCP and native SwiftUI generation into new directories; no imported scripts or WebView conversion.
