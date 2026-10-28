@@ -72,7 +72,7 @@ The renderer emits SwiftUI Text, VStack, ScrollView and DisclosureGroup with loc
 | 6. React/Next adapters | 5 for full completion | AST/static evidence only; backend stays server-side; fixture builds/tests/captures; dynamic ambiguity reported | Partial: bounded local React modules, literal props/expressions, children, boolean state/actions, conditional views, controlled text inputs and flat MemoryRouter routes; Next.js, effects and general state/events remain unsupported |
 | 7. Screenshot/Figma ingestion | 4 | Authorized image/design snapshots, visible facts separated from hidden requirements, traceable reconstruction | Planned |
 | 8. Flutter/React Native/other adapters | 6 | Per-adapter independent fixtures and native replacement mapping | Partial: static Vue/Svelte imports with rejection tests; native verification pending. Flutter, React Native and Angular remain planned |
-| 9. Source synchronization | Stable node identity | Three-way source/IR/native diff, no overwrites on conflicts, regression tests | Planned |
+| 9. Source synchronization | Stable node identity | Three-way source/IR/native diff, no overwrites on conflicts, regression tests | Partial: conservative file-level three-way reconciliation with review bundles; semantic merges and stable-identity source/IR synchronization remain planned |
 | 10. Studio/roles/provider expansion | Proven contracts | Real events and evidence, provider capability negotiation, cancellation, shared checkpoints | Partial: offline evidence viewer plus local Studio import/generation, folder import, build/launch/capture controls and project ZIP export; selected-device local HTTP build/launch/capture/export verified for one reusable React fixture; browser-native interaction, fidelity and autonomous repair integration remain open |
 | 11. Release preparation | Independent review and E2E gates | Compatibility documentation, truthful support matrix, explicit release authorization | Not requested for this branch |
 
@@ -331,3 +331,21 @@ The Studio smoke did not run native interactions or establish visual fidelity.
 Separate input tests passed typing, reset and state retention at Large and XXXL;
 the accessibility audit still failed at both sizes. Those failures are preserved
 and do not become passing checkpoints.
+
+### Conservative source reconciliation
+
+`app-ir reconcile BASE_SWIFT LOCAL_SWIFT GENERATED_SWIFT NEW_REVIEW_DIRECTORY`
+compares the previous generated source, the developer's current source, and newly
+regenerated source. It preserves byte-for-byte local edits when generation has not
+changed, chooses new generation when local source is unchanged, and accepts
+identical edits on both sides. If both sides differ, it emits a conflict report
+and all three inputs, with no candidate Swift file. Even non-overlapping edits
+require review: semantic and line-level merges are not yet implemented.
+
+The command never edits the project. It reserves a new directory, writes exact
+input copies and any candidate, then writes `report.json` last. A missing report
+means incomplete output. CLI exit 2 means conflict; exit 0 means a review bundle
+was produced, not compilation or acceptance. Inputs must be bounded UTF-8 text
+files; symlink leaves and existing output directories are refused. Developers
+must keep the correct prior base; hashes identify supplied bytes but do not prove
+their provenance. No source/IR stable-identity synchronization is claimed yet.
