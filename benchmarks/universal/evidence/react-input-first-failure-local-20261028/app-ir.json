@@ -1,0 +1,388 @@
+{
+  "schemaVersion": "1.4.0",
+  "mode": "faithful",
+  "name": "WalkForm",
+  "sources": [
+    {
+      "id": "source",
+      "path": "App.tsx",
+      "sha256": "3beb1a61626826e2fa3180e8bbaf59497b336e19f85bb2e2cdd0e04cc94800db",
+      "bytes": 735,
+      "adapter": "react-controlled-text@1"
+    }
+  ],
+  "screens": [
+    {
+      "id": "home",
+      "title": "WalkForm",
+      "root": "node-1"
+    }
+  ],
+  "states": [
+    {
+      "id": "state-1",
+      "initial": "",
+      "evidence": [
+        {
+          "source": "source",
+          "start": 66,
+          "end": 100,
+          "certainty": "extracted"
+        }
+      ]
+    },
+    {
+      "id": "state-2",
+      "initial": "River walk",
+      "evidence": [
+        {
+          "source": "source",
+          "start": 103,
+          "end": 161,
+          "certainty": "extracted"
+        }
+      ]
+    },
+    {
+      "id": "state-3",
+      "initial": true,
+      "evidence": [
+        {
+          "source": "source",
+          "start": 164,
+          "end": 206,
+          "certainty": "extracted"
+        }
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "id": "node-3",
+      "kind": "text",
+      "text": "Plan your walk",
+      "children": [],
+      "style": {
+        "fontSize": 32,
+        "bold": true
+      },
+      "evidence": [
+        {
+          "source": "source",
+          "start": 248,
+          "end": 271,
+          "certainty": "extracted"
+        }
+      ]
+    },
+    {
+      "id": "node-4",
+      "kind": "textfield",
+      "text": "Your name",
+      "stringBinding": "state-1",
+      "placeholder": "Enter your name",
+      "children": [],
+      "style": {},
+      "evidence": [
+        {
+          "source": "source",
+          "start": 276,
+          "end": 408,
+          "certainty": "extracted"
+        },
+        {
+          "source": "source",
+          "start": 66,
+          "end": 100,
+          "certainty": "extracted"
+        }
+      ]
+    },
+    {
+      "id": "node-5",
+      "kind": "text",
+      "text": "",
+      "stringBinding": "state-1",
+      "children": [],
+      "style": {},
+      "evidence": [
+        {
+          "source": "source",
+          "start": 413,
+          "end": 426,
+          "certainty": "extracted"
+        },
+        {
+          "source": "source",
+          "start": 66,
+          "end": 100,
+          "certainty": "extracted"
+        }
+      ]
+    },
+    {
+      "id": "node-9",
+      "kind": "textfield",
+      "text": "Destination",
+      "stringBinding": "state-2",
+      "children": [],
+      "style": {},
+      "evidence": [
+        {
+          "source": "source",
+          "start": 456,
+          "end": 581,
+          "certainty": "extracted"
+        },
+        {
+          "source": "source",
+          "start": 432,
+          "end": 628,
+          "certainty": "extracted"
+        },
+        {
+          "source": "source",
+          "start": 164,
+          "end": 206,
+          "certainty": "extracted"
+        },
+        {
+          "source": "source",
+          "start": 103,
+          "end": 161,
+          "certainty": "extracted"
+        }
+      ]
+    },
+    {
+      "id": "node-10",
+      "kind": "text",
+      "text": "River walk",
+      "stringBinding": "state-2",
+      "children": [],
+      "style": {},
+      "evidence": [
+        {
+          "source": "source",
+          "start": 588,
+          "end": 608,
+          "certainty": "extracted"
+        },
+        {
+          "source": "source",
+          "start": 432,
+          "end": 628,
+          "certainty": "extracted"
+        },
+        {
+          "source": "source",
+          "start": 164,
+          "end": 206,
+          "certainty": "extracted"
+        },
+        {
+          "source": "source",
+          "start": 103,
+          "end": 161,
+          "certainty": "extracted"
+        }
+      ]
+    },
+    {
+      "id": "node-8",
+      "kind": "column",
+      "children": [
+        "node-9",
+        "node-10"
+      ],
+      "style": {},
+      "evidence": [
+        {
+          "source": "source",
+          "start": 440,
+          "end": 623,
+          "certainty": "extracted"
+        },
+        {
+          "source": "source",
+          "start": 432,
+          "end": 628,
+          "certainty": "extracted"
+        },
+        {
+          "source": "source",
+          "start": 164,
+          "end": 206,
+          "certainty": "extracted"
+        }
+      ]
+    },
+    {
+      "id": "node-6",
+      "kind": "conditional",
+      "condition": {
+        "state": "state-3",
+        "whenTrue": "node-8",
+        "whenFalse": null
+      },
+      "children": [
+        "node-8"
+      ],
+      "style": {},
+      "evidence": [
+        {
+          "source": "source",
+          "start": 432,
+          "end": 628,
+          "certainty": "extracted"
+        },
+        {
+          "source": "source",
+          "start": 164,
+          "end": 206,
+          "certainty": "extracted"
+        }
+      ]
+    },
+    {
+      "id": "node-11",
+      "kind": "button",
+      "text": "Show or hide destination",
+      "action": {
+        "operation": "toggle",
+        "state": "state-3"
+      },
+      "children": [],
+      "style": {},
+      "evidence": [
+        {
+          "source": "source",
+          "start": 634,
+          "end": 721,
+          "certainty": "extracted"
+        },
+        {
+          "source": "source",
+          "start": 642,
+          "end": 687,
+          "certainty": "extracted"
+        },
+        {
+          "source": "source",
+          "start": 164,
+          "end": 206,
+          "certainty": "extracted"
+        }
+      ]
+    },
+    {
+      "id": "node-2",
+      "kind": "column",
+      "children": [
+        "node-3",
+        "node-4",
+        "node-5",
+        "node-6",
+        "node-11"
+      ],
+      "style": {
+        "padding": 24
+      },
+      "evidence": [
+        {
+          "source": "source",
+          "start": 216,
+          "end": 731,
+          "certainty": "extracted"
+        }
+      ]
+    },
+    {
+      "id": "node-1",
+      "kind": "column",
+      "children": [
+        "node-2"
+      ],
+      "style": {},
+      "evidence": [
+        {
+          "source": "source",
+          "start": 216,
+          "end": 731,
+          "certainty": "extracted"
+        }
+      ]
+    }
+  ],
+  "requirements": [
+    {
+      "id": "review-api",
+      "area": "api",
+      "status": "unknown",
+      "description": "No api behavior inferred from static HTML. Developer review required.",
+      "evidence": []
+    },
+    {
+      "id": "review-auth",
+      "area": "auth",
+      "status": "unknown",
+      "description": "No auth behavior inferred from static HTML. Developer review required.",
+      "evidence": []
+    },
+    {
+      "id": "review-data",
+      "area": "data",
+      "status": "unknown",
+      "description": "No data behavior inferred from static HTML. Developer review required.",
+      "evidence": []
+    },
+    {
+      "id": "review-assets",
+      "area": "assets",
+      "status": "unknown",
+      "description": "No assets behavior inferred from static HTML. Developer review required.",
+      "evidence": []
+    },
+    {
+      "id": "review-appearance",
+      "area": "appearance",
+      "status": "unknown",
+      "description": "No appearance behavior inferred from static HTML. Developer review required.",
+      "evidence": []
+    },
+    {
+      "id": "review-responsive",
+      "area": "responsive",
+      "status": "unknown",
+      "description": "No responsive behavior inferred from static HTML. Developer review required.",
+      "evidence": []
+    },
+    {
+      "id": "local-boolean-state",
+      "area": "state",
+      "status": "extracted",
+      "description": "Entry-owned boolean/string state, controlled text fields and direct text bindings. No form submission, effects, persistence or async events.",
+      "evidence": [
+        {
+          "source": "source",
+          "start": 66,
+          "end": 100,
+          "certainty": "extracted"
+        },
+        {
+          "source": "source",
+          "start": 103,
+          "end": 161,
+          "certainty": "extracted"
+        },
+        {
+          "source": "source",
+          "start": 164,
+          "end": 206,
+          "certainty": "extracted"
+        }
+      ]
+    }
+  ],
+  "limitations": []
+}

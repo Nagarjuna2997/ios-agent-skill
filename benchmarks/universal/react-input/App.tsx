@@ -11,6 +11,6 @@ export default function App() {
       <input type="text" aria-label="Destination" value={destination} onChange={event=>setDestination(event.currentTarget.value)}/>
       <p>{destination}</p>
     </section>:null}
-    <button onClick={()=>setVisible(previous=>!previous)}>Show or hide destination</button>
+    <button style={{color:"#111111",backgroundColor:"#eeeeee"}} onClick={()=>setVisible(previous=>!previous)}>Show or hide destination</button>
   </main>;
 }

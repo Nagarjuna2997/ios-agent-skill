@@ -110,3 +110,12 @@ test('Studio Svelte uses shared IR and native generation without executing expre
  const {u}=await workspace(t);const r=await u.create({adapter:'svelte',name:'SvelteSample',source:'<main><h1>From Svelte</h1></main>'});assert.equal((await u.generate(r.id)).status,'generated-unverified');assert.match((await u.source(r.id)).swift,/From Svelte/);
  await assert.rejects(u.create({adapter:'svelte',name:'UnsafeSvelte',source:'<p>{fetch("https://invalid.example")}</p>'}),/expressions/);
 });
+test('Studio retains controlled input contracts and native binding without inventing test results',async t=>{
+ const {u}=await workspace(t);
+ const source="import {useState} from 'react';export default function App(){const [name,setName]=useState('');return <main><input type=\"text\" aria-label=\"Name\" value={name} onChange={e=>setName(e.target.value)}/><p>{name}</p></main>}";
+ const row=await u.create({adapter:'react',name:'EditableName',source});
+ const generated=await u.generate(row.id);assert.equal(generated.status,'generated-unverified');
+ const data=await u.source(row.id);assert.equal(data.ir.schemaVersion,'1.4.0');assert.match(data.swift,/TextField\("", text: \$state_/);assert.match(data.swift,/accessibilityLabel\(Text\(verbatim: "Name"\)\)/);assert.equal(generated.tests,'not-run');assert.equal(generated.visualFidelity,'not-evaluated');
+ await assert.rejects(u.create({adapter:'react',name:'UnsupportedInput',source:source.replace('e.target.value','e.target.value.trim()')}));
+ assert.equal((await u.list()).length,1);
+});

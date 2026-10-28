@@ -92,7 +92,7 @@ test('navigation reports show their own fixture identity and exact native counts
  assert.ok(html.includes('Visual fidelity was not evaluated'));assert.ok(!html.includes('Source reference'));
 }));
 test('known fixtures reject reduced passing subsets and unknown fixture claims',async()=>nativeFixture(async({report,render})=>{
- for(const fixture of ['react-boolean-state','react-memory-router']){
+ for(const fixture of ['react-boolean-state','react-memory-router','react-controlled-text']){
   report.fixture=fixture;report.large.tests={...result(),passed:1};
   await assert.rejects(render(),/Contradictory native completion/);
   report.large.tests=result();report.expectedTests=1;await assert.rejects(render(),/test-count contract/);delete report.expectedTests;
@@ -105,3 +105,8 @@ test('viewer preserves infrastructure diagnostics even when repair returned requ
   await renderEvidence(root,join(root,'view.html'));const html=await readFile(join(root,'view.html'),'utf8');assert.match(html,/infrastructure_failure/);assert.match(html,/discovery &lt;failed&gt;/);assert.match(html,/build.log/);assert.match(html,/requires-review/);assert.match(html,/unavailable/);
  }finally{await rm(root,{recursive:true,force:true});}
 });
+
+test('controlled inputs retain a distinct native fixture identity without claiming fidelity',async()=>nativeFixture(async({report,render})=>{
+ report.fixture='react-controlled-text';report.expectedTests=3;
+ const {html,summary}=await render();assert.equal(summary.kind,'native-behavior');assert.ok(html.includes('react-controlled-text'));assert.ok(html.includes('Visual fidelity was not evaluated'));
+}));

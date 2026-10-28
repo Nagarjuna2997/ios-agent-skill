@@ -24,11 +24,28 @@ async handlers, form submission, component-local state, persistence or server AP
 String values cannot be used as boolean conditions or passed to boolean actions.
 
 Portable checks establish syntax, type-safe IR, source provenance and generated
-code. The generated RootView also passed `swiftc -typecheck` against the installed
-iOS Simulator SDK with an iOS 17 deployment target on 2026-10-28. This is not
-a simulator interaction or fidelity result. The generated unsigned Xcode project
-also built successfully for the generic iOS Simulator destination on Xcode 27.0
-(27A266a). Native acceptance remains pending: type into both fields, verify independent
-text updates, hide/show destination without state loss, relaunch reset, inspect
-VoiceOver labels, keyboard behavior, Dynamic Type and clipping. This fixture has
-no passing native or fidelity score yet.
+code. On 2026-10-28 the generated project built unsigned with Xcode 27.0
+(27A266a) for iOS Simulator. Both recorded native runs passed typing/independent
+updates, hide/show retention and relaunch-reset tests. The padded field repair
+also passed the 44-point accessibility-frame assertions.
+
+**Native acceptance is incomplete:** the accessibility test still fails Apple's
+placeholder-clipping and button-contrast audit at Large. Each run has 2 passed /
+1 failed test; XXXL is not run after that failure. Keyboard, VoiceOver and broader
+layout behavior are not established by these limited assertions. No passing
+native/fidelity score is claimed. Evidence: [initial failure](../evidence/react-input-first-failure-local-20261028/README.md)
+and [touch-size repair](../evidence/react-input-touch-size-local-20261028/README.md).
+
+## Native evidence runner
+
+```sh
+node benchmarks/universal/react-input/run.mjs benchmarks/universal/fidelity/local.json /absolute/new/input-evidence
+node benchmarks/universal/react-input/run.mjs benchmarks/universal/fidelity/local.json /absolute/new/input-evidence --resume
+```
+
+The shared runner pins the toolchain, hashes source and artifacts, checkpoints
+completed cells and preserves failed attempts. Three UI tests run at Large and
+XXXL Dynamic Type: independent typing/echo plus hide/show retention, native field
+labels and Apple's accessibility audit, and reset on relaunch. The existing React
+state workflow has a separate input matrix cell; it does not combine scores or
+establish HTML fidelity. The workflow remains PR/manual-triggered.

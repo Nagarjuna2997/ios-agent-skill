@@ -1,4 +1,4 @@
-name: Experimental React boolean state
+name: Experimental React state and inputs
 on:
   pull_request:
     paths:
@@ -6,7 +6,9 @@ on:
       - 'mcp-server/src/agent/**'
       - 'mcp-server/package*.json'
       - 'mcp-server/test/react-state.test.js'
+      - 'mcp-server/test/react-input.test.js'
       - 'benchmarks/universal/react-state/**'
+      - 'benchmarks/universal/react-input/**'
       - 'benchmarks/universal/native-behavior/**'
       - 'benchmarks/universal/fidelity/ci.json'
       - 'benchmarks/universal/fidelity/commands.mjs'
@@ -33,8 +35,12 @@ jobs:
           node-version: '22'
       - run: npm ci --prefix mcp-server
       - run: npm run build --prefix mcp-server
-      - run: node --test mcp-server/test/react-state.test.js mcp-server/test/react-ir.test.js mcp-server/test/app-ir.test.js benchmarks/universal/react-state/evidence.test.mjs
+      - run: node --test mcp-server/test/react-input.test.js mcp-server/test/react-state.test.js mcp-server/test/react-ir.test.js mcp-server/test/app-ir.test.js benchmarks/universal/react-state/evidence.test.mjs
   simulator:
+    strategy:
+      fail-fast: false
+      matrix:
+        fixture: [react-state, react-input]
     runs-on: macos-26
     timeout-minutes: 30
     env:
@@ -49,18 +55,18 @@ jobs:
       - run: npm ci --prefix mcp-server
       - run: npm run build --prefix mcp-server
       - name: Build and test actual native state transitions
-        run: node benchmarks/universal/react-state/run.mjs benchmarks/universal/fidelity/ci.json "$RUNNER_TEMP/react-state-evidence"
+        run: node benchmarks/universal/${{ matrix.fixture }}/run.mjs benchmarks/universal/fidelity/ci.json "$RUNNER_TEMP/${{ matrix.fixture }}-evidence"
       - name: Preserve actual results even on failure
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: react-state-${{ github.sha }}
+          name: ${{ matrix.fixture }}-${{ github.sha }}
           include-hidden-files: true
           path: |
-            ${{ runner.temp }}/react-state-evidence/report.json
-            ${{ runner.temp }}/react-state-evidence/checkpoints/
-            ${{ runner.temp }}/react-state-evidence/*-attachments-*/
-            ${{ runner.temp }}/react-state-evidence/app-*/.ios-agent/app-ir.json
-            ${{ runner.temp }}/react-state-evidence/app-*/.ios-agent/source-map.json
-            ${{ runner.temp }}/react-state-evidence/app-*/.ios-agent/logs/
-            ${{ runner.temp }}/react-state-evidence/app-*/.ios-agent/test-results/
+            ${{ runner.temp }}/${{ matrix.fixture }}-evidence/report.json
+            ${{ runner.temp }}/${{ matrix.fixture }}-evidence/checkpoints/
+            ${{ runner.temp }}/${{ matrix.fixture }}-evidence/*-attachments-*/
+            ${{ runner.temp }}/${{ matrix.fixture }}-evidence/app-*/.ios-agent/app-ir.json
+            ${{ runner.temp }}/${{ matrix.fixture }}-evidence/app-*/.ios-agent/source-map.json
+            ${{ runner.temp }}/${{ matrix.fixture }}-evidence/app-*/.ios-agent/logs/
+            ${{ runner.temp }}/${{ matrix.fixture }}-evidence/app-*/.ios-agent/test-results/
