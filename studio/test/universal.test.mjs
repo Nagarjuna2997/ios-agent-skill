@@ -119,3 +119,40 @@ test('Studio retains controlled input contracts and native binding without inven
  await assert.rejects(u.create({adapter:'react',name:'UnsupportedInput',source:source.replace('e.target.value','e.target.value.trim()')}));
  assert.equal((await u.list()).length,1);
 });
+test('explicit simulator selection is validated and never falls back to a different device',async t=>{
+ const {u}=await workspace(t),chosen='11111111-1111-1111-1111-111111111111',missing='22222222-2222-2222-2222-222222222222';
+ const row=await u.create({adapter:'html',name:'DeviceSelection',source:'<main><p>Hello</p></main>'});await u.generate(row.id);
+ const original=u.module.bind(u);let builds=0;
+ u.module=async name=>{
+  if(name==='agent/runner')return {ProcessRunner:class{}};
+  if(name==='agent/toolchain')return {detectToolchain:async()=>({simulators:[{udid:chosen,name:'Synthetic iPad',runtime:'synthetic',state:'Shutdown',isAvailable:true},{udid:missing,isAvailable:false}]}),chooseSimulator:(rows,id)=>rows.find(r=>r.isAvailable&&r.udid===id)};
+  if(name==='agent/build')return {buildProject:async(root,runner,options)=>{assert.equal(options.udid,chosen);builds++;return {success:false,errors:[{message:'synthetic stop after selected build'}]};}};
+  return original(name);
+ };
+ assert.deepEqual(await u.simulators(),[{udid:chosen,name:'Synthetic iPad',runtime:'synthetic',state:'Shutdown'}]);
+ for(const options of [null,{udid:'invalid'},{udid:123},{unexpected:true}])await assert.rejects(u.startBuild(row.id,options),/simulator UUID/);
+ assert.equal(u.nativeBusy,false);
+ await u.startBuild(row.id,{udid:missing});await u.jobs.get(row.id);assert.equal(builds,0);assert.match((await u.get(row.id)).error,/selected simulator is unavailable/);
+ await u.startBuild(row.id,{udid:chosen});await u.jobs.get(row.id);assert.equal(builds,1);assert.equal((await u.get(row.id)).runs.at(-1).requestedUDID,chosen);assert.equal((await u.get(row.id)).runs.at(-1).udid,chosen);
+});
+test('simulator discovery is authenticated and build endpoint passes the explicit selection',async t=>{
+ const {root}=await workspace(t);const app=await serve({port:0,root,repo:resolve('.')});t.after(()=>new Promise(r=>app.server.close(r)));
+ const page=await(await fetch(app.origin+'/universal')).text();const token=/name="studio-token" content="([a-f0-9]+)"/.exec(page)[1];const headers={'x-studio-token':token,'content-type':'application/json'};
+ app.universal.simulators=async()=>[{udid:'test-device'}];
+ assert.equal((await fetch(app.origin+'/api/universal/simulators')).status,403);
+ assert.deepEqual(await(await fetch(app.origin+'/api/universal/simulators',{headers})).json(),[{udid:'test-device'}]);
+ app.universal.startBuild=async(id,options)=>({id,...options,status:'synthetic-dispatch'});
+ const response=await fetch(app.origin+'/api/universal/test-id/build',{method:'POST',headers,body:JSON.stringify({udid:'selected'})});assert.equal(response.status,202);assert.equal((await response.json()).udid,'selected');
+});
+test('cancellation during launch settling prevents a screenshot and releases native ownership',async t=>{
+ const {u}=await workspace(t);const row=await u.create({adapter:'html',name:'CancelSettling',source:'<main><p>Hello</p></main>'});await u.generate(row.id);
+ const original=u.module.bind(u);
+ u.module=async name=>{
+  if(name==='agent/runner')return {ProcessRunner:class{}};
+  if(name==='agent/toolchain')return {detectToolchain:async()=>({simulators:[{udid:'test'}]}),chooseSimulator:s=>s[0]};
+  if(name==='agent/build')return {buildProject:async()=>({success:true,errors:[]})};
+  if(name==='agent/simulator')return {runApp:async()=>{queueMicrotask(()=>u.cancel(row.id));return {udid:'test'};},screenshot:async()=>assert.fail('cancelled capture must not run')};
+  return original(name);
+ };
+ await u.startBuild(row.id);await u.jobs.get(row.id);const done=await u.get(row.id);assert.equal(done.status,'cancelled');assert.equal(done.capture,undefined);assert.equal(u.nativeBusy,false);
+});

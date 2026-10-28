@@ -104,3 +104,23 @@ The Svelte selector accepts only static markup and supported inline styles.
 Expressions, scripts, stylesheets, directives, components and SvelteKit remain
 unsupported. It uses the shared IR/generator; no Svelte code is executed and no
 native test/fidelity result is inferred from generation.
+
+### Selecting a Universal simulator
+
+The Universal screen lists available iOS simulator devices. Choose a device before
+building or leave the automatic selection. An explicit device that disappears
+causes a recorded failure; it never silently falls back to another device. Refresh
+preserves an unavailable selection so the user can choose a replacement. Each
+native run records the requested and actual UDID. Simulator discovery uses the
+same authenticated local API as project operations.
+
+Capture waits two cancellable seconds after launch to reduce blank launch-transition
+images. This timing is not a readiness or fidelity proof: inspect the actual
+capture. Cancellation during that wait prevents capture and releases the native
+reservation. Screenshots still do not establish interactions or accessibility.
+
+Local native evidence is archived at
+`benchmarks/universal/evidence/studio-native-local-20261028/`: real authenticated
+HTTP import of a reusable React field, selected-device build/launch, populated
+screenshot and editable Xcode ZIP. The earlier blank capture is preserved too.
+This verifies that local API path, not arbitrary React support or a fidelity pass.

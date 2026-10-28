@@ -5,7 +5,7 @@ async function show(id){selected=id;const request=++viewRequest;for(const key of
 async function act(fn){$('error').textContent='';try{await fn();}catch(e){$('error').textContent=e.message;}}
 $('import').onsubmit=e=>{e.preventDefault();act(async()=>{const row=await api('',{name:$('name').value,adapter:$('adapter').value,source:$('source').value});await list();await show(row.id);});};
 $('generate').onclick=()=>act(async()=>{const id=selected;$('generate').disabled=true;$('status').textContent='Generating project…';await api('/'+id+'/generate',{});await list();await show(id);});
-$('build').onclick=()=>act(async()=>{await api('/'+selected+'/build',{});await show(selected);});
+$('build').onclick=()=>act(async()=>{await api('/'+selected+'/build',$('simulator').value?{udid:$('simulator').value}:{});await show(selected);});
 $('cancel').onclick=()=>act(()=>api('/'+selected+'/cancel',{}));
 setInterval(()=>{if(selected&&['building','launching','capturing'].some(s=>$('status').textContent.startsWith(s)))act(()=>show(selected));},2000);
 act(list);
@@ -23,3 +23,14 @@ $('folder').onchange=()=>act(async()=>{
  if(loaded.some(f=>f.path==='App.tsx'))$('entry').value='App.tsx';$('project-import').disabled=false;
 });
 $('project-import').onclick=()=>act(async()=>{const row=await api('/project',{name:$('name').value,entry:$('entry').value,files:uploaded});await list();await show(row.id);});
+
+let simulatorRequest=0;
+async function loadSimulators(){
+ const request=++simulatorRequest;const rows=await api('/simulators');if(request!==simulatorRequest)return;
+ const selectedDevice=$('simulator').value;$('simulator').replaceChildren(new Option('Automatic available device',''));
+ for(const row of rows){$('simulator').append(new Option(`${row.name} · ${row.runtime.replace('com.apple.CoreSimulator.SimRuntime.','')} · ${row.state}`,row.udid));}
+ if(selectedDevice&&!rows.some(r=>r.udid===selectedDevice)){const missing=new Option('Selected device unavailable — choose another',selectedDevice);missing.disabled=true;$('simulator').append(missing);}
+ $('simulator').value=selectedDevice;
+}
+$('refresh-simulators').onclick=()=>act(loadSimulators);
+act(loadSimulators);

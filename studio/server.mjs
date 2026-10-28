@@ -91,6 +91,7 @@ export async function serve({
         return send(403, { error: "Reload Studio to reconnect." });
       if(parts[1]==='universal') {
         if(req.method==='GET' && parts.length===2)return send(200,await universal.list());
+        if(req.method==='GET' && parts.length===3&&parts[2]==='simulators')return send(200,await universal.simulators());
         if(req.method==='GET' && parts.length===3)return send(200,await universal.get(parts[2]));
         if(req.method==='GET' && parts.length===4 && parts[3]==='source')return send(200,await universal.source(parts[2]));
         if(req.method==='GET' && parts.length===4 && parts[3]==='image')return send(200,await universal.image(parts[2]),'image/png');
@@ -101,7 +102,7 @@ export async function serve({
         if(parts.length===3&&parts[2]==='project')return send(201,await universal.createProject(body));
         if(parts.length===4 && parts[3]==='generate')return send(200,await universal.generate(parts[2]));
         if(parts.length===4 && parts[3]==='export')return send(200,await universal.exportProject(parts[2]),'application/zip');
-        if(parts.length===4 && parts[3]==='build')return send(202,await universal.startBuild(parts[2]));
+        if(parts.length===4 && parts[3]==='build')return send(202,await universal.startBuild(parts[2],body));
         if(parts.length===4 && parts[3]==='cancel'){universal.cancel(parts[2]);return send(200,{ok:true});}
         return send(404,{error:'Unknown conversion route'});
       }

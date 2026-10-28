@@ -78,3 +78,9 @@ run still fails if either cell fails. Successful cells remain resumable through
 the existing artifact-hash checks. Cell/export errors are visible in the viewer
 and contradict any claimed `native-behavior-passed` status. Historical reports
 above retain their original fail-fast behavior and are not rewritten.
+
+Latest independent-size run: **Large 3 passed / 1 failed; XXXL 3 passed / 1 failed**.
+Typing, clear/reset and retention pass at both sizes; placeholder clipping still
+fails the accessibility test at both sizes. [Archived reports and automatic failure captures](../evidence/react-input-both-sizes-local-20261028/README.md)
+show the overall failed verdict. No passing size checkpoint or fidelity baseline
+was created.

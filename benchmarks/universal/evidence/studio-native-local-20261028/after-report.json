@@ -1,0 +1,81 @@
+{
+  "started": "2026-10-28T06:44:21.859Z",
+  "root": "/tmp/studio-universal-device-evidence-Y8KiR8",
+  "status": "native-studio-capture-and-export-passed",
+  "tests": "not-run",
+  "visualFidelity": "not-evaluated",
+  "udid": "BA05A35D-8F1E-4D13-A406-BB8E2F405BC3",
+  "conversion": "1eedd86b-cb5c-4c13-a831-b46984fee30b",
+  "report": {
+    "id": "1eedd86b-cb5c-4c13-a831-b46984fee30b",
+    "name": "StudioProfile",
+    "adapter": "react",
+    "created": "2026-10-28T06:44:22.338Z",
+    "status": "preview-ready",
+    "limitations": [],
+    "tests": "not-run",
+    "visualFidelity": "not-evaluated",
+    "runs": [
+      {
+        "requestedUDID": "BA05A35D-8F1E-4D13-A406-BB8E2F405BC3",
+        "started": "2026-10-28T06:44:22.350Z",
+        "status": "preview-ready",
+        "tests": "not-run",
+        "visualFidelity": "not-evaluated",
+        "sourceHash": "f85137543d5f5994d3a1d6958f99ee22613bd03cd8174cf46e7868b9b335966d",
+        "environment": {
+          "platform": "darwin",
+          "node": "24.15.0",
+          "simulators": [
+            {
+              "udid": "BA05A35D-8F1E-4D13-A406-BB8E2F405BC3",
+              "name": "Universal-Studio-verification-1793169861859",
+              "state": "Shutdown",
+              "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-27-0",
+              "runtimeVersion": [
+                27,
+                0
+              ],
+              "deviceType": "com.apple.CoreSimulator.SimDeviceType.iPhone-18-Pro",
+              "isAvailable": true
+            }
+          ],
+          "xcode": {
+            "version": "27.0",
+            "build": "27A266a"
+          },
+          "iosSimulatorSdk": "27.0"
+        },
+        "udid": "BA05A35D-8F1E-4D13-A406-BB8E2F405BC3",
+        "build": {
+          "success": true,
+          "errors": [],
+          "warnings": [],
+          "durationMs": 5451,
+          "scheme": "StudioProfile",
+          "destination": "platform=iOS Simulator,id=BA05A35D-8F1E-4D13-A406-BB8E2F405BC3",
+          "appPath": "/tmp/studio-universal-device-evidence-Y8KiR8/universal/1eedd86b-cb5c-4c13-a831-b46984fee30b/project/.ios-agent/DerivedData/Build/Products/Debug-iphonesimulator/StudioProfile.app",
+          "logPath": "/tmp/studio-universal-device-evidence-Y8KiR8/universal/1eedd86b-cb5c-4c13-a831-b46984fee30b/project/.ios-agent/logs/build-1793169862495.log"
+        },
+        "launch": {
+          "udid": "BA05A35D-8F1E-4D13-A406-BB8E2F405BC3",
+          "simulator": "Universal-Studio-verification-1793169861859",
+          "bundleId": "com.example.studioprofile",
+          "booted": true,
+          "pid": 8120
+        },
+        "captureDelayMs": 2000,
+        "finished": "2026-10-28T06:45:04.069Z"
+      }
+    ],
+    "capture": {
+      "sourceHash": "f85137543d5f5994d3a1d6958f99ee22613bd03cd8174cf46e7868b9b335966d",
+      "sha256": "2f403c4b5be4ee82dd4d8297938da2cccf24fbc513ef91bd794723848586abc8"
+    }
+  },
+  "captureSHA256": "2f403c4b5be4ee82dd4d8297938da2cccf24fbc513ef91bd794723848586abc8",
+  "zipSHA256": "a0388ccbe1a47f66b7e6d99144113a9d3442e52c748f1ec07cc4940e8144b4d5",
+  "finished": "2026-10-28T06:45:07.599Z",
+  "evidenceRedaction": "Unrelated simulator inventory omitted; original report remains local.",
+  "visualInspection": "Populated Walking profile screen visible; not an interaction or fidelity pass"
+}

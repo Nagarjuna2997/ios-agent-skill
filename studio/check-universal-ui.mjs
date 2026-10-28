@@ -14,4 +14,13 @@ await page.getByRole('button',{name:'Inspect React project',exact:true}).click()
 await page.waitForFunction(()=>document.getElementById('title').textContent==='FolderApp');
 await page.getByRole('button',{name:'Generate new Xcode project',exact:true}).click();
 await page.waitForFunction(()=>document.getElementById('status').textContent.startsWith('generated-unverified')&&document.getElementById('swift').textContent.includes('Weekend walk'));
+let deviceRows=[{udid:'11111111-1111-1111-1111-111111111111',name:'Synthetic selection fixture',runtime:'test-runtime',state:'Shutdown'}];
+await page.route('**/api/universal/simulators',route=>route.fulfill({json:deviceRows}));
+await page.getByRole('button',{name:'Refresh devices',exact:true}).click();
+await page.waitForFunction(()=>document.querySelector('#simulator option[value="11111111-1111-1111-1111-111111111111"]'));
+await page.locator('#simulator').selectOption('11111111-1111-1111-1111-111111111111');deviceRows=[];
+await page.getByRole('button',{name:'Refresh devices',exact:true}).click();
+await page.waitForFunction(()=>document.querySelector('#simulator option:checked')?.disabled===true);
+if(await page.locator('#simulator').inputValue()!=='11111111-1111-1111-1111-111111111111')throw Error('Unavailable explicit simulator silently changed');
+await page.locator('#simulator').selectOption('');
 await page.setViewportSize({width:390,height:844});await page.screenshot({path:join(tmpdir(),'universal-studio-ui.png'),fullPage:true});console.log('Browser import and real project generation passed');}finally{await browser.close();await new Promise(r=>app.server.close(r));await rm(root,{recursive:true,force:true});}

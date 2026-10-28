@@ -1,0 +1,97 @@
+[
+  {
+    "attachments" : [
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "C92A07D1-C27D-4AA5-A412-DC217A3DF444",
+        "deviceName" : "ios-agent-react-controlled-text-reset-1793169446315",
+        "exportedFileName" : "146DDC54-551A-4C74-90AF-5B8DBFD4E0B9.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "accessible-fields_0_5AF9CC77-8607-42C7-A4CB-4E770B54B4D2.png",
+        "timestamp" : 1793169629.998
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "C92A07D1-C27D-4AA5-A412-DC217A3DF444",
+        "deviceName" : "ios-agent-react-controlled-text-reset-1793169446315",
+        "exportedFileName" : "BB56ADE9-384D-4A4C-B57D-AD914529F7D6.mp4",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "Screen Recording 2026-10-28 at 01.40.20 AM.mp4",
+        "timestamp" : 1793169620.453
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "C92A07D1-C27D-4AA5-A412-DC217A3DF444",
+        "deviceName" : "ios-agent-react-controlled-text-reset-1793169446315",
+        "exportedFileName" : "379348A5-54CA-4873-8963-14F5239F8BDC.txt",
+        "isAssociatedWithFailure" : true,
+        "suggestedHumanReadableName" : "Complete Issue Description.txt"
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "C92A07D1-C27D-4AA5-A412-DC217A3DF444",
+        "deviceName" : "ios-agent-react-controlled-text-reset-1793169446315",
+        "exportedFileName" : "D8444545-CC8A-440C-BC0D-B51B22892F81.png",
+        "isAssociatedWithFailure" : true,
+        "suggestedHumanReadableName" : "App Screenshot_0_772B339F-E9E7-43BF-A5EB-3F912D843267.png",
+        "timestamp" : 1793169629.86
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "C92A07D1-C27D-4AA5-A412-DC217A3DF444",
+        "deviceName" : "ios-agent-react-controlled-text-reset-1793169446315",
+        "exportedFileName" : "F18C9C84-3410-444E-9DCD-24BC5A3DF364.png",
+        "isAssociatedWithFailure" : true,
+        "suggestedHumanReadableName" : "Element Screenshot_1_11B164A1-04B6-42F9-A7DE-9FE414C5DE35.png",
+        "timestamp" : 1793169629.86
+      }
+    ],
+    "testIdentifier" : "InputTests/testAccessibleNativeFieldsAtConfiguredTextSize()",
+    "testIdentifierURL" : "test://com.apple.xcode/WalkForm/WalkFormUITests/InputTests/testAccessibleNativeFieldsAtConfiguredTextSize"
+  },
+  {
+    "attachments" : [
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "C92A07D1-C27D-4AA5-A412-DC217A3DF444",
+        "deviceName" : "ios-agent-react-controlled-text-reset-1793169446315",
+        "exportedFileName" : "D24B454D-5C55-465C-90A2-38FC2AD51AE1.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "reset-by-button_0_3194768B-FE1D-4D42-AC35-888F0C13FD16.png",
+        "timestamp" : 1793169641.662
+      }
+    ],
+    "testIdentifier" : "InputTests/testClearAndResetButtonsUpdateTheNativeBinding()",
+    "testIdentifierURL" : "test://com.apple.xcode/WalkForm/WalkFormUITests/InputTests/testClearAndResetButtonsUpdateTheNativeBinding"
+  },
+  {
+    "attachments" : [
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "C92A07D1-C27D-4AA5-A412-DC217A3DF444",
+        "deviceName" : "ios-agent-react-controlled-text-reset-1793169446315",
+        "exportedFileName" : "5BD6A4B2-6AB0-43D0-8BE3-CF03A8E205D3.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "reset_0_E236C73E-024A-435B-872D-A9635D016EC2.png",
+        "timestamp" : 1793169655.614
+      }
+    ],
+    "testIdentifier" : "InputTests/testRelaunchResetsInputState()",
+    "testIdentifierURL" : "test://com.apple.xcode/WalkForm/WalkFormUITests/InputTests/testRelaunchResetsInputState"
+  },
+  {
+    "attachments" : [
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "C92A07D1-C27D-4AA5-A412-DC217A3DF444",
+        "deviceName" : "ios-agent-react-controlled-text-reset-1793169446315",
+        "exportedFileName" : "F0957FB5-B779-41B6-9F9F-5F93B7CBF2FF.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "typed-and-restored_0_F6FA047A-F0D5-42EF-B96F-9D9335E80AD4.png",
+        "timestamp" : 1793169666.643
+      }
+    ],
+    "testIdentifier" : "InputTests/testTypingUpdatesIndependentStateAndRetainsHiddenValue()",
+    "testIdentifierURL" : "test://com.apple.xcode/WalkForm/WalkFormUITests/InputTests/testTypingUpdatesIndependentStateAndRetainsHiddenValue"
+  }
+]

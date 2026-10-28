@@ -3,6 +3,7 @@ import {promises as fs} from 'node:fs';
 import path from 'node:path';
 import {tmpdir} from 'node:os';
 import {randomUUID} from 'node:crypto';
+import {setTimeout as delay} from 'node:timers/promises';
 import {pathToFileURL} from 'node:url';
 export class UniversalStudio {
   constructor(root,repo,acquireNative){this.acquireNative=acquireNative;this.nativeBusy=false;this.root=path.join(root,'universal');this.repo=repo;this.jobs=new Map();this.controllers=new Map();}
@@ -60,7 +61,14 @@ export class UniversalStudio {
     return row;
   }
   async fingerprint(id){const {snapshotFiles,snapshotHash}=await this.module('agent/remote');return snapshotHash(await snapshotFiles(path.join(this.dir(id),'project')));}
-  async startBuild(id){
+  async simulators(){
+    const [{ProcessRunner},{detectToolchain}]=await Promise.all(['agent/runner','agent/toolchain'].map(n=>this.module(n)));
+    const environment=await detectToolchain(new ProcessRunner());
+    return environment.simulators.filter(s=>s.isAvailable).map(({udid,name,runtime,state})=>({udid,name,runtime,state}));
+  }
+  async startBuild(id,options={}){
+    if(!options||typeof options!=='object'||Array.isArray(options)||Object.keys(options).some(k=>k!=='udid')||
+      (options.udid!==undefined&&(typeof options.udid!=='string'||!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(options.udid))))throw Error('Choose an available simulator UUID');
     if(this.nativeBusy)throw Error('A native conversion is already running');
     const release=this.acquireNative?.()??(()=>{});this.nativeBusy=true;
     try {
@@ -71,22 +79,25 @@ export class UniversalStudio {
     const controller=new AbortController();this.controllers.set(id,controller);
     this.jobs.set(id,true);row.status='building';delete row.error;delete row.capture;
     try{await this.save(row);}catch(error){this.jobs.delete(id);this.controllers.delete(id);throw error;}
-    const task=this.executeBuild(row,controller.signal).finally(()=>{this.jobs.delete(id);this.controllers.delete(id);this.nativeBusy=false;release();});
+    const task=this.executeBuild(row,controller.signal,{...options}).finally(()=>{this.jobs.delete(id);this.controllers.delete(id);this.nativeBusy=false;release();});
     this.jobs.set(id,task);task.catch(()=>{});return row;
     }catch(error){this.nativeBusy=false;release();throw error;}
   }
-  async executeBuild(row,signal){
-    const run={started:new Date().toISOString(),status:'running',tests:'not-run',visualFidelity:'not-evaluated'};
+  async executeBuild(row,signal,options={}){
+    const run={...(options.udid?{requestedUDID:options.udid}:{}),started:new Date().toISOString(),status:'running',tests:'not-run',visualFidelity:'not-evaluated'};
     row.runs??=[];row.runs.push(run);const project=path.join(this.dir(row.id),'project');
     try{
       const [{ProcessRunner},{buildProject},{runApp,screenshot},{detectToolchain,chooseSimulator}]=await Promise.all(['agent/runner','agent/build','agent/simulator','agent/toolchain'].map(n=>this.module(n)));
       const processRunner=new ProcessRunner();const runner={run:(c,a,o={})=>{if(signal.aborted)throw Error('Cancelled');return processRunner.run(c,a,{...o,signal});}};
       run.sourceHash=await this.fingerprint(row.id);run.environment=await detectToolchain(runner);
-      const device=chooseSimulator(run.environment.simulators);if(!device)throw Error("Install an available iOS simulator runtime");run.udid=device.udid;await this.save(row);
+      const device=chooseSimulator(run.environment.simulators,options.udid);if(!device)throw Error(options.udid?'The selected simulator is unavailable; refresh the device list':'Install an available iOS simulator runtime');run.udid=device.udid;await this.save(row);
       run.build=await buildProject(project,runner,{udid:run.udid});await this.save(row);
       if(!run.build.success)throw Error(run.build.toolError??'Native build failed; inspect the recorded build diagnostics');
       row.status='launching';await this.save(row);run.launch=await runApp(project,runner,{udid:run.udid});
       if(run.launch.udid!==run.udid)throw Error('Simulator destination changed');
+      // simctl launch returns before the first frame. This bounded delay reduces
+      // launch-transition captures; it is not proof of visual readiness.
+      run.captureDelayMs=2000;await this.save(row);await delay(run.captureDelayMs,undefined,{signal});
       row.status='capturing';await this.save(row);const shot=await screenshot(project,runner,run.launch.udid,'universal');
       if(signal.aborted)throw Error('Cancelled');
       if(await this.fingerprint(row.id)!==run.sourceHash)throw Error('Source changed during native verification; screenshot is stale');
