@@ -166,3 +166,11 @@ Runtime smoke checking found silent exit through a symlinked checkout path. Entr
 - Independent read-only review found approval, input-confinement, output-limit, product-integrity, history-access and undo issues. These were corrected with regressions. Follow-up reviews found scheme-script/large-config validation and explicit-test-budget issues, also corrected. Final focused review reported no blocking findings in those paths; this is source-review evidence, not additional native execution.
 
 Explicit Verify requests have their own bounded budget and preserve historical build-cycle evidence. Verify runs tests without re-entering generation or treating unresolved visual findings as passed. Imported repair preserves the original task undo snapshot and cannot edit tests, project configuration or external dependencies. Release operations require separate exact-plan approval and retain uncertain-upload receipts across restart.
+
+### Hosted checks and second native run
+
+The feature-branch hosted Linux Studio job and macOS Studio/launcher job passed. Docs Consistency passed. The MCP job stopped at a pre-existing stale generated tool title (`ios_import_html`); its deterministic index and dependent local-library index were regenerated and the tool-index check passed locally. This does not claim the subsequent hosted rerun has passed.
+
+The explicit counter refinement preserved the test sources and added an accessibility container, rebuilt and recaptured the app. It still stopped at its visual-repair cap with an XXL button-label wrapping finding. A separate native rerun again reported 15 passed, 3 failed, 0 skipped. Both failed runs and their xcresults are retained; neither is counted as successful native app acceptance. This limits claims about autonomous generation quality even though the workspace infrastructure checks pass.
+
+XcodeGen 2.46.0 was installed in the developer's user-local bin/share directories without overwriting an existing installation. Claude account access was left unchanged as requested.
