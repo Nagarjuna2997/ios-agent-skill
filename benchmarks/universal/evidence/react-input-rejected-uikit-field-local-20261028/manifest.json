@@ -1,0 +1,52 @@
+[
+  {
+    "attachments" : [
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "764FB455-7E1C-4403-93E7-E71F9E79783C",
+        "deviceName" : "Universal-input-uikit-diagnostic",
+        "exportedFileName" : "00E7B2A7-6059-4B06-9619-3238A5B568CF.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "accessible-fields_0_BB1D0CFE-7481-485F-8EE0-E28CCBD833F2.png",
+        "timestamp" : 1793171365.011
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "764FB455-7E1C-4403-93E7-E71F9E79783C",
+        "deviceName" : "Universal-input-uikit-diagnostic",
+        "exportedFileName" : "C1599B74-E5ED-409C-8446-D3FB7D422DA4.mp4",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "Screen Recording 2026-10-28 at 02.09.13 AM.mp4",
+        "timestamp" : 1793171353.926
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "764FB455-7E1C-4403-93E7-E71F9E79783C",
+        "deviceName" : "Universal-input-uikit-diagnostic",
+        "exportedFileName" : "8854D715-685E-49C9-91A2-335305544A61.txt",
+        "isAssociatedWithFailure" : true,
+        "suggestedHumanReadableName" : "Complete Issue Description.txt"
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "764FB455-7E1C-4403-93E7-E71F9E79783C",
+        "deviceName" : "Universal-input-uikit-diagnostic",
+        "exportedFileName" : "A6B3E822-3905-4F33-91AE-388D0ACF6F33.png",
+        "isAssociatedWithFailure" : true,
+        "suggestedHumanReadableName" : "App Screenshot_0_5B74A2CE-8C83-447E-BF72-63C8194851CB.png",
+        "timestamp" : 1793171364.199
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "764FB455-7E1C-4403-93E7-E71F9E79783C",
+        "deviceName" : "Universal-input-uikit-diagnostic",
+        "exportedFileName" : "35915BB4-AF7E-4D37-91E7-2C180C62DDE4.png",
+        "isAssociatedWithFailure" : true,
+        "suggestedHumanReadableName" : "Element Screenshot_1_769EB25C-53FC-4B36-B32D-8530D8029D8A.png",
+        "timestamp" : 1793171364.199
+      }
+    ],
+    "testIdentifier" : "InputTests/testAccessibleNativeFieldsAtConfiguredTextSize()",
+    "testIdentifierURL" : "test://com.apple.xcode/WalkForm/WalkFormUITests/InputTests/testAccessibleNativeFieldsAtConfiguredTextSize"
+  }
+]
