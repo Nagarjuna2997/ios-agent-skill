@@ -6,7 +6,7 @@ import { readFile, lstat } from "node:fs/promises";
 import { relative } from "node:path";
 import { extractJson } from "../agent/brain.js";
 import type { CommandRunner } from "../agent/runner.js";
-import { canonicalJSON, type DesignContract } from "./contract.js";
+import { canonicalJSON, SECTIONS, type DesignContract, type Section } from "./contract.js";
 import { ReviewerOutputSchema, REVIEWER_ROLES, type Finding, type Provenance, type ReviewerFinding, type ReviewerOutput, type ReviewerRole } from "./findings.js";
 import { detectSignals, type Signal } from "./routing.js";
 import { containedReadPath } from "./store.js";
@@ -97,7 +97,7 @@ export const OUTPUT_SCHEMA_TEXT = `{
     "severity": "blocking" | "major" | "minor" | "note",
     "category": "requirements" | "acceptance-tests" | "architecture" | "compatibility" | "concurrency" | "state-ownership" | "lifecycle" | "security" | "privacy" | "permissions" | "service-integration" | "ui-states" | "accessibility" | "verification-feasibility" | "other",
     "title": string,
-    "affects": { "criteria": ["AC-1"], "sections": ["architecture"], "sources": [{ "path": "App/Foo.swift", "line": 12 }] },
+    "affects": { "criteria": ["AC-1"], "sections": ["architecture"], "sources": [{ "path": "App/Foo.swift", "line": 12 }] },  // sections must be contract top-level keys: objective, scope, nonGoals, constraints, currentCode, userJourneys, screens, architecture, apiContracts, dependencies, deployment, concurrency, permissions, privacy, failureHandling, migration, acceptanceCriteria, steps, unresolved, risks, requiredFiles, requiredSymbols
     "scenario": "a concrete way this goes wrong",
     "evidence": ["quote or reference from the package; leave empty if you have none"],
     "correction": "the specific change",
@@ -301,14 +301,45 @@ export class FakeProvider implements ReviewProvider {
 // ---------------------------------------------------------------------------
 // Parsing and the runner.
 
-export function parseReviewerOutput(text: string, role: ReviewerRole): { ok: true; output: ReviewerOutput } | { ok: false; error: string } {
+const SECTION_ALIASES: Record<string, Section> = {
+  stateownership: "architecture", dataflow: "architecture", persistence: "architecture", summary: "architecture",
+  toolchain: "deployment", iosminimum: "deployment", targets: "deployment", acceptance: "acceptanceCriteria", criteria: "acceptanceCriteria",
+  nongoals: "nonGoals", userjourneys: "userJourneys", currentcode: "currentCode", apicontracts: "apiContracts", failurehandling: "failureHandling",
+  acceptancecriteria: "acceptanceCriteria", requiredfiles: "requiredFiles", requiredsymbols: "requiredSymbols", entitlements: "permissions", security: "privacy",
+};
+
+/** Map reviewer-written section names onto contract sections; unknown names are dropped and reported, not fatal. */
+export function normaliseSections(json: unknown): string[] {
+  const dropped: string[] = [];
+  if (!json || typeof json !== "object") return dropped;
+  const findings = (json as { findings?: unknown }).findings;
+  if (!Array.isArray(findings)) return dropped;
+  for (const f of findings) {
+    const affects = f && typeof f === "object" ? (f as { affects?: { sections?: unknown } }).affects : undefined;
+    if (!affects || !Array.isArray(affects.sections)) continue;
+    const kept: Section[] = [];
+    for (const raw of affects.sections) {
+      if (typeof raw !== "string") continue;
+      const direct = (SECTIONS as readonly string[]).includes(raw) ? (raw as Section) : undefined;
+      const alias = SECTION_ALIASES[raw.toLowerCase().replace(/[^a-z]/g, "")];
+      const lower = SECTIONS.find((s) => s.toLowerCase() === raw.toLowerCase());
+      const mapped = direct ?? lower ?? alias;
+      if (mapped) { if (!kept.includes(mapped)) kept.push(mapped); } else dropped.push(raw);
+    }
+    affects.sections = kept;
+  }
+  return dropped;
+}
+
+export function parseReviewerOutput(text: string, role: ReviewerRole): { ok: true; output: ReviewerOutput; droppedSections: string[] } | { ok: false; error: string } {
   let json: unknown;
   try { json = extractJson(text); } catch (error) { return { ok: false, error: `not JSON: ${(error as Error).message}` }; }
+  const droppedSections = normaliseSections(json);
   const parsed = ReviewerOutputSchema.safeParse(json);
   if (!parsed.success) return { ok: false, error: parsed.error.issues.slice(0, 5).map((i) => `${i.path.join(".") || "output"}: ${i.message}`).join("; ") };
   const wrongRole = parsed.data.findings.filter((f) => f.role !== role);
   if (wrongRole.length) return { ok: false, error: `${wrongRole.length} finding(s) claim a different role than ${role}` };
-  return { ok: true, output: parsed.data };
+  return { ok: true, output: parsed.data, droppedSections };
 }
 
 export interface ReviewRunOptions {
@@ -393,7 +424,7 @@ export async function runReview(design: DesignWorkflow, options: ReviewRunOption
       } else {
         const provenance: Provenance = { runId, reviewerId: pkg.reviewerId, role: pkg.role, provider: options.provider.id, executionId: result.executionId, specHash };
         incoming = parsed.output.findings.map((finding) => ({ finding, provenance }));
-        record = { ...base, executionId: result.executionId, status: "completed", verdict: parsed.output.verdict, findings: parsed.output.findings.length, elapsedMs: Date.now() - t0, usage: result.usage };
+        record = { ...base, executionId: result.executionId, status: "completed", verdict: parsed.output.verdict, findings: parsed.output.findings.length, elapsedMs: Date.now() - t0, usage: result.usage, ...(parsed.droppedSections.length ? { error: `dropped unknown section names: ${[...new Set(parsed.droppedSections)].join(", ")}` } : {}) };
       }
     } catch (error) {
       const message = (error as Error).message;
@@ -482,7 +513,7 @@ export async function submitReviewerOutput(design: DesignWorkflow, input: { runI
   else {
     const provenance: Provenance = { runId: input.runId, reviewerId: input.reviewerId, role: pending.role, provider: pending.provider, executionId: input.executionId ?? "", specHash: round.contractHash };
     incoming = parsed.output.findings.map((finding) => ({ finding, provenance }));
-    record = { ...pending, isolation, executionId: input.executionId ?? "", status: "completed", verdict: parsed.output.verdict, findings: parsed.output.findings.length };
+    record = { ...pending, isolation, executionId: input.executionId ?? "", status: "completed", verdict: parsed.output.verdict, findings: parsed.output.findings.length, ...(parsed.droppedSections.length ? { error: `dropped unknown section names: ${[...new Set(parsed.droppedSections)].join(", ")}` } : {}) };
   }
   let workflow = (await design.recordReviewer(input.runId, record, incoming)).workflow;
   const updated = workflow.rounds.find((r) => r.runId === input.runId)!;

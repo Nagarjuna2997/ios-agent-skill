@@ -436,6 +436,10 @@ test("design review: the claude-code adapter runs a fresh headless process with 
   assert.match((await missing.available()).reason, /claude CLI not found/);
   assert.equal(parseReviewerOutput("```json\n" + reviewerOutput("requirements") + "\n```", "requirements").ok, true);
   assert.match(parseReviewerOutput(reviewerOutput("security"), "requirements").error, /different role/);
+  const loose = parseReviewerOutput(reviewerOutput("requirements", { affects: { criteria: ["AC-1"], sections: ["persistence", "dataFlow", "Concurrency", "wholeApp"] } }), "requirements");
+  assert.equal(loose.ok, true, "sub-section names and casing must not discard a whole reviewer");
+  assert.deepEqual(loose.output.findings[0].affects.sections, ["architecture", "concurrency"]);
+  assert.deepEqual(loose.droppedSections, ["wholeApp"]);
 });
 
 // ---------------------------------------------------------------------------

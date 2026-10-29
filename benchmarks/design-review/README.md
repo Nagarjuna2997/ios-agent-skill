@@ -47,7 +47,12 @@ none). Cost is never computed. If the provider is unavailable the report says
 `not-run` with the reason instead of pretending.
 
 Live results are written to separate files and must not be combined with the
-deterministic numbers. A category-level match is a weak proxy for "found the real
+deterministic numbers. `results/` holds two recorded `claude-code` runs from
+2026-10-28: run 1 (25/50 reviewers malformed because sub-section names were
+rejected; kept as evidence of the defect) and run 2 after the fix (48/50 completed,
+8/10 rounds independent, 12/12 seeded categories reported). Findings beyond the seeded
+defect are reported as `beyondSeeded`: the fixtures are thin and most of those are real
+gaps, so they are not counted as false positives. A category-level match is a weak proxy for "found the real
 problem"; read the finding titles before drawing conclusions. No run here claims
 improved quality or reduced rework; that needs a paired evaluation with and without
 the workflow, which has not been done.
