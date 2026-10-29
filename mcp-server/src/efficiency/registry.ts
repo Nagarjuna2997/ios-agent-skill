@@ -3,6 +3,7 @@ import type { Tool, CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 // another advertised tool: backend/runtime dependencies are not model tools.
 export const GROUPS = [
  {id:'screenshots',name:'Screenshot Studio',guide:'../screenshots/README.md',test:(n:string)=>/screenshot/.test(n)},
+ {id:'design-review',name:'Design contract and independent review',guide:'../tooling/design-review.md',test:(n:string)=>/^design_/.test(n)},
  {id:'build',name:'Build and app creation',guide:'../tooling/ios-build-agent.md',test:(n:string)=>/^ios_|^create_app$/.test(n)},
  {id:'design',name:'Color and backend',guide:'../backend/overview.md',test:(n:string)=>/color_system|backend_integration/.test(n)},
  {id:'integrations',name:'Apple integrations',guide:'../integrations/README.md',test:(n:string)=>/system_integration|apple_permissions|apple_capabilities/.test(n)},
@@ -13,7 +14,7 @@ export const GROUPS = [
  {id:'other',name:'Other tools',guide:'tools.md',test:(_:string)=>true},
 ] as const;
 export const PROFILES: Record<string, readonly string[]> = {
- all: GROUPS.map(g=>g.id), build:['build','simulator','apple-docs'], review:['review','apple-docs'], docs:['apple-docs'], design:['design','screenshots','integrations'],
+ all: GROUPS.map(g=>g.id), build:['build','design-review','simulator','apple-docs'], review:['review','apple-docs'], docs:['apple-docs'], design:['design','screenshots','integrations'],
 };
 export interface Entry { tool: Tool; groups: string[]; dependencies: string[]; runtime: string; handler: (args:Record<string,unknown>,signal?:AbortSignal)=>Promise<CallToolResult> }
 export function groupFor(name:string) { return GROUPS.find(g=>g.test(name))!; }

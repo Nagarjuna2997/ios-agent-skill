@@ -4100,6 +4100,409 @@
       "execution": {
         "taskSupport": "forbidden"
       }
+    },
+    {
+      "name": "design_contract",
+      "title": "Create, update or validate a design contract",
+      "description": "Use this before substantial iOS work to save a typed design contract (objective, evidence-backed current-code facts, architecture, acceptance criteria with IDs, steps) as the single source of truth. Renders DESIGN.md deterministically, recommends lightweight or full review from inspectable signals, and on update invalidates review and approval flags for changed sections. action validate checks a draft without saving.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "projectDir": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Absolute path of the app's project folder."
+          },
+          "designId": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]{0,40}$",
+            "description": "Design slug, for example offline-sync."
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "create",
+              "update",
+              "validate"
+            ]
+          },
+          "contract": {
+            "type": "object",
+            "additionalProperties": {},
+            "description": "Contract JSON; see docs/tooling/design-review.md."
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 400
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "lightweight",
+              "full"
+            ]
+          },
+          "modeReason": {
+            "type": "string",
+            "maxLength": 400
+          }
+        },
+        "required": [
+          "projectDir",
+          "designId",
+          "action",
+          "contract"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "design_status",
+      "title": "Inspect a design's state, flags and findings",
+      "description": "Use this to check where a design stands before acting on it. Read-only. Shows workflow state, mode, bound flags (review completed, ready, approved with provenance, verified), open and blocking findings, stale runs and the next action. Never infers approval.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "projectDir": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Absolute path of the app's project folder."
+          },
+          "designId": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]{0,40}$",
+            "description": "Design slug, for example offline-sync."
+          },
+          "includeFindings": {
+            "type": "boolean",
+            "default": true
+          }
+        },
+        "required": [
+          "projectDir",
+          "designId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "design_review",
+      "title": "Run or submit an independent design review",
+      "description": "Use this after design_contract when the mode is full, or whenever you want an independent opinion before implementing. Runs bounded reviewers that see only the contract revision, hashed evidence and role criteria. provider claude-code spawns fresh headless sessions; ai-route uses the configured stateless cloud provider; client-subagent and self-review prepare packages for the connected client to dispatch (self-review never counts as independent). action submit records an externally produced reviewer output. Records provider, execution id, hashes and isolation for every reviewer. Model calls happen only in this tool, never at startup.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "projectDir": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Absolute path of the app's project folder."
+          },
+          "designId": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]{0,40}$",
+            "description": "Design slug, for example offline-sync."
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "run",
+              "prepare",
+              "submit"
+            ],
+            "default": "run"
+          },
+          "provider": {
+            "type": "string",
+            "enum": [
+              "claude-code",
+              "ai-route",
+              "client-subagent",
+              "self-review"
+            ],
+            "default": "claude-code"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "requirements",
+                "architecture",
+                "concurrency",
+                "security",
+                "ui-verification"
+              ]
+            },
+            "maxItems": 5
+          },
+          "extraEvidence": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 400
+            },
+            "maxItems": 20,
+            "default": []
+          },
+          "runId": {
+            "type": "string"
+          },
+          "reviewerId": {
+            "type": "string"
+          },
+          "output": {
+            "type": "string",
+            "maxLength": 200000
+          },
+          "executionId": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "attestFreshContext": {
+            "type": "string",
+            "maxLength": 400
+          },
+          "timeoutMs": {
+            "type": "integer",
+            "minimum": 10000,
+            "maximum": 3600000
+          }
+        },
+        "required": [
+          "projectDir",
+          "designId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "design_resolve",
+      "title": "Disposition findings, compute readiness, record approval",
+      "description": "Use this after a review round to resolve findings and move toward implementation. action disposition sets accepted, rejected (needs rationale), deferred (needs impact) or superseded on a finding. action ready computes readiness (no open blocking or re-review findings, mandatory fields, independent review in full mode) and never asserts it. action approve records who authorized implementation with verbatim provenance; approval is never inferred from a review or from silence. action implement moves to implementing when approval matches the current revision. action decision closes a non-converging review with a decision record.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "projectDir": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Absolute path of the app's project folder."
+          },
+          "designId": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]{0,40}$",
+            "description": "Design slug, for example offline-sync."
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "disposition",
+              "ready",
+              "approve",
+              "implement",
+              "decision",
+              "cancel"
+            ]
+          },
+          "findingId": {
+            "type": "string"
+          },
+          "disposition": {
+            "type": "string",
+            "enum": [
+              "accepted",
+              "rejected",
+              "deferred",
+              "superseded"
+            ]
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "approvalSource": {
+            "type": "string",
+            "enum": [
+              "explicit-user-statement",
+              "existing-implementation-authorization"
+            ]
+          },
+          "provenance": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "scope": {
+            "type": "string",
+            "maxLength": 400
+          },
+          "resolution": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 400
+          }
+        },
+        "required": [
+          "projectDir",
+          "designId",
+          "action"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "design_verify",
+      "title": "Record evidence and steps against acceptance criteria",
+      "description": "Use this during and after implementation to connect work to the design. Tracks implementation against the exact design revision. action step marks an implementation step; action evidence records an artifact at one tier (code-written, compiled, automated-checks, simulator-observed, visual-inspected, external-verified) for one criterion; action import-build maps existing /ios-build state (builds, tests, screenshots) to criteria deterministically and reports what could not be mapped; action report shows each criterion's status and marks the design verified only when every criterion has current evidence at its required tier. A successful command or screenshot alone never establishes acceptance.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "projectDir": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Absolute path of the app's project folder."
+          },
+          "designId": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]{0,40}$",
+            "description": "Design slug, for example offline-sync."
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "step",
+              "evidence",
+              "import-build",
+              "report"
+            ]
+          },
+          "stepId": {
+            "type": "string"
+          },
+          "stepStatus": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "in-progress",
+              "done",
+              "abandoned"
+            ]
+          },
+          "criterion": {
+            "type": "string"
+          },
+          "tier": {
+            "type": "string",
+            "enum": [
+              "code-written",
+              "compiled",
+              "automated-checks",
+              "simulator-observed",
+              "visual-inspected",
+              "external-verified"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "passed",
+              "failed"
+            ]
+          },
+          "source": {
+            "type": "string",
+            "maxLength": 400
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 600
+          }
+        },
+        "required": [
+          "projectDir",
+          "designId",
+          "action"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "design_drift",
+      "title": "Compare a saved design with the current implementation",
+      "description": "Use this when the code may have moved away from the saved design, or before claiming a design is still implemented. Read-only. Deterministic checks: required files and symbols present, deployment target and Swift packages match project files, permission keys match Info.plist and entitlements, criteria lacking current evidence, evidence invalidated by source or contract changes, incomplete steps. Uncertain mappings are reported as unknown. Does not judge semantic equivalence and never rewrites the design.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "projectDir": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Absolute path of the app's project folder."
+          },
+          "designId": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]{0,40}$",
+            "description": "Design slug, for example offline-sync."
+          }
+        },
+        "required": [
+          "projectDir",
+          "designId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
     }
   ],
   "resources": [
