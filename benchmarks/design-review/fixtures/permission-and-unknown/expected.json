@@ -1,0 +1,6 @@
+{
+  "seededDefects": [
+    "permission-without-purpose",
+    "unknown-without-resolver"
+  ]
+}
