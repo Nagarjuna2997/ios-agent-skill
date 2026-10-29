@@ -1,0 +1,158 @@
+{
+  "id": "permission-and-unknown",
+  "title": "Offline receipt sync",
+  "objective": "Queue receipts captured offline and upload them when connectivity returns without loss or duplication.",
+  "scope": [
+    "queue locally",
+    "upload when reachable",
+    "show per-receipt sync state"
+  ],
+  "nonGoals": [
+    "cross-device conflict resolution"
+  ],
+  "currentCode": [
+    {
+      "kind": "fact",
+      "text": "SyncEngine is a @MainActor @Observable class holding receipts in memory.",
+      "evidence": [
+        {
+          "path": "App/Models/SyncEngine.swift",
+          "line": 2,
+          "symbol": "SyncEngine"
+        }
+      ]
+    }
+  ],
+  "screens": [
+    {
+      "screen": "receipts",
+      "states": [
+        "loading",
+        "empty",
+        "success",
+        "error",
+        "offline"
+      ],
+      "accessibility": [
+        "sync state announced to VoiceOver"
+      ]
+    }
+  ],
+  "architecture": {
+    "summary": "A SyncQueue actor owns pending uploads; the main-actor engine mirrors snapshots.",
+    "stateOwnership": [
+      {
+        "kind": "decision",
+        "text": "SyncQueue (actor) owns the pending list; SyncEngine mirrors a read-only snapshot on the main actor.",
+        "evidence": []
+      }
+    ],
+    "persistence": [
+      {
+        "kind": "decision",
+        "text": "Pending receipts persist in SwiftData with a schemaVersion field.",
+        "evidence": []
+      }
+    ]
+  },
+  "dependencies": [
+    {
+      "name": "ReceiptAPI",
+      "kind": "service",
+      "boundary": "HTTPS; bearer token from Keychain"
+    }
+  ],
+  "deployment": {
+    "iosMinimum": "17.0",
+    "targets": [
+      "iphone"
+    ]
+  },
+  "concurrency": [
+    {
+      "kind": "decision",
+      "text": "Uploads run in a TaskGroup inside the SyncQueue actor; UI state stays @MainActor; cancellation keeps the queue intact.",
+      "evidence": []
+    }
+  ],
+  "permissions": [
+    {
+      "key": "NSCameraUsageDescription",
+      "purpose": "",
+      "kind": "usage-description"
+    }
+  ],
+  "privacy": [
+    {
+      "kind": "decision",
+      "text": "The bearer token lives in the Keychain and never enters logs or source.",
+      "evidence": []
+    }
+  ],
+  "failureHandling": [
+    {
+      "kind": "decision",
+      "text": "Upload failures mark the receipt failed with retry; the queue is never dropped.",
+      "evidence": []
+    }
+  ],
+  "migration": [
+    {
+      "kind": "decision",
+      "text": "First launch migrates in-memory receipts to SwiftData; stores without schemaVersion are version 0.",
+      "evidence": []
+    }
+  ],
+  "acceptanceCriteria": [
+    {
+      "id": "AC-1",
+      "statement": "A receipt captured offline is still pending after relaunch.",
+      "method": "unit-test",
+      "target": "testPendingSurvivesRelaunch"
+    },
+    {
+      "id": "AC-2",
+      "statement": "The receipts screen shows the offline state when unreachable.",
+      "method": "simulator",
+      "target": "receipts"
+    },
+    {
+      "id": "AC-3",
+      "statement": "The project compiles with strict concurrency checking.",
+      "method": "compile"
+    }
+  ],
+  "steps": [
+    {
+      "id": "S-1",
+      "description": "Add SyncQueue actor and SwiftData model",
+      "criteria": [
+        "AC-1",
+        "AC-3"
+      ]
+    },
+    {
+      "id": "S-2",
+      "description": "Wire offline state into ReceiptsView",
+      "criteria": [
+        "AC-2"
+      ],
+      "dependsOn": [
+        "S-1"
+      ]
+    }
+  ],
+  "unresolved": [
+    {
+      "kind": "unknown",
+      "text": "Whether the backend rejects duplicate receipt ids."
+    }
+  ],
+  "requiredFiles": [
+    "App/Models/SyncEngine.swift"
+  ],
+  "requiredSymbols": [
+    "SyncEngine",
+    "SyncQueue"
+  ]
+}

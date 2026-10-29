@@ -1,0 +1,6 @@
+{
+  "seededDefects": [
+    "screen-missing-error-state",
+    "screen-missing-empty-state"
+  ]
+}

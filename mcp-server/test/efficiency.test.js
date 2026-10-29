@@ -72,7 +72,7 @@ test('usage null handling and explicit profile recommendation/apply/restore',asy
 test('actual MCP discovery and dispatch enforce profile; connection selection remains fixed',async t=>{
  const p=await root(t),client=new Client({name:'profile-test',version:'1'});t.after(()=>client.close());
  await client.connect(new StdioClientTransport({command:process.execPath,args:['dist/unified.js','--project',p,'--tool-profile','docs'],stderr:'pipe'}));
- const {tools}=await client.listTools();assert.ok(tools.length>0&&tools.length<82);assert.ok(tools.some(t=>t.name==='search_local_references'));assert.ok(!tools.some(t=>t.name==='create_app'));
+ const {tools}=await client.listTools();assert.ok(tools.length>0&&tools.length<88);assert.ok(tools.some(t=>t.name==='search_local_references'));assert.ok(!tools.some(t=>t.name==='create_app'));
  await assert.rejects(client.callTool({name:'create_app',arguments:{name:'DoNotCreate',directory:p,brief:'test'}}),/unavailable/);await assert.rejects(access(join(p,'DoNotCreate')));
  await update(p,'settings.json',{version:1},()=>({version:1,profile:'all'}));assert.deepEqual((await client.listTools()).tools,tools);
  const result=await client.callTool({name:'search_local_references',arguments:{query:'SwiftUI'}});assert.equal(result.isError,undefined);

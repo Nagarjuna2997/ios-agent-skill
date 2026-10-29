@@ -1792,5 +1792,19 @@
       "iOS Agent MCP (local)",
       "AI/ML API MCP (hosted, user account)"
     ]
+  },
+  "docs/tooling/design-review.md": {
+    "flow": [
+      "Write the design contract",
+      "Independent reviewers see only the package",
+      "Disposition findings and compute readiness",
+      "Record approval, implement, verify, detect drift"
+    ],
+    "architecture": [
+      "DESIGN.json (source of truth) and DESIGN.md",
+      "Workflow state and hash-bound flags",
+      "Reviewer packages, providers and recorded isolation",
+      "Verification tiers and drift checks"
+    ]
   }
 }

@@ -1,0 +1,1557 @@
+{
+  "mode": "live",
+  "provider": "claude-code",
+  "isolation": "fresh headless `claude -p` process per reviewer, --no-session-persistence, tools disabled, empty MCP config, temporary cwd",
+  "at": "2026-10-29T02:00:36.933Z",
+  "environment": "Linux x86_64, Node v22.23.4, Claude Code CLI from the session that opened PR #38",
+  "note": "Run 2, after mapping sub-section names onto contract sections and dropping only unknown names.",
+  "rows": [
+    {
+      "id": "auth-no-credential-boundary",
+      "independent": false,
+      "reviewers": 5,
+      "completed": 4,
+      "malformed": 1,
+      "elapsedMs": 51314,
+      "usage": {
+        "input_tokens": 10,
+        "cache_creation_input_tokens": 19891,
+        "cache_read_input_tokens": 69640,
+        "output_tokens": 10365
+      },
+      "expected": 1,
+      "detected": 1,
+      "missed": 0,
+      "beyondSeeded": 13,
+      "unsupported": 0,
+      "findings": [
+        {
+          "id": "F-16246e8d",
+          "severity": "blocking",
+          "category": "ui-states",
+          "title": "Passkey sign-in has no screen, states or criteria",
+          "supported": true
+        },
+        {
+          "id": "F-7d079690",
+          "severity": "blocking",
+          "category": "requirements",
+          "title": "Passkey sign-in is in the objective but absent from scope, criteria, steps and dependencies",
+          "supported": true
+        },
+        {
+          "id": "F-b0b4d2e8",
+          "severity": "blocking",
+          "category": "security",
+          "title": "Passkey sign-in and token lifecycle are not specified",
+          "supported": true
+        },
+        {
+          "id": "F-eb48f9ab",
+          "severity": "blocking",
+          "category": "privacy",
+          "title": "Privacy section is empty despite collecting and uploading receipt images",
+          "supported": true
+        },
+        {
+          "id": "F-2714bcf1",
+          "severity": "major",
+          "category": "verification-feasibility",
+          "title": "Receipts states are not reachable with synthetic data, and only offline is covered",
+          "supported": true
+        },
+        {
+          "id": "F-44ba2bb2",
+          "severity": "major",
+          "category": "acceptance-tests",
+          "title": "Screen states and per-receipt sync state lack criteria; userJourneys is empty",
+          "supported": true
+        },
+        {
+          "id": "F-6cabbcdb",
+          "severity": "major",
+          "category": "lifecycle",
+          "title": "Background/termination and relaunch recovery not covered",
+          "supported": true
+        },
+        {
+          "id": "F-b7615785",
+          "severity": "major",
+          "category": "accessibility",
+          "title": "Accessibility coverage is a single unverified line",
+          "supported": true
+        },
+        {
+          "id": "F-bb863eae",
+          "severity": "major",
+          "category": "acceptance-tests",
+          "title": "Upload, retry, migration and duplicate-handling behaviors are untested; AC-3 and AC-2 are weakly specified",
+          "supported": true
+        },
+        {
+          "id": "F-c6a55678",
+          "severity": "major",
+          "category": "concurrency",
+          "title": "Upload task lifetime and cancellation semantics undefined",
+          "supported": true
+        },
+        {
+          "id": "F-c9486b92",
+          "severity": "major",
+          "category": "state-ownership",
+          "title": "Actor re-entrancy and snapshot ordering between SyncQueue and SyncEngine",
+          "supported": true
+        },
+        {
+          "id": "F-d5cedc09",
+          "severity": "major",
+          "category": "service-integration",
+          "title": "ReceiptAPI boundary lacks data minimisation, a failure model, and at-rest protection for queued receipts",
+          "supported": true
+        },
+        {
+          "id": "F-a566adea",
+          "severity": "minor",
+          "category": "concurrency",
+          "title": "SwiftData isolation not specified",
+          "supported": true
+        },
+        {
+          "id": "F-ef1f3ed1",
+          "severity": "minor",
+          "category": "verification-feasibility",
+          "title": "Criteria that need an external service are not marked, and the main flow has no criterion",
+          "supported": true
+        }
+      ]
+    },
+    {
+      "id": "clean-control",
+      "independent": true,
+      "reviewers": 5,
+      "completed": 5,
+      "malformed": 0,
+      "elapsedMs": 48116,
+      "usage": {
+        "input_tokens": 10,
+        "cache_creation_input_tokens": 20082,
+        "cache_read_input_tokens": 69640,
+        "output_tokens": 9840
+      },
+      "expected": 0,
+      "detected": 0,
+      "missed": 0,
+      "beyondSeeded": 19,
+      "unsupported": 0,
+      "findings": [
+        {
+          "id": "F-e102540f",
+          "severity": "blocking",
+          "category": "acceptance-tests",
+          "title": "No criteria for upload-on-reconnect or no-duplication, the core objective",
+          "supported": true
+        },
+        {
+          "id": "F-0d834d55",
+          "severity": "major",
+          "category": "compatibility",
+          "title": "Migration and existing model do not match the observed code",
+          "supported": true
+        },
+        {
+          "id": "F-31bbd2fd",
+          "severity": "major",
+          "category": "ui-states",
+          "title": "Per-receipt sync state is in scope but has no row-level states or criteria",
+          "supported": true
+        },
+        {
+          "id": "F-3ee6b2af",
+          "severity": "major",
+          "category": "ui-states",
+          "title": "Screen states are not reachable by any stated synthetic-data mechanism, and only offline has a criterion",
+          "supported": true
+        },
+        {
+          "id": "F-460bb21e",
+          "severity": "major",
+          "category": "concurrency",
+          "title": "Actor re-entrancy during uploads can duplicate or lose receipts",
+          "supported": true
+        },
+        {
+          "id": "F-596c1890",
+          "severity": "major",
+          "category": "service-integration",
+          "title": "Duplication-free upload depends on an unresolved backend behavior",
+          "supported": true
+        },
+        {
+          "id": "F-836c5368",
+          "severity": "major",
+          "category": "privacy",
+          "title": "Privacy section omits receipt data actually collected, stored and uploaded",
+          "supported": true
+        },
+        {
+          "id": "F-9777d18a",
+          "severity": "major",
+          "category": "lifecycle",
+          "title": "Task lifetime, cancellation scope and app lifecycle are undefined",
+          "supported": true
+        },
+        {
+          "id": "F-9e034c56",
+          "severity": "major",
+          "category": "ui-states",
+          "title": "Loading, empty, error and success states and per-receipt sync state have no criteria; accessibility is untested",
+          "supported": true
+        },
+        {
+          "id": "F-9f1546c8",
+          "severity": "major",
+          "category": "requirements",
+          "title": "Unresolved duplicate-id behavior blocks the no-duplication guarantee",
+          "supported": true
+        },
+        {
+          "id": "F-a1073fa0",
+          "severity": "major",
+          "category": "state-ownership",
+          "title": "Two owners of pending state: SyncQueue actor and SwiftData store",
+          "supported": true
+        },
+        {
+          "id": "F-aed08ab5",
+          "severity": "major",
+          "category": "service-integration",
+          "title": "ReceiptAPI boundary lacks auth-failure, TLS and data-minimisation handling",
+          "supported": true
+        },
+        {
+          "id": "F-e83fb890",
+          "severity": "major",
+          "category": "accessibility",
+          "title": "Accessibility coverage is limited to one VoiceOver line and is not verifiable",
+          "supported": true
+        },
+        {
+          "id": "F-1c6ddb05",
+          "severity": "minor",
+          "category": "state-ownership",
+          "title": "Snapshot mirroring and SwiftData context ownership are unspecified",
+          "supported": true
+        },
+        {
+          "id": "F-6dc4ab21",
+          "severity": "minor",
+          "category": "acceptance-tests",
+          "title": "AC-2 and AC-3 are weakly testable as written",
+          "supported": true
+        },
+        {
+          "id": "F-735c3e25",
+          "severity": "minor",
+          "category": "verification-feasibility",
+          "title": "AC-2 target and mechanism are underspecified, and staging-dependent behavior is not marked",
+          "supported": true
+        },
+        {
+          "id": "F-be985367",
+          "severity": "minor",
+          "category": "requirements",
+          "title": "Camera permission is declared but capture is not in scope or tested",
+          "supported": true
+        },
+        {
+          "id": "F-c0a05b47",
+          "severity": "minor",
+          "category": "permissions",
+          "title": "Camera permission lacks denial handling and a usage-string requirement",
+          "supported": true
+        },
+        {
+          "id": "F-f526183a",
+          "severity": "minor",
+          "category": "other",
+          "title": "Plan steps list no files and the reachability mechanism is unspecified",
+          "supported": true
+        }
+      ]
+    },
+    {
+      "id": "concurrency-no-isolation",
+      "independent": false,
+      "reviewers": 5,
+      "completed": 4,
+      "malformed": 1,
+      "elapsedMs": 46693,
+      "usage": {
+        "input_tokens": 10,
+        "cache_creation_input_tokens": 20088,
+        "cache_read_input_tokens": 69640,
+        "output_tokens": 10179
+      },
+      "expected": 1,
+      "detected": 1,
+      "missed": 0,
+      "beyondSeeded": 15,
+      "unsupported": 0,
+      "findings": [
+        {
+          "id": "F-223e88a1",
+          "severity": "blocking",
+          "category": "acceptance-tests",
+          "title": "No criteria for upload, no-duplication, or reconnect behavior (core objective)",
+          "supported": true
+        },
+        {
+          "id": "F-3deb9208",
+          "severity": "blocking",
+          "category": "service-integration",
+          "title": "Unresolved duplicate-id backend behavior blocks the no-duplication guarantee",
+          "supported": true
+        },
+        {
+          "id": "F-c98123e1",
+          "severity": "blocking",
+          "category": "concurrency",
+          "title": "No in-flight claim or idempotency protocol; duplicate uploads are possible",
+          "supported": true
+        },
+        {
+          "id": "F-094d9b77",
+          "severity": "major",
+          "category": "accessibility",
+          "title": "Accessibility is limited to one VoiceOver line, with no criterion; Dynamic Type, Reduce Motion and iPad are not addressed",
+          "supported": true
+        },
+        {
+          "id": "F-11693a5a",
+          "severity": "major",
+          "category": "ui-states",
+          "title": "Screen states and per-receipt sync state lack criteria; userJourneys is empty",
+          "supported": true
+        },
+        {
+          "id": "F-11d86d6a",
+          "severity": "major",
+          "category": "state-ownership",
+          "title": "Snapshot mirroring order and Sendable boundary unspecified",
+          "supported": true
+        },
+        {
+          "id": "F-58512d99",
+          "severity": "major",
+          "category": "acceptance-tests",
+          "title": "Failure/retry, cancellation and migration decisions are untested; AC-3 is weak and AC-2 is vague",
+          "supported": true
+        },
+        {
+          "id": "F-624b3ffe",
+          "severity": "major",
+          "category": "ui-states",
+          "title": "Only the offline state has an acceptance criterion; no synthetic-data path for the other states",
+          "supported": true
+        },
+        {
+          "id": "F-c3936432",
+          "severity": "major",
+          "category": "privacy",
+          "title": "Collected receipt data and its upload/storage are not described in the privacy section",
+          "supported": true
+        },
+        {
+          "id": "F-dc17dd9d",
+          "severity": "major",
+          "category": "accessibility",
+          "title": "VoiceOver sync-state announcement has no criterion",
+          "supported": true
+        },
+        {
+          "id": "F-fd5ecc6a",
+          "severity": "major",
+          "category": "lifecycle",
+          "title": "Task lifetime and app lifecycle transitions undefined for uploads and persistence",
+          "supported": true
+        },
+        {
+          "id": "F-484703a0",
+          "severity": "minor",
+          "category": "concurrency",
+          "title": "TaskGroup width and cancellation semantics unspecified",
+          "supported": true
+        },
+        {
+          "id": "F-5d406a7b",
+          "severity": "minor",
+          "category": "service-integration",
+          "title": "ReceiptAPI failure mode for auth errors and duplicate ids is under-specified",
+          "supported": true
+        },
+        {
+          "id": "F-872668c1",
+          "severity": "minor",
+          "category": "security",
+          "title": "Pending receipts at rest have no declared data protection",
+          "supported": true
+        },
+        {
+          "id": "F-bac0b0ae",
+          "severity": "minor",
+          "category": "requirements",
+          "title": "Camera permission and capture are not covered by scope or criteria",
+          "supported": true
+        },
+        {
+          "id": "F-f9e8acf6",
+          "severity": "minor",
+          "category": "verification-feasibility",
+          "title": "The duplicate-id unknown depends on staging, which the simulator can't observe, and is not marked as external",
+          "supported": true
+        }
+      ]
+    },
+    {
+      "id": "criteria-untraceable",
+      "independent": true,
+      "reviewers": 5,
+      "completed": 5,
+      "malformed": 0,
+      "elapsedMs": 53582,
+      "usage": {
+        "input_tokens": 10,
+        "cache_creation_input_tokens": 20011,
+        "cache_read_input_tokens": 69640,
+        "output_tokens": 10155
+      },
+      "expected": 2,
+      "detected": 2,
+      "missed": 0,
+      "beyondSeeded": 16,
+      "unsupported": 0,
+      "findings": [
+        {
+          "id": "F-577f04a2",
+          "severity": "blocking",
+          "category": "acceptance-tests",
+          "title": "No criteria for upload, no-loss, or no-duplication, which are the core objective",
+          "supported": true
+        },
+        {
+          "id": "F-0066b1b8",
+          "severity": "major",
+          "category": "lifecycle",
+          "title": "No task lifetime or cancellation semantics, and no background/termination handling",
+          "supported": true
+        },
+        {
+          "id": "F-0f1d1605",
+          "severity": "major",
+          "category": "acceptance-tests",
+          "title": "Failure handling and migration decisions have no verifying criteria",
+          "supported": true
+        },
+        {
+          "id": "F-13b874aa",
+          "severity": "major",
+          "category": "service-integration",
+          "title": "No-duplication goal depends on an unresolved backend behavior with no idempotency design",
+          "supported": true
+        },
+        {
+          "id": "F-2e30ad3e",
+          "severity": "major",
+          "category": "state-ownership",
+          "title": "Persistence and state ownership split between SyncQueue, SwiftData and SyncEngine is undefined",
+          "supported": true
+        },
+        {
+          "id": "F-756c9ae0",
+          "severity": "major",
+          "category": "ui-states",
+          "title": "Loading, empty, success and error states have no acceptance criteria or reachability path",
+          "supported": true
+        },
+        {
+          "id": "F-773e035a",
+          "severity": "major",
+          "category": "concurrency",
+          "title": "Actor re-entrancy during upload can cause duplicate uploads",
+          "supported": true
+        },
+        {
+          "id": "F-83305138",
+          "severity": "major",
+          "category": "ui-states",
+          "title": "Screen states loading, empty, success and error have no criteria, and userJourneys is empty",
+          "supported": true
+        },
+        {
+          "id": "F-a1a14ac0",
+          "severity": "major",
+          "category": "requirements",
+          "title": "Duplicate-id behavior of the backend is an unresolved unknown that blocks the no-duplication guarantee",
+          "supported": true
+        },
+        {
+          "id": "F-acd96099",
+          "severity": "major",
+          "category": "accessibility",
+          "title": "Accessibility coverage is limited to one VoiceOver line, with no criterion",
+          "supported": true
+        },
+        {
+          "id": "F-c1bd6ae6",
+          "severity": "major",
+          "category": "privacy",
+          "title": "Receipt data collection, at-rest protection and retention are undeclared",
+          "supported": true
+        },
+        {
+          "id": "F-eae79e5e",
+          "severity": "major",
+          "category": "verification-feasibility",
+          "title": "AC-2 offline state has no synthetic way to simulate unreachability",
+          "supported": true
+        },
+        {
+          "id": "F-08cce1a9",
+          "severity": "minor",
+          "category": "other",
+          "title": "Migration is vague, and the in-memory source is not durable data",
+          "supported": true
+        },
+        {
+          "id": "F-75e3f021",
+          "severity": "minor",
+          "category": "compatibility",
+          "title": "iPad layout is not addressed and the target is iPhone only",
+          "supported": true
+        },
+        {
+          "id": "F-8681b3b0",
+          "severity": "minor",
+          "category": "verification-feasibility",
+          "title": "Duplicate-id behavior against the backend is not marked as an external verification",
+          "supported": true
+        },
+        {
+          "id": "F-a4bce91d",
+          "severity": "minor",
+          "category": "state-ownership",
+          "title": "Snapshot mirroring and SwiftData ownership are unspecified",
+          "supported": true
+        },
+        {
+          "id": "F-bfdb0b44",
+          "severity": "minor",
+          "category": "service-integration",
+          "title": "ReceiptAPI boundary lacks token lifecycle, auth-failure mode and data minimisation",
+          "supported": true
+        },
+        {
+          "id": "F-eaacf736",
+          "severity": "minor",
+          "category": "acceptance-tests",
+          "title": "AC-3 is not behavior and AC-1 lacks precision",
+          "supported": true
+        },
+        {
+          "id": "F-08b68280",
+          "severity": "note",
+          "category": "compatibility",
+          "title": "Deployment target is consistent, but several decisions lack evidence",
+          "supported": true
+        },
+        {
+          "id": "F-9ccfccce",
+          "severity": "note",
+          "category": "permissions",
+          "title": "Camera permission is justified, but the denied state is not designed",
+          "supported": true
+        }
+      ]
+    },
+    {
+      "id": "current-code-assumed",
+      "independent": true,
+      "reviewers": 5,
+      "completed": 5,
+      "malformed": 0,
+      "elapsedMs": 53212,
+      "usage": {
+        "input_tokens": 10,
+        "cache_creation_input_tokens": 19837,
+        "cache_read_input_tokens": 69640,
+        "output_tokens": 10689
+      },
+      "expected": 1,
+      "detected": 1,
+      "missed": 0,
+      "beyondSeeded": 18,
+      "unsupported": 0,
+      "findings": [
+        {
+          "id": "F-48ee1178",
+          "severity": "blocking",
+          "category": "concurrency",
+          "title": "Re-entrancy and duplicate uploads: no in-flight tracking or idempotency",
+          "supported": true
+        },
+        {
+          "id": "F-d36b633e",
+          "severity": "blocking",
+          "category": "compatibility",
+          "title": "Current-code claim is an unevidenced guess and conflicts with observed SyncEngine",
+          "supported": true
+        },
+        {
+          "id": "F-fd731606",
+          "severity": "blocking",
+          "category": "acceptance-tests",
+          "title": "No criteria for upload on reconnect, no-duplication, or retry",
+          "supported": true
+        },
+        {
+          "id": "F-1468b088",
+          "severity": "major",
+          "category": "state-ownership",
+          "title": "Two sources of truth between SyncQueue, SwiftData and the SyncEngine mirror, with no data flow defined",
+          "supported": true
+        },
+        {
+          "id": "F-343f22f7",
+          "severity": "major",
+          "category": "ui-states",
+          "title": "States are not reachable with synthetic data; no fixture or injection mechanism",
+          "supported": true
+        },
+        {
+          "id": "F-3dbd1232",
+          "severity": "major",
+          "category": "service-integration",
+          "title": "ReceiptAPI boundary lacks failure modes, auth-failure handling and data minimisation",
+          "supported": true
+        },
+        {
+          "id": "F-48d39a52",
+          "severity": "major",
+          "category": "acceptance-tests",
+          "title": "Unresolved duplicate-id behavior blocks the no-duplication criterion",
+          "supported": true
+        },
+        {
+          "id": "F-527435d0",
+          "severity": "major",
+          "category": "accessibility",
+          "title": "Accessibility coverage is limited to one VoiceOver line; Dynamic Type and Reduce Motion are not addressed",
+          "supported": true
+        },
+        {
+          "id": "F-6751baab",
+          "severity": "major",
+          "category": "lifecycle",
+          "title": "No background, termination or scene-change handling; actor and SwiftData can diverge",
+          "supported": true
+        },
+        {
+          "id": "F-8070645f",
+          "severity": "major",
+          "category": "requirements",
+          "title": "User journeys are empty, so screen states lack criteria",
+          "supported": true
+        },
+        {
+          "id": "F-b0e6e4f0",
+          "severity": "major",
+          "category": "requirements",
+          "title": "Current-code claim is an unverified assumption that contradicts the evidence and the migration step",
+          "supported": true
+        },
+        {
+          "id": "F-eda8b1aa",
+          "severity": "major",
+          "category": "privacy",
+          "title": "Receipt data collection, at-rest protection and disclosure are not specified",
+          "supported": true
+        },
+        {
+          "id": "F-ef45f243",
+          "severity": "major",
+          "category": "state-ownership",
+          "title": "Migration from in-memory receipts to SwiftData has no real source and misses persisted-data cases",
+          "supported": true
+        },
+        {
+          "id": "F-ffcee6e1",
+          "severity": "major",
+          "category": "concurrency",
+          "title": "Cancellation and task lifetime are undefined beyond \"keeps the queue intact\"",
+          "supported": true
+        },
+        {
+          "id": "F-82dd8bea",
+          "severity": "minor",
+          "category": "verification-feasibility",
+          "title": "AC-2 is feasible in the simulator only through a network stub; duplicate-id behavior is external-only",
+          "supported": true
+        },
+        {
+          "id": "F-a1ab4571",
+          "severity": "minor",
+          "category": "permissions",
+          "title": "Camera permission lacks denial handling and usage-string wording",
+          "supported": true
+        },
+        {
+          "id": "F-b0a48c8a",
+          "severity": "minor",
+          "category": "state-ownership",
+          "title": "Snapshot mirroring mechanism and Sendable types undefined",
+          "supported": true
+        },
+        {
+          "id": "F-ce7267c2",
+          "severity": "minor",
+          "category": "compatibility",
+          "title": "Steps list no files, and no reachability dependency is declared",
+          "supported": true
+        },
+        {
+          "id": "F-fef85a88",
+          "severity": "minor",
+          "category": "acceptance-tests",
+          "title": "AC-2 and AC-3 are weakly specified",
+          "supported": true
+        },
+        {
+          "id": "F-52c25448",
+          "severity": "note",
+          "category": "ui-states",
+          "title": "iPad layout is out of scope by target; the success state has no per-receipt state definitions",
+          "supported": true
+        }
+      ]
+    },
+    {
+      "id": "no-steps",
+      "independent": true,
+      "reviewers": 5,
+      "completed": 5,
+      "malformed": 0,
+      "elapsedMs": 48999,
+      "usage": {
+        "input_tokens": 10,
+        "cache_creation_input_tokens": 19285,
+        "cache_read_input_tokens": 69640,
+        "output_tokens": 10045
+      },
+      "expected": 1,
+      "detected": 1,
+      "missed": 0,
+      "beyondSeeded": 17,
+      "unsupported": 0,
+      "findings": [
+        {
+          "id": "F-e0b1d6c7",
+          "severity": "blocking",
+          "category": "acceptance-tests",
+          "title": "No criteria for upload, no-duplication, retry or per-receipt sync state",
+          "supported": true
+        },
+        {
+          "id": "F-08eea623",
+          "severity": "major",
+          "category": "privacy",
+          "title": "Queued receipt data at rest has no protection or retention policy",
+          "supported": true
+        },
+        {
+          "id": "F-0960f4f0",
+          "severity": "major",
+          "category": "concurrency",
+          "title": "Task lifetime and cancellation semantics are not defined",
+          "supported": true
+        },
+        {
+          "id": "F-0abcb256",
+          "severity": "major",
+          "category": "accessibility",
+          "title": "Dynamic Type, Reduce Motion and iPad are not addressed; VoiceOver is vague and unverified",
+          "supported": true
+        },
+        {
+          "id": "F-39bcaf7b",
+          "severity": "major",
+          "category": "compatibility",
+          "title": "Existing SyncEngine model (items: [String]) is not mapped to the new receipt model or per-receipt sync state",
+          "supported": true
+        },
+        {
+          "id": "F-7fe5653e",
+          "severity": "major",
+          "category": "lifecycle",
+          "title": "Backgrounding and termination during upload or persistence are not addressed",
+          "supported": true
+        },
+        {
+          "id": "F-964ff2b1",
+          "severity": "major",
+          "category": "service-integration",
+          "title": "ReceiptAPI boundary lacks payload minimisation, auth-failure mode and duplicate protection",
+          "supported": true
+        },
+        {
+          "id": "F-9c656d3d",
+          "severity": "major",
+          "category": "requirements",
+          "title": "userJourneys is empty and screen states are mostly uncovered",
+          "supported": true
+        },
+        {
+          "id": "F-a6599018",
+          "severity": "major",
+          "category": "verification-feasibility",
+          "title": "No synthetic-data or fault-injection path to reach receipts screen states",
+          "supported": true
+        },
+        {
+          "id": "F-baf3570f",
+          "severity": "major",
+          "category": "service-integration",
+          "title": "Unresolved duplicate-id backend behavior blocks the no-duplication guarantee",
+          "supported": true
+        },
+        {
+          "id": "F-bdf0d68b",
+          "severity": "major",
+          "category": "concurrency",
+          "title": "Actor re-entrancy can cause duplicate uploads; in-flight state and idempotency are undefined",
+          "supported": true
+        },
+        {
+          "id": "F-ceebdbdd",
+          "severity": "major",
+          "category": "state-ownership",
+          "title": "Two owners for pending state (SyncQueue actor vs SwiftData store) with no data flow defined",
+          "supported": true
+        },
+        {
+          "id": "F-13ea35fc",
+          "severity": "minor",
+          "category": "state-ownership",
+          "title": "Snapshot mirroring order and migration race are unspecified; AC-3 doesn't ensure Sendable snapshots",
+          "supported": true
+        },
+        {
+          "id": "F-28534c61",
+          "severity": "minor",
+          "category": "permissions",
+          "title": "Camera permission lacks denial handling, and the usage string is unspecified",
+          "supported": true
+        },
+        {
+          "id": "F-2c9df15d",
+          "severity": "minor",
+          "category": "acceptance-tests",
+          "title": "AC-2 and AC-3 are weakly specified or non-behavioral",
+          "supported": true
+        },
+        {
+          "id": "F-2fcb96ce",
+          "severity": "minor",
+          "category": "acceptance-tests",
+          "title": "Per-receipt sync state and retry have no acceptance criterion; AC-2 target is not an observable identifier",
+          "supported": true
+        },
+        {
+          "id": "F-7e5e8d06",
+          "severity": "minor",
+          "category": "service-integration",
+          "title": "No-duplication goal depends on an unresolved backend behavior and no client idempotency design",
+          "supported": true
+        },
+        {
+          "id": "F-a1cc5c58",
+          "severity": "minor",
+          "category": "requirements",
+          "title": "Migration and permission lack acceptance coverage; camera scope is implicit",
+          "supported": true
+        },
+        {
+          "id": "F-a1bdd96b",
+          "severity": "note",
+          "category": "verification-feasibility",
+          "title": "External-service verification is only partly marked",
+          "supported": true
+        },
+        {
+          "id": "F-f5b731e2",
+          "severity": "note",
+          "category": "lifecycle",
+          "title": "Foreground-only uploads and reachability trigger are unspecified",
+          "supported": true
+        }
+      ]
+    },
+    {
+      "id": "permission-and-unknown",
+      "independent": true,
+      "reviewers": 5,
+      "completed": 5,
+      "malformed": 0,
+      "elapsedMs": 51157,
+      "usage": {
+        "input_tokens": 10,
+        "cache_creation_input_tokens": 20051,
+        "cache_read_input_tokens": 69640,
+        "output_tokens": 10665
+      },
+      "expected": 2,
+      "detected": 2,
+      "missed": 0,
+      "beyondSeeded": 21,
+      "unsupported": 0,
+      "findings": [
+        {
+          "id": "F-3bf8bc63",
+          "severity": "blocking",
+          "category": "requirements",
+          "title": "Unknown about backend duplicate-id rejection blocks the no-duplication guarantee",
+          "supported": true
+        },
+        {
+          "id": "F-69e200bb",
+          "severity": "blocking",
+          "category": "acceptance-tests",
+          "title": "No criteria for upload, no-duplication, or retry, the core objective",
+          "supported": true
+        },
+        {
+          "id": "F-a9508388",
+          "severity": "blocking",
+          "category": "permissions",
+          "title": "NSCameraUsageDescription declared with empty purpose",
+          "supported": true
+        },
+        {
+          "id": "F-de65ee59",
+          "severity": "blocking",
+          "category": "service-integration",
+          "title": "No-duplication goal has no mechanism; backend duplicate behavior is unknown",
+          "supported": true
+        },
+        {
+          "id": "F-0ee74af0",
+          "severity": "major",
+          "category": "concurrency",
+          "title": "Actor re-entrancy and idempotency not addressed for upload-without-duplication",
+          "supported": true
+        },
+        {
+          "id": "F-1bfa0fb1",
+          "severity": "major",
+          "category": "privacy",
+          "title": "Receipt data collection and upload are not declared in the privacy section",
+          "supported": true
+        },
+        {
+          "id": "F-334926af",
+          "severity": "major",
+          "category": "requirements",
+          "title": "userJourneys is empty, so there is no journey-to-criteria traceability",
+          "supported": true
+        },
+        {
+          "id": "F-36668d25",
+          "severity": "major",
+          "category": "permissions",
+          "title": "Camera permission has an empty purpose, and capture is not in scope or covered",
+          "supported": true
+        },
+        {
+          "id": "F-3f16fea9",
+          "severity": "major",
+          "category": "lifecycle",
+          "title": "Task lifetime, cancellation owner, and background/termination behavior undefined",
+          "supported": true
+        },
+        {
+          "id": "F-5ce8113c",
+          "severity": "major",
+          "category": "ui-states",
+          "title": "Only the offline state of the five declared screen states has a criterion",
+          "supported": true
+        },
+        {
+          "id": "F-640727a8",
+          "severity": "major",
+          "category": "architecture",
+          "title": "SwiftData persistence and migration plan is underspecified and unevidenced",
+          "supported": true
+        },
+        {
+          "id": "F-878c43fc",
+          "severity": "major",
+          "category": "security",
+          "title": "Pending receipts persisted in SwiftData without a protection decision",
+          "supported": true
+        },
+        {
+          "id": "F-d42d9648",
+          "severity": "major",
+          "category": "verification-feasibility",
+          "title": "Offline and other states not reachable with synthetic data",
+          "supported": true
+        },
+        {
+          "id": "F-d52192f4",
+          "severity": "major",
+          "category": "state-ownership",
+          "title": "Existing in-memory SyncEngine.items is not reconciled with the new SyncQueue owner; dataFlow is empty",
+          "supported": true
+        },
+        {
+          "id": "F-f3810581",
+          "severity": "major",
+          "category": "accessibility",
+          "title": "Accessibility coverage limited to one VoiceOver line, with no criterion",
+          "supported": true
+        },
+        {
+          "id": "F-22b1c1fc",
+          "severity": "minor",
+          "category": "verification-feasibility",
+          "title": "Duplicate-rejection behaviour is unknown and no criterion is marked external",
+          "supported": true
+        },
+        {
+          "id": "F-350248e8",
+          "severity": "minor",
+          "category": "service-integration",
+          "title": "Duplicate-id handling by the backend is unknown, and token failure modes are unspecified",
+          "supported": true
+        },
+        {
+          "id": "F-6026bd7e",
+          "severity": "minor",
+          "category": "concurrency",
+          "title": "Reachability and relaunch triggers for uploads are not designed",
+          "supported": true
+        },
+        {
+          "id": "F-82cf6bd2",
+          "severity": "minor",
+          "category": "acceptance-tests",
+          "title": "AC-3 does not name what it checks, and AC-1 only partly covers the migration",
+          "supported": true
+        },
+        {
+          "id": "F-a54eb14f",
+          "severity": "minor",
+          "category": "ui-states",
+          "title": "iPad layout not addressed and the target is iPhone only",
+          "supported": true
+        },
+        {
+          "id": "F-b4f3a036",
+          "severity": "minor",
+          "category": "state-ownership",
+          "title": "Snapshot mirroring order and persistence ownership unspecified",
+          "supported": true
+        },
+        {
+          "id": "F-bc97da4d",
+          "severity": "minor",
+          "category": "permissions",
+          "title": "Camera permission has an empty purpose and no denied-state screen",
+          "supported": true
+        },
+        {
+          "id": "F-f1160201",
+          "severity": "minor",
+          "category": "permissions",
+          "title": "Camera permission has an empty purpose and no capture flow in the design",
+          "supported": true
+        }
+      ]
+    },
+    {
+      "id": "persistence-no-migration",
+      "independent": true,
+      "reviewers": 5,
+      "completed": 5,
+      "malformed": 0,
+      "elapsedMs": 50022,
+      "usage": {
+        "input_tokens": 10,
+        "cache_creation_input_tokens": 19807,
+        "cache_read_input_tokens": 69640,
+        "output_tokens": 10221
+      },
+      "expected": 1,
+      "detected": 1,
+      "missed": 0,
+      "beyondSeeded": 20,
+      "unsupported": 0,
+      "findings": [
+        {
+          "id": "F-097c2c96",
+          "severity": "blocking",
+          "category": "acceptance-tests",
+          "title": "No criteria for upload success or for no-loss/no-duplication",
+          "supported": true
+        },
+        {
+          "id": "F-20a4ded8",
+          "severity": "blocking",
+          "category": "state-ownership",
+          "title": "Existing SyncEngine.items state has no defined fate; ownership of receipts is split and unmigrated",
+          "supported": true
+        },
+        {
+          "id": "F-50d09e9f",
+          "severity": "blocking",
+          "category": "concurrency",
+          "title": "No idempotency or in-flight tracking, so re-entrancy on the actor can duplicate uploads",
+          "supported": true
+        },
+        {
+          "id": "F-11790f15",
+          "severity": "major",
+          "category": "requirements",
+          "title": "Unresolved backend duplicate-id behavior blocks the no-duplication criterion",
+          "supported": true
+        },
+        {
+          "id": "F-4a651893",
+          "severity": "major",
+          "category": "service-integration",
+          "title": "ReceiptAPI boundary lacks failure modes, auth expiry handling, and data minimisation",
+          "supported": true
+        },
+        {
+          "id": "F-4c4fe5ae",
+          "severity": "major",
+          "category": "ui-states",
+          "title": "Screen states loading, empty, success and error are listed but not covered, nor is per-receipt sync state",
+          "supported": true
+        },
+        {
+          "id": "F-5de2db24",
+          "severity": "major",
+          "category": "requirements",
+          "title": "User journeys are empty",
+          "supported": true
+        },
+        {
+          "id": "F-857e5071",
+          "severity": "major",
+          "category": "ui-states",
+          "title": "Loading, empty, error and success states have no acceptance criteria or synthetic reachability",
+          "supported": true
+        },
+        {
+          "id": "F-953ef5eb",
+          "severity": "major",
+          "category": "state-ownership",
+          "title": "Snapshot mirroring has no ordering guarantee and no Sendable type",
+          "supported": true
+        },
+        {
+          "id": "F-a9158507",
+          "severity": "major",
+          "category": "lifecycle",
+          "title": "Task lifetime, cancellation and app lifecycle are undefined",
+          "supported": true
+        },
+        {
+          "id": "F-b4af8b13",
+          "severity": "major",
+          "category": "service-integration",
+          "title": "No-duplication goal depends on an unresolved backend behavior with no client-side idempotency design",
+          "supported": true
+        },
+        {
+          "id": "F-ba010e77",
+          "severity": "major",
+          "category": "verification-feasibility",
+          "title": "AC-2 offline state has no synthetic way to trigger it in the simulator",
+          "supported": true
+        },
+        {
+          "id": "F-f3e27efd",
+          "severity": "major",
+          "category": "privacy",
+          "title": "Receipt data collection and storage are not described in privacy requirements",
+          "supported": true
+        },
+        {
+          "id": "F-fed1f418",
+          "severity": "major",
+          "category": "architecture",
+          "title": "Persistence and ownership decisions cite no evidence, and the SwiftData model's relation to SyncQueue is unspecified",
+          "supported": true
+        },
+        {
+          "id": "F-0d708fa6",
+          "severity": "minor",
+          "category": "concurrency",
+          "title": "The SwiftData context's actor isolation is not specified",
+          "supported": true
+        },
+        {
+          "id": "F-67609330",
+          "severity": "minor",
+          "category": "accessibility",
+          "title": "Accessibility is limited to one VoiceOver line, with no Dynamic Type, Reduce Motion or iPad coverage",
+          "supported": true
+        },
+        {
+          "id": "F-944f49a6",
+          "severity": "minor",
+          "category": "verification-feasibility",
+          "title": "The duplicate-id question needs staging and is not tied to a criterion",
+          "supported": true
+        },
+        {
+          "id": "F-ca497be3",
+          "severity": "minor",
+          "category": "acceptance-tests",
+          "title": "AC-1 and AC-2 are loosely specified and the compile criterion has no target",
+          "supported": true
+        },
+        {
+          "id": "F-d812b9e1",
+          "severity": "minor",
+          "category": "permissions",
+          "title": "Camera permission lacks denied-state handling and usage-description wording",
+          "supported": true
+        },
+        {
+          "id": "F-e7c9eeaf",
+          "severity": "minor",
+          "category": "acceptance-tests",
+          "title": "Acceptance coverage misses several scope items",
+          "supported": true
+        },
+        {
+          "id": "F-f27be3c2",
+          "severity": "minor",
+          "category": "requirements",
+          "title": "Persistence is a stated decision, yet migration is empty and the current code is in-memory",
+          "supported": true
+        }
+      ]
+    },
+    {
+      "id": "screen-missing-states",
+      "independent": true,
+      "reviewers": 5,
+      "completed": 5,
+      "malformed": 0,
+      "elapsedMs": 50709,
+      "usage": {
+        "input_tokens": 10,
+        "cache_creation_input_tokens": 20079,
+        "cache_read_input_tokens": 69640,
+        "output_tokens": 10047
+      },
+      "expected": 2,
+      "detected": 2,
+      "missed": 0,
+      "beyondSeeded": 16,
+      "unsupported": 0,
+      "findings": [
+        {
+          "id": "F-a57529c7",
+          "severity": "blocking",
+          "category": "acceptance-tests",
+          "title": "No acceptance criteria for upload, no-duplication, failure/retry, or migration",
+          "supported": true
+        },
+        {
+          "id": "F-b5e5a57a",
+          "severity": "blocking",
+          "category": "ui-states",
+          "title": "Receipts screen omits offline, empty, error and per-receipt sync states",
+          "supported": true
+        },
+        {
+          "id": "F-10528cc7",
+          "severity": "major",
+          "category": "accessibility",
+          "title": "Accessibility limited to a VoiceOver announcement; Dynamic Type, Reduce Motion and iPad unaddressed",
+          "supported": true
+        },
+        {
+          "id": "F-235b5195",
+          "severity": "major",
+          "category": "acceptance-tests",
+          "title": "Unresolved duplicate-id behavior blocks the no-duplication guarantee, and AC-2 and AC-3 are weakly specified",
+          "supported": true
+        },
+        {
+          "id": "F-33d2af1a",
+          "severity": "major",
+          "category": "privacy",
+          "title": "Privacy section covers only the token, not the receipt data that is collected, stored and uploaded",
+          "supported": true
+        },
+        {
+          "id": "F-4111567a",
+          "severity": "major",
+          "category": "verification-feasibility",
+          "title": "No synthetic-data route to reach states in the simulator",
+          "supported": true
+        },
+        {
+          "id": "F-59c70232",
+          "severity": "major",
+          "category": "lifecycle",
+          "title": "Task lifetime, cancellation owner and app lifecycle transitions are undefined",
+          "supported": true
+        },
+        {
+          "id": "F-6aff00e9",
+          "severity": "major",
+          "category": "state-ownership",
+          "title": "Existing SyncEngine state shape does not match the proposed ownership and migration model",
+          "supported": true
+        },
+        {
+          "id": "F-9f330dea",
+          "severity": "major",
+          "category": "service-integration",
+          "title": "No-duplication goal depends on an unresolved backend behavior, with no idempotency design",
+          "supported": true
+        },
+        {
+          "id": "F-f147cad1",
+          "severity": "major",
+          "category": "concurrency",
+          "title": "Re-entrancy during upload suspension can duplicate uploads or lose state",
+          "supported": true
+        },
+        {
+          "id": "F-fb5ec8af",
+          "severity": "major",
+          "category": "ui-states",
+          "title": "Screen states omit offline, empty, error and per-receipt sync states, and no user journeys are defined",
+          "supported": true
+        },
+        {
+          "id": "F-15f7290d",
+          "severity": "minor",
+          "category": "state-ownership",
+          "title": "Snapshot mirroring and SwiftData context ownership are unspecified",
+          "supported": true
+        },
+        {
+          "id": "F-29583923",
+          "severity": "minor",
+          "category": "service-integration",
+          "title": "ReceiptAPI boundary lacks authentication-failure handling, data minimisation and duplicate-safety",
+          "supported": true
+        },
+        {
+          "id": "F-7825e1f8",
+          "severity": "minor",
+          "category": "permissions",
+          "title": "Camera permission lacks denial handling and the usage-description wording",
+          "supported": true
+        },
+        {
+          "id": "F-81192c48",
+          "severity": "minor",
+          "category": "other",
+          "title": "Camera permission and the capture flow are outside the stated scope",
+          "supported": true
+        },
+        {
+          "id": "F-aa9b9dd2",
+          "severity": "minor",
+          "category": "ui-states",
+          "title": "Screen states omit offline and per-receipt sync states required by scope and AC-2",
+          "supported": true
+        },
+        {
+          "id": "F-c194c0e9",
+          "severity": "minor",
+          "category": "verification-feasibility",
+          "title": "Duplicate-id behavior depends on staging, but no criterion is marked as external",
+          "supported": true
+        },
+        {
+          "id": "F-f448fe58",
+          "severity": "minor",
+          "category": "concurrency",
+          "title": "Interaction between actor-owned queue, TaskGroup uploads and persisted SwiftData state is unspecified",
+          "supported": true
+        }
+      ]
+    },
+    {
+      "id": "service-no-failure-handling",
+      "independent": true,
+      "reviewers": 5,
+      "completed": 5,
+      "malformed": 0,
+      "elapsedMs": 50499,
+      "usage": {
+        "input_tokens": 10,
+        "cache_creation_input_tokens": 19878,
+        "cache_read_input_tokens": 69640,
+        "output_tokens": 10394
+      },
+      "expected": 1,
+      "detected": 1,
+      "missed": 0,
+      "beyondSeeded": 19,
+      "unsupported": 0,
+      "findings": [
+        {
+          "id": "F-1da1974e",
+          "severity": "blocking",
+          "category": "concurrency",
+          "title": "No idempotency or in-flight tracking, so duplicate uploads are possible and the duplicate-id question is unresolved",
+          "supported": true
+        },
+        {
+          "id": "F-3d78024c",
+          "severity": "blocking",
+          "category": "requirements",
+          "title": "Duplicate-id backend behavior is an unresolved unknown that blocks the no-duplication guarantee",
+          "supported": true
+        },
+        {
+          "id": "F-b60381c5",
+          "severity": "blocking",
+          "category": "service-integration",
+          "title": "ReceiptAPI has no failure handling, retry or auth-failure behavior",
+          "supported": true
+        },
+        {
+          "id": "F-e4deb9bd",
+          "severity": "blocking",
+          "category": "state-ownership",
+          "title": "Existing SyncEngine.items state has no defined owner or relationship to SyncQueue",
+          "supported": true
+        },
+        {
+          "id": "F-ee9c1236",
+          "severity": "blocking",
+          "category": "acceptance-tests",
+          "title": "No criterion verifies upload, no-loss or no-duplication, which is the core objective",
+          "supported": true
+        },
+        {
+          "id": "F-f9efe32a",
+          "severity": "blocking",
+          "category": "ui-states",
+          "title": "Five screen states have no reachability mechanism or acceptance criterion",
+          "supported": true
+        },
+        {
+          "id": "F-20695888",
+          "severity": "major",
+          "category": "ui-states",
+          "title": "Screen states loading, empty, success and error have no criteria; accessibility is uncovered",
+          "supported": true
+        },
+        {
+          "id": "F-44a485f8",
+          "severity": "major",
+          "category": "accessibility",
+          "title": "Accessibility requirements are a single vague line; Dynamic Type, Reduce Motion and iPad are not addressed",
+          "supported": true
+        },
+        {
+          "id": "F-46c50a38",
+          "severity": "major",
+          "category": "privacy",
+          "title": "Privacy section does not disclose collected receipt data or its upload",
+          "supported": true
+        },
+        {
+          "id": "F-4e24a03f",
+          "severity": "major",
+          "category": "service-integration",
+          "title": "No-duplication objective depends on an unresolved backend behavior and has no idempotency design",
+          "supported": true
+        },
+        {
+          "id": "F-542c337a",
+          "severity": "major",
+          "category": "requirements",
+          "title": "User journeys and failureHandling are empty",
+          "supported": true
+        },
+        {
+          "id": "F-b5603f4b",
+          "severity": "major",
+          "category": "lifecycle",
+          "title": "Background, suspension and termination behavior is undefined for uploads and persistence",
+          "supported": true
+        },
+        {
+          "id": "F-d4104056",
+          "severity": "major",
+          "category": "other",
+          "title": "Migration is claimed for data that the observed code does not hold, and its handling is incomplete",
+          "supported": true
+        },
+        {
+          "id": "F-e890c4c8",
+          "severity": "major",
+          "category": "verification-feasibility",
+          "title": "Per-receipt sync state is in scope but has no screen state, criterion or verification",
+          "supported": true
+        },
+        {
+          "id": "F-f5bce05e",
+          "severity": "major",
+          "category": "state-ownership",
+          "title": "Snapshot mirroring order and task lifetime are unspecified",
+          "supported": true
+        },
+        {
+          "id": "F-0aadf7a6",
+          "severity": "minor",
+          "category": "compatibility",
+          "title": "Architecture and persistence decisions carry no evidence, and steps list no files",
+          "supported": true
+        },
+        {
+          "id": "F-29698e53",
+          "severity": "minor",
+          "category": "acceptance-tests",
+          "title": "AC-3 names no checkable target; migration is uncovered",
+          "supported": true
+        },
+        {
+          "id": "F-475e1c48",
+          "severity": "minor",
+          "category": "security",
+          "title": "Pending receipts persisted in SwiftData with no at-rest protection declared",
+          "supported": true
+        },
+        {
+          "id": "F-91218ca5",
+          "severity": "minor",
+          "category": "concurrency",
+          "title": "A TaskGroup inside an actor gives no defined partial-failure or cancellation result handling",
+          "supported": true
+        },
+        {
+          "id": "F-920a8fdd",
+          "severity": "minor",
+          "category": "verification-feasibility",
+          "title": "Duplicate-id behavior depends on an external service and is not tied to a criterion",
+          "supported": true
+        }
+      ]
+    }
+  ]
+}

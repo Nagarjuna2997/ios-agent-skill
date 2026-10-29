@@ -1,0 +1,5 @@
+{
+  "seededDefects": [
+    "auth-without-credential-boundary"
+  ]
+}

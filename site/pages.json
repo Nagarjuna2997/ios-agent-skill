@@ -1075,5 +1075,9 @@
   "guides/mcp-aimlapi.html": {
     "title": "AI/ML API connection",
     "description": "Run the hosted AI/ML API model gateway beside iOS Agent MCP on your own account for icon and asset concepts, with clear boundaries and no verification claims."
+  },
+  "guides/tooling-design-review.html": {
+    "title": "Design contract and independent review",
+    "description": "Reviewed design contracts for substantial iOS work: evidence-tagged claims, independent reviewers, approval provenance, verification tiers and drift checks."
   }
 }

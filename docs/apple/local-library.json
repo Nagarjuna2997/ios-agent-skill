@@ -3106,8 +3106,8 @@
       "path": "docs/mcp/installation.md",
       "title": "Installing the iOS Agent MCP Server",
       "kind": "guide",
-      "characters": 15934,
-      "hash": "df69d99b28db6d0210a71ad07b3fa568abef88700235e6d0b09bfe38bdb9a166"
+      "characters": 16049,
+      "hash": "6a63356ec2d14ee5d11d8f1160876f05c74c02f5f60281f4627357bb441c364b"
     },
     {
       "path": "docs/mcp/knowledge-server.md",
@@ -3127,8 +3127,8 @@
       "path": "docs/mcp/tools.md",
       "title": "MCP Tool Reference",
       "kind": "guide",
-      "characters": 24073,
-      "hash": "6e0126fe8b19d148ce7503c570ee0c0de614a6c236bc01fcb1194373c1ba00ef"
+      "characters": 24786,
+      "hash": "7acbe1b0694887f8f483adeb9c8d8e9162c9a854eec16092fa8986e9b81109d1"
     },
     {
       "path": "docs/mcp/vnext-analysis-tools.md",
@@ -3416,6 +3416,13 @@
       "kind": "guide",
       "characters": 4680,
       "hash": "183d88705b081d1f783c0fa384ef5d35c36ac48d6e8150709982f539d27c599f"
+    },
+    {
+      "path": "docs/tooling/design-review.md",
+      "title": "Design contract and independent review",
+      "kind": "guide",
+      "characters": 19608,
+      "hash": "b1a82973afa8138f7667fa9dfc6b5d341dc86b9b4625e6386f98d75d38522354"
     },
     {
       "path": "docs/tooling/device-hub.md",

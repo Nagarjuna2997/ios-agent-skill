@@ -6,7 +6,7 @@
 claude mcp add ios-agent -- npx -y ios-agent-mcp@latest
 ```
 
-The published 2.10.3 server exposes 82 tools, including review/metadata, Apple reference and documentation, simulator, app scaffolding and the local `prepare_issue_report` tools. App scaffolding and simulator packages install automatically as dependencies; no separate installation or MCP connection is needed. Remove the separate knowledge/simulator connections if you previously configured them to avoid duplicate tools.
+The published 2.10.3 server exposes 82 tools, including review/metadata, Apple reference and documentation, simulator, app scaffolding and the local `prepare_issue_report` tools; a source checkout adds six `design_*` tools for the design-contract workflow (88 total, not yet published to npm). App scaffolding and simulator packages install automatically as dependencies; no separate installation or MCP connection is needed. Remove the separate knowledge/simulator connections if you previously configured them to avoid duplicate tools.
 
 Create a starter directly:
 

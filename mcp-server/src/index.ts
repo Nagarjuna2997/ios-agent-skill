@@ -4,6 +4,7 @@ import { reviewAvailability } from './availability/review.js';
 import { registerAppleDocs } from './apple-docs/tools.js';
 import { registerScreenshotTools } from './screenshots/tools.js';
 import { registerAgentTools } from './agent/tools.js';
+import { registerDesignTools } from './design/tools.js';
 import { reviewLaunchScreens } from './analyzers/launch-screen.js';
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
@@ -176,6 +177,7 @@ registerIntegrationTools(server);
 registerAppleDocs(server);
 registerScreenshotTools(server);
 registerAgentTools(server);
+registerDesignTools(server);
 
 server.registerTool('review_backend_integration', {
   title: 'Review iOS backend integration',

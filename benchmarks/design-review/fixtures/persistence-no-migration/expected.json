@@ -1,0 +1,5 @@
+{
+  "seededDefects": [
+    "persistence-without-migration"
+  ]
+}

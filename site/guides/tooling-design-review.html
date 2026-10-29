@@ -1,0 +1,329 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="canonical" href="https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-design-review.html"><meta property="og:title" content="Design contract and independent review"><meta property="og:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-design-review.html"><meta property="og:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="../playground.css"><link rel="stylesheet" href="../ios-polish.css"><link rel="stylesheet" href="../blog.css?v=guide-visuals-3"><link rel="stylesheet" href="../navigation.css?v=2"><script src="../appearance.js?v=2" defer=""></script><title>Design contract and independent review</title><meta name="description" content="Reviewed design contracts for substantial iOS work: evidence-tagged claims, independent reviewers, approval provenance, verification tiers and drift checks."><meta property="og:description" content="Reviewed design contracts for substantial iOS work: evidence-tagged claims, independent reviewers, approval provenance, verification tiers and drift checks."><meta property="og:type" content="article"><meta property="og:site_name" content="iOS Agent Skill"><meta name="twitter:title" content="Design contract and independent review"><meta name="twitter:description" content="Reviewed design contracts for substantial iOS work: evidence-tagged claims, independent reviewers, approval provenance, verification tiers and drift checks."><meta name="twitter:image" content="https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg"><meta name="twitter:url" content="https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-design-review.html"><meta name="robots" content="index,follow"><link rel="alternate" type="application/atom+xml" href="/ios-agent-skill/feed.xml" title="iOS Agent Skill"><script id="site-discovery-schema" type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Design contract and independent review","image":"https://nagarjuna2997.github.io/ios-agent-skill/assets/readme-hero.jpg","datePublished":"2026-09-16T20:25:44-05:00","dateModified":"2026-10-28T21:21:09-05:00","author":{"@type":"Person","name":"Nagarjuna"},"mainEntityOfPage":"https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-design-review.html","url":"https://nagarjuna2997.github.io/ios-agent-skill/guides/tooling-design-review.html"}</script></head><body class="subpage"><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="../index.html">iOS Agent Skill</a><div class="links"><a href="../install.html">Setup guides</a><a href="../blog.html">Blog</a><a href="../series.html">Guided series</a><a href="../library.html">Guide library</a><a href="../community.html">Community</a><a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a><!-- release-link:start --><a class="release-link" href="../releases.html">What’s new <span aria-hidden="true">↗</span></a><!-- release-link:end --></div><button class="appearance-toggle" type="button" aria-label="Use dark appearance" aria-pressed="false"><span aria-hidden="true">☾</span><span class="appearance-label">Dark mode</span></button></nav><main id="main"><div class="article-back"><a class="btn secondary" href="../library.html">← Back to all frameworks &amp; guides</a><a class="btn secondary" href="../blog.html">All articles →</a></div><article class="blog-article"><header class="page-intro"><p class="eyebrow">Tooling · Reference guide</p><h1>Design contract and independent review</h1><p class="lead">Repository guidance for Design contract and independent review. Examples, decisions, and verification limits from the maintained source guide.</p><p><a href="https://github.com/Nagarjuna2997/ios-agent-skill/blob/main/docs/tooling/design-review.md">Read or improve the source</a> · <a href="../library.html">All guides</a></p></header><div class="article-body"><aside class="article-toc"><strong>On this page</strong><p><a href="#visual-overview">Visual overview: workflow and architecture</a></p><div class="toc">
+<ul>
+<li><a href="#status">Status</a></li>
+<li><a href="#what-the-contract-holds">What the contract holds</a></li>
+<li><a href="#routing">Routing</a></li>
+<li><a href="#state-machine">State machine</a></li>
+<li><a href="#independent-review">Independent review</a></li>
+<li><a href="#implementation-and-verification">Implementation and verification</a></li>
+<li><a href="#drift">Drift</a></li>
+<li><a href="#commands">Commands</a></li>
+<li><a href="#state-on-disk">State on disk</a></li>
+<li><a href="#privacy">Privacy</a></li>
+<li><a href="#evaluation">Evaluation</a></li>
+<li><a href="#recorded-verification">Recorded verification</a></li>
+</ul>
+</div>
+</aside><section class="guide-visuals" aria-labelledby="visual-overview"><h2 id="visual-overview">Visual overview</h2>
+<p>Use the workflow to follow the task, and the architecture map to separate responsibilities. These are conceptual maps; the guide below defines implementation details and verification limits.</p>
+<figure class="guide-flow"><figcaption><span class="guide-visual-kicker">01 / Workflow</span>From intent to a checked result</figcaption><ol role="list"><li><span class="guide-step-number" aria-hidden="true">1</span><span>Write the design contract</span><span class="guide-flow-arrow" aria-hidden="true">↓</span></li><li><span class="guide-step-number" aria-hidden="true">2</span><span>Independent reviewers see only the package</span><span class="guide-flow-arrow" aria-hidden="true">↓</span></li><li><span class="guide-step-number" aria-hidden="true">3</span><span>Disposition findings and compute readiness</span><span class="guide-flow-arrow" aria-hidden="true">↓</span></li><li><span class="guide-step-number" aria-hidden="true">4</span><span>Record approval, implement, verify, detect drift</span></li></ol></figure>
+<figure class="guide-architecture"><figcaption><span class="guide-visual-kicker">02 / Architecture</span>Responsibility boundaries</figcaption><ol role="list"><li><span class="guide-boundary-label">Boundary 1</span><strong>DESIGN.json (source of truth) and DESIGN.md</strong></li><li><span class="guide-boundary-label">Boundary 2</span><strong>Workflow state and hash-bound flags</strong></li><li><span class="guide-boundary-label">Boundary 3</span><strong>Reviewer packages, providers and recorded isolation</strong></li><li><span class="guide-boundary-label">Boundary 4</span><strong>Verification tiers and drift checks</strong></li></ol><p class="guide-visual-note">Connected responsibilities, not a required class hierarchy or an execution trace.</p></figure></section><p><strong>Load this when:</strong> a change is substantial enough that a specification should be reviewed by someone who did not write it before code is written: a new persistence layer, authentication, payments, sensitive permissions, concurrency changes, multi-target work, or anything a single <code>/ios-build</code> plan cannot hold. Small, well-defined fixes stay on the existing <code>/ios-build</code> and review-tool workflow; nothing here is required for them.</p>
+<p>The workflow is <strong>Inspect → Design → Independent review → Resolve → Implement → Verify → Detect drift</strong>. A context-aware planning agent writes a self-contained contract. Fresh reviewers examine only that contract and the evidence it references. Findings become dispositions, dispositions gate readiness, and verification is tracked per acceptance criterion against the exact revision that was approved.</p>
+<h2 id="status">Status</h2>
+<p>Implemented in <code>mcp-server/src/design/</code> and covered by <code>mcp-server/test/design.test.js</code> (22 tests against fake providers, a fake <code>claude</code> runner, temporary projects, the real CLI entry point and the real MCP server). The deterministic lint evaluation in <code>benchmarks/design-review/</code> detects 12/12 seeded defects with no false positives on the clean control.</p>
+<p>What has and has not been exercised for real:</p>
+<ul>
+<li><strong>VERIFIED:</strong> schema validation, rendering, state transitions, locking, stale-run recovery, evidence packaging and redaction, reviewer output parsing, dedup, dispositions, readiness gating, approval provenance, verification tiers, <code>/ios-build</code> state import, drift checks, the <code>design</code> CLI and the six MCP tools, all on Linux with Node 22.</li>
+<li><strong>INSPECTED:</strong> the <code>claude-code</code> provider's command line is asserted by a fake runner (<code>-p --no-session-persistence --tools "" --strict-mcp-config</code>), the same flags the build agent already uses for headless calls.</li>
+<li><strong>Live <code>claude-code</code> runs:</strong> see <a href="#recorded-verification">Recorded verification</a> below for what was actually executed and what the reviewers found.</li>
+<li><strong>UNVERIFIED:</strong> the <code>ai-route</code> provider against a real cloud key; client-attested subagent isolation (the server records the attestation and cannot verify it); any claim that the workflow reduces rework or improves shipped quality. Those claims need the paired live evaluation that has not been run.</li>
+</ul>
+<h2 id="what-the-contract-holds">What the contract holds</h2>
+<p><code>DESIGN.json</code> is the machine-readable source of truth; <code>DESIGN.md</code> is rendered from it deterministically (same contract, same bytes, regardless of key order) and is never edited by hand. Schema version 1; <code>migrateContract</code> is the single place a future bump lands, and unknown versions fail loudly.</p>
+<table>
+<thead>
+<tr>
+<th>Section</th>
+<th>What goes in it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>objective</code>, <code>scope</code>, <code>nonGoals</code></td>
+<td>Why, how far, and what is explicitly out</td>
+</tr>
+<tr>
+<td><code>constraints</code>, <code>currentCode</code></td>
+<td>Claims about the existing code. A claim tagged <code>fact</code> <strong>must</strong> cite <code>evidence</code> (path, optional line and symbol); <code>decision</code>, <code>assumption</code> and <code>unknown</code> are labelled as such, and an <code>unknown</code> names what would settle it</td>
+</tr>
+<tr>
+<td><code>userJourneys</code>, <code>screens</code></td>
+<td>Journeys, per-screen states (<code>loading</code>, <code>empty</code>, <code>success</code>, <code>error</code>, <code>offline</code>, <code>partial</code>) and accessibility requirements</td>
+</tr>
+<tr>
+<td><code>architecture</code></td>
+<td>Summary plus claims for state ownership, data flow and persistence</td>
+</tr>
+<tr>
+<td><code>apiContracts</code>, <code>dependencies</code></td>
+<td>Service boundaries; packages, frameworks, services and tools</td>
+</tr>
+<tr>
+<td><code>deployment</code></td>
+<td>Minimum iOS, targets, toolchain claims</td>
+</tr>
+<tr>
+<td><code>concurrency</code>, <code>permissions</code>, <code>privacy</code></td>
+<td>Actor isolation decisions; Info.plist and entitlement keys with purpose; credential boundaries</td>
+</tr>
+<tr>
+<td><code>failureHandling</code>, <code>migration</code></td>
+<td>Recovery and data migration</td>
+</tr>
+<tr>
+<td><code>acceptanceCriteria</code></td>
+<td><code>AC-n</code> with a statement, a verification <code>method</code> (<code>compile</code>, <code>unit-test</code>, <code>ui-test</code>, <code>simulator</code>, <code>visual</code>, <code>accessibility</code>, <code>external-service</code>, <code>signed-distribution</code>, <code>manual</code>) and an optional <code>target</code> (test name, screen id, system) that evidence is traced to</td>
+</tr>
+<tr>
+<td><code>steps</code></td>
+<td><code>S-n</code> with the criteria it serves, dependencies and files</td>
+</tr>
+<tr>
+<td><code>unresolved</code>, <code>risks</code></td>
+<td>Open decisions and risks, tagged like other claims</td>
+</tr>
+<tr>
+<td><code>requiredFiles</code>, <code>requiredSymbols</code></td>
+<td>Drift anchors: paths that must exist, Swift identifiers that must appear</td>
+</tr>
+</tbody>
+</table>
+<p>Validation rejects duplicate IDs, steps that reference unknown criteria, criteria no step covers (once steps exist), facts without evidence and traversal in paths. Readiness additionally needs a non-empty objective, scope, criteria, steps, at least one observed fact about the current code, and no unknown without a settling check.</p>
+<h2 id="routing">Routing</h2>
+<p><code>design route</code> (or the <code>create</code> output) recommends <code>lightweight</code> or <code>full</code> from signals anyone can check in the contract: architecture decisions, persistence or migration, authentication, payments, sensitive permission keys, concurrency decisions, multiple targets, external services, large scope, many unknowns. Persistence, authentication, payments, sensitive permissions and concurrency each justify a full review alone; the others need two together. The explanation says which signal fired and where. <code>design mode --mode lightweight --reason "..."</code> records an explicit override with its reason; the recommendation is kept beside it.</p>
+<p>Lightweight mode: <code>drafting → ready</code> once mandatory fields are complete. Full mode: readiness also requires a completed <strong>independent</strong> review of the current revision.</p>
+<h2 id="state-machine">State machine</h2>
+<pre><code>drafting → review-requested → reviewing → review-complete → resolving → ready → implementing → verifying → verified
+     ↑__________________________________________________________|                 |
+     any revision returns here and clears every bound flag                        blocked / cancelled / superseded
+</code></pre>
+<p>Four flags are recorded separately and each is bound to the contract hash it was set for:</p>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Set by</th>
+<th>Means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>reviewCompleted</code></td>
+<td>a finished round whose reviewers all completed on an isolating provider</td>
+<td>an independent review of this exact revision exists</td>
+</tr>
+<tr>
+<td><code>readyForImplementation</code></td>
+<td><code>design ready</code></td>
+<td>computed: no open or re-review blocking findings, no mandatory gaps, review completed in full mode, no active run</td>
+</tr>
+<tr>
+<td><code>userApproved</code></td>
+<td><code>design approve</code></td>
+<td>who authorized implementation, with <code>source</code> (<code>explicit-user-statement</code> or <code>existing-implementation-authorization</code>) and verbatim <code>provenance</code>. Never inferred from a review, elapsed time or silence</td>
+</tr>
+<tr>
+<td><code>verified</code></td>
+<td><code>design verify</code></td>
+<td>every criterion has current evidence at its required tier</td>
+</tr>
+</tbody>
+</table>
+<p>A revision (<code>design update</code>) bumps the revision, snapshots the previous contract under <code>revisions/</code>, clears all four flags, and marks findings that touch changed sections or criteria as <code>re-review</code>. Editing <code>DESIGN.json</code> by hand is detected by hash on the next load and treated the same way. Nothing carries forward silently.</p>
+<p>The review budget (<code>maxReviewers</code> 5, <code>maxConcurrency</code> 2, <code>maxRounds</code> 3 per revision, <code>reviewerTimeoutMs</code> 10 min, <code>maxContextChars</code> 120k) is stored in <code>workflow.json</code>. When rounds run out with findings still open, <code>design decision --resolution ... --reason ...</code> writes a concise decision record and moves to <code>blocked</code>; nothing manufactures consensus.</p>
+<h2 id="independent-review">Independent review</h2>
+<p>Each reviewer receives exactly one package: the contract revision and its hash, a bounded evidence manifest (every file the contract's claims cite plus <code>requiredFiles</code> and any <code>--evidence</code> paths, inside the project only, credential files excluded, secret-looking lines redacted, each file hashed and truncated at 64k characters within the context budget), its role criteria and the output schema. The package has no history, rounds, findings or conversation. Roles are selected from the signals, not always all five:</p>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Covers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>requirements</code></td>
+<td>criteria testability, journey and state coverage, scope consistency</td>
+</tr>
+<tr>
+<td><code>architecture</code></td>
+<td>compatibility with observed code, single owner per state, dependencies and targets, migration</td>
+</tr>
+<tr>
+<td><code>concurrency</code></td>
+<td>main-actor isolation, cancellation and task lifetime, re-entrancy, lifecycle</td>
+</tr>
+<tr>
+<td><code>security</code></td>
+<td>credential boundaries, permission purposes, service boundaries, privacy</td>
+</tr>
+<tr>
+<td><code>ui-verification</code></td>
+<td>reachable states, Dynamic Type and VoiceOver, simulator feasibility</td>
+</tr>
+</tbody>
+</table>
+<p>Providers and what each records as <code>isolation</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Provider</th>
+<th>Isolation recorded</th>
+<th>Counts as independent</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>claude-code</code></td>
+<td>fresh headless <code>claude -p</code> process per reviewer, <code>--no-session-persistence</code>, tools disabled, empty MCP config, temporary cwd</td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>ai-route</code></td>
+<td>stateless HTTP completion through the existing <code>ai</code> router; needs <code>.ios-agent-ai.json</code> with <code>privacy cloud-permitted</code> and an allowed provider</td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>client-subagent</code></td>
+<td>packages written for the connected client to dispatch; the submitter's <code>--attest-fresh-context</code> text is recorded as <strong>client-attested, not verified by the server</strong></td>
+<td>only when every reviewer in the round is attested</td>
+</tr>
+<tr>
+<td><code>self-review</code></td>
+<td>same context as the author</td>
+<td>never; labelled self-review</td>
+</tr>
+</tbody>
+</table>
+<p>Every reviewer record stores provider, execution id, isolation text, verdict, elapsed time and model-reported usage (or <code>unavailable</code>). Cost is <code>null</code> unless pricing is configured, which it is not. Model calls happen only inside <code>design review</code> and the <code>design_review</code> tool, never at server startup, tool discovery or status inspection.</p>
+<p>Reviewer output is validated against a strict schema (role, severity, category, affected criteria/sections/sources, concrete scenario, evidence, correction, verification expectation, confidence, uncertainty). Malformed output is recorded as <code>malformed</code> with the parse error; the raw text is kept privately and the run continues. Findings without evidence are kept but marked <code>unsupported</code>. Overlapping findings (same category, same affected IDs, similar title) collapse into one finding that keeps every reviewer's provenance; agreement never raises severity or confidence.</p>
+<p>Dispositions: <code>accepted</code> (records the revision that incorporated it), <code>rejected</code> (needs a rationale), <code>deferred</code> (needs an impact statement), <code>superseded</code>. Readiness is blocked while any blocking finding is <code>open</code> or <code>re-review</code>.</p>
+<h2 id="implementation-and-verification">Implementation and verification</h2>
+<p><code>design implement</code> requires approval bound to the current revision. During implementation, <code>design step S-1 --status done</code> tracks steps and <code>design evidence</code> records artifacts per criterion in <strong>separate tiers</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Tier</th>
+<th>Satisfies methods</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>code-written</code></td>
+<td>nothing on its own</td>
+</tr>
+<tr>
+<td><code>compiled</code></td>
+<td><code>compile</code></td>
+</tr>
+<tr>
+<td><code>automated-checks</code></td>
+<td><code>unit-test</code>, <code>ui-test</code></td>
+</tr>
+<tr>
+<td><code>simulator-observed</code></td>
+<td><code>simulator</code></td>
+</tr>
+<tr>
+<td><code>visual-inspected</code></td>
+<td><code>visual</code>, <code>accessibility</code>, <code>manual</code></td>
+</tr>
+<tr>
+<td><code>external-verified</code></td>
+<td><code>external-service</code>, <code>signed-distribution</code></td>
+</tr>
+</tbody>
+</table>
+<p>Every evidence entry stores the artifact hash, the contract hash and a fingerprint of the project's buildable sources at the time. <code>design verify</code> reports each criterion as <code>verified</code>, <code>stale-evidence</code> (sources or revision changed since), <code>failed</code> or <code>unverified</code>, and marks the design verified only when all criteria are current at their required tier. A successful build or a screenshot never satisfies a criterion that needs a stronger tier.</p>
+<p><code>design import-build</code> maps the existing <code>/ios-build</code> state deterministically: successful builds to <code>compile</code> criteria, passing test runs to <code>unit-test</code>/<code>ui-test</code> criteria whose <code>target</code> appears in the test log, screenshots to <code>simulator</code> criteria whose <code>target</code> is the screen id, passing design reviews to <code>visual</code> criteria. Anything that cannot be matched is listed as unmapped rather than guessed. The existing protected acceptance files, retry caps and cancellation in the build loop are untouched; this layer only reads <code>state.json</code>.</p>
+<p>If implementation needs a material departure, write the revision with <code>design update</code>; the review results it invalidates are marked <code>re-review</code> and the approval is cleared, so the departure is reviewed rather than smuggled in. Routine details stay within the recorded authorization.</p>
+<h2 id="drift">Drift</h2>
+<p><code>design drift</code> compares the saved design with the project and the retained evidence. Every finding is labelled <code>deterministic</code> or <code>unknown</code>:</p>
+<ul>
+<li>required files missing; required symbols absent from Swift sources (presence only, not behaviour)</li>
+<li>deployment target in <code>spec.json</code>, <code>project.yml</code> or an xcconfig differing from the design; <code>unknown</code> when none states one</li>
+<li>Swift packages in the design not declared in the manifest; <code>unknown</code> when no manifest is found</li>
+<li>permission keys in the design but not in Info.plist/entitlements/project.yml, and the reverse</li>
+<li>criteria without current evidence; evidence invalidated by source or revision changes; steps not done</li>
+</ul>
+<p>It never claims semantic equivalence between prose and code and never modifies the design. Exit code 1 means at least one deterministic finding.</p>
+<h2 id="commands">Commands</h2>
+<pre><code class="language-sh">ios-agent-mcp design validate --contract design.json
+ios-agent-mcp design create   --project /abs/App --id offline-sync --contract design.json
+ios-agent-mcp design route    --project /abs/App --id offline-sync
+ios-agent-mcp design review   --project /abs/App --id offline-sync --provider claude-code
+ios-agent-mcp design findings --project /abs/App --id offline-sync
+ios-agent-mcp design disposition --project /abs/App --id offline-sync --finding F-1a2b3c4d --as accepted
+ios-agent-mcp design ready    --project /abs/App --id offline-sync
+ios-agent-mcp design approve  --project /abs/App --id offline-sync --source explicit-user-statement --provenance &quot;user: build it&quot;
+ios-agent-mcp design implement --project /abs/App --id offline-sync
+ios-agent-mcp design step     --project /abs/App --id offline-sync --step S-1 --status done
+ios-agent-mcp design import-build --project /abs/App --id offline-sync
+ios-agent-mcp design verify   --project /abs/App --id offline-sync
+ios-agent-mcp design drift    --project /abs/App --id offline-sync
+ios-agent-mcp design status | inspect | resume | cancel | cleanup --project /abs/App --id offline-sync
+</code></pre>
+<p>For a client that can dispatch its own fresh subagents (Claude Code's Agent tool, for example):</p>
+<pre><code class="language-sh">ios-agent-mcp design review --project /abs/App --id offline-sync --provider client-subagent
+# dispatch each printed prompt file to a subagent with no conversation access, then
+ios-agent-mcp design submit --project /abs/App --id offline-sync --run run-... --reviewer requirements-... --file out.json --attest-fresh-context &quot;Agent tool, fresh context&quot;
+</code></pre>
+<p>MCP tools: <code>design_contract</code> (create, update, validate), <code>design_status</code> (read-only), <code>design_review</code> (run, prepare, submit), <code>design_resolve</code> (disposition, ready, approve, implement, decision, cancel), <code>design_verify</code> (step, evidence, import-build, report), <code>design_drift</code> (read-only). They live in the <code>design-review</code> tool group, included in the <code>all</code> and <code>build</code> profiles and absent from <code>review</code> and <code>docs</code>; <code>--tool-groups</code> can exclude it. With the group excluded, no other behaviour changes.</p>
+<h2 id="state-on-disk">State on disk</h2>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>Contents</th>
+<th>Version control</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.ios-agent/design/&lt;id&gt;/DESIGN.json</code></td>
+<td>the contract</td>
+<td>commit it</td>
+</tr>
+<tr>
+<td><code>.ios-agent/design/&lt;id&gt;/DESIGN.md</code></td>
+<td>rendered view</td>
+<td>commit it</td>
+</tr>
+<tr>
+<td><code>.ios-agent/design/&lt;id&gt;/workflow.json</code></td>
+<td>state, flags, rounds, findings, dispositions, history</td>
+<td>commit it</td>
+</tr>
+<tr>
+<td><code>.ios-agent/design/&lt;id&gt;/verification.json</code></td>
+<td>evidence entries and step status</td>
+<td>commit it</td>
+</tr>
+<tr>
+<td><code>.ios-agent/design/&lt;id&gt;/revisions/&lt;n&gt;.json</code></td>
+<td>last 20 revisions</td>
+<td>commit it</td>
+</tr>
+<tr>
+<td><code>.ios-agent/design-private/&lt;id&gt;/runs/&lt;runId&gt;/</code></td>
+<td>packages, prompts, raw reviewer output, metrics (0o600)</td>
+<td>gitignored by <code>design-private/.gitignore</code></td>
+</tr>
+</tbody>
+</table>
+<p>Writes are atomic and serialised by a per-design lock that is never stolen from a live writer. A run whose process has exited or whose heartbeat is older than twice the reviewer timeout is reported as stale by <code>status</code> and cleared by <code>resume</code>, keeping any findings already recorded. <code>cleanup --keep N</code> prunes old private runs; durable files are never pruned automatically. Design ids are slugs; evidence paths must resolve inside the project and may not be symlinks.</p>
+<p>Configuration precedence: command-line flags, then the budget stored in <code>workflow.json</code> at creation, then defaults. The <code>ai-route</code> provider reads <code>.ios-agent-ai.json</code> from the project (MCP) or the current directory (CLI), the same file <code>ios-agent-mcp ai config</code> writes.</p>
+<h2 id="privacy">Privacy</h2>
+<p>Reviewer packages contain the contract and project files the contract cites, redacted of secret-looking lines and excluding credential files, <code>.env*</code> and <code>design-private/</code>. Those packages are sent to the provider you choose; choose non-sensitive evidence. Nothing is sent at startup, discovery or status. Reviewer responses and imported specifications are data: they populate findings and never change permissions or authorize actions. No credentials are collected; <code>claude-code</code> uses the installed CLI's own sign-in and <code>ai-route</code> uses the keys the <code>ai</code> router already reads.</p>
+<h2 id="evaluation">Evaluation</h2>
+<p><code>benchmarks/design-review/</code> holds ten fixtures: a clean control and nine contracts with seeded structural defects. <code>node evaluate.mjs</code> scores the deterministic lint (12/12 detected, 0 false positives; this measures what a script can decide, not reviewer judgment). <code>node evaluate.mjs --live --provider claude-code|ai-route --out DIR</code> runs real independent reviews per fixture and scores findings by category against the seeded defects, recording reviewers, rounds, elapsed time, unsupported findings and model-reported usage. Live results are written separately from deterministic ones and are not combined.</p>
+<h2 id="recorded-verification">Recorded verification</h2>
+<p>Executed on 2026-10-28 from the session that opened the pull request, on Linux x86_64 with Node 22 and the Claude Code CLI installed there (no Mac, simulator or signing).</p>
+<ul>
+<li><code>mcp-server</code>: <code>npm run typecheck</code>, <code>npm run build</code>, <code>npm test</code>: 873 passed, 0 failed, 1 skipped. <code>check-tool-manifest.mjs</code> and <code>render-tool-index.mjs --check</code>: 88 tools. <code>scripts/hooks/verify-repo.sh</code>: pass.</li>
+<li><code>benchmarks/design-review/evaluate.mjs --self-test</code>: 10 fixtures, 12/12 seeded defects detected by lint, 0 false positives.</li>
+<li>Live <code>claude-code</code> provider, two runs over all ten fixtures, five reviewers each (<code>benchmarks/design-review/results/</code>):</li>
+<li>Run 1: 25 of 50 reviewers completed, 25 marked malformed, 0 rounds independent. The raw outputs showed reviewers naming contract sub-sections (<code>persistence</code>, <code>dataFlow</code>, <code>stateOwnership</code>) that the strict <code>sections</code> enum rejected, discarding whole reviewers. That is exactly the kind of defect only a live adapter exposes; it was fixed by listing valid sections in the prompt, mapping sub-sections to their parent and dropping only unknown names (recorded on the reviewer).</li>
+<li>Run 2: 48 of 50 reviewers completed, 2 malformed, 8 of 10 rounds independent, 12/12 seeded defect categories reported, 0 unsupported findings, 191 deduplicated findings in total, about 50 seconds per fixture with concurrency 2, roughly 10k output tokens per fixture as reported by the CLI (cost not computed). Every round of every fixture, including the clean control, also reported 14-23 findings beyond the seeded defect; the fixtures are deliberately thin and most of those are real gaps (empty user journeys, no criteria for upload or no-duplication, no synthetic path to screen states), so they are recorded as "beyond seeded", not as false positives.</li>
+<li>Not exercised: <code>ai-route</code> against a real cloud key; client-attested subagent isolation (recorded, not verified, by design); Mac, simulator and signed-distribution tiers, which come only from your own <code>/ios-build</code> runs through <code>design import-build</code>. No claim of reduced rework or improved shipped quality is made; that needs a paired evaluation with and without the workflow.</li>
+</ul></div></article></main><footer><a href="../blog.html">All articles</a> · <a href="../install.html">Install and try it</a><!-- discovery-nav:start --><div role="navigation" aria-label="Site discovery"><a href="../">Home</a> · <a href="../install.html">Install</a> · <a href="../community.html">Community</a> · <a href="../blog.html">Blog</a> · <a href="../docs-index.html">Docs index</a> · <a href="../pages.html">Site map</a> · <a href="https://github.com/Nagarjuna2997/ios-agent-skill">GitHub</a> · <a href="https://www.npmjs.com/package/ios-agent-mcp">npm</a></div><!-- discovery-nav:end --></footer></div></body></html>
