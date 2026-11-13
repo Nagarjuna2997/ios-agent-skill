@@ -530,6 +530,26 @@
       "url": "https://swiftagents.app/tools/ios-agent-skill/",
       "verifiedOn": "2026-10-27",
       "evidence": "Opened canonical tool profile via HTTPS and confirmed the exact Nagarjuna2997/ios-agent-skill GitHub link and ios-agent-mcp install command. Distinct profile from the existing SwiftSkills listing, which it credits as a source. Directory overview, not an independent review or endorsement."
+    },
+    {
+      "id": "protocol-probe",
+      "platform": "ProtocolProbe",
+      "kind": "directory",
+      "category": "Technical analysis \u00b7 dated automated inspection",
+      "description": "Reports a dated read-only inspection of the MCP server package and its declared tools; the tools were not called.",
+      "url": "https://protocolprobe.com/mcp/servers/io.github.Nagarjuna2997/ios-agent-skill",
+      "verifiedOn": "2026-11-13",
+      "evidence": "Opened the exact registry record and confirmed its repository link, package and dated read-only session. Third-party analysis is not an endorsement or proof of tool behavior."
+    },
+    {
+      "id": "mcphub-space",
+      "platform": "MCPHub",
+      "kind": "directory",
+      "category": "MCP directory \u00b7 index",
+      "description": "Lists the repository and npm package with client installation examples.",
+      "url": "https://mcphub.space/servers/nagarjuna2997--ios-agent-skill",
+      "verifiedOn": "2026-11-13",
+      "evidence": "Opened the listing and confirmed the exact repository name and ios-agent-mcp package. Directory listing, not evidence of independent use or endorsement."
     }
   ]
 }
