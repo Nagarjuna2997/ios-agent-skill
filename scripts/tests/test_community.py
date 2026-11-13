@@ -16,3 +16,11 @@ class Community(unittest.TestCase):
  def test_requires_ownership_label(self):
   self.data['mentions'][0].update(kind='own',category='Independent Article')
   with self.assertRaises(ValueError):m.render(self.data)
+
+ def test_related_links_are_safe_and_deduplicated(self):
+  self.data['mentions'][0]['relatedLinks']=[{'label':'<unsafe>', 'url':'https://example.org/extra','evidence':'checked'}]
+  result=m.render(self.data);self.assertIn('&lt;unsafe&gt;',result);self.assertIn('https://example.org/extra',result)
+  self.data['mentions'][0]['relatedLinks'][0]['url']=self.data['mentions'][1]['url']+'?utm_source=test'
+  with self.assertRaises(ValueError):m.render(self.data)
+  self.data['mentions'][0]['relatedLinks'][0]['url']='javascript:alert(1)'
+  with self.assertRaises(ValueError):m.render(self.data)

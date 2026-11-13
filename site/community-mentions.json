@@ -109,7 +109,14 @@
       "description": "The maintainer explains the Swift, Xcode and simulator toolbox and asks for feedback.",
       "url": "https://dev.to/nagarjuna_reddy_7ca85e003/im-building-an-mcp-toolbox-for-swift-xcode-and-ios-simulator-kp9",
       "verifiedOn": "2026-09-16",
-      "evidence": "Author is Nagarjuna Reddy; article links the repository and npm package."
+      "evidence": "Author is Nagarjuna Reddy; article links the repository and npm package.",
+      "relatedLinks": [
+        {
+          "label": "Web Pulse republication of maintainer article",
+          "url": "https://wpnews.pro/news/im-building-an-mcp-toolbox-for-swift-xcode-and-ios-simulator",
+          "evidence": "Opened article and confirmed attribution to Nagarjuna Reddy and DEV source; a republication, not independent coverage."
+        }
+      ]
     },
     {
       "id": "github",
@@ -229,7 +236,14 @@
       "description": "Indexes the skill with installation instructions and an automated analysis of its files.",
       "url": "https://www.skillsdirectory.com/skills/nagarjuna2997-ios-agent-skill",
       "verifiedOn": "2026-10-01",
-      "evidence": "Direct HTTPS fetch returned 200 and names Nagarjuna2997/ios-agent-skill in its install command and project metadata. Web search extraction could not open the page; direct HTML verification succeeded. Automated directory analysis is not an endorsement or independent security guarantee."
+      "evidence": "Direct HTTPS fetch returned 200 and names Nagarjuna2997/ios-agent-skill in its install command and project metadata. Web search extraction could not open the page; direct HTML verification succeeded. Automated directory analysis is not an endorsement or independent security guarantee.",
+      "relatedLinks": [
+        {
+          "label": "iOS Builder skill listing",
+          "url": "https://www.skillsdirectory.com/skills/nagarjuna2997-ios-builder",
+          "evidence": "Opened listing and verified install command references the exact repository and ios-builder skill."
+        }
+      ]
     },
     {
       "id": "ahel",
@@ -249,7 +263,14 @@
       "description": "The project\u2019s launch page presents its iOS development workflow and a maker introduction.",
       "url": "https://www.producthunt.com/products/ios-agent-mcp",
       "verifiedOn": "2026-10-06",
-      "evidence": "Opened the previously inaccessible launch page. Its website link identifies nagarjuna2997.github.io/ios-agent-skill; the maker introduction is attributed to Nagarjuna Reddy. Official project launch, not independent coverage or endorsement."
+      "evidence": "Opened the previously inaccessible launch page. Its website link identifies nagarjuna2997.github.io/ios-agent-skill; the maker introduction is attributed to Nagarjuna Reddy. Official project launch, not independent coverage or endorsement.",
+      "relatedLinks": [
+        {
+          "label": "Hunted Space launch tracker",
+          "url": "https://hunted.space/dashboard/ios-agent-mcp",
+          "evidence": "Opened launch tracker and confirmed iOS Agent MCP and Nagarjuna Reddy; tracks the existing maintainer-submitted launch."
+        }
+      ]
     },
     {
       "id": "freemcp-space",
@@ -550,6 +571,43 @@
       "url": "https://mcphub.space/servers/nagarjuna2997--ios-agent-skill",
       "verifiedOn": "2026-11-13",
       "evidence": "Opened the listing and confirmed the exact repository name and ios-agent-mcp package. Directory listing, not evidence of independent use or endorsement."
+    },
+    {
+      "id": "awesome-gemini-cli",
+      "platform": "Awesome Gemini CLI",
+      "kind": "resource",
+      "category": "Curated GitHub list",
+      "description": "Lists the project\u2019s Gemini CLI extension and links to its source repository.",
+      "url": "https://github.com/Piebald-AI/awesome-gemini-cli",
+      "verifiedOn": "2026-11-13",
+      "evidence": "Opened list and confirmed its iOS Agent Skill entry links to the exact project.",
+      "relatedLinks": [
+        {
+          "label": "Track Awesome List mirror",
+          "url": "https://www.trackawesomelist.com/Piebald-AI/awesome-gemini-cli/readme/",
+          "evidence": "Opened mirrored list and confirmed the iOS Agent Skill entry; not a separate mention."
+        }
+      ]
+    },
+    {
+      "id": "ai-kendra",
+      "platform": "AI Kendra",
+      "kind": "directory",
+      "category": "Open-source directory",
+      "description": "Indexes the project with repository, website and installation information.",
+      "url": "https://aikendra.com/open-source/ios-agent-skill",
+      "verifiedOn": "2026-11-13",
+      "evidence": "Opened project page and confirmed exact repository and project site."
+    },
+    {
+      "id": "info-agent-ia",
+      "platform": "Info Agent IA",
+      "kind": "directory",
+      "category": "MCP directory \u00b7 analysis",
+      "description": "Provides a project profile with source links and an automated overview of setup and capabilities.",
+      "url": "https://info-agent-ia.com/en/mcp/ios-agent-skill/",
+      "verifiedOn": "2026-11-13",
+      "evidence": "Opened page and confirmed repository and website; third-party assessment is not an endorsement."
     }
   ]
 }
