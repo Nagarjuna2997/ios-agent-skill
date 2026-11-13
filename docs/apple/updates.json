@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-09-29",
+  "checkedAt": "2026-11-13",
   "source": "https://developer.apple.com/documentation/updates",
   "entries": [
     {
@@ -43,6 +43,16 @@
       "url": "https://developer.apple.com/documentation/appstoreconnectapi/app-store-connect-api-release-notes",
       "summary": "Learn about new features and updates in the App Store Connect API.",
       "topics": [
+        {
+          "title": "App Store Connect API 4.6 release notes",
+          "url": "https://developer.apple.com/documentation/appstoreconnectapi/app-store-connect-api-4-6-release-notes",
+          "section": "Versions"
+        },
+        {
+          "title": "App Store Connect API 4.5.1 release notes",
+          "url": "https://developer.apple.com/documentation/appstoreconnectapi/app-store-connect-api-4-5-1-release-notes",
+          "section": "Versions"
+        },
         {
           "title": "App Store Connect API 4.5 release notes",
           "url": "https://developer.apple.com/documentation/appstoreconnectapi/app-store-connect-api-4-5-release-notes",
@@ -404,7 +414,12 @@
       "summary": "Learn about changes to the iOS & iPadOS SDK.",
       "topics": [
         {
-          "title": "iOS & iPadOS 27.2 Beta 2 Release Notes",
+          "title": "iOS & iPadOS 27.3 Beta Release Notes",
+          "url": "https://developer.apple.com/documentation/ios-ipados-release-notes/ios-ipados-27_3-release-notes",
+          "section": "iOS & iPadOS 27"
+        },
+        {
+          "title": "iOS & iPadOS 27.2 Release Notes",
           "url": "https://developer.apple.com/documentation/ios-ipados-release-notes/ios-ipados-27_2-release-notes",
           "section": "iOS & iPadOS 27"
         },
@@ -739,7 +754,12 @@
       "summary": "Learn about changes to the macOS SDK.",
       "topics": [
         {
-          "title": "macOS 27.2 Golden Gate Beta 2 Release Notes",
+          "title": "macOS 27.3 Golden Gate Beta Release Notes",
+          "url": "https://developer.apple.com/documentation/macos-release-notes/macos-27_3-release-notes",
+          "section": "macOS 27"
+        },
+        {
+          "title": "macOS 27.2 Golden Gate Release Notes",
           "url": "https://developer.apple.com/documentation/macos-release-notes/macos-27_2-release-notes",
           "section": "macOS 27"
         },
@@ -1134,8 +1154,18 @@
       "summary": "Learn about changes for Safari and Safari View Controller for iOS, iPadOS, macOS, and in visionOS; WKWebView for iOS, iPadOS, macOS, watchOS, and in visionOS; …",
       "topics": [
         {
-          "title": "Safari 27.2 Beta Release Notes",
+          "title": "Safari 27.3 Beta Release Notes",
+          "url": "https://developer.apple.com/documentation/safari-release-notes/safari-27_3-release-notes",
+          "section": "Version 27"
+        },
+        {
+          "title": "Safari 27.2 Release Notes",
           "url": "https://developer.apple.com/documentation/safari-release-notes/safari-27_2-release-notes",
+          "section": "Version 27"
+        },
+        {
+          "title": "Safari 27.1 Release Notes",
+          "url": "https://developer.apple.com/documentation/safari-release-notes/safari-27_1-release-notes",
           "section": "Version 27"
         },
         {
@@ -1447,7 +1477,12 @@
       "summary": "Learn about changes to the tvOS SDK.",
       "topics": [
         {
-          "title": "tvOS 27.2 Beta 2 Release Notes",
+          "title": "tvOS 27.3 Beta Release Notes",
+          "url": "https://developer.apple.com/documentation/tvos-release-notes/tvos-27_3-release-notes",
+          "section": "tvOS 27"
+        },
+        {
+          "title": "tvOS 27.2 Release Notes",
           "url": "https://developer.apple.com/documentation/tvos-release-notes/tvos-27_2-release-notes",
           "section": "tvOS 27"
         },
@@ -2256,7 +2291,12 @@
       "summary": "Learn about changes to the visionOS SDK.",
       "topics": [
         {
-          "title": "visionOS 27.2 Beta 2 Release Notes",
+          "title": "visionOS 27.3 Beta Release Notes",
+          "url": "https://developer.apple.com/documentation/visionos-release-notes/visionos-27_3-release-notes",
+          "section": "visionOS 27"
+        },
+        {
+          "title": "visionOS 27.2 Release Notes",
           "url": "https://developer.apple.com/documentation/visionos-release-notes/visionos-27_2-release-notes",
           "section": "visionOS 27"
         },
@@ -2369,7 +2409,12 @@
       "summary": "Learn about changes to the watchOS SDK.",
       "topics": [
         {
-          "title": "watchOS 27.2 Beta 2 Release Notes",
+          "title": "watchOS 27.3 Beta Release Notes",
+          "url": "https://developer.apple.com/documentation/watchos-release-notes/watchos-27_3-release-notes",
+          "section": "watchOS 27"
+        },
+        {
+          "title": "watchOS 27.2 Release Notes",
           "url": "https://developer.apple.com/documentation/watchos-release-notes/watchos-27_2-release-notes",
           "section": "watchOS 27"
         },
@@ -2768,6 +2813,11 @@
           "title": "Group Activities",
           "url": "https://developer.apple.com/documentation/groupactivities",
           "section": "SharePlay and Group Activities"
+        },
+        {
+          "title": "Documenting apps, frameworks, and packages",
+          "url": "https://developer.apple.com/documentation/xcode/documenting-apps-frameworks-and-packages",
+          "section": "DocC"
         },
         {
           "title": "User Notifications",
@@ -3569,6 +3619,11 @@
         {
           "title": "Interacting with nearby points of interest",
           "url": "https://developer.apple.com/documentation/mapkit/interacting-with-nearby-points-of-interest",
+          "section": "Apple Maps"
+        },
+        {
+          "title": "MapKit for AppKit and UIKit",
+          "url": "https://developer.apple.com/documentation/mapkit/mapkit-for-appkit-and-uikit",
           "section": "Apple Maps"
         },
         {
@@ -5025,12 +5080,17 @@
       "summary": "Learn about changes to Xcode.",
       "topics": [
         {
-          "title": "Xcode 27.2 Beta 2 Release Notes",
+          "title": "Xcode 27.3 Beta Release Notes",
+          "url": "https://developer.apple.com/documentation/xcode-release-notes/xcode-27_3-release-notes",
+          "section": "Xcode 27"
+        },
+        {
+          "title": "Xcode 27.2 Release Notes",
           "url": "https://developer.apple.com/documentation/xcode-release-notes/xcode-27_2-release-notes",
           "section": "Xcode 27"
         },
         {
-          "title": "Xcode 27.1 Beta Release Notes",
+          "title": "Xcode 27.1 Release Notes",
           "url": "https://developer.apple.com/documentation/xcode-release-notes/xcode-27_1-release-notes",
           "section": "Xcode 27"
         },

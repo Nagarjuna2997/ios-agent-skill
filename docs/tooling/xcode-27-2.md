@@ -45,3 +45,9 @@ real JSON project builds and Xcode 27.2 preview sessions remain unverified.
 Apple adds `GetCodeCoverage` to its coding-assistant MCP tools. Discover its installed schema before requesting the latest test coverage, optionally scoped to a target or file. This is Apple's tool, not a new ios-agent-mcp tool. The preview override picker also gains alternative-display selection.
 
 Known issues include temporary black Duo captures after boot, simulator-clone permissions, and reinstalled runtimes remaining unavailable. Avoid diagnosing those immediately as app defects. Apple's service-restart workaround is disruptive; obtain authorization before interrupting active simulators. For iOS 27.1-specific APIs in Catalyst, Apple recommends platform compilation conditionals. The non-iOS SDKs incorrectly advertising deployment target 27.1 need extra scrutiny. None of these beta 2 behaviors was exercised on the local Xcode 27.0 installation.
+
+## Xcode 27.3 beta update (checked November 13, 2026)
+
+Apple’s [Xcode 27.3 beta release notes](https://developer.apple.com/documentation/xcode-release-notes/xcode-27_3-release-notes) state that the beta requires macOS 26.6 or later and includes Swift 6.4 and 27.3 SDKs. Treat these as beta capabilities, and use the installed toolchain’s actual SDK and deployment targets.
+
+The notes say Device Hub accepts keyboard and mouse input for older simulator OS versions again, resolving the previously documented problem. RenderPreview snapshot filenames and metadata include applied overrides; interactive delayed snapshots are specifically for macOS previews. Swift Testing supports UI tests with XCUIAutomation, and XCUIHinge can set an iPhone Duo hinge angle. Confirm support in the installed Xcode before using these features; this repository has not verified them on a 27.3 installation.

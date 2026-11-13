@@ -6,7 +6,7 @@ Load this when a task names **Core Audio Types** or one of the API topics below.
 
 Apple categories: Media.
 
-[Apple documentation](https://developer.apple.com/documentation/coreaudiotypes) · Source checked: 2026-09-29.
+[Apple documentation](https://developer.apple.com/documentation/coreaudiotypes) · Source checked: 2026-11-13.
 
 Apple’s short description (excerpt):
 

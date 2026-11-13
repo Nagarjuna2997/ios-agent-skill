@@ -6,7 +6,7 @@ Load this when a task names **IdentityDocumentServicesUI** or one of the API top
 
 Apple categories: App Services.
 
-[Apple documentation](https://developer.apple.com/documentation/identitydocumentservicesui) · Source checked: 2026-09-29.
+[Apple documentation](https://developer.apple.com/documentation/identitydocumentservicesui) · Source checked: 2026-11-13.
 
 Apple’s short description (excerpt):
 
@@ -37,6 +37,13 @@ These are landing-page values, not availability guarantees for every member. Che
 - [ISO18013MobileDocumentRequestScene](https://developer.apple.com/documentation/identitydocumentservicesui/iso18013mobiledocumentrequestscene)
 - [ISO18013MobileDocumentRequestContext](https://developer.apple.com/documentation/identitydocumentservicesui/iso18013mobiledocumentrequestcontext)
 - [IdentityDocumentRequestSceneBuilder](https://developer.apple.com/documentation/identitydocumentservicesui/identitydocumentrequestscenebuilder)
+
+### Handling raw requests
+
+- [ISO18013MobileDocumentRawRequestScene](https://developer.apple.com/documentation/identitydocumentservicesui/iso18013mobiledocumentrawrequestscene)
+- [ISO18013MobileDocumentRawRequestContext](https://developer.apple.com/documentation/identitydocumentservicesui/iso18013mobiledocumentrawrequestcontext)
+- [OpenID4VPRawRequestScene](https://developer.apple.com/documentation/identitydocumentservicesui/openid4vprawrequestscene)
+- [OpenID4VPRawRequestContext](https://developer.apple.com/documentation/identitydocumentservicesui/openid4vprawrequestcontext)
 
 ### Implementing the web presentment flow into your browser
 

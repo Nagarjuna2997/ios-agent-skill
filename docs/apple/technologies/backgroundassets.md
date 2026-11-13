@@ -6,7 +6,7 @@ Load this when a task names **Background Assets** or one of the API topics below
 
 Apple categories: App Services.
 
-[Apple documentation](https://developer.apple.com/documentation/backgroundassets) · Source checked: 2026-09-29.
+[Apple documentation](https://developer.apple.com/documentation/backgroundassets) · Source checked: 2026-11-13.
 
 Apple’s short description (excerpt):
 
@@ -80,7 +80,7 @@ These are landing-page values, not availability guarantees for every member. Che
 
 ### Enumerations
 
-- [SizeCalculationMethod](https://developer.apple.com/documentation/backgroundassets/sizecalculationmethod) — beta
+- [SizeCalculationMethod](https://developer.apple.com/documentation/backgroundassets/sizecalculationmethod)
 
 ## Anti-Patterns
 

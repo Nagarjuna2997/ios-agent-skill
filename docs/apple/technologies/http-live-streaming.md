@@ -6,7 +6,7 @@ Load this when a task names **HTTP Live Streaming** or one of the API topics bel
 
 Apple categories: Media.
 
-[Apple documentation](https://developer.apple.com/documentation/http-live-streaming) · Source checked: 2026-09-29.
+[Apple documentation](https://developer.apple.com/documentation/http-live-streaming) · Source checked: 2026-11-13.
 
 Apple’s short description (excerpt):
 
@@ -36,7 +36,7 @@ Apple’s directory does not supply platform availability for this entry. It may
 
 ### Specifications and other documents
 
-- [HTTP Live Streaming (HLS) authoring specification for Apple devices](https://developer.apple.com/documentation/http-live-streaming/hls-authoring-specification-for-apple-devices)
+- [HLS for Apple Podcasts](https://developer.apple.com/documentation/http-live-streaming/hls-for-podcasts)
 - [Using content protection systems with HLS](https://developer.apple.com/documentation/http-live-streaming/using-content-protection-systems-with-hls)
 - [About the Common Media Application Format with HTTP Live Streaming (HLS)](https://developer.apple.com/documentation/http-live-streaming/about-the-common-media-application-format-with-http-live-streaming-hls)
 - [Enabling Low-Latency HTTP Live Streaming (HLS)](https://developer.apple.com/documentation/http-live-streaming/enabling-low-latency-http-live-streaming-hls)

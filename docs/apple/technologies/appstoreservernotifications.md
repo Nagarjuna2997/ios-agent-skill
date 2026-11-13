@@ -6,7 +6,7 @@ Load this when a task names **App Store Server Notifications** or one of the API
 
 Apple categories: App Services.
 
-[Apple documentation](https://developer.apple.com/documentation/appstoreservernotifications) · Source checked: 2026-09-29.
+[Apple documentation](https://developer.apple.com/documentation/appstoreservernotifications) · Source checked: 2026-11-13.
 
 Apple’s short description (excerpt):
 
@@ -46,6 +46,10 @@ These are landing-page values, not availability guarantees for every member. Che
 ### Deprecated
 
 - [App Store Server Notifications Version 1](https://developer.apple.com/documentation/appstoreservernotifications/app-store-server-notifications-version-1)
+
+### Type Aliases
+
+- [unclaimSeatIds](https://developer.apple.com/documentation/appstoreservernotifications/unclaimseatids)
 
 ## Anti-Patterns
 

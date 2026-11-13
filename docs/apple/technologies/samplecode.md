@@ -6,7 +6,7 @@ Load this when a task names **Sample Code Library** or one of the API topics bel
 
 Apple categories: Sample Code.
 
-[Apple documentation](https://developer.apple.com/documentation/samplecode) · Source checked: 2026-09-29.
+[Apple documentation](https://developer.apple.com/documentation/samplecode) · Source checked: 2026-11-13.
 
 Apple’s short description (excerpt):
 
@@ -60,7 +60,7 @@ Apple’s directory does not supply platform availability for this entry. It may
 - [Training a neural network to render irradiance in real time](https://developer.apple.com/documentation/metal/training-a-neural-network-to-render-irradiance-in-real-time)
 - [Wishlist: Planning travel in a SwiftUI app](https://developer.apple.com/documentation/swiftui/wishlist-planning-travel-in-a-swiftui-app)
 - [Working with content from your Mac app using Spatial Preview](https://developer.apple.com/documentation/spatialpreview/working-with-content-from-your-mac-app-using-spatial-preview)
-- [Rendering Gaussian splats with RealityKit](https://developer.apple.com/documentation/visionos/working-with-gaussian-splats-with-realitykit)
+- [Rendering Gaussian splats with RealityKit](https://developer.apple.com/documentation/visionos/rendering-gaussian-splats-with-realitykit)
 
 ### Accelerate
 
@@ -148,7 +148,7 @@ Apple’s directory does not supply platform availability for this entry. It may
 - [Organize Your User Interface with a Stack View](https://developer.apple.com/documentation/appkit/organize-your-user-interface-with-a-stack-view)
 - [Restoring your app’s state with AppKit](https://developer.apple.com/documentation/appkit/restoring-your-app-s-state-with-appkit)
 - [Supporting Collection View Drag and Drop Through File Promises](https://developer.apple.com/documentation/appkit/supporting-collection-view-drag-and-drop-through-file-promises)
-- [Supporting Drag and Drop Through File Promises](https://developer.apple.com/documentation/appkit/supporting-drag-and-drop-through-file-promises)
+- [Supporting drag and drop through file promises](https://developer.apple.com/documentation/appkit/supporting-drag-and-drop-through-file-promises)
 - [Supporting Table View Drag and Drop Through File Promises](https://developer.apple.com/documentation/appkit/supporting-table-view-drag-and-drop-through-file-promises)
 
 ### App services
@@ -384,6 +384,7 @@ Apple’s directory does not supply platform availability for this entry. It may
 - [Detecting human body poses in an image](https://developer.apple.com/documentation/coreml/detecting-human-body-poses-in-an-image)
 - [Enhancing your app with machine learning-based video effects](https://developer.apple.com/documentation/videotoolbox/enhancing-your-app-with-machine-learning-based-video-effects)
 - [Evaluating a Core AI model](https://developer.apple.com/documentation/evaluations/evaluating-a-core-ai-model)
+- [Evaluating multimodal prompts](https://developer.apple.com/documentation/evaluations/evaluating-multimodal-prompts)
 - [Finding answers to questions in a text document](https://developer.apple.com/documentation/coreml/finding-answers-to-questions-in-a-text-document)
 - [Generate dynamic game content with guided generation and tools](https://developer.apple.com/documentation/foundationmodels/generate-dynamic-game-content-with-guided-generation-and-tools)
 - [Integrating a Core ML Model into Your App](https://developer.apple.com/documentation/coreml/integrating-a-core-ml-model-into-your-app)
@@ -714,6 +715,7 @@ Apple’s directory does not supply platform availability for this entry. It may
 - [Creating a foveated streaming client on visionOS](https://developer.apple.com/documentation/foveatedstreaming/creating-a-foveated-streaming-client-on-visionos)
 - [Creating an immersive space in visionOS](https://developer.apple.com/documentation/visionos/creating-immersive-spaces-in-visionos-with-swiftui)
 - [Creating an interactive 3D model in visionOS](https://developer.apple.com/documentation/visionos/creating-an-interactable-3d-model-in-visionos)
+- [Creating a navigation mesh with Reality Composer Pro](https://developer.apple.com/documentation/visionos/creating-a-navigation-mesh-with-reality-composer-pro)
 - [Creating SwiftUI windows in visionOS](https://developer.apple.com/documentation/visionos/creating-a-new-swiftui-window-in-visionos)
 - [Designing no-code games with Reality Composer Pro 3](https://developer.apple.com/documentation/visionos/designing-no-code-games-in-reality-composer-pro-3)
 - [Destination Video](https://developer.apple.com/documentation/visionos/destination-video)
@@ -748,6 +750,7 @@ Apple’s directory does not supply platform availability for this entry. It may
 - [Playing spatial audio](https://developer.apple.com/documentation/visionos/playing-spatial-audio-in-visionos)
 - [Rendering hover effects in Metal immersive apps](https://developer.apple.com/documentation/compositorservices/rendering_hover_effects_in_metal_immersive_apps)
 - [Swift Splash](https://developer.apple.com/documentation/visionos/swift-splash)
+- [Synchronizing custom video playback with SharePlay](https://developer.apple.com/documentation/visionos/synchronizing-custom-video-playback-with-shareplay)
 - [Tracking and visualizing hand movement](https://developer.apple.com/documentation/visionos/tracking-and-visualizing-hand-movement)
 - [Tracking specific points in world space](https://developer.apple.com/documentation/visionos/tracking-points-in-world-space)
 - [Working with generic spatial accessories](https://developer.apple.com/documentation/visionos/working-with-generic-spatial-accessories)

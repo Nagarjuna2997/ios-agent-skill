@@ -6,7 +6,7 @@ Load this when a task names **Endpoint Security** or one of the API topics below
 
 Apple categories: System.
 
-[Apple documentation](https://developer.apple.com/documentation/endpointsecurity) · Source checked: 2026-09-29.
+[Apple documentation](https://developer.apple.com/documentation/endpointsecurity) · Source checked: 2026-11-13.
 
 Apple’s short description (excerpt):
 
@@ -50,6 +50,9 @@ These are landing-page values, not availability guarantees for every member. Che
 ### Structures
 
 - [es_bootstrap_target_type_t](https://developer.apple.com/documentation/endpointsecurity/es_bootstrap_target_type_t)
+- [es_coalition_info_t](https://developer.apple.com/documentation/endpointsecurity/es_coalition_info_t)
+- [es_coalition_jetsam_t](https://developer.apple.com/documentation/endpointsecurity/es_coalition_jetsam_t)
+- [es_coalition_task_role_t](https://developer.apple.com/documentation/endpointsecurity/es_coalition_task_role_t)
 - [es_cs_validation_category_t](https://developer.apple.com/documentation/endpointsecurity/es_cs_validation_category_t)
 - [es_deadline_miss_mode_t](https://developer.apple.com/documentation/endpointsecurity/es_deadline_miss_mode_t)
 - [es_event_bootstrap_check_in_t](https://developer.apple.com/documentation/endpointsecurity/es_event_bootstrap_check_in_t)
@@ -65,6 +68,10 @@ These are landing-page values, not availability guarantees for every member. Che
 
 - [ES_BOOTSTRAP_TARGET_TYPE_JOB](https://developer.apple.com/documentation/endpointsecurity/es_bootstrap_target_type_job)
 - [ES_BOOTSTRAP_TARGET_TYPE_PROCESS](https://developer.apple.com/documentation/endpointsecurity/es_bootstrap_target_type_process)
+- [ES_COALITION_TASK_ROLE_EXT](https://developer.apple.com/documentation/endpointsecurity/es_coalition_task_role_ext)
+- [ES_COALITION_TASK_ROLE_LEADER](https://developer.apple.com/documentation/endpointsecurity/es_coalition_task_role_leader)
+- [ES_COALITION_TASK_ROLE_UNDEF](https://developer.apple.com/documentation/endpointsecurity/es_coalition_task_role_undef)
+- [ES_COALITION_TASK_ROLE_XPC](https://developer.apple.com/documentation/endpointsecurity/es_coalition_task_role_xpc)
 - [ES_CS_VALIDATION_CATEGORY_APP_STORE](https://developer.apple.com/documentation/endpointsecurity/es_cs_validation_category_app_store)
 - [ES_CS_VALIDATION_CATEGORY_DEVELOPER_ID](https://developer.apple.com/documentation/endpointsecurity/es_cs_validation_category_developer_id)
 - [ES_CS_VALIDATION_CATEGORY_DEVELOPMENT](https://developer.apple.com/documentation/endpointsecurity/es_cs_validation_category_development)

@@ -211,6 +211,10 @@ struct AppClipBanner: View {
 }
 ```
 
+## Asset delivery and submission eligibility
+
+Apple announced on November 12, 2026 that starting in early 2027 App Store Connect will reject uploads containing On-Demand Resources for new apps and apps that have never used the feature. Apple recommends Background Assets. The example below is legacy guidance for applicable existing projects, not a default for a new app. Check current [App Store Connect release notes](https://developer.apple.com/help/app-store-connect/release-notes/) and [Background Assets documentation](https://developer.apple.com/documentation/backgroundassets) before choosing an asset strategy.
+
 ## Size Limitations (15 MB)
 
 App Clips must be under 15 MB (uncompressed, thinned for a specific device). Strategies to stay within the limit.
@@ -221,7 +225,7 @@ App Clips must be under 15 MB (uncompressed, thinned for a specific device). Str
 // 1. Share only necessary code — don't include unused frameworks
 // In Build Phases, only include files the App Clip needs
 
-// 2. Use on-demand resources for images and assets
+// 2. Legacy On-Demand Resources example (check submission eligibility below)
 // In the asset catalog, assign assets to "App Clip" tag
 // Load them at runtime:
 import Foundation

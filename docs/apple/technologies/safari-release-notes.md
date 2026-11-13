@@ -6,7 +6,7 @@ Load this when a task names **Safari Release Notes** or one of the API topics be
 
 Apple categories: Release Notes.
 
-[Apple documentation](https://developer.apple.com/documentation/safari-release-notes) · Source checked: 2026-09-29.
+[Apple documentation](https://developer.apple.com/documentation/safari-release-notes) · Source checked: 2026-11-13.
 
 Apple’s short description (excerpt):
 
@@ -22,7 +22,9 @@ Apple’s directory does not supply platform availability for this entry. It may
 
 ### Version 27
 
-- [Safari 27.2 Beta Release Notes](https://developer.apple.com/documentation/safari-release-notes/safari-27_2-release-notes)
+- [Safari 27.3 Beta Release Notes](https://developer.apple.com/documentation/safari-release-notes/safari-27_3-release-notes)
+- [Safari 27.2 Release Notes](https://developer.apple.com/documentation/safari-release-notes/safari-27_2-release-notes)
+- [Safari 27.1 Release Notes](https://developer.apple.com/documentation/safari-release-notes/safari-27_1-release-notes)
 - [Safari 27 Release Notes](https://developer.apple.com/documentation/safari-release-notes/safari-27-release-notes)
 
 ### Version 26

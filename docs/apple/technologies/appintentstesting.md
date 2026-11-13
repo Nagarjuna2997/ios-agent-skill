@@ -6,7 +6,7 @@ Load this when a task names **App Intents Testing** or one of the API topics bel
 
 Apple categories: Developer Tools.
 
-[Apple documentation](https://developer.apple.com/documentation/appintentstesting) · Source checked: 2026-09-29.
+[Apple documentation](https://developer.apple.com/documentation/appintentstesting) · Source checked: 2026-11-13.
 
 Apple’s short description (excerpt):
 
@@ -65,6 +65,24 @@ These are landing-page values, not availability guarantees for every member. Che
 - [DynamicPropertyPath](https://developer.apple.com/documentation/appintentstesting/dynamicpropertypath)
 - [DynamicPropertyPathCollection](https://developer.apple.com/documentation/appintentstesting/dynamicpropertypathcollection)
 - [IntentValuePropertiesCallable](https://developer.apple.com/documentation/appintentstesting/intentvaluepropertiescallable)
+
+### Protocols
+
+- [AppEntityExpectationProviding](https://developer.apple.com/documentation/appintentstesting/appentityexpectationproviding) — beta
+- [AppIntentExpectationProviding](https://developer.apple.com/documentation/appintentstesting/appintentexpectationproviding) — beta
+- [IntentValueExpectation](https://developer.apple.com/documentation/appintentstesting/intentvalueexpectation) — beta
+- [ResolvableAppEntityExpectation](https://developer.apple.com/documentation/appintentstesting/resolvableappentityexpectation) — beta
+- [ResolvableIntentValueExpectation](https://developer.apple.com/documentation/appintentstesting/resolvableintentvalueexpectation) — beta
+
+### Structures
+
+- [AppEntityExpectation](https://developer.apple.com/documentation/appintentstesting/appentityexpectation) — beta
+- [AppEntityIdentifierExpectation](https://developer.apple.com/documentation/appintentstesting/appentityidentifierexpectation) — beta
+- [AppIntentExpectation](https://developer.apple.com/documentation/appintentstesting/appintentexpectation) — beta
+- [IntentValueExpectationCallable](https://developer.apple.com/documentation/appintentstesting/intentvalueexpectationcallable) — beta
+- [PredicateExpectation](https://developer.apple.com/documentation/appintentstesting/predicateexpectation) — beta
+- [PrimitiveExpectation](https://developer.apple.com/documentation/appintentstesting/primitiveexpectation) — beta
+- [SkillDefinition](https://developer.apple.com/documentation/appintentstesting/skilldefinition) — beta
 
 ## Anti-Patterns
 

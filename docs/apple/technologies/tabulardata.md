@@ -6,7 +6,7 @@ Load this when a task names **Tabular Data** or one of the API topics below.
 
 Apple categories: App Services.
 
-[Apple documentation](https://developer.apple.com/documentation/tabulardata) · Source checked: 2026-09-29.
+[Apple documentation](https://developer.apple.com/documentation/tabulardata) · Source checked: 2026-11-13.
 
 Apple’s short description (excerpt):
 
@@ -34,12 +34,12 @@ Documentation language identifiers: swift.
 
 These are landing-page values, not availability guarantees for every member. Check the selected symbol and the installed SDK.
 
-### Data Tables
+### Data tables
 
 - [DataFrame](https://developer.apple.com/documentation/tabulardata/dataframe)
 - [DataFrameProtocol](https://developer.apple.com/documentation/tabulardata/dataframeprotocol)
 
-### Typed Columns
+### Typed columns
 
 - [Column](https://developer.apple.com/documentation/tabulardata/column)
 - [ColumnSlice](https://developer.apple.com/documentation/tabulardata/columnslice)
@@ -48,14 +48,14 @@ These are landing-page values, not availability guarantees for every member. Che
 - [ColumnProtocol](https://developer.apple.com/documentation/tabulardata/columnprotocol)
 - [OptionalColumnProtocol](https://developer.apple.com/documentation/tabulardata/optionalcolumnprotocol)
 
-### Type-Erased Columns
+### Type-erased columns
 
 - [AnyColumn](https://developer.apple.com/documentation/tabulardata/anycolumn)
 - [AnyColumnSlice](https://developer.apple.com/documentation/tabulardata/anycolumnslice)
 - [AnyColumnProtocol](https://developer.apple.com/documentation/tabulardata/anycolumnprotocol)
 - [AnyColumnPrototype](https://developer.apple.com/documentation/tabulardata/anycolumnprototype)
 
-### Statistical Summaries
+### Statistical summaries
 
 - [NumericSummary](https://developer.apple.com/documentation/tabulardata/numericsummary)
 - [CategoricalSummary](https://developer.apple.com/documentation/tabulardata/categoricalsummary)
@@ -70,15 +70,11 @@ These are landing-page values, not availability guarantees for every member. Che
 - [ColumnEncodingError](https://developer.apple.com/documentation/tabulardata/columnencodingerror)
 - [SFrameReadingError](https://developer.apple.com/documentation/tabulardata/sframereadingerror)
 
-### Supporting Types
+### Supporting types
 
 - [Order](https://developer.apple.com/documentation/tabulardata/order)
 - [ColumnID](https://developer.apple.com/documentation/tabulardata/columnid)
 - [FormattingOptions](https://developer.apple.com/documentation/tabulardata/formattingoptions)
-
-### Structures
-
-- [JSONWritingOptions](https://developer.apple.com/documentation/tabulardata/jsonwritingoptions)
 
 ## Anti-Patterns
 

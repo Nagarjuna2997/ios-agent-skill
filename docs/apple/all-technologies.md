@@ -1,8 +1,8 @@
 # All Apple Technologies: Accelerate to XPC
 
-Snapshot checked **2026-09-29**: **405 unique entries** from [Apple’s technology directory](https://developer.apple.com/documentation/technologies).
+Snapshot checked **2026-11-13**: **408 unique entries** from [Apple’s technology directory](https://developer.apple.com/documentation/technologies).
 
-**83** entries reuse existing implementation guides; **322** have dedicated source-backed reference pages. Each technology has one canonical catalog record.
+**83** entries reuse existing implementation guides; **325** have dedicated source-backed reference pages. Each technology has one canonical catalog record.
 
 This full directory includes frameworks, services, tools, release notes, legacy technologies, and external resources. The selected app-development catalog in `frameworks.json` remains a separate curated subset; its coverage percentage is not the full Apple directory coverage.
 
@@ -192,6 +192,7 @@ This full directory includes frameworks, services, tools, release notes, legacy 
 | GSS | System | [Guide](technologies/gss.md) | [Apple source](https://developer.apple.com/documentation/gss) |
 | HealthKit | App Services | [Guide](../frameworks/hardware/healthkit.md) | [Apple source](https://developer.apple.com/documentation/healthkit) |
 | HIDDriverKit | System | [Guide](technologies/hiddriverkit.md) | [Apple source](https://developer.apple.com/documentation/hiddriverkit) |
+| HomeExtensions | App Frameworks | [Guide](technologies/homeextensions.md) | [Apple source](https://developer.apple.com/documentation/homeextensions) |
 | HomeKit | App Services | [Guide](../frameworks/hardware/homekit.md) | [Apple source](https://developer.apple.com/documentation/homekit) |
 | HTTP Live Streaming | Media | [Guide](technologies/http-live-streaming.md) | [Apple source](https://developer.apple.com/documentation/http-live-streaming) |
 | Human Interface Guidelines | Design | [Guide](../design/stunning-ui-patterns.md) | [Apple source](https://developer.apple.com/design/human-interface-guidelines) |
@@ -335,6 +336,7 @@ This full directory includes frameworks, services, tools, release notes, legacy 
 | ShazamKit | Media | [Guide](../frameworks/extended-apple-frameworks.md) | [Apple source](https://developer.apple.com/documentation/shazamkit) |
 | Sign in with Apple | Web | [Guide](technologies/signinwithapple.md) | [Apple source](https://developer.apple.com/documentation/signinwithapple) |
 | simd | System | [Guide](technologies/accelerate__simd-library.md) | [Apple source](https://developer.apple.com/documentation/accelerate/simd-library) |
+| Siri Evaluations | App Frameworks | [Guide](technologies/sirievaluations.md) | [Apple source](https://developer.apple.com/documentation/sirievaluations) |
 | Siri Event Suggestions Markup | Web | [Guide](technologies/sirieventsuggestionsmarkup.md) | [Apple source](https://developer.apple.com/documentation/sirieventsuggestionsmarkup) |
 | SiriKit | App Services | [Guide](technologies/sirikit.md) | [Apple source](https://developer.apple.com/documentation/sirikit) |
 | SiriKit Cloud Media | Media | [Guide](technologies/sirikitcloudmedia.md) | [Apple source](https://developer.apple.com/documentation/sirikitcloudmedia) |
@@ -393,6 +395,7 @@ This full directory includes frameworks, services, tools, release notes, legacy 
 | VideoDriverKit | System | [Guide](technologies/videodriverkit.md) | [Apple source](https://developer.apple.com/documentation/videodriverkit) |
 | Virtualization | System | [Guide](technologies/virtualization.md) | [Apple source](https://developer.apple.com/documentation/virtualization) |
 | Vision | App Services | [Guide](../frameworks/ml/vision.md) | [Apple source](https://developer.apple.com/documentation/vision) |
+| VisionEntitlementServices | App Frameworks | [Guide](technologies/visionentitlementservices.md) | [Apple source](https://developer.apple.com/documentation/visionentitlementservices) |
 | VisionKit | App Services | [Guide](../frameworks/visionkit.md) | [Apple source](https://developer.apple.com/documentation/visionkit) |
 | visionOS | App Frameworks | [Guide](../platforms/visionos.md) | [Apple source](https://developer.apple.com/documentation/visionos) |
 | visionOS Release Notes | Release Notes | [Guide](technologies/visionos-release-notes.md) | [Apple source](https://developer.apple.com/documentation/visionos-release-notes) |

@@ -6,7 +6,7 @@ Load this when a task names **Apple Pay Merchant Token Management API** or one o
 
 Apple categories: Web.
 
-[Apple documentation](https://developer.apple.com/documentation/merchanttokennotificationservices) · Source checked: 2026-09-29.
+[Apple documentation](https://developer.apple.com/documentation/merchanttokennotificationservices) · Source checked: 2026-11-13.
 
 Apple’s short description (excerpt):
 
@@ -47,6 +47,8 @@ These are landing-page values, not availability guarantees for every member. Che
 - [MerchantTokenMetadata](https://developer.apple.com/documentation/merchanttokennotificationservices/merchanttokenmetadata)
 - [CardArt](https://developer.apple.com/documentation/merchanttokennotificationservices/cardart)
 - [CardMetadata](https://developer.apple.com/documentation/merchanttokennotificationservices/cardmetadata)
+- [EncryptedTokenMetadata](https://developer.apple.com/documentation/merchanttokennotificationservices/encryptedtokenmetadata)
+- [TokenMetadata](https://developer.apple.com/documentation/merchanttokennotificationservices/tokenmetadata)
 
 ### Merchant token usage information
 

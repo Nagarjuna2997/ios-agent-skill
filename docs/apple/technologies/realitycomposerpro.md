@@ -6,7 +6,7 @@ Load this when a task names **Reality Composer Pro** or one of the API topics be
 
 Apple categories: Developer Tools.
 
-[Apple documentation](https://developer.apple.com/documentation/realitycomposerpro) · Source checked: 2026-09-29.
+[Apple documentation](https://developer.apple.com/documentation/realitycomposerpro) · Source checked: 2026-11-13.
 
 Apple’s short description (excerpt):
 
@@ -80,7 +80,8 @@ Apple’s directory does not supply platform availability for this entry. It may
 
 ### Release notes
 
-- [Reality Composer Pro Release Notes](https://developer.apple.com/documentation/realitycomposerpro/reality-composer-pro-release-notes)
+- [Reality Composer Pro 3.1 Release Notes](https://developer.apple.com/documentation/realitycomposerpro/reality-composer-pro-3-1-release-notes)
+- [Reality Composer Pro 3 Release Notes](https://developer.apple.com/documentation/realitycomposerpro/reality-composer-pro-3-release-notes)
 
 ## Anti-Patterns
 

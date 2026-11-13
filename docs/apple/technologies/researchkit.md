@@ -6,7 +6,7 @@ Load this when a task names **ResearchKit** or one of the API topics below.
 
 Apple categories: App Services.
 
-[Apple documentation](https://github.com/ResearchKit) · Source checked: 2026-09-29.
+[Apple documentation](https://github.com/ResearchKit) · Source checked: 2026-11-13.
 
 ## Pattern
 

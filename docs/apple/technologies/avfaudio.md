@@ -6,7 +6,7 @@ Load this when a task names **AVFAudio** or one of the API topics below.
 
 Apple categories: Media.
 
-[Apple documentation](https://developer.apple.com/documentation/avfaudio) · Source checked: 2026-09-29.
+[Apple documentation](https://developer.apple.com/documentation/avfaudio) · Source checked: 2026-11-13.
 
 Apple’s short description (excerpt):
 
@@ -55,17 +55,34 @@ These are landing-page values, not availability guarantees for every member. Che
 - [AVAudioRecorder](https://developer.apple.com/documentation/avfaudio/avaudiorecorder)
 - [AVMIDIPlayer](https://developer.apple.com/documentation/avfaudio/avmidiplayer)
 
+### Audio data
+
+- [AVAudioFile](https://developer.apple.com/documentation/avfaudio/avaudiofile)
+- [AVAudioPCMBuffer](https://developer.apple.com/documentation/avfaudio/avaudiopcmbuffer)
+- [AVAudioCompressedBuffer](https://developer.apple.com/documentation/avfaudio/avaudiocompressedbuffer)
+- [AVReadOnlyAudioPCMBuffer](https://developer.apple.com/documentation/avfaudio/avreadonlyaudiopcmbuffer)
+- [AVAudioBuffer](https://developer.apple.com/documentation/avfaudio/avaudiobuffer)
+- [AVAudioFormat](https://developer.apple.com/documentation/avfaudio/avaudioformat)
+- [AVAudioChannelLayout](https://developer.apple.com/documentation/avfaudio/avaudiochannellayout)
+- [AVAudioConverter](https://developer.apple.com/documentation/avfaudio/avaudioconverter)
+- [AVAudioTime](https://developer.apple.com/documentation/avfaudio/avaudiotime)
+- [Audio settings](https://developer.apple.com/documentation/avfaudio/audio-settings)
+
 ### Advanced audio processing
 
-- [Audio Engine](https://developer.apple.com/documentation/avfaudio/audio-engine)
+- [Audio engine](https://developer.apple.com/documentation/avfaudio/audio-engine)
 
 ### Speech synthesis
 
 - [Speech synthesis](https://developer.apple.com/documentation/avfaudio/speech-synthesis)
 
-### Macros
+### Preprocessor macros
 
 - [Macros](https://developer.apple.com/documentation/avfaudio/macros)
+
+### Structures
+
+- [AVReadOnlyAudioCompressedBuffer](https://developer.apple.com/documentation/avfaudio/avreadonlyaudiocompressedbuffer)
 
 ## Anti-Patterns
 

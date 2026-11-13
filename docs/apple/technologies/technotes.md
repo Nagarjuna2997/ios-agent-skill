@@ -6,7 +6,7 @@ Load this when a task names **Technotes** or one of the API topics below.
 
 Apple categories: Developer Tools.
 
-[Apple documentation](https://developer.apple.com/documentation/technotes) · Source checked: 2026-09-29.
+[Apple documentation](https://developer.apple.com/documentation/technotes) · Source checked: 2026-11-13.
 
 Apple’s short description (excerpt):
 
@@ -22,6 +22,11 @@ Apple’s directory does not supply platform availability for this entry. It may
 
 ### Latest
 
+- [TN3216: Supporting touch input for games on macOS](https://developer.apple.com/documentation/technotes/tn3216-supporting-touch-input-for-games-on-macos)
+- [TN3215: Reading man pages](https://developer.apple.com/documentation/technotes/tn3215-reading-man-pages)
+- [TN3192: Migrating your app from the deprecated UIRequiresFullScreen key](https://developer.apple.com/documentation/technotes/tn3192-migrating-your-app-from-the-deprecated-uirequiresfullscreen-key)
+- [TN3179: Understanding local network privacy](https://developer.apple.com/documentation/technotes/tn3179-understanding-local-network-privacy)
+- [TN3214: Validating the fonts you ship in your app](https://developer.apple.com/documentation/technotes/tn3214-validating-the-fonts-you-ship-in-your-app)
 - [TN3137: On Mac keychain APIs and implementations](https://developer.apple.com/documentation/technotes/tn3137-on-mac-keychains)
 - [TN3189: Managing Mail background traffic load](https://developer.apple.com/documentation/technotes/tn3189-managing-mail-background-traffic-load)
 - [TN3213: Moving from Multipeer Connectivity to Network framework](https://developer.apple.com/documentation/technotes/tn3213-moving-from-multipeer-connectivity-to-network-framework)
@@ -31,12 +36,10 @@ Apple’s directory does not supply platform availability for this entry. It may
 - [TN3208: Preparing your app’s launch screen to meet App Store requirements](https://developer.apple.com/documentation/technotes/tn3208-preparing-your-apps-launch-screen-to-meet-app-store-requirements)
 - [TN3205: Low-latency communication with RDMA over Thunderbolt](https://developer.apple.com/documentation/technotes/tn3205-low-latency-communication-with-rdma-over-thunderbolt)
 - [TN3206: Updating Apple Pay certificates](https://developer.apple.com/documentation/technotes/tn3206-updating-apple-pay-certificates)
-- [TN3179: Understanding local network privacy](https://developer.apple.com/documentation/technotes/tn3179-understanding-local-network-privacy)
 - [TN3190: USB audio device design considerations](https://developer.apple.com/documentation/technotes/tn3190-usb-audio-device-design-considerations)
 - [TN3194: Handling account deletions and revoking tokens for Sign in with Apple](https://developer.apple.com/documentation/technotes/tn3194-handling-account-deletions-and-revoking-tokens-for-sign-in-with-apple)
 - [TN3193: Managing the on-device foundation model’s context window](https://developer.apple.com/documentation/technotes/tn3193-managing-the-on-device-foundation-model-s-context-window)
 - [TN3115: Bluetooth State Restoration app relaunch rules](https://developer.apple.com/documentation/technotes/tn3115-bluetooth-state-restoration-app-relaunch-rules)
-- [TN3192: Migrating your iPad app from the deprecated UIRequiresFullScreen key](https://developer.apple.com/documentation/technotes/tn3192-migrating-your-app-from-the-deprecated-uirequiresfullscreen-key)
 - [TN3151: Choosing the right networking API](https://developer.apple.com/documentation/technotes/tn3151-choosing-the-right-networking-api)
 - [TN3111: iOS Wi-Fi API overview](https://developer.apple.com/documentation/technotes/tn3111-ios-wifi-api-overview)
 - [TN3191: IMAP extensions supported by Mail for iOS, iPadOS, and visionOS](https://developer.apple.com/documentation/technotes/tn3191-imap-extensions-supported-by-mail)

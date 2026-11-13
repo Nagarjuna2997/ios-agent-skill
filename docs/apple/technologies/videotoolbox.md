@@ -6,7 +6,7 @@ Load this when a task names **Video Toolbox** or one of the API topics below.
 
 Apple categories: Media.
 
-[Apple documentation](https://developer.apple.com/documentation/videotoolbox) · Source checked: 2026-09-29.
+[Apple documentation](https://developer.apple.com/documentation/videotoolbox) · Source checked: 2026-11-13.
 
 Apple’s short description (excerpt):
 
@@ -101,6 +101,7 @@ These are landing-page values, not availability guarantees for every member. Che
 - [kVTCompressionPreset_ConsistentQuality](https://developer.apple.com/documentation/videotoolbox/kvtcompressionpreset_consistentquality)
 - [kVTCompressionPropertyKey_ConstantQualityFactor](https://developer.apple.com/documentation/videotoolbox/kvtcompressionpropertykey_constantqualityfactor)
 - [kVTCompressionPropertyKey_LogTransferFunction](https://developer.apple.com/documentation/videotoolbox/kvtcompressionpropertykey_logtransferfunction)
+- [kVTDecompressionPropertyKey_EnableStrictBitstreamValidation](https://developer.apple.com/documentation/videotoolbox/kvtdecompressionpropertykey_enablestrictbitstreamvalidation) — beta
 - [kVTLogTransferFunctionMismatchErr](https://developer.apple.com/documentation/videotoolbox/kvtlogtransferfunctionmismatcherr)
 - [kVTProjectionKind_AppleImmersiveVideo](https://developer.apple.com/documentation/videotoolbox/kvtprojectionkind_appleimmersivevideo)
 

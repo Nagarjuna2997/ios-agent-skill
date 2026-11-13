@@ -6,7 +6,7 @@ Load this when a task names **Audio Toolbox** or one of the API topics below.
 
 Apple categories: Media.
 
-[Apple documentation](https://developer.apple.com/documentation/audiotoolbox) · Source checked: 2026-09-29.
+[Apple documentation](https://developer.apple.com/documentation/audiotoolbox) · Source checked: 2026-11-13.
 
 Apple’s short description (excerpt):
 
@@ -109,6 +109,8 @@ These are landing-page values, not availability guarantees for every member. Che
 - [kAudioCodecContentSource_AV_Spatial_Offline](https://developer.apple.com/documentation/audiotoolbox/kaudiocodeccontentsource_av_spatial_offline)
 - [kAudioCodecContentSource_AV_Traditional_Live](https://developer.apple.com/documentation/audiotoolbox/kaudiocodeccontentsource_av_traditional_live)
 - [kAudioCodecContentSource_AV_Traditional_Offline](https://developer.apple.com/documentation/audiotoolbox/kaudiocodeccontentsource_av_traditional_offline)
+- [kAudioCodecContentSource_Alarm_Spatial](https://developer.apple.com/documentation/audiotoolbox/kaudiocodeccontentsource_alarm_spatial) — beta
+- [kAudioCodecContentSource_Alarm_Traditional](https://developer.apple.com/documentation/audiotoolbox/kaudiocodeccontentsource_alarm_traditional) — beta
 - [kAudioCodecContentSource_AppleAV_Spatial_Live](https://developer.apple.com/documentation/audiotoolbox/kaudiocodeccontentsource_appleav_spatial_live)
 - [kAudioCodecContentSource_AppleAV_Spatial_Offline](https://developer.apple.com/documentation/audiotoolbox/kaudiocodeccontentsource_appleav_spatial_offline)
 - [kAudioCodecContentSource_AppleAV_Traditional_Live](https://developer.apple.com/documentation/audiotoolbox/kaudiocodeccontentsource_appleav_traditional_live)
@@ -122,10 +124,20 @@ These are landing-page values, not availability guarantees for every member. Che
 - [kAudioCodecContentSource_Capture_Spatial](https://developer.apple.com/documentation/audiotoolbox/kaudiocodeccontentsource_capture_spatial)
 - [kAudioCodecContentSource_Capture_Spatial_Enhanced](https://developer.apple.com/documentation/audiotoolbox/kaudiocodeccontentsource_capture_spatial_enhanced)
 - [kAudioCodecContentSource_Capture_Traditional](https://developer.apple.com/documentation/audiotoolbox/kaudiocodeccontentsource_capture_traditional)
+- [kAudioCodecContentSource_FeedbackSound_Spatial](https://developer.apple.com/documentation/audiotoolbox/kaudiocodeccontentsource_feedbacksound_spatial) — beta
+- [kAudioCodecContentSource_FeedbackSound_Traditional](https://developer.apple.com/documentation/audiotoolbox/kaudiocodeccontentsource_feedbacksound_traditional) — beta
 - [kAudioCodecContentSource_Music_Spatial](https://developer.apple.com/documentation/audiotoolbox/kaudiocodeccontentsource_music_spatial)
 - [kAudioCodecContentSource_Music_Traditional](https://developer.apple.com/documentation/audiotoolbox/kaudiocodeccontentsource_music_traditional)
+- [kAudioCodecContentSource_OtherSystemSound_Spatial](https://developer.apple.com/documentation/audiotoolbox/kaudiocodeccontentsource_othersystemsound_spatial) — beta
+- [kAudioCodecContentSource_OtherSystemSound_Traditional](https://developer.apple.com/documentation/audiotoolbox/kaudiocodeccontentsource_othersystemsound_traditional) — beta
 - [kAudioCodecContentSource_Passthrough](https://developer.apple.com/documentation/audiotoolbox/kaudiocodeccontentsource_passthrough)
+- [kAudioCodecContentSource_Podcast_Audiobook_Spatial](https://developer.apple.com/documentation/audiotoolbox/kaudiocodeccontentsource_podcast_audiobook_spatial) — beta
+- [kAudioCodecContentSource_Podcast_Audiobook_Traditional](https://developer.apple.com/documentation/audiotoolbox/kaudiocodeccontentsource_podcast_audiobook_traditional) — beta
 - [kAudioCodecContentSource_Reserved](https://developer.apple.com/documentation/audiotoolbox/kaudiocodeccontentsource_reserved)
+- [kAudioCodecContentSource_Ringtone_Spatial](https://developer.apple.com/documentation/audiotoolbox/kaudiocodeccontentsource_ringtone_spatial) — beta
+- [kAudioCodecContentSource_Ringtone_Traditional](https://developer.apple.com/documentation/audiotoolbox/kaudiocodeccontentsource_ringtone_traditional) — beta
+- [kAudioCodecContentSource_SpokenResponse_Spatial](https://developer.apple.com/documentation/audiotoolbox/kaudiocodeccontentsource_spokenresponse_spatial) — beta
+- [kAudioCodecContentSource_SpokenResponse_Traditional](https://developer.apple.com/documentation/audiotoolbox/kaudiocodeccontentsource_spokenresponse_traditional) — beta
 - [kAudioCodecContentSource_Unspecified](https://developer.apple.com/documentation/audiotoolbox/kaudiocodeccontentsource_unspecified)
 - [kAudioCodecDynamicRangeControlConfiguration_Capture](https://developer.apple.com/documentation/audiotoolbox/kaudiocodecdynamicrangecontrolconfiguration_capture)
 - [kAudioCodecDynamicRangeControlConfiguration_Movie](https://developer.apple.com/documentation/audiotoolbox/kaudiocodecdynamicrangecontrolconfiguration_movie)

@@ -6,7 +6,7 @@ Load this when a task names **Accessory Live Activities** or one of the API topi
 
 Apple categories: App Frameworks.
 
-[Apple documentation](https://developer.apple.com/documentation/accessoryliveactivities) · Source checked: 2026-09-29.
+[Apple documentation](https://developer.apple.com/documentation/accessoryliveactivities) · Source checked: 2026-11-13.
 
 Apple’s short description (excerpt):
 

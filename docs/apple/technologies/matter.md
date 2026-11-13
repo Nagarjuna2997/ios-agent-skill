@@ -6,7 +6,7 @@ Load this when a task names **Matter** or one of the API topics below.
 
 Apple categories: App Services.
 
-[Apple documentation](https://developer.apple.com/documentation/matter) · Source checked: 2026-09-29.
+[Apple documentation](https://developer.apple.com/documentation/matter) · Source checked: 2026-11-13.
 
 Apple’s short description (excerpt):
 
@@ -356,6 +356,12 @@ These are landing-page values, not availability guarantees for every member. Che
 - [MTRDeviceControllerRegistrationControllerIsRunningKey](https://developer.apple.com/documentation/matter/mtrdevicecontrollerregistrationcontrollerisrunningkey)
 - [MTRDeviceControllerRegistrationControllerNodeIDKey](https://developer.apple.com/documentation/matter/mtrdevicecontrollerregistrationcontrollernodeidkey)
 - [MTRDeviceControllerRegistrationDeviceInternalStateKey](https://developer.apple.com/documentation/matter/mtrdevicecontrollerregistrationdeviceinternalstatekey)
+- [MTRDeviceControllerRegistrationInterestedPathAttributeIDKey](https://developer.apple.com/documentation/matter/mtrdevicecontrollerregistrationinterestedpathattributeidkey)
+- [MTRDeviceControllerRegistrationInterestedPathClusterIDKey](https://developer.apple.com/documentation/matter/mtrdevicecontrollerregistrationinterestedpathclusteridkey)
+- [MTRDeviceControllerRegistrationInterestedPathEndpointIDKey](https://developer.apple.com/documentation/matter/mtrdevicecontrollerregistrationinterestedpathendpointidkey)
+- [MTRDeviceControllerRegistrationInterestedPathEventIDKey](https://developer.apple.com/documentation/matter/mtrdevicecontrollerregistrationinterestedpatheventidkey)
+- [MTRDeviceControllerRegistrationInterestedPathsForAttributesKey](https://developer.apple.com/documentation/matter/mtrdevicecontrollerregistrationinterestedpathsforattributeskey)
+- [MTRDeviceControllerRegistrationInterestedPathsForEventsKey](https://developer.apple.com/documentation/matter/mtrdevicecontrollerregistrationinterestedpathsforeventskey)
 - [MTRDeviceControllerRegistrationNodeIDKey](https://developer.apple.com/documentation/matter/mtrdevicecontrollerregistrationnodeidkey)
 - [MTRDeviceControllerRegistrationNodeIDsKey](https://developer.apple.com/documentation/matter/mtrdevicecontrollerregistrationnodeidskey)
 - [MTRUnpoweredInitialPhase](https://developer.apple.com/documentation/matter/mtrunpoweredinitialphase)

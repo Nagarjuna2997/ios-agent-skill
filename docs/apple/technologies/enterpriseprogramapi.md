@@ -6,7 +6,7 @@ Load this when a task names **Enterprise Program API** or one of the API topics 
 
 Apple categories: Developer Tools.
 
-[Apple documentation](https://developer.apple.com/documentation/enterpriseprogramapi) · Source checked: 2026-09-29.
+[Apple documentation](https://developer.apple.com/documentation/enterpriseprogramapi) · Source checked: 2026-11-13.
 
 Apple’s short description (excerpt):
 

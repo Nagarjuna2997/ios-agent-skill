@@ -44,3 +44,9 @@ The Xcode 27 agent setup, Core AI execution, third-party Foundation Models adapt
 ## September 29 audit
 
 The [source-change audit](source-audit-2026-09-29.md) refreshes all 405 technology landing pages and checks delisted topic URLs independently. The release-note directory now has 98 pages and 949 topic links. Read the updated [Xcode beta 2](../tooling/xcode-27-2.md), [Device Hub](../tooling/device-hub.md) and [distribution](../tooling/september-2026-distribution.md) guidance. These dated checks supersede stale current-state wording above; historical evidence and release records remain intact. No account credentials or private developer resources were copied.
+
+## November 13, 2026 source review
+
+The technology directory refresh added Home Extensions, Siri Evaluations and Vision Entitlement Services. No technology landing-page URLs disappeared from the prior snapshot. Seven individual topic links no longer appeared in Apple’s refreshed landing-page topic maps; this observation alone does not prove that the linked articles or APIs were removed. Open Apple’s source and check SDK availability before changing existing code.
+
+Apple announced a [Siri AI developer preview](https://developer.apple.com/news/?id=gdk2umrf) for the 27.3 betas using App Intents. Preview availability and App Store submission timing are separate from API availability on a user’s deployed device. Verify requirements and applicable regions with Apple before planning a release.

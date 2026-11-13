@@ -6,7 +6,7 @@ Load this when a task names **IdentityDocumentServices** or one of the API topic
 
 Apple categories: App Services.
 
-[Apple documentation](https://developer.apple.com/documentation/identitydocumentservices) · Source checked: 2026-09-29.
+[Apple documentation](https://developer.apple.com/documentation/identitydocumentservices) · Source checked: 2026-11-13.
 
 Apple’s short description (excerpt):
 
@@ -41,6 +41,7 @@ These are landing-page values, not availability guarantees for every member. Che
 - [IdentityDocumentProviderRegistrationStore](https://developer.apple.com/documentation/identitydocumentservices/identitydocumentproviderregistrationstore)
 - [IdentityDocumentRegistration](https://developer.apple.com/documentation/identitydocumentservices/identitydocumentregistration)
 - [MobileDocumentRegistration](https://developer.apple.com/documentation/identitydocumentservices/mobiledocumentregistration)
+- [VerifiableCredentialRegistration](https://developer.apple.com/documentation/identitydocumentservices/verifiablecredentialregistration)
 
 ### Implementing the web presentment flow into your browser
 
@@ -51,7 +52,14 @@ These are landing-page values, not availability guarantees for every member. Che
 - [ISO18013MobileDocumentResponse](https://developer.apple.com/documentation/identitydocumentservices/iso18013mobiledocumentresponse)
 - [IdentityDocumentWebPresentmentRawRequest](https://developer.apple.com/documentation/identitydocumentservices/identitydocumentwebpresentmentrawrequest)
 
-### Structures
+### Requesting credentials with OpenID4VP
+
+- [OpenID4VPRequest](https://developer.apple.com/documentation/identitydocumentservices/openid4vprequest)
+- [OpenID4VPResponse](https://developer.apple.com/documentation/identitydocumentservices/openid4vpresponse)
+- [OpenID4VPExchangeProtocolIdentifier](https://developer.apple.com/documentation/identitydocumentservices/openid4vpexchangeprotocolidentifier)
+- [DigitalCredentialsQuery](https://developer.apple.com/documentation/identitydocumentservices/digitalcredentialsquery)
+
+### Errors
 
 - [IdentityDocumentPresentmentError](https://developer.apple.com/documentation/identitydocumentservices/identitydocumentpresentmenterror)
 

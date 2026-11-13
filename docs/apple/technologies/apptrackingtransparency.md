@@ -6,7 +6,7 @@ Load this when a task names **App Tracking Transparency** or one of the API topi
 
 Apple categories: System.
 
-[Apple documentation](https://developer.apple.com/documentation/apptrackingtransparency) · Source checked: 2026-09-29.
+[Apple documentation](https://developer.apple.com/documentation/apptrackingtransparency) · Source checked: 2026-11-13.
 
 Apple’s short description (excerpt):
 
@@ -41,8 +41,8 @@ These are landing-page values, not availability guarantees for every member. Che
 ### Authorization requests
 
 - [requestTrackingAuthorization(completionHandler:)](https://developer.apple.com/documentation/apptrackingtransparency/attrackingmanager/requesttrackingauthorization(completionhandler:))
-- [requestTrackingAuthorization(preferExpandedInterface:additionalInformationAction:completionHandler:)](https://developer.apple.com/documentation/apptrackingtransparency/attrackingmanager/requesttrackingauthorization(preferexpandedinterface:additionalinformationaction:completionhandler:)) — beta
-- [NSUserTrackingMarkdownUsageDescription](https://developer.apple.com/documentation/bundleresources/information-property-list/nsusertrackingmarkdownusagedescription) — beta
+- [requestTrackingAuthorization(preferExpandedInterface:additionalInformationAction:completionHandler:)](https://developer.apple.com/documentation/apptrackingtransparency/attrackingmanager/requesttrackingauthorization(preferexpandedinterface:additionalinformationaction:completionhandler:))
+- [NSUserTrackingMarkdownUsageDescription](https://developer.apple.com/documentation/bundleresources/information-property-list/nsusertrackingmarkdownusagedescription)
 
 ### Authorization status and results
 

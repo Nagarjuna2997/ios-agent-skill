@@ -1,6 +1,6 @@
 # Apple Updates and Release Notes
 
-Source snapshot: 2026-09-29. **98 update/release-note landing pages** fetched from Apple, with **949 unique-within-page topic links**.
+Source snapshot: 2026-11-13. **98 update/release-note landing pages** fetched from Apple, with **961 unique-within-page topic links**.
 
 ## Context
 
@@ -18,7 +18,7 @@ Match the app’s installed SDK, deployment target, and affected framework to th
 | AdAttributionKit Updates | [Open](https://developer.apple.com/documentation/updates/adattributionkit) | 0 |
 | App Clips updates | [Open](https://developer.apple.com/documentation/updates/appclips) | 0 |
 | App Intents updates | [Open](https://developer.apple.com/documentation/updates/appintents) | 0 |
-| App Store Connect API Release Notes | [Open](https://developer.apple.com/documentation/appstoreconnectapi/app-store-connect-api-release-notes) | 31 |
+| App Store Connect API Release Notes | [Open](https://developer.apple.com/documentation/appstoreconnectapi/app-store-connect-api-release-notes) | 33 |
 | AppKit updates | [Open](https://developer.apple.com/documentation/updates/appkit) | 0 |
 | Apple Intelligence updates | [Open](https://developer.apple.com/documentation/updates/apple-intelligence) | 0 |
 | Apple Pencil updates | [Open](https://developer.apple.com/documentation/updates/applepencil) | 0 |
@@ -52,11 +52,11 @@ Match the app’s installed SDK, deployment target, and affected framework to th
 | Group Activities updates | [Open](https://developer.apple.com/documentation/updates/groupactivities) | 0 |
 | HealthKit updates | [Open](https://developer.apple.com/documentation/updates/healthkit) | 0 |
 | Hypervisor updates | [Open](https://developer.apple.com/documentation/updates/hypervisor) | 0 |
-| iOS & iPadOS Release Notes | [Open](https://developer.apple.com/documentation/ios-ipados-release-notes) | 62 |
+| iOS & iPadOS Release Notes | [Open](https://developer.apple.com/documentation/ios-ipados-release-notes) | 63 |
 | Journaling Suggestions updates | [Open](https://developer.apple.com/documentation/updates/journalingsuggestions) | 0 |
 | LightweightCodeRequirements updates | [Open](https://developer.apple.com/documentation/updates/lightweightcoderequirements) | 0 |
 | LiveCommunicationKit updates | [Open](https://developer.apple.com/documentation/updates/livecommunicationkit) | 0 |
-| macOS Release Notes | [Open](https://developer.apple.com/documentation/macos-release-notes) | 62 |
+| macOS Release Notes | [Open](https://developer.apple.com/documentation/macos-release-notes) | 63 |
 | MapKit updates | [Open](https://developer.apple.com/documentation/updates/mapkit) | 0 |
 | MapKitJS updates | [Open](https://developer.apple.com/documentation/updates/mapkitjs) | 0 |
 | Matter updates | [Open](https://developer.apple.com/documentation/updates/matter) | 0 |
@@ -70,7 +70,7 @@ Match the app’s installed SDK, deployment target, and affected framework to th
 | PhotoKit updates | [Open](https://developer.apple.com/documentation/updates/photokit) | 0 |
 | ProximityReader updates | [Open](https://developer.apple.com/documentation/updates/proximityreader) | 0 |
 | RealityKit updates | [Open](https://developer.apple.com/documentation/updates/realitykit) | 0 |
-| Safari Release Notes | [Open](https://developer.apple.com/documentation/safari-release-notes) | 42 |
+| Safari Release Notes | [Open](https://developer.apple.com/documentation/safari-release-notes) | 44 |
 | SafariServices updates | [Open](https://developer.apple.com/documentation/updates/safariservices) | 0 |
 | ScreenCaptureKit updates | [Open](https://developer.apple.com/documentation/updates/screencapturekit) | 0 |
 | Security updates | [Open](https://developer.apple.com/documentation/updates/security) | 0 |
@@ -87,26 +87,26 @@ Match the app’s installed SDK, deployment target, and affected framework to th
 | Symbols updates | [Open](https://developer.apple.com/documentation/updates/symbols) | 0 |
 | ThreadNetwork updates | [Open](https://developer.apple.com/documentation/updates/threadnetwork) | 0 |
 | TipKit updates | [Open](https://developer.apple.com/documentation/updates/tipkit) | 0 |
-| tvOS Release Notes | [Open](https://developer.apple.com/documentation/tvos-release-notes) | 57 |
+| tvOS Release Notes | [Open](https://developer.apple.com/documentation/tvos-release-notes) | 58 |
 | UIKit updates | [Open](https://developer.apple.com/documentation/updates/uikit) | 0 |
 | Updates | [Open](https://developer.apple.com/documentation/updates) | 96 |
 | User Notifications updates | [Open](https://developer.apple.com/documentation/updates/usernotifications) | 0 |
 | Video Subscriber Account updates | [Open](https://developer.apple.com/documentation/updates/videosubscriberaccount) | 0 |
 | Virtualization updates | [Open](https://developer.apple.com/documentation/updates/virtualization) | 0 |
 | Vision updates | [Open](https://developer.apple.com/documentation/updates/vision) | 0 |
-| visionOS Release Notes | [Open](https://developer.apple.com/documentation/visionos-release-notes) | 20 |
+| visionOS Release Notes | [Open](https://developer.apple.com/documentation/visionos-release-notes) | 21 |
 | Visual Intelligence updates | [Open](https://developer.apple.com/documentation/updates/visualintelligence) | 0 |
-| watchOS Release Notes | [Open](https://developer.apple.com/documentation/watchos-release-notes) | 55 |
+| watchOS Release Notes | [Open](https://developer.apple.com/documentation/watchos-release-notes) | 56 |
 | watchOS updates | [Open](https://developer.apple.com/documentation/updates/watchos) | 0 |
 | WeatherKit updates | [Open](https://developer.apple.com/documentation/updates/weatherkit) | 0 |
 | WidgetKit updates | [Open](https://developer.apple.com/documentation/updates/widgetkit) | 0 |
 | WorkoutKit updates | [Open](https://developer.apple.com/documentation/updates/workoutkit) | 0 |
-| WWDC21 | [Open](https://developer.apple.com/documentation/updates/wwdc2021) | 107 |
-| WWDC22 | [Open](https://developer.apple.com/documentation/updates/wwdc2022) | 107 |
+| WWDC21 | [Open](https://developer.apple.com/documentation/updates/wwdc2021) | 108 |
+| WWDC22 | [Open](https://developer.apple.com/documentation/updates/wwdc2022) | 108 |
 | WWDC23 | [Open](https://developer.apple.com/documentation/updates/wwdc2023) | 96 |
 | WWDC24 | [Open](https://developer.apple.com/documentation/updates/wwdc2024) | 52 |
 | WWDC25 | [Open](https://developer.apple.com/documentation/updates/wwdc2025) | 101 |
-| Xcode Release Notes | [Open](https://developer.apple.com/documentation/xcode-release-notes) | 61 |
+| Xcode Release Notes | [Open](https://developer.apple.com/documentation/xcode-release-notes) | 62 |
 | Xcode updates | [Open](https://developer.apple.com/documentation/updates/xcode) | 0 |
 | XCUIAutomation updates | [Open](https://developer.apple.com/documentation/updates/xcuiautomation) | 0 |
 | XPC updates | [Open](https://developer.apple.com/documentation/updates/xpc) | 0 |

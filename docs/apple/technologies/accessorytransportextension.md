@@ -6,7 +6,7 @@ Load this when a task names **Accessory Transport Extension** or one of the API 
 
 Apple categories: System.
 
-[Apple documentation](https://developer.apple.com/documentation/accessorytransportextension) · Source checked: 2026-09-29.
+[Apple documentation](https://developer.apple.com/documentation/accessorytransportextension) · Source checked: 2026-11-13.
 
 Apple’s short description (excerpt):
 
@@ -35,28 +35,39 @@ These are landing-page values, not availability guarantees for every member. Che
 - [AccessoryTransportSession](https://developer.apple.com/documentation/accessorytransportextension/accessorytransportsession)
 - [Wi-Fi Infrastructure](https://developer.apple.com/documentation/wifiinfrastructure)
 
-### Notification forwarding
+### Notification and Live Activity forwarding
 
 - [Receiving iOS notifications on an accessory](https://developer.apple.com/documentation/accessorytransportextension/receiving-ios-notifications-on-an-accessory)
+- [Receiving Live Activity updates and alerts on an accessory](https://developer.apple.com/documentation/accessoryliveactivities/receiving-live-activities-on-an-accessory)
 - [Forwarding notifications to your accessory using the internet transport type](https://developer.apple.com/documentation/accessorytransportextension/forwarding-notifications-to-your-accessory-using-the-internet-transport-type)
 - [AccessoryDataProvider](https://developer.apple.com/documentation/accessorytransportextension/accessorydataprovider)
 - [AccessoryDataProviderConfiguration](https://developer.apple.com/documentation/accessorytransportextension/accessorydataproviderconfiguration)
 - [AccessoryTransportSecurity](https://developer.apple.com/documentation/accessorytransportextension/accessorytransportsecurity)
 - [AccessoryTransportSecurityConfiguration](https://developer.apple.com/documentation/accessorytransportextension/accessorytransportsecurityconfiguration)
 - [Accessory Notifications](https://developer.apple.com/documentation/accessorynotifications)
+- [Accessory Live Activities](https://developer.apple.com/documentation/accessoryliveactivities)
 
-### Data and sessions
+### Transport messaging and security
 
-- [AccessoryFeature](https://developer.apple.com/documentation/accessorytransportextension/accessoryfeature)
 - [AccessoryMessage](https://developer.apple.com/documentation/accessorytransportextension/accessorymessage)
 - [AccessorySecuritySession](https://developer.apple.com/documentation/accessorytransportextension/accessorysecuritysession)
 - [TransportMessage](https://developer.apple.com/documentation/accessorytransportextension/transportmessage)
 - [SecurityMessage](https://developer.apple.com/documentation/accessorytransportextension/securitymessage)
 - [AccessoryTransport](https://developer.apple.com/documentation/accessorytransportextension/accessorytransport)
 
+### Feature catalog
+
+- [Accessory features](https://developer.apple.com/documentation/accessorytransportextension/accessory-features)
+
+### Background work
+
+- [Sending data to an accessory in the background](https://developer.apple.com/documentation/accessorytransportextension/sending-data-to-an-accessory-in-the-background)
+- [AccessoryWorker](https://developer.apple.com/documentation/accessorytransportextension/accessoryworker) — beta
+- [AccessoryGPUWorker](https://developer.apple.com/documentation/accessorytransportextension/accessorygpuworker) — beta
+
 ### Protocols
 
-- [AccessoryFeatureSession](https://developer.apple.com/documentation/accessorytransportextension/accessoryfeaturesession)
+- [AccessoryFeatureAuthorizing](https://developer.apple.com/documentation/accessorytransportextension/accessoryfeatureauthorizing) — beta
 
 ## Anti-Patterns
 

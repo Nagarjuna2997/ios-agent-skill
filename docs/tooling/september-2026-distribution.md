@@ -67,3 +67,16 @@ not add authenticated App Store Connect API execution.
 ### ATT signature update
 
 The current [App Tracking Transparency landing page](https://developer.apple.com/documentation/apptrackingtransparency) links `requestTrackingAuthorization(preferExpandedInterface:additionalInformationAction:completionHandler:)`. Its previously indexed `usingExpandedInterface:` documentation URL returns 404 in this audit. Treat this as a documentation/signature migration lead; validate availability and the precise declaration with the selected SDK before rewriting code. A failed old URL alone does not prove binary API removal.
+
+## Updates checked November 13, 2026
+
+Apple’s [App Store Connect release notes](https://developer.apple.com/help/app-store-connect/release-notes/) now distinguish these upload paths:
+
+- Xcode 27.2 and its 27.2 SDK builds are accepted for App Store submission and internal/external TestFlight testing (October 30).
+- Xcode 27.3 beta and its 27.3 beta SDK builds are accepted for internal/external TestFlight testing (November 3). This announcement does not establish App Store submission eligibility for beta builds.
+- Apple says iPhone Duo screenshots will be required for submitted apps and games starting April 2027; consult current [screenshot specifications](https://developer.apple.com/help/app-store-connect/reference/screenshot-specifications/) and applicability before submission.
+- Starting in early 2027, uploads containing On-Demand Resources will no longer be accepted for new apps or apps that have never used that feature. Apple recommends migration to Background Assets. This announced restriction does not say existing users of On-Demand Resources are immediately blocked.
+
+Apple lists [App Store Connect API 4.6 release notes](https://developer.apple.com/documentation/appstoreconnectapi/app-store-connect-api-4-6-release-notes); verify endpoint availability and access before implementing integrations. For current dates and changes, consult Apple directly; this is a dated snapshot.
+
+In API 4.6, Apple documents retention message and offer resources, and deprecates the `INSTALLS` sales report type: no new reports of that type have been generated since November 4, although historical reports remain downloadable. See the [API 4.6 notes](https://developer.apple.com/documentation/appstoreconnectapi/app-store-connect-api-4-6-release-notes). Do not assume account access or implement calls without checking the endpoint documentation.

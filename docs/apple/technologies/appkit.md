@@ -6,7 +6,7 @@ Load this when a task names **AppKit** or one of the API topics below.
 
 Apple categories: App Frameworks.
 
-[Apple documentation](https://developer.apple.com/documentation/appkit) · Source checked: 2026-09-29.
+[Apple documentation](https://developer.apple.com/documentation/appkit) · Source checked: 2026-11-13.
 
 Apple’s short description (excerpt):
 
@@ -32,6 +32,7 @@ These are landing-page values, not availability guarantees for every member. Che
 ### Essentials
 
 - [Adopting Liquid Glass](https://developer.apple.com/documentation/technologyoverviews/adopting-liquid-glass)
+- [Adopting gesture recognizers in your app](https://developer.apple.com/documentation/appkit/adopting-gesture-recognizers-in-your-app)
 - [AppKit updates](https://developer.apple.com/documentation/updates/appkit)
 - [Protecting the User’s Privacy](https://developer.apple.com/documentation/uikit/protecting-the-user-s-privacy)
 - [Porting your macOS apps to Apple silicon](https://developer.apple.com/documentation/apple-silicon/porting-your-macos-apps-to-apple-silicon)
@@ -78,16 +79,16 @@ These are landing-page values, not availability guarantees for every member. Che
 - [Fonts](https://developer.apple.com/documentation/appkit/fonts)
 - [Writing Tools](https://developer.apple.com/documentation/appkit/writing-tools)
 
-### Deprecated
-
-- [Deprecated Symbols](https://developer.apple.com/documentation/appkit/deprecated-symbols)
-
 ### Reference
 
 - [Enumerations](https://developer.apple.com/documentation/appkit/enumerations)
 - [Constants](https://developer.apple.com/documentation/appkit/constants)
 - [Data Types](https://developer.apple.com/documentation/appkit/data-types)
 - [Macros](https://developer.apple.com/documentation/appkit/macros)
+
+### Deprecated
+
+- [Deprecated symbols](https://developer.apple.com/documentation/appkit/deprecated-symbols)
 
 ## Anti-Patterns
 
