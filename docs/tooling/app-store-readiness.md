@@ -42,3 +42,7 @@ Exit `1` means actionable static findings; `2` means incomplete coverage; `0` me
 - [App Review guideline 2.3.7](https://developer.apple.com/app-store/review/guidelines/#accurate-metadata)
 
 Rules reviewed October 11, 2026. Static checks support developer review; they do not replace Apple's current requirements.
+
+## On-Demand Resources review
+
+Direct `NSBundleResourceRequest` construction in selected app source produces a minor advisory. Apple announced an early-2027 upload restriction for new apps and apps that have never used On-Demand Resources; the analyzer cannot establish app history or final archive contents, and does not predict rejection. Review the archive and [Apple’s App Store Connect release notes](https://developer.apple.com/help/app-store-connect/release-notes/) and consider Background Assets. Objective-C, wrappers, generated code and other resource-tagging mechanisms remain outside this source check.

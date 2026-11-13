@@ -74,3 +74,7 @@ The implementations are original repository source under the repository MIT lice
 The result distinguishes a generated response from local matches. Model errors and cancellation propagate to the caller. Present an explicit error state rather than interpreting an error as an empty library.
 
 Verified on 2026-09-16: Xcode 26.6 / Swift 6.3.3, all 12 package tests passed, including compilation and direct execution of the Foundation Models `Tool`, fallback, error and cancellation checks. Model-backed generation, tool selection by a live model, iOS device behavior and iOS 27 provider routing are **not** verified by these tests.
+
+### Tracking authorization (iOS only)
+
+`TrackingAuthorization.request(preferExpanded:)` demonstrates the iOS 27.2 expanded ATT request with a legacy fallback. Call it only in an appropriate user-facing flow when tracking is actually needed; provide `NSUserTrackingUsageDescription`, review Apple’s regional requirements, and act on the returned status. The sample does not request authorization by itself or treat `.notDetermined` as consent. The expanded method is compile-checked with Xcode 27.2; prompt display, regional behavior and reprompting require real-device verification. See [Apple’s release notes](https://developer.apple.com/documentation/ios-ipados-release-notes/ios-ipados-27_2-release-notes).

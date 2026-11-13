@@ -1,4 +1,4 @@
-# Xcode 27.2 beta: project format and preview tooling
+# Xcode 27.2: project format and preview tooling
 
 ## Context
 
@@ -24,7 +24,7 @@ returned by the installed tool and select the intended one using its advertised
 schema. Record the destination with preview evidence. Don’t hardcode guessed
 argument names or treat a preview as a Simulator test.
 
-Apple directs Duo development to **Xcode 27.1 beta**, even from the 27.2 notes.
+Apple’s released Xcode 27.2 notes describe iPhone Duo simulator support and known issues; the earlier 27.1 beta guidance was specific to that beta period.
 See `docs/platforms/iphone-duo.md` and `docs/tooling/device-hub.md`.
 
 ## Anti-Patterns
@@ -44,7 +44,7 @@ real JSON project builds and Xcode 27.2 preview sessions remain unverified.
 
 Apple adds `GetCodeCoverage` to its coding-assistant MCP tools. Discover its installed schema before requesting the latest test coverage, optionally scoped to a target or file. This is Apple's tool, not a new ios-agent-mcp tool. The preview override picker also gains alternative-display selection.
 
-Known issues include temporary black Duo captures after boot, simulator-clone permissions, and reinstalled runtimes remaining unavailable. Avoid diagnosing those immediately as app defects. Apple's service-restart workaround is disruptive; obtain authorization before interrupting active simulators. For iOS 27.1-specific APIs in Catalyst, Apple recommends platform compilation conditionals. The non-iOS SDKs incorrectly advertising deployment target 27.1 need extra scrutiny. None of these beta 2 behaviors was exercised on the local Xcode 27.0 installation.
+In the released Xcode 27.2 notes, known issues include temporary black Duo captures after boot and simulator-clone permissions. Apple lists reinstalled runtimes remaining unavailable as resolved. Avoid diagnosing those immediately as app defects. Apple's service-restart workaround is disruptive; obtain authorization before interrupting active simulators. For iOS 27.1-specific APIs in Catalyst, Apple recommends platform compilation conditionals. The non-iOS SDKs incorrectly advertising deployment target 27.1 need extra scrutiny. None of these beta 2 behaviors was exercised on the local Xcode 27.0 installation.
 
 ## Xcode 27.3 beta update (checked November 13, 2026)
 

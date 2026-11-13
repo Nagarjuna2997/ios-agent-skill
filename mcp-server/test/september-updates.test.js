@@ -42,7 +42,7 @@ test('coexisting formats do not authorize legacy launch assumptions',async t=>{
 });
 test('SDK API recognition preserves 27.1 metadata, ignores comments/strings and shadow types',()=>{
  const found=recognizeAdaptiveAPIs([{path:'UI.swift',content:'import SwiftUI\nArrangementView {} secondary: {}\n.arrangementViewStyle(.split)\n.splitArrangementLayoutRatio(0.5)\nlet style: any ArrangementViewStyle\nSplitArrangementViewStyle()\nOverlayArrangementViewStyle()'},{path:'Controller.swift',content:'import UIKit\nUIArrangementViewController()\nUISplitArrangement()\nUIOverlayArrangement()'}]);
- assert.equal(found.length,9);assert.ok(found.every(a=>a.introducedIOS==='27.1'&&a.beta));
+ assert.equal(found.length,9);assert.ok(found.every(a=>a.introducedIOS==='27.1'&&a.beta===false&&a.checkedAt==='2026-11-13'));
  assert.deepEqual(recognizeAdaptiveAPIs([{path:'Other.swift',content:'import SwiftUI\n// ArrangementView\nlet text="ArrangementView"\nstruct ArrangementView {}'}]),[]);
  assert.deepEqual(recognizeAdaptiveAPIs([{path:'Other.swift',content:'ArrangementView()'}]),[]);
 });

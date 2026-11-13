@@ -2728,8 +2728,8 @@
       "path": "docs/frameworks/app-clips.md",
       "title": "App Clips",
       "kind": "guide",
-      "characters": 27924,
-      "hash": "757832ef6f930fe2154d3b30a30e356cab9a2f6e9aa1d4ade191888601538600"
+      "characters": 28477,
+      "hash": "f7b908e4c8fceb09f871bcb9cca066994680655c7335e5cf9da85b235e7d9813"
     },
     {
       "path": "docs/frameworks/app-intents-intelligence.md",
@@ -3428,8 +3428,8 @@
       "path": "docs/tooling/app-store-readiness.md",
       "title": "Local App Store readiness review",
       "kind": "guide",
-      "characters": 4530,
-      "hash": "3da43441fd518bf48995bfc61c021f26992db32ca2847bedf378ce1743c3a9fa"
+      "characters": 5146,
+      "hash": "32634e4aa2a6bf9c72f96d91e1a2ef1a38ebd4ba02e03d936f2228548d59e001"
     },
     {
       "path": "docs/tooling/deployment-guard.md",
@@ -3573,10 +3573,10 @@
     },
     {
       "path": "docs/tooling/xcode-27-2.md",
-      "title": "Xcode 27.2 beta: project format and preview tooling",
+      "title": "Xcode 27.2: project format and preview tooling",
       "kind": "guide",
-      "characters": 4110,
-      "hash": "535957bc4828cc0ed8ed9edcb69455ab0fc54c9c4cbe2b0a68d33fc826034847"
+      "characters": 4237,
+      "hash": "e4903ece030a8a97bb69f8e2b1470fa06e64a1a43cbb0d35b07e6084e79e19d4"
     },
     {
       "path": "docs/tooling/xcode-27-agents.md",
@@ -3771,8 +3771,8 @@
       "path": "samples/AppleRecipes/README.md",
       "title": "AppleRecipes — complete local Swift source",
       "kind": "guide",
-      "characters": 5913,
-      "hash": "3170f74d557a09f32b580a1f06e06d3bb2b965b73753fa2031ee7d32bf21e115"
+      "characters": 6624,
+      "hash": "f0900f100169b9aa8f46cb0a0a59c98b2a9e7a742715d9afa624296db3a49b1c"
     },
     {
       "path": "samples/AppleRecipes/Sources/AppleRecipes/ContentDigest.swift",
@@ -3815,6 +3815,13 @@
       "kind": "source",
       "characters": 840,
       "hash": "e538f4b6cd664b5ab53213c8cbe989c2cf0c21696c9822cf8d4c5bd69ea1f78f"
+    },
+    {
+      "path": "samples/AppleRecipes/Sources/AppleRecipes/TrackingAuthorization.swift",
+      "title": "TrackingAuthorization.swift",
+      "kind": "source",
+      "characters": 759,
+      "hash": "674ac809b03c73688a948f807f292ba8af7f51b01140a97a7c40de60082beb60"
     },
     {
       "path": "samples/AppleRecipes/Sources/AppleRecipes/VectorStatistics.swift",

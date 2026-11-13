@@ -88,6 +88,13 @@ export async function reviewReadiness(path:string,options:ReadinessOptions={}){
    if(isSupportFile(file.path)||/(^|\/)(Tests?|Fixtures?|Previews)\//.test(file.path))continue;
    const code=appIntentsCode(file.content);
    if(/^\s*#(?:if|elseif)\b/m.test(code)){limitations.push(`${file.path}: conditional source skipped; active compilation branch unknown.`);continue;}
+   // Source-level evidence cannot determine archive resources or App Store history.
+   if(!/\b(?:class|struct|enum|protocol|typealias|func|let|var)\s+NSBundleResourceRequest\b/.test(code)){
+    const odr=/\bNSBundleResourceRequest\s*\(/.exec(code);
+    if(odr)issues.push(finding(file.path,code.slice(0,odr.index).split('\n').length,'on-demand-resources-review',
+     'On-Demand Resources request detected; review the final archive and app history against Apple’s announced early-2027 upload restriction.',
+     'Check whether the archive contains On-Demand Resources and whether this app has previously used them; consider Background Assets. Source evidence alone cannot determine submission eligibility.','minor'));
+   }
    if(info&&!localizedPurpose)for(const e of permissionEvidence(file.content)){
     const v=info[e.key];if(typeof v==='string'&&/\$[({]/.test(v)){limitations.push(`${e.key}: unresolved build setting.`);continue;}
     if(typeof v!=='string'||!v.trim())issues.push(finding(file.path,e.line,'missing-purpose-string',`${e.key} is missing or empty in ${t.name}/${t.configuration}.`,'Add a specific, truthful purpose string to this target’s effective Info.plist.'));

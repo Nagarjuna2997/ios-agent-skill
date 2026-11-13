@@ -99,3 +99,16 @@ test('localized purpose strings remain unknown until built-app review',async t=>
  await fs.mkdir(join(root,'en.lproj'));await fs.writeFile(join(root,'en.lproj/InfoPlist.strings'),'"NSCameraUsageDescription" = "Scan a page";');
  const r=await reviewReadiness(root);assert.ok(!rules(r).includes('missing-purpose-string'));assert.ok(r.targets[0].limitations.some(l=>l.includes('Localized InfoPlist.strings')));
 });
+
+
+test('On-Demand Resources request is a conditional advisory, excluding comments and shadow types',async t=>{
+ const {root}=await fixture(t,{source:'import Foundation\nlet request = NSBundleResourceRequest(tags: ["sample"])'});
+ let report=await reviewReadiness(root);let item=report.findings.find(f=>f.rule==='on-demand-resources-review');
+ assert.ok(item);assert.equal(item.severity,'minor');assert.match(item.message,/review/i);assert.match(item.fix,/history|previously/i);
+ await fs.writeFile(join(root,'App.swift'),'// NSBundleResourceRequest(tags: [])\nlet s = "NSBundleResourceRequest(tags: [])"');
+ assert.ok(!rules(await reviewReadiness(root)).includes('on-demand-resources-review'));
+ await fs.writeFile(join(root,'App.swift'),'struct NSBundleResourceRequest {}\nlet value = NSBundleResourceRequest()');
+ assert.ok(!rules(await reviewReadiness(root)).includes('on-demand-resources-review'));
+ await fs.writeFile(join(root,'App.swift'),'func NSBundleResourceRequest() {}\nNSBundleResourceRequest()');
+ assert.ok(!rules(await reviewReadiness(root)).includes('on-demand-resources-review'));
+});

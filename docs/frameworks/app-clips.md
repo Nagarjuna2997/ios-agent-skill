@@ -1,6 +1,6 @@
 # App Clips
 
-App Clips are lightweight versions of your app that users can discover and launch instantly from NFC tags, QR codes, Safari Smart Banners, Maps, and Messages. They provide focused functionality without requiring a full app download, with a strict 15 MB size limit.
+App Clips are lightweight versions of your app that users can discover and launch instantly from NFC tags, QR codes, Safari Smart Banners, Maps, and Messages. They provide focused functionality without requiring a full app download, subject to size limits that depend on the deployment target and invocation method.
 
 ## App Clip Target Setup in Xcode
 
@@ -215,9 +215,9 @@ struct AppClipBanner: View {
 
 Apple announced on November 12, 2026 that starting in early 2027 App Store Connect will reject uploads containing On-Demand Resources for new apps and apps that have never used the feature. Apple recommends Background Assets. The example below is legacy guidance for applicable existing projects, not a default for a new app. Check current [App Store Connect release notes](https://developer.apple.com/help/app-store-connect/release-notes/) and [Background Assets documentation](https://developer.apple.com/documentation/backgroundassets) before choosing an asset strategy.
 
-## Size Limitations (15 MB)
+## Size limitations
 
-App Clips must be under 15 MB (uncompressed, thinned for a specific device). Strategies to stay within the limit.
+Apple measures the uncompressed main bundle of each thinned App Clip variant. The maximum depends on deployment target and invocation: 10 MB below iOS 16; 15 MB for iOS 16; up to 100 MB for iOS 17+ only if the App Clip supports digital invocation only, a reliable internet connection is likely, and it does not support iOS 16 or earlier. Review Apple's [current size limits](https://developer.apple.com/help/app-store-connect/reference/app-uploads/maximum-build-file-sizes/) and invocation requirements; do not assume every iOS 17+ clip qualifies for 100 MB. Strategies to reduce size:
 
 ```swift
 // Strategies to minimize App Clip size:
@@ -252,8 +252,7 @@ enum AppClipError: Error {
 // 6. Use Asset Catalog slicing for images
 // 7. Check size: Product > Archive > Distribute App > App Thinning report
 
-// 8. Verify the thinned size:
-// $ xcrun app-clip-size --app-clip-path path/to/MyAppClip.app
+// 8. Review the variant size in App Store Connect using Apple’s size guidance.
 ```
 
 ## App Group Data Handoff to Full App
@@ -826,7 +825,7 @@ struct CartItem: Identifiable {
 
 ## Key Considerations
 
-- **Size limit**: App Clips must be under 15 MB (thinned, uncompressed). Check with `xcrun app-clip-size`.
+- **Size limit**: Check the applicable thinned, uncompressed limit using Apple’s App Store Connect size guidance above; eligibility for 100 MB is conditional.
 - **Capabilities**: App Clips support Sign in with Apple, Apple Pay, notifications (for 8 hours after launch), and App Groups. They cannot access HealthKit, CallKit, or perform background networking.
 - **Data persistence**: App Clip data may be deleted by the system after a period of inactivity. Use App Groups to hand off important data to the full app.
 - **Invocation URLs**: Register all URLs in App Store Connect. URLs must use HTTPS. Each URL maps to one App Clip experience.
