@@ -3512,8 +3512,8 @@
       "path": "docs/tooling/local-apple-documentation.md",
       "title": "Local Apple Developer Documentation Grounding",
       "kind": "guide",
-      "characters": 7570,
-      "hash": "b7937ccbe5cf47fff4c0ddd783fad915c0bb19e82f27c6a0edf302a460e9bde5"
+      "characters": 7698,
+      "hash": "46da4618f8ca3a895cd8c24e0ff86946b3c44b8f5bdba94a722eb857bd5b54ea"
     },
     {
       "path": "docs/tooling/local-release-package.md",
@@ -3582,8 +3582,8 @@
       "path": "docs/tooling/xcode-27-agents.md",
       "title": "Xcode 27 Coding Agents",
       "kind": "guide",
-      "characters": 10425,
-      "hash": "9a8d647d8d18f3103d9d292e6401a47e9307986ebae5d0f26ddad4a4bdade25a"
+      "characters": 13057,
+      "hash": "0051a45d2a308469fe8cbe0e9acbefea554ea413b994c51c263761a143beaffc"
     },
     {
       "path": "docs/tooling/xcode-documentation-resources.md",

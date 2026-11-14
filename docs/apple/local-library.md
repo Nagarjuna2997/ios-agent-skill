@@ -509,7 +509,7 @@ Search offline with `node scripts/query-library.mjs search "SwiftData"`. Read a 
 | [docs/tooling/ios-simulator-mcp.md](../../docs/tooling/ios-simulator-mcp.md) | guide | 7719 |
 | [docs/tooling/issue-reporting.md](../../docs/tooling/issue-reporting.md) | guide | 5314 |
 | [docs/tooling/launch-screen-review.md](../../docs/tooling/launch-screen-review.md) | guide | 6420 |
-| [docs/tooling/local-apple-documentation.md](../../docs/tooling/local-apple-documentation.md) | guide | 7570 |
+| [docs/tooling/local-apple-documentation.md](../../docs/tooling/local-apple-documentation.md) | guide | 7698 |
 | [docs/tooling/local-release-package.md](../../docs/tooling/local-release-package.md) | guide | 10660 |
 | [docs/tooling/offline-source-library.md](../../docs/tooling/offline-source-library.md) | guide | 4736 |
 | [docs/tooling/project-scaffolding.md](../../docs/tooling/project-scaffolding.md) | guide | 18060 |
@@ -519,7 +519,7 @@ Search offline with `node scripts/query-library.mjs search "SwiftData"`. Read a 
 | [docs/tooling/token-efficiency.md](../../docs/tooling/token-efficiency.md) | guide | 11574 |
 | [docs/tooling/visual-iteration-loop.md](../../docs/tooling/visual-iteration-loop.md) | guide | 3160 |
 | [docs/tooling/xcode-27-2.md](../../docs/tooling/xcode-27-2.md) | guide | 4237 |
-| [docs/tooling/xcode-27-agents.md](../../docs/tooling/xcode-27-agents.md) | guide | 10425 |
+| [docs/tooling/xcode-27-agents.md](../../docs/tooling/xcode-27-agents.md) | guide | 13057 |
 | [docs/tooling/xcode-documentation-resources.md](../../docs/tooling/xcode-documentation-resources.md) | guide | 3150 |
 | [docs/tooling/xcode-memory-debugging.md](../../docs/tooling/xcode-memory-debugging.md) | guide | 5286 |
 | [docs/uikit/animations.md](../../docs/uikit/animations.md) | guide | 34691 |

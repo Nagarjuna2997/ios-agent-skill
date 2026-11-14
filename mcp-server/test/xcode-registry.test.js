@@ -12,3 +12,11 @@ for(const failure of ['handshake','crash','timeout'])test(`${failure} closes bri
 test('live-shaped discovered docs tool works without any application fetch',async()=>{const original=global.fetch;global.fetch=()=>{throw Error('network forbidden')};let args;try{const b=new XcodeBackend(undefined,()=>fake({callTool:async p=>{args=p;return {structuredContent:{documents:[{title:'Symbol',uri:'https://developer.apple.com/documentation/test',contents:'Synthetic evidence',kind:'symbol',score:1}]}}}}));assert.equal((await b.search('Symbol'))[0].title,'Symbol');assert.equal(args.name,tool.name);assert.deepEqual(args.arguments,{query:'Symbol'})}finally{global.fetch=original}});
 test('missing documentation capability fails explicitly',async()=>{await assert.rejects(new XcodeBackend(undefined,()=>fake({listTools:async()=>({tools:[]})})).search('x'),/unavailable/)});
 test('denial and malformed documents are not treated as evidence',async()=>{await assert.rejects(new XcodeBackend(undefined,()=>fake({callTool:async()=>({isError:true})})).search('x'),/denied/);await assert.rejects(new XcodeBackend(undefined,()=>fake({callTool:async()=>({content:[{type:'text',text:'not json'}]})})).search('x'),/malformed/)});
+
+
+test('Xcode interactive device and preview names are categorized without executing tools',async()=>{
+ const names=['DeviceInteractionStartWorkspaceSession','DeviceInteractionInstallAndRun','DeviceEventSynthesize','DeviceInteractionEndSession','RenderPreview','FutureAction'];
+ let calls=0;const r=await inspectClient(fake({listTools:async()=>({tools:names.map(name=>({name,inputSchema:{type:'object'}}))}),callTool:async()=>{calls++;throw Error('must not execute')}}));
+ assert.deepEqual(r.tools.map(t=>t.category),['device-interaction','device-interaction','device-interaction','device-interaction','preview','unknown']);
+ assert.equal(calls,0);assert.equal(r.authorization,'not_verified_by_discovery');
+});

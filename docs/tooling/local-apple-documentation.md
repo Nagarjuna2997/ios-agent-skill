@@ -59,6 +59,8 @@ Up to 100 successful query results are cached in process memory, with at most fi
 
 Portable tests use synthetic installations and mocked documentation responses. A local macOS smoke test must separately verify bridge authorization and returned documentation. An unavailable backend is not a passing retrieval test.
 
+For Claude Code’s Xcode-managed marketplace plugin and duplicate-registration guidance, see `docs/tooling/xcode-27-agents.md`.
+
 Official setup: [Giving external agents access to Xcode](https://developer.apple.com/documentation/xcode/giving-external-agents-access-to-xcode).
 
 ## Xcode MCP registry and doctor

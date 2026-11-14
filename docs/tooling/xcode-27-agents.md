@@ -12,6 +12,22 @@ in `docs/orchestration/` applies inside Xcode.
 
 ---
 
+## Using Apple’s official Claude Code plugin
+
+The [official Claude plugin marketplace](https://github.com/anthropics/claude-plugins-official/blob/main/.claude-plugin/marketplace.json) lists Apple’s `xcode` plugin. In a Claude Code session, install it with:
+
+```text
+/plugin install xcode@claude-plugins-official
+```
+
+The marketplace asks the **selected Xcode installation** for its plugin path via `xcrun agent plugin path --plugin-format claude`; Apple supplies and updates those files with Xcode. On the verification Mac, Xcode 27.2 (27B52) returned a local `xcode-integration` plugin whose bridge runs `xcrun mcpbridge`. This proves export and configuration inspection only; it does not prove Claude can connect or that a build, device session, or documentation query succeeded. Claude Code was not on the verification shell’s PATH, so installation was not run.
+
+In Xcode, open the project and set **Settings → Intelligence → Model Context Protocol → Allow External Agents to Use Xcode Tools** to the appropriate permitted mode, as described in [Apple’s external-agent setup](https://developer.apple.com/documentation/xcode/giving-external-agents-access-to-xcode). Follow the client and Xcode prompts for access. `claude mcp list` shows client configuration; it is not proof a project operation was authorized. Apple also documents direct `claude mcp add --transport stdio xcode -- xcrun mcpbridge` as an alternative. The plugin already supplies a bridge configuration, so inspect existing registrations before adding another; never remove the user’s configuration automatically.
+
+The Apple plugin’s available skills and tools depend on the selected Xcode. Discover the advertised schemas and use them within the client when appropriate. Xcode 27.2’s exported skills include device interaction, SwiftUI, App Intents, localization, accessibility, testing and profiling. A device session can change simulator or device state: use the intended workspace, inspect supported actions, and end the session when finished. Verify actual build, test, screenshot and accessibility results separately.
+
+The repository’s `ios-agent-mcp` and Apple’s plugin can coexist: this project supplies its own iOS reviews, local references and simulator workflows; the Apple plugin connects Claude directly to Xcode. `xcode_mcp_status` / `xcode_mcp_tools` discover the bridge but the repository adapter only invokes compatible documentation search; it does not forward arbitrary device, build, or preview tools. Unknown tool schemas are preserved, not assumed safe or supported. Avoid treating Xcode preview output as proof of a simulator interaction.
+
 ## 1. What they are
 
 Agents in Xcode work across the development cycle — prototyping, filling in
