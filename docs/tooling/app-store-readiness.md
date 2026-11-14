@@ -46,3 +46,7 @@ Rules reviewed October 11, 2026. Static checks support developer review; they do
 ## On-Demand Resources review
 
 Direct `NSBundleResourceRequest` construction in selected app source produces a minor advisory. Apple announced an early-2027 upload restriction for new apps and apps that have never used On-Demand Resources; the analyzer cannot establish app history or final archive contents, and does not predict rejection. Review the archive and [Apple’s App Store Connect release notes](https://developer.apple.com/help/app-store-connect/release-notes/) and consider Background Assets. Objective-C, wrappers, generated code and other resource-tagging mechanisms remain outside this source check.
+
+## Accessibility Nutrition Labels
+
+Before indicating support for a feature, evaluate whether people can complete the app’s common tasks using that feature on each applicable device. Static findings and screenshots alone do not prove this. Apple describes the criteria and a task/device matrix in its [Accessibility Nutrition Labels overview](https://developer.apple.com/help/app-store-connect/manage-app-accessibility/overview-of-accessibility-nutrition-labels/). Record actual results and do not set a support claim automatically.

@@ -1,0 +1,68 @@
+name: Refresh Apple reference indexes
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/apple-daily-refresh.yml', 'scripts/apple-daily-refresh.py']
+  schedule:
+    - cron: '17 9 * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: write
+concurrency:
+  group: apple-reference-refresh
+  cancel-in-progress: false
+jobs:
+  refresh:
+    if: github.event.repository.private == false && github.ref == 'refs/heads/main'
+    runs-on: xcode-27
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Fetch Apple sources and inventory selected Xcode plugin
+        id: refresh
+        run: python3 scripts/apple-daily-refresh.py
+      - name: Install validation dependencies
+        if: steps.refresh.outputs.apple_changed == 'true' || steps.refresh.outputs.plugin_changed == 'true'
+        run: |
+          python3 -m pip install -r scripts/requirements-site.txt
+          npm ci --prefix mcp-server --ignore-scripts
+          npm ci --prefix scripts/site-discovery --ignore-scripts
+      - name: Validate generated references and website
+        if: steps.refresh.outputs.apple_changed == 'true' || steps.refresh.outputs.plugin_changed == 'true'
+        run: |
+          bash scripts/hooks/verify-repo.sh
+          python3 -m unittest discover -s scripts/tests -p 'test_apple_technologies.py'
+          python3 -m unittest discover -s scripts/tests -p 'test_apple_daily_refresh.py'
+          npm run build --prefix mcp-server
+          python3 scripts/render-library.py
+          python3 scripts/render-site.py
+          node scripts/render-integrations.mjs
+          node scripts/render-screenshot-studio.mjs
+          node scripts/site-meta.mjs
+          node scripts/check-site-discovery.mjs
+      - name: Commit verified changes only
+        if: steps.refresh.outputs.apple_changed == 'true' || steps.refresh.outputs.plugin_changed == 'true'
+        env:
+          APPLE_CHANGED: ${{ steps.refresh.outputs.apple_changed }}
+          PLUGIN_CHANGED: ${{ steps.refresh.outputs.plugin_changed }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -eu
+          if [ "$APPLE_CHANGED" = true ]; then
+            git add docs/apple/technologies.json docs/apple/technologies docs/apple/all-technologies.md docs/apple/updates.json docs/apple/updates-and-release-notes.md docs/apple/local-library.json docs/apple/local-library.md
+          fi
+          if [ "$PLUGIN_CHANGED" = true ]; then git add docs/apple/xcode-plugin-inventory.json docs/apple/local-library.json docs/apple/local-library.md; fi
+          if [ -n "$(git diff --cached --diff-filter=D --name-only)" ]; then echo 'Deletion detected; review required.'; exit 1; fi
+          if git diff --cached --quiet; then echo 'No material changes.'; exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'docs: refresh Apple reference indexes'
+          git push origin HEAD:main
+          gh workflow run pages.yml --ref main

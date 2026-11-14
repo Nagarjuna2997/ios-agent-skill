@@ -2452,6 +2452,13 @@
       "hash": "425e3f3fbc7808ca06abace54d712bc89dd648896a701e7ac2e4329b3651d100"
     },
     {
+      "path": "docs/apple/xcode-plugin-inventory.json",
+      "title": "xcode-plugin-inventory.json",
+      "kind": "source",
+      "characters": 19565,
+      "hash": "5eacfe0ebe4e95db488268fe023fdc3fea85bac5426a4bbbd345982ac6ef49a3"
+    },
+    {
       "path": "docs/architecture/universal-app-engine.md",
       "title": "Universal App Engine: architecture and implementation record",
       "kind": "guide",
@@ -2742,8 +2749,8 @@
       "path": "docs/frameworks/app-intents.md",
       "title": "App Intents",
       "kind": "guide",
-      "characters": 18601,
-      "hash": "3bdec551b747d2a8b1e008b7925de3ca168534353d348a9304fc4f62a90460d6"
+      "characters": 19225,
+      "hash": "fe048ed742209735e0aca886ca54cbaff6aa1061bb95a85641979d237abb99c0"
     },
     {
       "path": "docs/frameworks/apple-intelligence.md",
@@ -3148,8 +3155,8 @@
       "path": "docs/mcp/tools.md",
       "title": "MCP Tool Reference",
       "kind": "guide",
-      "characters": 24786,
-      "hash": "7acbe1b0694887f8f483adeb9c8d8e9162c9a854eec16092fa8986e9b81109d1"
+      "characters": 25078,
+      "hash": "2780f18bf97128580957a15d2b38804d0e566dd486e3385a3d5011614073809f"
     },
     {
       "path": "docs/mcp/vnext-analysis-tools.md",
@@ -3428,8 +3435,8 @@
       "path": "docs/tooling/app-store-readiness.md",
       "title": "Local App Store readiness review",
       "kind": "guide",
-      "characters": 5146,
-      "hash": "32634e4aa2a6bf9c72f96d91e1a2ef1a38ebd4ba02e03d936f2228548d59e001"
+      "characters": 5679,
+      "hash": "f12a1f657e670e1c105000eb28df8d87fa5d21b5c9a424295764cde9553d79da"
     },
     {
       "path": "docs/tooling/deployment-guard.md",
@@ -3512,8 +3519,8 @@
       "path": "docs/tooling/local-apple-documentation.md",
       "title": "Local Apple Developer Documentation Grounding",
       "kind": "guide",
-      "characters": 7698,
-      "hash": "46da4618f8ca3a895cd8c24e0ff86946b3c44b8f5bdba94a722eb857bd5b54ea"
+      "characters": 11534,
+      "hash": "e5de3519c3235c577ff3f214418a948988d119677ff1e331c78184115099c28b"
     },
     {
       "path": "docs/tooling/local-release-package.md",

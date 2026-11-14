@@ -574,3 +574,7 @@ struct WidgetItem {
 - **Phrases**: Include `\(.applicationName)` in at least one phrase per AppShortcut so Siri associates the phrase with your app.
 - **Testing**: Use the Shortcuts app and Siri to test intents. Use the `xcrun simctl` command to trigger intents in the simulator.
 - **Migration**: SiriKit INIntent definitions can coexist with App Intents. Migrate incrementally by implementing the same functionality with App Intents and marking the SiriKit version as deprecated.
+
+## Parameter resolution and side effects
+
+Apple documents that `needsValueError` requests a value and restarts `perform()`; `requestValue` can obtain a value and continue the current invocation. Resolve or confirm required inputs before irreversible work, and make retried operations safe from duplication. Check deployment availability and verify the actual workflow; do not assume every intent is retried in the same circumstances. Sources: [IntentParameter](https://developer.apple.com/documentation/appintents/intentparameter) and [Apple’s migration session](https://developer.apple.com/videos/play/tech-talks/10168/).

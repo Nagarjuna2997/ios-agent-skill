@@ -75,6 +75,7 @@ For product discovery and setup, use https://nagarjuna2997.github.io/ios-agent-s
 | Substantial work that needs a reviewed specification first | `docs/tooling/design-review.md`; `ios-agent-mcp design` and the `design_*` tools. Small fixes stay on `/ios-build` and the review tools. |
 | Choose a build workflow, or turn an idea into screens and a brief | `docs/tooling/idea-to-app.md`, `docs/tooling/app-description-workflow.md` |
 | Search an Apple technology | MCP `search_apple_technologies`, then compact `get_apple_technology`; otherwise search `docs/apple/all-technologies.md` |
+| Apple’s locally installed Xcode plugin guidance | `xcode_plugin_skills`, then `xcode_plugin_read_skill` for relevant local reference; see `docs/tooling/local-apple-documentation.md` |
 | SDK updates or release notes | `docs/apple/updates-and-release-notes.md` |
 | Layered app icon | `docs/design/icon-composer.md`; preserve editable layers and verify native `.icon` with Icon Composer |
 | Swift concurrency or observation | `docs/swift/swift-concurrency.md`, `docs/swiftui/state-and-data-flow.md` |

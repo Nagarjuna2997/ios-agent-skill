@@ -158,6 +158,8 @@ describe("mcp server", () => {
       "scaffold_system_integration",
       "xcode_mcp_status",
       "xcode_mcp_tools",
+      "xcode_plugin_read_skill",
+      "xcode_plugin_skills",
     ]);
   });
 
