@@ -128,6 +128,11 @@ def main():
     oldtech, oldupdates = load(techpath), load(updatespath)
     oldplugin = load(inventorypath) if inventorypath.exists() else None
     developer, version = choose_xcode()
+    # GitHub's disposable image does not start XcodeService by default. Enable
+    # its headless mode without granting automatic agent approvals. Never alter
+    # the developer's own Mac when running the script locally.
+    if os.environ.get('GITHUB_ACTIONS') == 'true':
+        subprocess.run(['sudo', 'env', f'DEVELOPER_DIR={developer}', 'xcrun', 'mcp-server', 'enable'], check=True, timeout=60)
     if oldplugin:
         previous = re.search(r'Xcode (\d+)(?:\.(\d+))?(?:\.(\d+))?', oldplugin.get('xcode',''))
         current = re.search(r'Xcode (\d+)(?:\.(\d+))?(?:\.(\d+))?', version)
