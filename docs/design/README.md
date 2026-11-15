@@ -74,3 +74,5 @@ Use [palette generation](palette-generation.md) to produce a four-appearance tok
 ## Apple UI kits and source verification
 
 Use [Apple design resources](apple-design-resources.md) for the iOS/iPadOS 27 kit, app icon template, supplied Figma reference, verification limits and token-to-catalog workflow.
+
+The [iOS UI pack](ios-ui-pack/README.md) adds Apple's official kit and technology-template links, a component-to-documentation map, a design-to-code workflow, and a native SwiftUI gallery. Apple design files are downloaded from Apple-linked sources and are not bundled here.

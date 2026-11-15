@@ -2655,6 +2655,34 @@
       "hash": "e61c4656ac40b1c677f978c874edb40cbbb9bffd1568918c40fece3be9c75ef9"
     },
     {
+      "path": "docs/design/ios-ui-pack/components.md",
+      "title": "iOS UI component map",
+      "kind": "guide",
+      "characters": 8427,
+      "hash": "55a6c2778294902066da354e3438dacb38abbd35dce06627709318880518f831"
+    },
+    {
+      "path": "docs/design/ios-ui-pack/README.md",
+      "title": "iOS UI pack: Apple resources and native components",
+      "kind": "guide",
+      "characters": 3092,
+      "hash": "fe5a47955c1690628f1c4c9092d43f3f8169305f5bd075eff90491652afe05c5"
+    },
+    {
+      "path": "docs/design/ios-ui-pack/resources.md",
+      "title": "Official Apple iOS UI resources",
+      "kind": "guide",
+      "characters": 5815,
+      "hash": "740267817c7af473110add100d78ea98fce2b19d8a02167ef9a6ed572d291eaa"
+    },
+    {
+      "path": "docs/design/ios-ui-pack/workflow.md",
+      "title": "Apple UI pack: design-to-code workflow",
+      "kind": "guide",
+      "characters": 2930,
+      "hash": "067c48a2daa5602a5782544898c30a741943ef369ea544367be55ecf199b1e96"
+    },
+    {
       "path": "docs/design/liquid-glass-adoption.md",
       "title": "Adopting Liquid Glass",
       "kind": "guide",
@@ -2672,8 +2700,8 @@
       "path": "docs/design/README.md",
       "title": "Professional UI/UX System",
       "kind": "guide",
-      "characters": 3214,
-      "hash": "077b1e690e2d744fd753578aaad3b458c489006fe20030446bfdc905b3a0c143"
+      "characters": 3490,
+      "hash": "10ce889542e69b0ab92e7a660b49602cf92396b2fecafa7b59a412a511df6159"
     },
     {
       "path": "docs/design/stunning-ui-patterns.md",
@@ -4207,6 +4235,69 @@
       "kind": "source",
       "characters": 881,
       "hash": "caca849ff8ede38c67d6d9f27e562b7e16d097e4d8bfced613092fdc77cf85a0"
+    },
+    {
+      "path": "samples/IOSUIPack/IOSUIPack.xcodeproj/project.pbxproj",
+      "title": "project.pbxproj",
+      "kind": "source",
+      "characters": 7182,
+      "hash": "163d27ccf50948b0d9d5547b28f556297bbd6a870f6955a017a3a6055be10301"
+    },
+    {
+      "path": "samples/IOSUIPack/IOSUIPack.xcodeproj/xcshareddata/xcschemes/IOSUIPack.xcscheme",
+      "title": "IOSUIPack.xcscheme",
+      "kind": "source",
+      "characters": 2130,
+      "hash": "0256cfe20d70df72ed96787a5a0e6f9ec47d5ccf4a195bfa45e2ba10f98ce728"
+    },
+    {
+      "path": "samples/IOSUIPack/IOSUIPack/ControlsGallery.swift",
+      "title": "ControlsGallery.swift",
+      "kind": "source",
+      "characters": 2840,
+      "hash": "f20e9d6dc2ecaaed0b54c6b0108f661d10bd274a73ffb9f6cbe35643cabcb175"
+    },
+    {
+      "path": "samples/IOSUIPack/IOSUIPack/FormGallery.swift",
+      "title": "FormGallery.swift",
+      "kind": "source",
+      "characters": 1884,
+      "hash": "0a47fe0f0fc6e5941c17371a4b66c0cb1499b7063253f8f4f4dae8eeecdba01e"
+    },
+    {
+      "path": "samples/IOSUIPack/IOSUIPack/IOSUIPackApp.swift",
+      "title": "IOSUIPackApp.swift",
+      "kind": "source",
+      "characters": 800,
+      "hash": "ccb9705ed364b914eb618fa2fcfe092ff343ac4a31b78ae34741bf5d522a6f3a"
+    },
+    {
+      "path": "samples/IOSUIPack/IOSUIPack/NavigationGallery.swift",
+      "title": "NavigationGallery.swift",
+      "kind": "source",
+      "characters": 3923,
+      "hash": "a7fc7166b3ca8ac8896c5dcebc8c3a8dda5f8f1cd396db74a45d7d689d75d208"
+    },
+    {
+      "path": "samples/IOSUIPack/IOSUIPack/SplitGallery.swift",
+      "title": "SplitGallery.swift",
+      "kind": "source",
+      "characters": 999,
+      "hash": "2a9e309be22d323f9bd49f2e1eff9e8884075e91f603ee633246617238af7a60"
+    },
+    {
+      "path": "samples/IOSUIPack/IOSUIPack/StatesGallery.swift",
+      "title": "StatesGallery.swift",
+      "kind": "source",
+      "characters": 1994,
+      "hash": "1ef46e718d9a348b2e8e9008772a06298854b32a0f61f6bd62610645ea29257f"
+    },
+    {
+      "path": "samples/IOSUIPack/README.md",
+      "title": "iOS UI pack: native component gallery",
+      "kind": "guide",
+      "characters": 2608,
+      "hash": "e26fdb92badfbda7300575b4266deec35bfc11de4cbb39d8212ef931e7718a59"
     },
     {
       "path": "samples/ReadingList/App/ReadingListApp.swift",

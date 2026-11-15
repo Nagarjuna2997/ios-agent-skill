@@ -22,6 +22,17 @@ defaults:
     shell: bash
 
 jobs:
+  ios-ui-pack:
+    name: iOS UI pack simulator build
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build native gallery without signing
+        run: |
+          xcodebuild -project samples/IOSUIPack/IOSUIPack.xcodeproj -scheme IOSUIPack \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath "$RUNNER_TEMP/ios-ui-pack" CODE_SIGNING_ALLOWED=NO build
+
   local-studio:
     name: Local studio regression tests
     runs-on: ubuntu-latest
