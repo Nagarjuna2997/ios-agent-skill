@@ -9,6 +9,9 @@ on:
 permissions:
   contents: write
   actions: write
+defaults:
+  run:
+    shell: bash
 concurrency:
   group: apple-reference-refresh
   cancel-in-progress: false
