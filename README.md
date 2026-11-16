@@ -119,6 +119,8 @@ For an existing app, provide its absolute project path and ask for a focused rev
 
 [Asset generation](docs/design/asset-generation.md) · [Review tools](docs/mcp/tools.md) · [Simulator setup](docs/tooling/ios-simulator-mcp.md) · [Apple release status](docs/apple/ios-27-release-verification.md)
 
+**iOS UI pack (GitHub source):** Find Apple's official Figma and Sketch kits, design guidance and a separate native SwiftUI component gallery in [the iOS UI pack](docs/design/ios-ui-pack/README.md). Apple's design files are linked rather than redistributed; the gallery is original repository code, not an Apple product.
+
 Create a starter directly:
 
 ```sh

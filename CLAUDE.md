@@ -55,6 +55,7 @@ For product discovery and setup, use https://nagarjuna2997.github.io/ios-agent-s
 | Compose App Store screenshot sets | `docs/screenshots/README.md`; use existing captures, supplied copy and local rendering. Review preview and validation before export; never claim Apple approval. |
 | Generate or review app colors | `docs/design/palette-generation.md`; use `generate_color_system` for a read-only preview and `review_color_system` for evidence. Asset writes require the user’s request. |
 | Design, colors and typography | `docs/design/README.md`, `docs/design/design-tokens.md` |
+| Apple iOS/iPadOS UI kits and native component examples | `docs/design/ios-ui-pack/README.md`; get Apple's original kits from their source, then use `samples/IOSUIPack/` for a separate repository-authored SwiftUI gallery |
 | Compile-tested implementations | `samples/SkillPatterns/`, `samples/AppleRecipes/` and their READMEs |
 | Run an app, see it in a sidebar, or inspect simulator/Duo availability | `docs/tooling/ios-simulator-mcp.md`, `docs/platforms/iphone-duo.md` |
 | Client setup and MCP | `docs/mcp/installation.md`, `docs/mcp/knowledge-server.md` |
