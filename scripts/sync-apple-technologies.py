@@ -208,8 +208,8 @@ def outputs(data):
     for row in data['technologies']:
         if not row['guides']:
             result[row['guide']] = render_guide(row, data['checkedAt'])
-    # Preserve an established repository path after Apple's directory renamed
-    # the entry. A real reintroduced record takes precedence over this stub.
+    # Preserve an established repository path after Apple's directory stopped
+    # listing the entry. A reintroduced record takes precedence over this stub.
     retired = 'docs/apple/technologies/iworkdocumentexportingapi.md'
     result.setdefault(retired, '''# iWork Document Exporting API — historical reference
 
@@ -228,6 +228,13 @@ Generated from `docs/apple/technologies.json`; refresh with `python3 scripts/syn
 
 def reconcile(generated, write=False, root=ROOT):
     folder = root / 'docs/apple/technologies'
+    retired = 'docs/apple/technologies/iworkdocumentexportingapi.md'
+    stub = generated.get(retired, '')
+    if 'This path documented an entry present in Apple\'s technology directory' in stub:
+        if 'docs/apple/technologies/creatorstudiodocumentexportingapi.md' not in generated:
+            raise ValueError('Historical iWork stub target is absent from current generated guides; review required')
+        if not (root / 'docs/apple/historical/2026-11-index-changes.md').is_file():
+            raise ValueError('Historical iWork index record is missing; review required')
     actual = {p.relative_to(root).as_posix() for p in folder.glob('*.md')}
     obsolete = actual - set(generated)
     if obsolete and not write:

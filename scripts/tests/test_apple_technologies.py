@@ -72,11 +72,26 @@ class CatalogTests(unittest.TestCase):
             retired = 'docs/apple/technologies/iworkdocumentexportingapi.md'
             self.assertIn('historical reference', generated[retired])
             self.assertIn('../historical/2026-11-index-changes.md', generated[retired])
+            replacement = 'docs/apple/technologies/creatorstudiodocumentexportingapi.md'
+            generated[replacement] = '# Current Creator Studio guide\n'
+            historical = root / 'docs/apple/historical/2026-11-index-changes.md'
+            historical.parent.mkdir(parents=True)
+            historical.write_text('Previously indexed links')
             catalog.reconcile(generated, write=True, root=root)
             catalog.reconcile(generated, root=root)
             (root / retired).write_text('tampered')
             with self.assertRaisesRegex(ValueError, 'Stale/missing'):
                 catalog.reconcile(generated, root=root)
+
+    def test_retired_iwork_stub_requires_both_targets(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            generated = catalog.outputs(self.snapshot())
+            with self.assertRaisesRegex(ValueError, 'stub target is absent'):
+                catalog.reconcile(generated, write=True, root=root)
+            generated['docs/apple/technologies/creatorstudiodocumentexportingapi.md'] = '# Current guide\n'
+            with self.assertRaisesRegex(ValueError, 'index record is missing'):
+                catalog.reconcile(generated, write=True, root=root)
 
     def test_reintroduced_iwork_entry_takes_precedence_over_stub(self):
         data = self.snapshot()
