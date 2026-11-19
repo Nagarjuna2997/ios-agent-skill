@@ -6,7 +6,7 @@ Load this when a task names **HTTP Live Streaming** or one of the API topics bel
 
 Apple categories: Media.
 
-[Apple documentation](https://developer.apple.com/documentation/http-live-streaming) · Source checked: 2026-11-13.
+[Apple documentation](https://developer.apple.com/documentation/http-live-streaming) · Source checked: 2026-11-18.
 
 Apple’s short description (excerpt):
 

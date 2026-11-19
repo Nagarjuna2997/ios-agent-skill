@@ -6,7 +6,7 @@ Load this when a task names **Core Audio Types** or one of the API topics below.
 
 Apple categories: Media.
 
-[Apple documentation](https://developer.apple.com/documentation/coreaudiotypes) · Source checked: 2026-11-13.
+[Apple documentation](https://developer.apple.com/documentation/coreaudiotypes) · Source checked: 2026-11-18.
 
 Apple’s short description (excerpt):
 
@@ -103,12 +103,6 @@ These are landing-page values, not availability guarantees for every member. Che
 
 ### Variables
 
-- [kAudioChannelLayoutTag_Ogg_3_0](https://developer.apple.com/documentation/coreaudiotypes/kaudiochannellayouttag_ogg_3_0)
-- [kAudioChannelLayoutTag_Ogg_4_0](https://developer.apple.com/documentation/coreaudiotypes/kaudiochannellayouttag_ogg_4_0)
-- [kAudioChannelLayoutTag_Ogg_5_0](https://developer.apple.com/documentation/coreaudiotypes/kaudiochannellayouttag_ogg_5_0)
-- [kAudioChannelLayoutTag_Ogg_5_1](https://developer.apple.com/documentation/coreaudiotypes/kaudiochannellayouttag_ogg_5_1)
-- [kAudioChannelLayoutTag_Ogg_6_1](https://developer.apple.com/documentation/coreaudiotypes/kaudiochannellayouttag_ogg_6_1)
-- [kAudioChannelLayoutTag_Ogg_7_1](https://developer.apple.com/documentation/coreaudiotypes/kaudiochannellayouttag_ogg_7_1)
 - [kAudioFormatAPAC](https://developer.apple.com/documentation/coreaudiotypes/kaudioformatapac)
 - [kAudio_BadFilePathError](https://developer.apple.com/documentation/coreaudiotypes/kaudio_badfilepatherror)
 - [kAudio_FilePermissionError](https://developer.apple.com/documentation/coreaudiotypes/kaudio_filepermissionerror)

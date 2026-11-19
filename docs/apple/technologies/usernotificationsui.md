@@ -6,7 +6,7 @@ Load this when a task names **User Notifications UI** or one of the API topics b
 
 Apple categories: App Services.
 
-[Apple documentation](https://developer.apple.com/documentation/usernotificationsui) · Source checked: 2026-11-13.
+[Apple documentation](https://developer.apple.com/documentation/usernotificationsui) · Source checked: 2026-11-18.
 
 Apple’s short description (excerpt):
 

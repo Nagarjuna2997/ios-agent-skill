@@ -6,7 +6,7 @@ Load this when a task names **Watch Connectivity** or one of the API topics belo
 
 Apple categories: App Services.
 
-[Apple documentation](https://developer.apple.com/documentation/watchconnectivity) · Source checked: 2026-11-13.
+[Apple documentation](https://developer.apple.com/documentation/watchconnectivity) · Source checked: 2026-11-18.
 
 Apple’s short description (excerpt):
 

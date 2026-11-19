@@ -6,7 +6,7 @@ Load this when a task names **Apple Music API** or one of the API topics below.
 
 Apple categories: Web.
 
-[Apple documentation](https://developer.apple.com/documentation/applemusicapi) · Source checked: 2026-11-13.
+[Apple documentation](https://developer.apple.com/documentation/applemusicapi) · Source checked: 2026-11-18.
 
 Apple’s short description (excerpt):
 

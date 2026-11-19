@@ -6,7 +6,7 @@ Load this when a task names **IdentityDocumentServicesUI** or one of the API top
 
 Apple categories: App Services.
 
-[Apple documentation](https://developer.apple.com/documentation/identitydocumentservicesui) · Source checked: 2026-11-13.
+[Apple documentation](https://developer.apple.com/documentation/identitydocumentservicesui) · Source checked: 2026-11-18.
 
 Apple’s short description (excerpt):
 
@@ -47,7 +47,6 @@ These are landing-page values, not availability guarantees for every member. Che
 
 ### Implementing the web presentment flow into your browser
 
-- [Implementing as an identity document provider](https://developer.apple.com/documentation/identitydocumentservices/implenting-as-an-identity-document-provider)
 - [IdentityDocumentWebPresentmentController](https://developer.apple.com/documentation/identitydocumentservicesui/identitydocumentwebpresentmentcontroller)
 - [IdentityDocumentWebPresentmentControllerDelegate](https://developer.apple.com/documentation/identitydocumentservicesui/identitydocumentwebpresentmentcontrollerdelegate)
 - [IdentityDocumentPresentmentControllerPresentationContextProviding](https://developer.apple.com/documentation/identitydocumentservicesui/identitydocumentpresentmentcontrollerpresentationcontextproviding)

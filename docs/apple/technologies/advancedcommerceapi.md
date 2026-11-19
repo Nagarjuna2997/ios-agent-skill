@@ -6,7 +6,7 @@ Load this when a task names **Advanced Commerce API** or one of the API topics b
 
 Apple categories: App Services.
 
-[Apple documentation](https://developer.apple.com/documentation/advancedcommerceapi) · Source checked: 2026-11-13.
+[Apple documentation](https://developer.apple.com/documentation/advancedcommerceapi) · Source checked: 2026-11-18.
 
 Apple’s short description (excerpt):
 
@@ -43,6 +43,7 @@ These are landing-page values, not availability guarantees for every member. Che
 
 - [Setting up generic product identifiers](https://developer.apple.com/documentation/advancedcommerceapi/setting-up-generic-product-identifiers)
 - [Creating SKUs for your Apple In-App Purchases](https://developer.apple.com/documentation/advancedcommerceapi/creating-your-purchases)
+- [Creating multiseat purchases](https://developer.apple.com/documentation/advancedcommerceapi/creating-multiseat-purchases)
 - [Creating SKUs for the Mini Apps Partner Program](https://developer.apple.com/documentation/advancedcommerceapi/creating-skus-for-the-mini-app-partner-program)
 
 ### Tax codes and pricing
@@ -60,30 +61,41 @@ These are landing-page values, not availability guarantees for every member. Che
 
 - [OneTimeChargeCreateRequest](https://developer.apple.com/documentation/advancedcommerceapi/onetimechargecreaterequest)
 - [OneTimeChargeItem](https://developer.apple.com/documentation/advancedcommerceapi/onetimechargeitem)
+- [OneTimeChargeCreateRequestV1](https://developer.apple.com/documentation/advancedcommerceapi/onetimechargecreaterequestv1)
+- [OneTimeChargeItemV1](https://developer.apple.com/documentation/advancedcommerceapi/onetimechargeitemv1)
 
 ### Subscription creation in the app
 
 - [SubscriptionCreateRequest](https://developer.apple.com/documentation/advancedcommerceapi/subscriptioncreaterequest)
 - [SubscriptionCreateItem](https://developer.apple.com/documentation/advancedcommerceapi/subscriptioncreateitem)
+- [BundleItem](https://developer.apple.com/documentation/advancedcommerceapi/bundleitem)
+- [SubscriptionCreateRequestV1](https://developer.apple.com/documentation/advancedcommerceapi/subscriptioncreaterequestv1)
+- [SubscriptionCreateItemV1](https://developer.apple.com/documentation/advancedcommerceapi/subscriptioncreateitemv1)
 
 ### Subscription modification in the app
 
 - [SubscriptionModifyInAppRequest](https://developer.apple.com/documentation/advancedcommerceapi/subscriptionmodifyinapprequest)
 - [SubscriptionModifyAddItem](https://developer.apple.com/documentation/advancedcommerceapi/subscriptionmodifyadditem)
 - [SubscriptionModifyChangeItem](https://developer.apple.com/documentation/advancedcommerceapi/subscriptionmodifychangeitem)
+- [ModifyBundleItem](https://developer.apple.com/documentation/advancedcommerceapi/modifybundleitem)
 - [SubscriptionModifyRemoveItem](https://developer.apple.com/documentation/advancedcommerceapi/subscriptionmodifyremoveitem)
 - [SubscriptionModifyPeriodChange](https://developer.apple.com/documentation/advancedcommerceapi/subscriptionmodifyperiodchange)
+- [SubscriptionModifyInAppRequestV1](https://developer.apple.com/documentation/advancedcommerceapi/subscriptionmodifyinapprequestv1)
+- [SubscriptionModifyChangeItemV1](https://developer.apple.com/documentation/advancedcommerceapi/subscriptionmodifychangeitemv1)
 
 ### Subscription reactivation in the app
 
 - [SubscriptionReactivateInAppRequest](https://developer.apple.com/documentation/advancedcommerceapi/subscriptionreactivateinapprequest)
 - [SubscriptionReactivateItem](https://developer.apple.com/documentation/advancedcommerceapi/subscriptionreactivateitem)
+- [SubscriptionReactivateInAppRequestV1](https://developer.apple.com/documentation/advancedcommerceapi/subscriptionreactivateinapprequestv1)
 
 ### Subscription price change from the server
 
 - [Change Subscription Price](https://developer.apple.com/documentation/advancedcommerceapi/change-subscription-price)
 - [SubscriptionPriceChangeRequest](https://developer.apple.com/documentation/advancedcommerceapi/subscriptionpricechangerequest)
 - [SubscriptionPriceChangeResponse](https://developer.apple.com/documentation/advancedcommerceapi/subscriptionpricechangeresponse)
+- [SubscriptionPriceChangeRequestV1](https://developer.apple.com/documentation/advancedcommerceapi/subscriptionpricechangerequestv1)
+- [SubscriptionPriceChangeItemV1](https://developer.apple.com/documentation/advancedcommerceapi/subscriptionpricechangeitemv1)
 
 ### Subscription cancellation from the server
 
@@ -103,6 +115,8 @@ These are landing-page values, not availability guarantees for every member. Che
 - [RequestRefundRequest](https://developer.apple.com/documentation/advancedcommerceapi/requestrefundrequest)
 - [RequestRefundResponse](https://developer.apple.com/documentation/advancedcommerceapi/requestrefundresponse)
 - [RequestRefundItem](https://developer.apple.com/documentation/advancedcommerceapi/requestrefunditem)
+- [RefundItem](https://developer.apple.com/documentation/advancedcommerceapi/refunditem)
+- [RequestRefundRequestV1](https://developer.apple.com/documentation/advancedcommerceapi/requestrefundrequestv1)
 
 ### Subscription metadata changes from the server
 
@@ -111,6 +125,9 @@ These are landing-page values, not availability guarantees for every member. Che
 - [SubscriptionChangeMetadataResponse](https://developer.apple.com/documentation/advancedcommerceapi/subscriptionchangemetadataresponse)
 - [SubscriptionChangeMetadataDescriptors](https://developer.apple.com/documentation/advancedcommerceapi/subscriptionchangemetadatadescriptors)
 - [SubscriptionChangeMetadataItem](https://developer.apple.com/documentation/advancedcommerceapi/subscriptionchangemetadataitem)
+- [ChangeMetadataBundleItem](https://developer.apple.com/documentation/advancedcommerceapi/changemetadatabundleitem)
+- [SubscriptionChangeMetadataRequestV1](https://developer.apple.com/documentation/advancedcommerceapi/subscriptionchangemetadatarequestv1)
+- [SubscriptionChangeMetadataItemV1](https://developer.apple.com/documentation/advancedcommerceapi/subscriptionchangemetadataitemv1)
 
 ### Migration from the server
 
@@ -118,8 +135,24 @@ These are landing-page values, not availability guarantees for every member. Che
 - [SubscriptionMigrateRequest](https://developer.apple.com/documentation/advancedcommerceapi/subscriptionmigraterequest)
 - [SubscriptionMigrateResponse](https://developer.apple.com/documentation/advancedcommerceapi/subscriptionmigrateresponse)
 - [SubscriptionMigrateItem](https://developer.apple.com/documentation/advancedcommerceapi/subscriptionmigrateitem)
+- [MigrateBundleItem](https://developer.apple.com/documentation/advancedcommerceapi/migratebundleitem)
 - [SubscriptionMigrateRenewalItem](https://developer.apple.com/documentation/advancedcommerceapi/subscriptionmigraterenewalitem)
 - [SubscriptionMigrateDescriptors](https://developer.apple.com/documentation/advancedcommerceapi/subscriptionmigratedescriptors)
+- [SubscriptionMigrateRequestV1](https://developer.apple.com/documentation/advancedcommerceapi/subscriptionmigraterequestv1)
+- [SubscriptionMigrateItemV1](https://developer.apple.com/documentation/advancedcommerceapi/subscriptionmigrateitemv1)
+
+### Bundle items details from the server
+
+- [Bundle Items Details](https://developer.apple.com/documentation/advancedcommerceapi/bundle-items-details)
+- [BundleItemsDetailsResponse](https://developer.apple.com/documentation/advancedcommerceapi/bundleitemsdetailsresponse)
+- [BundleItemsDetailsItem](https://developer.apple.com/documentation/advancedcommerceapi/bundleitemsdetailsitem)
+- [BundleItemsDetailsBundleItem](https://developer.apple.com/documentation/advancedcommerceapi/bundleitemsdetailsbundleitem)
+
+### Transaction responses
+
+- [TransactionsResponse](https://developer.apple.com/documentation/advancedcommerceapi/transactionsresponse)
+- [Transaction](https://developer.apple.com/documentation/advancedcommerceapi/transaction)
+- [BundleTransaction](https://developer.apple.com/documentation/advancedcommerceapi/bundletransaction)
 
 ### Objects and types
 
@@ -133,6 +166,13 @@ These are landing-page values, not availability guarantees for every member. Che
 ### Error handling
 
 - [Error messages and codes](https://developer.apple.com/documentation/advancedcommerceapi/errorcodes)
+
+### Endpoints
+
+- [Change Subscription Metadata V1](https://developer.apple.com/documentation/advancedcommerceapi/change-subscription-metadata-v1)
+- [Change Subscription Price V1](https://developer.apple.com/documentation/advancedcommerceapi/change-subscription-price-v1)
+- [Migrate Subscription to Advanced Commerce API V1](https://developer.apple.com/documentation/advancedcommerceapi/migrate-subscription-to-advanced-commerce-api-v1)
+- [Request Transaction Refund V1](https://developer.apple.com/documentation/advancedcommerceapi/request-transaction-refund-v1)
 
 ## Anti-Patterns
 

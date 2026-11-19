@@ -193,6 +193,7 @@ def render_index(data):
              '1. Find the technology below and load its local guide.',
              '2. For exact platform metadata and the full landing-page topic map, search its record in `docs/apple/technologies.json`.',
              '3. Follow [the implementation workflow](technology-workflow.md); source retrieval does not verify compilation or runtime behavior.', '',
+             'Previously indexed links omitted from the November 2026 source refresh are preserved in the [historical index record](historical/2026-11-index-changes.md). Their absence from the current directory does not establish API removal.', '',
              '## Directory', '', '| Technology | Categories | Local guide | Source |', '|---|---|---|---|']
     for r in rows:
         lines += [f"| {escape(r['name'])} | {', '.join(r['categories'])} | [Guide]({relative(r['guide'], 'docs/apple')}) | [Apple source]({r['url']}) |"]

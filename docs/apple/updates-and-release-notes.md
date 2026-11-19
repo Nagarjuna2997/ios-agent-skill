@@ -1,6 +1,6 @@
 # Apple Updates and Release Notes
 
-Source snapshot: 2026-11-13. **98 update/release-note landing pages** fetched from Apple, with **961 unique-within-page topic links**.
+Source snapshot: 2026-11-18. **98 update/release-note landing pages** fetched from Apple, with **960 unique-within-page topic links**.
 
 ## Context
 
@@ -18,7 +18,7 @@ Match the app’s installed SDK, deployment target, and affected framework to th
 | AdAttributionKit Updates | [Open](https://developer.apple.com/documentation/updates/adattributionkit) | 0 |
 | App Clips updates | [Open](https://developer.apple.com/documentation/updates/appclips) | 0 |
 | App Intents updates | [Open](https://developer.apple.com/documentation/updates/appintents) | 0 |
-| App Store Connect API Release Notes | [Open](https://developer.apple.com/documentation/appstoreconnectapi/app-store-connect-api-release-notes) | 33 |
+| App Store Connect API Release Notes | [Open](https://developer.apple.com/documentation/appstoreconnectapi/app-store-connect-api-release-notes) | 34 |
 | AppKit updates | [Open](https://developer.apple.com/documentation/updates/appkit) | 0 |
 | Apple Intelligence updates | [Open](https://developer.apple.com/documentation/updates/apple-intelligence) | 0 |
 | Apple Pencil updates | [Open](https://developer.apple.com/documentation/updates/applepencil) | 0 |
@@ -105,7 +105,7 @@ Match the app’s installed SDK, deployment target, and affected framework to th
 | WWDC22 | [Open](https://developer.apple.com/documentation/updates/wwdc2022) | 108 |
 | WWDC23 | [Open](https://developer.apple.com/documentation/updates/wwdc2023) | 96 |
 | WWDC24 | [Open](https://developer.apple.com/documentation/updates/wwdc2024) | 52 |
-| WWDC25 | [Open](https://developer.apple.com/documentation/updates/wwdc2025) | 101 |
+| WWDC25 | [Open](https://developer.apple.com/documentation/updates/wwdc2025) | 99 |
 | Xcode Release Notes | [Open](https://developer.apple.com/documentation/xcode-release-notes) | 62 |
 | Xcode updates | [Open](https://developer.apple.com/documentation/updates/xcode) | 0 |
 | XCUIAutomation updates | [Open](https://developer.apple.com/documentation/updates/xcuiautomation) | 0 |

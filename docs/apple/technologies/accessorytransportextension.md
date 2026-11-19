@@ -6,7 +6,7 @@ Load this when a task names **Accessory Transport Extension** or one of the API 
 
 Apple categories: System.
 
-[Apple documentation](https://developer.apple.com/documentation/accessorytransportextension) · Source checked: 2026-11-13.
+[Apple documentation](https://developer.apple.com/documentation/accessorytransportextension) · Source checked: 2026-11-18.
 
 Apple’s short description (excerpt):
 
@@ -64,10 +64,6 @@ These are landing-page values, not availability guarantees for every member. Che
 - [Sending data to an accessory in the background](https://developer.apple.com/documentation/accessorytransportextension/sending-data-to-an-accessory-in-the-background)
 - [AccessoryWorker](https://developer.apple.com/documentation/accessorytransportextension/accessoryworker) — beta
 - [AccessoryGPUWorker](https://developer.apple.com/documentation/accessorytransportextension/accessorygpuworker) — beta
-
-### Protocols
-
-- [AccessoryFeatureAuthorizing](https://developer.apple.com/documentation/accessorytransportextension/accessoryfeatureauthorizing) — beta
 
 ## Anti-Patterns
 

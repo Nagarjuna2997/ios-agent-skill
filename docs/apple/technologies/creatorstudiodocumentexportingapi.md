@@ -1,22 +1,22 @@
-# iWork Document Exporting API
+# Creator Studio Document Exporting API
 
 ## Context
 
-Load this when a task names **iWork Document Exporting API** or one of the API topics below.
+Load this when a task names **Creator Studio Document Exporting API** or one of the API topics below.
 
 Apple categories: App Services.
 
-[Apple documentation](https://developer.apple.com/documentation/iworkdocumentexportingapi) · Source checked: 2026-11-13.
+[Apple documentation](https://developer.apple.com/documentation/creatorstudiodocumentexportingapi) · Source checked: 2026-11-18.
 
 Apple’s short description (excerpt):
 
-> Convert iWork documents to Portable Document Format (PDF) files using a web API.
+> Convert documents to other formats, such as Portable Document Format (PDF), by using a web API.
 
 ## Pattern
 
 Use the topic map below to select the API for the requested feature. Follow the [technology implementation workflow](../technology-workflow.md) before writing integration code.
 
-Documented modules: `iWork Document Exporting API`.
+Documented modules: `Creator Studio Document Exporting API`.
 
 Documentation language identifiers: data.
 
@@ -24,13 +24,13 @@ Documentation language identifiers: data.
 
 | Platform | Introduced | Deprecated | Beta |
 |---|---|---|---|
-| iWork | 14.0 | — | No |
+| Creator Studio | 14.0 | — | No |
 
 These are landing-page values, not availability guarantees for every member. Check the selected symbol and the installed SDK.
 
 ### Endpoints
 
-- [Export a PDF document from an iWork file](https://developer.apple.com/documentation/iworkdocumentexportingapi/create-an-export-job-(v2))
+- [Export a PDF document from a Creator Studio file](https://developer.apple.com/documentation/creatorstudiodocumentexportingapi/create-an-export-job-(v2))
 
 ## Anti-Patterns
 

@@ -6,7 +6,7 @@ Load this when a task names **IdentityDocumentServices** or one of the API topic
 
 Apple categories: App Services.
 
-[Apple documentation](https://developer.apple.com/documentation/identitydocumentservices) · Source checked: 2026-11-13.
+[Apple documentation](https://developer.apple.com/documentation/identitydocumentservices) · Source checked: 2026-11-18.
 
 Apple’s short description (excerpt):
 
@@ -33,7 +33,7 @@ These are landing-page values, not availability guarantees for every member. Che
 ### Essentials
 
 - [Requesting a mobile document on the web](https://developer.apple.com/documentation/identitydocumentservices/requesting-a-mobile-document-on-the-web)
-- [Implementing as an identity document provider](https://developer.apple.com/documentation/identitydocumentservices/implenting-as-an-identity-document-provider)
+- [Implementing as an identity document provider](https://developer.apple.com/documentation/identitydocumentservices/implementing-as-an-identity-document-provider)
 - [Verifying a mobile document from a passport](https://developer.apple.com/documentation/identitydocumentservices/verifying-a-mobile-document-from-a-passport)
 
 ### Registering as an identity document provider

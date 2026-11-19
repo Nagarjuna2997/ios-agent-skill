@@ -6,7 +6,7 @@ Load this when a task names **Security Interface** or one of the API topics belo
 
 Apple categories: System.
 
-[Apple documentation](https://developer.apple.com/documentation/securityinterface) · Source checked: 2026-11-13.
+[Apple documentation](https://developer.apple.com/documentation/securityinterface) · Source checked: 2026-11-18.
 
 Apple’s short description (excerpt):
 

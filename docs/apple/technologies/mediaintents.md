@@ -6,7 +6,7 @@ Load this when a task names **Media Intents** or one of the API topics below.
 
 Apple categories: App Services.
 
-[Apple documentation](https://developer.apple.com/documentation/mediaintents) · Source checked: 2026-11-13.
+[Apple documentation](https://developer.apple.com/documentation/mediaintents) · Source checked: 2026-11-18.
 
 Apple’s short description (excerpt):
 
@@ -38,6 +38,10 @@ These are landing-page values, not availability guarantees for every member. Che
 
 - [Responding to audio search and playback requests](https://developer.apple.com/documentation/mediaintents/responding-to-audio-search-and-playback-requests)
 - [AudioSearch](https://developer.apple.com/documentation/mediaintents/audiosearch)
+
+### Structures
+
+- [VideoSearch](https://developer.apple.com/documentation/mediaintents/videosearch)
 
 ## Anti-Patterns
 

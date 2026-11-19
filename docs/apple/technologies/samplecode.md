@@ -6,7 +6,7 @@ Load this when a task names **Sample Code Library** or one of the API topics bel
 
 Apple categories: Sample Code.
 
-[Apple documentation](https://developer.apple.com/documentation/samplecode) · Source checked: 2026-11-13.
+[Apple documentation](https://developer.apple.com/documentation/samplecode) · Source checked: 2026-11-18.
 
 Apple’s short description (excerpt):
 
@@ -43,7 +43,7 @@ Apple’s directory does not supply platform availability for this entry. It may
 - [Implementing saliency-based image cropping in iOS and watchOS](https://developer.apple.com/documentation/vision/implementing-saliency-based-image-cropping-in-ios-and-watchos)
 - [Integrating MusicKit into your app](https://developer.apple.com/documentation/musickit/integrating-musickit-into-your-app)
 - [Integrating your calendar app with Apple Intelligence](https://developer.apple.com/documentation/appintents/integrating-your-calendar-app-with-apple-intelligence)
-- [Integrating your messaging app with Apple Intelligence](https://developer.apple.com/documentation/appintents/integrating-your-messaging-app-with-apple-intelligence)
+- [Integrating your messaging app with Apple Intelligence](https://developer.apple.com/documentation/appintents/integrating-your-messaging-app-with-apple-intelligence) — beta
 - [Integrating your music app with Apple Intelligence](https://developer.apple.com/documentation/appintents/integrating-your-music-app-with-apple-intelligence)
 - [Integrating your photo app with Apple Intelligence](https://developer.apple.com/documentation/appintents/integrating-your-photo-app-with-apple-intelligence)
 - [Making a card game with drag, drop, and reordering in SwiftUI](https://developer.apple.com/documentation/swiftui/making-a-card-game-with-drag-drop-and-reordering-in-swiftui)

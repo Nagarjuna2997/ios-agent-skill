@@ -6,7 +6,7 @@ Load this when a task names **Technology Overviews** or one of the API topics be
 
 Apple categories: Technology Overviews.
 
-[Apple documentation](https://developer.apple.com/documentation/technologyoverviews) · Source checked: 2026-11-13.
+[Apple documentation](https://developer.apple.com/documentation/technologyoverviews) · Source checked: 2026-11-18.
 
 Apple’s short description (excerpt):
 
@@ -24,13 +24,13 @@ Apple’s directory does not supply platform availability for this entry. It may
 
 ### Get started
 
-- [App design and UI](https://developer.apple.com/documentation/technologyoverviews/app-design-and-ui)
-- [Games](https://developer.apple.com/documentation/technologyoverviews/games)
+- [Apps and content](https://developer.apple.com/documentation/technologyoverviews/apps-and-content)
+- [Interface](https://developer.apple.com/documentation/technologyoverviews/interface)
 
 ### Discover Apple technologies
 
 - [Data management](https://developer.apple.com/documentation/technologyoverviews/data-management)
-- [Core experiences](https://developer.apple.com/documentation/technologyoverviews/core-experiences)
+- [Apple experiences](https://developer.apple.com/documentation/technologyoverviews/apple-experiences)
 - [Apple Intelligence and machine learning](https://developer.apple.com/documentation/technologyoverviews/ai-machine-learning)
 - [Audio and video](https://developer.apple.com/documentation/technologyoverviews/audio-and-video)
 - [Graphics, drawing, and animation](https://developer.apple.com/documentation/technologyoverviews/graphics-drawing-and-animation)

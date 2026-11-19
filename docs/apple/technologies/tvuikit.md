@@ -6,7 +6,7 @@ Load this when a task names **TVUIKit** or one of the API topics below.
 
 Apple categories: App Frameworks.
 
-[Apple documentation](https://developer.apple.com/documentation/tvuikit) · Source checked: 2026-11-13.
+[Apple documentation](https://developer.apple.com/documentation/tvuikit) · Source checked: 2026-11-18.
 
 Apple’s short description (excerpt):
 

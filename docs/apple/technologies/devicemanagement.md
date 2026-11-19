@@ -6,7 +6,7 @@ Load this when a task names **Device Management** or one of the API topics below
 
 Apple categories: System.
 
-[Apple documentation](https://developer.apple.com/documentation/devicemanagement) · Source checked: 2026-11-13.
+[Apple documentation](https://developer.apple.com/documentation/devicemanagement) · Source checked: 2026-11-18.
 
 Apple’s short description (excerpt):
 

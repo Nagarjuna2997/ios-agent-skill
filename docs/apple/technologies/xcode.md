@@ -6,7 +6,7 @@ Load this when a task names **Xcode** or one of the API topics below.
 
 Apple categories: Developer Tools.
 
-[Apple documentation](https://developer.apple.com/documentation/xcode) · Source checked: 2026-11-13.
+[Apple documentation](https://developer.apple.com/documentation/xcode) · Source checked: 2026-11-18.
 
 Apple’s short description (excerpt):
 
@@ -69,11 +69,6 @@ Apple’s directory does not supply platform availability for this entry. It may
 
 - [Apple silicon](https://developer.apple.com/documentation/apple-silicon)
 - [Application binary interfaces](https://developer.apple.com/documentation/xcode/application-binary-interfaces)
-
-### Articles
-
-- [Managing files and folders in your Xcode project](https://developer.apple.com/documentation/xcode/managing-files-and-folders-in-your-xcode-project)
-- [Managing multiple projects and their dependencies](https://developer.apple.com/documentation/xcode/managing-multiple-projects-and-their-dependencies)
 
 ## Anti-Patterns
 

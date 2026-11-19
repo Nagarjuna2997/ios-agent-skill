@@ -6,7 +6,7 @@ Load this when a task names **Apple Pay Merchant Token Management API** or one o
 
 Apple categories: Web.
 
-[Apple documentation](https://developer.apple.com/documentation/merchanttokennotificationservices) · Source checked: 2026-11-13.
+[Apple documentation](https://developer.apple.com/documentation/merchanttokennotificationservices) · Source checked: 2026-11-18.
 
 Apple’s short description (excerpt):
 

@@ -6,7 +6,7 @@ Load this when a task names **MetalFX** or one of the API topics below.
 
 Apple categories: Graphics and Games.
 
-[Apple documentation](https://developer.apple.com/documentation/metalfx) · Source checked: 2026-11-13.
+[Apple documentation](https://developer.apple.com/documentation/metalfx) · Source checked: 2026-11-18.
 
 Apple’s short description (excerpt):
 

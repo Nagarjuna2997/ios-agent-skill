@@ -6,7 +6,7 @@ Load this when a task names **Distributed** or one of the API topics below.
 
 Apple categories: App Frameworks.
 
-[Apple documentation](https://developer.apple.com/documentation/distributed) · Source checked: 2026-11-13.
+[Apple documentation](https://developer.apple.com/documentation/distributed) · Source checked: 2026-11-18.
 
 Apple’s short description (excerpt):
 

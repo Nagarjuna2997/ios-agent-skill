@@ -6,7 +6,7 @@ Load this when a task names **Assets Library** or one of the API topics below.
 
 Apple categories: Media.
 
-[Apple documentation](https://developer.apple.com/documentation/assetslibrary) · Source checked: 2026-11-13.
+[Apple documentation](https://developer.apple.com/documentation/assetslibrary) · Source checked: 2026-11-18.
 
 Apple’s short description (excerpt):
 

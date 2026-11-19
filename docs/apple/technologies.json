@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-11-13",
+  "checkedAt": "2026-11-18",
   "source": "https://developer.apple.com/tutorials/data/documentation/technologies.json",
   "directoryURL": "https://developer.apple.com/documentation/technologies",
-  "sourceCount": 408,
+  "sourceCount": 409,
   "technologies": [
     {
       "name": "Accelerate",
@@ -1446,17 +1446,6 @@
               "beta": true
             }
           ]
-        },
-        {
-          "title": "Protocols",
-          "links": [
-            {
-              "title": "AccessoryFeatureAuthorizing",
-              "url": "https://developer.apple.com/documentation/accessorytransportextension/accessoryfeatureauthorizing",
-              "deprecated": false,
-              "beta": true
-            }
-          ]
         }
       ]
     },
@@ -2826,6 +2815,12 @@
               "beta": false
             },
             {
+              "title": "Creating multiseat purchases",
+              "url": "https://developer.apple.com/documentation/advancedcommerceapi/creating-multiseat-purchases",
+              "deprecated": false,
+              "beta": false
+            },
+            {
               "title": "Creating SKUs for the Mini Apps Partner Program",
               "url": "https://developer.apple.com/documentation/advancedcommerceapi/creating-skus-for-the-mini-app-partner-program",
               "deprecated": false,
@@ -2887,6 +2882,18 @@
               "url": "https://developer.apple.com/documentation/advancedcommerceapi/onetimechargeitem",
               "deprecated": false,
               "beta": false
+            },
+            {
+              "title": "OneTimeChargeCreateRequestV1",
+              "url": "https://developer.apple.com/documentation/advancedcommerceapi/onetimechargecreaterequestv1",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "OneTimeChargeItemV1",
+              "url": "https://developer.apple.com/documentation/advancedcommerceapi/onetimechargeitemv1",
+              "deprecated": false,
+              "beta": false
             }
           ]
         },
@@ -2902,6 +2909,24 @@
             {
               "title": "SubscriptionCreateItem",
               "url": "https://developer.apple.com/documentation/advancedcommerceapi/subscriptioncreateitem",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "BundleItem",
+              "url": "https://developer.apple.com/documentation/advancedcommerceapi/bundleitem",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "SubscriptionCreateRequestV1",
+              "url": "https://developer.apple.com/documentation/advancedcommerceapi/subscriptioncreaterequestv1",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "SubscriptionCreateItemV1",
+              "url": "https://developer.apple.com/documentation/advancedcommerceapi/subscriptioncreateitemv1",
               "deprecated": false,
               "beta": false
             }
@@ -2929,6 +2954,12 @@
               "beta": false
             },
             {
+              "title": "ModifyBundleItem",
+              "url": "https://developer.apple.com/documentation/advancedcommerceapi/modifybundleitem",
+              "deprecated": false,
+              "beta": false
+            },
+            {
               "title": "SubscriptionModifyRemoveItem",
               "url": "https://developer.apple.com/documentation/advancedcommerceapi/subscriptionmodifyremoveitem",
               "deprecated": false,
@@ -2937,6 +2968,18 @@
             {
               "title": "SubscriptionModifyPeriodChange",
               "url": "https://developer.apple.com/documentation/advancedcommerceapi/subscriptionmodifyperiodchange",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "SubscriptionModifyInAppRequestV1",
+              "url": "https://developer.apple.com/documentation/advancedcommerceapi/subscriptionmodifyinapprequestv1",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "SubscriptionModifyChangeItemV1",
+              "url": "https://developer.apple.com/documentation/advancedcommerceapi/subscriptionmodifychangeitemv1",
               "deprecated": false,
               "beta": false
             }
@@ -2954,6 +2997,12 @@
             {
               "title": "SubscriptionReactivateItem",
               "url": "https://developer.apple.com/documentation/advancedcommerceapi/subscriptionreactivateitem",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "SubscriptionReactivateInAppRequestV1",
+              "url": "https://developer.apple.com/documentation/advancedcommerceapi/subscriptionreactivateinapprequestv1",
               "deprecated": false,
               "beta": false
             }
@@ -2977,6 +3026,18 @@
             {
               "title": "SubscriptionPriceChangeResponse",
               "url": "https://developer.apple.com/documentation/advancedcommerceapi/subscriptionpricechangeresponse",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "SubscriptionPriceChangeRequestV1",
+              "url": "https://developer.apple.com/documentation/advancedcommerceapi/subscriptionpricechangerequestv1",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "SubscriptionPriceChangeItemV1",
+              "url": "https://developer.apple.com/documentation/advancedcommerceapi/subscriptionpricechangeitemv1",
               "deprecated": false,
               "beta": false
             }
@@ -3054,6 +3115,18 @@
               "url": "https://developer.apple.com/documentation/advancedcommerceapi/requestrefunditem",
               "deprecated": false,
               "beta": false
+            },
+            {
+              "title": "RefundItem",
+              "url": "https://developer.apple.com/documentation/advancedcommerceapi/refunditem",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "RequestRefundRequestV1",
+              "url": "https://developer.apple.com/documentation/advancedcommerceapi/requestrefundrequestv1",
+              "deprecated": false,
+              "beta": false
             }
           ]
         },
@@ -3089,6 +3162,24 @@
               "url": "https://developer.apple.com/documentation/advancedcommerceapi/subscriptionchangemetadataitem",
               "deprecated": false,
               "beta": false
+            },
+            {
+              "title": "ChangeMetadataBundleItem",
+              "url": "https://developer.apple.com/documentation/advancedcommerceapi/changemetadatabundleitem",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "SubscriptionChangeMetadataRequestV1",
+              "url": "https://developer.apple.com/documentation/advancedcommerceapi/subscriptionchangemetadatarequestv1",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "SubscriptionChangeMetadataItemV1",
+              "url": "https://developer.apple.com/documentation/advancedcommerceapi/subscriptionchangemetadataitemv1",
+              "deprecated": false,
+              "beta": false
             }
           ]
         },
@@ -3120,6 +3211,12 @@
               "beta": false
             },
             {
+              "title": "MigrateBundleItem",
+              "url": "https://developer.apple.com/documentation/advancedcommerceapi/migratebundleitem",
+              "deprecated": false,
+              "beta": false
+            },
+            {
               "title": "SubscriptionMigrateRenewalItem",
               "url": "https://developer.apple.com/documentation/advancedcommerceapi/subscriptionmigraterenewalitem",
               "deprecated": false,
@@ -3128,6 +3225,70 @@
             {
               "title": "SubscriptionMigrateDescriptors",
               "url": "https://developer.apple.com/documentation/advancedcommerceapi/subscriptionmigratedescriptors",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "SubscriptionMigrateRequestV1",
+              "url": "https://developer.apple.com/documentation/advancedcommerceapi/subscriptionmigraterequestv1",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "SubscriptionMigrateItemV1",
+              "url": "https://developer.apple.com/documentation/advancedcommerceapi/subscriptionmigrateitemv1",
+              "deprecated": false,
+              "beta": false
+            }
+          ]
+        },
+        {
+          "title": "Bundle items details from the server",
+          "links": [
+            {
+              "title": "Bundle Items Details",
+              "url": "https://developer.apple.com/documentation/advancedcommerceapi/bundle-items-details",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "BundleItemsDetailsResponse",
+              "url": "https://developer.apple.com/documentation/advancedcommerceapi/bundleitemsdetailsresponse",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "BundleItemsDetailsItem",
+              "url": "https://developer.apple.com/documentation/advancedcommerceapi/bundleitemsdetailsitem",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "BundleItemsDetailsBundleItem",
+              "url": "https://developer.apple.com/documentation/advancedcommerceapi/bundleitemsdetailsbundleitem",
+              "deprecated": false,
+              "beta": false
+            }
+          ]
+        },
+        {
+          "title": "Transaction responses",
+          "links": [
+            {
+              "title": "TransactionsResponse",
+              "url": "https://developer.apple.com/documentation/advancedcommerceapi/transactionsresponse",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "Transaction",
+              "url": "https://developer.apple.com/documentation/advancedcommerceapi/transaction",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "BundleTransaction",
+              "url": "https://developer.apple.com/documentation/advancedcommerceapi/bundletransaction",
               "deprecated": false,
               "beta": false
             }
@@ -3167,6 +3328,35 @@
             {
               "title": "Error messages and codes",
               "url": "https://developer.apple.com/documentation/advancedcommerceapi/errorcodes",
+              "deprecated": false,
+              "beta": false
+            }
+          ]
+        },
+        {
+          "title": "Endpoints",
+          "links": [
+            {
+              "title": "Change Subscription Metadata V1",
+              "url": "https://developer.apple.com/documentation/advancedcommerceapi/change-subscription-metadata-v1",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "Change Subscription Price V1",
+              "url": "https://developer.apple.com/documentation/advancedcommerceapi/change-subscription-price-v1",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "Migrate Subscription to Advanced Commerce API V1",
+              "url": "https://developer.apple.com/documentation/advancedcommerceapi/migrate-subscription-to-advanced-commerce-api-v1",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "Request Transaction Refund V1",
+              "url": "https://developer.apple.com/documentation/advancedcommerceapi/request-transaction-refund-v1",
               "deprecated": false,
               "beta": false
             }
@@ -5956,6 +6146,17 @@
               "title": "RefundLookupResponse",
               "url": "https://developer.apple.com/documentation/appstoreserverapi/refundlookupresponse",
               "deprecated": true,
+              "beta": false
+            }
+          ]
+        },
+        {
+          "title": "Dictionaries",
+          "links": [
+            {
+              "title": "advancedCommerceBundleItem",
+              "url": "https://developer.apple.com/documentation/appstoreserverapi/advancedcommercebundleitem",
+              "deprecated": false,
               "beta": false
             }
           ]
@@ -14811,7 +15012,7 @@
         "occ",
         "swift"
       ],
-      "summary": "Integrate CarPlay in apps related to audio, communication, navigation, parking, EV charging, food ordering, and more.",
+      "summary": "Deliver your iOS app’s audio, video, messaging, VoIP calling, navigation, or other features in CarPlay environments.",
       "modules": [
         "CarPlay"
       ],
@@ -14836,29 +15037,22 @@
       "guide": "docs/apple/technologies/carplay.md",
       "topics": [
         {
-          "title": "CarPlay Integration",
+          "title": "Essentials",
           "links": [
             {
-              "title": "Requesting CarPlay Entitlements",
-              "url": "https://developer.apple.com/documentation/carplay/requesting-carplay-entitlements",
+              "title": "Preparing your iOS app for CarPlay development",
+              "url": "https://developer.apple.com/documentation/carplay/preparing-your-ios-app-for-carplay-development",
               "deprecated": false,
               "beta": false
-            },
+            }
+          ]
+        },
+        {
+          "title": "App management",
+          "links": [
             {
-              "title": "Displaying Content in CarPlay",
-              "url": "https://developer.apple.com/documentation/carplay/displaying-content-in-carplay",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "Supporting Previous Versions of iOS",
-              "url": "https://developer.apple.com/documentation/carplay/supporting-previous-versions-of-ios",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "Using the CarPlay Simulator",
-              "url": "https://developer.apple.com/documentation/carplay/using-the-carplay-simulator",
+              "title": "Building your app’s initial CarPlay interface",
+              "url": "https://developer.apple.com/documentation/carplay/building-your-apps-initial-carplay-interface",
               "deprecated": false,
               "beta": false
             },
@@ -14875,16 +15069,34 @@
               "beta": false
             },
             {
+              "title": "CPInterfaceController",
+              "url": "https://developer.apple.com/documentation/carplay/cpinterfacecontroller",
+              "deprecated": false,
+              "beta": false
+            },
+            {
               "title": "CPSessionConfiguration",
               "url": "https://developer.apple.com/documentation/carplay/cpsessionconfiguration",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "CPWindow",
+              "url": "https://developer.apple.com/documentation/carplay/cpwindow",
               "deprecated": false,
               "beta": false
             }
           ]
         },
         {
-          "title": "General Purpose Templates",
+          "title": "Interface templates",
           "links": [
+            {
+              "title": "CPTabBarTemplate",
+              "url": "https://developer.apple.com/documentation/carplay/cptabbartemplate",
+              "deprecated": false,
+              "beta": false
+            },
             {
               "title": "CPListTemplate",
               "url": "https://developer.apple.com/documentation/carplay/cplisttemplate",
@@ -14898,31 +15110,8 @@
               "beta": false
             },
             {
-              "title": "CPTabBarTemplate",
-              "url": "https://developer.apple.com/documentation/carplay/cptabbartemplate",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "CPTemplate",
-              "url": "https://developer.apple.com/documentation/carplay/cptemplate",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "CPBarButtonProviding",
-              "url": "https://developer.apple.com/documentation/carplay/cpbarbuttonproviding",
-              "deprecated": false,
-              "beta": false
-            }
-          ]
-        },
-        {
-          "title": "Audio",
-          "links": [
-            {
-              "title": "Integrating CarPlay with Your Music App",
-              "url": "https://developer.apple.com/documentation/carplay/integrating-carplay-with-your-music-app",
+              "title": "CPMapTemplate",
+              "url": "https://developer.apple.com/documentation/carplay/cpmaptemplate",
               "deprecated": false,
               "beta": false
             },
@@ -14931,62 +15120,22 @@
               "url": "https://developer.apple.com/documentation/carplay/cpnowplayingtemplate",
               "deprecated": false,
               "beta": false
-            }
-          ]
-        },
-        {
-          "title": "Instrument cluster",
-          "links": [
+            },
             {
-              "title": "CPInstrumentClusterController",
-              "url": "https://developer.apple.com/documentation/carplay/cpinstrumentclustercontroller",
+              "title": "CPPointOfInterestTemplate",
+              "url": "https://developer.apple.com/documentation/carplay/cppointofinteresttemplate",
               "deprecated": false,
               "beta": false
             },
             {
-              "title": "CPInstrumentClusterControllerDelegate",
-              "url": "https://developer.apple.com/documentation/carplay/cpinstrumentclustercontrollerdelegate",
+              "title": "CPInformationTemplate",
+              "url": "https://developer.apple.com/documentation/carplay/cpinformationtemplate",
               "deprecated": false,
               "beta": false
             },
             {
-              "title": "CPTemplateApplicationInstrumentClusterScene",
-              "url": "https://developer.apple.com/documentation/carplay/cptemplateapplicationinstrumentclusterscene",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "CPTemplateApplicationInstrumentClusterSceneDelegate",
-              "url": "https://developer.apple.com/documentation/carplay/cptemplateapplicationinstrumentclusterscenedelegate",
-              "deprecated": false,
-              "beta": false
-            }
-          ]
-        },
-        {
-          "title": "Navigation",
-          "links": [
-            {
-              "title": "Integrating CarPlay with Your Navigation App",
-              "url": "https://developer.apple.com/documentation/carplay/integrating-carplay-with-your-navigation-app",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "CPTemplateApplicationDashboardScene",
-              "url": "https://developer.apple.com/documentation/carplay/cptemplateapplicationdashboardscene",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "CPTemplateApplicationDashboardSceneDelegate",
-              "url": "https://developer.apple.com/documentation/carplay/cptemplateapplicationdashboardscenedelegate",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "CPMapTemplate",
-              "url": "https://developer.apple.com/documentation/carplay/cpmaptemplate",
+              "title": "CPContactTemplate",
+              "url": "https://developer.apple.com/documentation/carplay/cpcontacttemplate",
               "deprecated": false,
               "beta": false
             },
@@ -15001,110 +15150,7 @@
               "url": "https://developer.apple.com/documentation/carplay/cpvoicecontroltemplate",
               "deprecated": false,
               "beta": false
-            }
-          ]
-        },
-        {
-          "title": "Location and Information",
-          "links": [
-            {
-              "title": "CPPointOfInterestTemplate",
-              "url": "https://developer.apple.com/documentation/carplay/cppointofinteresttemplate",
-              "deprecated": false,
-              "beta": false
             },
-            {
-              "title": "CPInformationTemplate",
-              "url": "https://developer.apple.com/documentation/carplay/cpinformationtemplate",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "CPTextButton",
-              "url": "https://developer.apple.com/documentation/carplay/cptextbutton",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "Integrating CarPlay with your quick-ordering app",
-              "url": "https://developer.apple.com/documentation/carplay/integrating-carplay-with-your-quick-ordering-app",
-              "deprecated": false,
-              "beta": false
-            }
-          ]
-        },
-        {
-          "title": "Maneuvers",
-          "links": [
-            {
-              "title": "CPManeuver",
-              "url": "https://developer.apple.com/documentation/carplay/cpmaneuver",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "CPManeuverState",
-              "url": "https://developer.apple.com/documentation/carplay/cpmaneuverstate",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "CPManeuverType",
-              "url": "https://developer.apple.com/documentation/carplay/cpmaneuvertype",
-              "deprecated": false,
-              "beta": false
-            }
-          ]
-        },
-        {
-          "title": "Routes, lanes and junctions",
-          "links": [
-            {
-              "title": "CPRouteInformation",
-              "url": "https://developer.apple.com/documentation/carplay/cprouteinformation",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "CPLane",
-              "url": "https://developer.apple.com/documentation/carplay/cplane",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "CPLaneGuidance",
-              "url": "https://developer.apple.com/documentation/carplay/cplaneguidance",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "CPLaneStatus",
-              "url": "https://developer.apple.com/documentation/carplay/cplanestatus",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "CPJunctionType",
-              "url": "https://developer.apple.com/documentation/carplay/cpjunctiontype",
-              "deprecated": false,
-              "beta": false
-            }
-          ]
-        },
-        {
-          "title": "Communication",
-          "links": [
-            {
-              "title": "CPContactTemplate",
-              "url": "https://developer.apple.com/documentation/carplay/cpcontacttemplate",
-              "deprecated": false,
-              "beta": false
-            }
-          ]
-        },
-        {
-          "title": "Actions and Alerts",
-          "links": [
             {
               "title": "CPActionSheetTemplate",
               "url": "https://developer.apple.com/documentation/carplay/cpactionsheettemplate",
@@ -15118,28 +15164,98 @@
               "beta": false
             },
             {
-              "title": "CPAlertAction",
-              "url": "https://developer.apple.com/documentation/carplay/cpalertaction",
+              "title": "All templates and supporting types",
+              "url": "https://developer.apple.com/documentation/carplay/all-templates-and-supporting-types",
               "deprecated": false,
               "beta": false
             }
           ]
         },
         {
-          "title": "Related Types",
+          "title": "CarPlay app types",
           "links": [
             {
-              "title": "CPButton",
-              "url": "https://developer.apple.com/documentation/carplay/cpbutton",
+              "title": "Audio",
+              "url": "https://developer.apple.com/documentation/carplay/audio",
               "deprecated": false,
               "beta": false
             },
             {
-              "title": "CPImageSet",
-              "url": "https://developer.apple.com/documentation/carplay/cpimageset",
+              "title": "Communication",
+              "url": "https://developer.apple.com/documentation/carplay/communication-apps",
               "deprecated": false,
               "beta": false
             },
+            {
+              "title": "Driving task",
+              "url": "https://developer.apple.com/documentation/carplay/driving-task",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "EV charging",
+              "url": "https://developer.apple.com/documentation/carplay/ev-charging",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "Fueling",
+              "url": "https://developer.apple.com/documentation/carplay/fueling",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "Navigation",
+              "url": "https://developer.apple.com/documentation/carplay/navigation-apps",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "Parking",
+              "url": "https://developer.apple.com/documentation/carplay/parking",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "Public safety",
+              "url": "https://developer.apple.com/documentation/carplay/public-safety",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "Quick food ordering",
+              "url": "https://developer.apple.com/documentation/carplay/quick-food-ordering",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "Video",
+              "url": "https://developer.apple.com/documentation/carplay/video",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "Voice-based conversation",
+              "url": "https://developer.apple.com/documentation/carplay/voice-based-conversation",
+              "deprecated": false,
+              "beta": false
+            }
+          ]
+        },
+        {
+          "title": "Testing",
+          "links": [
+            {
+              "title": "Testing your app in CarPlay Simulator",
+              "url": "https://developer.apple.com/documentation/carplay/testing-your-app-in-carplay-simulator",
+              "deprecated": false,
+              "beta": false
+            }
+          ]
+        },
+        {
+          "title": "Errors",
+          "links": [
             {
               "title": "CarPlayErrorDomain",
               "url": "https://developer.apple.com/documentation/carplay/carplayerrordomain",
@@ -15154,299 +15270,6 @@
             {
               "title": "Deprecated Symbols",
               "url": "https://developer.apple.com/documentation/carplay/deprecated-symbols",
-              "deprecated": false,
-              "beta": false
-            }
-          ]
-        },
-        {
-          "title": "Reference",
-          "links": [
-            {
-              "title": "CarPlay Enumerations",
-              "url": "https://developer.apple.com/documentation/carplay/carplay-enumerations",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "CarPlay Constants",
-              "url": "https://developer.apple.com/documentation/carplay/carplay-constants",
-              "deprecated": false,
-              "beta": false
-            }
-          ]
-        },
-        {
-          "title": "Classes",
-          "links": [
-            {
-              "title": "CPChargingStationConnection",
-              "url": "https://developer.apple.com/documentation/carplay/cpchargingstationconnection",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "CPImageOverlay",
-              "url": "https://developer.apple.com/documentation/carplay/cpimageoverlay",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "CPListImageRowItemCardElement",
-              "url": "https://developer.apple.com/documentation/carplay/cplistimagerowitemcardelement",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "CPListImageRowItemCondensedElement",
-              "url": "https://developer.apple.com/documentation/carplay/cplistimagerowitemcondensedelement",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "CPListImageRowItemElement",
-              "url": "https://developer.apple.com/documentation/carplay/cplistimagerowitemelement",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "CPListImageRowItemGridElement",
-              "url": "https://developer.apple.com/documentation/carplay/cplistimagerowitemgridelement",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "CPListImageRowItemImageGridElement",
-              "url": "https://developer.apple.com/documentation/carplay/cplistimagerowitemimagegridelement",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "CPListImageRowItemRowElement",
-              "url": "https://developer.apple.com/documentation/carplay/cplistimagerowitemrowelement",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "CPListTemplateDetailsHeader",
-              "url": "https://developer.apple.com/documentation/carplay/cplisttemplatedetailsheader",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "CPMapPanel",
-              "url": "https://developer.apple.com/documentation/carplay/cpmappanel",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "CPMapPanelButtonConfiguration",
-              "url": "https://developer.apple.com/documentation/carplay/cpmappanelbuttonconfiguration",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "CPMapPanelItem",
-              "url": "https://developer.apple.com/documentation/carplay/cpmappanelitem",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "CPMapPanelSection",
-              "url": "https://developer.apple.com/documentation/carplay/cpmappanelsection",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "CPMapTemplateWaypoint",
-              "url": "https://developer.apple.com/documentation/carplay/cpmaptemplatewaypoint",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "CPMessageGridItemConfiguration",
-              "url": "https://developer.apple.com/documentation/carplay/cpmessagegriditemconfiguration",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "CPMultiStopCardConfiguration",
-              "url": "https://developer.apple.com/documentation/carplay/cpmultistopcardconfiguration",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "CPNavigationWaypoint",
-              "url": "https://developer.apple.com/documentation/carplay/cpnavigationwaypoint",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "CPNowPlayingMode",
-              "url": "https://developer.apple.com/documentation/carplay/cpnowplayingmode",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "CPNowPlayingModeSports",
-              "url": "https://developer.apple.com/documentation/carplay/cpnowplayingmodesports",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "CPNowPlayingSportsClock",
-              "url": "https://developer.apple.com/documentation/carplay/cpnowplayingsportsclock",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "CPNowPlayingSportsEventStatus",
-              "url": "https://developer.apple.com/documentation/carplay/cpnowplayingsportseventstatus",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "CPNowPlayingSportsTeam",
-              "url": "https://developer.apple.com/documentation/carplay/cpnowplayingsportsteam",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "CPNowPlayingSportsTeamLogo",
-              "url": "https://developer.apple.com/documentation/carplay/cpnowplayingsportsteamlogo",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "CPPanel",
-              "url": "https://developer.apple.com/documentation/carplay/cppanel",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "CPPanelButtonConfiguration",
-              "url": "https://developer.apple.com/documentation/carplay/cppanelbuttonconfiguration",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "CPPanelItem",
-              "url": "https://developer.apple.com/documentation/carplay/cppanelitem",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "CPPlaybackConfiguration",
-              "url": "https://developer.apple.com/documentation/carplay/cpplaybackconfiguration",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "CPRouteDetail",
-              "url": "https://developer.apple.com/documentation/carplay/cproutedetail",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "CPRouteSegment",
-              "url": "https://developer.apple.com/documentation/carplay/cproutesegment",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "CPSportsOverlay",
-              "url": "https://developer.apple.com/documentation/carplay/cpsportsoverlay",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "CPThumbnailImage",
-              "url": "https://developer.apple.com/documentation/carplay/cpthumbnailimage",
-              "deprecated": false,
-              "beta": false
-            }
-          ]
-        },
-        {
-          "title": "Protocols",
-          "links": [
-            {
-              "title": "CPPlayableItem",
-              "url": "https://developer.apple.com/documentation/carplay/cpplayableitem",
-              "deprecated": false,
-              "beta": false
-            }
-          ]
-        },
-        {
-          "title": "Structures",
-          "links": [
-            {
-              "title": "CPLocationCoordinate3D",
-              "url": "https://developer.apple.com/documentation/carplay/cplocationcoordinate3d",
-              "deprecated": false,
-              "beta": false
-            }
-          ]
-        },
-        {
-          "title": "Variables",
-          "links": [
-            {
-              "title": "CPMaximumMessageItemLeadingDetailTextImageSize",
-              "url": "https://developer.apple.com/documentation/carplay/cpmaximummessageitemleadingdetailtextimagesize",
-              "deprecated": false,
-              "beta": false
-            }
-          ]
-        },
-        {
-          "title": "Functions",
-          "links": [
-            {
-              "title": "NSStringFromCPJunctionType(_:)",
-              "url": "https://developer.apple.com/documentation/carplay/nsstringfromcpjunctiontype(_:)",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "NSStringFromCPLaneStatus(_:)",
-              "url": "https://developer.apple.com/documentation/carplay/nsstringfromcplanestatus(_:)",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "NSStringFromCPManeuverType(_:)",
-              "url": "https://developer.apple.com/documentation/carplay/nsstringfromcpmaneuvertype(_:)",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "NSStringFromCPRerouteReason(_:)",
-              "url": "https://developer.apple.com/documentation/carplay/nsstringfromcpreroutereason(_:)",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "NSStringFromCPTrafficSide(_:)",
-              "url": "https://developer.apple.com/documentation/carplay/nsstringfromcptrafficside(_:)",
-              "deprecated": false,
-              "beta": false
-            }
-          ]
-        },
-        {
-          "title": "Enumerations",
-          "links": [
-            {
-              "title": "CPRerouteReason",
-              "url": "https://developer.apple.com/documentation/carplay/cpreroutereason",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "CPRouteSource",
-              "url": "https://developer.apple.com/documentation/carplay/cproutesource",
               "deprecated": false,
               "beta": false
             }
@@ -18873,17 +18696,6 @@
           ]
         },
         {
-          "title": "Articles",
-          "links": [
-            {
-              "title": "Controlling Metal rendering immersion level",
-              "url": "https://developer.apple.com/documentation/compositorservices/controlling-metal-rendering-immersion-level",
-              "deprecated": false,
-              "beta": false
-            }
-          ]
-        },
-        {
           "title": "Structures",
           "links": [
             {
@@ -21131,42 +20943,6 @@
         {
           "title": "Variables",
           "links": [
-            {
-              "title": "kAudioChannelLayoutTag_Ogg_3_0",
-              "url": "https://developer.apple.com/documentation/coreaudiotypes/kaudiochannellayouttag_ogg_3_0",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "kAudioChannelLayoutTag_Ogg_4_0",
-              "url": "https://developer.apple.com/documentation/coreaudiotypes/kaudiochannellayouttag_ogg_4_0",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "kAudioChannelLayoutTag_Ogg_5_0",
-              "url": "https://developer.apple.com/documentation/coreaudiotypes/kaudiochannellayouttag_ogg_5_0",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "kAudioChannelLayoutTag_Ogg_5_1",
-              "url": "https://developer.apple.com/documentation/coreaudiotypes/kaudiochannellayouttag_ogg_5_1",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "kAudioChannelLayoutTag_Ogg_6_1",
-              "url": "https://developer.apple.com/documentation/coreaudiotypes/kaudiochannellayouttag_ogg_6_1",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "kAudioChannelLayoutTag_Ogg_7_1",
-              "url": "https://developer.apple.com/documentation/coreaudiotypes/kaudiochannellayouttag_ogg_7_1",
-              "deprecated": false,
-              "beta": false
-            },
             {
               "title": "kAudioFormatAPAC",
               "url": "https://developer.apple.com/documentation/coreaudiotypes/kaudioformatapac",
@@ -29243,6 +29019,45 @@
             {
               "title": "VideoReaderError",
               "url": "https://developer.apple.com/documentation/createmlcomponents/videoreadererror",
+              "deprecated": false,
+              "beta": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Creator Studio Document Exporting API",
+      "slug": "creatorstudiodocumentexportingapi",
+      "url": "https://developer.apple.com/documentation/creatorstudiodocumentexportingapi",
+      "categories": [
+        "App Services"
+      ],
+      "languages": [
+        "data"
+      ],
+      "summary": "Convert documents to other formats, such as Portable Document Format (PDF), by using a web API.",
+      "modules": [
+        "Creator Studio Document Exporting API"
+      ],
+      "platforms": [
+        {
+          "introducedAt": "14.0",
+          "name": "Creator Studio"
+        }
+      ],
+      "deprecated": false,
+      "sourceKind": "docc",
+      "verifiedURL": "https://developer.apple.com/documentation/creatorstudiodocumentexportingapi",
+      "guides": [],
+      "guide": "docs/apple/technologies/creatorstudiodocumentexportingapi.md",
+      "topics": [
+        {
+          "title": "Endpoints",
+          "links": [
+            {
+              "title": "Export a PDF document from a Creator Studio file",
+              "url": "https://developer.apple.com/documentation/creatorstudiodocumentexportingapi/create-an-export-job-(v2)",
               "deprecated": false,
               "beta": false
             }
@@ -42494,7 +42309,7 @@
             },
             {
               "title": "Implementing as an identity document provider",
-              "url": "https://developer.apple.com/documentation/identitydocumentservices/implenting-as-an-identity-document-provider",
+              "url": "https://developer.apple.com/documentation/identitydocumentservices/implementing-as-an-identity-document-provider",
               "deprecated": false,
               "beta": false
             },
@@ -42719,12 +42534,6 @@
         {
           "title": "Implementing the web presentment flow into your browser",
           "links": [
-            {
-              "title": "Implementing as an identity document provider",
-              "url": "https://developer.apple.com/documentation/identitydocumentservices/implenting-as-an-identity-document-provider",
-              "deprecated": false,
-              "beta": false
-            },
             {
               "title": "IdentityDocumentWebPresentmentController",
               "url": "https://developer.apple.com/documentation/identitydocumentservicesui/identitydocumentwebpresentmentcontroller",
@@ -44602,7 +44411,7 @@
           "title": "iOS & iPadOS 27",
           "links": [
             {
-              "title": "iOS & iPadOS 27.3 Beta Release Notes",
+              "title": "iOS & iPadOS 27.3 Beta 2 Release Notes",
               "url": "https://developer.apple.com/documentation/ios-ipados-release-notes/ios-ipados-27_3-release-notes",
               "deprecated": false,
               "beta": false
@@ -45548,45 +45357,6 @@
       ]
     },
     {
-      "name": "iWork Document Exporting API",
-      "slug": "iworkdocumentexportingapi",
-      "url": "https://developer.apple.com/documentation/iworkdocumentexportingapi",
-      "categories": [
-        "App Services"
-      ],
-      "languages": [
-        "data"
-      ],
-      "summary": "Convert iWork documents to Portable Document Format (PDF) files using a web API.",
-      "modules": [
-        "iWork Document Exporting API"
-      ],
-      "platforms": [
-        {
-          "introducedAt": "14.0",
-          "name": "iWork"
-        }
-      ],
-      "deprecated": false,
-      "sourceKind": "docc",
-      "verifiedURL": "https://developer.apple.com/documentation/iworkdocumentexportingapi",
-      "guides": [],
-      "guide": "docs/apple/technologies/iworkdocumentexportingapi.md",
-      "topics": [
-        {
-          "title": "Endpoints",
-          "links": [
-            {
-              "title": "Export a PDF document from an iWork file",
-              "url": "https://developer.apple.com/documentation/iworkdocumentexportingapi/create-an-export-job-(v2)",
-              "deprecated": false,
-              "beta": false
-            }
-          ]
-        }
-      ]
-    },
-    {
       "name": "JavaScriptCore",
       "slug": "javascriptcore",
       "url": "https://developer.apple.com/documentation/javascriptcore",
@@ -46232,6 +46002,109 @@
             {
               "title": "OSAction_IOHIDEventService__SetUserPropertiesInterface",
               "url": "https://developer.apple.com/documentation/kernel/osaction_iohideventservice_setuserpropertiesinterface",
+              "deprecated": false,
+              "beta": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Keynote Interchange Format",
+      "slug": "keynoteinterchangeformat",
+      "url": "https://developer.apple.com/documentation/keynoteinterchangeformat",
+      "categories": [
+        "App Services"
+      ],
+      "languages": [
+        "data"
+      ],
+      "summary": "Read and write Keynote presentations using a JSON-based file format.",
+      "modules": [
+        "Keynote Interchange Format"
+      ],
+      "platforms": [
+        {
+          "beta": true,
+          "introducedAt": "1.0",
+          "name": "Keynote Interchange Format"
+        }
+      ],
+      "deprecated": false,
+      "sourceKind": "docc",
+      "verifiedURL": "https://developer.apple.com/documentation/keynoteinterchangeformat",
+      "guides": [],
+      "guide": "docs/apple/technologies/keynoteinterchangeformat.md",
+      "topics": [
+        {
+          "title": "Essentials",
+          "links": [
+            {
+              "title": "Understanding Keynote Interchange Format structure",
+              "url": "https://developer.apple.com/documentation/keynoteinterchangeformat/understanding-keynote-interchange-format-structure",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "Creating your first Keynote Interchange Format document",
+              "url": "https://developer.apple.com/documentation/keynoteinterchangeformat/creating-your-first-keynote-interchange-format-document",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "Writing common presentation content",
+              "url": "https://developer.apple.com/documentation/keynoteinterchangeformat/writing-common-presentation-content",
+              "deprecated": false,
+              "beta": false
+            }
+          ]
+        },
+        {
+          "title": "Authoring requirements",
+          "links": [
+            {
+              "title": "Understanding authoring requirements for Keynote Interchange Format",
+              "url": "https://developer.apple.com/documentation/keynoteinterchangeformat/understanding-authoring-requirements-for-keynote-interchange-format",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "Downloading the schema for Keynote Interchange Format",
+              "url": "https://developer.apple.com/documentation/keynoteinterchangeformat/downloading-the-schema-for-keynote-interchange-format",
+              "deprecated": false,
+              "beta": false
+            }
+          ]
+        },
+        {
+          "title": "File format",
+          "links": [
+            {
+              "title": "Presentation",
+              "url": "https://developer.apple.com/documentation/keynoteinterchangeformat/presentation",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "Manifest",
+              "url": "https://developer.apple.com/documentation/keynoteinterchangeformat/manifest",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "Preset",
+              "url": "https://developer.apple.com/documentation/keynoteinterchangeformat/preset",
+              "deprecated": false,
+              "beta": false
+            }
+          ]
+        },
+        {
+          "title": "Release notes",
+          "links": [
+            {
+              "title": "Keynote Interchange Format release notes",
+              "url": "https://developer.apple.com/documentation/keynoteinterchangeformat/keynote-interchange-format-release-notes",
               "deprecated": false,
               "beta": false
             }
@@ -46888,6 +46761,12 @@
             {
               "title": "LiveAssistance",
               "url": "https://developer.apple.com/documentation/livecommunicationkit/liveassistance",
+              "deprecated": false,
+              "beta": false
+            },
+            {
+              "title": "LiveAssistanceRequesterPresenceObserving",
+              "url": "https://developer.apple.com/documentation/livecommunicationkit/liveassistancerequesterpresenceobserving",
               "deprecated": false,
               "beta": false
             },
@@ -47654,7 +47533,7 @@
           "title": "macOS 27",
           "links": [
             {
-              "title": "macOS 27.3 Golden Gate Beta Release Notes",
+              "title": "macOS 27.3 Golden Gate Beta 2 Release Notes",
               "url": "https://developer.apple.com/documentation/macos-release-notes/macos-27_3-release-notes",
               "deprecated": false,
               "beta": false
@@ -52047,6 +51926,17 @@
             {
               "title": "AudioSearch",
               "url": "https://developer.apple.com/documentation/mediaintents/audiosearch",
+              "deprecated": false,
+              "beta": false
+            }
+          ]
+        },
+        {
+          "title": "Structures",
+          "links": [
+            {
+              "title": "VideoSearch",
+              "url": "https://developer.apple.com/documentation/mediaintents/videosearch",
               "deprecated": false,
               "beta": false
             }
@@ -65225,6 +65115,12 @@
               "url": "https://developer.apple.com/documentation/realitykit/component",
               "deprecated": false,
               "beta": false
+            },
+            {
+              "title": "System",
+              "url": "https://developer.apple.com/documentation/realitykit/system",
+              "deprecated": false,
+              "beta": false
             }
           ]
         },
@@ -65456,26 +65352,8 @@
               "beta": false
             },
             {
-              "title": "NavigationComponent",
-              "url": "https://developer.apple.com/documentation/realitykit/navigationcomponent",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "NavigationMeshComponent",
-              "url": "https://developer.apple.com/documentation/realitykit/navigationmeshcomponent",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "NavigationController",
-              "url": "https://developer.apple.com/documentation/realitykit/navigationcontroller",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "NavigationMeshResource",
-              "url": "https://developer.apple.com/documentation/realitykit/navigationmeshresource",
+              "title": "Navigation",
+              "url": "https://developer.apple.com/documentation/realitykit/game-development-navigation",
               "deprecated": false,
               "beta": false
             }
@@ -65552,110 +65430,6 @@
             {
               "title": "Low-level rendering",
               "url": "https://developer.apple.com/documentation/realitykit/low-level-rendering",
-              "deprecated": false,
-              "beta": false
-            }
-          ]
-        },
-        {
-          "title": "Articles",
-          "links": [
-            {
-              "title": "Gaussian Splat Rendering Guidelines",
-              "url": "https://developer.apple.com/documentation/realitykit/gaussian-splat-rendering-guidelines",
-              "deprecated": false,
-              "beta": false
-            }
-          ]
-        },
-        {
-          "title": "Classes",
-          "links": [
-            {
-              "title": "ComputeGraphResource",
-              "url": "https://developer.apple.com/documentation/realitykit/computegraphresource",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "ComputeGraphSharedUniforms",
-              "url": "https://developer.apple.com/documentation/realitykit/computegraphshareduniforms",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "GaussianSplatResource",
-              "url": "https://developer.apple.com/documentation/realitykit/gaussiansplatresource",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "ShaderGraph",
-              "url": "https://developer.apple.com/documentation/realitykit/shadergraph",
-              "deprecated": false,
-              "beta": false
-            }
-          ]
-        },
-        {
-          "title": "Structures",
-          "links": [
-            {
-              "title": "BoundingBoxCalculator",
-              "url": "https://developer.apple.com/documentation/realitykit/boundingboxcalculator",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "ComputeGraphComponent",
-              "url": "https://developer.apple.com/documentation/realitykit/computegraphcomponent",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "ComputeGraphOutputComponent",
-              "url": "https://developer.apple.com/documentation/realitykit/computegraphoutputcomponent",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "ComputeGraphRuntimeComponent",
-              "url": "https://developer.apple.com/documentation/realitykit/computegraphruntimecomponent",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "ComputeGraphViewpointComponent",
-              "url": "https://developer.apple.com/documentation/realitykit/computegraphviewpointcomponent",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "GaussianSplatComponent",
-              "url": "https://developer.apple.com/documentation/realitykit/gaussiansplatcomponent",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "RenormalizingDeformer",
-              "url": "https://developer.apple.com/documentation/realitykit/renormalizingdeformer",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "SubdivisionSurfaceDeformer",
-              "url": "https://developer.apple.com/documentation/realitykit/subdivisionsurfacedeformer",
-              "deprecated": false,
-              "beta": false
-            }
-          ]
-        },
-        {
-          "title": "Enumerations",
-          "links": [
-            {
-              "title": "GaussianSplatEvents",
-              "url": "https://developer.apple.com/documentation/realitykit/gaussiansplatevents",
               "deprecated": false,
               "beta": false
             }
@@ -67995,7 +67769,7 @@
               "title": "Integrating your messaging app with Apple Intelligence",
               "url": "https://developer.apple.com/documentation/appintents/integrating-your-messaging-app-with-apple-intelligence",
               "deprecated": false,
-              "beta": false
+              "beta": true
             },
             {
               "title": "Integrating your music app with Apple Intelligence",
@@ -73587,12 +73361,6 @@
               "beta": false
             },
             {
-              "title": "kSecPolicyAppleQWACTLSBinding",
-              "url": "https://developer.apple.com/documentation/security/ksecpolicyappleqwactlsbinding",
-              "deprecated": false,
-              "beta": false
-            },
-            {
               "title": "kSecPolicyAppleSSLClient",
               "url": "https://developer.apple.com/documentation/security/ksecpolicyapplesslclient",
               "deprecated": false,
@@ -73630,12 +73398,6 @@
             {
               "title": "SecIdentityCreate(_:_:_:)",
               "url": "https://developer.apple.com/documentation/security/secidentitycreate(_:_:_:)",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "SecPolicyCreateQWACTLSBinding(_:)",
-              "url": "https://developer.apple.com/documentation/security/secpolicycreateqwactlsbinding(_:)",
               "deprecated": false,
               "beta": false
             },
@@ -75617,6 +75379,12 @@
         {
           "title": "Evaluations",
           "links": [
+            {
+              "title": "Evaluating your app’s integration with Siri",
+              "url": "https://developer.apple.com/documentation/sirievaluations/evaluating-your-apps-integration-with-siri",
+              "deprecated": false,
+              "beta": false
+            },
             {
               "title": "SiriService",
               "url": "https://developer.apple.com/documentation/sirievaluations/siriservice",
@@ -80847,6 +80615,12 @@
           "title": "Structures",
           "links": [
             {
+              "title": "ScrollGestureAxisLock",
+              "url": "https://developer.apple.com/documentation/swiftui/scrollgestureaxislock",
+              "deprecated": false,
+              "beta": true
+            },
+            {
               "title": "ToolbarContainerBehavior",
               "url": "https://developer.apple.com/documentation/swiftui/toolbarcontainerbehavior",
               "deprecated": false,
@@ -82413,14 +82187,14 @@
           "title": "Get started",
           "links": [
             {
-              "title": "App design and UI",
-              "url": "https://developer.apple.com/documentation/technologyoverviews/app-design-and-ui",
+              "title": "Apps and content",
+              "url": "https://developer.apple.com/documentation/technologyoverviews/apps-and-content",
               "deprecated": false,
               "beta": false
             },
             {
-              "title": "Games",
-              "url": "https://developer.apple.com/documentation/technologyoverviews/games",
+              "title": "Interface",
+              "url": "https://developer.apple.com/documentation/technologyoverviews/interface",
               "deprecated": false,
               "beta": false
             }
@@ -82436,8 +82210,8 @@
               "beta": false
             },
             {
-              "title": "Core experiences",
-              "url": "https://developer.apple.com/documentation/technologyoverviews/core-experiences",
+              "title": "Apple experiences",
+              "url": "https://developer.apple.com/documentation/technologyoverviews/apple-experiences",
               "deprecated": false,
               "beta": false
             },
@@ -85012,7 +84786,7 @@
           "title": "tvOS 27",
           "links": [
             {
-              "title": "tvOS 27.3 Beta Release Notes",
+              "title": "tvOS 27.3 Beta 2 Release Notes",
               "url": "https://developer.apple.com/documentation/tvos-release-notes/tvos-27_3-release-notes",
               "deprecated": false,
               "beta": false
@@ -89895,7 +89669,7 @@
           "title": "visionOS 27",
           "links": [
             {
-              "title": "visionOS 27.3 Beta Release Notes",
+              "title": "visionOS 27.3 Beta 2 Release Notes",
               "url": "https://developer.apple.com/documentation/visionos-release-notes/visionos-27_3-release-notes",
               "deprecated": false,
               "beta": false
@@ -91427,7 +91201,7 @@
           "title": "watchOS 27",
           "links": [
             {
-              "title": "watchOS 27.3 Beta Release Notes",
+              "title": "watchOS 27.3 Beta 2 Release Notes",
               "url": "https://developer.apple.com/documentation/watchos-release-notes/watchos-27_3-release-notes",
               "deprecated": false,
               "beta": false
@@ -97205,23 +96979,6 @@
               "beta": false
             }
           ]
-        },
-        {
-          "title": "Articles",
-          "links": [
-            {
-              "title": "Managing files and folders in your Xcode project",
-              "url": "https://developer.apple.com/documentation/xcode/managing-files-and-folders-in-your-xcode-project",
-              "deprecated": false,
-              "beta": false
-            },
-            {
-              "title": "Managing multiple projects and their dependencies",
-              "url": "https://developer.apple.com/documentation/xcode/managing-multiple-projects-and-their-dependencies",
-              "deprecated": false,
-              "beta": false
-            }
-          ]
         }
       ]
     },
@@ -97494,7 +97251,7 @@
           "title": "Xcode 27",
           "links": [
             {
-              "title": "Xcode 27.3 Beta Release Notes",
+              "title": "Xcode 27.3 Beta 2 Release Notes",
               "url": "https://developer.apple.com/documentation/xcode-release-notes/xcode-27_3-release-notes",
               "deprecated": false,
               "beta": false

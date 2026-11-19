@@ -6,7 +6,7 @@ Load this when a task names **Siri Event Suggestions Markup** or one of the API 
 
 Apple categories: Web.
 
-[Apple documentation](https://developer.apple.com/documentation/sirieventsuggestionsmarkup) · Source checked: 2026-11-13.
+[Apple documentation](https://developer.apple.com/documentation/sirieventsuggestionsmarkup) · Source checked: 2026-11-18.
 
 Apple’s short description (excerpt):
 

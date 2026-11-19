@@ -1,8 +1,8 @@
 # All Apple Technologies: Accelerate to XPC
 
-Snapshot checked **2026-11-13**: **408 unique entries** from [Apple’s technology directory](https://developer.apple.com/documentation/technologies).
+Snapshot checked **2026-11-18**: **409 unique entries** from [Apple’s technology directory](https://developer.apple.com/documentation/technologies).
 
-**83** entries reuse existing implementation guides; **325** have dedicated source-backed reference pages. Each technology has one canonical catalog record.
+**83** entries reuse existing implementation guides; **326** have dedicated source-backed reference pages. Each technology has one canonical catalog record.
 
 This full directory includes frameworks, services, tools, release notes, legacy technologies, and external resources. The selected app-development catalog in `frameworks.json` remains a separate curated subset; its coverage percentage is not the full Apple directory coverage.
 
@@ -11,6 +11,8 @@ This full directory includes frameworks, services, tools, release notes, legacy 
 1. Find the technology below and load its local guide.
 2. For exact platform metadata and the full landing-page topic map, search its record in `docs/apple/technologies.json`.
 3. Follow [the implementation workflow](technology-workflow.md); source retrieval does not verify compilation or runtime behavior.
+
+Previously indexed links omitted from the November 2026 source refresh are preserved in the [historical index record](historical/2026-11-index-changes.md). Their absence from the current directory does not establish API removal.
 
 ## Directory
 
@@ -140,6 +142,7 @@ This full directory includes frameworks, services, tools, release notes, legacy 
 | CrashReportExtension | App Services | [Guide](technologies/crashreportextension.md) | [Apple source](https://developer.apple.com/documentation/crashreportextension) |
 | Create ML | App Services | [Guide](technologies/createml.md) | [Apple source](https://developer.apple.com/documentation/createml) |
 | Create ML Components | App Services | [Guide](technologies/createmlcomponents.md) | [Apple source](https://developer.apple.com/documentation/createmlcomponents) |
+| Creator Studio Document Exporting API | App Services | [Guide](technologies/creatorstudiodocumentexportingapi.md) | [Apple source](https://developer.apple.com/documentation/creatorstudiodocumentexportingapi) |
 | CryptoTokenKit | System | [Guide](technologies/cryptotokenkit.md) | [Apple source](https://developer.apple.com/documentation/cryptotokenkit) |
 | Darwin Notify | System | [Guide](technologies/darwinnotify.md) | [Apple source](https://developer.apple.com/documentation/darwinnotify) |
 | DataDetection | App Services | [Guide](technologies/datadetection.md) | [Apple source](https://developer.apple.com/documentation/datadetection) |
@@ -214,10 +217,10 @@ This full directory includes frameworks, services, tools, release notes, legacy 
 | IOSurface | System | [Guide](technologies/iosurface.md) | [Apple source](https://developer.apple.com/documentation/iosurface) |
 | IOUSBHost | System | [Guide](technologies/iousbhost.md) | [Apple source](https://developer.apple.com/documentation/iousbhost) |
 | iTunes Library | Media | [Guide](technologies/ituneslibrary.md) | [Apple source](https://developer.apple.com/documentation/ituneslibrary) |
-| iWork Document Exporting API | App Services | [Guide](technologies/iworkdocumentexportingapi.md) | [Apple source](https://developer.apple.com/documentation/iworkdocumentexportingapi) |
 | JavaScriptCore | App Services | [Guide](technologies/javascriptcore.md) | [Apple source](https://developer.apple.com/documentation/javascriptcore) |
 | Journaling Suggestions | App Services | [Guide](technologies/journalingsuggestions.md) | [Apple source](https://developer.apple.com/documentation/journalingsuggestions) |
 | Kernel | System | [Guide](technologies/kernel.md) | [Apple source](https://developer.apple.com/documentation/kernel) |
+| Keynote Interchange Format | App Services | [Guide](technologies/keynoteinterchangeformat.md) | [Apple source](https://developer.apple.com/documentation/keynoteinterchangeformat) |
 | Latent Semantic Mapping | System | [Guide](technologies/latentsemanticmapping.md) | [Apple source](https://developer.apple.com/documentation/latentsemanticmapping) |
 | LightweightCodeRequirements | System | [Guide](technologies/lightweightcoderequirements.md) | [Apple source](https://developer.apple.com/documentation/lightweightcoderequirements) |
 | Link Presentation | Web | [Guide](../frameworks/extended-apple-frameworks.md) | [Apple source](https://developer.apple.com/documentation/linkpresentation) |

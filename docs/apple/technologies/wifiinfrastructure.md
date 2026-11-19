@@ -6,7 +6,7 @@ Load this when a task names **Wi-Fi Infrastructure** or one of the API topics be
 
 Apple categories: System.
 
-[Apple documentation](https://developer.apple.com/documentation/wifiinfrastructure) · Source checked: 2026-11-13.
+[Apple documentation](https://developer.apple.com/documentation/wifiinfrastructure) · Source checked: 2026-11-18.
 
 Apple’s short description (excerpt):
 
