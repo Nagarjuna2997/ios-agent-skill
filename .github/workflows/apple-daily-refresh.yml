@@ -2,7 +2,13 @@ name: Refresh Apple reference indexes
 on:
   push:
     branches: [main]
-    paths: ['.github/workflows/apple-daily-refresh.yml', 'scripts/apple-daily-refresh.py']
+    paths:
+      - '.github/workflows/apple-daily-refresh.yml'
+      - 'scripts/apple-daily-refresh.py'
+      - 'scripts/sync-apple-technologies.py'
+      - 'scripts/sync-apple-updates.py'
+      - 'docs/apple/technologies.json'
+      - 'docs/apple/updates.json'
   schedule:
     - cron: '17 9 * * *'
   workflow_dispatch:
