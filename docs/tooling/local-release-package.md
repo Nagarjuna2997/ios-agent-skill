@@ -14,6 +14,8 @@ npm ci --prefix mcp-server
 npm run build --prefix mcp-server
 node mcp-server/dist/unified.js apple analyze --project /path/to/app \
   --xcodeproj App.xcodeproj --target App --configuration Release --json
+node mcp-server/dist/unified.js apple suggest --project /path/to/app \
+  --xcodeproj App.xcodeproj --target App --configuration Release --json
 node mcp-server/dist/unified.js apple prepare --project /path/to/app \
   --xcodeproj App.xcodeproj --target App --configuration Release \
   --prompt 'For students. No account required.'
@@ -25,8 +27,16 @@ there is no fallback to Debug. One unambiguous application target may be selecte
 automatically. Multiple projects/targets require explicit selection. Simple flat
 workspace group references are supported; nested workspace groups are deferred.
 
-`analyze` writes only its terminal/JSON response. `prepare` writes a package.
-Both commands return status 2 when target/configuration selection is blocked,
+`analyze` writes only its terminal/JSON response. `suggest` also runs only local,
+read-only static inspection and returns an evidence-linked release proposal:
+candidate metadata, privacy topics, review questions and validation status. Its
+generated text is deterministic and requires developer review; it does not
+establish runtime behavior, data collection, export classification, age ratings,
+credentials or App Store readiness. No source excerpts, free-form brief, usage
+strings, credentials or network calls are included. `prepare` writes a package;
+the new proposal is not yet stored in that package and does not change the
+existing package schema or verification/resume behavior.
+All three commands return status 2 when target/configuration selection is blocked,
 1 on an invocation or file/integrity failure, and 0 for completed local analysis.
 Status 0 does not mean submission-ready: inspect questions, requirements and
 coverage. No MCP tool was added; the exported services and `--json` form the

@@ -5,6 +5,7 @@ import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { randomUUID } from 'node:crypto';
 import { analyzeApp, canonical, digest, Options, AppModelSchema } from './model.js';
+import { proposeRelease, validateProposal } from './intelligence.js';
 import { VERSION } from '../version.js';
 const files = ['app-model.json', 'requirements.json', 'questions.json', 'change-plan.json', 'manifest.json'];
 async function directory(p: string) { try {
@@ -121,10 +122,15 @@ export async function prepareRelease(options: Options) {
         await rm(lock, { recursive: true, force: true });
     }
 }
+/** A read-only, evidence-linked draft. No package or credentials are written. */
+export async function inspectRelease(options: Options) {
+    const analysis = await analyzeApp(options);
+    return { ...analysis, proposal: validateProposal(proposeRelease(analysis), analysis) };
+}
 export async function appleCLI(args: string[]) {
     const command = args.shift();
-    if (!['analyze', 'prepare'].includes(command || ''))
-        throw Error('Usage: ios-agent-mcp apple analyze|prepare --project ROOT [--xcodeproj FILE] [--workspace FILE] [--target NAME] [--configuration Release] [--prompt TEXT] [--json]');
+    if (!['analyze', 'suggest', 'prepare'].includes(command || ''))
+        throw Error('Usage: ios-agent-mcp apple analyze|suggest|prepare --project ROOT [--xcodeproj FILE] [--workspace FILE] [--target NAME] [--configuration Release] [--prompt TEXT] [--json]');
     const options: Options = { root: process.cwd() };
     let json = false;
     const keys: Record<string, keyof Options> = { '--project': 'root', '--xcodeproj': 'project', '--workspace': 'workspace', '--target': 'target', '--configuration': 'configuration', '--prompt': 'prompt' };
@@ -138,7 +144,8 @@ export async function appleCLI(args: string[]) {
             throw Error('Unknown option or missing argument');
         options[keys[a]!] = args.shift()!;
     }
-    const result = command === 'prepare' ? await prepareRelease(options) : await analyzeApp(options);
+    const result = command === 'prepare' ? await prepareRelease(options) : command === 'suggest' ? await inspectRelease(options) : await analyzeApp(options);
+    const proposal = command === 'suggest' ? (result as Awaited<ReturnType<typeof inspectRelease>>).proposal : null;
     if (json)
         console.log(canonical(result));
     else {
@@ -149,7 +156,12 @@ export async function appleCLI(args: string[]) {
         console.log('INFERRED ' + result.model.features.length + ' API-based feature candidates; ' + result.model.screens.length + ' screen candidates. Runtime NOT CHECKED.');
         if ('releaseId' in result)
             console.log((result.reused ? 'REUSED' : 'GENERATED') + ' local package: ' + result.path);
-        for (const q of result.questions)
+        if (proposal) {
+            console.log('LOCAL DRAFT: all text, classifications and review answers require developer review.');
+            for (const [name, field] of Object.entries(proposal.metadata))
+                console.log(field.status + ' ' + name + ': ' + (field.value ?? 'not established'));
+        }
+        for (const q of (proposal?.questions ?? result.questions))
             console.log('NEEDS CONFIRMATION [' + q.priority + '] ' + q.question);
         console.log('Build/signing NOT CHECKED. No credentials, AI provider or remote changes.');
     }
