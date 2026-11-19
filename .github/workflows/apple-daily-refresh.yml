@@ -30,7 +30,17 @@ jobs:
           node-version: '22'
       - name: Fetch Apple sources and inventory selected Xcode plugin
         id: refresh
+        env:
+          APPLE_REFRESH_REPORT: ${{ runner.temp }}/apple-source-drift.json
         run: python3 scripts/apple-daily-refresh.py
+      - name: Preserve source drift report for review
+        if: failure() && steps.refresh.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: apple-source-drift
+          path: ${{ runner.temp }}/apple-source-drift.json
+          if-no-files-found: ignore
+          retention-days: 30
       - name: Install validation dependencies
         if: steps.refresh.outputs.apple_changed == 'true' || steps.refresh.outputs.plugin_changed == 'true'
         run: |

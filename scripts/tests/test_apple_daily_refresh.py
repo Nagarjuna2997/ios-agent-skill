@@ -21,6 +21,21 @@ class DailyRefresh(unittest.TestCase):
         old={'entries':[{'url':'https://apple/a','topics':[{'url':'https://apple/topic'}]}]}
         with self.assertRaises(RuntimeError):daily.check_no_removed(old,{'entries':[{'url':'https://apple/a','topics':[]}]},'entries')
         daily.check_no_removed(old,{'entries':[{'url':'https://apple/a','topics':[{'url':'https://apple/topic'},{'url':'https://apple/new'}]}]},'entries')
+    def test_drift_report_preserves_missing_links_and_their_parent(self):
+        from unittest.mock import patch
+        old={'technologies':[{'url':'https://apple/parent','topics':[{'links':[{'url':'https://apple/still-reachable'}]}]}]}
+        new={'technologies':[{'url':'https://apple/parent','topics':[]}]}
+        with tempfile.TemporaryDirectory() as tmp:
+            report=Path(tmp)/'drift.json'
+            with patch.dict('os.environ', {'APPLE_REFRESH_REPORT':str(report)}):
+                with self.assertRaisesRegex(RuntimeError,'human review required'):
+                    daily.check_no_removed(old,new,'technologies')
+                data=json.loads(report.read_text())
+                self.assertEqual(data['missingTopicLinks'],['https://apple/still-reachable'])
+                self.assertEqual(data['affectedPages'],[{'landingPage':'https://apple/parent','landingPageMissing':False,'missingTopics':['https://apple/still-reachable']}])
+                report.unlink()
+                daily.check_no_removed(old,old,'technologies')
+                self.assertFalse(report.exists())
     def test_plugin_hashes_do_not_copy_content_and_reject_symlink(self):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp); (root/'.claude-plugin').mkdir(); (root/'.claude-plugin/plugin.json').write_text(json.dumps({'name':'xcode-integration'}))

@@ -29,7 +29,22 @@ def check_no_removed(old, new, key):
     missing = urls(old, key) - urls(new, key)
     topics = topic_urls(old, key) - topic_urls(new, key)
     if missing or topics:
-        raise RuntimeError(f'{key}: {len(missing)} landing pages and {len(topics)} topic links disappeared; human review required')
+        # Omission from an Apple index does not prove an API was removed. Keep
+        # enough provenance to review the change without promoting a partial
+        # snapshot or requiring another hundreds-page fetch.
+        affected = []
+        for item in old[key]:
+            sections = item.get('topics', [])
+            links = sections if key == 'entries' else [link for section in sections for link in section.get('links', [])]
+            lost = sorted({link['url'] for link in links} & topics)
+            if item['url'] in missing or lost:
+                affected.append({'landingPage': item['url'], 'landingPageMissing': item['url'] in missing, 'missingTopics': lost})
+        report = {'source': key, 'missingLandingPages': sorted(missing), 'missingTopicLinks': sorted(topics), 'affectedPages': affected}
+        report_path = os.environ.get('APPLE_REFRESH_REPORT')
+        if report_path:
+            Path(report_path).write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
+        sample = sorted(missing)[:3] + sorted(topics)[:3]
+        raise RuntimeError(f'{key}: {len(missing)} landing pages and {len(topics)} topic links disappeared; human review required. Examples: {json.dumps(sample)}')
 
 def plugin_inventory(export, version):
     root = export.resolve(strict=True)
