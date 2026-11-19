@@ -6,13 +6,13 @@ Source: [Apple technology directory](https://developer.apple.com/documentation/t
 
 ## Accessory Transport Extension
 
-Former landing page: [Accessory Transport Extension](https://developer.apple.com/documentation/accessorytransportextension).
+Source landing page: [Accessory Transport Extension](https://developer.apple.com/documentation/accessorytransportextension).
 
 - [AccessoryFeatureAuthorizing](https://developer.apple.com/documentation/accessorytransportextension/accessoryfeatureauthorizing)
 
 ## CarPlay
 
-Former landing page: [CarPlay](https://developer.apple.com/documentation/carplay).
+Source landing page: [CarPlay](https://developer.apple.com/documentation/carplay).
 
 - [Requesting CarPlay Entitlements](https://developer.apple.com/documentation/carplay/requesting-carplay-entitlements)
 - [Displaying Content in CarPlay](https://developer.apple.com/documentation/carplay/displaying-content-in-carplay)
@@ -84,13 +84,13 @@ Former landing page: [CarPlay](https://developer.apple.com/documentation/carplay
 
 ## Compositor Services
 
-Former landing page: [Compositor Services](https://developer.apple.com/documentation/compositorservices).
+Source landing page: [Compositor Services](https://developer.apple.com/documentation/compositorservices).
 
 - [Controlling Metal rendering immersion level](https://developer.apple.com/documentation/compositorservices/controlling-metal-rendering-immersion-level)
 
 ## Core Audio Types
 
-Former landing page: [Core Audio Types](https://developer.apple.com/documentation/coreaudiotypes).
+Source landing page: [Core Audio Types](https://developer.apple.com/documentation/coreaudiotypes).
 
 - [kAudioChannelLayoutTag_Ogg_3_0](https://developer.apple.com/documentation/coreaudiotypes/kaudiochannellayouttag_ogg_3_0)
 - [kAudioChannelLayoutTag_Ogg_4_0](https://developer.apple.com/documentation/coreaudiotypes/kaudiochannellayouttag_ogg_4_0)
@@ -101,25 +101,25 @@ Former landing page: [Core Audio Types](https://developer.apple.com/documentatio
 
 ## IdentityDocumentServices
 
-Former landing page: [IdentityDocumentServices](https://developer.apple.com/documentation/identitydocumentservices).
+Source landing page: [IdentityDocumentServices](https://developer.apple.com/documentation/identitydocumentservices).
 
 - [Implementing as an identity document provider](https://developer.apple.com/documentation/identitydocumentservices/implenting-as-an-identity-document-provider)
 
 ## IdentityDocumentServicesUI
 
-Former landing page: [IdentityDocumentServicesUI](https://developer.apple.com/documentation/identitydocumentservicesui).
+Source landing page: [IdentityDocumentServicesUI](https://developer.apple.com/documentation/identitydocumentservicesui).
 
 - [Implementing as an identity document provider](https://developer.apple.com/documentation/identitydocumentservices/implenting-as-an-identity-document-provider)
 
 ## iWork Document Exporting API
 
-Former landing page: [iWork Document Exporting API](https://developer.apple.com/documentation/iworkdocumentexportingapi). No longer listed in the refreshed directory.
+Source landing page: [iWork Document Exporting API](https://developer.apple.com/documentation/iworkdocumentexportingapi). No longer listed in the refreshed directory.
 
 - [Export a PDF document from an iWork file](https://developer.apple.com/documentation/iworkdocumentexportingapi/create-an-export-job-(v2))
 
 ## RealityKit
 
-Former landing page: [RealityKit](https://developer.apple.com/documentation/realitykit).
+Source landing page: [RealityKit](https://developer.apple.com/documentation/realitykit).
 
 - [NavigationComponent](https://developer.apple.com/documentation/realitykit/navigationcomponent)
 - [NavigationMeshComponent](https://developer.apple.com/documentation/realitykit/navigationmeshcomponent)
@@ -142,14 +142,14 @@ Former landing page: [RealityKit](https://developer.apple.com/documentation/real
 
 ## Security
 
-Former landing page: [Security](https://developer.apple.com/documentation/security).
+Source landing page: [Security](https://developer.apple.com/documentation/security).
 
 - [kSecPolicyAppleQWACTLSBinding](https://developer.apple.com/documentation/security/ksecpolicyappleqwactlsbinding)
 - [SecPolicyCreateQWACTLSBinding(_:)](https://developer.apple.com/documentation/security/secpolicycreateqwactlsbinding(_:))
 
 ## Technology Overviews
 
-Former landing page: [Technology Overviews](https://developer.apple.com/documentation/technologyoverviews).
+Source landing page: [Technology Overviews](https://developer.apple.com/documentation/technologyoverviews).
 
 - [App design and UI](https://developer.apple.com/documentation/technologyoverviews/app-design-and-ui)
 - [Games](https://developer.apple.com/documentation/technologyoverviews/games)
@@ -157,7 +157,7 @@ Former landing page: [Technology Overviews](https://developer.apple.com/document
 
 ## Xcode
 
-Former landing page: [Xcode](https://developer.apple.com/documentation/xcode).
+Source landing page: [Xcode](https://developer.apple.com/documentation/xcode).
 
 - [Managing files and folders in your Xcode project](https://developer.apple.com/documentation/xcode/managing-files-and-folders-in-your-xcode-project)
 - [Managing multiple projects and their dependencies](https://developer.apple.com/documentation/xcode/managing-multiple-projects-and-their-dependencies)
