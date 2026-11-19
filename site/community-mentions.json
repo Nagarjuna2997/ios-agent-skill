@@ -608,6 +608,26 @@
       "url": "https://info-agent-ia.com/en/mcp/ios-agent-skill/",
       "verifiedOn": "2026-11-13",
       "evidence": "Opened page and confirmed repository and website; third-party assessment is not an endorsement."
+    },
+    {
+      "id": "getbindu-awesome-claude",
+      "platform": "Awesome Claude Skills \u00b7 GetBindu",
+      "kind": "directory",
+      "category": "Curated list \u00b7 maintainer-submitted",
+      "description": "Lists the project among framework-specific development tools; the project maintainer submitted the listing.",
+      "url": "https://github.com/GetBindu/awesome-claude-code-and-skills/blob/main/readme.md",
+      "verifiedOn": "2026-11-19",
+      "evidence": "Opened the current list and confirmed its direct link to Nagarjuna2997/ios-agent-skill. Pull request 204 was submitted by the project maintainer and merged by the list maintainer; inclusion is not an independent review."
+    },
+    {
+      "id": "agents-nix",
+      "platform": "agents.nix",
+      "kind": "directory",
+      "category": "Nix skill index \u00b7 automated",
+      "description": "Indexes the repository as a Nix agent skill; its recorded entry references an older project tag.",
+      "url": "https://github.com/sudosubin/agents.nix/blob/main/data/agent-skills/github.com/nagarjuna2997/ios-agent-skill.json",
+      "verifiedOn": "2026-11-19",
+      "evidence": "Opened the record at the exact repository path. It pins v3.8.1; pull request 49644 was created and merged by automation. This is an index, not evidence of independent use."
     }
   ]
 }
