@@ -36,11 +36,49 @@ credentials or App Store readiness. No source excerpts, free-form brief, usage
 strings, credentials or network calls are included. `prepare` writes a package;
 the new proposal is not yet stored in that package and does not change the
 existing package schema or verification/resume behavior.
-All three commands return status 2 when target/configuration selection is blocked,
+`analyze`, `suggest` and `prepare` return status 2 when target/configuration selection is blocked,
 1 on an invocation or file/integrity failure, and 0 for completed local analysis.
 Status 0 does not mean submission-ready: inspect questions, requirements and
 coverage. No MCP tool was added; the exported services and `--json` form the
 future MCP boundary without increasing the advertised tool count.
+
+### Optional developer confirmations
+
+Developer answers are local assertions, not proof of compliance or App Store
+acceptance. Coding agents may save an answer only after the developer explicitly
+states yes or no for the displayed question and its fingerprint. Inference from
+source code, a passing test, or a model's guess does not authorize an answer.
+To inspect the three supported yes/no questions and their current
+evidence fingerprints, run:
+
+```sh
+ios-agent-mcp apple confirmations --project /path/to/app --target App --json
+ios-agent-mcp apple confirm --project /path/to/app --target App \
+  --question review.login-required --answer no --fingerprint 'REPLACE_WITH_FINGERPRINT' --json
+ios-agent-mcp apple confirmation-reset --project /path/to/app --target App \
+  --question review.login-required --json
+```
+
+Other question IDs are `privacy.practices-reviewed` and
+`metadata.draft-reviewed`. Inspection is read-only. Saving creates a private,
+gitignored `.ios-agent/confirmations/` directory with boolean answers, timestamps,
+and hashes only; do not enter credentials or free-form personal information.
+The supplied fingerprint must match the current selected target and evidence at
+the time of writing. A change to selected evidence requires reconfirmation; when
+project identity or selection changes, its answers are kept separately. Preserve
+the same project/target/configuration and optional prompt between inspection and
+save. A directory lock serializes writers, and writes replace the state atomically;
+if interrupted, inspect any stale `.lock` before removing it. Corrupt, symlinked,
+oversized or unexpectedly permissioned state is rejected, not silently reset.
+The inspection command marks stale answers `RECONFIRMATION_REQUIRED` and never
+applies them. Confirmations do not modify release packages, clear unresolved
+package questions, run validation, or submit data to Apple. They are not signed
+proof against malicious changes by a user with access to the local account.
+Use it only in a trusted project directory. Symlinks and hard links are rejected
+at inspection and the final state file uses no-follow opens where supported, but
+these checks cannot prevent another process with directory write access from
+swapping an ancestor during an operation. Do not use it as a security boundary
+in a shared or attacker-writable project directory.
 
 ## App Model contract
 

@@ -6,6 +6,7 @@ import { promisify } from 'node:util';
 import { randomUUID } from 'node:crypto';
 import { analyzeApp, canonical, digest, Options, AppModelSchema } from './model.js';
 import { proposeRelease, validateProposal } from './intelligence.js';
+import { listReleaseConfirmations, saveReleaseConfirmation, resetReleaseConfirmation } from './confirmations.js';
 import { VERSION } from '../version.js';
 const files = ['app-model.json', 'requirements.json', 'questions.json', 'change-plan.json', 'manifest.json'];
 async function directory(p: string) { try {
@@ -129,10 +130,11 @@ export async function inspectRelease(options: Options) {
 }
 export async function appleCLI(args: string[]) {
     const command = args.shift();
-    if (!['analyze', 'suggest', 'prepare'].includes(command || ''))
-        throw Error('Usage: ios-agent-mcp apple analyze|suggest|prepare --project ROOT [--xcodeproj FILE] [--workspace FILE] [--target NAME] [--configuration Release] [--prompt TEXT] [--json]');
+    if (!['analyze', 'suggest', 'prepare', 'confirmations', 'confirm', 'confirmation-reset'].includes(command || ''))
+        throw Error('Usage: ios-agent-mcp apple analyze|suggest|prepare|confirmations|confirm|confirmation-reset --project ROOT [--json]');
     const options: Options = { root: process.cwd() };
     let json = false;
+    let question: string | undefined, answer: string | undefined, expected: string | undefined;
     const keys: Record<string, keyof Options> = { '--project': 'root', '--xcodeproj': 'project', '--workspace': 'workspace', '--target': 'target', '--configuration': 'configuration', '--prompt': 'prompt' };
     while (args.length) {
         const a = args.shift()!;
@@ -140,10 +142,30 @@ export async function appleCLI(args: string[]) {
             json = true;
             continue;
         }
+        if (['--question', '--answer', '--fingerprint'].includes(a)) {
+            if (!args.length || args[0]!.startsWith('--')) throw Error('Unknown option or missing argument');
+            const value = args.shift()!;
+            if (a === '--question') question = value;
+            else if (a === '--answer') answer = value;
+            else expected = value;
+            continue;
+        }
         if (!keys[a] || !args.length || args[0]!.startsWith('--'))
             throw Error('Unknown option or missing argument');
         options[keys[a]!] = args.shift()!;
     }
+    if (['confirmations', 'confirm', 'confirmation-reset'].includes(command || '')) {
+        if ((command === 'confirmations' && (question || answer || expected)) || (command === 'confirm' && (!question || !['yes', 'no'].includes(answer || '') || !expected)) || (command === 'confirmation-reset' && (!question || answer || expected)))
+            throw Error('Invalid confirmation arguments');
+        const result = command === 'confirmations' ? await listReleaseConfirmations(options) : command === 'confirm' ? await saveReleaseConfirmation(options, question!, answer === 'yes', expected!) : await resetReleaseConfirmation(options, question!);
+        if (json) console.log(canonical(result));
+        else {
+            console.log('LOCAL DEVELOPER ASSERTIONS ONLY. Save an answer only after the developer explicitly provides yes/no for the displayed question and fingerprint; inference and tests do not authorize answers. Builds, privacy and App Store approval remain unverified.');
+            for (const q of result.questions) console.log(`${q.id} ${q.status} fingerprint=${q.fingerprint} ${q.question}${q.answer === null ? '' : ' Answer: ' + (q.answer ? 'yes' : 'no')}`);
+        }
+        return;
+    }
+    if (question || answer || expected) throw Error('Invalid confirmation arguments');
     const result = command === 'prepare' ? await prepareRelease(options) : command === 'suggest' ? await inspectRelease(options) : await analyzeApp(options);
     const proposal = command === 'suggest' ? (result as Awaited<ReturnType<typeof inspectRelease>>).proposal : null;
     if (json)
