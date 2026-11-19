@@ -1297,6 +1297,13 @@
       "hash": "dc41e5331b3fafa503bbaf82eece61e7a1e33dc9e8277c5f1c4c5117e7285a12"
     },
     {
+      "path": "docs/apple/technologies/iworkdocumentexportingapi.md",
+      "title": "iWork Document Exporting API — historical reference",
+      "kind": "guide",
+      "characters": 725,
+      "hash": "ee522b86c71014a4f95a54d251986dc5cbe64a973269e0e06a7cdfdc451d2aa8"
+    },
+    {
       "path": "docs/apple/technologies/javascriptcore.md",
       "title": "JavaScriptCore",
       "kind": "guide",

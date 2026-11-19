@@ -62,8 +62,30 @@ class CatalogTests(unittest.TestCase):
             catalog.validate(data, root)
             result = catalog.outputs(data)
             self.assertNotIn('existing.md', result)
-            self.assertEqual(len(result), 1)
+            self.assertIn('docs/apple/technologies/iworkdocumentexportingapi.md', result)
             self.assertEqual((root / 'existing.md').read_text(), 'authored implementation')
+
+    def test_retired_iwork_path_is_preserved_and_checked(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            generated = catalog.outputs(self.snapshot())
+            retired = 'docs/apple/technologies/iworkdocumentexportingapi.md'
+            self.assertIn('historical reference', generated[retired])
+            self.assertIn('../historical/2026-11-index-changes.md', generated[retired])
+            catalog.reconcile(generated, write=True, root=root)
+            catalog.reconcile(generated, root=root)
+            (root / retired).write_text('tampered')
+            with self.assertRaisesRegex(ValueError, 'Stale/missing'):
+                catalog.reconcile(generated, root=root)
+
+    def test_reintroduced_iwork_entry_takes_precedence_over_stub(self):
+        data = self.snapshot()
+        row = data['technologies'][0]
+        row.update(name='iWork Document Exporting API', slug='iworkdocumentexportingapi',
+                   guide='docs/apple/technologies/iworkdocumentexportingapi.md')
+        rendered = catalog.outputs(data)[row['guide']]
+        self.assertNotIn('historical reference', rendered)
+        self.assertIn('# iWork Document Exporting API', rendered)
 
     def test_missing_existing_guide_rejected(self):
         with tempfile.TemporaryDirectory() as directory:
