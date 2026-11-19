@@ -23,6 +23,33 @@ for (const [name, key, code, feature] of [['camera', 'NSCameraUsageDescription',
     test(name + ' declaration is evidence, collection remains unknown', async (t) => { const { root } = await fixture(t, { info: { UILaunchScreen: {}, [key]: 'Private purpose text' } }); await source(root, code); const r = await analyzeApp({ root }); assert.ok(c(r, 'permission:' + key)); assert.equal(r.model.features.find(f => f.id === feature).status, 'INFERRED'); assert.equal(c(r, 'server-data-handling').status, 'UNKNOWN'); assert.ok(r.questions.some(q => q.id === 'data-handling')); assert.ok(!canonical(r).includes('Private purpose text')); });
 test('package products are target linked; lockfiles do not prove SDK behavior', async (t) => { const { root, data } = await fixture(t); data.objects.sdk = { isa: 'XCSwiftPackageProductDependency', productName: 'Alamofire' }; data.objects[ids.target].packageProductDependencies = ['sdk']; await save(root, data); await fs.writeFile(path.join(root, 'Package.resolved'), '{}'); const r = await analyzeApp({ root }); assert.equal(c(r, 'dependency:Alamofire').status, 'OBSERVED'); assert.equal(c(r, 'external-services').status, 'UNKNOWN'); });
 test('analytics indicator stays inferred', async (t) => { const { root } = await fixture(t); await source(root, 'import FirebaseAnalytics\nAnalytics.logEvent("x",parameters:nil)'); const r = await analyzeApp({ root }); assert.equal(r.model.features.find(f => f.id === 'analytics').status, 'INFERRED'); });
+test('release source indicators retain evidence without proving runtime behavior', async (t) => {
+    const { root } = await fixture(t);
+    await source(root, 'let web = WKWebView()\nlet message = MFMessageComposeViewController()\nlet cipher = AES.GCM.self\nlet id = UIDevice.current.identifierForVendor');
+    const r = await analyzeApp({ root });
+    for (const id of ['web-content', 'messaging', 'cryptography', 'user-identifiers']) {
+        const feature = r.model.features.find(f => f.id === id);
+        assert.equal(feature?.status, 'INFERRED');
+        assert.ok(feature.evidence.length);
+        assert.ok(feature.evidence.every(e => r.model.evidence.some(item => item.id === e)));
+    }
+    assert.equal(c(r, 'server-data-handling').status, 'UNKNOWN');
+    assert.ok(r.questions.some(q => q.id === 'data-handling'));
+});
+test('release source indicators ignore comments and strings', async (t) => {
+    const { root } = await fixture(t);
+    await source(root, '// WKWebView MFMessageComposeViewController\nlet text = "CryptoKit identifierForVendor"');
+    const r = await analyzeApp({ root });
+    assert.ok(!r.model.features.some(f => ['web-content', 'messaging', 'cryptography', 'user-identifiers'].includes(f.id)));
+});
+for (const code of ['WKWebView()', 'MFMessageComposeViewController()', 'UIDevice.current.identifierForVendor'])
+    test(`${code} prompts for data-handling review without asserting collection`, async (t) => {
+        const { root } = await fixture(t);
+        await source(root, code);
+        const r = await analyzeApp({ root });
+        assert.ok(r.questions.some(q => q.id === 'data-handling'));
+        assert.equal(c(r, 'server-data-handling').status, 'UNKNOWN');
+    });
 test('Sign in with Apple entitlement and code are distinct evidence', async (t) => { const { root } = await fixture(t, { settings: { CODE_SIGN_ENTITLEMENTS: 'App.entitlements' } }); await fs.writeFile(path.join(root, 'App.entitlements'), plist.build({ 'com.apple.developer.applesignin': ['Default'] })); await source(root, 'ASAuthorizationAppleIDProvider()'); const r = await analyzeApp({ root }); assert.ok(c(r, 'entitlement:com.apple.developer.applesignin')); assert.ok(r.model.features.some(f => f.id === 'sign-in-with-apple')); assert.equal(c(r, 'authentication-required').status, 'UNKNOWN'); });
 test('StoreKit use does not prove subscriptions offered', async (t) => { const { root } = await fixture(t); await source(root, 'import StoreKit\nlet x=Transaction.currentEntitlements'); const r = await analyzeApp({ root }); assert.equal(c(r, 'subscriptions-offered').status, 'UNKNOWN'); assert.ok(r.questions.some(q => q.id === 'purchases')); });
 test('missing Info.plist produces focused blocker without inventing facts', async (t) => { const { root } = await fixture(t); await fs.unlink(path.join(root, 'Info.plist')); const r = await analyzeApp({ root }); assert.equal(c(r, 'info-plist').status, 'UNKNOWN'); assert.ok(r.questions.some(q => q.id === 'identity')); });

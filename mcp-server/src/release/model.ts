@@ -434,6 +434,13 @@ export async function analyzeApp(options: Options): Promise<Analysis> {
         RegExp,
         string[]
     ][] = [['pdf', /\b(?:PDFDocument|PDFView)\b/, []], ['document-scanning', /\bVNDocumentCameraViewController\b/, ['NSCameraUsageDescription']], ['camera', /\b(?:AVCaptureSession|AVCaptureDevice)\b/, ['NSCameraUsageDescription']], ['photos', /\b(?:PhotosPicker|PHPickerViewController|PHPhotoLibrary)\b/, ['NSPhotoLibraryUsageDescription']], ['microphone', /\b(?:AVAudioRecorder|requestRecordPermission)\b/, ['NSMicrophoneUsageDescription']], ['location', /\bCLLocationManager\b/, ['NSLocationWhenInUseUsageDescription']], ['contacts', /\bCNContactStore\b/, ['NSContactsUsageDescription']], ['health', /\bHKHealthStore\b/, ['NSHealthShareUsageDescription']], ['networking', /\b(?:URLSession|NWConnection)\b/, []], ['storekit', /\b(?:StoreKit|Transaction\.currentEntitlements|Product\.products)\b/, []], ['authentication', /\b(?:ASAuthorizationController|ASWebAuthenticationSession|signInWithEmailAndPassword)\b/, []], ['sign-in-with-apple', /\bASAuthorizationAppleIDProvider\b/, []], ['notifications', /\bUNUserNotificationCenter\b/, []], ['cloud', /\b(?:CKContainer|NSUbiquitousKeyValueStore)\b/, []], ['tracking', /\b(?:ATTrackingManager|ASIdentifierManager)\b/, ['NSUserTrackingUsageDescription']], ['analytics', /\b(?:FirebaseAnalytics|Analytics\.logEvent|Mixpanel)\b/, []], ['search', /\.searchable\s*\(/, []], ['canvas', /\b(?:PKCanvasView|Canvas)\s*\(/, []], ['local-storage', /\b(?:UserDefaults|FileManager|ModelContainer|NSPersistentContainer)\b/, []]];
+    // These are source indicators only; each remains an inferred candidate.
+    patterns.push(
+        ['web-content', /\b(?:WKWebView|SFSafariViewController)\b/, []],
+        ['messaging', /\bMFMessageComposeViewController\b/, []],
+        ['cryptography', /\b(?:CryptoKit|CCCrypt|AES\.GCM|ChaChaPoly)\b/, []],
+        ['user-identifiers', /\b(?:identifierForVendor|advertisingIdentifier)\b/, []],
+    );
     const hits = new Map<string, {
         ev: Set<string>;
         permissions: string[];
@@ -574,7 +581,7 @@ export function questionsFor(model: AppModel): Question[] {
         add('auth-conflict', 1, 'review', 'The brief says no account is required, but authentication APIs are present. Is sign-in optional, required, or excluded from this release?', [conflict.id]);
     else if (!model.claims.some(c => c.id === 'intent:no-account' && c.status === 'DEVELOPER_CONFIRMED'))
         add('auth-access', 2, 'review', 'Does the shipping app require an account or other restricted access for review?', ['authentication-required']);
-    const sensitive = model.features.filter(f => ['document-scanning', 'camera', 'photos', 'microphone', 'location', 'contacts', 'health', 'networking', 'analytics', 'tracking', 'cloud', 'authentication'].includes(f.id));
+    const sensitive = model.features.filter(f => ['document-scanning', 'camera', 'photos', 'microphone', 'location', 'contacts', 'health', 'networking', 'analytics', 'tracking', 'cloud', 'authentication', 'user-identifiers', 'web-content', 'messaging'].includes(f.id));
     if (sensitive.length || model.claims.some(c => c.id.startsWith('permission:') || c.id.startsWith('dependency:') || c.id.startsWith('privacy-manifest:')))
         add('data-handling', 1, 'privacy', 'For the detected sensitive access/services, what data leaves the device, for what purposes, and is it retained or linked to a person?', [...sensitive.map(f => f.id), ...model.claims.filter(c => c.id.startsWith('permission:') || c.id.startsWith('dependency:') || c.id.startsWith('privacy-manifest:')).map(c => c.id), 'server-data-handling']);
     if (model.features.some(f => f.id === 'storekit'))

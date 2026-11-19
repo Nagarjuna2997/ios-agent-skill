@@ -3554,8 +3554,8 @@
       "path": "docs/tooling/local-release-package.md",
       "title": "Local App Store release preparation — Phase 1",
       "kind": "guide",
-      "characters": 10660,
-      "hash": "560ca1afc269b87a1631471e53394b61be1188688c609a6166e35cbb8303991c"
+      "characters": 10973,
+      "hash": "1cf216f0e231991be103118eb2a9603c25c0b71114f9bb1f3a1c7f57d5d16022"
     },
     {
       "path": "docs/tooling/offline-source-library.md",

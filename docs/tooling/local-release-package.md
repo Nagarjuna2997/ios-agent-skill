@@ -63,6 +63,10 @@ Every observed claim requires evidence; all evidence IDs must resolve. States:
 A camera permission does not prove off-device collection. StoreKit imports do not
 prove that subscriptions are sold. Authentication indicators do not prove login
 is required. Development team/signing settings do not establish signing validity.
+Web-content, messaging, cryptography and device-identifier source indicators are
+also inferred candidates. They do not establish runtime use, data collection,
+export-compliance classification or App Store approval. Web-content, messaging
+and identifier indicators prompt for human clarification of data handling.
 
 ## Selection and evidence
 
