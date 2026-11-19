@@ -2,10 +2,11 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {mkdtemp,readFile,rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
-import {join,resolve} from 'node:path';
+import {join} from 'node:path';
 import {UniversalStudio} from '../universal.mjs';
 import {serve} from '../server.mjs';
-async function workspace(t){const root=await mkdtemp(join(tmpdir(),'universal-studio-'));t.after(()=>rm(root,{recursive:true,force:true}));const u=new UniversalStudio(root,resolve('.'));await u.init();return {u,root};}
+import {repositoryRoot} from './repository.mjs';
+async function workspace(t){const root=await mkdtemp(join(tmpdir(),'universal-studio-'));t.after(()=>rm(root,{recursive:true,force:true}));const u=new UniversalStudio(root,repositoryRoot);await u.init();return {u,root};}
 test('Studio imports actual React IR and generates editable SwiftUI without claiming build success',async t=>{
  const {u}=await workspace(t);const row=await u.create({adapter:'react',name:'StudioSample',source:'export default function App(){return <main><h1>Hello</h1></main>}'});
  assert.equal(row.status,'inspected');const result=await u.generate(row.id);assert.equal(result.status,'generated-unverified');assert.equal(result.tests,'not-run');
@@ -18,10 +19,10 @@ test('unsupported source remains inspectable but cannot produce a plausible nati
  await assert.rejects(u.create({adapter:'angular',name:'App',source:'<p>Hello</p>'}));await assert.rejects(u.create({adapter:'html',name:'../outside',source:'test'}));await assert.rejects(u.get('../outside'));
 });
 test('restart marks interrupted work honestly and retains inspected source',async t=>{
- const {u,root}=await workspace(t);const r=await u.create({adapter:'html',name:'Recover',source:'<main><p>Kept</p></main>'});r.status='generating';await u.save(r);const next=new UniversalStudio(root,resolve('.'));await next.init();assert.equal((await next.get(r.id)).status,'interrupted');assert.match((await next.source(r.id)).input,/Kept/);
+ const {u,root}=await workspace(t);const r=await u.create({adapter:'html',name:'Recover',source:'<main><p>Kept</p></main>'});r.status='generating';await u.save(r);const next=new UniversalStudio(root,repositoryRoot);await next.init();assert.equal((await next.get(r.id)).status,'interrupted');assert.match((await next.source(r.id)).input,/Kept/);
 });
 test('Universal HTTP endpoints retain Studio authorization and source is not served as executable HTML',async t=>{
- const {root}=await workspace(t);const app=await serve({port:0,root,repo:resolve('.')});t.after(()=>new Promise(r=>app.server.close(r)));
+ const {root}=await workspace(t);const app=await serve({port:0,root,repo:repositoryRoot});t.after(()=>new Promise(r=>app.server.close(r)));
  const page=await(await fetch(app.origin+'/universal')).text();const token=/name="studio-token" content="([a-f0-9]+)"/.exec(page)[1];
  assert.equal((await fetch(app.origin+'/api/universal')).status,403);
  const headers={'x-studio-token':token,'content-type':'application/json'};
@@ -63,7 +64,7 @@ test('native ownership excludes other conversions, releases on cancellation and 
  await assert.rejects(u.startBuild('invalid'));assert.equal(leased,false);
 });
 test('server shares native reservation with existing Studio actions and live preview',async t=>{
- const {root}=await workspace(t);const app=await serve({port:0,root,repo:resolve('.')});t.after(()=>new Promise(r=>app.server.close(r)));
+ const {root}=await workspace(t);const app=await serve({port:0,root,repo:repositoryRoot});t.after(()=>new Promise(r=>app.server.close(r)));
  const row=await app.universal.create({adapter:'html',name:'Lease',source:'<main><p>Lease</p></main>'});await app.universal.generate(row.id);
  app.studio.reserved=true;await assert.rejects(app.universal.startBuild(row.id),/active Studio/);app.studio.reserved=false;
  app.universal.executeBuild=async(r,signal)=>new Promise(resolve=>signal.addEventListener('abort',resolve,{once:true}));
@@ -89,11 +90,11 @@ test('uploaded React modules produce one native project and preserve each source
  await assert.rejects(u.createProject({name:'Modules',entry:'missing.tsx',files}));
 });
 test('an interrupted import staging directory never becomes a broken saved conversion',async t=>{
- const {u,root}=await workspace(t);const {mkdir,writeFile}=await import('node:fs/promises');const pending=join(u.root,'.pending-interrupted');await mkdir(pending);await writeFile(join(pending,'input.txt'),'unfinished');const next=new UniversalStudio(root,resolve('.'));await next.init();assert.deepEqual(await next.list(),[]);
+ const {u,root}=await workspace(t);const {mkdir,writeFile}=await import('node:fs/promises');const pending=join(u.root,'.pending-interrupted');await mkdir(pending);await writeFile(join(pending,'input.txt'),'unfinished');const next=new UniversalStudio(root,repositoryRoot);await next.init();assert.deepEqual(await next.list(),[]);
  const r=await next.createProject({name:'Complete',entry:'App.tsx',files:[{path:'App.tsx',source:'export default function App(){return <p>Ready</p>}'}]});assert.match((await next.source(r.id)).input,/Ready/);assert.equal((await next.list()).length,1);
 });
 test('folder upload endpoint requires token and rejects path escape over HTTP',async t=>{
- const {root}=await workspace(t);const app=await serve({port:0,root,repo:resolve('.')});t.after(()=>new Promise(r=>app.server.close(r)));
+ const {root}=await workspace(t);const app=await serve({port:0,root,repo:repositoryRoot});t.after(()=>new Promise(r=>app.server.close(r)));
  const page=await(await fetch(app.origin+'/universal')).text();const token=/name="studio-token" content="([a-f0-9]+)"/.exec(page)[1];
  const body=JSON.stringify({name:'HttpFolder',entry:'App.tsx',files:[{path:'App.tsx',source:'export default function App(){return <p>Folder</p>}'}]});
  assert.equal((await fetch(app.origin+'/api/universal/project',{method:'POST',headers:{'content-type':'application/json'},body})).status,403);
@@ -136,7 +137,7 @@ test('explicit simulator selection is validated and never falls back to a differ
  await u.startBuild(row.id,{udid:chosen});await u.jobs.get(row.id);assert.equal(builds,1);assert.equal((await u.get(row.id)).runs.at(-1).requestedUDID,chosen);assert.equal((await u.get(row.id)).runs.at(-1).udid,chosen);
 });
 test('simulator discovery is authenticated and build endpoint passes the explicit selection',async t=>{
- const {root}=await workspace(t);const app=await serve({port:0,root,repo:resolve('.')});t.after(()=>new Promise(r=>app.server.close(r)));
+ const {root}=await workspace(t);const app=await serve({port:0,root,repo:repositoryRoot});t.after(()=>new Promise(r=>app.server.close(r)));
  const page=await(await fetch(app.origin+'/universal')).text();const token=/name="studio-token" content="([a-f0-9]+)"/.exec(page)[1];const headers={'x-studio-token':token,'content-type':'application/json'};
  app.universal.simulators=async()=>[{udid:'test-device'}];
  assert.equal((await fetch(app.origin+'/api/universal/simulators')).status,403);
@@ -181,7 +182,7 @@ test('immutable capture history survives rebuilding, source changes and later fa
  await assert.rejects(u.capturedSource(row.id,'../outside'),/Invalid/);
 });
 test('archived capture HTTP route requires authentication and forwards the run ID',async t=>{
- const {root}=await workspace(t);const app=await serve({port:0,root,repo:resolve('.')});t.after(()=>new Promise(r=>app.server.close(r)));
+ const {root}=await workspace(t);const app=await serve({port:0,root,repo:repositoryRoot});t.after(()=>new Promise(r=>app.server.close(r)));
  const page=await(await fetch(app.origin+'/universal')).text();const token=/name="studio-token" content="([a-f0-9]+)"/.exec(page)[1];
  let requested;app.universal.image=async(id,run)=>{requested={id,run};return Buffer.from('fixture');};
  const url=app.origin+'/api/universal/conversion/captures/run';assert.equal((await fetch(url)).status,403);
@@ -208,7 +209,7 @@ test('multi-file revisions retain separate complete source sets',async t=>{
 });
 test('revision API requires authorization and uses immutable parent identity',async t=>{
  const {root,u}=await workspace(t);const parent=await u.create({adapter:'html',name:'Parent',source:'<p>Before</p>'});
- const app=await serve({port:0,root,repo:resolve('.')});t.after(()=>new Promise(r=>app.server.close(r)));
+ const app=await serve({port:0,root,repo:repositoryRoot});t.after(()=>new Promise(r=>app.server.close(r)));
  const page=await(await fetch(app.origin+'/universal')).text();const token=/name="studio-token" content="([a-f0-9]+)"/.exec(page)[1];
  const url=app.origin+'/api/universal/'+parent.id+'/revision',body=JSON.stringify({adapter:'html',name:'Child',source:'<p>After</p>'});
  assert.equal((await fetch(url,{method:'POST',body})).status,403);

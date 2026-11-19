@@ -36,7 +36,11 @@ Open http://127.0.0.1:8844. Requires Node 20+, macOS, Xcode, an installed iOS si
 ## Checks
 
 ```sh
+npm ci --prefix mcp-server
+npm run build --prefix mcp-server
 node --test studio/test/*.test.mjs
+# Or run the same tests via the Studio package:
+npm test --prefix studio
 ```
 
 The tests use synthetic process adapters. Real client and simulator results are recorded separately in `VALIDATION.md`; unit tests are not proof of provider availability.

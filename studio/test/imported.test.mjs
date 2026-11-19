@@ -6,6 +6,7 @@ import path from "node:path";
 import { Studio } from "../engine.mjs";
 import { installWorkspace } from "../workspace.mjs";
 import { importCopy, importedChanges, executeImported } from "../imported.mjs";
+import { repositoryRoot } from './repository.mjs';
 installWorkspace(Studio);
 test("import copies app and inventory, preserves original, refuses test edits and verifies selected scheme", async (t) => {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), "studio-import-test-"));
@@ -31,7 +32,7 @@ test("import copies app and inventory, preserves original, refuses test edits an
   await fs.writeFile(path.join(original, "App/View.swift"), "struct View {}");
   await fs.writeFile(path.join(original, ".env"), "TOKEN=private");
   const calls = [];
-  const s = new Studio(storage, process.cwd(), async (c, args) => {
+  const s = new Studio(storage, repositoryRoot, async (c, args) => {
     calls.push([c, args]);
     return "";
   });

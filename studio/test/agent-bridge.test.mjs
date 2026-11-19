@@ -4,10 +4,11 @@ import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { Studio } from '../engine.mjs';
+import { repositoryRoot } from './repository.mjs';
 test('shared-agent Studio projects persist the explicit provider without legacy scaffolding', async () => {
  const dir = await mkdtemp(path.join(tmpdir(),'studio-shared-'));
  try {
- const studio = new Studio(dir, process.cwd());
+ const studio = new Studio(dir, repositoryRoot);
  const codex = await studio.create('Example','A sample app','codex','agent');
  assert.equal(codex.provider,'codex');
  const p = await studio.create('Example','A sample app','claude','agent');

@@ -6,11 +6,12 @@ import os from "node:os";
 import { Studio } from "../engine.mjs";
 import { installWorkspace, sourceTree } from "../workspace.mjs";
 import { providerEvent, eventParser } from "../providers.mjs";
+import { repositoryRoot } from './repository.mjs';
 installWorkspace(Studio);
 async function setup(t) {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), "studio-ws-"));
   t.after(() => fs.rm(root, { recursive: true, force: true }));
-  const s = new Studio(root, process.cwd());
+  const s = new Studio(root, repositoryRoot);
   await s.init();
   const p = await s.create("Example", "A sample", "codex", "agent");
   await fs.writeFile(
@@ -163,7 +164,7 @@ test('stderr is bounded before it reaches persistent output handlers', async () 
 
 test('legacy HTTP actions cannot bypass queued approval', async t => {
   const {serve}=await import('../server.mjs');const root=await fs.mkdtemp(path.join(os.tmpdir(),'studio-legacy-'));
-  const app=await serve({root,port:0,repo:process.cwd()});
+  const app=await serve({root,port:0,repo:repositoryRoot});
   t.after(async()=>{await app.tasks.close();await new Promise(r=>app.server.close(r));await fs.rm(root,{recursive:true,force:true});});
   const p=await app.studio.create('Sample','Sample app','codex','agent');
   const html=await (await fetch(app.origin)).text();const token=/name="studio-token" content="([a-f0-9]+)"/.exec(html)[1];

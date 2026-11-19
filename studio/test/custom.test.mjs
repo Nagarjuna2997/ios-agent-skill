@@ -11,7 +11,7 @@ import {
   projectText,
   swiftString,
 } from "../project.mjs";
-const repo = path.resolve(import.meta.dirname, "../..");
+import { repositoryRoot as repo } from './repository.mjs';
 const plan = () => ({
   summary: "A counter with saved state",
   screens: ["Counter", "Settings"],

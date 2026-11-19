@@ -4,10 +4,11 @@ import { promises as fs } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
+import { repositoryRoot } from './repository.mjs';
 
 test('server entry point starts through a symbolic checkout path', async t => {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'studio-launch-'));
-  await fs.symlink(process.cwd(), path.join(root, 'checkout'));
+  await fs.symlink(repositoryRoot, path.join(root, 'checkout'));
   const child = spawn(process.execPath, [path.join(root, 'checkout/studio/server.mjs')], {
     env: { ...process.env, STUDIO_HOME: path.join(root, 'data'), STUDIO_PORT: '0' },
     stdio: ['ignore', 'pipe', 'pipe']

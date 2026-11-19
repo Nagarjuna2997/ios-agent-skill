@@ -12,7 +12,7 @@ import {
   run,
 } from "../engine.mjs";
 import { serve } from "../server.mjs";
-const repo = path.resolve(import.meta.dirname, "../..");
+import { repositoryRoot as repo } from './repository.mjs';
 async function fixture(t, runner) {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), "studio-test-"));
   t.after(() => fs.rm(root, { recursive: true, force: true }));
