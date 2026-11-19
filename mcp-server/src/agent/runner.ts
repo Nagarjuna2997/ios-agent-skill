@@ -103,6 +103,8 @@ export interface ToolLogEntry {
   at: string;
   command: string;
   args: string[];
+  /** Arguments were deliberately omitted; an empty array does not imply none were passed. */
+  argumentsRedacted?: boolean;
   cwd?: string;
   exitCode: number | null;
   durationMs: number;
@@ -117,6 +119,7 @@ export class LoggingRunner implements CommandRunner {
   constructor(
     private readonly inner: CommandRunner,
     private readonly logFile: string,
+    private readonly options: { redactArguments?: boolean } = {},
   ) {
     this.projectRoot = dirname(dirname(logFile));
   }
@@ -125,13 +128,14 @@ export class LoggingRunner implements CommandRunner {
     const result = await this.inner.run(command, args, options);
     const entry: ToolLogEntry = {
       at: new Date().toISOString(),
-      command,
-      args: args.map((arg) => this.portablePath(arg)),
-      ...(options.cwd ? { cwd: this.portableCwd(options.cwd) } : {}),
+      command: this.options.redactArguments ? basename(command) : command,
+      args: this.options.redactArguments ? [] : args.map((arg) => this.portablePath(arg)),
+      ...(this.options.redactArguments ? { argumentsRedacted: true } : {}),
+      ...(!this.options.redactArguments && options.cwd ? { cwd: this.portableCwd(options.cwd) } : {}),
       exitCode: result.exitCode,
       durationMs: result.durationMs,
       timedOut: result.timedOut,
-      ...(result.spawnError ? { spawnError: result.spawnError } : {}),
+      ...(!this.options.redactArguments && result.spawnError ? { spawnError: result.spawnError } : {}),
     };
     await mkdir(dirname(this.logFile), { recursive: true });
     await appendFile(this.logFile, JSON.stringify(entry) + "\n");

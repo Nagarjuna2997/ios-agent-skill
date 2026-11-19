@@ -23,9 +23,9 @@ function localImagePath(root: string, file: string): string | undefined {
   return normalized === ".." || normalized.startsWith("../") ? undefined : normalized;
 }
 
-export async function toolCallCount(root: string): Promise<number> {
+export async function toolCallCount(root: string): Promise<number | null> {
   const file = projectPaths(root).toolLog;
-  if (!existsSync(file)) return 0;
+  if (!existsSync(file)) return null;
   return (await readFile(file, "utf8")).split("\n").filter(Boolean).length;
 }
 
@@ -73,7 +73,7 @@ export function renderRunReport(input: {
   plan?: Plan;
   rows?: CapabilityPlanRow[];
   budget?: Budget;
-  toolCalls?: number;
+  toolCalls?: number | null;
   now?: Date;
   /** Current checkout root; persisted projectDir can refer to the machine that created the run. */
   projectDir?: string;
@@ -94,7 +94,7 @@ export function renderRunReport(input: {
   lines.push(`- Launched: ${state.run ? `yes, on ${state.run.simulator} (${state.run.udid})${state.run.pid ? `, pid ${state.run.pid}` : ""}` : "no"}`);
   lines.push(`- Screenshots: ${state.screenshots.length}`);
   if (state.toolchain) lines.push(`- Toolchain: ${state.toolchain.xcode ?? "unknown Xcode"}; simulator ${state.toolchain.simulator ?? "unknown"}${state.toolchain.sdk ? `; iOS Simulator SDK ${state.toolchain.sdk}` : ""}`);
-  if (input.toolCalls !== undefined) lines.push(`- External tool calls logged: ${input.toolCalls} (\`.ios-agent/tool-log.jsonl\`)`);
+  if (input.toolCalls !== undefined) lines.push(input.toolCalls === null ? '- External tool calls logged: unavailable (no command log)' : `- External tool calls logged: ${input.toolCalls} (\`.ios-agent/tool-log.jsonl\`)`);
   lines.push("");
 
   if (plan?.design) {

@@ -43,6 +43,15 @@ The tests use synthetic process adapters. Real client and simulator results are 
 
 Codex adapter reference: [structured CLI output](https://developers.openai.com/blog/eval-skills).
 
+For shared-agent projects, `RUN_REPORT.md` counts recorded build and simulator
+commands from the local `.ios-agent/tool-log.jsonl`. Studio records command
+names, exit status and timing, but omits arguments, working paths, prompts,
+environment variables and output. Provider calls are not part of this count.
+The count covers all entries in the project log, not a single run. Older
+Studio sessions may have incomplete command logs; an absent log is reported as
+unavailable, not as zero calls. Existing entries are not scrubbed and may
+contain arguments recorded by older versions or the CLI.
+
 ## Custom acceptance contract
 
 `acceptance.json` records the plan, its criterion indexes and UI steps. Supported actions are `tap`, `type`, `exists`, `absent`, `text` (exact label), and `relaunch`; targets are accessibility identifiers/labels for buttons, text fields, secure text fields, static text or any element. Each journey must assert an observable result. Every criterion must have a journey mapping or be marked manual. Mapping alone does not prove the steps fully exercise that criterion.

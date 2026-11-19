@@ -20,12 +20,14 @@ export async function agentFingerprint(studio, id) {
 export async function executeAgent(studio, p, kind, message, signal) {
   if (!["claude", "codex"].includes(p.provider))
     throw Error("Unsupported provider");
-  const [{ runAgent }, { ClaudeCodeBrain }, { ProcessRunner }, { loadState }] =
+  const [{ runAgent }, { ClaudeCodeBrain }, { ProcessRunner, LoggingRunner }, { loadState }] =
     await Promise.all(
       ["loop", "brain", "runner", "state"].map((n) => moduleFrom(studio, n)),
     );
   const root = path.join(studio.dir(p.id), "project");
-  const processRunner = new ProcessRunner();
+  // Commands executed by the build/simulator loop are counted without saving
+  // arguments, prompts, environment variables, output, or working paths.
+  const processRunner = new LoggingRunner(new ProcessRunner(), path.join(root, '.ios-agent', 'tool-log.jsonl'), { redactArguments: true });
   const runner = {
     run(command, args, options = {}) {
       if (signal.aborted) throw Error("Cancelled");

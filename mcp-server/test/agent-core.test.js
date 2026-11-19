@@ -22,12 +22,22 @@ import { containedPath, writeProjectFiles, addPackage, readSpec } from "../dist/
 import { ProcessRunner, LoggingRunner } from "../dist/agent/runner.js";
 import { runApp, screenshot, appLogs } from "../dist/agent/simulator.js";
 import { createProject, recordedBuild, requestedCapabilities, writeReport, writePlan } from "../dist/agent/workspace.js";
-import { loadState, saveState } from "../dist/agent/state.js";
+import { loadState, saveState, newRunState } from "../dist/agent/state.js";
 import { PlanSchema } from "../dist/agent/plan.js";
-import { auditGeneratedPalette, renderRunReport } from "../dist/agent/report.js";
+import { auditGeneratedPalette, renderRunReport, toolCallCount } from "../dist/agent/report.js";
 import { fakeXcode, BOOTED, NEWER } from "./helpers/fake-xcode.js";
 
 const simctl = (devices) => JSON.stringify({ devices });
+test('missing command logs report unavailable rather than an invented zero', async (t) => {
+  const root = await mkdtemp(join(tmpdir(), 'ios-agent-no-tool-log-'));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  assert.equal(await toolCallCount(root), null);
+  const state = newRunState({ description: 'Synthetic sample', projectDir: root });
+  assert.match(renderRunReport({ state, projectDir: root, toolCalls: await toolCallCount(root) }), /External tool calls logged: unavailable/);
+  await mkdir(join(root, '.ios-agent'));
+  await writeFile(join(root, '.ios-agent', 'tool-log.jsonl'), '');
+  assert.equal(await toolCallCount(root), 0);
+});
 const dev = (udid, name, state, type = "iPhone-17") => ({ udid, name, state, isAvailable: true, deviceTypeIdentifier: `com.apple.CoreSimulator.SimDeviceType.${type}` });
 
 test("run reports summarize provider rate limits without copying response payloads", () => {

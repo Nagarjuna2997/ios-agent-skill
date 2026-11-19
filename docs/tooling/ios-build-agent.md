@@ -23,7 +23,14 @@ The agent's build, simulator launch and per-screen screenshot stages subsequentl
 7. **Run**: the newest installed iOS runtime's iPhone (or a booted one) is used; SpringBoard is foregrounded before capture so screenshots do not show a return link to a previously captured app. Each top-level screen is launched with sample data and captured in light, dark and XXL Dynamic Type. The simulator's original appearance and text-size settings are restored afterward.
 8. **Report**: `RUN_REPORT.md` lists the result, a per-screen appearance/text-size image matrix, measured contrast for generated semantic asset pairs, capabilities (applied, status, awaiting credentials), builds, what needs the user's accounts or money, next steps and the progress log. The contrast check covers generated palette assets, not every custom text/background pairing in app code.
 
-Every external command is logged to `.ios-agent/tool-log.jsonl` (commands and exit codes, not output). Run state lives in `.ios-agent/state.json`, so runs resume.
+Build and simulator commands are recorded in `.ios-agent/tool-log.jsonl` with
+their exit codes, not their output. Studio records command names and timing
+without arguments or working paths; model-provider calls are not included.
+The count is cumulative for the project's log, not a per-run total. Older
+Studio runs may have no command log or incomplete earlier entries, so a
+missing log is reported as unavailable rather than a zero count. Existing
+entries are not scrubbed and may contain arguments recorded by older versions
+or the CLI. Run state lives in `.ios-agent/state.json`, so runs resume.
 
 ## Install
 

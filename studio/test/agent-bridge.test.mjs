@@ -24,7 +24,7 @@ test('shared bridge resumes created projects without reselecting design', async 
  await writeFile(path.join(dir,'package.json'),'{"type":"module"}');
  await writeFile(path.join(modules,'loop.js'),'export async function runAgent(o) { if(o.design) throw Error("unexpected design re-selection"); return {state:{status:"stopped",failure:"provider unavailable"}}; }');
  await writeFile(path.join(modules,'brain.js'),'export class ClaudeCodeBrain {}');
- await writeFile(path.join(modules,'runner.js'),'export class ProcessRunner {}');
+ await writeFile(path.join(modules,'runner.js'),'export class ProcessRunner {} export class LoggingRunner {constructor(inner){this.inner=inner} run(...args){return this.inner.run(...args)}}');
  await writeFile(path.join(modules,'state.js'),'export async function loadState(){ return {milestones:{created:"now"},builds:[]}; }');
  const root = path.join(dir,'workspace'); await mkdir(path.join(root,'project/.ios-agent'),{recursive:true});
  await writeFile(path.join(root,'project/.ios-agent/plan.json'),JSON.stringify({appName:'Probe',summary:'Sample',screens:[],features:[]}));
@@ -42,11 +42,34 @@ test('verify-only shared action runs native tests without restarting generation 
   const modules=path.join(dir,'mcp-server/dist/agent');await mkdir(modules,{recursive:true});await writeFile(path.join(dir,'package.json'),'{"type":"module"}');
   await writeFile(path.join(modules,'loop.js'),'export async function runAgent(){throw Error("unexpected generation");}');
   await writeFile(path.join(modules,'brain.js'),'export class ClaudeCodeBrain {}');
-  await writeFile(path.join(modules,'runner.js'),'export class ProcessRunner {}');
+  await writeFile(path.join(modules,'runner.js'),'export class ProcessRunner {} export class LoggingRunner {constructor(inner){this.inner=inner} run(...args){return this.inner.run(...args)}}');
   await writeFile(path.join(modules,'state.js'),'export async function loadState(){return {status:"stopped",failure:"Visual repair budget exhausted"};}');
   await writeFile(path.join(modules,'testing.js'),'export async function testProject(root,runner,udid){if(udid!=="chosen")throw Error("wrong device");return {status:"passed",passed:3,failed:0,skipped:0};}');
   const studio={repo:dir,dir:()=>dir,async save(){}};const p={id:'p',provider:'codex',simulator:'chosen',messages:[],evidence:{scope:'visual review unresolved'}};
   await executeAgent(studio,p,'verify','',new AbortController().signal);
   assert.equal(p.status,'tests-passed');assert.match(p.error,/Visual repair budget exhausted/);assert.equal(p.verification.passed,3);assert.equal(p.evidence.scope,'visual review unresolved');
+ } finally {await rm(dir,{recursive:true,force:true});}
+});
+
+test('shared bridge logs executed commands without sensitive arguments and honors cancellation', async () => {
+ const {mkdir,writeFile,readFile}=await import('node:fs/promises'); const {executeAgent}=await import('../agent-bridge.mjs');
+ const dir=await mkdtemp(path.join(tmpdir(),'studio-agent-log-'));
+ try {
+  const modules=path.join(dir,'mcp-server/dist/agent');await mkdir(modules,{recursive:true});
+  await writeFile(path.join(dir,'package.json'),'\u007b"type":"module"\u007d');
+  await writeFile(path.join(modules,'loop.js'),`export async function runAgent(o){await o.runner.run(process.execPath,['-e','process.stdout.write("PRIVATE_OUTPUT")','PRIVATE_ARGUMENT'],{cwd:o.projectDir,input:'PRIVATE_PROMPT',env:{TEST_SECRET:'PRIVATE_ENV'}});return {state:{status:'stopped',failure:'fixture'}}}`);
+  await writeFile(path.join(modules,'brain.js'),'export class ClaudeCodeBrain {}');
+  await writeFile(path.join(modules,'runner.js'),`export { ProcessRunner, LoggingRunner } from ${JSON.stringify(new URL('../../mcp-server/dist/agent/runner.js',import.meta.url).href)};`);
+  await writeFile(path.join(modules,'state.js'),'export async function loadState(){return null;}');
+  const root=path.join(dir,'workspace');await mkdir(path.join(root,'project/.ios-agent'),{recursive:true});
+  await writeFile(path.join(root,'project/.ios-agent/plan.json'),JSON.stringify({summary:'Sample',screens:[],features:[]}));
+  const studio={repo:dir,dir:()=>root,async log(){},async save(){}};const p={id:'p',provider:'codex',brief:'Sample',messages:[]};
+  await executeAgent(studio,p,'build','first',new AbortController().signal);
+  const file=path.join(root,'project/.ios-agent/tool-log.jsonl');const contents=await readFile(file,'utf8');const entries=contents.trim().split('\n').map(JSON.parse);
+  assert.equal(entries.length,1);assert.equal(entries[0].command,path.basename(process.execPath));assert.deepEqual(entries[0].args,[]);assert.equal(entries[0].argumentsRedacted,true);assert.equal(entries[0].exitCode,0);
+  for(const secret of ['PRIVATE_OUTPUT','PRIVATE_ARGUMENT','PRIVATE_PROMPT','PRIVATE_ENV',dir])assert.ok(!contents.includes(secret));
+  const controller=new AbortController();controller.abort();
+  await assert.rejects(executeAgent(studio,p,'build','first',controller.signal),/Cancelled/);
+  assert.equal(await readFile(file,'utf8'),contents);
  } finally {await rm(dir,{recursive:true,force:true});}
 });
