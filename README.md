@@ -71,7 +71,7 @@ Simulator builds can use placeholder configuration for supported services. Capab
 
 - The design-system, firebase-auth, firebase-firestore, google-sign-in, stripe-payments, rive-animation and webview-animation capabilities have passed isolated Mac compile verification. Provider accounts and runtime transactions remain unverified; a combined compile check is not a substitute for each module's verify run (see [the compile check](capabilities/README.md#compile-check)).
 - The agent's build, simulator launch and per-screen capture stages ran on Mac for these four existing examples. The original planning and code-generation sessions were separate, and a fresh one-sentence generation has not yet been run end to end on Mac.
-- Taps and scrolling during the agent's own screenshots, and device builds, are not done. In the food-delivery example the StoreKit purchase and the Live Activity were not exercised.
+- Taps and scrolling during the agent's own screenshots, and device builds, are not done. A separate [Habit Tracker simulator test](examples/agent/habit-tracker/verification/README.md) verified one navigation and completion-state interaction; it issued a swipe without asserting the scroll position. In the food-delivery example the StoreKit purchase and the Live Activity were not exercised.
 
 ## Which workflow to use
 
