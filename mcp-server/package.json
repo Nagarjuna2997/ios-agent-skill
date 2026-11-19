@@ -44,7 +44,7 @@
     "@nagarjuna2002/ios-agent": "0.4.1",
     "@nagarjuna2002/ios-simulator-mcp": "0.2.0",
     "@resvg/resvg-js": "2.6.2",
-    "fast-xml-parser": "5.11.1",
+    "fast-xml-parser": "5.12.1",
     "fontkit": "2.0.4",
     "jpeg-js": "0.4.4",
     "parse5": "7.3.0",
