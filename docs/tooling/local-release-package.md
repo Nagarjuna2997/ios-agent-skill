@@ -138,6 +138,16 @@ README/BRIEF presence is hashed as untrusted context, not treated as feature pro
 URL syntax is recorded without destinations, credentials, paths or query strings.
 Required-reason evidence currently covers manifest declarations and a conservative
 UserDefaults source indicator, not a comprehensive required-reason API scan.
+For target-linked `PrivacyInfo.xcprivacy` resources, the analyzer also records
+the `NSPrivacyTracking` Boolean and recognized collected-data categories with
+their declared linked-to-user and tracking Booleans. These are declarations
+with manifest evidence, not proof of actual data collection or tracking.
+Unknown categories, malformed fields and truncated lists are reported as
+coverage gaps; collection purposes and third-party SDK internals are not
+analyzed. The supported category names are a fixed snapshot checked on
+November 18, 2026; newly added Apple categories appear as unknown until the
+allowlist is updated. They are based on Apple's
+[collected-data type documentation](https://developer.apple.com/documentation/bundleresources/app-privacy-configuration/nsprivacycollecteddatatypes/nsprivacycollecteddatatype).
 
 ## Brief and questions
 

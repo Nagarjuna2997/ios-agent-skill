@@ -102,6 +102,49 @@ test('linked analytics package needs privacy clarification without source calls'
 test('Info.plist changes invalidate project evidence without losing source evidence', async (t) => { const { root } = await fixture(t); const a = await prepareRelease({ root }); const p = path.join(root, 'Info.plist'); const info = plist.parse(await fs.readFile(p, 'utf8')); info.NSCameraUsageDescription = 'Scan'; await fs.writeFile(p, plist.build(info)); const b = await prepareRelease({ root }); assert.notEqual(a.model.sectionHashes.project, b.model.sectionHashes.project); assert.equal(a.model.sectionHashes.source, b.model.sectionHashes.source); });
 test('identical package resume retains package status and semantic hash', async (t) => { const { root } = await fixture(t); const a = await prepareRelease({ root }), b = await prepareRelease({ root }); assert.equal(a.status, b.status); assert.match((await verifyPackage(a.path)).manifest.semanticHash, /^[a-f0-9]{64}$/); });
 test('privacy manifests provide declarations, not verified data collection', async (t) => { const { root } = await fixture(t, { resources: ['PrivacyInfo.xcprivacy'] }); await fs.writeFile(path.join(root, 'PrivacyInfo.xcprivacy'), plist.build({ NSPrivacyAccessedAPITypes: [{ NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategoryUserDefaults', NSPrivacyAccessedAPITypeReasons: ['CA92.1'] }] })); const r = await analyzeApp({ root }); assert.ok(c(r, 'required-reason:NSPrivacyAccessedAPICategoryUserDefaults')); assert.ok(r.questions.some(q => q.id === 'data-handling')); });
+test('privacy data and tracking declarations stay evidence-linked declarations, not runtime facts', async (t) => {
+    const { root } = await fixture(t, { resources: ['PrivacyInfo.xcprivacy'] });
+    await fs.writeFile(path.join(root, 'PrivacyInfo.xcprivacy'), plist.build({
+        NSPrivacyTracking: false,
+        NSPrivacyCollectedDataTypes: [
+            { NSPrivacyCollectedDataType: 'NSPrivacyCollectedDataTypeEmailAddress', NSPrivacyCollectedDataTypeLinked: true, NSPrivacyCollectedDataTypeTracking: false, NSPrivacyCollectedDataTypePurposes: ['NSPrivacyCollectedDataTypePurposeAppFunctionality'] },
+            { NSPrivacyCollectedDataType: 'NSPrivacyCollectedDataTypeEmailAddress', NSPrivacyCollectedDataTypeLinked: false, NSPrivacyCollectedDataTypeTracking: true },
+        ],
+    }));
+    const r = await analyzeApp({ root });
+    const tracking = r.model.claims.find(x => x.id.startsWith('manifest-tracking:'));
+    assert.equal(tracking.status, 'OBSERVED'); assert.equal(tracking.value, false);
+    const types = r.model.claims.filter(x => x.id.startsWith('manifest-data:'));
+    assert.equal(types.length, 2); assert.notEqual(types[0].id, types[1].id);
+    assert.ok(types.every(x => x.value === 'NSPrivacyCollectedDataTypeEmailAddress' && x.evidence.length));
+    assert.deepEqual(r.model.claims.filter(x => x.id.startsWith('manifest-data-linked:')).map(x => x.value), [true, false]);
+    assert.deepEqual(r.model.claims.filter(x => x.id.startsWith('manifest-data-tracking:')).map(x => x.value), [false, true]);
+    assert.equal(c(r, 'server-data-handling').status, 'UNKNOWN');
+    assert.ok(r.model.coverage.includes('privacy-manifest-purposes-not-analyzed'));
+    assert.ok(r.questions.some(q => q.id === 'data-handling'));
+});
+test('unknown, malformed, and incomplete privacy data declarations are bounded and withheld', async (t) => {
+    const { root } = await fixture(t, { resources: ['PrivacyInfo.xcprivacy'] });
+    const sentinel = 'NSPrivacyCollectedDataTypePrivateSentinel';
+    await fs.writeFile(path.join(root, 'PrivacyInfo.xcprivacy'), plist.build({ NSPrivacyTracking: 'not-a-boolean', NSPrivacyCollectedDataTypes: [ { NSPrivacyCollectedDataType: sentinel }, { NSPrivacyCollectedDataType: 'NSPrivacyCollectedDataTypeDeviceID' } ] }));
+    const r = await analyzeApp({ root });
+    assert.ok(r.model.coverage.includes('privacy-manifest-tracking-invalid'));
+    assert.ok(r.model.coverage.includes('privacy-manifest-data-unknown'));
+    assert.ok(r.model.coverage.includes('privacy-manifest-data-incomplete'));
+    assert.ok(!canonical(r).includes(sentinel));
+    assert.equal(r.model.claims.filter(x => x.id.startsWith('manifest-data:')).length, 1);
+    assert.equal(c(r, 'server-data-handling').status, 'UNKNOWN');
+});
+test('privacy data type enumeration is bounded and reports truncation', async (t) => {
+    const { root } = await fixture(t, { resources: ['PrivacyInfo.xcprivacy'] });
+    await fs.writeFile(path.join(root, 'PrivacyInfo.xcprivacy'), plist.build({
+        NSPrivacyCollectedDataTypes: Array.from({length: 257}, () => ({NSPrivacyCollectedDataType: 'NSPrivacyCollectedDataTypeDeviceID', NSPrivacyCollectedDataTypeLinked: false, NSPrivacyCollectedDataTypeTracking: false})),
+    }));
+    const r = await analyzeApp({ root });
+    assert.ok(r.model.coverage.includes('privacy-manifest-data-truncated'));
+    assert.equal(r.model.claims.filter(x => x.id.startsWith('manifest-data:')).length, 256);
+    assert.equal(c(r, 'server-data-handling').status, 'UNKNOWN');
+});
 test('launch findings remain release requirements and package blockers', async (t) => { const { root } = await fixture(t, { info: { UILaunchStoryboardName: 'Gone' } }); const r = await prepareRelease({ root }); assert.ok((await verifyPackage(r.path)).manifest.unresolvedBlockers.includes('launch-finding:launch-storyboard-missing')); });
 test('selection outside root is refused', async (t) => { const { root } = await fixture(t); await assert.rejects(analyzeApp({ root, project: '../Outside.xcodeproj' }), /inside project root/); });
 test('missing configuration does not silently fall back to Debug', async (t) => { const { root } = await fixture(t); assert.equal((await analyzeApp({ root, configuration: 'Production' })).model.status, 'BLOCKED'); });

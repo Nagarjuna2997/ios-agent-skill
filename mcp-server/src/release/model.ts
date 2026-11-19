@@ -78,6 +78,17 @@ export function canonical(v: unknown): string { if (Array.isArray(v))
     return '{' + Object.entries(v).sort(([a], [b]) => a.localeCompare(b, 'en')).map(([k, x]) => JSON.stringify(k) + ':' + canonical(x)).join(',') + '}'; return JSON.stringify(v); }
 export const digest = (v: string | Uint8Array) => createHash('sha256').update(v).digest('hex');
 const secret = /-----BEGIN|\b(?:sk|ghp|github_pat|AKIA)[-_A-Za-z0-9]{12,}|\beyJ[A-Za-z0-9_-]{15,}|(?:password|secret|token|api[_-]?key)\s*[:=]/i;
+// Apple's documented NSPrivacyCollectedDataType values. Unknown future or
+// malformed values remain coverage gaps, not exported user-supplied strings.
+const privacyDataTypes = new Set([
+    'Name', 'EmailAddress', 'PhoneNumber', 'PhysicalAddress', 'OtherUserContactInfo',
+    'Health', 'Fitness', 'PaymentInfo', 'CreditInfo', 'OtherFinancialInfo',
+    'PreciseLocation', 'CoarseLocation', 'SensitiveInfo', 'Contacts', 'EmailsOrTextMessages',
+    'PhotosorVideos', 'AudioData', 'GameplayContent', 'CustomerSupport', 'OtherUserContent',
+    'BrowsingHistory', 'SearchHistory', 'UserID', 'DeviceID', 'PurchaseHistory',
+    'ProductInteraction', 'AdvertisingData', 'OtherUsageData', 'CrashData', 'PerformanceData',
+    'OtherDiagnosticData', 'EnvironmentScanning', 'Hands', 'Head', 'OtherDataTypes',
+].map(name => 'NSPrivacyCollectedDataType' + name));
 function safe(v: unknown): string | null { if (typeof v !== 'string' || v.length > 180 || secret.test(v) || /[\r\n\x00-\x1f]/.test(v) || /\$[({]/.test(v))
     return null; return v; }
 function label(v: string): string { return safe(v) || 'redacted-' + digest(v).slice(0, 12); }
@@ -507,7 +518,30 @@ export async function analyzeApp(options: Options): Promise<Analysis> {
         if (p.endsWith('PrivacyInfo.xcprivacy')) {
             try {
                 const manifest = parsePropertyList(r.b);
-                claim('privacy-manifest:' + digest(p).slice(0, 8), 'bundled-resource-declaration', 'OBSERVED', [r.id], ['Declarations are not runtime verification or App Privacy answers.']);
+                const manifestId = digest(p).slice(0, 8);
+                claim('privacy-manifest:' + manifestId, 'bundled-resource-declaration', 'OBSERVED', [r.id], ['Declarations are not runtime verification or App Privacy answers.']);
+                if (typeof manifest.NSPrivacyTracking === 'boolean')
+                    claim('manifest-tracking:' + manifestId, manifest.NSPrivacyTracking, 'OBSERVED', [r.id], ['Manifest declaration only; actual tracking and completeness remain unknown.']);
+                else if (manifest.NSPrivacyTracking !== undefined)
+                    inv.coverage.add('privacy-manifest-tracking-invalid');
+                const types = manifest.NSPrivacyCollectedDataTypes;
+                if (types !== undefined && !Array.isArray(types)) inv.coverage.add('privacy-manifest-data-invalid');
+                if (Array.isArray(types)) {
+                    if (types.length) inv.coverage.add('privacy-manifest-purposes-not-analyzed');
+                    if (types.length > 256) inv.coverage.add('privacy-manifest-data-truncated');
+                    for (const [index, item] of types.slice(0, 256).entries()) {
+                        if (!item || typeof item !== 'object' || !privacyDataTypes.has(item.NSPrivacyCollectedDataType)) {
+                            inv.coverage.add('privacy-manifest-data-unknown');
+                            continue;
+                        }
+                        const itemId = `${manifestId}:${index}`;
+                        claim('manifest-data:' + itemId, item.NSPrivacyCollectedDataType, 'OBSERVED', [r.id], ['Declared category only; actual collection, linkage, purpose and completeness require review.']);
+                        for (const [key, id] of [['NSPrivacyCollectedDataTypeLinked', 'linked'], ['NSPrivacyCollectedDataTypeTracking', 'tracking']]) {
+                            if (typeof item[key!] === 'boolean') claim(`manifest-data-${id}:${itemId}`, item[key!], 'OBSERVED', [r.id], ['Declared value only; runtime behavior and applicability not verified.']);
+                            else inv.coverage.add('privacy-manifest-data-incomplete');
+                        }
+                    }
+                }
                 for (const item of list(manifest.NSPrivacyAccessedAPITypes)) {
                     if (typeof item.NSPrivacyAccessedAPIType === 'string' && /^NSPrivacyAccessedAPICategory[A-Za-z]+$/.test(item.NSPrivacyAccessedAPIType))
                         claim('required-reason:' + item.NSPrivacyAccessedAPIType, item.NSPrivacyAccessedAPIType, 'OBSERVED', [r.id], ['Declared reasons not checked for applicability.']);
