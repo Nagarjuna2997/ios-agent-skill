@@ -1,0 +1,38 @@
+{
+  "key": "d7eeeb62c430693321bc34c47fa7580c85651189476079d503aff955fea738ea",
+  "cycle": 1,
+  "round": 2,
+  "status": "pass",
+  "screens": [
+    {
+      "screen": "notes",
+      "images": [
+        {
+          "variant": "light",
+          "sha256": "33814b15b9977a003e1918c784e286301182d745afc6047b811fbede3db6bb9b",
+          "path": ".ios-agent/design-reviews/d7eeeb62c430693321bc34c47fa7580c85651189476079d503aff955fea738ea/notes-light.png"
+        },
+        {
+          "variant": "dark",
+          "sha256": "0e1d115d9ab3def72bfdfe0a062ea15a17403aa06fd341f37ec8f51ecd72e302",
+          "path": ".ios-agent/design-reviews/d7eeeb62c430693321bc34c47fa7580c85651189476079d503aff955fea738ea/notes-dark.png"
+        },
+        {
+          "variant": "xxl",
+          "sha256": "996a77001b4a3b0253f95424bba81180148f0b47ad2e854bc02733d09f613b32",
+          "path": ".ios-agent/design-reviews/d7eeeb62c430693321bc34c47fa7580c85651189476079d503aff955fea738ea/notes-xxl.png"
+        }
+      ],
+      "assessment": {
+        "verdict": "pass",
+        "findings": [],
+        "limitations": [
+          "The light, dark, and XXL captures show the populated notes list. Empty, loading, and error states are unverified.",
+          "In the XXL capture, the header and first note title wrap without visible overlap. The frame ends partway through the first note preview, so the rest of that card and subsequent rows are unverified.",
+          "VoiceOver behavior, actual hit areas, motion, scrolling, and note actions cannot be certified from screenshots. Exact contrast ratios were not measured.",
+          "The review uses Apple’s Human Interface Guidelines as visual criteria. A pass indicates no observed blocking visual issue in the supplied captures and does not certify Apple approval."
+        ]
+      }
+    }
+  ]
+}

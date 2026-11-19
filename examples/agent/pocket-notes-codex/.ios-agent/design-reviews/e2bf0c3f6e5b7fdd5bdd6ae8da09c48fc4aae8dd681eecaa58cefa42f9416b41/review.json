@@ -1,0 +1,50 @@
+{
+  "key": "e2bf0c3f6e5b7fdd5bdd6ae8da09c48fc4aae8dd681eecaa58cefa42f9416b41",
+  "cycle": 1,
+  "round": 1,
+  "status": "needs_changes",
+  "screens": [
+    {
+      "screen": "notes",
+      "images": [
+        {
+          "variant": "light",
+          "sha256": "b001d62c96a6a238b6228e998f310bbb31403451efc69860db18a017dfd43087",
+          "path": ".ios-agent/design-reviews/e2bf0c3f6e5b7fdd5bdd6ae8da09c48fc4aae8dd681eecaa58cefa42f9416b41/notes-light.png"
+        },
+        {
+          "variant": "dark",
+          "sha256": "be88d3e829acf51802189b75acd3544cdc5164665402d59df8ed9e03e9854c70",
+          "path": ".ios-agent/design-reviews/e2bf0c3f6e5b7fdd5bdd6ae8da09c48fc4aae8dd681eecaa58cefa42f9416b41/notes-dark.png"
+        },
+        {
+          "variant": "xxl",
+          "sha256": "dacf9b7fbcb0b68acf258a841261ba87db10816e445b4a03ab2b64e59a2eb815",
+          "path": ".ios-agent/design-reviews/e2bf0c3f6e5b7fdd5bdd6ae8da09c48fc4aae8dd681eecaa58cefa42f9416b41/notes-xxl.png"
+        }
+      ],
+      "assessment": {
+        "verdict": "needs_changes",
+        "findings": [
+          {
+            "variant": "dark",
+            "category": "dark-mode",
+            "observation": "The Edit label at the top left and the compose glyph at the top right are dark against their dark button surfaces. The compose action is especially hard to distinguish. The notebook glyph above Pocket Notes also nearly disappears into the background.",
+            "repair": "Use an adaptive light ink color for both toolbar controls and the notebook glyph while preserving the warm dark surfaces."
+          },
+          {
+            "variant": "dark",
+            "category": "contrast",
+            "observation": "The green note glyph blends into its dark tile at the left edge of each populated row.",
+            "repair": "Use a lighter green accent for the glyph in dark mode."
+          }
+        ],
+        "limitations": [
+          "The light and dark captures show the populated list in newest-first order. Empty, loading, error, and deletion states are unseen.",
+          "The XXL capture shows the heading and first note title wrapping without visible overlap. The remainder of the first row and subsequent rows are below the captured viewport, so their layout and scroll reachability cannot be verified.",
+          "Exact contrast ratios, VoiceOver behavior, actual hit areas, motion, and interactions cannot be verified from screenshots."
+        ]
+      }
+    }
+  ]
+}

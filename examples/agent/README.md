@@ -8,6 +8,11 @@ All four Xcode projects built unsigned for the iPhone 18 Pro Simulator with Xcod
 
 These are build and rendering checks, not full acceptance tests. A [separate Habit Tracker simulator test](habit-tracker/verification/README.md) later verified one navigation and completion-state interaction and issued a swipe; it did not assert scroll position. Taps and scrolling during the agent's own captures, authentication, real network services, StoreKit purchases, remote updates and physical-device signing were not exercised. The `-ios-agent-sample-data YES` launch argument seeds synthetic data in an in-memory store and selects local demo services; it does not use credentials or alter the app's normal persistent data path. Palette contrast checks cover generated semantic asset pairs, not every runtime text/background combination.
 
+A later [Pocket Notes Studio/Codex run](pocket-notes-codex/README.md) started
+with a fresh synthetic request, completed the shared build loop, and passed 11
+native tests. Its evidence and limitations are recorded separately from these
+four existing examples.
+
 ## Apps and evidence
 
 | Example | Screens captured | Build result | Notes |

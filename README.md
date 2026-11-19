@@ -37,7 +37,7 @@ Then, in any Claude Code session on a Mac with Xcode 16 or later:
 
 **Windows/Linux or cloud client:** the GitHub source now includes `build --remote` for unsigned builds and simulator screenshots on GitHub Actions. It requires a destination repository, GitHub CLI authentication and pinned toolkit/Xcode versions. See [remote macOS setup and billing](docs/tooling/remote-macos-build.md). npm publication is deferred.
 
-XcodeGen is optional: without it, the agent writes a folder-synchronized Xcode project itself. The steps are described in [docs/tooling/ios-build-agent.md](docs/tooling/ios-build-agent.md). The four screenshot examples reused existing app folders; this exact one-sentence quickstart has not yet been run from planning through code generation in one Mac session.
+XcodeGen is optional: without it, the agent writes a folder-synchronized Xcode project itself. The steps are described in [docs/tooling/ios-build-agent.md](docs/tooling/ios-build-agent.md). The four screenshot examples reused existing app folders; this exact Claude Code quickstart has not yet been run from planning through code generation in one Mac session. A separate fresh [Studio/Codex notes-app run](examples/agent/pocket-notes-codex/README.md) completed planning, generation, builds, simulator captures and tests on a Mac.
 
 ### Examples
 
@@ -70,7 +70,7 @@ Simulator builds can use placeholder configuration for supported services. Capab
 ### Not yet
 
 - The design-system, firebase-auth, firebase-firestore, google-sign-in, stripe-payments, rive-animation and webview-animation capabilities have passed isolated Mac compile verification. Provider accounts and runtime transactions remain unverified; a combined compile check is not a substitute for each module's verify run (see [the compile check](capabilities/README.md#compile-check)).
-- The agent's build, simulator launch and per-screen capture stages ran on Mac for these four existing examples. The original planning and code-generation sessions were separate, and a fresh one-sentence generation has not yet been run end to end on Mac.
+- The agent's build, simulator launch and per-screen capture stages ran on Mac for these four existing examples. Their planning and code-generation sessions were separate. A subsequent fresh Studio/Codex notes-app run completed the shared loop with 11 passing native tests; the Claude Code quickstart still needs its own end-to-end run.
 - Taps and scrolling during the agent's own screenshots, and device builds, are not done. A separate [Habit Tracker simulator test](examples/agent/habit-tracker/verification/README.md) verified one navigation and completion-state interaction; it issued a swipe without asserting the scroll position. In the food-delivery example the StoreKit purchase and the Live Activity were not exercised.
 
 ## Which workflow to use
