@@ -10,7 +10,7 @@ The agent's tools, loop, capability system and reports are covered by tests agai
 - The resulting projects, written by the built-in project writer, built on the first build with Xcode 27.0 and ran on the iPhone 18 Pro Simulator, including a WidgetKit extension target. See [examples/agent](../../examples/agent/README.md).
 - Every capability module's Swift compiled together in one app target. See the [compile check](../../capabilities/README.md#compile-check).
 
-The automated build-and-fix loop has not yet run against a real `xcodebuild`, and neither have the `simctl` launch and screenshot steps. No capability module has passed its own verify run, so every module is `untested`. Treat the first `/ios-build` run on a Mac as the acceptance test.
+The agent's build, simulator launch and per-screen screenshot stages subsequently ran on the four existing example projects; TabFeed required a compile repair. Planning and code generation were separate sessions, so a fresh one-sentence request has not yet been verified end to end on a Mac. See the [example evidence](../../examples/agent/README.md). The seven modules marked verified in the [catalog](../../capabilities/CATALOG.md) passed their individual minimal-app checks; the combined compile check does not substitute for those checks. Provider accounts and runtime transactions remain unverified.
 
 ## What a run does
 

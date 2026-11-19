@@ -65,7 +65,7 @@ Every capability is a folder in [capabilities/](capabilities/README.md) with a m
 
 ### Needs your accounts
 
-The agent builds and runs everything in the simulator without accounts. Capabilities that need a service declare the keys in their manifest. Client keys, such as a publishable key, go in the project's gitignored `.env` file and reach the app through a generated xcconfig. Until they are set, the keys are `REPLACE_ME` placeholders, so the app still builds and shows a configuration message. Server secrets are never put in the app. PLAN.md lists what each run needs and the cost model of each service. Running on a device, using TestFlight or publishing needs your Apple Developer Program membership.
+Simulator builds can use placeholder configuration for supported services. Capabilities that need a service declare the keys in their manifest; a successful build does not verify those services or their runtime transactions. Client keys, such as a publishable key, go in the project's gitignored `.env` file and reach the app through a generated xcconfig. Until they are set, the keys are `REPLACE_ME` placeholders and the app can show a configuration message. Server secrets are never put in the app. PLAN.md lists what each run needs and the cost model of each service. Device signing, TestFlight and publication have separate Apple account and provisioning requirements.
 
 ### Not yet
 

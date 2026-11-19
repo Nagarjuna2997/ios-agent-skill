@@ -3519,8 +3519,8 @@
       "path": "docs/tooling/ios-build-agent.md",
       "title": "iOS build agent",
       "kind": "guide",
-      "characters": 11213,
-      "hash": "716ac4397a4276d244e8397824d8a07077705985007a05424651565bf3f9eec3"
+      "characters": 11532,
+      "hash": "2b36b8548ed98b14461cf005fdd02d9e69ccfeab3b280fba33e5f810d7e60325"
     },
     {
       "path": "docs/tooling/ios-simulator-mcp.md",
