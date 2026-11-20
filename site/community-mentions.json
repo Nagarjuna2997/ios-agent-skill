@@ -628,6 +628,16 @@
       "url": "https://github.com/sudosubin/agents.nix/blob/main/data/agent-skills/github.com/nagarjuna2997/ios-agent-skill.json",
       "verifiedOn": "2026-11-19",
       "evidence": "Opened the record at the exact repository path. It pins v3.8.1; pull request 49644 was created and merged by automation. This is an index, not evidence of independent use."
+    },
+    {
+      "id": "ai-learned-today",
+      "platform": "Today (A)I Learned",
+      "kind": "directory",
+      "category": "AI tools directory \u00b7 index",
+      "description": "Lists ios-agent-skill in its public AI tools index with a short project summary and a source link.",
+      "url": "https://ailearned.today/",
+      "verifiedOn": "2026-11-20",
+      "evidence": "Opened the directory and verified its IOS Agent Skill entry links directly to github.com/Nagarjuna2997/ios-agent-skill. An index listing does not establish independent testing or endorsement."
     }
   ]
 }
