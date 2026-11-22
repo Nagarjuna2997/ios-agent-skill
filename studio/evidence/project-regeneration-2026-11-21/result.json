@@ -1,0 +1,81 @@
+{
+  "status": "passed",
+  "device": "iPhone 17",
+  "xcode": {
+    "version": "27.2",
+    "build": "27B52"
+  },
+  "sdk": "27.2",
+  "reviewId": "5ada00ec1fc38f4e5f770af20fd5102c9976447f2222f48d497847dd15dd7c0c",
+  "changes": [
+    {
+      "path": ".ios-agent/app-ir.json",
+      "change": "use-generated",
+      "base": "975103586444b15789f6bb0e0016e8e6e681dd8eda789765c2f0fa98a7853106",
+      "local": "975103586444b15789f6bb0e0016e8e6e681dd8eda789765c2f0fa98a7853106",
+      "generated": "f8edfc8e9944e9bcdbba05df9ef8c838f3d4a79b2284606268c6383c6bc4a198",
+      "candidate": "f8edfc8e9944e9bcdbba05df9ef8c838f3d4a79b2284606268c6383c6bc4a198"
+    },
+    {
+      "path": ".ios-agent/source-map.json",
+      "change": "invalidate-source-map",
+      "base": "16ef310772dbf3c7a20ea00414b1617057efa596fcf4b0422f32f7a279c10158",
+      "local": "16ef310772dbf3c7a20ea00414b1617057efa596fcf4b0422f32f7a279c10158",
+      "generated": "bea65fc3347a7131ba5b4fba82fef5bb19baa79d7d500babf477efc47fa6607a",
+      "candidate": "2f9fda7aa7253f738b8056be9ac599adbfb99c3d0816773ef6bc2ef7a047395e"
+    },
+    {
+      "path": "ReadingShelf.xcodeproj/project.pbxproj",
+      "change": "keep-local",
+      "base": "29d74ea847a62f4ef62fdecb5aae9d52d24ce9c6a288a876f678ff3d380deee9",
+      "local": "6c650a6b3a6ef9a22ff61fb51f1b3f4635245247d869cc4763b5f995000b0067",
+      "generated": "29d74ea847a62f4ef62fdecb5aae9d52d24ce9c6a288a876f678ff3d380deee9",
+      "candidate": "6c650a6b3a6ef9a22ff61fb51f1b3f4635245247d869cc4763b5f995000b0067"
+    },
+    {
+      "path": "ReadingShelf/Resources/Assets.xcassets/ReaderInk.colorset/Contents.json",
+      "change": "keep-local",
+      "base": null,
+      "local": "5a0406d451b40764d035d0562d3cff7553f5ec4ad2dfb04967b338a287271763",
+      "generated": null,
+      "candidate": "5a0406d451b40764d035d0562d3cff7553f5ec4ad2dfb04967b338a287271763"
+    },
+    {
+      "path": "ReadingShelf/Views/ReaderToolbar.swift",
+      "change": "keep-local",
+      "base": null,
+      "local": "f778cdc7db54efff5244c37176683368a9c11295b18bd13654960602368ccb74",
+      "generated": null,
+      "candidate": "f778cdc7db54efff5244c37176683368a9c11295b18bd13654960602368ccb74"
+    },
+    {
+      "path": "ReadingShelf/Views/RootView.swift",
+      "change": "merged",
+      "base": "8f70e673bba7760c393071fd5f60e66979840a2421b6434b1efdbabe05fe61cb",
+      "local": "c17ad00ee3fdfc9ce8ac732fd3306afa9039ccb8434661644e1978892006806b",
+      "generated": "e52c01537cb1548bd4162cc432ed8c81c45e432dfaf41080f1f4204bd8c4028c",
+      "candidate": "b8e5fc628f02fc359fc8593f7230e4d4749c949339f000d6a96e1570c9b3056f"
+    }
+  ],
+  "replay": {
+    "name": "Second book",
+    "profile": "light-large",
+    "orientation": "portrait",
+    "locale": "en-US",
+    "taps": [
+      "screen-1-node-4-cedar-b"
+    ],
+    "visible": "screen-2-node-5"
+  },
+  "toolbar": {
+    "taps": [
+      "screen-1-node-4-cedar-b",
+      "reader-notes"
+    ],
+    "visible": "reader-notes-title"
+  },
+  "captures": {
+    "second-book.png": "6f894799c1049212c0c190502e3e65a38257b8f6968a8c88ddd944dc2eb0ddb6",
+    "user-toolbar.png": "1cf33f54dacffdeb191adeb04b8ca7422ae9bd59b47f90547ffae3f20f514afd"
+  }
+}
