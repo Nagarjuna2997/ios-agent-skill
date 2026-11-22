@@ -655,3 +655,7 @@ struct AppUpdate {
 ## September 21 follow-up
 
 See `docs/tooling/september-2026-distribution.md` for the newly checked beta APIs and tooling limitations.
+
+## Group subscriptions in iOS 27.3 beta 2
+
+The [multiseat sample](../../samples/StoreKitMultiseat/README.md) checks the product's group-purchase setting and opens Apple's invitation sheet using the verified purchaser transaction's original ID. Recompile with Xcode 27.3 beta 2 or newer when migrating from the first beta's subscription-group-ID APIs. The consent eligibility query also moved to `Product.SubscriptionInfo.multiSeatDataSharingConsentEligibility(originalTransactionID:)`. See [Apple's migration notes](https://developer.apple.com/documentation/ios-ipados-release-notes/ios-ipados-27_3-release-notes).

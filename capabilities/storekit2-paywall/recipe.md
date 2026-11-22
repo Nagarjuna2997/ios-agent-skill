@@ -26,3 +26,5 @@ From [StoreKit](../../docs/frameworks/storekit.md):
 - Listen to `Transaction.updates` for purchases made elsewhere, renewals and refunds.
 - Offer restore. Show price, period and terms clearly.
 - Product ids and prices in `Products.storekit` are placeholders. Create real products in App Store Connect with the same ids before release ([StoreKit testing](../../docs/apple/technologies/storekittest.md)).
+
+For Apple-hosted group subscriptions, see [the optional iOS 27.3 multiseat sample](../../samples/StoreKitMultiseat/README.md). It demonstrates the product support check and invitation by verified original transaction ID.
