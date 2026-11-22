@@ -36,3 +36,27 @@ test('improved pixels cannot override the independent native and reference gates
   assert.equal(combineSizeDecisions(passed, {outcome:'requires-review', reasons:['approval missing']}, pixels).outcome, 'requires-review');
   assert.equal(combineSizeDecisions(passed, passed, pixels).outcome, 'accepted');
 });
+import {mkdtemp, mkdir, rm, writeFile} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+import {sharedVerifierInputs, readCaptureSize} from './capture-contract.mjs';
+
+test('changing the test scheme helper changes the checkpoint contract input', async t => {
+  const root = await mkdtemp(join(tmpdir(), 'scheme-contract-'));
+  t.after(() => rm(root, {recursive:true, force:true}));
+  const directory = join(root, 'benchmarks/universal/native-behavior');
+  await mkdir(directory, {recursive:true});
+  const helper = join(directory, 'ui-test-scheme.mjs');
+  await writeFile(helper, 'first scheme');
+  const first = await sharedVerifierInputs(root);
+  await writeFile(helper, 'second scheme');
+  assert.notDeepEqual(await sharedVerifierInputs(root), first);
+});
+test('a capture cannot be labeled XXXL when the simulator reports Large', async () => {
+  await assert.rejects(readCaptureSize(async () => 'large\n', 'test-device', 'extra-extra-extra-large'), /simulator reports large/);
+  assert.equal(await readCaptureSize(async (name, args) => {
+    assert.equal(name, 'xcrun');
+    assert.deepEqual(args, ['simctl','ui','test-device','content_size']);
+    return 'extra-extra-extra-large\n';
+  }, 'test-device', 'extra-extra-extra-large'), 'extra-extra-extra-large');
+});

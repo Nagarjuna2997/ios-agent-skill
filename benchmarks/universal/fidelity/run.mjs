@@ -1,3 +1,4 @@
+import {readCaptureSize, sharedVerifierInputs} from './capture-contract.mjs';
 import {selectMeasuredText, compareSizeRepairs, combineSizeDecisions, textScales} from './measured-repair.mjs';
 import {fixtureUIScheme} from '../native-behavior/ui-test-scheme.mjs';
 import {allProbeCapturesInvariant} from './probe-integrity.mjs';
@@ -68,7 +69,7 @@ try{
  browser=await playwright.chromium.launch({headless:true,...(process.env.CHROME_PATH?{executablePath:process.env.CHROME_PATH}:{})});
  const environment={xcode,sdk,runtimeBuild:runtime.buildversion,browser:browser.version(),host:await command('sw_vers',['-buildVersion'])};
  const inputs=[...await files(resolve(here,'../../../mcp-server/dist')),...await files(fixture),...await files(here)].filter(f=>!f.includes('/node_modules/'));
- const inputHashes=[];for(const f of inputs)inputHashes.push([f.slice(resolve(here,'../../..').length),sha256(await readFile(f))]);
+ const inputHashes=await sharedVerifierInputs(resolve(here,'../../..'));for(const f of inputs)inputHashes.push([f.slice(resolve(here,'../../..').length),sha256(await readFile(f))]);
  const contract=sha256(JSON.stringify({profile,environment,inputHashes,referenceApproval,approvalXXXL,adapter,fixtureName,autoRepair,textNodes,promoteBaseline}));
  if(resume&&report.contract!==contract)throw Error('Run inputs, verifier or environment changed; use a new output directory');
  if(report.error){report.interruptions=[...(report.interruptions??[]),{error:report.error,category:report.failureCategory,resumedAt:new Date().toISOString()}];delete report.error;delete report.failureCategory;}
@@ -109,7 +110,9 @@ try{
   for(const [suffix,size] of [['large','large'],['xxxl','extra-extra-extra-large']]){
    await command('xcrun',['simctl','ui',udid,'content_size',size]);
    row[suffix]=await journal.stage(name+'-'+suffix,async()=>{
+    const before=autoRepair?await readCaptureSize(command,udid,size):null;
     const tests=await testProject(folder,runner,udid);const log=join(folder,tests.logPath);
+    const after=autoRepair?await readCaptureSize(command,udid,size):null;
     const exports=join(folder,'.ios-agent/screenshots',suffix+'-'+randomUUID());
     await command('xcrun',['xcresulttool','export','attachments','--path',join(folder,tests.resultBundle),'--output-path',exports]);
     const manifest=join(exports,'manifest.json');
@@ -121,7 +124,7 @@ try{
     let geometry=null;if(match)geometry=measureClipping(JSON.parse(match[1]));
     const textMatch=text.match(/IOS_AGENT_TYPOGRAPHY:(\{[^\n]+\})/);
     const typography=textMatch?JSON.parse(textMatch[1]):null;
-    return {value:{tests,shot,geometry,typography,probe,probeComparison},files:[log,manifest,shot.path,probe]};
+    return {value:{tests,shot,geometry,typography,probe,probeComparison,...(autoRepair?{verifiedContentSize:{before,after}}:{})},files:[log,manifest,shot.path,probe]};
    });await save();
   }
   await command('xcrun',['simctl','ui',udid,'content_size','large']);
