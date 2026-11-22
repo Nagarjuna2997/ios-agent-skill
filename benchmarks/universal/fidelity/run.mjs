@@ -116,6 +116,12 @@ try{
     const exports=join(folder,'.ios-agent/screenshots',suffix+'-'+randomUUID());
     await command('xcrun',['xcresulttool','export','attachments','--path',join(folder,tests.resultBundle),'--output-path',exports]);
     const manifest=join(exports,'manifest.json');
+    if (tests.status !== 'passed') {
+      row.failedCaptures ??= {};
+      row.failedCaptures[suffix] = {tests, manifest, ...(autoRepair ? {verifiedContentSize: {before, after}} : {})};
+      await save();
+      throw Error('Capture requires passing native tests; see ' + suffix + ' test result and log');
+    }
     const capture=selectVerifiedCapture(JSON.parse(await readFile(manifest,'utf8')),udid,tests.status);
     const shot={path:join(exports,capture),source:'XCTest runningForeground collapsed-state attachment'};
     const probe=join(exports,selectVerifiedCapture(JSON.parse(await readFile(manifest,'utf8')),udid,tests.status,'typography'));
