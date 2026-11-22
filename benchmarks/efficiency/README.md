@@ -19,7 +19,7 @@ Each JSON cell must contain:
 
 `save_cell(directory, cell)` atomically retains each completed receipt; replaying identical evidence is idempotent, and a conflicting replay fails without overwriting it. The evaluator reports each pair's quality and metrics plus signed optimized-minus-baseline deltas. It does not turn incomplete/failed/provider runs into successful savings or pool cold/warm conditions. Contract unit tests use synthetic receipts; they are not scored model results.
 
-No paired authenticated model comparison has been run for this change. The independently measured component result is serialized MCP schema size, recorded in [the implementation guide](../../docs/tooling/token-efficiency.md). A narrower schema is not proof of lower billed tokens or improved task success. Existing hidden-oracle isolation requirements still apply before any scored run.
+A [three-task hosted pilot with a local Qwen model](evidence/portable-pilot-2026-11-22/README.md) recorded 12 real generations. Both guide-budget arms solved zero tasks. Authenticated agent-client comparisons remain open. The independently measured component result is serialized MCP schema size, recorded in [the implementation guide](../../docs/tooling/token-efficiency.md). A narrower schema is not proof of lower billed tokens or improved task success. Existing hidden-oracle isolation requirements still apply before any scored run.
 
 ## Real Xcode integration check (no model)
 

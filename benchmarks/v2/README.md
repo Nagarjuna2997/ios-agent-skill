@@ -100,7 +100,7 @@ command**. Do not reuse the older same-host harness as an isolation boundary.
 
 ## Scope and limits
 
-- No scored baseline or skill arm has been executed for v2.
+- The [three-task Qwen pilot](../efficiency/evidence/portable-pilot-2026-11-22/README.md) compared two guide budgets. The broader skill-versus-baseline study across all 30 tasks remains open.
 - Public fixture sources can in principle be memorized by models; network/filesystem
   isolation prevents tool retrieval, not pretraining contamination. Freeze before trials.
 - Simulator fallback B04 is compiled at iOS 16 and exercised through its injected
