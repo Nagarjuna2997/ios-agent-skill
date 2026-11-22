@@ -202,3 +202,5 @@ Run the local two-revision acceptance check from the repository root after build
 ```sh
 node studio/check-screen-setup.mjs SIMULATOR_UDID /absolute/new/evidence-directory
 ```
+
+The [recorded iPhone 17 run](evidence/screen-setup-2026-11-21/README.md) includes both Cedar Loop screenshots, their hashes and the measured revision difference.
