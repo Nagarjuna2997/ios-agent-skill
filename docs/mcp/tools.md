@@ -140,7 +140,7 @@ Guide: [knowledge-server.md](knowledge-server.md)
 | `apple_docs_lookup_symbol` | not declared | Retrieve bounded Apple documentation evidence for lookup_symbol. |
 | `apple_docs_platform_support` | not declared | Inspect dynamically installed SDK/platform inventory; not API availability. |
 | `apple_docs_related_symbols` | not declared | Retrieve bounded Apple documentation evidence for related_symbols. |
-| `apple_docs_sdk_diff` | not declared | Compare installed Xcode SDK inventories or public Swift symbol graphs for one framework and two named Xcode installations. |
+| `apple_docs_sdk_diff` | not declared | List installed Xcode SDK inventories or compare one module’s primary public Swift symbol graph between two named Xcode installations. |
 | `apple_docs_search` | not declared | Retrieve bounded Apple documentation evidence for search. |
 | `apple_docs_status` | not declared | Discover installed Xcode, SDKs and local Apple documentation; does not prove bridge authorization. |
 | `get_apple_technology` | read-only | Read Apple technology guide |

@@ -111,4 +111,13 @@ ios-agent-mcp docs diff StoreKit Xcode.app Xcode-beta.app
 
 The corresponding MCP input for `apple_docs_sdk_diff` is `{"comparison":{"framework":"StoreKit","from":"Xcode.app","to":"Xcode-beta.app"}}`. Both installations must have an iOS Simulator SDK and support the same extraction flags. Each comparison uses Apple's symbol extractor at the same deployment target and architecture. The result includes before/after Xcode builds, SDK versions, graph hashes, declarations, and availability annotations. Pass the returned `nextOffset` as the last CLI argument or as `comparison.offset` to read the next page.
 
-Added and removed refer to the primary public Swift symbol graph of the selected module. Changes to an overload's identifier can appear as removals and additions. Separate extension graphs and other platforms are outside this comparison. Bundled Swift sample and template paths in `exampleCandidates` are textual identifiers in files importing the module. Build an example to establish whether it is affected. Temporary extraction files are removed on completion.
+The comparison reads only `Module.symbols.json` for each installation. Extension files such as `StoreKit@Foundation.symbols.json`, re-exported modules, and other platforms fall outside its scope. An unchanged SwiftUI graph can coexist with new APIs in SwiftUICore. Changes to an overload's identifier can appear as a removal and an addition. Build the bundled Swift sample and template paths in `exampleCandidates` to check whether a textual reference is affected.
+
+Use `ios-agent-mcp docs frameworks` to see frameworks in the selected installation. To locate a Swift declaration exposed by an umbrella framework, search that installation’s public simulator interfaces. For example, on the iOS 27.2 SDK this search finds `glassEffect` in `SwiftUICore.framework`:
+
+```sh
+sdk_path="$(xcrun --sdk iphonesimulator --show-sdk-path)"
+rg -l -F --glob 'arm64-apple-ios-simulator.swiftinterface' 'func glassEffect(' "$sdk_path/System/Library/Frameworks"
+```
+
+Set `DEVELOPER_DIR` before running the command to select another installation. A match identifies a module to investigate. Swift interfaces can omit Objective-C declarations, and a member in a separate extension graph will still be outside the primary comparison. Extraction has a 150-second timeout per installation and a 64 MiB limit per primary graph. Exceeding either yields an unavailable result; partial graphs never produce changes. Allow several minutes for both installations when configuring an MCP client, or use the CLI. Temporary graph files and the extraction cache are removed after each capture.

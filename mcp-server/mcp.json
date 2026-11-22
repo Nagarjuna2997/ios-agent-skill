@@ -331,7 +331,7 @@
     },
     {
       "name": "apple_docs_sdk_diff",
-      "description": "Compare installed Xcode SDK inventories or public Swift symbol graphs for one framework and two named Xcode installations.",
+      "description": "Use when reviewing an SDK upgrade. List installed Xcode SDK inventories or compare one module’s primary public Swift symbol graph between two named Xcode installations.",
       "inputSchema": {
         "type": "object",
         "properties": {
