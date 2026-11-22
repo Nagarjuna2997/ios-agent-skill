@@ -362,7 +362,7 @@ Search offline with `node scripts/query-library.mjs search "SwiftData"`. Read a 
 | [docs/apple/technology-workflow.md](../../docs/apple/technology-workflow.md) | guide | 7695 |
 | [docs/apple/updates-and-release-notes.md](../../docs/apple/updates-and-release-notes.md) | guide | 11108 |
 | [docs/apple/xcode-plugin-inventory.json](../../docs/apple/xcode-plugin-inventory.json) | source | 19565 |
-| [docs/architecture/universal-app-engine.md](../../docs/architecture/universal-app-engine.md) | guide | 37902 |
+| [docs/architecture/universal-app-engine.md](../../docs/architecture/universal-app-engine.md) | guide | 38973 |
 | [docs/backend/app-architectures.md](../../docs/backend/app-architectures.md) | guide | 3005 |
 | [docs/backend/appwrite.md](../../docs/backend/appwrite.md) | guide | 2906 |
 | [docs/backend/authentication.md](../../docs/backend/authentication.md) | guide | 3980 |
@@ -523,7 +523,7 @@ Search offline with `node scripts/query-library.mjs search "SwiftData"`. Read a 
 | [docs/tooling/project-scaffolding.md](../../docs/tooling/project-scaffolding.md) | guide | 18060 |
 | [docs/tooling/remote-macos-build.md](../../docs/tooling/remote-macos-build.md) | guide | 6245 |
 | [docs/tooling/september-2026-distribution.md](../../docs/tooling/september-2026-distribution.md) | guide | 6675 |
-| [docs/tooling/ship-testflight.md](../../docs/tooling/ship-testflight.md) | guide | 6303 |
+| [docs/tooling/ship-testflight.md](../../docs/tooling/ship-testflight.md) | guide | 7963 |
 | [docs/tooling/token-efficiency.md](../../docs/tooling/token-efficiency.md) | guide | 11574 |
 | [docs/tooling/visual-iteration-loop.md](../../docs/tooling/visual-iteration-loop.md) | guide | 3160 |
 | [docs/tooling/xcode-27-2.md](../../docs/tooling/xcode-27-2.md) | guide | 4237 |

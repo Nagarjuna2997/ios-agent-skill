@@ -2483,8 +2483,8 @@
       "path": "docs/architecture/universal-app-engine.md",
       "title": "Universal App Engine: architecture and implementation record",
       "kind": "guide",
-      "characters": 37902,
-      "hash": "184110bed3f85be5eb7da3d7dc4c281a20183073da5fc33bdc3d673aaaf82e38"
+      "characters": 38973,
+      "hash": "aeb58624072eec036d056edcdad1688606229a5be90c3d335a74b2c8f623baf8"
     },
     {
       "path": "docs/backend/app-architectures.md",
@@ -3610,8 +3610,8 @@
       "path": "docs/tooling/ship-testflight.md",
       "title": "Ship an app to TestFlight",
       "kind": "guide",
-      "characters": 6303,
-      "hash": "b8a39e2455b8efe35a9506adff1d5bfa5cb215c997c2be6949b5688df9a44723"
+      "characters": 7963,
+      "hash": "15dae9216f5483cac50ae3e7788fff0409653d4a8c6f58bf166eb63e98187171"
     },
     {
       "path": "docs/tooling/token-efficiency.md",

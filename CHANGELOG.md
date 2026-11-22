@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+### Editable collections, safe regeneration and runtime verification
+
+- Import bounded React record collections with stable keys into editable SwiftUI list and detail screens. The [Reading Shelf fixture](benchmarks/universal/reading-list/README.md) has two books with the same title and different record IDs.
+- Review regenerated Swift sources, assets and project membership as one revision. Studio keeps local edits, checks the reviewed hashes on apply and explains conflicts. [Studio regeneration](studio/README.md#source-revisions)
+- The [Library hours benchmark](benchmarks/universal/library-hours/README.md) selects text candidates using observed line breaks and compares native output at Large and XXXL.
+- The [capability runtime tests](benchmarks/capability-runtime/README.md) exercise SwiftData across process relaunch and local StoreKit subscriptions against working and deliberately broken template copies.
+- After a lost TestFlight upload response, `ship status` can look up the exact app, version and build through read-only App Store Connect requests. [Shipping guide](docs/tooling/ship-testflight.md)
+- The [paired Swift benchmark](benchmarks/v2/PAIRED.md) grades three portable repair tasks in isolation and records measured model usage, quality and failed attempts for cold and warm runs.
+
 ### Simulator journeys, native layouts and Apple SDK updates
 
 - `/ios-build` plans can describe a user journey with taps, scrolling, relaunch and visible outcomes. The generated XCTest records per-step screenshots for the run report. [Habit Tracker journey](examples/agent/habit-tracker/verification/journey-2026-11-21/RUN_REPORT.md)
