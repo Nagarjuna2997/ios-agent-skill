@@ -31,6 +31,22 @@ export function lookupTechnology(id: string) {
 export function searchLocalReferences(query: string, limit = 8, kind = 'all') {
   return searchLibrary(bundle.library, query, limit, kind);
 }
+// Match identifiers only in bundled Swift samples/templates that import this module.
+export function exampleMatcher(framework: string) {
+  const imports = new RegExp('^\\s*(?:@\\w+\\s+)*import\\s+' + framework + '\\b', 'm');
+  const byToken = new Map<string, string[]>();
+  for (const file of bundle.library.files) {
+    if (!file.path.endsWith('.swift')) continue;
+    const source = bundle.library.blobs[file.hash];
+    if (!imports.test(source)) continue;
+    for (const token of new Set(source.match(/[A-Za-z_][A-Za-z0-9_]*/g) ?? [])) {
+      const paths = byToken.get(token) ?? [];
+      if (paths.length < 5) paths.push(file.path);
+      byToken.set(token, paths);
+    }
+  }
+  return (token: string) => byToken.get(token) ?? [];
+}
 export function readLocalReference(path: string, offset = 0, maxChars = 6000) {
   return readLibrary(bundle.library, path, offset, maxChars);
 }

@@ -331,10 +331,42 @@
     },
     {
       "name": "apple_docs_sdk_diff",
-      "description": "Compare installed Xcode SDK inventories; not a symbol-level API diff. Use before generating Apple API code.",
+      "description": "Compare installed Xcode SDK inventories or public Swift symbol graphs for one framework and two named Xcode installations.",
       "inputSchema": {
         "type": "object",
-        "properties": {},
+        "properties": {
+          "comparison": {
+            "type": "object",
+            "properties": {
+              "framework": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_]{0,79}$"
+              },
+              "from": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 100
+              },
+              "to": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 100
+              },
+              "offset": {
+                "type": "integer",
+                "minimum": 0,
+                "default": 0
+              }
+            },
+            "required": [
+              "framework",
+              "from",
+              "to"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
       "execution": {

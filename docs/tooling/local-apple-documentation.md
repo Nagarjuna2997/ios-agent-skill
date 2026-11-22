@@ -39,7 +39,7 @@ Xcode documentation build identifiers may be unknown when installed metadata omi
 - `apple_docs_lookup_symbol`, `apple_docs_availability`, `apple_docs_related_symbols`, `apple_docs_examples`: focused documentation searches, not separate native Xcode tools or exact symbol resolvers.
 - `apple_docs_frameworks`: framework inventory grouped by installed SDK.
 - `apple_docs_platform_support`: installed platform/SDK inventory, not API support certification.
-- `apple_docs_sdk_diff`: compares Xcode/SDK inventories; symbol-level API diff is not implemented.
+- `apple_docs_sdk_diff`: lists installed Xcode/SDK inventories. With a comparison request it extracts and compares public symbols for one framework.
 
 Availability and deprecation are evidence in excerpts, not inferred from an SDK number. SDK fallback may match a reference rather than a declaration and is labelled accordingly. Retrieval does not automatically validate generated code: compile and test against the chosen SDK. SDK search is bounded and may miss deeply nested or unusually large interfaces. It requires a framework-qualified symbol or explicit framework.
 
@@ -100,3 +100,15 @@ The `Refresh Apple reference indexes` GitHub Actions workflow runs daily at 09:1
 The inventory at `docs/apple/xcode-plugin-inventory.json` records file paths and SHA-256 hashes, not guidance or a proof of API correctness. Hosted Xcode may differ from a developer’s Mac and may lag the newest beta. If the export is unavailable, source retrieval fails, a prior entry or topic disappears, generated files would be deleted, or validation fails, the job stops without committing and requires investigation. GitHub schedules may be delayed and public-repository schedules can be disabled after 60 days without activity. Standard GitHub-hosted runners are free for public repositories; private usage and artifacts follow GitHub’s billing rules. See [GitHub scheduling](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule) and [billing](https://docs.github.com/en/actions/concepts/billing-and-usage).
 
 This job refreshes source indexes and plugin fingerprints; it cannot autonomously implement or verify every newly released API without engineering review and an appropriate SDK. It does not run Claude or ChatGPT, learn project facts, publish npm, or approve app releases.
+
+## Compare two installed simulator SDKs
+
+Run `ios-agent-mcp docs diff` to see installation names, then specify the earlier and later Xcode apps explicitly. For example:
+
+```sh
+ios-agent-mcp docs diff StoreKit Xcode.app Xcode-beta.app
+```
+
+The corresponding MCP input for `apple_docs_sdk_diff` is `{"comparison":{"framework":"StoreKit","from":"Xcode.app","to":"Xcode-beta.app"}}`. Both installations must have an iOS Simulator SDK and support the same extraction flags. Each comparison uses Apple's symbol extractor at the same deployment target and architecture. The result includes before/after Xcode builds, SDK versions, graph hashes, declarations, and availability annotations. Pass the returned `nextOffset` as the last CLI argument or as `comparison.offset` to read the next page.
+
+Added and removed refer to the primary public Swift symbol graph of the selected module. Changes to an overload's identifier can appear as removals and additions. Separate extension graphs and other platforms are outside this comparison. Bundled Swift sample and template paths in `exampleCandidates` are textual identifiers in files importing the module. Build an example to establish whether it is affected. Temporary extraction files are removed on completion.
