@@ -1,0 +1,31 @@
+{
+  "run": "initial capture",
+  "status": "requires-review",
+  "candidateTests": {
+    "passedTests": 2,
+    "failedTests": 3,
+    "skippedTests": 0
+  },
+  "failedCases": [
+    {
+      "test": "InteractionTests/testAccessibilityCollapsedAndExpanded()",
+      "message": "Application 'com.example.fieldnotes' does not have a process ID"
+    },
+    {
+      "test": "InteractionTests/testDisclosureAndContent()",
+      "message": "Application 'com.example.fieldnotes' does not have a process ID"
+    },
+    {
+      "test": "InteractionTests/testMeasuredGeometry()",
+      "message": "Failed to get background assertion for target app with pid 71663: No failure details provided"
+    }
+  ],
+  "candidateCapture": "No XXXL capture admitted",
+  "candidateFailure": {
+    "phase": "verification",
+    "category": "verification_failure",
+    "message": "Capture requires passing native tests"
+  },
+  "largeMeanError": 0.0037185669961041553,
+  "baselineXXXLMeanError": 0.020926274015498618
+}
