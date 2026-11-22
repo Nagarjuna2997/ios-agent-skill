@@ -13,3 +13,5 @@ node benchmarks/universal/reading-list/run.mjs benchmarks/universal/native-behav
 ```
 
 At Large and XXXL, the XCTest opens the second Cedar, checks its author, edits its title, returns to the list, and revisits both books. It verifies that the first title stays unchanged. The run records a screenshot and test result at each size. This fixture tests native interaction and accessibility identifiers. It does not establish visual fidelity, a live backend, or persistence across launch.
+
+The [recorded iOS 27.2 simulator evidence](../evidence/reading-list-20261121/) includes the two XCTest summaries and their screenshots.
