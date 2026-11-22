@@ -1,0 +1,48 @@
+name: Local capability runtime contracts
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'capabilities/swiftdata/template/**'
+      - 'capabilities/storekit2-paywall/template/**'
+      - 'benchmarks/capability-runtime/**'
+      - '.github/workflows/capability-runtime.yml'
+  pull_request:
+    paths:
+      - 'capabilities/swiftdata/template/**'
+      - 'capabilities/storekit2-paywall/template/**'
+      - 'benchmarks/capability-runtime/**'
+      - '.github/workflows/capability-runtime.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+defaults:
+  run:
+    shell: bash
+jobs:
+  contracts:
+    runs-on: macos-26
+    timeout-minutes: 40
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.5.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Check project generator
+        run: command -v xcodegen || brew install xcodegen
+      - name: Check XCTest receipt classification
+        run: python3 -B -m unittest discover -s benchmarks/capability-runtime
+      - name: Verify persistence and local purchase behavior and detect broken templates
+        run: |
+          python3 benchmarks/capability-runtime/run.py "$RUNNER_TEMP/runtime-contracts" \
+            --runtime com.apple.CoreSimulator.SimRuntime.iOS-26-5 \
+            --device-type com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: capability-runtime-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/runtime-contracts/*/receipt.json
+            ${{ runner.temp }}/runtime-contracts/*/build.log
+            ${{ runner.temp }}/runtime-contracts/*/results.xcresult/

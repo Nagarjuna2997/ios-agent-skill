@@ -78,3 +78,7 @@ Recorded runs, 2026-10-02. Both were clean builds with Xcode 27.0 for the iPhone
 ![Xcode build log for 39 modules: Build succeeded](_evidence/compile-check-2026-10-02-39-modules.jpg)
 
 ![Xcode build log for 41 modules: Build succeeded](_evidence/compile-check-2026-10-02-41-modules.jpg)
+
+### Runtime contracts
+
+SwiftData persistence across process relaunch and the StoreKit paywall's local purchase lifecycle have separate [simulator contracts](../benchmarks/capability-runtime/README.md). The runner records XCTest results for the actual templates and checks that the same tests detect intentionally broken copies. Module compilation, local runtime behavior, and external account verification are separate results.
