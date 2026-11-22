@@ -36,3 +36,9 @@ Cold runs start empty. For warm runs the observer first typechecks two different
 - The worker supports these three single-file portable Swift fixtures. Swift packages, Apple SDK fixtures and simulator workloads need separately implemented and verified runners. An unrestricted local folder is never used as a fallback. A passing smoke run cannot establish model accuracy or measured token savings.
 
 [Fixture contracts](README.md) · [Efficiency receipt format](../efficiency/README.md) · [Ollama generation API](https://docs.ollama.com/api/generate) · [Ollama model inventory](https://docs.ollama.com/api/tags)
+
+## Hosted open-model pilot
+
+The [pilot workflow](../../.github/workflows/benchmark-v2-model-pilot.yml) runs on a public GitHub-hosted Linux runner. It pins the official Swift and Ollama image digests and the Qwen 2.5 Coder 0.5B Instruct GGUF manifest. Provisioning downloads public weights. Before any experiment begins, the provisioning server stops. The inference server has a loopback-only network namespace and no access to the checkout, Docker socket or provider secrets. The observer connects through the same network namespace; every candidate execution gets its own separate container. Model name, digest, version, context budget, seed and generation budget are pinned and recorded.
+
+One trial covers the three fixtures in both response-budget arms at cold and warm start, for twelve model calls. A grade can fail even when inference succeeds. Malformed model output counts as failed task quality and retains measured usage. The workflow is limited to 35 minutes, runs on changes to its own pilot launcher or workflow, and can be manually dispatched. A single small-model trial cannot establish an efficiency improvement across clients. [Apache-2.0 model card](https://huggingface.co/Qwen/Qwen2.5-Coder-0.5B-Instruct)

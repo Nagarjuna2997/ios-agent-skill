@@ -1,0 +1,31 @@
+name: Pinned local-model Swift pilot
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['benchmarks/v2/hosted-pilot.sh', '.github/workflows/benchmark-v2-model-pilot.yml']
+permissions:
+  contents: read
+defaults:
+  run:
+    shell: bash
+jobs:
+  pilot:
+    if: github.event.repository.private == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run the pretrained local model offline in both arms
+        run: bash benchmarks/v2/hosted-pilot.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: local-model-paired-evidence
+          path: ${{ runner.temp }}/paired-model
+          if-no-files-found: warn

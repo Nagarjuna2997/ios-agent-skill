@@ -14,7 +14,7 @@ import uuid
 
 import harness
 import protocol
-from paired_worker import Docker, IMAGE, InfrastructureError, LocalOllama, ProviderError
+from paired_worker import Docker, IMAGE, InfrastructureError, InvalidCandidate, LocalOllama, ProviderError
 
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[1]
@@ -24,7 +24,7 @@ import evaluate
 GUIDES = {'C02': 'docs/swift/swift-concurrency.md', 'D03': 'docs/frameworks/foundation.md',
           'Q02': 'docs/swift/memory-lifetime.md'}
 TRAINING = ('D04', 'Q01')
-SETTINGS = {'temperature': 0, 'seed': 23, 'max_output_tokens': 2048}
+SETTINGS = {'temperature': 0, 'seed': 23, 'max_output_tokens': 1024, 'context_tokens': 12288}
 VERSION = 'portable-guidance-pairs-1'
 FACT = 'Two separate held-out Swift fixtures typechecked with swiftc -swift-version 6 -strict-concurrency=complete -warnings-as-errors -typecheck Solution.swift.'
 SMOKE = {'client': 'unchanged-starter-smoke', 'client_version': VERSION,
@@ -124,6 +124,10 @@ def cell(docker, provider, task, arm, trial, condition, pins, root, training):
         passed = quality['behavior'] is True
         evidence['quality'] = quality
         status = 'completed'
+    except InvalidCandidate as exc:
+        metrics.update(exc.usage)
+        evidence.update(error=str(exc), quality={'valid_source_response': False, 'compiled': None, 'behavior': None})
+        status, passed = 'completed', False
     except ProviderError as exc:
         status, evidence['error'] = 'provider_failure', str(exc)
     except (InfrastructureError, OSError, subprocess.SubprocessError) as exc:

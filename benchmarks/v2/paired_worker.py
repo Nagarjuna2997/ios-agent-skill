@@ -22,6 +22,12 @@ class ProviderError(RuntimeError):
     pass
 
 
+class InvalidCandidate(ValueError):
+    def __init__(self, message, usage):
+        super().__init__(message)
+        self.usage = usage
+
+
 class Docker:
     def __init__(self, config_dir):
         # Empty config avoids inherited auth, proxies, CLI plugins and remote contexts.
@@ -48,6 +54,10 @@ class Docker:
         name = 'ios-bench-' + uuid.uuid4().hex
         cmd[2:2] = ['--name', name, '--interactive', '--cpus=2', '--ipc=none',
                     '--ulimit', 'fsize=67108864:67108864', '--log-driver=none']
+        if evaluator:
+            # Docker mounts /tmp noexec by default. Only the trusted grading
+            # container needs to launch its freshly linked Swift executable.
+            cmd[2:2] = ['--tmpfs', '/run/ios-check:rw,exec,nosuid,nodev,mode=1777,size=96m']
         try:
             proc = subprocess.run(cmd, env=self.env, input=stdin, stdout=subprocess.PIPE,
                                   stderr=subprocess.PIPE, timeout=timeout)
@@ -97,14 +107,18 @@ swift --version"""
     def judge(self, workspace):
         # Ignore candidate output. Only the isolated process' exit status is used.
         # Toolchain availability is checked independently before each experiment.
-        body = """swiftc -swift-version 6 -strict-concurrency=complete -warnings-as-errors -parse-as-library Solution.swift Acceptance.swift -o /tmp/verify >/dev/null 2>&1 || exit 20
-timeout 30 /tmp/verify </dev/null >/dev/null 2>&1
+        body = """cp /bin/true /run/ios-check/probe && /run/ios-check/probe || exit 24
+swiftc -swift-version 6 -strict-concurrency=complete -warnings-as-errors -parse-as-library Solution.swift Acceptance.swift -o /run/ios-check/verify >/dev/null 2>&1 || exit 20
+timeout 30 /run/ios-check/verify </dev/null >/dev/null 2>&1
 code=$?
-case "$code" in 0) exit 0;; 124|137) exit 23;; *) exit 21;; esac"""
+echo "$code"
+case "$code" in 0) exit 0;; 124|126|127|137) exit 23;; *) exit 21;; esac"""
         proc = self.run(workspace, ['sh', '-c', body], evaluator=True, timeout=150)
         if proc.returncode in (0, 20, 21):
-            return {'compiled': proc.returncode != 20, 'behavior': proc.returncode == 0 if proc.returncode != 20 else None}
-        raise InfrastructureError('Evaluator interrupted or timed out (exit %d)' % proc.returncode)
+            return {'compiled': proc.returncode != 20, 'behavior': proc.returncode == 0 if proc.returncode != 20 else None,
+                    'runtime_exit': int(proc.stdout.strip()) if proc.returncode != 20 else None}
+        raise InfrastructureError('Evaluator launch, timeout or infrastructure failure (exit %d; runtime %s)' %
+                                  (proc.returncode, proc.stdout.decode(errors='replace')[:16].strip()))
 
 
 class LocalOllama:
@@ -154,17 +168,18 @@ class LocalOllama:
             'model': self.model, 'prompt': prompt, 'stream': False, 'keep_alive': 0,
             'format': {'type': 'object', 'properties': {'source': {'type': 'string'}}, 'required': ['source']},
             'options': {'temperature': settings['temperature'], 'seed': settings['seed'],
-                        'num_predict': settings['max_output_tokens']}}, timeout=180)
+                        'num_predict': settings['max_output_tokens'], 'num_ctx': settings['context_tokens']}}, timeout=180)
         if response.get('model') != self.model or response.get('done') is not True:
             raise ProviderError('Provider did not complete with the pinned model')
         self.identify()
+        fields = {'input_tokens': 'prompt_eval_count', 'output_tokens': 'eval_count',
+                  'cached_tokens': 'prompt_eval_cached_count'}
+        usage = {out: response.get(key) if type(response.get(key)) is int and response[key] >= 0 else None
+                        for out, key in fields.items()}
         try:
             source = json.loads(response['response'])['source']
         except (KeyError, TypeError, ValueError) as exc:
-            raise ProviderError('Provider returned invalid structured source') from exc
+            raise InvalidCandidate('Model returned invalid structured source', usage) from exc
         if not isinstance(source, str) or not 0 < len(source.encode()) <= LIMIT:
-            raise ProviderError('Provider returned missing or oversized source')
-        fields = {'input_tokens': 'prompt_eval_count', 'output_tokens': 'eval_count',
-                  'cached_tokens': 'prompt_eval_cached_count'}
-        return source, {out: response.get(key) if type(response.get(key)) is int and response[key] >= 0 else None
-                        for out, key in fields.items()}
+            raise InvalidCandidate('Model returned missing or oversized source', usage)
+        return source, usage
