@@ -5,7 +5,7 @@ import ts from 'typescript';
 export const routerNames = ['MemoryRouter', 'Routes', 'Route', 'Link'] as const;
 type Fail = (node: ts.Node, reason: string) => never;
 export const absoluteRoute = (s: string) => s.length <= 200 && /^\/(?:[a-zA-Z0-9_-]+(?:\/[a-zA-Z0-9_-]+)*)?$/.test(s);
-export function readRoutes(node: ts.Expression, file: ts.SourceFile, fail: Fail) {
+export function readRoutes(node: ts.Expression, file: ts.SourceFile, fail: Fail, parameters = false) {
   const attributes = (node: ts.JsxOpeningElement | ts.JsxSelfClosingElement, allowed: string[]) => {
     const result = new Map<string, ts.JsxAttribute>();
     for (const attr of node.attributes.properties) {
@@ -27,7 +27,7 @@ export function readRoutes(node: ts.Expression, file: ts.SourceFile, fail: Fail)
     if (!ts.isJsxSelfClosingElement(route) || route.tagName.getText(file) !== 'Route') fail(route, 'only flat self-closing Route declarations are supported');
     const attrs = attributes(route, ['path','element']);
     const path = attrs.get('path')?.initializer, element = attrs.get('element')?.initializer;
-    if (!path || !ts.isStringLiteral(path) || !absoluteRoute(path.text)) fail(route, 'route path must be a canonical absolute literal without parameters, query or fragment');
+    if (!path || !ts.isStringLiteral(path) || (!absoluteRoute(path.text) && !(parameters && /^\/(?:[a-zA-Z0-9_-]+\/)*:[a-zA-Z][a-zA-Z0-9_]*$/.test(path.text)))) fail(route, 'route path must be a canonical absolute literal without parameters, query or fragment');
     if (!element || !ts.isJsxExpression(element) || !element.expression) fail(route, 'route element requires explicit JSX');
     return {id:`screen-${index + 1}`, path:path.text, element:element.expression, origin:route};
   });

@@ -57,6 +57,9 @@ export async function importReactProject(entryPath:string,name='ImportedApp'):Pr
     }
     // Linking must not make an unimported component from another file visible.
     const walk=(node:ts.Node)=>{
+      if(path!==resolve(root,basename(entry)) && ts.isCallExpression(node) &&
+         ts.isIdentifier(node.expression) && node.expression.text==='useParams')
+        throw Error('useParams must be explicitly imported in the same source module; dependency hooks are unsupported');
       if(ts.isJsxOpeningElement(node)||ts.isJsxSelfClosingElement(node)){
         const tag=node.tagName.getText(file);
         if(/^[A-Z]/.test(tag)&&!visible.has(tag)&&!(path===resolve(root,basename(entry))&&['MemoryRouter','Routes','Route','Link'].includes(tag)))throw Error('Component is not imported in its source module: '+tag);
@@ -72,7 +75,7 @@ export async function importReactProject(entryPath:string,name='ImportedApp'):Pr
   const declared=new Set<string>();for(const module of rows)for(const id of module.functions){if(declared.has(id))throw Error('Component names must be unique across linked modules: '+id);declared.add(id);}
   let combined='';const regions=rows.map((module,index)=>{const start=Buffer.byteLength(combined);combined+=module.lowered+'\n';return {module,id:'source-'+(index+1),start,end:Buffer.byteLength(combined)-1};});
   const ir=reactToIR(combined,basename(entry),name);
-  for(const row of [...ir.nodes,...ir.requirements,...ir.limitations,...(ir.states??[])])for(const e of row.evidence){
+  for(const row of [...ir.nodes,...ir.requirements,...ir.limitations,...(ir.states??[]),...(ir.collections??[])])for(const e of row.evidence){
     const region=regions.find(r=>e.start>=r.start&&e.end<=r.end);if(!region)throw Error('Linked source evidence crosses module boundaries');e.source=region.id;e.start-=region.start;e.end-=region.start;
   }
   ir.sources=regions.map(r=>({id:r.id,path:relative(root,r.module.path).split(sep).join('/'),sha256:sha256(r.module.source),bytes:Buffer.byteLength(r.module.source),adapter:'react-local-modules@1'}));

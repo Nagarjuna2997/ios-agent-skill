@@ -1,6 +1,7 @@
 import {isErasedTypeStatement} from './react-types.js';
 // Static syntax adapter. Never imports, evaluates, bundles or installs the input project.
 import ts from 'typescript';
+import { parseRecords, methodCall, listTemplate, lookupParam, recordUpdate } from './react-records.js';
 import { htmlToIR } from './html.js';
 import { AppIRSchema, sha256, type AppIR } from './schema.js';
 import { absoluteRoute, readRoutes, routerNames } from './react-routes.js';
@@ -19,6 +20,7 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
   const components = new Map<string, ts.FunctionDeclaration>();
   let hasStateImport = false;
   let hasRouterImport = false;
+  let hasParams = false;
   let entry: ts.FunctionDeclaration | undefined;
   const fail: (node: ts.Node, reason: string) => never = (node, reason) => {
     const pos = file.getLineAndCharacterOfPosition(node.getStart(file));
@@ -31,9 +33,9 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
       const clause = node.importClause, imports = clause?.namedBindings;
       if (ts.isStringLiteral(node.moduleSpecifier) && node.moduleSpecifier.text === 'react-router-dom') {
         if (hasRouterImport || !clause || clause.isTypeOnly || clause.name || !imports || !ts.isNamedImports(imports) || node.attributes ||
-            imports.elements.length !== routerNames.length || new Set(imports.elements.map(e => e.name.text)).size !== routerNames.length ||
-            imports.elements.some(e => e.propertyName || e.isTypeOnly || !routerNames.includes(e.name.text as typeof routerNames[number]))) fail(node, 'router import must explicitly name MemoryRouter, Routes, Route and Link without aliases');
-        hasRouterImport = true; continue;
+            new Set(imports.elements.map(e => e.name.text)).size !== imports.elements.length || !routerNames.every(name=>imports.elements.some(e=>e.name.text===name)) ||
+            imports.elements.some(e => e.propertyName || e.isTypeOnly || !([...routerNames,'useParams'] as string[]).includes(e.name.text))) fail(node, 'router import must explicitly name MemoryRouter, Routes, Route and Link without aliases');
+        hasRouterImport = true; hasParams=imports.elements.some(e=>e.name.text==='useParams'); continue;
       }
       if (hasStateImport || !ts.isStringLiteral(node.moduleSpecifier) || node.moduleSpecifier.text !== 'react' ||
           !clause || clause.isTypeOnly || clause.name || !imports || !ts.isNamedImports(imports) ||
@@ -54,7 +56,7 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
   }
   if (!entry) throw Error('React input needs a default-exported named function component');
   if (hasStateImport && components.has('useState')) fail(components.get('useState')!, 'useState import is shadowed');
-  if (hasRouterImport) for (const name of routerNames) if (components.has(name)) fail(components.get(name)!, 'router import is shadowed');
+  if (hasRouterImport) for (const name of [...routerNames,...(hasParams?['useParams']:[])]) if (components.has(name)) fail(components.get(name)!, 'router import is shadowed');
   if(entry.parameters.length)fail(entry,'entry component cannot receive external props');
   const escape = (s: string) => s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
   const jsxText = (value: string, node: ts.Node) => {
@@ -68,7 +70,8 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
   type Literal = {value:string|number; origins:ts.Node[]};
   type Children = {kind:'children'; nodes:readonly ts.JsxChild[]; scope:Scope; stack:string[]; origins:ts.Node[]};
   type StateBinding = {kind:'state'|'setter'; id:string; origins:ts.Node[]};
-  type Binding = Literal|Children|StateBinding;
+  type RecordBinding = {kind:'collection'|'collectionSetter'|'selected'|'routeParam';id:string;parameter?:string;origins:ts.Node[]};
+  type Binding = Literal|Children|StateBinding|RecordBinding;
   type Props = Map<string,Binding>;
   type Scope = Map<string, Binding|Props>;
   const binding=(node:ts.Expression,scope:Scope):Binding|undefined=>{
@@ -117,6 +120,22 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
   }
   const dependencies:Array<{start:number;end:number;nodes:ts.Node[]}>=[];
   const states:Array<{id:string; initial:boolean|string; origin:ts.Node}>=[];
+  const collections: NonNullable<AppIR['collections']>=[];
+  const recordRoutes=new Map<string,string>();
+  type RecordMapping={start:number;end:number;field?:AppIR['nodes'][number]['recordField'];list?:AppIR['nodes'][number]['recordList'];input?:boolean;placeholder?:string};
+  const recordMappings:RecordMapping[]=[];
+  const sourceEvidence=(node:ts.Node)=>({source:'source',start:Buffer.byteLength(source.slice(0,node.getStart(file))),end:Buffer.byteLength(source.slice(0,node.end)),certainty:'extracted' as const});
+  const recordField=(expr:ts.Expression, scope:Scope)=>{
+    if(!ts.isPropertyAccessExpression(expr)||expr.questionDotToken)return;
+    const obj=binding(expr.expression,scope);
+    if(!obj||!('kind' in obj)||obj.kind!=='selected')return;
+    if(!collections.find(c=>c.id===obj.id)?.fields.includes(expr.name.text))fail(expr,'unknown or immutable record field');
+    return {field:{collection:obj.id,field:expr.name.text},param:obj.parameter!,origins:obj.origins};
+  };
+  const assignRoute=(path:string,collection:string,node:ts.Node)=>{
+    if(recordRoutes.has(path)&&recordRoutes.get(path)!==collection)fail(node,'inconsistent collection for record route');
+    recordRoutes.set(path,collection);
+  };
   type Mapping = {start:number; end:number; textBinding?:AppIR['nodes'][number]['textBinding']; action?:AppIR['nodes'][number]['action']; stringBinding?:string; input?:boolean; placeholder?:string; origins:ts.Node[]};
   const stateMappings:Mapping[]=[];
   const conditionMappings:Array<{start:number;end:number;state:string;branches:Array<{start:number;end:number}|null>}> = [];
@@ -159,9 +178,26 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
       if(ts.isVariableStatement(statement)&&!statement.modifiers?.length&&
           statement.declarationList.flags===ts.NodeFlags.Const&&statement.declarationList.declarations.length===1){
         const local=statement.declarationList.declarations[0]!;
+        if(hasParams && local.initializer && ts.isCallExpression(local.initializer) && ts.isIdentifier(local.initializer.expression) && local.initializer.expression.text==='useParams'){
+          const call=local.initializer, pattern=local.name;
+          if(!currentPath?.includes(':')||call.questionDotToken||call.typeArguments||call.arguments.length||scope.has('useParams')||
+             !ts.isObjectBindingPattern(pattern)||pattern.elements.length!==1)fail(local,'useParams requires a parameterized detail route and one parameter binding');
+          const param=pattern.elements[0]!;
+          if(!ts.isIdentifier(param.name)||param.initializer||param.propertyName||param.dotDotDotToken||scope.has(param.name.text)||param.name.text==='useParams'||currentPath!.split(':')[1]!==param.name.text)fail(local,'useParams must read the declared route parameter');
+          scope.set(param.name.text,{kind:'routeParam',id:param.name.text,origins:[statement]});continue;
+        }
         if(ts.isIdentifier(local.name)&&local.initializer){
           const name=local.name.text;
-          if(scope.has(name)||components.has(name)||name==='useState'||hasRouterImport&&routerNames.includes(name as typeof routerNames[number]))fail(local,'constant shadows another binding');
+          if(scope.has(name)||components.has(name)||name==='useState'||hasParams&&name==='useParams'||hasRouterImport&&routerNames.includes(name as typeof routerNames[number]))fail(local,'constant shadows another binding');
+          const lookup=methodCall(local.initializer,'find');
+          if(lookup){
+            const collection=binding(lookup.receiver,scope);
+            if(!currentPath||!collection||!('kind' in collection)||collection.kind!=='collection')fail(local,'find requires the route’s record collection');
+            const parameter=lookupParam(lookup.callback,fail), param=scope.get(parameter);
+            if(!param||!('kind' in param)||param.kind!=='routeParam')fail(local,'find requires the current route parameter');
+            assignRoute(currentPath!,collection.id,local);
+            scope.set(name,{kind:'selected',id:collection.id,parameter,origins:[statement,...collection.origins,...param.origins]});continue;
+          }
           const value=literal(local.initializer,scope);
           scope.set(name,{value:value.value,origins:[statement,...value.origins]});
           origins=[...origins,statement,...value.origins];
@@ -173,19 +209,22 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
         fail(statement, 'only top-level const boolean/string useState bindings in the entry component are supported');
       }
       const declaration = statement.declarationList.declarations[0]!, call = declaration.initializer;
+      const array = call && ts.isCallExpression(call) && call.arguments.length===1 && ts.isArrayLiteralExpression(call.arguments[0]!) ? call.arguments[0] as ts.ArrayLiteralExpression : undefined;
       if (!ts.isArrayBindingPattern(declaration.name) || declaration.name.elements.length !== 2 || declaration.type ||
-          !call || !ts.isCallExpression(call) || !ts.isIdentifier(call.expression) || call.expression.text !== 'useState' ||
+          !call || !ts.isCallExpression(call) || call.questionDotToken || !ts.isIdentifier(call.expression) || call.expression.text !== 'useState' ||
           (call.typeArguments?.length!==undefined&&(call.typeArguments.length!==1||![ts.SyntaxKind.BooleanKeyword,ts.SyntaxKind.StringKeyword].includes(call.typeArguments[0]!.kind))) || call.arguments.length !== 1 ||
-          !ts.isStringLiteral(call.arguments[0]!)&&![ts.SyntaxKind.TrueKeyword,ts.SyntaxKind.FalseKeyword].includes(call.arguments[0]!.kind)) {
+          !array&&!ts.isStringLiteral(call.arguments[0]!)&&![ts.SyntaxKind.TrueKeyword,ts.SyntaxKind.FalseKeyword].includes(call.arguments[0]!.kind)) {
         fail(declaration, 'useState requires a literal boolean or string and a [value, setter] binding');
       }
       if (states.length >= 16) fail(declaration, 'state count exceeds 16');
-      const id = `state-${states.length + 1}`;
+      if(array && (call.typeArguments || collections.length>=16))fail(call,'record collections require unannotated, bounded literal state');
+      const id = array ? `collection-${collections.length+1}` : `state-${states.length + 1}`;
       for (const [index, element] of [...declaration.name.elements].entries()) {
         if (!ts.isBindingElement(element) || !ts.isIdentifier(element.name) || element.initializer || element.dotDotDotToken || element.propertyName) fail(element, 'state bindings require two distinct identifiers');
         if (scope.has(element.name.text) || components.has(element.name.text) || element.name.text === 'useState' || hasRouterImport && routerNames.includes(element.name.text as typeof routerNames[number])) fail(element, 'state binding shadows another name');
-        scope.set(element.name.text, {kind:index === 0 ? 'state' : 'setter', id, origins:[statement]});
+        scope.set(element.name.text, {kind:array ? (index===0?'collection':'collectionSetter') : (index === 0 ? 'state' : 'setter'), id, origins:[statement]});
       }
+      if(array){ collections.push({id,...parseRecords(array,fail),evidence:[sourceEvidence(statement)]});continue; }
       const initial=ts.isStringLiteral(call.arguments[0]!)?call.arguments[0]!.text:call.arguments[0]!.kind===ts.SyntaxKind.TrueKeyword;
       if(call.typeArguments?.length&&call.typeArguments[0]!.kind!==(typeof initial==='string'?ts.SyntaxKind.StringKeyword:ts.SyntaxKind.BooleanKeyword))fail(call,'useState type must match its literal initializer');
       if(typeof initial==='string'&&(initial.length>4000||/[\r\n\u0000-\u001f]/.test(initial)))fail(call,'string state must be bounded single-line text');
@@ -193,7 +232,7 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
     }
     const start=html.length;
     if (node === entry && hasRouterImport) {
-      const router=readRoutes(unwrap(returned.expression),file,fail);initialPath=router.initialPath;
+      const router=readRoutes(unwrap(returned.expression),file,fail,hasParams);initialPath=router.initialPath;
       declaredPaths = new Set(router.routes.map(r=>r.path));
       for (const route of router.routes) {
         const start=html.length;inRoute=true;currentPath=route.path;
@@ -208,9 +247,9 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
   // Reuse the syntax-only lowering checks, then discard the temporary markup/evidence.
   // Work budgets are deliberately not restored. No application code is executed.
   function validateChildren(nodes:readonly ts.JsxChild[],stack:string[],scope:Scope){
-    const savedHTML=html,savedSpans=spans.length,savedDependencies=dependencies.length,savedMappings=stateMappings.length,savedConditions=conditionMappings.length;
+    const savedHTML=html,savedSpans=spans.length,savedDependencies=dependencies.length,savedMappings=stateMappings.length,savedConditions=conditionMappings.length,savedRecords=recordMappings.length;
     try{html='';for(const child of nodes)render(child,stack,scope);}
-    finally{html=savedHTML;spans.length=savedSpans;dependencies.length=savedDependencies;stateMappings.length=savedMappings;conditionMappings.length=savedConditions;}
+    finally{html=savedHTML;spans.length=savedSpans;dependencies.length=savedDependencies;stateMappings.length=savedMappings;conditionMappings.length=savedConditions;recordMappings.length=savedRecords;}
   }
   function conditionalTree(expression:ts.Expression, stack:string[], scope:Scope):boolean {
     const node=unwrap(expression);
@@ -251,6 +290,18 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
     }
     if (ts.isJsxExpression(node)) {
       if(!node.expression)fail(node,'empty JSX expressions are unsupported');
+      const map=methodCall(unwrap(node.expression),'map');
+      if(map){
+        const collection=binding(map.receiver,scope);
+        if(!hasRouterImport||!inRoute||currentPath?.includes(':')||textElementDepth||scope.has('Link')||!collection||!('kind' in collection)||collection.kind!=='collection')fail(node,'keyed list needs record state on a static route');
+        const {prefix, field}=listTemplate(map.callback,fail);
+        const paths=[...declaredPaths].filter(p=>p.startsWith(prefix+':') && !p.slice(prefix.length+1).includes('/'));
+        if(paths.length!==1||!collections.find(c=>c.id===collection.id)?.fields.includes(field))fail(node,'record link needs a declared parameterized route and known label field');
+        assignRoute(paths[0]!,collection.id,node);
+        const start=html.length;append('<p>record list</p>');spans.push({start,end:html.length,node});
+        recordMappings.push({start,end:html.length,list:{collection:collection.id,field,screen:paths[0]!}});
+        dependencies.push({start,end:html.length,nodes:collection.origins});return;
+      }
       if(conditionalTree(node.expression,stack,scope))return;
       const slot=binding(unwrap(node.expression),scope);
       if(slot&&'kind' in slot&&slot.kind==='children'){for(const child of slot.nodes)render(child,slot.stack,slot.scope);return;}
@@ -273,7 +324,7 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
         const key=attr.name.getText(file);if(['key','ref','children'].includes(key)||props.has(key))fail(attr,'reserved or duplicate prop');
         const init=attr.initializer;if(!init)fail(attr,'boolean props are unsupported');
         const direct=ts.isJsxExpression(init)&&init.expression?binding(unwrap(init.expression),scope):undefined;
-        if(direct&&'kind' in direct&&(direct.kind==='state'||direct.kind==='setter')){
+        if(direct&&'kind' in direct&&(direct.kind==='state'||direct.kind==='setter'||direct.kind==='collection'||direct.kind==='collectionSetter')){
           props.set(key,{...direct,origins:[attr,...direct.origins]});
         }else{
           const value=ts.isStringLiteral(init)?{value:jsxText(init.text,attr),origins:[attr]}:ts.isJsxExpression(init)&&init.expression?literal(init.expression,scope):fail(attr,'unsupported prop value');
@@ -296,6 +347,15 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
       if(stringAttr('type')!=='text')fail(node,'only text input is supported');const label=stringAttr('aria-label');if(!label.trim())fail(node,'input requires an accessible label');
       const valueAttr=attrs.get('value')?.initializer,handler=attrs.get('onChange')?.initializer;
       if(!valueAttr||!ts.isJsxExpression(valueAttr)||!valueAttr.expression||!handler||!ts.isJsxExpression(handler)||!handler.expression)fail(node,'input needs controlled value and onChange');
+      const selected=recordField(unwrap(valueAttr.expression),scope);
+      if(selected){
+        const target=recordUpdate(unwrap(handler.expression),selected.field.field,selected.param,fail);
+        const collection=scope.get(target.collection),setter=scope.get(target.setter);
+        if(!collection||!('kind' in collection)||collection.kind!=='collection'||collection.id!==selected.field.collection||!setter||!('kind' in setter)||setter.kind!=='collectionSetter'||setter.id!==collection.id)fail(node,'input must update its own record collection');
+        const start=html.length;append('<p>'+escape(label)+'</p>');spans.push({start,end:html.length,node});
+        recordMappings.push({start,end:html.length,field:selected.field,input:true,placeholder:attrs.has('placeholder')?stringAttr('placeholder'):undefined});
+        dependencies.push({start,end:html.length,nodes:selected.origins});return;
+      }
       const state=binding(unwrap(valueAttr.expression),scope);if(!state||!('kind' in state)||state.kind!=='state'||typeof states.find(s=>s.id===state.id)?.initial!=='string')fail(node,'input value must reference string state');
       const fn=unwrap(handler.expression);if(!ts.isArrowFunction(fn)||fn.modifiers?.length||fn.typeParameters?.length||fn.parameters.length!==1||ts.isBlock(fn.body))fail(node,'input event requires a single expression callback');
       const param=fn.parameters[0]!;if(!ts.isIdentifier(param.name)||param.initializer||param.dotDotDotToken||param.questionToken||param.modifiers?.length)fail(node,'input event requires one plain identifier');
@@ -310,6 +370,7 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
     const stateOrigins:ts.Node[]=[];
     const visibleChildren=ts.isJsxElement(node)?node.children.filter(c=>!ts.isJsxText(c)||c.text.trim()):[];
     const conditional=visibleChildren.length===1&&ts.isJsxExpression(visibleChildren[0]!)?visibleChildren[0].expression:undefined;
+    const selectedText=conditional && ['p','h1','h2','h3','span','strong'].includes(tag) ? recordField(unwrap(conditional),scope) : undefined;
     if(conditional&&['p','h1','h2','h3','span','strong'].includes(tag)){
       const value=binding(unwrap(conditional),scope);
       if(value&&'kind' in value&&value.kind==='state'&&typeof states.find(s=>s.id===value.id)?.initial==='string'){stringBinding=value.id;stateOrigins.push(...value.origins);}
@@ -389,7 +450,8 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
     if(tag==='button'&&(!action||visibleChildren.some(c=>!ts.isJsxText(c))))fail(node,'button requires one state action and a plain text label');
     if(isLink&&(!action||visibleChildren.some(c=>!ts.isJsxText(c))))fail(node,'Link requires one destination and a plain text label');
     append('>');
-    if(stringBinding){append(escape(states.find(s=>s.id===stringBinding)!.initial as string));}
+    if(selectedText)append('record field');
+    else if(stringBinding){append(escape(states.find(s=>s.id===stringBinding)!.initial as string));}
     else if(textBinding){const state=states.find(s=>s.id===textBinding.state)!;append(escape(state.initial?textBinding.whenTrue:textBinding.whenFalse));}
     else if(ts.isJsxElement(node)){
       const textElement=['p','h1','h2','h3','span','strong'].includes(tag);
@@ -398,6 +460,10 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
     }
     append('</'+loweredTag+'>');
     spans.push({start,end:html.length,node});
+    if(selectedText){
+      recordMappings.push({start,end:html.length,field:selectedText.field});
+      dependencies.push({start,end:html.length,nodes:selectedText.origins});
+    }
     if(action||textBinding||stringBinding)stateMappings.push({start,end:html.length,action,textBinding,stringBinding,origins:stateOrigins});
   }
   component(entry,[]);
@@ -433,6 +499,11 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
     const matches=ir.nodes.filter(n=>n.evidence.length===1&&n.evidence[0]!.start===start&&n.evidence[0]!.end===end);
     if(matches.length!==1)throw Error('Conditional mapping has no unambiguous source element');return matches[0]!;
   };
+  for(const mapping of recordMappings){
+    const n=intermediateNode(mapping);
+    if(mapping.list){n.kind='record-list';delete n.text;n.recordList={...mapping.list,screen:routeSpans.find(r=>r.path===mapping.list!.screen)!.id};}
+    else if(mapping.field){n.recordField=mapping.field;if(mapping.input){n.kind='textfield';if(mapping.placeholder!==undefined)n.placeholder=mapping.placeholder;}else n.text='';}
+  }
   for(const mapping of conditionMappings){
     const outer=intermediateNode(mapping);
     const children=mapping.branches.map(branch=>{
@@ -458,12 +529,18 @@ export function reactToIR(source: string, sourcePath = 'App.tsx', name = 'Import
     ir.requirements.push({id:'local-boolean-state',area:'state',status:'extracted',description:states.some(s=>typeof s.initial==='string')?'Entry-owned boolean/string state, controlled text fields and direct text bindings. No form submission, effects, persistence or async events.':'Entry-component boolean state, literal text branches and single-step button transitions. No effects, persistence or async events.',evidence:ir.states.flatMap(s=>s.evidence)});
   }
   if(routeSpans.length){
-    ir.schemaVersion='1.2.0';ir.navigation={initialScreen:routeSpans.find(r=>r.path===initialPath)!.id,routes:routeSpans.map(r=>({screen:r.id,path:r.path}))};
+    ir.schemaVersion='1.2.0';ir.navigation={initialScreen:routeSpans.find(r=>r.path===initialPath)!.id,routes:routeSpans.map(r=>({screen:r.id,path:r.path,...(recordRoutes.has(r.path)?{collection:recordRoutes.get(r.path)}:{})}))};
     ir.requirements.push({id:'native-route-stack',area:'navigation',status:'inferred',description:'Explicit MemoryRouter routes and Link pushes become a native stack with a platform Back control. No browser URL, forward history, scroll restoration or deep-link synchronization.',evidence:[{source:'source',start:Buffer.byteLength(source.slice(0,entry.getStart(file))),end:Buffer.byteLength(source.slice(0,entry.end)),certainty:'inferred',note:'Native Back navigation substitutes for router-history back; exact web navigation chrome and scroll restoration are not inferred.'}]});
   }
   if(conditionMappings.length)ir.schemaVersion='1.3.0';
   if(states.some(s=>typeof s.initial==='string'))ir.schemaVersion='1.4.0';
   if (ir.nodes.some(n => n.kind === 'row')) ir.schemaVersion = ir.nodes.some(n => n.style.wrap) ? '1.6.0' : '1.5.0';
-  ir.sources=[{id:'source',path:sourcePath,sha256:sha256(source),bytes:Buffer.byteLength(source),adapter:states.some(s=>typeof s.initial==='string')?'react-controlled-text@1':conditionMappings.length?'react-conditional-views@1':routeSpans.length?'react-memory-router@1':states.length?'react-boolean-state@1':'react-static@1'}];
+  if(collections.length){
+    ir.collections=collections;
+    ir.schemaVersion='1.7.0';
+    for(const c of collections)ir.requirements.push({id:c.id+'-state',area:'data',status:'extracted',
+      description:'In-memory keyed records initialized from literal source. Field edits update the selected record by ID; no persistence or API calls are inferred.',evidence:c.evidence});
+  }
+  ir.sources=[{id:'source',path:sourcePath,sha256:sha256(source),bytes:Buffer.byteLength(source),adapter:collections.length?'react-records@1':states.some(s=>typeof s.initial==='string')?'react-controlled-text@1':conditionMappings.length?'react-conditional-views@1':routeSpans.length?'react-memory-router@1':states.length?'react-boolean-state@1':'react-static@1'}];
   return AppIRSchema.parse(ir);
 }

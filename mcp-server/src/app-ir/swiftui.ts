@@ -15,7 +15,27 @@ export function renderSwiftUI(value: unknown, options: { disclosureStyle?: "plat
   if (ir.navigation && ir.nodes.some(n => n.kind === 'disclosure')) throw Error('Disclosure lifecycle inside routed screens is not mapped');
   if (ir.limitations.length) throw Error('Resolve unsupported input before generating. Inspect IR limitations; no lossy conversion is implicit.');
   const symbol = (id: string) => 'node_' + id.replaceAll('-','_');
-  const state = [...(ir.navigation ? ['    @State private var routePath: [String] = []'] : []), ...ir.nodes.filter(n => n.kind === 'disclosure').map(n => `    @State private var expanded_${symbol(n.id)} = false;`),
+  const records=ir.collections??[];
+  const recordType=(id:string)=>'ImportedRecord_'+id.replaceAll('-','_');
+  const recordProperty=(field:string)=>'field_'+field;
+  const recordState=(id:string)=>'records_'+symbol(id);
+  const recordRoute=(screen:string)=>ir.navigation?.routes.find(r=>r.screen===screen&&r.collection);
+  const recordNodes=new Set<string>();
+  function markDetail(id:string){
+    recordNodes.add(id);
+    for(const child of ir.nodes.find(n=>n.id===id)!.children)markDetail(child);
+  }
+  for(const screen of ir.screens)if(recordRoute(screen.id))markDetail(screen.root);
+  const reference=(id:string)=>symbol(id)+(recordNodes.has(id)?'(recordID)':'');
+  const declaration=(id:string)=>recordNodes.has(id)?`func ${symbol(id)}(_ recordID: String) -> some View`:`var ${symbol(id)}: some View`;
+  const recordInitializers=records.map(collection=>{
+    const literal=collection.rows.map(row=>{
+      const values=collection.fields.map(field=>recordProperty(field)+': '+swiftString(row.values[field]!)).join(', ');
+      return `        ${recordType(collection.id)}(id: ${swiftString(row.id)}, ${values})`;
+    }).join(',\n');
+    return `    @State private var ${recordState(collection.id)}: [${recordType(collection.id)}] = [\n${literal}\n    ]`;
+  });
+  const state = [...recordInitializers,...(ir.navigation ? ['    @State private var routePath: [String] = []'] : []), ...ir.nodes.filter(n => n.kind === 'disclosure').map(n => `    @State private var expanded_${symbol(n.id)} = false;`),
     ...(ir.states ?? []).map(s => `    @State private var state_${symbol(s.id)} = ${typeof s.initial==='string'?swiftString(s.initial):s.initial};`)].join('\n');
   const rowChildren=new Set(ir.nodes.filter(n=>n.kind==='row').flatMap(n=>n.children));
   // Conditional wrappers have no native layout of their own. Their visible
@@ -25,21 +45,31 @@ export function renderSwiftUI(value: unknown, options: { disclosureStyle?: "plat
   const views = ir.nodes.map(n => {
     if(n.kind === 'conditional' && n.condition) {
       const c=n.condition;
-      return `    @ViewBuilder private var ${symbol(n.id)}: some View {\n        if state_${symbol(c.state)} {\n            ${c.whenTrue ? symbol(c.whenTrue) : 'EmptyView()'}\n        } else {\n            ${c.whenFalse ? symbol(c.whenFalse) : 'EmptyView()'}\n        }\n    }`;
+      return `    @ViewBuilder private ${declaration(n.id)} {\n        if state_${symbol(c.state)} {\n            ${c.whenTrue ? reference(c.whenTrue) : 'EmptyView()'}\n        } else {\n            ${c.whenFalse ? reference(c.whenFalse) : 'EmptyView()'}\n        }\n    }`;
     }
     const s = n.style;
-    const children = n.children.map(c => `            ${symbol(c)}`).join('\n');
-    const content = n.stringBinding && n.kind==='text' ? `collapsedInputText(state_${symbol(n.stringBinding)})` : n.textBinding ? `(state_${symbol(n.textBinding.state)} ? ${swiftString(n.textBinding.whenTrue)} : ${swiftString(n.textBinding.whenFalse)})` : swiftString(n.text ?? '');
+    const children = n.children.map(c => `            ${reference(c)}`).join('\n');
+    const selected = n.recordField ? `fieldBinding(\$${recordState(n.recordField.collection)}, id: recordID, field: \\.${recordProperty(n.recordField.field)})` : undefined;
+    const content = selected && n.kind==='text' ? `collapsedInputText(${selected}.wrappedValue)` : n.stringBinding && n.kind==='text' ? `collapsedInputText(state_${symbol(n.stringBinding)})` : n.textBinding ? `(state_${symbol(n.textBinding.state)} ? ${swiftString(n.textBinding.whenTrue)} : ${swiftString(n.textBinding.whenFalse)})` : swiftString(n.text ?? '');
     const textView = options.instrumentTypography ? `MeasuredText(nodeID: ${swiftString(n.id)}, content: ${content})` : `Text(verbatim: ${content})`;
     const action = n.action?.operation === 'toggle' ? `state_${symbol(n.action.state)}.toggle()` : n.action?.operation === 'set' ? `state_${symbol(n.action.state)} = ${typeof n.action.value==='string'?swiftString(n.action.value):n.action.value}` : '';
     const field = n.stringBinding ? 'state_' + symbol(n.stringBinding) : '';
     const prompt = swiftString(n.placeholder ?? '');
-    let view = n.kind === 'textfield' && field ? `TextField("", text: $${field})
+    const inputBinding=selected??('$'+field);
+    const inputValue=selected?selected+'.wrappedValue':field;
+    const list=n.recordList;
+    let view = list ? `ForEach(${recordState(list.collection)}) { record in
+            NavigationLink(value: ${swiftString(recordRoute(list.screen)!.path.split(':')[0]!)} + record.id) {
+                Text(verbatim: collapsedInputText(record.${recordProperty(list.field)})).frame(minHeight: 44)
+            }
+            .buttonStyle(.bordered)
+            .accessibilityIdentifier(${swiftString(n.id+'-')} + record.id)
+        }` : n.kind === 'textfield' && (field||selected) ? `TextField("", text: ${inputBinding})
         .accessibilityLabel(Text(verbatim: ${swiftString(n.text ?? '')}))
-        .accessibilityHint(Text(verbatim: ${field}.isEmpty ? ${prompt} : ""))
-        .textFieldStyle(ImportedTextFieldStyle(prompt: ${prompt}, isEmpty: ${field}.isEmpty))` : n.kind === 'text' ? textView : n.kind === 'link' && n.action?.operation === 'navigate'
+        .accessibilityHint(Text(verbatim: ${inputValue}.isEmpty ? ${prompt} : ""))
+        .textFieldStyle(ImportedTextFieldStyle(prompt: ${prompt}, isEmpty: ${inputValue}.isEmpty))` : n.kind === 'text' ? textView : n.kind === 'link' && n.action?.operation === 'navigate'
       ? `NavigationLink(value: ${swiftString(n.action.screen)}) { ${textView}.frame(minHeight: 44) }\n        .buttonStyle(.bordered)` : n.kind === 'button'
-      ? `Button { ${action} } label: { ${textView}${['1.4.0','1.5.0','1.6.0'].includes(ir.schemaVersion)&&s.foreground&&s.background?`.frame(${rowChildren.has(n.id)?'':'maxWidth: .infinity, '}minHeight: 44, alignment: ${s.centered?'.center':'.leading'}).contentShape(Rectangle())`:''} }\n        .buttonStyle(${['1.4.0','1.5.0','1.6.0'].includes(ir.schemaVersion)&&s.foreground&&s.background?'.plain':'.bordered'})\n        .frame(minHeight: 44)` : n.kind === 'disclosure'
+      ? `Button { ${action} } label: { ${textView}${['1.4.0','1.5.0','1.6.0','1.7.0'].includes(ir.schemaVersion)&&s.foreground&&s.background?`.frame(${rowChildren.has(n.id)?'':'maxWidth: .infinity, '}minHeight: 44, alignment: ${s.centered?'.center':'.leading'}).contentShape(Rectangle())`:''} }\n        .buttonStyle(${['1.4.0','1.5.0','1.6.0','1.7.0'].includes(ir.schemaVersion)&&s.foreground&&s.background?'.plain':'.bordered'})\n        .frame(minHeight: 44)` : n.kind === 'disclosure'
       ? `DisclosureGroup(isExpanded: $expanded_${symbol(n.id)}) {\n${children}\n        } label: { ${textView} }`
       : s.wrap ? `ImportedWrappingRow(gap: ${s.gap ?? 0}) {\n${children}\n        }`
       : n.kind==='row' ? `HStack(alignment: .center, spacing: ${s.gap ?? 0}) {\n${children}\n        }`
@@ -54,13 +84,22 @@ export function renderSwiftUI(value: unknown, options: { disclosureStyle?: "plat
     if (s.background) view += `\n        .background(${color(s.background)})`;
     if (s.radius) view += `\n        .clipShape(RoundedRectangle(cornerRadius: ${s.radius}))`;
     // Container identifiers propagate to descendants in XCTest; identify leaf controls only.
-    if (!['column','row'].includes(n.kind)) view += `\n        .accessibilityIdentifier(${swiftString(n.id)})`;
-    return `    private var ${symbol(n.id)}: some View {\n        ${view}\n    }`;
+    if (!['column','row','record-list'].includes(n.kind)) view += `\n        .accessibilityIdentifier(${swiftString(n.id)})`;
+    return `    private ${declaration(n.id)} {\n        ${view}\n    }`;
   }).join('\n\n');
   const root = ir.nodes.find(n => n.id === ir.screens[0]!.root)!;
-  const screenBody = (root: AppIR['nodes'][number]) => `ScrollView { ${symbol(root.id)} }\n        ${root.style.background ? `.background(${color(root.style.background)}.ignoresSafeArea())` : ''}`;
+  const screenBody = (root: AppIR['nodes'][number]) => `ScrollView { ${reference(root.id)} }\n        ${root.style.background ? `.background(${color(root.style.background)}.ignoresSafeArea())` : ''}`;
   const body = ir.navigation ? `NavigationStack(path: $routePath) {\n            routeScreen(${swiftString(ir.navigation.initialScreen)})\n                .navigationDestination(for: String.self) { destination in routeScreen(destination) }\n        }` : screenBody(root);
-  const routedViews = ir.navigation ? `\n    @ViewBuilder private func routeScreen(_ destination: String) -> some View {\n        switch destination {\n${ir.screens.map(s => `        case ${swiftString(s.id)}:\n            ${screenBody(ir.nodes.find(n => n.id === s.root)!)}\n                .navigationBarTitleDisplayMode(.inline)`).join('\n')}\n        default: EmptyView()\n        }\n    }\n` : '';
+  const recordDestinations=ir.screens.flatMap(screen=>{
+    const route=recordRoute(screen.id);
+    if(!route)return [];
+    const prefix=swiftString(route.path.split(':')[0]!);
+    return [`        case let path where path.hasPrefix(${prefix}):
+            let recordID = String(path.dropFirst(${prefix}.count))
+            ${screenBody(ir.nodes.find(n=>n.id===screen.root)!)}
+                .navigationBarTitleDisplayMode(.inline)`];
+  });
+  const routedViews = ir.navigation ? `\n    @ViewBuilder private func routeScreen(_ destination: String) -> some View {\n        switch destination {\n${ir.screens.filter(s=>!recordRoute(s.id)).map(s => `        case ${swiftString(s.id)}:\n            ${screenBody(ir.nodes.find(n => n.id === s.root)!)}\n                .navigationBarTitleDisplayMode(.inline)`).concat(recordDestinations).join('\n')}\n        default: EmptyView()\n        }\n    }\n` : '';
   const scales = ir.nodes.filter(n => n.style.fontSize).map(n => `    @ScaledMetric(relativeTo: .body) private var scaled_${symbol(n.id)}: CGFloat = ${n.style.fontSize}`).join('\n');
   const disclosureStyle = options.disclosureStyle === 'leading' ? `
 private struct ImportedDisclosureStyle: DisclosureGroupStyle {
@@ -112,12 +151,26 @@ private struct ImportedTextFieldStyle: TextFieldStyle {
     }
 }
 `:'';
-  const stringTextHelper=ir.nodes.some(n=>n.kind==='text'&&n.stringBinding)?`
+  const recordHelpers=records.length?`
+${records.map(collection=>`private struct ${recordType(collection.id)}: Identifiable, Sendable {
+    let id: String
+${collection.fields.map(field=>'    var '+recordProperty(field)+': String').join('\n')}
+}`).join('\n\n')}
+
+@MainActor private func fieldBinding<Record: Identifiable & Sendable>(_ records: Binding<[Record]>, id: String,
+    field: WritableKeyPath<Record, String> & Sendable) -> Binding<String> where Record.ID == String {
+    Binding(get: { records.wrappedValue.first { $0.id == id }?[keyPath: field] ?? "" }, set: { value in
+        guard let index = records.wrappedValue.firstIndex(where: { $0.id == id }) else { return }
+        records.wrappedValue[index][keyPath: field] = value
+    })
+}
+`:'';
+  const stringTextHelper=records.length||ir.nodes.some(n=>n.kind==='text'&&n.stringBinding)?`
 private func collapsedInputText(_ value: String) -> String {
     value.split(whereSeparator: { [" ", "\\t", "\\n", "\\r", "\\u{c}"].contains(String($0)) }).joined(separator: " ")
 }
 `:'';
-  return {source:`import SwiftUI\n\nstruct RootView: View {\n${state}\n${scales}\n    var body: some View {\n        ${body}\n    }\n${routedViews}\n${views}\n}\n\n${ir.nodes.some(n => n.style.wrap) ? wrappingRowSwift : ''}${disclosureStyle}${inputStyle}${stringTextHelper}\n${options.instrumentTypography ? typographyProbeSwift : ''}\n#Preview { RootView() }\n`,mappings:ir.nodes.map(n => ({node:n.id,symbol:symbol(n.id),evidence:n.evidence}))};
+  return {source:`import SwiftUI\n\nstruct RootView: View {\n${state}\n${scales}\n    var body: some View {\n        ${body}\n    }\n${routedViews}\n${views}\n}\n\n${ir.nodes.some(n => n.style.wrap) ? wrappingRowSwift : ''}${disclosureStyle}${inputStyle}${recordHelpers}${stringTextHelper}\n${options.instrumentTypography ? typographyProbeSwift : ''}\n#Preview { RootView() }\n`,mappings:ir.nodes.map(n => ({node:n.id,symbol:symbol(n.id),evidence:n.evidence}))};
 }
 export async function generateProject(value: unknown, output: string, options: { disclosureStyle?: "platform" | "leading"; instrumentTypography?: boolean } = {}): Promise<{project: string; sourceHash: string; status: 'generated-unverified'}> {
   const ir = AppIRSchema.parse(value);

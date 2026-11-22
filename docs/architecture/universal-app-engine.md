@@ -414,3 +414,9 @@ Ordinary rows still produce IR 1.5 and use HStack. Wrap-reverse, flex growth,
 distributed alignment and nested container sizing require additional mappings.
 The [chip row fixture](../../benchmarks/universal/wrapping-row/) checks
 orientation changes, accessibility element order and portrait text clipping.
+
+### Keyed record collections and editable detail routes (IR 1.7)
+
+The React importer can trace an entry-owned literal record collection from a keyed list to a parameterized detail screen. Every record has a unique, immutable string ID and the same named string fields. A list link uses that ID for its React key and its route parameter. The detail component selects the record by exact ID. A bound text field changes one field of that record and retains the entry state when the user navigates Back.
+
+The native renderer emits an `Identifiable` Swift struct per collection with named properties, a `ForEach` keyed by record identity, and a binding that resolves the ID on every edit. The supported source grammar rejects duplicate record IDs, incompatible fields, overlapping dynamic routes, arbitrary callbacks and updates to a different record or field. Other collection kinds, server queries, general router behavior and persistence across app restarts require additional mappings. See the [reading-list benchmark](../../benchmarks/universal/reading-list/README.md).

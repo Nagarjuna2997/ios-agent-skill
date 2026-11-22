@@ -11,6 +11,8 @@ on:
       - 'benchmarks/universal/react-state/**'
       - 'benchmarks/universal/react-input/**'
       - 'benchmarks/universal/wrapping-row/**'
+      - 'benchmarks/universal/reading-list/**'
+      - 'mcp-server/test/react-records.test.js'
       - 'benchmarks/universal/native-behavior/**'
       - 'benchmarks/universal/fidelity/ci.json'
       - 'benchmarks/universal/fidelity/commands.mjs'
@@ -37,12 +39,12 @@ jobs:
           node-version: '22'
       - run: npm ci --prefix mcp-server
       - run: npm run build --prefix mcp-server
-      - run: node --test mcp-server/test/react-input.test.js mcp-server/test/row-ir.test.js mcp-server/test/react-state.test.js mcp-server/test/react-ir.test.js mcp-server/test/app-ir.test.js benchmarks/universal/react-state/evidence.test.mjs benchmarks/universal/native-behavior/ui-test-scheme.test.mjs benchmarks/universal/fidelity/commands.test.mjs
+      - run: node --test mcp-server/test/react-records.test.js mcp-server/test/react-input.test.js mcp-server/test/row-ir.test.js mcp-server/test/react-state.test.js mcp-server/test/react-ir.test.js mcp-server/test/app-ir.test.js benchmarks/universal/react-state/evidence.test.mjs benchmarks/universal/native-behavior/ui-test-scheme.test.mjs benchmarks/universal/fidelity/commands.test.mjs
   simulator:
     strategy:
       fail-fast: false
       matrix:
-        fixture: [react-state, react-input, wrapping-row]
+        fixture: [react-state, react-input, wrapping-row, reading-list]
     runs-on: macos-26
     timeout-minutes: 30
     env:
