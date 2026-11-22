@@ -29,3 +29,21 @@ test('manual app and extension mappings archive and export without changing buil
  const xml=await fs.readFile(join(plan.path,'ExportOptions.plist'),'utf8');assert.match(xml,/Widget Distribution/);assert.match(xml,/App Distribution/);
 });
 test('archive tampering prevents any upload process',async t=>{const root=await fixture(t),plan=await prepareShip(root,config),runner=fakeRunner();await executeShip(root,plan.id,'archive',runner,{});await fs.appendFile(join(plan.path,'App.xcarchive/Products/Applications/Fixture.app/Fixture'),'tampered');const before=runner.calls.length;await assert.rejects(executeShip(root,plan.id,'upload',runner,{}),/Archive missing or changed/);assert.equal(runner.calls.length,before);});
+
+test('read-only status recovers an uncertain upload after source edits without running export again',async t=>{
+ const {shipStatus}=await import('../dist/release/ship.js');
+ const root=await fixture(t),plan=await prepareShip(root,config),runner=fakeRunner({failUpload:true});
+ const initial=await shipStatus(root,plan.id,()=>{throw Error('Unexpected auth');});
+ assert.equal(initial.status,'NO_RECORDED_UPLOAD');
+ await executeShip(root,plan.id,'archive',runner,{});
+ await assert.rejects(executeShip(root,plan.id,'upload',runner,{}),/upload failed/);
+ const receipt=join(plan.path,'receipt.json'),previous=await fs.readFile(receipt,'utf8');
+ await fs.writeFile(join(root,'updated.swift'),'// subsequent release');
+ const reply=await shipStatus(root,plan.id,async()=>'mock',async(url,opts)=>{
+   assert.equal(opts.method,'GET');
+   if(url.pathname==='/v1/apps')return Response.json({data:[{type:'apps',id:'a',attributes:{bundleId:config.bundleId}}]});
+   return Response.json({data:[{type:'builds',id:'b',attributes:{version:config.build,processingState:'PROCESSING'},relationships:{app:{data:{type:'apps',id:'a'}},preReleaseVersion:{data:{type:'preReleaseVersions',id:'v'}}}}],included:[{type:'preReleaseVersions',id:'v',attributes:{version:config.version,platform:'IOS'}}]});
+ });
+ assert.equal(reply.status,'PROCESSING');assert.equal(reply.localUpload,'uncertain');assert.equal(reply.buildId,'b');
+ assert.equal(await fs.readFile(receipt,'utf8'),previous);assert.equal(runner.calls.filter(c=>c.args.includes('-exportArchive')).length,1);
+});

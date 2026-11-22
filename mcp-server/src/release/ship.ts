@@ -5,6 +5,7 @@ import { mkdir, readFile, writeFile, rename, readdir, lstat, realpath, rm, chmod
 import { resolve, join, relative, isAbsolute } from 'node:path';
 import * as plist from 'plist';
 import { z } from 'zod';
+import { connectToken, lookupBuild } from './testflight-status.js';
 import { reviewReadiness } from '../analyzers/readiness.js';
 import { prepareRelease } from './package.js';
 import { canonical, digest } from './model.js';
@@ -147,10 +148,40 @@ export async function executeShip(projectRoot:string,id:string,action:'archive'|
   }finally{await rm(lock,{recursive:true,force:true});}
 }
 
+/** Inspect an existing attempt even if the project has changed or a writer crashed. */
+export async function shipStatus(projectRoot:string,id:string,token=()=>connectToken(process.env),transport:typeof fetch=fetch) {
+  if(!/^[a-f0-9]{64}$/.test(id))throw Error('Use the full ID of the locally reviewed ship plan');
+  const root=await realpath(resolve(projectRoot));
+  const dir=await confined(root,`.ios-agent/ship/${id}`);
+  const m=await readJSON(join(dir,'ship.json')) as Manifest;
+  const config=ShipConfig.parse(m.config);
+  if(m.schemaVersion!==1||m.id!==id||digest(canonical({config,sourceHash:m.sourceHash,files:m.files,requestHash:m.requestHash}))!==id)throw Error('Ship plan integrity mismatch');
+  const identity={bundleId:config.bundleId,version:config.version,build:config.build};
+  const key=digest(canonical({team:config.teamId,bundle:config.bundleId,version:config.version,build:config.build}));
+  async function optional(file:string){try{return await readJSON(file);}catch(e){if((e as NodeJS.ErrnoException).code==='ENOENT')return null;throw e;}}
+  const receipt=await optional(join(dir,'receipt.json'));
+  const ledger=await optional(join(dir,'..','upload-'+key+'.json'));
+  if(ledger&&ledger.plan!==id)return {identity,status:'UNKNOWN',reason:'This identity is reserved by another plan. Check the original plan.'};
+  const localUpload=receipt?.upload??ledger?.status;
+  if(!localUpload)return {identity,status:'NO_RECORDED_UPLOAD'};
+  if(!['accepted','in_progress','uncertain'].includes(localUpload))throw Error('Invalid local upload receipt');
+  let bearer:string;
+  try{bearer=await token();}catch{return {identity,localUpload,status:'UNKNOWN',reason:'App Store Connect credentials unavailable. Configure ASC_KEY_PATH, ASC_KEY_ID and ASC_ISSUER_ID.'};}
+  return {identity,localUpload,...await lookupBuild(identity,bearer,transport)};
+}
+
 export async function shipCLI(args:string[]):Promise<number>{
-  if(args.includes('--help')||args.includes('-h')||!args.length){console.log('ios-agent-mcp ship --project DIR --config ship.json\nios-agent-mcp ship --project DIR --archive --approve ID\nios-agent-mcp ship --project DIR --upload --approve ID\nPrepare first; inspect SHIP_PLAN.md. Signing/provisioning and uploading require separate explicit approval. No App Review or public release.');return 0;}
-  const flags=new Map<string,string|boolean>();for(let i=0;i<args.length;i++){const key=args[i]!;if(!['--project','--config','--archive','--upload','--approve'].includes(key)||flags.has(key))throw Error(`Invalid/duplicate ship option: ${key}`);if(['--archive','--upload'].includes(key))flags.set(key,true);else{const value=args[++i];if(!value||value.startsWith('--'))throw Error(`Missing value for ${key}`);flags.set(key,value);}}
+  if(args.includes('--help')||args.includes('-h')||!args.length){console.log('ios-agent-mcp ship status --project DIR --plan ID\nios-agent-mcp ship --project DIR --config ship.json\nios-agent-mcp ship --project DIR --archive --approve ID\nios-agent-mcp ship --project DIR --upload --approve ID\nPrepare first; inspect SHIP_PLAN.md. Signing/provisioning and uploading require separate explicit approval. No App Review or public release.');return 0;}
+  const status=args[0]==='status';
+  if(status)args=args.slice(1);
+  const allowed=status?['--project','--plan']:['--project','--config','--archive','--upload','--approve'];
+  const flags=new Map<string,string|boolean>();for(let i=0;i<args.length;i++){const key=args[i]!;if(!allowed.includes(key)||flags.has(key))throw Error(`Invalid/duplicate ship option: ${key}`);if(['--archive','--upload'].includes(key))flags.set(key,true);else{const value=args[++i];if(!value||value.startsWith('--'))throw Error(`Missing value for ${key}`);flags.set(key,value);}}
   const root=String(flags.get('--project')??'');if(!root)throw Error('--project is required');
+  if(status){
+    const result=await shipStatus(root,String(flags.get('--plan')??''));
+    console.log(JSON.stringify(result,null,2));
+    return result.status==='INVALID'?1:result.status==='UNKNOWN'?2:0;
+  }
   if(flags.has('--archive')&&flags.has('--upload'))throw Error('Archive and upload need separate reviewed invocations');
   if(flags.has('--archive')||flags.has('--upload')){if(flags.has('--config'))throw Error('Prepare config separately');if(!flags.has('--approve'))throw Error('--approve ID is required');console.log(JSON.stringify(await executeShip(root,String(flags.get('--approve')),flags.has('--archive')?'archive':'upload'),null,2));}
   else{if(flags.has('--approve')||!flags.has('--config'))throw Error('Preparation needs --config, not --approve');console.log(JSON.stringify(await prepareShip(root,await readJSON(resolve(String(flags.get('--config'))))),null,2));}return 0;
