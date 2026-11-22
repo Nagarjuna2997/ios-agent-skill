@@ -358,6 +358,8 @@ export async function serve({
           return send(201, await universal.createProject(body));
         if (parts.length === 4 && parts[3] === "revision")
           return send(201, await universal.createRevision(parts[2], body));
+        if (parts.length === 4 && parts[3] === "screen-setup")
+          return send(200, await universal.saveScreenSetup(parts[2], body));
         if (parts.length === 4 && parts[3] === "generate")
           return send(200, await universal.generate(parts[2]));
         if (parts.length === 4 && parts[3] === "export")

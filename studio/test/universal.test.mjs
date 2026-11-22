@@ -259,3 +259,18 @@ test('cancellation during profile restoration cannot publish a successful captur
  assert.equal(result.status,'cancelled');assert.equal(result.runs[0].status,'cancelled');assert.equal(result.capture,undefined);assert.equal(result.runs[0].captureProfile.restored,true);assert.equal(state.appearance,'dark');assert.equal(u.nativeBusy,false);
  await assert.rejects(u.image(row.id,result.runs[0].id),/No archived/);
 });
+test('screen setups reject containers and revalidate copied identifiers on source revisions', async t => {
+  const {u}=await workspace(t);
+  const parent=await u.create({adapter:'html',name:'Parent',source:'<main><h1>Hello</h1><p>Details</p></main>'});
+  const {ir}=await u.source(parent.id);
+  const setup={name:'Details',profile:'light-large',orientation:'portrait',locale:'en-US',taps:[],
+    visible:ir.nodes.find(n=>n.text==='Details').id};
+  await assert.rejects(u.saveScreenSetup(parent.id,{...setup,visible:ir.nodes.find(n=>n.kind==='column').id}),/layout container/);
+  await u.saveScreenSetup(parent.id,setup);
+  const child=await u.createRevision(parent.id,{adapter:'html',name:'Child',source:'<p>One element</p>'});
+  assert.deepEqual(child.screenSetups,[setup]);
+  await u.generate(child.id);
+  await assert.rejects(u.startBuild(child.id,{setupName:'Details'}),/Update the setup/);
+  assert.equal(u.nativeBusy,false);
+  assert.equal(u.jobs.size,0);
+});

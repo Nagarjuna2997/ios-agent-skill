@@ -45,7 +45,7 @@ const syntheticPNG=new PNG({width:2,height:2});syntheticPNG.data.fill(255);const
 const {sha256}=await app.universal.module('app-ir/schema');
 historyRow.status='failed';historyRow.error='Synthetic later build failure';historyRow.runs=[{status:'preview-ready',started:'legacy',sourceHash:'legacy'},{id:runId,started:'synthetic test',status:'preview-ready',udid:'synthetic',sourceHash:'fixture-hash',capture:{runId,sourceHash:'fixture-hash',sha256:sha256(png),nativeSourceSHA256:sha256('Recorded <Swift> source')}}];
 await mkdir(join(app.universal.dir(historyRow.id),'captures'));await writeFile(join(app.universal.dir(historyRow.id),'captures',runId+'.png'),png);await writeFile(join(app.universal.dir(historyRow.id),'captures',runId+'.swift'),'Recorded <Swift> source');historyRow.revisionOf={id:originalRow.id,irHash:'synthetic fixture'};
-originalRow.runs=[{id:runId,started:'synthetic parent',status:'preview-ready',sourceHash:'parent-fixture',capture:{runId,sourceHash:'parent-fixture',sha256:sha256(png)}}];
+originalRow.runs=[{id:runId,udid:'synthetic',started:'synthetic parent',status:'preview-ready',sourceHash:'parent-fixture',capture:{runId,sourceHash:'parent-fixture',sha256:sha256(png)}}];
 await mkdir(join(app.universal.dir(originalRow.id),'captures'));await writeFile(join(app.universal.dir(originalRow.id),'captures',runId+'.png'),png);await app.universal.save(originalRow);
 await app.universal.save(historyRow);
 await page.getByRole('button',{name:'FolderApp · react · generated-unverified',exact:true}).click();
@@ -63,4 +63,13 @@ await page.route('**/api/universal/*/build',route=>{profileRequest=route.request
 await page.locator('#capture-profile').selectOption('dark-xxxl');const profileResponse=page.waitForResponse(r=>r.url().endsWith('/build'));await page.getByRole('button',{name:'Build, launch and capture on this Mac',exact:true}).click();
 await profileResponse;
 if(profileRequest?.captureProfile!=='dark-xxxl')throw Error('Selected capture profile was not submitted');
+await page.getByText('Save a repeatable screen setup',{exact:true}).click();
+const nodes=(await app.universal.source(historyRow.id)).ir.nodes;
+const target=nodes.find(n=>n.kind==='text').id;
+await page.locator('#setup-name').fill('Details');await page.locator('#setup-visible').fill(target);
+await page.getByRole('button',{name:'Save screen setup',exact:true}).click();
+await page.waitForFunction(()=>document.getElementById('screen-setup').value==='Details');
+const savedRequest=page.waitForResponse(r=>r.url().endsWith('/build'));
+await page.locator('#build').click();await savedRequest;
+if(profileRequest?.setupName!=='Details'||profileRequest?.captureProfile!==undefined)throw Error('Saved setup was not selected for the build');
 await page.setViewportSize({width:390,height:844});await page.screenshot({path:join(tmpdir(),'universal-studio-ui.png'),fullPage:true});console.log('Browser import and real project generation passed');}finally{await browser.close();await new Promise(r=>app.server.close(r));await rm(root,{recursive:true,force:true});}

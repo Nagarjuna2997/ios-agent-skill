@@ -178,8 +178,7 @@ only and does not merge other project files or later edits to the child revision
 using the latest archived successful capture on each conversion. It verifies image
 hashes and refuses mismatched dimensions rather than resizing. The report identifies
 both run/source hashes and retains `requires-review`, even for identical pixels.
-Studio capture conditions do not pin orientation or UI state, and older/current-setting
-captures also lack appearance/text-size profiles, so this exploratory diff cannot satisfy the visual-fidelity gate or approve
+Captures without saved screen setups can lack orientation, locale and UI state. The exploratory diff cannot satisfy the visual-fidelity gate or approve
 a repair. It does not compare against an HTML/browser reference.
 
 Optional capture settings select Light/Dark with Large/XXXL Dynamic Type. Studio
@@ -188,6 +187,18 @@ the requested settings, then restores and verifies the originals after capture o
 failure. Unknown original settings block the operation; restoration failures are
 reported as failures, not passing captures. Cancellation uses an independent,
 bounded cleanup runner. Run evidence records requested/original settings and
-restoration. This does not pin orientation, locale or application state, and does
+restoration. A profile by itself only sets those two values and does
 not establish accessibility or fidelity. Choosing current settings preserves the
 older behavior and records no profile.
+
+### Repeatable screen setups
+
+In Universal import, choose a capture profile, open **Save a repeatable screen setup**, and enter a name, orientation, locale, and the identifier of an element expected on screen. For navigation, enter the tap targets from the App IR in order. For the TrailRoutes example, tap `screen-1-node-6` and expect `screen-2-node-3` to capture Cedar Loop. Select the saved setup before building. Revisions copy the parent's setups, and each successful capture records the setup used.
+
+Studio launches the built app through XCTest with the chosen locale and language launch arguments, checks the orientation and frame, taps each visible target, and attaches the app screenshot after verifying the final element. This supports deterministic navigation through generated views. It does not reset accounts, external services or persistent user data. A revision comparison reports mismatched settings before calculating pixel differences. Older captures are still viewable.
+
+Run the local two-revision acceptance check from the repository root after building `mcp-server`:
+
+```sh
+node studio/check-screen-setup.mjs SIMULATOR_UDID /absolute/new/evidence-directory
+```

@@ -1,3 +1,4 @@
+import {captureScreenSetup, comparisonConditions, normalizeSetup} from './screen-setup.mjs';
 import {captureProfiles,withCaptureProfile} from './capture-profile.mjs';
 // Local Universal IR workspace. Imported source is parsed, never executed.
 import {promises as fs} from 'node:fs';
@@ -24,6 +25,7 @@ export class UniversalStudio {
     const id=randomUUID(),dir=this.dir(id),staging=await fs.mkdtemp(path.join(this.root,'.pending-'));
     const row={id,name,adapter,created:new Date().toISOString(),status:'inspected',limitations:ir.limitations,tests:'not-run',visualFidelity:'not-evaluated',...(revisionOf?{revisionOf}:{})};
     try{
+      if (revisionOf) row.screenSetups = (await this.get(revisionOf.id)).screenSetups ?? [];
       await fs.writeFile(path.join(staging,'input.txt'),source,{flag:'wx'});
       await fs.writeFile(path.join(staging,'ir.json'),JSON.stringify(ir,null,2),{flag:'wx'});
       if(files)await fs.writeFile(path.join(staging,'inputs.json'),JSON.stringify(files),{flag:'wx'});
@@ -104,12 +106,13 @@ export class UniversalStudio {
     const latest=row=>[...(row.runs??[])].reverse().find(r=>typeof r.id==='string'&&r.status==='preview-ready'&&r.capture?.runId===r.id);
     const before=latest(parent),after=latest(child);
     if(!before||!after)throw Error('Both conversions need an archived native capture');
+    const conditions=comparisonConditions(before,after);
     const [a,b]=await Promise.all([this.image(parent.id,before.id),this.image(child.id,after.id)]);
     const {comparePNGs}=await this.module('app-ir/compare');const result=comparePNGs(a,b);
-    const describe=(row,run)=>({conversionId:row.id,runId:run.id,started:run.started,sourceHash:run.sourceHash,udid:run.udid,xcode:run.environment?.xcode??null,sdk:run.environment?.iosSimulatorSdk??null,captureProfile:run.captureProfile??null});
+    const describe=(row,run)=>({conversionId:row.id,runId:run.id,started:run.started,sourceHash:run.sourceHash,udid:run.udid,xcode:run.environment?.xcode??null,sdk:run.environment?.iosSimulatorSdk??null,captureProfile:run.captureProfile??null,screenSetup:run.screenSetup??null});
     return {baseline:describe(parent,before),candidate:describe(child,after),report:result.report,diff:result.diff.toString('base64'),
       status:'requires-review',comparison:'latest archived parent and revision captures; native-to-native only',
-      conditions:'Recorded appearance/text-size profiles are shown when available. Orientation and UI state are not pinned; older captures may also lack appearance/text-size profiles. Pixel differences are exploratory and cannot pass the fidelity gate.'};
+      conditions};
   }
   async fingerprint(id){const {snapshotFiles,snapshotHash}=await this.module('agent/remote');return snapshotHash(await snapshotFiles(path.join(this.dir(id),'project')));}
   async simulators(){
@@ -117,22 +120,48 @@ export class UniversalStudio {
     const environment=await detectToolchain(new ProcessRunner());
     return environment.simulators.filter(s=>s.isAvailable).map(({udid,name,runtime,state})=>({udid,name,runtime,state}));
   }
+  async validateScreenSetup(id,input) {
+    const setup=normalizeSetup(input);
+    const ir=JSON.parse(await fs.readFile(path.join(this.dir(id),'ir.json'),'utf8'));
+    const identifiers=new Set(ir.nodes.filter(n=>!['row','column'].includes(n.kind)).map(n=>n.id));
+    if (![...setup.taps,setup.visible].every(key=>identifiers.has(key)))
+      throw Error('A screen setup identifier is missing or belongs to a layout container. Update the setup for this revision.');
+    return setup;
+  }
+  async saveScreenSetup(id, input) {
+    if (this.jobs.has(id)) throw Error('Wait for this conversion to finish');
+    this.jobs.set(id,true);
+    try {
+      const row = await this.get(id);
+      const setup = await this.validateScreenSetup(id,input);
+      const existing = (row.screenSetups ?? []).filter(s => s.name !== setup.name);
+      if (existing.length >= 24) throw Error('Up to 24 screen setups can be saved per conversion');
+      row.screenSetups = [...existing,setup];
+      await this.save(row);
+      return setup;
+    } finally { this.jobs.delete(id); }
+  }
   async startBuild(id,options={}){
-    if(!options||typeof options!=='object'||Array.isArray(options)||Object.keys(options).some(k=>!['udid','captureProfile'].includes(k))||(options.captureProfile!==undefined&&(typeof options.captureProfile!=='string'||!Object.hasOwn(captureProfiles,options.captureProfile)))||
+    if(!options||typeof options!=='object'||Array.isArray(options)||Object.keys(options).some(k=>!['udid','captureProfile','setupName'].includes(k))||(options.captureProfile!==undefined&&(typeof options.captureProfile!=='string'||!Object.hasOwn(captureProfiles,options.captureProfile)))||
       (options.udid!==undefined&&(typeof options.udid!=='string'||!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(options.udid))))throw Error('Choose an available simulator UUID');
+    if (options.setupName !== undefined && (typeof options.setupName !== 'string' || options.captureProfile !== undefined)) throw Error('Choose one saved screen setup or one capture profile');
     if(this.nativeBusy)throw Error('A native conversion is already running');
+    if(this.jobs.has(id))throw Error('Conversion already running');
     const release=this.acquireNative?.()??(()=>{});this.nativeBusy=true;
+    this.jobs.set(id,true);
     try {
     const row=await this.get(id);
     if(!['generated-unverified','preview-ready','failed','interrupted','cancelled'].includes(row.status))throw Error('Generate a project first');
     await fs.stat(path.join(this.dir(id),'project','.ios-agent','spec.json'));
-    if(this.jobs.has(id))throw Error('Conversion already running');
+    const setup = (row.screenSetups ?? []).find(s => s.name === options.setupName);
+    if (options.setupName !== undefined && !setup) throw Error('Unknown saved screen setup');
+    const verifiedSetup=setup ? await this.validateScreenSetup(id,setup) : null;
     const controller=new AbortController();this.controllers.set(id,controller);
-    this.jobs.set(id,true);row.status='building';delete row.error;delete row.capture;
+    row.status='building';delete row.error;delete row.capture;
     try{await this.save(row);}catch(error){this.jobs.delete(id);this.controllers.delete(id);throw error;}
-    const task=this.executeBuild(row,controller.signal,{...options}).finally(()=>{this.jobs.delete(id);this.controllers.delete(id);this.nativeBusy=false;release();});
+    const task=this.executeBuild(row,controller.signal,verifiedSetup ? {...options,screenSetup:verifiedSetup,captureProfile:verifiedSetup.profile} : {...options}).finally(()=>{this.jobs.delete(id);this.controllers.delete(id);this.nativeBusy=false;release();});
     this.jobs.set(id,task);task.catch(()=>{});return row;
-    }catch(error){this.nativeBusy=false;release();throw error;}
+    }catch(error){this.jobs.delete(id);this.nativeBusy=false;release();throw error;}
   }
   async executeBuild(row,signal,options={}){
     const run={id:randomUUID(),...(options.udid?{requestedUDID:options.udid}:{}),started:new Date().toISOString(),status:'running',tests:'not-run',visualFidelity:'not-evaluated'};
@@ -151,14 +180,24 @@ export class UniversalStudio {
       const capture=async()=>{
       row.status='launching';await this.save(row);run.launch=await runApp(project,runner,{udid:run.udid});
       if(run.launch.udid!==run.udid)throw Error('Simulator destination changed');
-      // simctl launch returns before the first frame. This bounded delay reduces
-      // launch-transition captures; it is not proof of visual readiness.
-      run.captureDelayMs=2000;await this.save(row);await delay(run.captureDelayMs,undefined,{signal});
-      row.status='capturing';await this.save(row);const shot=await screenshot(project,runner,run.launch.udid,'universal');
+      let bytes;
+      if (options.screenSetup) {
+        row.status='capturing';await this.save(row);
+        const output=path.join(this.dir(row.id),run.id+'.staging.png');
+        try {
+          await captureScreenSetup({runner,cleanupRunner:processRunner,udid:run.udid,setup:options.screenSetup,bundle:run.launch.bundleId,output});
+          bytes=await fs.readFile(output);
+          run.screenSetup=options.screenSetup;
+        } finally { await fs.rm(output,{force:true}); }
+      } else {
+        run.captureDelayMs=2000;await this.save(row);await delay(run.captureDelayMs,undefined,{signal});
+        row.status='capturing';await this.save(row);
+        const shot=await screenshot(project,runner,run.launch.udid,'universal');
+        bytes=await fs.readFile(shot.path);
+      }
       if(signal.aborted)throw Error('Cancelled');
       if(await this.fingerprint(row.id)!==run.sourceHash)throw Error('Source changed during native verification; screenshot is stale');
       const {sha256}=await this.module('app-ir/schema');
-      const bytes=await fs.readFile(shot.path);
       const captures=path.join(this.dir(row.id),'captures');await fs.mkdir(captures,{recursive:true});
       if(!(await fs.realpath(captures)).startsWith(await fs.realpath(this.dir(row.id))+path.sep))throw Error('Capture directory escapes workspace');
       await fs.writeFile(path.join(captures,run.id+'.png'),bytes,{flag:'wx'});
