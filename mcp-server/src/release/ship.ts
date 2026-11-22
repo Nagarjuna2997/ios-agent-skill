@@ -5,7 +5,7 @@ import { mkdir, readFile, writeFile, rename, readdir, lstat, realpath, rm, chmod
 import { resolve, join, relative, isAbsolute } from 'node:path';
 import * as plist from 'plist';
 import { z } from 'zod';
-import { connectToken, lookupBuild } from './testflight-status.js';
+import { connectToken, lookupBuild, type StatusToken } from './testflight-status.js';
 import { reviewReadiness } from '../analyzers/readiness.js';
 import { prepareRelease } from './package.js';
 import { canonical, digest } from './model.js';
@@ -149,7 +149,7 @@ export async function executeShip(projectRoot:string,id:string,action:'archive'|
 }
 
 /** Inspect an existing attempt even if the project has changed or a writer crashed. */
-export async function shipStatus(projectRoot:string,id:string,token=()=>connectToken(process.env),transport:typeof fetch=fetch) {
+export async function shipStatus(projectRoot:string,id:string,token:StatusToken=request=>connectToken(process.env,request),transport:typeof fetch=fetch) {
   if(!/^[a-f0-9]{64}$/.test(id))throw Error('Use the full ID of the locally reviewed ship plan');
   const root=await realpath(resolve(projectRoot));
   const dir=await confined(root,`.ios-agent/ship/${id}`);
@@ -165,9 +165,7 @@ export async function shipStatus(projectRoot:string,id:string,token=()=>connectT
   const localUpload=receipt?.upload??ledger?.status;
   if(!localUpload)return {identity,status:'NO_RECORDED_UPLOAD'};
   if(!['accepted','in_progress','uncertain'].includes(localUpload))throw Error('Invalid local upload receipt');
-  let bearer:string;
-  try{bearer=await token();}catch{return {identity,localUpload,status:'UNKNOWN',reason:'App Store Connect credentials unavailable. Configure ASC_KEY_PATH, ASC_KEY_ID and ASC_ISSUER_ID.'};}
-  return {identity,localUpload,...await lookupBuild(identity,bearer,transport)};
+  return {identity,localUpload,...await lookupBuild(identity,token,transport)};
 }
 
 export async function shipCLI(args:string[]):Promise<number>{

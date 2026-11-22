@@ -7,23 +7,39 @@ const resource = z.object({type:z.string(),id:z.string().min(1),attributes:z.rec
   relationships:z.record(z.object({data:z.object({type:z.string(),id:z.string()}).nullable().optional()})).optional()});
 const page = z.object({data:z.array(resource),included:z.array(resource).optional(),links:z.object({next:z.string().nullish()}).optional()});
 
-export async function connectToken(env: NodeJS.ProcessEnv) {
+const apiOrigin = 'https://api.appstoreconnect.apple.com';
+export type StatusToken = (request: URL) => string | Promise<string>;
+
+export async function connectToken(env: NodeJS.ProcessEnv, request: URL) {
+  const filters = request.searchParams;
+  const exactApp = request.pathname === '/v1/apps' && filters.get('filter[bundleId]');
+  const exactBuild = request.pathname === '/v1/builds' && filters.get('filter[app]') &&
+    filters.get('filter[version]') && filters.get('filter[preReleaseVersion.version]') &&
+    filters.get('filter[preReleaseVersion.platform]') === 'IOS';
+  if (request.origin !== apiOrigin || request.username || request.password || request.hash ||
+      !(exactApp || exactBuild)) {
+    throw Error('A scoped token requires an App Store Connect status request for one app or build.');
+  }
   if(!env.ASC_KEY_ID || !env.ASC_ISSUER_ID || !env.ASC_KEY_PATH) throw Error('Set ASC_KEY_ID, ASC_ISSUER_ID and ASC_KEY_PATH for a read-only status lookup.');
   const key=createPrivateKey(await readFile(env.ASC_KEY_PATH));
   if(key.asymmetricKeyType!=='ec'||key.asymmetricKeyDetails?.namedCurve!=='prime256v1') throw Error('Expected an App Store Connect P-256 private key');
   const encode=(v:unknown)=>Buffer.from(JSON.stringify(v)).toString('base64url');
   const now=Math.floor(Date.now()/1000);
-  const payload=encode({alg:'ES256',kid:env.ASC_KEY_ID,typ:'JWT'})+'.'+encode({iss:env.ASC_ISSUER_ID,iat:now,exp:now+300,aud:'appstoreconnect-v1',scope:['GET /v1/apps','GET /v1/builds']});
+  const payload=encode({alg:'ES256',kid:env.ASC_KEY_ID,typ:'JWT'})+'.'+encode({iss:env.ASC_ISSUER_ID,iat:now,exp:now+300,aud:'appstoreconnect-v1',scope:[`GET ${request.pathname}${request.search}`]});
   return payload+'.'+sign('sha256',Buffer.from(payload),{key,dsaEncoding:'ieee-p1363'}).toString('base64url');
 }
 
 class LookupError extends Error { constructor(readonly http:number){ super('App Store Connect HTTP '+http); } }
 
-export async function lookupBuild(identity:BuildIdentity, token:string, transport:typeof fetch=fetch) {
+class CredentialError extends Error {}
+
+export async function lookupBuild(identity:BuildIdentity, token:StatusToken, transport:typeof fetch=fetch) {
   const get=async(path:string,params:Record<string,string>)=>{
-    const url=new URL(path,'https://api.appstoreconnect.apple.com/v1/');
+    const url=new URL('/v1/'+path,apiOrigin);
     url.search=new URLSearchParams(params).toString();
-    const response=await transport(url,{method:'GET',headers:{Authorization:'Bearer '+token},redirect:'error',signal:AbortSignal.timeout(15000)});
+    let bearer:string;
+    try { bearer=await token(new URL(url)); } catch { throw new CredentialError(); }
+    const response=await transport(url,{method:'GET',headers:{Authorization:'Bearer '+bearer},redirect:'error',signal:AbortSignal.timeout(15000)});
     if(!response.ok)throw new LookupError(response.status);
     return page.parse(await response.json());
   };
@@ -62,6 +78,7 @@ export async function lookupBuild(identity:BuildIdentity, token:string, transpor
     }
     return {status,buildId:build.id,processingState:typeof processing==='string'?processing:null,internalBuildState:internal,externalBuildState:external};
   }catch(e){
+    if(e instanceof CredentialError)return {status:'UNKNOWN',reason:'App Store Connect credentials unavailable. Configure ASC_KEY_PATH, ASC_KEY_ID and ASC_ISSUER_ID.'};
     return {status:'UNKNOWN',reason:e instanceof LookupError?e.message:'Response unavailable or invalid. The upload attempt remains reserved.'};
   }
 }
