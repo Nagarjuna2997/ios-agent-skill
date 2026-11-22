@@ -2,7 +2,7 @@
 // evidence, role criteria, output schema) and nothing from the author's conversation.
 // Providers record how they isolate; the server never assumes isolation from a prompt.
 import { createHash, randomUUID } from "node:crypto";
-import { readFile, lstat } from "node:fs/promises";
+import { readFile, lstat, realpath } from "node:fs/promises";
 import { relative } from "node:path";
 import { extractJson } from "../agent/brain.js";
 import type { CommandRunner } from "../agent/runner.js";
@@ -17,6 +17,10 @@ export const PACKAGE_VERSION = 1 as const;
 const MAX_EVIDENCE_FILE_CHARS = 64_000;
 const SECRET_PATH = /(^|\/)(\.env[^/]*|.*\.(p12|p8|pem|key|mobileprovision|keychain)|Secrets\.xcconfig|.*secret.*)$/i;
 const SECRET_LINE = /(api[_-]?key|secret|token|password|authorization)\s*[:=]\s*["']?[A-Za-z0-9_\-]{12,}/i;
+
+function isPrivateEvidence(path: string): boolean {
+  return path.startsWith(".ios-agent/design-private") || SECRET_PATH.test(path);
+}
 
 export interface EvidenceEntry {
   path: string;
@@ -138,11 +142,14 @@ export async function buildEvidenceManifest(root: string, contract: DesignContra
   for (const p of extra) wanted.add(p);
   const evidence: EvidenceEntry[] = [];
   const skipped: Array<{ path: string; reason: string }> = [];
+  const canonicalRoot = await realpath(root);
   let used = 0;
   for (const path of [...wanted].sort()) {
-    if (path.startsWith(".ios-agent/design-private") || SECRET_PATH.test(path)) { skipped.push({ path, reason: "excluded as private or credential material" }); continue; }
+    if (isPrivateEvidence(path)) { skipped.push({ path, reason: "excluded as private or credential material" }); continue; }
     let full: string;
-    try { full = await containedReadPath(root, path); } catch (error) { skipped.push({ path, reason: (error as Error).message }); continue; }
+    try { full = await containedReadPath(canonicalRoot, path); } catch (error) { skipped.push({ path, reason: (error as Error).message }); continue; }
+    const projectPath = relative(canonicalRoot, full).split("\\").join("/");
+    if (isPrivateEvidence(projectPath)) { skipped.push({ path, reason: "excluded as private or credential material" }); continue; }
     const st = await lstat(full);
     if (!st.isFile()) { skipped.push({ path, reason: "not a regular file" }); continue; }
     const raw = await readFile(full);
@@ -153,7 +160,7 @@ export async function buildEvidenceManifest(root: string, contract: DesignContra
     const truncated = text.length > limit;
     const body = truncated ? text.slice(0, limit) : text;
     used += body.length;
-    evidence.push({ path: relative(root, full).split("\\").join("/"), sha256, bytes: raw.length, text: body, truncated, redactedLines: redacted });
+    evidence.push({ path: projectPath, sha256, bytes: raw.length, text: body, truncated, redactedLines: redacted });
   }
   return { evidence, skipped };
 }

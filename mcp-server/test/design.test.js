@@ -256,6 +256,29 @@ test("design review: the package carries only the contract, hashed evidence and 
   assert.deepEqual(selectRoles(validateContract(contract({ acceptanceCriteria: [{ id: "AC-1", statement: "x", method: "compile" }], steps: [{ id: "S-1", description: "y", criteria: ["AC-1"] }] })).contract), ["requirements", "architecture", "concurrency"]);
 });
 
+test("design review: an alias above the project preserves evidence paths and read boundaries", async (t) => {
+  const parent = await mkdtemp(join(tmpdir(), "design-alias-"));
+  t.after(() => rm(parent, { recursive: true, force: true }));
+  const projectDir = join(parent, "real", "project");
+  await mkdir(join(projectDir, "App", "Models"), { recursive: true });
+  await symlink(join(parent, "real"), join(parent, "alias"), "dir");
+  const source = "App/Models/SyncEngine.swift";
+  await writeFile(join(projectDir, source), "actor SyncEngine {}");
+  await writeFile(join(projectDir, ".env"), "private value");
+  await symlink(".env", join(projectDir, "Config.swift"));
+  await writeFile(join(parent, "outside.swift"), "outside value");
+  await symlink(join(parent, "outside.swift"), join(projectDir, "Outside.swift"));
+
+  const c = validateContract(contract({ requiredFiles: [source] })).contract;
+  const manifest = await buildEvidenceManifest(join(parent, "alias", "project"), c, ["Config.swift", "Outside.swift"], 1024);
+  assert.deepEqual(manifest.evidence.map((entry) => entry.path), [source]);
+  assert.ok(manifest.skipped.some((s) => s.path === "Config.swift" && /private or credential/.test(s.reason)));
+  assert.ok(manifest.skipped.some((s) => s.path === "Outside.swift" && /outside the project/.test(s.reason)));
+  const pkg = buildPackage(c, contractHash(c), "architecture", manifest.evidence, "alias-test");
+  assert.ok(!renderPrompt(pkg).includes(parent));
+  assert.doesNotMatch(renderPrompt(pkg), /private value|outside value/);
+});
+
 test("design review: fake provider rounds record provider, execution id, hashes and isolation; dedup keeps provenance", async (t) => {
   const root = await project(t);
   const design = new DesignWorkflow(root, "offline-sync");
