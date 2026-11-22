@@ -8,6 +8,28 @@ New Claude-generated projects receive separate Swift Testing and XCUITest target
 
 The loop runs unsigned simulator tests and reads the xcresult summary. Zero tests, skipped tests, a missing result bundle, a failing command or changed source cannot count as passing. Failed runs preserve logs and result bundles. Up to three test attempts can repair application source; that repair path cannot delete tests. Compiler-diagnosed test files can be repaired while preserving the test/assertion count; behavioral failures are repaired in app source. Review generated assertions for semantic weakening. This does not establish exhaustive coverage: review generated assertions and edge cases.
 
+## Simulator journeys
+
+A plan may include up to four named journeys. The agent writes their starting screens and steps in `PLAN.md`. When it creates the project, it converts the reviewed steps into a deterministic XCUITest suite. The app supplies the matching accessibility identifiers on real controls.
+
+For example, this journey tests opening a note, pinning it, and observing the changed state:
+
+```json
+{
+  "id": "pin-note",
+  "startScreen": "notes",
+  "steps": [
+    {"action": "tap", "target": "first-note"},
+    {"action": "tap", "target": "pin-note-button"},
+    {"action": "expectVisible", "target": "unpin-note-button"}
+  ]
+}
+```
+
+Place the object in the plan's `journeys` array. To test scrolling, use `{"action":"scrollTo","target":"last-note","scrollView":"notes-list"}`. The target must start offscreen and become visible after at most eight upward swipes. To verify saved state, use `{"action":"relaunch"}`, then navigate to and assert the changed state. Each journey gets a fresh `-ios-agent-journey` UUID for its synthetic store. Apps with persistence must reuse that isolated store across launches. Each journey ends with a visible-state assertion.
+
+The build loop runs the suite on the simulator. Each completed step attaches a PNG to the XCTest result bundle. `RUN_REPORT.md` links those checkpoints under the corresponding test run. A missing checkpoint prevents a passing journey receipt. The [Habit Tracker fixture](../../examples/agent/habit-tracker/verification/README.md) demonstrates scroll, tap, a persisted update and relaunch.
+
 ## Design and devices
 
 Review PLAN.md's alternatives, then use `build --resume --design <id>`. `--design first` explicitly chooses the first alternative. The default design-system and sample-data flags are shared by the CLI and Studio. Visual findings are model observations, not HIG certification.

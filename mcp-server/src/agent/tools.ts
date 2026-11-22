@@ -142,7 +142,7 @@ export function registerAgentTools(server: McpServer, runners: RunnerFactory = d
       inputSchema: {
         projectDir,
         description: z.string().min(1).max(2000).describe("The user's request, verbatim."),
-        plan: z.record(z.unknown()).describe("Plan JSON: appName, displayName, summary, navigation, design{mood,palette{name,primary,secondary,accent},typography,shape,density,motion}, screens[], models[{name,persisted,fields[],sampleData[2+ synthetic records]}], capabilities[], features[], assumptions[]."),
+        plan: z.record(z.unknown()).describe("Plan JSON: appName, displayName, summary, navigation, design{mood,palette{name,primary,secondary,accent},typography,shape,density,motion}, screens[], models[{name,persisted,fields[],sampleData[2+ synthetic records]}], optional journeys[{id,startScreen,steps}] for tap/scrollTo/relaunch/expectVisible, capabilities[], features[], assumptions[]."),
       },
       annotations: writes,
     },

@@ -53,6 +53,26 @@ enum SampleData {
         return container
     }
 
+    /// A UI-test session owns its own synthetic store, allowing the test to check relaunch.
+    @MainActor
+    static func journeyContainer(session: UUID) throws -> ModelContainer {
+        let schema = Schema([Habit.self])
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("journey-" + session.uuidString + ".store")
+        let configuration = ModelConfiguration(schema: schema, url: url, cloudKitDatabase: .none)
+        let container = try ModelContainer(for: schema, configurations: [configuration])
+        let context = container.mainContext
+        if try context.fetchCount(FetchDescriptor<Habit>()) == 0 {
+            // Place the target below the fold so the test must actually scroll to reach it.
+            for index in 0..<15 {
+                context.insert(Habit(name: "Practice session " + String(index + 1),
+                                     createdAt: Date(timeIntervalSince1970: Double(index + 1))))
+            }
+            for habit in habits() { context.insert(habit) }
+            try context.save()
+        }
+        return container
+    }
+
     /// For #Preview blocks, which cannot recover from a container error.
     @MainActor
     static func previewContainer() -> ModelContainer {

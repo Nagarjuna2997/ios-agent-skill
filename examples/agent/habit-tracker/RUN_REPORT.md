@@ -64,6 +64,10 @@ Running on a physical iPhone, TestFlight or the App Store requires your own Appl
 1. Ask for changes with `/ios-build --refine "<change>"`.
 2. Open `HabitTracker.xcodeproj` in Xcode to edit and run it yourself.
 
+## Simulator journey verification
+
+The [November 21 XCTest report](verification/journey-2026-11-21/RUN_REPORT.md) records 2 passing simulator tests and 9 step screenshots. The journey verified the offscreen reading habit became visible after scrolling, undid its check-in, relaunched and observed the persisted change.
+
 ## Progress log
 
 ```text

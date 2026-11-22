@@ -160,10 +160,13 @@ test("an interrupted run resumes from the stage where it stopped", async (t) => 
   assert.equal(first.state.failure, "network dropped");
   const legacy = await loadState(projectDir);
   delete legacy.cycleStartedAt;
+  legacy.startedAt = "2020-01-01T00:00:00Z";
   await saveState(projectDir, legacy);
+  const resumeStartedAt = Date.now();
   const second = await runAgent({ projectDir, brain, runner, resume: true, screenshotDelayMs: 0 });
   assert.equal(second.state.status, "complete", second.state.failure);
-  assert.ok(Date.parse(second.state.cycleStartedAt) >= Date.parse(second.state.updatedAt) - 10_000, "legacy saved runs start timing the resumed cycle instead of using the original run date");
+  const cycleStartedAt = Date.parse(second.state.cycleStartedAt);
+  assert.ok(cycleStartedAt >= resumeStartedAt && cycleStartedAt <= Date.parse(second.state.updatedAt), "legacy saved runs start timing the resumed cycle instead of using the original run date");
   assert.equal(brain.calls.filter((c) => c[0] === "plan").length, 1);
 });
 

@@ -164,5 +164,50 @@
     "No reminders, accounts or cloud sync were requested, so none are included.",
     "Dark mode is a simple on/off toggle that overrides the system setting.",
     "Streak is calculated from completed dates rather than stored."
+  ],
+  "journeys": [
+    {
+      "id": "persist-check-in",
+      "startScreen": "habit-list",
+      "steps": [
+        {
+          "action": "scrollTo",
+          "target": "habit-a0000000-0000-0000-0000-000000000001",
+          "scrollView": "habit-list-scroll"
+        },
+        {
+          "action": "tap",
+          "target": "habit-a0000000-0000-0000-0000-000000000001"
+        },
+        {
+          "action": "expectVisible",
+          "target": "undo-check-in"
+        },
+        {
+          "action": "tap",
+          "target": "undo-check-in"
+        },
+        {
+          "action": "expectVisible",
+          "target": "check-in"
+        },
+        {
+          "action": "relaunch"
+        },
+        {
+          "action": "scrollTo",
+          "target": "habit-a0000000-0000-0000-0000-000000000001",
+          "scrollView": "habit-list-scroll"
+        },
+        {
+          "action": "tap",
+          "target": "habit-a0000000-0000-0000-0000-000000000001"
+        },
+        {
+          "action": "expectVisible",
+          "target": "check-in"
+        }
+      ]
+    }
   ]
 }

@@ -12,6 +12,10 @@ A simple habit tracker that shows your habits in a list, lets you open any habit
 
 Navigation: stack.
 
+## Simulator journey
+
+Open the habit list in an isolated synthetic session. Scroll until the reading habit becomes visible, open it and undo today's check-in. Terminate the app, relaunch with the same session, scroll back to the habit and verify the undo persisted. The machine-readable steps are in `.ios-agent/plan.json`.
+
 ## Design direction
 
 - Mood: optimistic, steady, and restorative

@@ -1,6 +1,9 @@
 // Test results are separate from compilation. A zero-test run is never a pass.
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { collectJourneyScreenshots, type JourneyScreenshot } from './journey-evidence.js';
+import { journeyTests } from "./journeys.js";
+import { readPlan } from './workspace.js';
 import { randomUUID } from 'node:crypto';
 import { resolveDestination } from './build.js';
 import { readSpec, projectPaths } from './project.js';
@@ -10,6 +13,7 @@ import { loadState, saveState } from './state.js';
 
 export interface TestEvidence {
   cycle?: number; verificationRequest?: string; sourceHash: string; at: string; status: 'passed' | 'failed' | 'unavailable';
+  journeyScreenshots?: JourneyScreenshot[];
   passed: number; failed: number; skipped: number; logPath: string; resultBundle: string; reason?: string;
 }
 export function classifyTestSummary(exitCode: number | null, value: unknown): Pick<TestEvidence, 'status' | 'passed' | 'failed' | 'skipped' | 'reason'> {
@@ -33,6 +37,11 @@ export function testBudget(before: { cycle: number; deadlineAt: string; tests?: 
 export async function testProject(root: string, runner: CommandRunner, udid?: string, request?: VerificationRequest): Promise<TestEvidence> {
   const spec = await readSpec(root);
   if (!spec.tests) throw new Error('Project has no configured test targets');
+  const journeys = (await readPlan(root))?.journeys ?? [];
+  if (journeys.length) {
+    const suite = join(root, spec.name + 'UITests/PlannedJourneyTests.swift');
+    if (await readFile(suite, 'utf8') !== journeyTests(journeys)) throw new Error('The planned journey test differs from its reviewed plan');
+  }
   const sourceHash = snapshotHash(await snapshotFiles(root));
   const id = randomUUID();
   const logPath = `.ios-agent/logs/test-${id}.log`, resultBundle = `.ios-agent/test-results/${id}.xcresult`;
@@ -48,6 +57,15 @@ export async function testProject(root: string, runner: CommandRunner, udid?: st
   let value: unknown;
   if (summary.exitCode === 0) { try { value = JSON.parse(summary.stdout); } catch { /* unknown, not passed */ } }
   const evidence: TestEvidence = {...(request ? {verificationRequest:request.id} : {}), ...(before ? {cycle:before.cycle} : {}), sourceHash, at: new Date().toISOString(), logPath, resultBundle, ...classifyTestSummary(result.exitCode, value)};
+  if (journeys.length) {
+    try {
+      evidence.journeyScreenshots = await collectJourneyScreenshots(root, resultBundle, id, journeys, runner);
+    } catch { evidence.journeyScreenshots = []; }
+    if (evidence.status === 'passed' && evidence.journeyScreenshots.length !== journeys.reduce((n, j) => n + j.steps.length, 0)) {
+      evidence.status = 'unavailable';
+      evidence.reason = 'Missing per-step journey screenshots in XCTest evidence';
+    }
+  }
   if (snapshotHash(await snapshotFiles(root)) !== sourceHash) { evidence.status = 'unavailable'; evidence.reason = 'Source changed during test execution'; }
   const state = await loadState(root);
   if (state) { state.tests = [...(state.tests ?? []), evidence]; await saveState(root, state); }

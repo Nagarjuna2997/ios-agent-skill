@@ -1,3 +1,5 @@
+import { hasJourneyEvidence } from "./journey-evidence.js";
+import { journeyTests } from "./journeys.js";
 import { snapshotFiles, snapshotHash } from "./remote.js";
 // High-level operations shared by the MCP tools and the CLI loop.
 import { existsSync } from "node:fs";
@@ -187,13 +189,19 @@ export async function addCapabilities(rootDir: string, requested: string[], runn
 }
 
 export async function createProject(
-  input: { projectDir: string; name: string; bundleId?: string; displayName?: string; deploymentTarget?: string; capabilities?: string[] },
+  input: { projectDir: string; name: string; bundleId?: string; displayName?: string; deploymentTarget?: string; capabilities?: string[]; tests?: boolean },
   runner: CommandRunner,
   sink?: ProgressSink,
 ): Promise<CreatedProject & { capabilities: CapabilityOutcome }> {
   const savedPlan = await readPlan(requireProjectDir(input.projectDir));
   if (savedPlan?.designDirections && !savedPlan.selectedDesign) throw new Error("Choose a design direction in the plan before creating the app.");
-  const { root, spec, files } = await initProject({ ...input, capabilities: input.capabilities ?? [] });
+  const journeys = savedPlan?.journeys ?? [];
+  const { root, spec, files } = await initProject({ ...input, ...(journeys.length ? { tests: true } : {}), capabilities: input.capabilities ?? [] });
+  if (journeys.length) {
+    const path = spec.name + "UITests/PlannedJourneyTests.swift";
+    await writeFile(await containedPath(root, path), journeyTests(journeys), { flag: "wx" });
+    files.push(path);
+  }
   const state = await ensureState(root);
   progress(state, "creating", `Creating ${spec.name} (${spec.bundleId}, iOS ${spec.deploymentTarget}).`, sink);
   await saveState(root, state);
@@ -274,6 +282,7 @@ export async function writeReport(rootDir: string, options: { status?: RunState[
   if (options.status === "complete" && existsSync(projectPaths(root).spec) && (await readSpec(root)).tests) {
     const tests = state.tests?.at(-1);
     const current = snapshotHash(await snapshotFiles(root));
+    if (!await hasJourneyEvidence(root, (await readPlan(root))?.journeys ?? [], tests?.journeyScreenshots)) throw new Error("Cannot complete: journey screenshot evidence is missing.");
     if (!tests || tests.status !== "passed" || tests.sourceHash !== current || !existsSync(join(root, tests.logPath)) || !existsSync(join(root, tests.resultBundle))) throw new Error("Cannot complete: current passing test evidence and artifacts are required.");
   }
   if (options.status) state.status = options.status;

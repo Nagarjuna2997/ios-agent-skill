@@ -1,5 +1,7 @@
 # Habit Tracker simulator interaction evidence
 
+On November 21, the [journey run report](journey-2026-11-21/RUN_REPORT.md) recorded both tests passing on iPhone 17e with all nine step screenshots, including the persisted state after relaunch.
+
 On November 18, 2026, a separate XCUITest ran against the existing synthetic
 HabitTracker example using Xcode 27.2 (27B52), Swift 6 and an iPhone 18 Pro
 simulator running iOS 27.2 (24B8117). The unsigned simulator test build and
@@ -16,7 +18,17 @@ the screenshot has SHA-256
 `96b55a8f49ffc00f14cb55a15c3ed1dad38e310cdbf902222e89478df0352d05`.
 These values identify this captured evidence, not a visual-fidelity baseline.
 
-To repeat the test, install Xcode, XcodeGen and an iOS Simulator runtime,
+The current runner additionally generates `PlannedJourneyTests.swift` directly from
+the example's approved `.ios-agent/plan.json` using the same generator as
+`/ios-build`. The journey uses a new UUID-scoped synthetic store, scrolls to
+the reading habit, opens the detail and undoes today's check-in. It relaunches
+the app and verifies that “Mark Done Today” is still available. For both scrolls,
+the target must start offscreen and become visible. The interactive test's
+store is separate from the original in-memory screenshot fixture.
+
+Build the MCP server once with `cd mcp-server && npm ci && npm run build`.
+
+To repeat the tests, install Xcode, XcodeGen and an iOS Simulator runtime,
 select an available simulator UDID with `xcrun simctl list devices available`,
 and run from this repository:
 
@@ -24,6 +36,8 @@ and run from this repository:
 python3 examples/agent/habit-tracker/verification/run.py \
   --device SIMULATOR-UDID --result /tmp/habit-interaction.xcresult
 ```
+
+The runner exports the checkpoint PNGs and a Markdown run report alongside the supplied result bundle.
 
 The runner copies the example into a temporary directory, adds a UI-test target
 there, and performs an unsigned simulator build and test. The result path must

@@ -58,6 +58,7 @@ struct HabitDetailView: View {
                           systemImage: done ? "arrow.uturn.backward.circle" : "checkmark.circle.fill")
                         .frame(maxWidth: .infinity)
                 }
+                .accessibilityIdentifier(done ? "undo-check-in" : "check-in")
                 .buttonStyle(AppPrimaryButtonStyle())
                 .motionAwareAnimation(.snappy(duration: AppTheme.motionDuration), value: done)
                 VStack(alignment: .leading, spacing: spacing.compact) {

@@ -1,6 +1,7 @@
 // The plan is what a non-developer reviews before any code exists: screens,
 // data model, capabilities with their defaults and alternatives, what each
 // needs from the user, and a budget built only from stated cost data.
+import { JourneySchema } from "./journeys.js";
 import { z } from "zod";
 import type { CatalogEntry, LoadedCapability, Resolution } from "./capabilities.js";
 import { SWIFT_IDENTIFIER } from "./spec.js";
@@ -56,6 +57,7 @@ export const PlanSchema = z
       )
       .min(1)
       .max(30),
+    journeys: z.array(JourneySchema).max(4).optional(),
     models: z
       .array(
         z
@@ -87,6 +89,12 @@ export const PlanSchema = z
     for (const screen of plan.screens) {
       if (ids.has(screen.id)) ctx.addIssue({ code: "custom", message: `Duplicate screen id ${screen.id}` });
       ids.add(screen.id);
+    }
+    const journeyIds = new Set<string>();
+    for (const journey of plan.journeys ?? []) {
+      if (!ids.has(journey.startScreen)) ctx.addIssue({ code: "custom", message: "Unknown journey start screen" });
+      if (journeyIds.has(journey.id)) ctx.addIssue({ code: "custom", message: "Duplicate journey ID" });
+      journeyIds.add(journey.id);
     }
     if (!plan.screens.some((s) => s.topLevel)) ctx.addIssue({ code: "custom", message: "At least one screen must be topLevel (reachable from launch)." });
     if (plan.navigation === "tabs" && plan.screens.filter((s) => s.topLevel).length > 5) {
@@ -213,6 +221,13 @@ export function renderPlanMarkdown(plan: Plan, rows: CapabilityPlanRow[], money_
     lines.push(`| ${escapeCell(screen.title)} (\`${screen.id}\`) | ${screen.kind} | ${screen.topLevel ? (plan.navigation === "tabs" ? "tab bar" : "launch") : "navigation"} | ${escapeCell(screen.purpose)} |`);
   }
   lines.push("", `Navigation: ${plan.navigation}.`, "");
+  if (plan.journeys?.length) {
+    lines.push("## Simulator journeys", "");
+    for (const journey of plan.journeys) {
+      lines.push(`- ${journey.id} (from ${journey.startScreen}): ${journey.steps.map(s => s.action === "relaunch" ? s.action : s.action + " " + s.target + (s.action === "scrollTo" ? " in " + s.scrollView : "")).join(" → ")}`);
+    }
+    lines.push("");
+  }
   if (plan.designDirections) {
     lines.push("## Choose a design", "", ...plan.designDirections.map(d => `- **${d.name}** (\`${d.id}\`): ${d.rationale} — ${d.design.mood}; ${d.design.palette.name}, ${d.design.typography}, ${d.design.density}.`), "", plan.selectedDesign ? `Selected: ${plan.selectedDesign}` : "Choose a direction, then resume with --design <id>. No app code is generated before your choice.", "");
   }

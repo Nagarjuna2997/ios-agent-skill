@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { z } from 'zod';
 import type { BuildResult } from './build.js';
 import { PlanSchema } from "./plan.js";
+import { journeyStepName } from "./journeys.js";
 import { validateAppName } from "./spec.js";
 import { readSpec } from './project.js';
 import { attemptsThisCycle, loadState, progress, saveState } from './state.js';
@@ -19,7 +20,7 @@ export const RemoteResult = z.object({
   build: z.object({ success: z.boolean(), errors: z.array(diagnostic), warnings: z.array(diagnostic), durationMs: z.number().nonnegative(), scheme: z.string(), destination: z.string(), logPath: z.string(), toolError: z.string().optional() }),
   primaryCaptureDevice: z.enum(["iphone", "ipad"]).optional(),
   captureError: z.string().optional(),
-  tests: z.object({cycle:z.number().int().positive().optional(), sourceHash: z.string(), at: z.string(), status: z.enum(['passed','failed','unavailable']), passed: z.number().int().nonnegative(), failed: z.number().int().nonnegative(), skipped: z.number().int().nonnegative(), logPath: z.string(), resultBundle: z.string(), reason: z.string().optional()}).optional(),
+  tests: z.object({cycle:z.number().int().positive().optional(), sourceHash: z.string(), at: z.string(), status: z.enum(['passed','failed','unavailable']), passed: z.number().int().nonnegative(), failed: z.number().int().nonnegative(), skipped: z.number().int().nonnegative(), logPath: z.string(), resultBundle: z.string(), journeyScreenshots: z.array(z.object({ step: z.string().regex(/^journey-[a-z0-9-]+-[0-9]{2}-(?:tap|scrollTo|expectVisible|relaunch)$/), path: z.string(), sha256: z.string().regex(/^[a-f0-9]{64}$/) })).max(48).optional(), reason: z.string().optional()}).optional(),
   run: z.object({ udid: z.string(), simulator: z.string(), pid: z.number().optional() }).optional(),
   toolchain: z.object({ sdk: z.string().optional(), xcode: z.string().optional(), simulator: z.string().optional() }),
   screenshots: z.array(z.object({ screen: z.string(), device: z.enum(['iphone','ipad']).optional(), variant: z.enum(['light', 'dark', 'xxl']), path: z.string() })),
@@ -159,12 +160,20 @@ export class GitHubBuildBackend {
       if (!(await lstat(source)).isFile() || digest(await readFile(source)) !== f.sha256) throw new Error(`Remote evidence hash mismatch: ${f.path}`);
     }
     for (const shot of result.screenshots) if (!result.files.some(f => f.path === shot.path && f.path.endsWith('.png'))) throw new Error('Screenshot missing verified evidence');
+    for (const image of result.tests?.journeyScreenshots ?? []) {
+      if (!image.path.startsWith('.ios-agent/screenshots/') || !image.path.endsWith('-' + image.step + '.png') || !result.files.some(f => f.path === image.path && f.sha256 === image.sha256)) throw new Error('Missing verified journey image');
+    }
     if (result.tests?.resultBundle.endsWith('.zip') && !result.files.some(f => f.path === result.tests!.resultBundle)) throw new Error('Test bundle missing verified evidence');
     if (result.tests && (result.tests.sourceHash !== inputHash || !result.files.some(f => f.path === result.tests!.logPath) || (result.tests.status === 'passed' && (!result.tests.passed || result.tests.failed || result.tests.skipped)))) throw new Error('Invalid remote test evidence');
     if (!result.files.some(f => f.path === result.build.logPath)) throw new Error('Build log missing verified evidence');
     if (result.build.success && !result.captureError) {
       if (result.build.errors.length || !result.run) throw new Error('Inconsistent remote success evidence');
       const plan = PlanSchema.parse(JSON.parse(await readFile(join(root, '.ios-agent/plan.json'), 'utf8')));
+      if (plan.journeys?.length) {
+        const required = plan.journeys.flatMap(j => j.steps.map((_, index) => journeyStepName(j, index)));
+        const observed = new Set(result.tests?.journeyScreenshots?.map(s => s.step));
+        if (!result.tests || (result.tests.status === 'passed' && (required.length !== result.tests.journeyScreenshots?.length || required.some(s => !observed.has(s))))) throw new Error('Incomplete remote journey evidence');
+      }
       const expected = plan.screens.filter(s => s.topLevel).flatMap(s => ['light', 'dark', 'xxl'].map(v => `${s.id}:${v}`));
       const actual = result.screenshots.filter(s => (s.device ?? "iphone") === (result.primaryCaptureDevice ?? "iphone")).map(s => `${s.screen}:${s.variant}`);
       if (!expected.length || expected.length !== actual.length || expected.some(k => !actual.includes(k))) throw new Error('Incomplete remote screenshot matrix');

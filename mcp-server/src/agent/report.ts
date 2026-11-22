@@ -160,7 +160,15 @@ export function renderRunReport(input: {
   for (const shot of tabletShots) lines.push(`- [${shot.screen} / ${shot.variant}](${shot.path})`);
   lines.push("", "## Tests", "");
   if (!state.tests?.length) lines.push("Not run. A successful build is not test evidence.", "");
-  for (const t of state.tests ?? []) lines.push(`- ${t.status}: ${t.passed} passed, ${t.failed} failed, ${t.skipped} skipped; source ${t.sourceHash}. [Log](${t.logPath}); result bundle: ${t.resultBundle}${t.reason ? ` — ${t.reason}` : ""}`, "");
+  for (const t of state.tests ?? []) {
+    lines.push(`- ${t.status}: ${t.passed} passed, ${t.failed} failed, ${t.skipped} skipped; source ${t.sourceHash}. [Log](${t.logPath}); result bundle: ${t.resultBundle}${t.reason ? ` — ${t.reason}` : ""}`, "");
+    if (t.journeyScreenshots && plan?.journeys?.length) {
+      const expected = plan.journeys.reduce((count, journey) => count + journey.steps.length, 0);
+      lines.push(`  Journey checkpoints captured: ${t.journeyScreenshots.length}/${expected}.`, "");
+    }
+    for (const image of t.journeyScreenshots ?? []) lines.push(`  - [${image.step}](${image.path})`);
+    if (t.journeyScreenshots?.length) lines.push("");
+  }
   lines.push("## Builds", "");
   if (!state.builds.length) lines.push("No build ran.", "");
   else {

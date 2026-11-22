@@ -29,6 +29,7 @@ struct HabitListView: View {
                 dashboard(today: today)
             }
         }
+        .accessibilityIdentifier("habit-list-scroll")
         .background(Color(.systemGroupedBackground))
         .fontDesign(AppTheme.fontDesign)
         .navigationTitle("Habits")
@@ -160,6 +161,7 @@ struct HabitListView: View {
                     }
                 }
                 .buttonStyle(.plain)
+                .accessibilityIdentifier("habit-" + habit.id.uuidString.lowercased())
                 .accessibilityHint("Opens habit details")
             }
         }

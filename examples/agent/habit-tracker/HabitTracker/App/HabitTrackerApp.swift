@@ -11,7 +11,12 @@ struct HabitTrackerApp: App {
             if AgentLaunch.usesSampleData {
                 // Demo launches get an isolated in-memory store seeded from SampleData.
                 // The persistent store on disk is never opened or modified.
-                container = try SampleData.container()
+                if let value = UserDefaults.standard.string(forKey: "ios-agent-journey"),
+                   let session = UUID(uuidString: value) {
+                    container = try SampleData.journeyContainer(session: session)
+                } else {
+                    container = try SampleData.container()
+                }
             } else {
                 container = try PersistenceController.container(for: [Habit.self])
             }

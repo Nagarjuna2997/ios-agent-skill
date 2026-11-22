@@ -23,6 +23,15 @@ with tempfile.TemporaryDirectory(prefix='ios-agent-habit-interaction-') as tempo
     tests = project / 'HabitTrackerUITests'
     tests.mkdir()
     shutil.copy2(example / 'verification/HabitInteractionTests.swift', tests / 'HabitInteractionTests.swift')
+    engine = example.parents[2] / 'mcp-server/dist/agent/journeys.js'
+    if not engine.is_file():
+        raise SystemExit('Build mcp-server first (npm ci && npm run build)')
+    generator = """import { readFileSync } from 'node:fs'; import { pathToFileURL } from 'node:url';
+const { journeyTests } = await import(pathToFileURL(process.argv[1]));
+process.stdout.write(journeyTests(JSON.parse(readFileSync(process.argv[2], 'utf8')).journeys));"""
+    with (tests / 'PlannedJourneyTests.swift').open('w') as source:
+        subprocess.run(['node', '--input-type=module', '-e', generator, str(engine),
+                        str(example / '.ios-agent/plan.json')], stdout=source, check=True)
     spec = project / 'project.yml'
     text = spec.read_text(encoding='utf-8')
     if text.count('schemes:\n') != 1 or 'HabitTrackerUITests:' in text:
@@ -46,7 +55,14 @@ schemes:
 '''
     spec.write_text(text, encoding='utf-8')
     subprocess.run(['xcodegen', 'generate', '--spec', str(spec)], cwd=project, check=True)
-    subprocess.run(['xcodebuild', '-project', 'HabitTracker.xcodeproj', '-scheme', 'HabitTracker',
+    execution = subprocess.run(['xcodebuild', '-project', 'HabitTracker.xcodeproj', '-scheme', 'HabitTracker',
                     '-destination', f'platform=iOS Simulator,id={args.device}',
                     '-derivedDataPath', str(project / 'derived'), '-resultBundlePath', str(result),
-                    'CODE_SIGNING_ALLOWED=NO', 'test'], cwd=project, check=True)
+                    '-parallel-testing-enabled', 'NO', 'CODE_SIGNING_ALLOWED=NO', 'test'], cwd=project, check=False)
+    if (result / 'Info.plist').exists():
+        report = subprocess.run(['node', str(example / 'verification/report.mjs'), str(result)], check=False)
+        if report.returncode:
+            raise SystemExit(report.returncode)
+    elif execution.returncode == 0:
+        raise SystemExit('Missing XCTest result bundle')
+    raise SystemExit(execution.returncode)

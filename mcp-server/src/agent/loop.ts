@@ -1,6 +1,7 @@
 import { progressCheck } from '../efficiency/progress.js';
 import { observeBuild, fingerprint } from '../efficiency/memory.js';
 import { ignore } from '../efficiency/store.js';
+import { hasJourneyEvidence } from "./journey-evidence.js";
 import { testProject, screenSmokeTests } from "./testing.js";
 import { snapshotFiles, snapshotHash } from "./remote.js";
 // The autonomous build loop used by `ios-agent-mcp build`:
@@ -539,9 +540,18 @@ export async function runAgent(options: LoopOptions): Promise<LoopResult> {
         const fresh = (await loadState(root))!;
         const hash = snapshotHash(await snapshotFiles(root));
         const previous = fresh.tests?.at(-1);
-        const tests = previous?.sourceHash === hash && previous.status === "passed" && existsSync(join(root, previous.logPath)) && existsSync(join(root, previous.resultBundle)) ? previous : options.remote ? previous : await testProject(root, options.runner, options.udid);
+        const reusable = previous?.sourceHash === hash && previous.status === "passed" &&
+          existsSync(join(root, previous.logPath)) && existsSync(join(root, previous.resultBundle)) &&
+          await hasJourneyEvidence(root, plan.journeys ?? [], previous.journeyScreenshots);
+        let tests = previous;
+        if (!reusable && !options.remote) tests = await testProject(root, options.runner, options.udid);
+        if (!reusable && options.remote && previous?.sourceHash === hash && previous.status === "passed" && plan.journeys?.length) {
+          // Same source and cycle reuse the remote receipt and re-download its original artifacts.
+          await options.remote.build(root);
+          tests = (await loadState(root))?.tests?.at(-1);
+        }
         if (tests?.status === "passed" && tests.sourceHash === hash) {
-          if (!existsSync(join(root, tests.logPath)) || !existsSync(join(root, tests.resultBundle))) return await finish(root, "stopped", "Saved test artifacts are missing; rerun verification.", sink);
+          if (!existsSync(join(root, tests.logPath)) || !existsSync(join(root, tests.resultBundle)) || !await hasJourneyEvidence(root, plan.journeys ?? [], tests.journeyScreenshots)) return await finish(root, "stopped", "Saved test artifacts are missing; rerun verification.", sink);
           break;
         }
         if (!tests || (options.remote && tests.sourceHash !== hash) || tests.status === "unavailable" || attempt === 3 || timeLeft(fresh) <= 0) return await finish(root, "failed", "Tests did not pass; inspect the recorded test evidence.", sink);
