@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+### Simulator journeys, native layouts and Apple SDK updates
+
+- `/ios-build` plans can describe a user journey with taps, scrolling, relaunch and visible outcomes. The generated XCTest records per-step screenshots for the run report. [Habit Tracker journey](examples/agent/habit-tracker/verification/journey-2026-11-21/RUN_REPORT.md)
+- Universal import supports explicit wrapping rows and a native text field with a wrapping placeholder. [Wrapping-row benchmark](benchmarks/universal/wrapping-row/README.md) · [React text fields](benchmarks/universal/react-input/README.md)
+- Studio can save and replay screen setups across revisions, including locale, orientation, tap sequence and expected element. [Cedar Loop screenshots and comparison](studio/evidence/screen-setup-2026-11-21/README.md)
+- `apple_docs_sdk_diff` can compare public declarations from two installed Xcode SDKs and identify repository examples that reference a changed name. The StoreKit paywall has an optional iOS 27.3 multiseat invitation example. [SDK comparison](docs/tooling/local-apple-documentation.md) · [StoreKit example](samples/StoreKitMultiseat/README.md)
+
 ### Design contract and independent review workflow (source checkout; not yet on npm)
 
 - Added `ios-agent-mcp design <command>` and six `design_*` MCP tools (new `design-review` tool group; 88 tools in a checkout) for substantial iOS work: a versioned design contract with claims tagged fact, decision, assumption or unknown (facts must cite evidence), acceptance criteria with stable IDs and verification methods, and implementation steps bound to criteria. DESIGN.md is rendered deterministically from DESIGN.json.

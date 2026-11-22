@@ -2483,8 +2483,8 @@
       "path": "docs/architecture/universal-app-engine.md",
       "title": "Universal App Engine: architecture and implementation record",
       "kind": "guide",
-      "characters": 36912,
-      "hash": "6cbe5286142ca65e4d0ab47d30ea061985c8f765d2cbbf3659b80385d7b7ee1d"
+      "characters": 37902,
+      "hash": "184110bed3f85be5eb7da3d7dc4c281a20183073da5fc33bdc3d673aaaf82e38"
     },
     {
       "path": "docs/backend/app-architectures.md",
@@ -3099,8 +3099,8 @@
       "path": "docs/frameworks/storekit.md",
       "title": "StoreKit 2",
       "kind": "guide",
-      "characters": 21326,
-      "hash": "aa2033ba7b2188f03488e949c3d6e79ff6a70d7b781e179bfa305add8803d0e5"
+      "characters": 21942,
+      "hash": "d816589fd916991125798d65a9e1e524eb95b94320fa3fbbb12cf4af4f5649c9"
     },
     {
       "path": "docs/frameworks/swift-charts.md",
@@ -3204,8 +3204,8 @@
       "path": "docs/mcp/tools.md",
       "title": "MCP Tool Reference",
       "kind": "guide",
-      "characters": 25078,
-      "hash": "2780f18bf97128580957a15d2b38804d0e566dd486e3385a3d5011614073809f"
+      "characters": 25142,
+      "hash": "f581db63c9104bebad8f7fa706c5da4a74e2270a28710804e99c255e449b6d39"
     },
     {
       "path": "docs/mcp/vnext-analysis-tools.md",
@@ -3526,8 +3526,8 @@
       "path": "docs/tooling/generated-app-quality.md",
       "title": "Generated app quality",
       "kind": "guide",
-      "characters": 10932,
-      "hash": "3b3b19f93db543b718a39aa9c26be2f8116a245db42cc4d7871b4429a750b028"
+      "characters": 12490,
+      "hash": "9d29dd753e48904cd9ee6b155b35fef14f39740071e48a091b7eba4612a0b2b2"
     },
     {
       "path": "docs/tooling/idea-to-app.md",
@@ -3568,8 +3568,8 @@
       "path": "docs/tooling/local-apple-documentation.md",
       "title": "Local Apple Developer Documentation Grounding",
       "kind": "guide",
-      "characters": 11534,
-      "hash": "e5de3519c3235c577ff3f214418a948988d119677ff1e331c78184115099c28b"
+      "characters": 13935,
+      "hash": "d1d8de77db47da499166b3623baf3973d52b29646abe7509d372e9b0e0fe9b01"
     },
     {
       "path": "docs/tooling/local-release-package.md",
@@ -4529,6 +4529,27 @@
       "kind": "source",
       "characters": 9392,
       "hash": "6b5cccd657c3ffa2b97bf570d07579701572caf7e9c3fba685217b35893d27a4"
+    },
+    {
+      "path": "samples/StoreKitMultiseat/GroupSubscription.swift",
+      "title": "GroupSubscription.swift",
+      "kind": "source",
+      "characters": 1550,
+      "hash": "3fc0e88be8474b5321c3704bb779074c5b8bf763e11143fc3522749402df670a"
+    },
+    {
+      "path": "samples/StoreKitMultiseat/README.md",
+      "title": "StoreKit multiseat management",
+      "kind": "guide",
+      "characters": 2253,
+      "hash": "f73ee954dbc441b917c78aa210993671ccc8c07b1c0df9d7318f5e5bec5b6494"
+    },
+    {
+      "path": "samples/StoreKitMultiseat/verify.py",
+      "title": "verify.py",
+      "kind": "source",
+      "characters": 1771,
+      "hash": "f981e0b7670578d1d20844010d27d32d0aa133f5046a9e4b46b1062b4311dd92"
     },
     {
       "path": "samples/SystemIntegrationDemo/Info.plist",
