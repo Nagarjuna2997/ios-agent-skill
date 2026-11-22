@@ -97,7 +97,7 @@ export const AppIRSchema = z.object({
     }
     if(node.recordField){
       const {collection,field}=node.recordField;
-      if(!['text','textfield'].includes(node.kind)||!collections.get(collection)?.fields.includes(field)||node.children.length||node.action||node.textBinding||node.stringBinding||
+      if((node.kind==='text'&&node.text!=='')||!['text','textfield'].includes(node.kind)||!collections.get(collection)?.fields.includes(field)||node.children.length||node.action||node.textBinding||node.stringBinding||
          !routes.some(r=>r.screen===currentScreen&&r.collection===collection))fail('Invalid record field or route scope');
     }
     if(node.style.wrap && (node.kind !== 'row' || minorVersion < 6)) fail('Wrapping requires an IR 1.6 row');

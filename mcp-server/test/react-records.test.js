@@ -63,6 +63,7 @@ test('IR enforces route ownership, stable ids, field schema and compatibility',(
     ir=>ir.collections[0].rows[1].id=ir.collections[0].rows[0].id,
     ir=>delete ir.collections[0].rows[0].values.author,
     ir=>ir.nodes.find(n=>n.kind==='textfield').recordField.field='id',
+    ir=>ir.nodes.find(n=>n.kind==='text'&&n.recordField).text='Conflicting label',
     ir=>ir.nodes.find(n=>n.kind==='record-list').recordList.screen='screen-1',
     ir=>delete ir.navigation.routes[1].collection,
     ir=>ir.navigation.initialScreen='screen-2',
@@ -70,5 +71,17 @@ test('IR enforces route ownership, stable ids, field schema and compatibility',(
     ir=>ir.nodes.find(n=>n.id==='screen-1-node-3').recordField={collection:'collection-1',field:'title'}
   ]) {
     const ir=reactToIR(source);change(ir);assert.throws(()=>parseIR(ir));
+  }
+});
+
+
+test('two parameterized detail routes sharing a path prefix each consume exactly one record ID',()=>{
+  const extra='<Route path="/books/archive/:id" element={<BookDetails books={books} setBooks={setBooks} />} />';
+  const list='{books.map(book => <Link key={book.id} to={`/books/archive/${book.id}`}>{book.title}</Link>)}';
+  const input=source.replace('<h1>Reading shelf</h1>', '<h1>Reading shelf</h1>'+list).replace('</Routes>',extra+'</Routes>');
+  const ir=reactToIR(input);
+  const swift=renderSwiftUI(ir).source;
+  for(const prefix of ['/books/','/books/archive/']){
+    assert.ok(swift.includes(`path.hasPrefix("${prefix}") && !path.dropFirst("${prefix}".count).contains("/")`));
   }
 });

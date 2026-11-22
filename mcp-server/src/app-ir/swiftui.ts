@@ -94,7 +94,7 @@ export function renderSwiftUI(value: unknown, options: { disclosureStyle?: "plat
     const route=recordRoute(screen.id);
     if(!route)return [];
     const prefix=swiftString(route.path.split(':')[0]!);
-    return [`        case let path where path.hasPrefix(${prefix}):
+    return [`        case let path where path.hasPrefix(${prefix}) && !path.dropFirst(${prefix}.count).contains("/"):
             let recordID = String(path.dropFirst(${prefix}.count))
             ${screenBody(ir.nodes.find(n=>n.id===screen.root)!)}
                 .navigationBarTitleDisplayMode(.inline)`];
