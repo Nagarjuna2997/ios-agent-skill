@@ -6,6 +6,8 @@ Run contracts: `python3 -m unittest discover -s benchmarks/efficiency -p 'test_*
 Evaluate receipts: `python3 benchmarks/efficiency/evaluate.py /absolute/path/cells`.
 Measure actual advertised schemas: `cd mcp-server && node scripts/measure-efficiency.mjs`.
 
+The [isolated three-task runner](../v2/PAIRED.md) emits these receipts for cold and held-out warm response-budget experiments. Its hosted smoke uses a non-model worker.
+
 Each JSON cell must contain:
 
 - `version: "efficiency-pairs-1"`, `task`, `trial`, `arm: baseline|optimized`, `condition: cold|warm`, `component: profiles|responses|memory|intervention|combined`.

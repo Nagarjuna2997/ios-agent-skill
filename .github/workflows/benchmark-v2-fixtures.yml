@@ -2,9 +2,9 @@ name: Benchmark v2 portable fixture contracts
 on:
   push:
     branches: [main]
-    paths: ['benchmarks/v2/**', 'benchmarks/observability/**', '.github/workflows/benchmark-v2-fixtures.yml']
+    paths: ['benchmarks/v2/**', 'benchmarks/efficiency/**', 'benchmarks/observability/**', '.github/workflows/benchmark-v2-fixtures.yml']
   pull_request:
-    paths: ['benchmarks/v2/**', 'benchmarks/observability/**', '.github/workflows/benchmark-v2-fixtures.yml']
+    paths: ['benchmarks/v2/**', 'benchmarks/efficiency/**', 'benchmarks/observability/**', '.github/workflows/benchmark-v2-fixtures.yml']
   workflow_dispatch:
 defaults:
   run:
@@ -32,3 +32,36 @@ jobs:
         with:
           name: v2-portable-fixture-validation
           path: /tmp/v2-evidence
+
+  isolated-worker:
+    name: Networkless paired-worker smoke (no model)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check observer and receipt contracts
+        run: python3 -m unittest discover -s benchmarks/v2 -p 'test_paired.py'
+      - name: Preload the pinned Swift image before isolated evaluation
+        run: |
+          image="$(PYTHONPATH=benchmarks/v2 python3 -c 'import paired_worker; print(paired_worker.IMAGE)')"
+          docker pull "$image"
+      - name: Run cold and held-out warm controls
+        run: |
+          python3 benchmarks/v2/paired.py --mode smoke --condition both --output "$RUNNER_TEMP/paired-smoke"
+          python3 - "$RUNNER_TEMP/paired-smoke/summary.json" <<'PY'
+          import json, sys
+          report = json.load(open(sys.argv[1]))
+          assert report["purpose"] == "non-model-smoke"
+          assert len(report["pairs"]) == report["counts"]["tie_fail"] == 6
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: networkless-paired-smoke
+          path: ${{ runner.temp }}/paired-smoke
+          if-no-files-found: warn

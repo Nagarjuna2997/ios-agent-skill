@@ -2,7 +2,7 @@
 
 This is **fixture validation, not a scored agent comparison**. The 30 specifications
 in [PLAN.md](PLAN.md) have standalone synthetic starter projects, evaluator-owned
-checks, and reference repairs. No client/model is invoked by this directory.
+checks, and reference repairs. The fixture validator invokes no model. A separate [paired portable runner](PAIRED.md) grades isolated one-shot repairs for three of these tasks.
 Issue #12's JSONDecoder/JSONEncoder correction is already present; the v2 checks
 use behavioral/compiler evidence, not performance-analyzer wording or style.
 Historical 20-task/120-run evidence is not modified or rescored.
@@ -82,8 +82,7 @@ capabilities and a preloaded toolchain image pinned by digest. The external agen
 driver must use this tool boundary for **every** filesystem/command operation and
 expose no host file/search/network tools. The tool driver must run as the unprivileged workspace owner; its UID/GID
 are mapped into the container so exported files are writable. Root drivers and
-foreign-owned workspaces are refused. The container command has not been smoke-tested
-in this phase; verify the real isolated tool boundary before any comparison. The model control plane, if any, runs outside this
+foreign-owned workspaces are refused. The [paired worker](PAIRED.md) probes the container and checks starter/reference controls before each comparison. Its CI smoke supplies an unchanged starter without model inference. The model control plane, if any, runs outside this
 filesystem namespace and receives only the allowed prompt/tool results.
 
 For Apple fixtures the boundary must be a **separate disposable macOS VM** containing
@@ -93,7 +92,7 @@ lanes. This phase does not provision a VM, infer client access, or launch an age
 The evaluator runs hidden checks only after the agent has stopped, in a separate
 copy. References/checks must never be included in the treatment skill archive.
 
-A future scored runner must pass `protocol.validate_pins` before any score: exact
+A scored runner must pass `protocol.validate_pins` before any score: exact
 client/version, requested and observed model, Swift/SDK, protocol version, fixture,
 oracle, repair, skill, harness and corrected-analyzer hashes, isolation, worker count
 and cache policy. This fixture-only CLI intentionally has **no run/score/provider
