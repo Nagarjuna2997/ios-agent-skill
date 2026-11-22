@@ -56,7 +56,8 @@ jobs:
           if len(description) < 40:
               sys.exit("description must state concrete trigger conditions (>= 40 chars)")
 
-          print(f"OK - {name} v{re.search(r'^version:\s*(.+)$', block, re.MULTILINE).group(1).strip()}")
+          version = re.search(r"^version:\s*(.+)$", block, re.MULTILINE).group(1).strip()
+          print(f"OK - {name} v{version}")
           PY
 
       - name: Skill manifests share the SKILL.md version
