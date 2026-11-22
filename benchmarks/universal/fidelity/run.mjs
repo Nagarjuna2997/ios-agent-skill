@@ -1,3 +1,5 @@
+import {selectMeasuredText, compareSizeRepairs, combineSizeDecisions, textScales} from './measured-repair.mjs';
+import {fixtureUIScheme} from '../native-behavior/ui-test-scheme.mjs';
 import {allProbeCapturesInvariant} from './probe-integrity.mjs';
 import {applyUIKitCandidate} from './uikit-candidate.mjs';
 import {runSetupCommand,waitForSimulator,classifyRunFailure,withSimulatorDiscoveryEvidence,candidateFailureEvidence} from './commands.mjs';
@@ -30,7 +32,12 @@ const profile=JSON.parse(await readFile(resolve(profilePath),'utf8'));
 if(profile.version!==1||profile.state!=='collapsed'||profile.locale!=='en_US'||profile.appearance!=='light'||profile.contentSize!=='large')throw Error('Unsupported capture profile');
 const adapter=process.env.FIDELITY_ADAPTER??'html';
 if(!['html','react-static','react-literal-props'].includes(adapter))throw Error('Unsupported adapter');
-const textNodes=process.env.FIDELITY_UIKIT_TEXT_NODES ? process.env.FIDELITY_UIKIT_TEXT_NODES.split(',') : [];
+const autoRepair=process.env.FIDELITY_AUTO_REPAIR==='1';
+const fixtureName=process.env.FIDELITY_FIXTURE??'html-disclosure';
+if(!['library-hours','html-disclosure'].includes(fixtureName)||fixtureName==='library-hours'&&adapter!=='html')throw Error('Unsupported fidelity fixture and adapter');
+if(autoRepair && (process.env.FIDELITY_UIKIT_TEXT_NODES || process.env.FIDELITY_PROMOTE_KNOWN_GOOD))throw Error('Measured repair selects its own candidates and never promotes the baseline');
+const approvalXXXL=process.env.FIDELITY_XXXL_REFERENCE_APPROVAL?JSON.parse(await readFile(resolve(process.env.FIDELITY_XXXL_REFERENCE_APPROVAL),'utf8')):null;
+let textNodes=process.env.FIDELITY_UIKIT_TEXT_NODES ? process.env.FIDELITY_UIKIT_TEXT_NODES.split(',') : [];
 if(textNodes.some(id=>!/^node-[0-9]+$/.test(id)))throw Error('Invalid experimental text node ID');
 const promoteBaseline=promotionRequested(process.env.FIDELITY_PROMOTE_KNOWN_GOOD);
 const referenceApproval=process.env.FIDELITY_REFERENCE_APPROVAL?JSON.parse(await readFile(resolve(process.env.FIDELITY_REFERENCE_APPROVAL),'utf8')):null;
@@ -49,7 +56,7 @@ const command=(c,args)=>runSetupCommand(runner,c,args,evidence=>appendFile(join(
 const atomic=async(path,value)=>{const tmp=path+'.'+randomUUID()+'.tmp';await writeFile(tmp,JSON.stringify(value,null,2));await rename(tmp,path);};
 const report=resume?JSON.parse(await readFile(join(root,'report.json'),'utf8')):{version:2,profile,startedAt:new Date().toISOString(),status:'running',runs:[]};
 const save=()=>atomic(join(root,'report.json'),report);
-const here=dirname(fileURLToPath(import.meta.url)),fixture=resolve(here,'../html-disclosure');
+const here=dirname(fileURLToPath(import.meta.url)),fixture=resolve(here,'..',fixtureName);
 const files=async(dir)=>{const all=[];for(const e of await readdir(dir,{withFileTypes:true})){if(e.name==='node_modules')continue;if(e.isDirectory())all.push(...await files(join(dir,e.name)));else if(e.isFile())all.push(join(dir,e.name));else throw Error('Unsupported symlink in evidence tree');}return all.sort();};
 let udid,browser;
 try{
@@ -62,7 +69,7 @@ try{
  const environment={xcode,sdk,runtimeBuild:runtime.buildversion,browser:browser.version(),host:await command('sw_vers',['-buildVersion'])};
  const inputs=[...await files(resolve(here,'../../../mcp-server/dist')),...await files(fixture),...await files(here)].filter(f=>!f.includes('/node_modules/'));
  const inputHashes=[];for(const f of inputs)inputHashes.push([f.slice(resolve(here,'../../..').length),sha256(await readFile(f))]);
- const contract=sha256(JSON.stringify({profile,environment,inputHashes,referenceApproval,adapter,textNodes,promoteBaseline}));
+ const contract=sha256(JSON.stringify({profile,environment,inputHashes,referenceApproval,approvalXXXL,adapter,fixtureName,autoRepair,textNodes,promoteBaseline}));
  if(resume&&report.contract!==contract)throw Error('Run inputs, verifier or environment changed; use a new output directory');
  if(report.error){report.interruptions=[...(report.interruptions??[]),{error:report.error,category:report.failureCategory,resumedAt:new Date().toISOString()}];delete report.error;delete report.failureCategory;}
  report.contract=contract;report.environment=environment;report.status='running';await save();
@@ -94,7 +101,7 @@ try{
    if(name!=='baseline'&&textNodes.length)await copyFile(join(here,'LiveTextTests.swift'),join(folder,'FieldNotesUITests/LiveTextTests.swift'));
    await regenerate(folder,spec,runner);
    const scheme=join(folder,'FieldNotes.xcodeproj/xcshareddata/xcschemes/FieldNotes.xcscheme');
-   await writeFile(scheme,(await readFile(scheme,'utf8')).replace(/<TestableReference[^>]*><BuildableReference[^>]*BuildableName="FieldNotesTests.xctest"[^>]*\/><\/TestableReference>/g,''));
+   await writeFile(scheme,fixtureUIScheme(await readFile(scheme,'utf8'),'FieldNotes'));
    return {value:{folder,sourceHash:generation.sourceHash},files:await files(folder)};
   });
   const folder=generated.folder;let row=report.runs.find(r=>r.name===name);if(!row){row={name,...generated};report.runs.push(row);}await save();
@@ -118,39 +125,84 @@ try{
    });await save();
   }
   await command('xcrun',['simctl','ui',udid,'content_size','large']);
-  const native=await readFile(row.large.shot.path);
-  const reference=await journal.stage('reference',async()=>{
-   const width=native.readUInt32BE(16),height=native.readUInt32BE(20),cropHeight=height-(profile.safeAreaTop+profile.safeAreaBottom)*profile.scale;
-   if(!Number.isInteger(cropHeight)||cropHeight<=0)throw Error('Invalid crop');
-   const crops={reference:{x:0,y:0,width,height:cropHeight},native:{x:0,y:profile.safeAreaTop*profile.scale,width,height:cropHeight}};
-   const page=await browser.newPage({viewport:{width:width/profile.scale,height:cropHeight/profile.scale},deviceScaleFactor:profile.scale,locale:'en-US',colorScheme:'light',reducedMotion:'reduce'});
-   await page.route('**/*',r=>r.request().url().startsWith('file:')?r.continue():r.abort());await page.setContent(annotateTextRegions(await readFile(join(fixture,'index.html'),'utf8'),referenceIR));await page.evaluate(()=>document.fonts.ready);
-   const path=join(root,'reference.png');await page.screenshot({path});
-   const expected=await page.locator('body').innerText();const regions=await captureDOMTypography(page);await page.close();
-   const recognized=await recognize(path);const ocrPath=join(root,'reference-text.json');await atomic(ocrPath,recognized);
-   const pins={device:profile.deviceType,os:runtime.identifier+' '+runtime.buildversion,xcode,appearance:profile.appearance,contentSize:profile.contentSize,locale:profile.locale,orientation:'portrait',state:profile.state,width,height,scale:profile.scale,fontConfiguration:profile.fontConfiguration,referenceRenderer:environment.browser+' host '+environment.host,normalizationHash:sha256(JSON.stringify(crops))};
-   return {value:{path,recognized,expected,regions,crops,pins},files:[path,ocrPath]};
-  });
-  const evidence=await journal.stage(name+'-measurement',async()=>{
-   const ref=await readFile(reference.path),comparison=comparePNGs(ref,native,reference.crops);
-   const diff=join(folder,'difference.png');await writeFile(diff,comparison.diff);
-   const normalized=join(folder,'normalized.png');await normalize(row.large.shot.path,reference.crops.native,normalized);
-   const recognized=reference.recognized.unavailable?{unavailable:true,reason:'Reference recognition unavailable'}:await recognize(normalized);const supportingOCR=reference.recognized.unavailable||recognized.unavailable?{status:'unavailable',mismatches:null,reason:'Local OCR unavailable'}:measureLineBreaks(reference.recognized,recognized,reference.expected);
-   const typography=compareTextRegions(reference.regions,row.large.typography,allProbeCapturesInvariant(row));
-   const geometry=[row.large.geometry,row.xxxl.geometry];const layout=geometry.some(g=>g?.status==='failed')?'failed':geometry.every(g=>g?.status==='passed')?'passed':'unavailable';
-   const clipped=geometry.every(g=>g?.clippedElements!==null&&g?.clippedElements!==undefined)?geometry.reduce((n,g)=>n+g.clippedElements,0):null;
-   const measurement={comparison:comparison.report,typography,supportingOCR,geometry,recognized,referenceRegions:reference.regions,nativeRegions:row.large.typography,probeComparison:row.large.probeComparison};const measurementPath=join(folder,'measurement.json');await atomic(measurementPath,measurement);
-   const checksPassed=row.large.tests.status==='passed'&&row.xxxl.tests.status==='passed';
-   const artifacts={};for(const file of [row.build.logPath,join(folder,row.large.tests.logPath),join(folder,row.xxxl.tests.logPath),row.large.shot.path,row.xxxl.shot.path,row.large.probe,row.xxxl.probe,diff,measurementPath])artifacts[file]=sha256(await readFile(file));
-   return {value:{version:1,sourceHash:row.sourceHash,referenceHash:sha256(ref),screenshotHash:sha256(native),pins:reference.pins,build:'passed',functionality:checksPassed?'passed':'failed',accessibility:checksPassed?'passed':'unavailable',layout,typography:typography.status,testsPassed:Math.min(row.large.tests.passed,row.xxxl.tests.passed),accessibilityIssues:checksPassed?0:null,clippedElements:clipped,lineBreakMismatches:typography.mismatches,meanError:comparison.report.meanAbsoluteChannelError,changedFraction:comparison.report.changedPixelFraction,artifactsHash:sha256(JSON.stringify(artifacts))},files:[diff,normalized,measurementPath]};
-  });row.evidence=evidence;await save();return evidence;
+  async function measureSize(size) {
+   const extra=size==='xxxl'?'xxxl-':'';
+   const native=await readFile(row[size].shot.path);
+   const reference=await journal.stage(extra+'reference',async()=>{
+    const width=native.readUInt32BE(16),height=native.readUInt32BE(20),cropHeight=height-(profile.safeAreaTop+profile.safeAreaBottom)*profile.scale;
+    if(!Number.isInteger(cropHeight)||cropHeight<=0)throw Error('Invalid crop');
+    const crops={reference:{x:0,y:0,width,height:cropHeight},native:{x:0,y:profile.safeAreaTop*profile.scale,width,height:cropHeight}};
+    const page=await browser.newPage({viewport:{width:width/profile.scale,height:cropHeight/profile.scale},deviceScaleFactor:profile.scale,locale:'en-US',colorScheme:'light',reducedMotion:'reduce'});
+    await page.route('**/*',r=>r.request().url().startsWith('file:')?r.continue():r.abort());await page.setContent(annotateTextRegions(await readFile(join(fixture,'index.html'),'utf8'),referenceIR));if(size==='xxxl')await page.evaluate(scale=>{
+      const elements=[...document.querySelectorAll('body,body *')];
+      const sizes=elements.map(el=>parseFloat(getComputedStyle(el).fontSize));
+      elements.forEach((el,i)=>{el.style.fontSize=sizes[i]*scale+'px';});
+    },textScales[size]);
+    await page.evaluate(()=>document.fonts.ready);
+    const path=join(root,extra+'reference.png');await page.screenshot({path});
+    const expected=await page.locator('body').innerText();const regions=await captureDOMTypography(page);await page.close();
+    const recognized=await recognize(path);const ocrPath=join(root,extra+'reference-text.json');await atomic(ocrPath,recognized);
+    const pins={device:profile.deviceType,os:runtime.identifier+' '+runtime.buildversion,xcode,appearance:profile.appearance,contentSize:size==='xxxl'?'extra-extra-extra-large':profile.contentSize,locale:profile.locale,orientation:'portrait',state:profile.state,width,height,scale:profile.scale,fontConfiguration:size==='xxxl' ? `system-ui browser body scale ${textScales.xxxl} / SwiftUI system, Dynamic Type XXXL` : profile.fontConfiguration,referenceRenderer:environment.browser+' host '+environment.host,normalizationHash:sha256(JSON.stringify(crops))};
+    return {value:{path,recognized,expected,regions,crops,pins},files:[path,ocrPath]};
+   });
+   const evidence=await journal.stage(name+'-'+extra+'measurement',async()=>{
+    const ref=await readFile(reference.path),comparison=comparePNGs(ref,native,reference.crops);
+    const diff=join(folder,extra+'difference.png');await writeFile(diff,comparison.diff);
+    const normalized=join(folder,extra+'normalized.png');await normalize(row[size].shot.path,reference.crops.native,normalized);
+    const recognized=reference.recognized.unavailable?{unavailable:true,reason:'Reference recognition unavailable'}:await recognize(normalized);const supportingOCR=reference.recognized.unavailable||recognized.unavailable?{status:'unavailable',mismatches:null,reason:'Local OCR unavailable'}:measureLineBreaks(reference.recognized,recognized,reference.expected);
+    const typography=compareTextRegions(reference.regions,row[size].typography,allProbeCapturesInvariant(row));
+    const geometry=[row.large.geometry,row.xxxl.geometry];const layout=geometry.some(g=>g?.status==='failed')?'failed':geometry.every(g=>g?.status==='passed')?'passed':'unavailable';
+    const clipped=geometry.every(g=>g?.clippedElements!==null&&g?.clippedElements!==undefined)?geometry.reduce((n,g)=>n+g.clippedElements,0):null;
+    const measurement={comparison:comparison.report,typography,supportingOCR,geometry,recognized,referenceRegions:reference.regions,nativeRegions:row[size].typography,probeComparison:row[size].probeComparison};const measurementPath=join(folder,extra+'measurement.json');await atomic(measurementPath,measurement);
+    const checksPassed=row.large.tests.status==='passed'&&row.xxxl.tests.status==='passed';
+    const artifacts={};for(const file of [row.build.logPath,join(folder,row.large.tests.logPath),join(folder,row.xxxl.tests.logPath),row.large.shot.path,row.xxxl.shot.path,row.large.probe,row.xxxl.probe,diff,measurementPath])artifacts[file]=sha256(await readFile(file));
+    return {value:{version:1,sourceHash:row.sourceHash,referenceHash:sha256(ref),screenshotHash:sha256(native),pins:reference.pins,build:'passed',functionality:checksPassed?'passed':'failed',accessibility:checksPassed?'passed':'unavailable',layout,typography:typography.status,testsPassed:Math.min(row.large.tests.passed,row.xxxl.tests.passed),accessibilityIssues:checksPassed?0:null,clippedElements:clipped,lineBreakMismatches:typography.mismatches,meanError:comparison.report.meanAbsoluteChannelError,changedFraction:comparison.report.changedPixelFraction,artifactsHash:sha256(JSON.stringify(artifacts))},files:[diff,normalized,measurementPath]};
+   });
+   const measurement=JSON.parse(await readFile(join(folder,extra+'measurement.json'),'utf8'));
+   return {evidence,measurement:{referenceHash:evidence.referenceHash,pins:evidence.pins,typography:measurement.typography,meanError:evidence.meanError,changedFraction:evidence.changedFraction}};
+  }
+  const large=await measureSize('large');
+  row.evidence=large.evidence;
+  if(autoRepair){
+    const xxxl=await measureSize('xxxl');
+    row.sizeMeasurements={large:large.measurement,xxxl:xxxl.measurement};
+    row.xxxlEvidence=xxxl.evidence;
+  }
+  await save();return large.evidence;
  }
  const baseline=await makeCandidate('baseline','platform');report.baseline=baseline;
  try{report.knownGood=authorizedKnownGood(promoteBaseline,baseline,profile.policy,referenceApproval);}catch{report.knownGood=null;}
- report.repair=await repairWithGate({directory:join(root,'repairs'),referenceApproval,baseline,policy:profile.policy,maxAttempts:1,resumeInterrupted:true,verifySavedEvidence:async saved=>{const current=await makeCandidate('candidate-1',textNodes.length?'platform':'leading');if(JSON.stringify(VisualEvidenceSchema.parse(current))!==JSON.stringify(VisualEvidenceSchema.parse(saved)))throw Error('Saved candidate evidence differs from verified checkpoints');},verifyCandidate:async()=>{try{return await makeCandidate('candidate-1',textNodes.length?'platform':'leading');}catch(error){report.candidateFailure=candidateFailureEvidence(error);await save();throw error;}}});
+ if(autoRepair){
+   textNodes=selectMeasuredText(ir,report.runs[0].sizeMeasurements);
+   report.diagnosis={fixture:fixtureName,strategy:'compare-native-and-browser-word-boundaries',textNodes};
+   await save();
+ }
+ report.repair=autoRepair&&!textNodes.length ? {outcome:'requires-review',attempts:[],reasons:['No eligible measured wrapping mismatch']} : await repairWithGate({directory:join(root,'repairs'),referenceApproval,baseline,policy:profile.policy,maxAttempts:1,resumeInterrupted:true,verifySavedEvidence:async saved=>{const current=await makeCandidate('candidate-1',textNodes.length?'platform':'leading');if(JSON.stringify(VisualEvidenceSchema.parse(current))!==JSON.stringify(VisualEvidenceSchema.parse(saved)))throw Error('Saved candidate evidence differs from verified checkpoints');},verifyCandidate:async()=>{try{return await makeCandidate('candidate-1',textNodes.length?'platform':'leading');}catch(error){report.candidateFailure=candidateFailureEvidence(error);await save();throw error;}}});
+ if (autoRepair && report.runs[1]?.sizeMeasurements) {
+   const [previous, proposed] = report.runs;
+   const largeGate = report.repair;
+   const xxxlGate = await repairWithGate({
+     directory: join(root, 'repairs-xxxl'), referenceApproval: approvalXXXL,
+     baseline: previous.xxxlEvidence, policy: profile.policy, maxAttempts: 1, resumeInterrupted: true,
+     verifyCandidate: async () => proposed.xxxlEvidence,
+     verifySavedEvidence: async saved => {
+       if (JSON.stringify(VisualEvidenceSchema.parse(proposed.xxxlEvidence)) !== JSON.stringify(saved)) {
+         throw Error('Saved XXXL candidate evidence differs from verified checkpoints');
+       }
+     }
+   });
+   report.sizeDecisions = {large: largeGate, xxxl: xxxlGate};
+   report.twoSizeDecision = compareSizeRepairs(previous.sizeMeasurements, proposed.sizeMeasurements, profile.policy);
+   const decision = combineSizeDecisions(largeGate.attempts[0].decision,
+     xxxlGate.attempts[0].decision, report.twoSizeDecision);
+   const attempt = {...largeGate.attempts[0], decision};
+   report.repair = {outcome: decision.outcome, attempts: [attempt]};
+   if (decision.outcome === 'accepted') report.repair.acceptedAttempt = 1;
+ }
  if(report.repair.acceptedAttempt){const candidate=report.repair.attempts.find(a=>a.number===report.repair.acceptedAttempt).evidence;report.knownGood=authorizedKnownGood(promoteBaseline,candidate,profile.policy,referenceApproval);}
  report.promotion={requested:promoteBaseline,status:report.knownGood?'promoted':promoteBaseline?'blocked':'not-requested'};
- report.status=report.repair.outcome;report.limitations=['Typography is restricted to traced plain-text LTR English regions at default text size; OCR is supporting evidence only.','Probe pixels must match normal rendering exactly; otherwise region measurements remain provisional.','Geometry covers text frames and Apple text-clipping audit, not arbitrary images, shadows or occlusion.','Known-good requires every quality gate plus a matching manual reference approval; no approval is generated automatically.'];await save();
+ report.status=report.repair.outcome;
+ report.limitations=[autoRepair?'The two reference captures use traced LTR English text and the declared browser font scale for each size.':'Typography uses traced plain-text LTR English regions at default text size.','Probe pixels must match normal rendering exactly; otherwise region measurements remain provisional.','Geometry covers text frames and Apple text-clipping audit, not arbitrary images, shadows or occlusion.','Known-good requires every quality gate plus a matching manual reference approval; no approval is generated automatically.'];await save();
  process.exitCode=report.status==='accepted'?0:report.status==='requires-review'?2:1;
 }catch(error){report.status='failed';report.failureCategory=classifyRunFailure(report.phase,error.message,process.env.FIDELITY_INTERRUPT_AFTER,error.code);report.error=error.message;process.exitCode=1;}
 finally{if(browser)await browser.close();if(udid){await runner.run('xcrun',['simctl','shutdown',udid]);await runner.run('xcrun',['simctl','delete',udid]);}await save();await unlink(lockPath);console.log(JSON.stringify({status:report.status,report:join(root,'report.json')},null,2));}

@@ -142,3 +142,7 @@ The user subsequently approved the recorded .85 reference only. A separate post-
 The explicit HTML/UIKit [run 39715697038](https://github.com/Nagarjuna2997/ios-agent-skill/actions/runs/39715697038) at `a0de220` completed both builds and all 16 native test executions on Xcode 26.5 / iOS 26.5. All four ordinary/probe capture pairs are pixel-identical; the candidate has nine measured regions and zero line-boundary mismatches. Mean pixel error improves 0.01849445 → 0.01559923 (15.65%). The control-sizing correction passes the unchanged live-update and accessibility-size checks. See the [hashed hosted evidence](../evidence/uikit-ax-harness-fixed-hosted-39715697038/README.md).
 
 The portable job passes; the simulator job remains red with `requires-review` because this hosted reference lacks matching independent approval. Local reference approval does not cover it, and the original baseline still fails typography. Neither a known-good baseline nor production UIKit integration is authorized by this result. The interrupted checkpoint resume succeeded; React verification remains separate.
+
+### Measured repair on a second screen
+
+The [Library hours benchmark](../library-hours/README.md) compares browser and native word boundaries at Large and XXXL, then attempts a repair only for eligible text regions found by the verifier. Each size has its own pinned reference, screenshots, difference image, native evidence and gate decision. An improving average cannot hide a regression at either size.

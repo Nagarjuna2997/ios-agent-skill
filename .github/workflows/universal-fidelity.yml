@@ -15,7 +15,7 @@ on:
       text_strategy:
         description: Benchmark-only heading strategy (production generation unchanged)
         type: choice
-        options: [swiftui, uikit]
+        options: [swiftui, uikit, measured-library-hours]
         default: swiftui
 defaults:
   run:
@@ -38,13 +38,15 @@ jobs:
           node-version: '22'
       - run: npm ci --prefix mcp-server
       - run: npm run build --prefix mcp-server
-      - run: node --test benchmarks/universal/fidelity/promotion.test.mjs benchmarks/universal/fidelity/probe-integrity.test.mjs benchmarks/universal/fidelity/uikit-candidate.test.mjs benchmarks/universal/fidelity/commands.test.mjs benchmarks/universal/render-evidence.test.mjs mcp-server/test/react-ir.test.js
+      - run: node --test benchmarks/universal/fidelity/measured-repair.test.mjs benchmarks/universal/fidelity/promotion.test.mjs benchmarks/universal/fidelity/probe-integrity.test.mjs benchmarks/universal/fidelity/uikit-candidate.test.mjs benchmarks/universal/fidelity/commands.test.mjs benchmarks/universal/render-evidence.test.mjs mcp-server/test/react-ir.test.js
       - run: node --test mcp-server/test/app-ir.test.js mcp-server/test/visual-gate.test.js mcp-server/test/measurements.test.js mcp-server/test/checkpoints.test.js mcp-server/test/known-good.test.js mcp-server/test/test-capture.test.js mcp-server/test/typography.test.js
   simulator:
     runs-on: macos-26
     timeout-minutes: 35
     env:
       FIDELITY_ADAPTER: ${{ inputs.adapter || 'html' }}
+      FIDELITY_FIXTURE: ${{ inputs.text_strategy == 'measured-library-hours' && 'library-hours' || 'html-disclosure' }}
+      FIDELITY_AUTO_REPAIR: ${{ inputs.text_strategy == 'measured-library-hours' && '1' || '0' }}
       FIDELITY_UIKIT_TEXT_NODES: ${{ inputs.text_strategy == 'uikit' && 'node-5' || '' }}
       DEVELOPER_DIR: /Applications/Xcode_26.5.app/Contents/Developer
     steps:
@@ -80,12 +82,18 @@ jobs:
             ${{ runner.temp }}/fidelity-evidence/setup-commands.jsonl
             ${{ runner.temp }}/fidelity-evidence/simulator-discovery.jsonl
             ${{ runner.temp }}/fidelity-evidence/reference.png
+            ${{ runner.temp }}/fidelity-evidence/xxxl-reference.png
             ${{ runner.temp }}/fidelity-evidence/reference-text.json
+            ${{ runner.temp }}/fidelity-evidence/xxxl-reference-text.json
             ${{ runner.temp }}/fidelity-evidence/checkpoints/
             ${{ runner.temp }}/fidelity-evidence/*/measurement.json
+            ${{ runner.temp }}/fidelity-evidence/*/xxxl-measurement.json
             ${{ runner.temp }}/fidelity-evidence/*/normalized.png
+            ${{ runner.temp }}/fidelity-evidence/*/xxxl-normalized.png
             ${{ runner.temp }}/fidelity-evidence/repairs/
+            ${{ runner.temp }}/fidelity-evidence/repairs-xxxl/
             ${{ runner.temp }}/fidelity-evidence/*/difference.png
+            ${{ runner.temp }}/fidelity-evidence/*/xxxl-difference.png
             ${{ runner.temp }}/fidelity-evidence/*/.ios-agent/logs/
             ${{ runner.temp }}/fidelity-evidence/*/.ios-agent/screenshots/
             ${{ runner.temp }}/fidelity-evidence/*/.ios-agent/test-results/
