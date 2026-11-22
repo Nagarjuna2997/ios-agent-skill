@@ -72,4 +72,16 @@ await page.waitForFunction(()=>document.getElementById('screen-setup').value==='
 const savedRequest=page.waitForResponse(r=>r.url().endsWith('/build'));
 await page.locator('#build').click();await savedRequest;
 if(profileRequest?.setupName!=='Details'||profileRequest?.captureProfile!==undefined)throw Error('Saved setup was not selected for the build');
+const base=await app.universal.create({adapter:'html',name:'TreeReview',source:'<main><p>Before</p></main>'});
+await app.universal.generate(base.id);
+const revised=await app.universal.createRevision(base.id,{adapter:'html',name:'TreeReview',source:'<main><p>Revised source</p></main>'});
+await app.universal.generate(revised.id);
+await page.reload();
+await page.getByRole('button',{name:'TreeReview · html · generated-unverified',exact:true}).first().click();
+await page.getByRole('button',{name:'Review whole project',exact:true}).click();
+await page.waitForFunction(()=>!document.getElementById('project-review').hidden);
+await page.locator('#review-file').selectOption('TreeReview/Views/RootView.swift');
+await page.waitForFunction(()=>document.getElementById('file-versions').textContent.includes('Revised source'));
+await page.getByRole('button',{name:'Apply reviewed changes to a new project',exact:true}).click();
+await page.waitForFunction(()=>document.getElementById('project-review').hidden && document.getElementById('status').textContent.startsWith('generated-unverified'));
 await page.setViewportSize({width:390,height:844});await page.screenshot({path:join(tmpdir(),'universal-studio-ui.png'),fullPage:true});console.log('Browser import and real project generation passed');}finally{await browser.close();await new Promise(r=>app.server.close(r));await rm(root,{recursive:true,force:true});}

@@ -1,7 +1,8 @@
-const $=id=>document.getElementById(id);let selected,captureURL,viewRequest=0,revisionParent=null,revisionInput=null;
+import {screenTargets} from './universal-targets.mjs';
+const $=id=>document.getElementById(id);let projectReviewId=null,folderRevision=false;let selected,captureURL,viewRequest=0,revisionParent=null,revisionInput=null;
 async function api(url,body){const r=await fetch('/api/universal'+url,{method:body?'POST':'GET',headers:{'x-studio-token':document.querySelector('meta[name="studio-token"]').content,'content-type':'application/json'},...(body?{body:JSON.stringify(body)}:{})});const value=await r.json();if(!r.ok)throw Error(value.error);return value;}
 async function list(){const rows=await api('');$('conversions').replaceChildren();for(const row of rows){const b=document.createElement('button');b.textContent=`${row.name} · ${row.adapter} · ${row.status}`;b.onclick=()=>act(()=>show(row.id));$('conversions').append(b);}}
-async function show(id){const previousSetup=selected===id?$('screen-setup').value:'';const previousCapture=selected===id?$("capture-history").value:"";selected=id;const request=++viewRequest;for(const key of ["generate","build","cancel","export","revision","compare-revision","compare-captures"])$(key).disabled=true;const [row,data]=await Promise.all([api('/'+id),api('/'+id+'/source')]);if(request!==viewRequest||selected!==id)return;renderSetups(row,data.ir,previousSetup);$('capture-comparison').hidden=true;$('compare-captures').disabled=!row.revisionOf||!(row.runs??[]).some(r=>r.id&&r.capture?.runId===r.id&&r.status==='preview-ready');$('reconciliation').hidden=true;$('compare-revision').disabled=!row.revisionOf||!row.generatedRootSHA256||['building','launching','capturing','generating'].includes(row.status);revisionInput={adapter:row.adapter,name:row.name,source:data.input};$('revision').disabled=!!data.files||['building','launching','capturing','generating'].includes(row.status);$('revision').title=data.files?'For a multi-file revision, submit all files through the revision API.':'';$('lineage').textContent=row.revisionOf?'Source revision of '+row.revisionOf.id+' · prior IR '+row.revisionOf.irHash:'';$('detail').hidden=false;$('title').textContent=row.name;$('status').textContent=`${row.status} · tests: ${row.tests} · fidelity: ${row.visualFidelity}${row.error?' · '+row.error:''}`;$('limitations').textContent=JSON.stringify(row.limitations,null,2);$('original').textContent=data.files?data.files.map(f=>'// '+f.path+'\n'+f.source).join('\n\n'):data.input;$('swift').textContent=data.swift??'Not generated';$('ir').textContent=JSON.stringify(data.ir,null,2);$('generate').disabled=row.status!=='inspected'||row.limitations.length>0;$('build').disabled=!['generated-unverified','preview-ready','failed','interrupted','cancelled'].includes(row.status);$('cancel').disabled=!['building','launching','capturing'].includes(row.status);$('export').disabled=!data.swift||['building','launching','capturing','generating'].includes(row.status);$('runs').textContent=JSON.stringify(row.runs??[],null,2);const history=$('capture-history');history.replaceChildren(new Option('Current capture',''));for(const run of row.runs??[]){if(run.status==='preview-ready'&&typeof run.id==='string'&&/^[a-f0-9-]{36}$/.test(run.id)&&run.capture?.runId===run.id)history.add(new Option(`${run.started} · ${run.udid} · ${run.sourceHash.slice(0,12)}`,run.id));}if([...history.options].some(o=>o.value===previousCapture))history.value=previousCapture;await loadCapture(id,history.value,!!history.value||!!row.capture);}
+async function show(id){const previousSetup=selected===id?$('screen-setup').value:'';const previousCapture=selected===id?$("capture-history").value:"";selected=id;projectReviewId=null;$('project-review').hidden=true;$('review-project').disabled=true;$('apply-project').disabled=true;const request=++viewRequest;for(const key of ["generate","build","cancel","export","revision","compare-revision","compare-captures"])$(key).disabled=true;const [row,data]=await Promise.all([api('/'+id),api('/'+id+'/source')]);if(request!==viewRequest||selected!==id)return;renderSetups(row,data.ir,previousSetup);$('review-project').disabled=!(row.revisionOf && row.generatedTreeSHA256);$('capture-comparison').hidden=true;$('compare-captures').disabled=!row.revisionOf||!(row.runs??[]).some(r=>r.id&&r.capture?.runId===r.id&&r.status==='preview-ready');$('reconciliation').hidden=true;$('compare-revision').disabled=!row.revisionOf||!row.generatedRootSHA256||['building','launching','capturing','generating'].includes(row.status);revisionInput={adapter:row.adapter,name:row.name,source:data.input,folder:!!data.files};$('revision').disabled=['building','launching','capturing','generating'].includes(row.status);$('revision').title=data.files?'Select the updated source folder and entry component.':'';$('lineage').textContent=row.revisionOf?'Source revision of '+row.revisionOf.id+' · prior IR '+row.revisionOf.irHash:'';$('detail').hidden=false;$('title').textContent=row.name;$('status').textContent=`${row.status} · tests: ${row.tests} · fidelity: ${row.visualFidelity}${row.error?' · '+row.error:''}`;$('limitations').textContent=JSON.stringify(row.limitations,null,2);$('original').textContent=data.files?data.files.map(f=>'// '+f.path+'\n'+f.source).join('\n\n'):data.input;$('swift').textContent=data.swift??'Not generated';$('ir').textContent=JSON.stringify(data.ir,null,2);$('generate').disabled=row.status!=='inspected'||row.limitations.length>0;$('build').disabled=!['generated-unverified','preview-ready','failed','interrupted','cancelled'].includes(row.status);$('cancel').disabled=!['building','launching','capturing'].includes(row.status);$('export').disabled=!data.swift||['building','launching','capturing','generating'].includes(row.status);$('runs').textContent=JSON.stringify(row.runs??[],null,2);const history=$('capture-history');history.replaceChildren(new Option('Current capture',''));for(const run of row.runs??[]){if(run.status==='preview-ready'&&typeof run.id==='string'&&/^[a-f0-9-]{36}$/.test(run.id)&&run.capture?.runId===run.id)history.add(new Option(`${run.started} · ${run.udid} · ${run.sourceHash.slice(0,12)}`,run.id));}if([...history.options].some(o=>o.value===previousCapture))history.value=previousCapture;await loadCapture(id,history.value,!!history.value||!!row.capture);}
 let captureRequest=0;
 async function loadCapture(id,runId,available=true){
  const request=++captureRequest;
@@ -22,10 +23,10 @@ async function loadCapture(id,runId,available=true){
 $('capture-history').onchange=()=>act(()=>loadCapture(selected,$('capture-history').value));
 
 async function act(fn){$('error').textContent='';try{await fn();}catch(e){$('error').textContent=e.message;}}
-$('import').onsubmit=e=>{e.preventDefault();act(async()=>{const row=await api(revisionParent?'/'+revisionParent+'/revision':'',{name:$('name').value,adapter:$('adapter').value,source:$('source').value});clearRevision();await list();await show(row.id);});};
-function clearRevision(){revisionParent=null;$('revision-context').hidden=true;$('cancel-revision').hidden=true;}
+$('import').onsubmit=e=>{e.preventDefault();act(async()=>{if(folderRevision)throw Error('Choose the revised source folder and its entry component');const row=await api(revisionParent?'/'+revisionParent+'/revision':'',{name:$('name').value,adapter:$('adapter').value,source:$('source').value});clearRevision();await list();await show(row.id);});};
+function clearRevision(){revisionParent=null;folderRevision=false;$('revision-context').hidden=true;$('cancel-revision').hidden=true;}
 $('cancel-revision').onclick=clearRevision;
-$('revision').onclick=()=>{if(!revisionInput)return;revisionParent=selected;for(const key of ['name','adapter','source'])$(key).value=revisionInput[key];$('revision-context').textContent='Editing a new revision of '+revisionInput.name+'. Original source and evidence will be preserved.';$('revision-context').hidden=false;$('cancel-revision').hidden=false;$('source').focus();};
+$('revision').onclick=()=>{if(!revisionInput)return;revisionParent=selected;folderRevision=revisionInput.folder;for(const key of ['name','adapter','source'])$(key).value=revisionInput[key];$('revision-context').textContent='Editing a new revision of '+revisionInput.name+'. Original source and evidence will be preserved.';$('revision-context').hidden=false;$('cancel-revision').hidden=false;if(folderRevision){uploaded=[];uploadRequest++;$('folder').value='';$('entry').replaceChildren();$('project-import').disabled=true;$('folder').closest('details').open=true;$('folder').focus();}else $('source').focus();};
 $('generate').onclick=()=>act(async()=>{const id=selected;$('generate').disabled=true;$('status').textContent='Generating project…';await api('/'+id+'/generate',{});await list();await show(id);});
 $('build').onclick=()=>act(async()=>{await api('/'+selected+'/build',{...($('simulator').value?{udid:$('simulator').value}:{}),...($('screen-setup').value?{setupName:$('screen-setup').value}:$('capture-profile').value?{captureProfile:$('capture-profile').value}:{})});await show(selected);});
 $('cancel').onclick=()=>act(()=>api('/'+selected+'/cancel',{}));
@@ -78,7 +79,7 @@ function renderSetups(row,ir,previous) {
   const select=$('screen-setup');
   select.replaceChildren(new Option('Use capture settings only',''),...savedSetups.map(s=>new Option(s.name,s.name)));
   if(savedSetups.some(s=>s.name===previous))select.value=previous;
-  $('setup-identifiers').replaceChildren(...ir.nodes.filter(n=>!['row','column'].includes(n.kind)).map(n=>new Option(n.text??n.kind,n.id)));
+  $('setup-identifiers').replaceChildren(...screenTargets(ir).map(n=>new Option(n.label,n.id)));
 }
 function loadSetupFields() {
   const setup=savedSetups.find(s=>s.name===$('screen-setup').value);
@@ -104,4 +105,30 @@ $('save-setup').onclick=()=>act(async()=>{
   if(selected!==id)return;
   await show(id);
   if(selected===id){$('screen-setup').value=setup.name;loadSetupFields();}
+});
+
+async function reviewSelectedFile() {
+ const path=$('review-file').value, id=selected, request=viewRequest;
+ $('file-versions').textContent='';
+ if(!path)return;
+ const versions=await api('/'+id+'/project-review',{file:path});
+ if(id!==selected||viewRequest!==request||path!==$('review-file').value)return;
+ $('file-versions').textContent=Object.entries(versions).filter(([key])=>key!=='entry').map(([key,value])=>key+'\n'+(value??(versions.entry[key]?'Binary or large file · '+versions.entry[key]:'Absent'))).join('\n\n');
+}
+$('review-project').onclick=()=>act(async()=>{
+ const id=selected, request=viewRequest, report=await api('/'+id+'/project-review',{});
+ if(id!==selected||request!==viewRequest)return;
+ const changes=report.files.filter(f=>f.change!=='unchanged');
+ $('review-file').replaceChildren(...changes.map(f=>new Option(f.path+' · '+f.change,f.path)));
+ $('project-review-status').textContent=changes.length+' changed files · '+report.blockers.length+' conflicts';
+ projectReviewId=report.reviewId;$('apply-project').disabled=report.blockers.length>0;
+ $('project-review').hidden=false;await reviewSelectedFile();
+});
+$('review-file').onchange=()=>act(reviewSelectedFile);
+$('apply-project').onclick=()=>act(async()=>{
+ const id=selected,approval=projectReviewId;
+ if(!approval)return;
+ $('apply-project').disabled=true;
+ const next=await api('/'+id+'/apply-project',{reviewId:approval});
+ await list();await show(next.id);
 });

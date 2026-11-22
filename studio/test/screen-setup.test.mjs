@@ -22,3 +22,10 @@ test('capture comparisons refuse mixed or different conditions, including naviga
   assert.throws(()=>comparisonConditions(before,{...before,udid:'different'}),/simulator/);
   assert.match(comparisonConditions({},{}),/not pinned/);
 });
+
+test('record links are distinct tappable members and the layout container has no AX target',async()=>{
+  const {screenTargets}=await import('../public/universal-targets.mjs');
+  const ir={nodes:[{id:'row',kind:'record-list',recordList:{collection:'books',field:'title'}}],collections:[{id:'books',rows:[{id:'a_1',values:{title:'Cedar'}},{id:'B',values:{title:'Cedar'}}]}]};
+  assert.deepEqual(screenTargets(ir).map(r=>r.id),['row-a_1','row-B']);
+  assert.deepEqual(normalizeSetup({...basic,taps:['row-a_1','row-B']}).taps,['row-a_1','row-B']);
+});

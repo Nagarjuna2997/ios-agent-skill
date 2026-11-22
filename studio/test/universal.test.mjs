@@ -1,12 +1,12 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {mkdtemp,readFile,rm} from 'node:fs/promises';
+import {mkdtemp,readFile,writeFile,rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {UniversalStudio} from '../universal.mjs';
 import {serve} from '../server.mjs';
 import {repositoryRoot} from './repository.mjs';
-async function workspace(t){const root=await mkdtemp(join(tmpdir(),'universal-studio-'));t.after(()=>rm(root,{recursive:true,force:true}));const u=new UniversalStudio(root,repositoryRoot);await u.init();return {u,root};}
+async function workspace(t){const root=await mkdtemp(join(tmpdir(),'universal-studio-'));t.after(()=>rm(root,{recursive:true,force:true,maxRetries:4,retryDelay:100}));const u=new UniversalStudio(root,repositoryRoot);await u.init();return {u,root};}
 test('Studio imports actual React IR and generates editable SwiftUI without claiming build success',async t=>{
  const {u}=await workspace(t);const row=await u.create({adapter:'react',name:'StudioSample',source:'export default function App(){return <main><h1>Hello</h1></main>}'});
  assert.equal(row.status,'inspected');const result=await u.generate(row.id);assert.equal(result.status,'generated-unverified');assert.equal(result.tests,'not-run');
@@ -273,4 +273,35 @@ test('screen setups reject containers and revalidate copied identifiers on sourc
   await assert.rejects(u.startBuild(child.id,{setupName:'Details'}),/Update the setup/);
   assert.equal(u.nativeBusy,false);
   assert.equal(u.jobs.size,0);
+});
+
+test('whole-project review and apply routes preserve both inputs, reject stale approval and start without old evidence',async t=>{
+ const {root,u}=await workspace(t);const app=await serve({root,repo:repositoryRoot,port:0});
+ t.after(()=>new Promise(resolve=>app.server.close(resolve)));
+ const token=(await (await fetch(app.origin+'/universal')).text()).match(/name="studio-token" content="([a-f0-9]+)"/)[1];
+ const post=async(path,body)=>fetch(app.origin+'/api/universal/'+path,{method:'POST',headers:{'content-type':'application/json','x-studio-token':token},body:JSON.stringify(body)});
+ const parent=await u.create({name:'Regen',adapter:'html',source:'<main><h1>Before</h1></main>'});await u.generate(parent.id);
+ const child=await u.createRevision(parent.id,{name:'Regen',adapter:'html',source:'<main><h1>After</h1></main>'});await u.generate(child.id);
+ const add=join(u.dir(parent.id),'project/Regen/Views/User.swift');
+ await writeFile(add,'// user-owned source');
+ const r=await (await post(child.id+'/project-review',{})).json();
+ assert.equal(r.status,'requires-review');
+ const changed=await (await post(child.id+'/project-review',{file:'Regen/Views/User.swift'})).json();
+ assert.equal(changed.candidate,'// user-owned source');assert.equal(changed.entry.change,'keep-local');
+ await writeFile(add,'// new edits');
+ assert.notEqual((await post(child.id+'/apply-project',{reviewId:r.reviewId})).status,201);
+ assert.equal((await u.list()).length,2);
+ const current=await (await post(child.id+'/project-review',{})).json();
+ const result=await post(child.id+'/apply-project',{reviewId:current.reviewId}), row=await result.json();
+ assert.equal(result.status,201,JSON.stringify(row));
+ assert.equal(row.status,'generated-unverified');assert.equal(row.tests,'not-run');assert.ok(!row.capture&&!row.runs);
+ assert.equal((await (await post(child.id+'/apply-project',{reviewId:current.reviewId})).json()).id,row.id);
+ assert.equal(await readFile(join(u.dir(row.id),'project/Regen/Views/User.swift'),'utf8'),'// new edits');
+ assert.match((await u.source(row.id)).swift,/After/);assert.match((await u.source(parent.id)).swift,/Before/);
+ assert.equal(await readFile(add,'utf8'),'// new edits');
+ const installedHash=await u.fingerprint(row.id);
+ await writeFile(join(u.dir(row.id),'project/Local.xcconfig'),'SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG');
+ assert.notEqual(await u.fingerprint(row.id),installedHash);
+ await writeFile(join(u.dir(child.id),'project/Regen/Views/Child.swift'),'// separate revision edit');
+ assert.notEqual((await post(child.id+'/project-review',{})).status,200);
 });

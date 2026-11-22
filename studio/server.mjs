@@ -123,6 +123,7 @@ export async function serve({
           "/": "index.html",
           "/universal": "universal.html",
           "/universal.js": "universal.js",
+          "/universal-targets.mjs": "universal-targets.mjs",
           "/app.js": "app.js",
           "/style.css": "style.css",
         };
@@ -138,6 +139,7 @@ export async function serve({
             "index.html": "text/html; charset=utf-8",
             "universal.html": "text/html; charset=utf-8",
             "universal.js": "text/javascript",
+            "universal-targets.mjs": "text/javascript",
             "app.js": "text/javascript",
             "style.css": "text/css",
           }[f],
@@ -358,6 +360,12 @@ export async function serve({
           return send(201, await universal.createProject(body));
         if (parts.length === 4 && parts[3] === "revision")
           return send(201, await universal.createRevision(parts[2], body));
+        if (parts.length === 4 && parts[3] === "project-review") {
+          if (body.file !== undefined && typeof body.file !== "string") throw Error("Choose a review file");
+          return send(200, await universal.compareProject(parts[2], body.file));
+        }
+        if (parts.length === 4 && parts[3] === "apply-project")
+          return send(201, await universal.applyProject(parts[2], body.reviewId));
         if (parts.length === 4 && parts[3] === "screen-setup")
           return send(200, await universal.saveScreenSetup(parts[2], body));
         if (parts.length === 4 && parts[3] === "generate")

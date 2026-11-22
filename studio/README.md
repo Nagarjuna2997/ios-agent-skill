@@ -174,6 +174,20 @@ parent IR hash must still match. Older conversions without the original snapshot
 cannot supply a trustworthy base and are refused. This compares `RootView.swift`
 only and does not merge other project files or later edits to the child revision.
 
+**Review whole project** compares the original generation, your current parent project and a regenerated revision with the same target name. It covers Swift files, resources including binary assets, Xcode project membership, shared schemes and configuration. Inspect each changed file before selecting **Apply reviewed changes to a new project**. Studio creates a third editable conversion and keeps both inputs and their captures. Subsequent builds and exports use the merged tree. Replay a saved screen setup on that new conversion to collect its own evidence.
+
+Independent additions and deletions are carried through. Disjoint Swift edits are merged using local Git; overlapping edits, conflicting asset contents and competing project-membership edits require resolution. Changed source inputs invalidate the review ID. Source mappings that no longer match their Swift file are removed. The operation requires generation snapshots from this version of Studio and an unedited child revision. If the child also contains local edits, resolve them independently first. Source ZIPs and photographs of builds do not supply a historical generation snapshot.
+
+The CLI exposes the same comparison and approval. `BASE` is the saved original project, `LOCAL` is the developer’s copy and `NEXT` is a fresh regeneration. All three are directories.
+
+```sh
+ios-agent-mcp app-ir reconcile-project BASE LOCAL NEXT
+ios-agent-mcp app-ir reconcile-project BASE LOCAL NEXT --file MyApp/Views/RootView.swift
+ios-agent-mcp app-ir reconcile-project BASE LOCAL NEXT --approve REVIEW_ID --out NEW_DIRECTORY
+```
+
+The new directory must be outside the inputs. The local snapshot accepts up to 1,500 files, 8 MiB per file and 32 MiB total. Known credentials, user workspace state, build products and installed dependencies are excluded. Restore local configuration and dependencies separately if needed. Symlinks, special files and case-ambiguous output paths block reconciliation. Binary or large files are reviewed by fingerprint. App-specific build scripts run only when you subsequently choose to build.
+
 **Compare latest captures with parent** computes a raw native-to-native pixel diff
 using the latest archived successful capture on each conversion. It verifies image
 hashes and refuses mismatched dimensions rather than resizing. The report identifies

@@ -1,3 +1,4 @@
+import {reviewProjectDirectories,applyReviewedProject,reviewProjectFile} from './project-reconcile.js';
 import {reconcileFiles} from './reconcile.js';
 import { importSvelte } from './svelte.js';
 import { importVue } from './vue.js';
@@ -8,7 +9,19 @@ import { importHTML, readBoundedFile } from './html.js';
 import { generateProject } from './swiftui.js';
 export async function appIRCLI(args: string[]): Promise<number> {
   if (args.includes('--help') || args.includes('-h')) {
+    console.log('ios-agent-mcp app-ir reconcile-project BASE LOCAL GENERATED [--file PATH | --approve REVIEW_ID --out NEW_DIRECTORY]');
     console.log('ios-agent-mcp app-ir reconcile BASE_SWIFT LOCAL_SWIFT GENERATED_SWIFT NEW_REVIEW_DIRECTORY\nios-agent-mcp app-ir inspect-svelte SVELTE_FILE [AppName]\nios-agent-mcp app-ir inspect-vue VUE_FILE [AppName]\nios-agent-mcp app-ir inspect-react TSX_FILE [AppName]\nios-agent-mcp app-ir inspect HTML_FILE [AppName]\nios-agent-mcp app-ir validate IR_JSON\nios-agent-mcp app-ir generate IR_JSON NEW_DIRECTORY\nExperimental local HTML inline-style, Vue static-template SFC, Svelte static markup and bounded local React TSX module subsets. Vue scripts, stylesheets, directives and interpolation are unsupported. React supports bounded literal props/expressions, same-file or explicitly imported local components, boolean state/button actions, controlled single-line text inputs with literal clear/reset actions, direct state/setter props and explicit flat MemoryRouter routes. Erased interfaces, type aliases, declaration-level import type, matching primitive hook annotations and input event annotations are accepted without typechecking. Other imports, hooks and dynamic behavior are rejected. inspect prints IR; generate rejects unsupported markup and existing destinations. No scripts, downloads, builds or publication are run by import.'); return 0;
+  }
+  if(args[0]==='reconcile-project'){
+    const [,base,local,next,...options]=args;
+    if(!base||!local||!next)throw Error('Provide base, local and regenerated project directories');
+    const review=await reviewProjectDirectories(base,local,next);
+    if(options.length===0){console.log(JSON.stringify(review.report,null,2));return review.report.blockers.length?2:0;}
+    if(options.length===2 && options[0]==='--file'){console.log(JSON.stringify(reviewProjectFile(review,options[1]!),null,2));return 0;}
+    if(options.length===4 && options[0]==='--approve' && options[2]==='--out'){
+      console.log(JSON.stringify(await applyReviewedProject(review,options[1]!,options[3]!,[base,local,next]),null,2));return 0;
+    }
+    throw Error('Use app-ir reconcile-project BASE LOCAL GENERATED [--file PATH | --approve REVIEW_ID --out NEW_DIRECTORY]');
   }
   if(args[0]==='reconcile'){
     if(args.length!==5)throw Error('Use app-ir reconcile BASE_SWIFT LOCAL_SWIFT GENERATED_SWIFT NEW_REVIEW_DIRECTORY');

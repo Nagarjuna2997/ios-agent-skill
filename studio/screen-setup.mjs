@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { captureProfiles } from './capture-profile.mjs';
 import { projectText, schemeText, swiftString } from './project.mjs';
 
-const nodeID = /^[a-z][a-z0-9-]{0,79}$/;
+const nodeID = /^[a-z][A-Za-z0-9_-]{0,145}$/;
 const orientations = ['portrait', 'landscapeLeft', 'landscapeRight'];
 
 export function normalizeSetup(input) {

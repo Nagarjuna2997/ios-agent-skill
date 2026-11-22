@@ -1,3 +1,4 @@
+import {screenTargets} from './public/universal-targets.mjs';
 import {captureScreenSetup, comparisonConditions, normalizeSetup} from './screen-setup.mjs';
 import {captureProfiles,withCaptureProfile} from './capture-profile.mjs';
 // Local Universal IR workspace. Imported source is parsed, never executed.
@@ -73,6 +74,10 @@ export class UniversalStudio {
       const original=await fs.readFile(path.join(this.dir(id),'project',row.name,'Views','RootView.swift'));
       await fs.writeFile(path.join(this.dir(id),'generated-root.swift'),original,{flag:'wx'});
       row.generatedRootSHA256=sha256(original);
+      const {readProjectTree,projectTreeHash,writeProjectTree}=await this.module('app-ir/project-reconcile');
+      const tree=await readProjectTree(path.join(this.dir(id),'project'));
+      await writeProjectTree(tree,path.join(this.dir(id),'generated-project'));
+      row.generatedTreeSHA256=projectTreeHash(tree);
       row.status='generated-unverified';
     }catch(error){if(row && row.status==='generating'){row.status='failed';row.error=error.message;}else throw error;}finally{try{if(row)await this.save(row);}finally{this.jobs.delete(id);}}
     return row;
@@ -100,6 +105,56 @@ export class UniversalStudio {
       scope:'RootView.swift only; original revision generation, not subsequent child edits',
       base:base.toString('utf8'),local:local.toString('utf8'),generated:generated.toString('utf8'),candidate:candidate?.toString('utf8')??null};
   }
+  async projectReview(id) {
+    const child=await this.get(id);
+    if(!child.revisionOf)throw Error('This conversion has no parent revision');
+    const parent=await this.get(child.revisionOf.id);
+    if(this.jobs.has(id)||this.jobs.has(parent.id))throw Error('Wait for both conversions to finish');
+    if(!child.generatedTreeSHA256||!parent.generatedTreeSHA256)throw Error('Whole-project generation snapshot unavailable for this revision');
+    if(child.name!==parent.name)throw Error('Whole-project reconciliation requires the same target name');
+    const core=await this.module('app-ir/project-reconcile');
+    const {sha256}=await this.module('app-ir/schema');
+    if(sha256(await fs.readFile(path.join(this.dir(parent.id),'ir.json')))!==child.revisionOf.irHash)throw Error('Parent IR changed since revision creation');
+    const directories=[path.join(this.dir(parent.id),'generated-project'), path.join(this.dir(parent.id),'project'), path.join(this.dir(id),'generated-project')];
+    const review=await core.reviewProjectDirectories(...directories);
+    if(review.report.inputs.base!==parent.generatedTreeSHA256||review.report.inputs.generated!==child.generatedTreeSHA256)throw Error('Original project generation snapshot changed');
+    const current=await core.readProjectTree(path.join(this.dir(id),'project'));
+    if(core.projectTreeHash(current)!==child.generatedTreeSHA256)throw Error('The regenerated revision also contains developer edits. Review it independently before combining these projects.');
+    return {core,review,child,parent,directories};
+  }
+  async compareProject(id,file) {
+    const {core,review}=await this.projectReview(id);
+    return file===undefined?review.report:core.reviewProjectFile(review,file);
+  }
+  async applyProject(id,approval) {
+    const {core,review,child,parent,directories}=await this.projectReview(id);
+    if(this.jobs.has(id)||this.jobs.has(parent.id))throw Error('Wait for both conversions to finish');
+    this.jobs.set(id,true);this.jobs.set(parent.id,true);
+    let staging;
+    try {
+      if(approval!==review.report.reviewId)throw Error('Stale approval. Review the current project files again.');
+      const existing=(await this.list()).find(r=>r.projectReview?.reviewId===approval && r.projectReview.regeneration===id);
+      if(existing)return existing;
+      staging=await fs.mkdtemp(path.join(this.root,'.pending-'));
+      await core.applyReviewedProject(review,approval,path.join(staging,'project'),directories);
+      const sourceDir=this.dir(id);
+      for(const name of ['input.txt','ir.json','generated-root.swift','inputs.json']){
+        try{await fs.copyFile(path.join(sourceDir,name),path.join(staging,name));}
+        catch(error){if(name!=='inputs.json'||error.code!=='ENOENT')throw error;}
+      }
+      await core.writeProjectTree(review.generated,path.join(staging,'generated-project'));
+      const row={id:randomUUID(),name:child.name,adapter:child.adapter,created:new Date().toISOString(),
+        status:'generated-unverified',tests:'not-run',visualFidelity:'not-evaluated',limitations:child.limitations,
+        revisionOf:child.revisionOf,generatedRootSHA256:child.generatedRootSHA256,generatedTreeSHA256:child.generatedTreeSHA256,
+        screenSetups:child.screenSetups??[],projectReview:{reviewId:approval,regeneration:id,parent:parent.id}};
+      await fs.writeFile(path.join(staging,'report.json'),JSON.stringify(row,null,2));
+      await fs.rename(staging,this.dir(row.id));
+      return row;
+    } finally {
+      this.jobs.delete(id);this.jobs.delete(parent.id);
+      if(staging)await fs.rm(staging,{recursive:true,force:true});
+    }
+  }
   async compareCaptures(id){
     const child=await this.get(id);if(!child.revisionOf)throw Error('This conversion has no parent revision');
     const parent=await this.get(child.revisionOf.id);
@@ -114,7 +169,18 @@ export class UniversalStudio {
       status:'requires-review',comparison:'latest archived parent and revision captures; native-to-native only',
       conditions};
   }
-  async fingerprint(id){const {snapshotFiles,snapshotHash}=await this.module('agent/remote');return snapshotHash(await snapshotFiles(path.join(this.dir(id),'project')));}
+  async snapshot(row) {
+    const dir=path.join(this.dir(row.id),'project');
+    if(row.projectReview) {
+      const {readProjectTree,projectTreeHash}=await this.module('app-ir/project-reconcile');
+      const tree=await readProjectTree(dir);
+      return {hash:projectTreeHash(tree),files:[...tree].map(([path,f])=>({path,content:f.bytes,mode:f.mode}))};
+    }
+    const {snapshotFiles,snapshotHash}=await this.module('agent/remote');
+    const files=await snapshotFiles(dir);
+    return {hash:snapshotHash(files),files};
+  }
+  async fingerprint(id){return (await this.snapshot(await this.get(id))).hash;}
   async simulators(){
     const [{ProcessRunner},{detectToolchain}]=await Promise.all(['agent/runner','agent/toolchain'].map(n=>this.module(n)));
     const environment=await detectToolchain(new ProcessRunner());
@@ -123,7 +189,7 @@ export class UniversalStudio {
   async validateScreenSetup(id,input) {
     const setup=normalizeSetup(input);
     const ir=JSON.parse(await fs.readFile(path.join(this.dir(id),'ir.json'),'utf8'));
-    const identifiers=new Set(ir.nodes.filter(n=>!['row','column'].includes(n.kind)).map(n=>n.id));
+    const identifiers=new Set(screenTargets(ir).map(n=>n.id));
     if (![...setup.taps,setup.visible].every(key=>identifiers.has(key)))
       throw Error('A screen setup identifier is missing or belongs to a layout container. Update the setup for this revision.');
     return setup;
@@ -169,8 +235,7 @@ export class UniversalStudio {
     try{
       const [{ProcessRunner},{buildProject},{runApp,screenshot,ensureBooted},{detectToolchain,chooseSimulator}]=await Promise.all(['agent/runner','agent/build','agent/simulator','agent/toolchain'].map(n=>this.module(n)));
       const processRunner=new ProcessRunner();const runner={run:(c,a,o={})=>{if(signal.aborted)throw Error('Cancelled');return processRunner.run(c,a,{...o,signal});}};
-      const {snapshotFiles,snapshotHash}=await this.module('agent/remote');
-      const sourceFiles=await snapshotFiles(project);run.sourceHash=snapshotHash(sourceFiles);
+      const {files:sourceFiles,hash}=await this.snapshot(row);run.sourceHash=hash;
       const nativeSource=sourceFiles.find(f=>f.path===row.name+'/Views/RootView.swift')?.content;
       if(!nativeSource)throw Error('Generated root view missing from source snapshot');
       run.environment=await detectToolchain(runner);
@@ -251,13 +316,12 @@ export class UniversalStudio {
     this.jobs.set(id,true);let staging;
     try{
       const row=await this.get(id);
-      const {snapshotFiles,snapshotHash}=await this.module('agent/remote');
-      const files=await snapshotFiles(path.join(this.dir(id),'project'));const hash=snapshotHash(files);
+      const {files,hash}=await this.snapshot(row);
       staging=await fs.mkdtemp(path.join(this.dir(id),'export-'));
       const target=path.join(staging,'NativeProject');await fs.mkdir(target);
       for(const file of files){
         if(path.isAbsolute(file.path)||file.path.split('/').includes('..'))throw Error('Unsafe export path');
-        const out=path.join(target,file.path);await fs.mkdir(path.dirname(out),{recursive:true});await fs.writeFile(out,file.content,{flag:'wx'});
+        const out=path.join(target,file.path);await fs.mkdir(path.dirname(out),{recursive:true});await fs.writeFile(out,file.content,{flag:'wx',mode:file.mode});
       }
       await fs.writeFile(path.join(target,'UNIVERSAL-EXPORT.json'),JSON.stringify({name:row.name,adapter:row.adapter,sourceHash:hash,tests:row.tests,visualFidelity:row.visualFidelity},null,2));
       const {ProcessRunner}=await this.module('agent/runner');
