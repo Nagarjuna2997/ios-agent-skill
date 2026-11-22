@@ -12,12 +12,13 @@ def verify(require_multiseat):
     version = subprocess.check_output(["xcrun", "--sdk", "iphonesimulator", "--show-sdk-version"], text=True).strip()
     major, minor = (int(n) for n in re.match(r'^(\d+)\.(\d+)', version).groups())
     source = Path(__file__).with_name("GroupSubscription.swift")
+    paywall = source.resolve().parents[2] / "capabilities/storekit2-paywall/template/Store.swift"
     triple = f"{platform.machine()}-apple-ios17.0-simulator"
     with tempfile.TemporaryDirectory() as tmp:
         compile_args = ["xcrun", "swiftc", "-swift-version", "6", "-typecheck", "-sdk", sdk,
-                        "-target", triple, "-module-cache-path", tmp, str(source)]
+                        "-target", triple, "-module-cache-path", tmp, str(source), str(paywall)]
         subprocess.run(compile_args, check=True)
-        print(f"PASS legacy branch (SDK {version}, target {triple})", flush=True)
+        print(f"PASS single-seat paywall and legacy branch (SDK {version}, target {triple})", flush=True)
         if (major, minor) < (27, 3):
             print("SKIPPED multiseat compilation: select Xcode 27.3 beta 2 or later.")
             return int(require_multiseat)
