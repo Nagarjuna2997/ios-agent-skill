@@ -1,3 +1,4 @@
+import { wrappingRowSwift } from './wrapping-row.js';
 import {typographyProbeSwift} from './typography-probe.js';
 import { mkdir, writeFile, lstat } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
@@ -31,10 +32,16 @@ export function renderSwiftUI(value: unknown, options: { disclosureStyle?: "plat
     const content = n.stringBinding && n.kind==='text' ? `collapsedInputText(state_${symbol(n.stringBinding)})` : n.textBinding ? `(state_${symbol(n.textBinding.state)} ? ${swiftString(n.textBinding.whenTrue)} : ${swiftString(n.textBinding.whenFalse)})` : swiftString(n.text ?? '');
     const textView = options.instrumentTypography ? `MeasuredText(nodeID: ${swiftString(n.id)}, content: ${content})` : `Text(verbatim: ${content})`;
     const action = n.action?.operation === 'toggle' ? `state_${symbol(n.action.state)}.toggle()` : n.action?.operation === 'set' ? `state_${symbol(n.action.state)} = ${typeof n.action.value==='string'?swiftString(n.action.value):n.action.value}` : '';
-    let view = n.kind === 'textfield' && n.stringBinding ? `TextField("", text: $state_${symbol(n.stringBinding)}, prompt: Text(verbatim: ${swiftString(n.placeholder??'')}))\n        .accessibilityLabel(Text(verbatim: ${swiftString(n.text??'')}))\n        .textFieldStyle(ImportedTextFieldStyle())` : n.kind === 'text' ? textView : n.kind === 'link' && n.action?.operation === 'navigate'
+    const field = n.stringBinding ? 'state_' + symbol(n.stringBinding) : '';
+    const prompt = swiftString(n.placeholder ?? '');
+    let view = n.kind === 'textfield' && field ? `TextField("", text: $${field})
+        .accessibilityLabel(Text(verbatim: ${swiftString(n.text ?? '')}))
+        .accessibilityHint(Text(verbatim: ${field}.isEmpty ? ${prompt} : ""))
+        .textFieldStyle(ImportedTextFieldStyle(prompt: ${prompt}, isEmpty: ${field}.isEmpty))` : n.kind === 'text' ? textView : n.kind === 'link' && n.action?.operation === 'navigate'
       ? `NavigationLink(value: ${swiftString(n.action.screen)}) { ${textView}.frame(minHeight: 44) }\n        .buttonStyle(.bordered)` : n.kind === 'button'
-      ? `Button { ${action} } label: { ${textView}${['1.4.0','1.5.0'].includes(ir.schemaVersion)&&s.foreground&&s.background?`.frame(${rowChildren.has(n.id)?'':'maxWidth: .infinity, '}minHeight: 44, alignment: ${s.centered?'.center':'.leading'}).contentShape(Rectangle())`:''} }\n        .buttonStyle(${['1.4.0','1.5.0'].includes(ir.schemaVersion)&&s.foreground&&s.background?'.plain':'.bordered'})\n        .frame(minHeight: 44)` : n.kind === 'disclosure'
+      ? `Button { ${action} } label: { ${textView}${['1.4.0','1.5.0','1.6.0'].includes(ir.schemaVersion)&&s.foreground&&s.background?`.frame(${rowChildren.has(n.id)?'':'maxWidth: .infinity, '}minHeight: 44, alignment: ${s.centered?'.center':'.leading'}).contentShape(Rectangle())`:''} }\n        .buttonStyle(${['1.4.0','1.5.0','1.6.0'].includes(ir.schemaVersion)&&s.foreground&&s.background?'.plain':'.bordered'})\n        .frame(minHeight: 44)` : n.kind === 'disclosure'
       ? `DisclosureGroup(isExpanded: $expanded_${symbol(n.id)}) {\n${children}\n        } label: { ${textView} }`
+      : s.wrap ? `ImportedWrappingRow(gap: ${s.gap ?? 0}) {\n${children}\n        }`
       : n.kind==='row' ? `HStack(alignment: .center, spacing: ${s.gap ?? 0}) {\n${children}\n        }`
       : `VStack(alignment: ${s.centered ? '.center' : '.leading'}, spacing: ${s.gap ?? 12}) {\n${children}\n        }`;
     if (n.kind === 'disclosure' && options.disclosureStyle === 'leading') view += '\n        .disclosureGroupStyle(ImportedDisclosureStyle())';
@@ -81,13 +88,27 @@ private struct ImportedDisclosureStyle: DisclosureGroupStyle {
 ` : '';
   const inputStyle=ir.nodes.some(n=>n.kind==='textfield')?`
 private struct ImportedTextFieldStyle: TextFieldStyle {
+    let prompt: String
+    let isEmpty: Bool
+
     func _body(configuration: TextField<Self._Label>) -> some View {
-        configuration
-            .textFieldStyle(.plain)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 12)
-            .frame(minHeight: 44)
-            .background(Color(uiColor: .secondarySystemBackground), in: RoundedRectangle(cornerRadius: 8))
+        ZStack(alignment: .leading) {
+            if isEmpty && !prompt.isEmpty {
+                // The native field exposes the prompt as a hint while empty.
+                // A separate text view can wrap instead of truncating to one line.
+                Text(verbatim: prompt)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .allowsHitTesting(false)
+                    .accessibilityHidden(true)
+            }
+            configuration
+                .textFieldStyle(.plain)
+                .padding(.vertical, 12)
+                .frame(minHeight: 44)
+        }
+        .padding(.horizontal, 12)
+        .background(Color(uiColor: .secondarySystemBackground), in: RoundedRectangle(cornerRadius: 8))
     }
 }
 `:'';
@@ -96,7 +117,7 @@ private func collapsedInputText(_ value: String) -> String {
     value.split(whereSeparator: { [" ", "\\t", "\\n", "\\r", "\\u{c}"].contains(String($0)) }).joined(separator: " ")
 }
 `:'';
-  return {source:`import SwiftUI\n\nstruct RootView: View {\n${state}\n${scales}\n    var body: some View {\n        ${body}\n    }\n${routedViews}\n${views}\n}\n\n${disclosureStyle}${inputStyle}${stringTextHelper}\n${options.instrumentTypography ? typographyProbeSwift : ''}\n#Preview { RootView() }\n`,mappings:ir.nodes.map(n => ({node:n.id,symbol:symbol(n.id),evidence:n.evidence}))};
+  return {source:`import SwiftUI\n\nstruct RootView: View {\n${state}\n${scales}\n    var body: some View {\n        ${body}\n    }\n${routedViews}\n${views}\n}\n\n${ir.nodes.some(n => n.style.wrap) ? wrappingRowSwift : ''}${disclosureStyle}${inputStyle}${stringTextHelper}\n${options.instrumentTypography ? typographyProbeSwift : ''}\n#Preview { RootView() }\n`,mappings:ir.nodes.map(n => ({node:n.id,symbol:symbol(n.id),evidence:n.evidence}))};
 }
 export async function generateProject(value: unknown, output: string, options: { disclosureStyle?: "platform" | "leading"; instrumentTypography?: boolean } = {}): Promise<{project: string; sourceHash: string; status: 'generated-unverified'}> {
   const ir = AppIRSchema.parse(value);

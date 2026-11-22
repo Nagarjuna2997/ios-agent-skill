@@ -1,0 +1,48 @@
+{
+  "fixture": "react-controlled-text-reset",
+  "status": "native-behavior-passed",
+  "environment": {
+    "xcode": "Xcode 27.2\nBuild version 27B52",
+    "sdk": "27.2",
+    "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-27-2",
+    "runtimeBuild": "24B8117",
+    "host": "26A434"
+  },
+  "profile": {
+    "version": 1,
+    "xcode": "27.2",
+    "xcodeBuild": "27B52",
+    "sdk": "27.2",
+    "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-27-2",
+    "deviceType": "com.apple.CoreSimulator.SimDeviceType.iPhone-18-Pro",
+    "appearance": "light",
+    "locale": "en_US"
+  },
+  "sourceHash": "606574bb2814f21aeafc8799a1746ad650d79acc4c565de17f4221726260a19a",
+  "irHash": "b7ec66d205a7207eb0676c6df3874382613e324f48db9b08318bbdd93d76af7f",
+  "generatedSwiftSHA256": "21204ab3e60bd8a66508bf4d68d204baea3747d1e66a9a145eeeac44d2dfdbbc",
+  "buildSucceeded": true,
+  "visualFidelity": "not-evaluated",
+  "cells": {
+    "large": {
+      "status": "passed",
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0,
+      "sourceHash": "2817d7f58dc404dcc33187301339df2d3067369f25e7e00398adb2bc45a574c9",
+      "screenshots": {
+        "large-accessible-fields.png": "4ad8bb21424a0e4b935da1edc89e01fa8d10b8a0c6fb5eca1fef1cfd0be26ced"
+      }
+    },
+    "xxxl": {
+      "status": "passed",
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0,
+      "sourceHash": "2817d7f58dc404dcc33187301339df2d3067369f25e7e00398adb2bc45a574c9",
+      "screenshots": {
+        "xxxl-accessible-fields.png": "7bfb8cd87f7d6921776159cb568d4bd1d532a3392378dee6b58a96f96a6ee3d3"
+      }
+    }
+  }
+}

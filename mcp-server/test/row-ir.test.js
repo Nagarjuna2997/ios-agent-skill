@@ -16,7 +16,7 @@ test('row children retain intrinsic sizing and default CSS gap is zero',()=>{
  for(const id of row.children){const start=source.indexOf(`private var node_${id.replaceAll('-','_')}:`);const end=source.indexOf('\n    }',start);assert.doesNotMatch(source.slice(start,end),/frame\(maxWidth/);}
 });
 test('ambiguous and unsupported flex behavior blocks generation',()=>{
- for(const text of [markup.replace(';align-items:center',''),markup.replace('align-items:center','align-items:stretch'),markup.replace('flex-direction:row','flex-direction:row;flex-direction:column'),markup.replace('gap:8px','flex-wrap:wrap'),markup.replace('gap:8px','justify-content:space-between'),markup.replace('<main','<p').replace('</main>','</p>')])assert.throws(()=>renderSwiftUI(htmlToIR(text)));
+ for(const text of [markup.replace(';align-items:center',''),markup.replace('align-items:center','align-items:stretch'),markup.replace('flex-direction:row','flex-direction:row;flex-direction:column'),markup.replace('gap:8px','flex-wrap:wrap-reverse'),markup.replace('gap:8px','justify-content:space-between'),markup.replace('<main','<p').replace('</main>','</p>')])assert.throws(()=>renderSwiftUI(htmlToIR(text)));
 });
 test('rows require new schema while older layouts remain unchanged',()=>{
  const ir=htmlToIR(markup);assert.equal(AppIRSchema.safeParse({...ir,schemaVersion:'1.4.0'}).success,false);
@@ -38,4 +38,23 @@ test('unmapped nested row sizing blocks generation rather than expanding implici
  for(const child of ['<section><p>Nested</p></section>','<details><summary>More</summary><p>Text</p></details>'])assert.throws(()=>renderSwiftUI(htmlToIR(markup.replace('<p>Trail</p>',child))),/Unsupported row child/);
  const ir=reactToIR('import {useState} from "react";export default function App(){const [ready,setReady]=useState(false);return <main style={{display:"flex",flexDirection:"row",alignItems:"center"}}>{ready ? <section><p>Nested</p></section> : <p>Waiting</p>}</main>}');
  assert.throws(()=>renderSwiftUI(ir),/Unsupported row child/);
+});
+
+test('wrapping rows opt into IR 1.6 across all four static adapters', () => {
+  const wrapped = markup.replace('gap:8px', 'gap:8px;flex-wrap:wrap');
+  const html = htmlToIR(wrapped);
+  assert.equal(html.schemaVersion, '1.6.0');
+  assert.equal(html.nodes.find(n => n.kind === 'row').style.wrap, true);
+  const react = reactToIR('export default function App(){return <main style={{display:"flex",flexDirection:"row",alignItems:"center",flexWrap:"wrap",gap:8}}><p>Trail</p><p>6 km</p></main>}');
+  const swift = renderSwiftUI(html).source;
+  assert.match(swift, /ImportedWrappingRow\(gap: 8\)/);
+  for (const ir of [react, vueToIR(`<template>${wrapped}</template>`), svelteToIR(wrapped)]) {
+    assert.equal(renderSwiftUI(ir).source, swift);
+  }
+  assert.throws(() => renderSwiftUI({...html, schemaVersion:'1.5.0'}));
+  for (const incorrect of [wrapped.replace('row','column'), wrapped.replace('wrap:wrap','wrap:wrap;flex-wrap:wrap')]) {
+    assert.throws(() => renderSwiftUI(htmlToIR(incorrect)));
+  }
+  const plain = htmlToIR(markup);
+  assert.doesNotMatch(renderSwiftUI(plain).source, /ImportedWrappingRow/);
 });

@@ -32,7 +32,7 @@ code. On 2026-10-28 the generated project built unsigned with Xcode 27.0
 updates, hide/show retention and relaunch-reset tests. The padded field repair
 also passed the 44-point accessibility-frame assertions.
 
-**Native acceptance is incomplete:** the accessibility test still fails Apple's
+**Initial October 28 results:** the accessibility test failed Apple's
 placeholder-clipping and button-contrast audit at Large. Each run has 2 passed /
 1 failed test; XXXL is not run after that failure. Keyboard, VoiceOver and broader
 layout behavior are not established by these limited assertions. No passing
@@ -55,11 +55,39 @@ uses fixture ID `react-controlled-text-reset` with four required tests; archived
 state workflow has a separate input matrix cell; it does not combine scores or
 establish HTML fidelity. The workflow remains PR/manual-triggered.
 
-## Latest four-test result
+## November 21 native verification
+
+On Xcode 27.2 (27B52) and the iPhone 18 Pro simulator running iOS 27.2
+(24B8117), all four native tests passed at Large and again at XXXL. This
+covers the controlled input interactions, including clear/reset and relaunch.
+The generator renders the original prompt as wrapping text while the native
+editable field is empty and exposes it through the field's accessibility hint.
+The test reads the visible prompt from a cropped field screenshot with Vision
+and runs Apple's clipping, contrast and element-detection audits. The final serial
+run had zero failed or skipped tests. Each size exported four XCTest PNGs. The
+archive includes the field screenshot from each size as well as both XCTest summaries.
+
+[Large XCTest summary](../evidence/react-input-20261121/large-summary.json) ·
+[XXXL XCTest summary](../evidence/react-input-20261121/xxxl-summary.json) ·
+[Large screenshot](../evidence/react-input-20261121/large-accessible-fields.png) ·
+[XXXL screenshot](../evidence/react-input-20261121/xxxl-accessible-fields.png) ·
+[Source and capture hashes](../evidence/react-input-20261121/result.json).
+
+The original generator reproduced the clipping failure on iOS 27.2 before
+its baseline run was stopped. In the first candidate run under concurrent
+simulator load, the Large audit timed out and the other three tests passed.
+XXXL passed all four tests. The final run above used a fresh, dedicated device
+and the reviewed test and scheme. These tests cover a native form fixture.
+Manual VoiceOver navigation and browser-to-native fidelity remain separate.
+
+To repeat this run, use `benchmarks/universal/native-behavior/ios-27.2.json`
+as the profile in the command above and choose an unused output directory.
+
+## October 28 four-test result
 
 The 2026-10-28 hit-region run built successfully and passed 3/4 Large tests:
 typing/retention, clear/reset actions and relaunch reset. The accessibility test
-still fails on placeholder clipping; it no longer reports button contrast or
+failed on placeholder clipping; it no longer reports button contrast or
 44-point field geometry failures. XXXL did not run after the Large failure.
 See [the exact report, logs and screenshots](../evidence/react-input-hit-region-local-20261028/README.md).
 The rejected native-label experiment and the earlier missing-hit-region run are
@@ -79,8 +107,8 @@ the existing artifact-hash checks. Cell/export errors are visible in the viewer
 and contradict any claimed `native-behavior-passed` status. Historical reports
 above retain their original fail-fast behavior and are not rewritten.
 
-Latest independent-size run: **Large 3 passed / 1 failed; XXXL 3 passed / 1 failed**.
-Typing, clear/reset and retention pass at both sizes; placeholder clipping still
-fails the accessibility test at both sizes. [Archived reports and automatic failure captures](../evidence/react-input-both-sizes-local-20261028/README.md)
+October 28 independent-size run: **Large 3 passed / 1 failed; XXXL 3 passed / 1 failed**.
+Typing, clear/reset and retention passed at both sizes. Placeholder clipping
+failed the accessibility test at both sizes. [Archived reports and automatic failure captures](../evidence/react-input-both-sizes-local-20261028/README.md)
 show the overall failed verdict. No passing size checkpoint or fidelity baseline
 was created.

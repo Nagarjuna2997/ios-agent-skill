@@ -1,4 +1,5 @@
 import XCTest
+import Vision
 
 @MainActor final class InputTests: XCTestCase {
     private func launch() -> XCUIApplication {
@@ -62,6 +63,18 @@ import XCTest
             XCTAssertEqual(field.elementType, .textField)
             XCTAssertGreaterThanOrEqual(field.frame.height, 44)
         }
+        // Check the actual visible prompt within the native field. The accessibility
+        // audit alone cannot verify text supplied as a decorative rendering of a hint.
+        let name = app.textFields["Your name"]
+        for _ in 0..<5 where !name.isHittable { app.swipeDown() }
+        XCTAssertTrue(name.isHittable)
+        let image = try XCTUnwrap(name.screenshot().image.cgImage)
+        let request = VNRecognizeTextRequest()
+        request.recognitionLevel = .accurate
+        request.recognitionLanguages = ["en-US"]
+        try VNImageRequestHandler(cgImage: image).perform([request])
+        let visiblePrompt = (request.results ?? []).compactMap { $0.topCandidates(1).first?.string }.joined(separator: " ")
+        XCTAssertEqual(visiblePrompt, "Enter your name")
         try app.performAccessibilityAudit(for: [.textClipped, .contrast, .elementDetection])
         capture(app, "accessible-fields")
     }

@@ -1,0 +1,50 @@
+{
+  "fixture": "wrapping-chip-row",
+  "status": "native-behavior-passed",
+  "environment": {
+    "xcode": "Xcode 27.2\nBuild version 27B52",
+    "sdk": "27.2",
+    "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-27-2",
+    "runtimeBuild": "24B8117",
+    "host": "26A434"
+  },
+  "profile": {
+    "version": 1,
+    "xcode": "27.2",
+    "xcodeBuild": "27B52",
+    "sdk": "27.2",
+    "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-27-2",
+    "deviceType": "com.apple.CoreSimulator.SimDeviceType.iPhone-18-Pro",
+    "appearance": "light",
+    "locale": "en_US"
+  },
+  "sourceHash": "6b2cc74e3102d625547266e49ff8735a386d2cc06da0fa91d2f26ef06b777fe4",
+  "irHash": "145538b6f6576247ebb4d013049f4b04b934c4cc36c8c37a40052efa665b5336",
+  "generatedSwiftSHA256": "2d1d1c99a2f842df167f25a20825799b6de722eda844cf1ae8b2e078ac0568e7",
+  "buildSucceeded": true,
+  "visualFidelity": "not-evaluated",
+  "cells": {
+    "large": {
+      "status": "passed",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "sourceHash": "2c8c2af179e110bf01a0444f400de3a6ad1f0fbe6c2ef464e6ad0d501ed02e48",
+      "screenshots": {
+        "large-landscape-tags.png": "52260da0f448e007d867ef905e4c34e898d52c16433e647fa41268a2f1ba3aef",
+        "large-portrait-tags.png": "5feb06489091a2c5a24fadff77ac93cf958bb1ac3a4c8d167b2fd38f6ccbef29"
+      }
+    },
+    "xxxl": {
+      "status": "passed",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "sourceHash": "2c8c2af179e110bf01a0444f400de3a6ad1f0fbe6c2ef464e6ad0d501ed02e48",
+      "screenshots": {
+        "xxxl-landscape-tags.png": "0d906bc25c0715b05da275597c8820c14d27134cb763f4dcc329c0b525c60178",
+        "xxxl-portrait-tags.png": "964f718d73c29a4ed15115676fa712eb58bfb053eb7cc2337bd1cf7853ed0e97"
+      }
+    }
+  }
+}

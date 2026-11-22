@@ -393,7 +393,24 @@ leaf widths. Rows support text, buttons, links and conditional branches of those
 leaves; nested containers, disclosures and input sizing remain blocked. HTML, static React, Vue and Svelte share this mapping. Row containers
 do not add accessibility identifiers that could override descendant identifiers.
 Existing IR versions retain their previous output; state and navigation contracts
-remain available in 1.5. This is not a CSS flexbox engine: stretch/baseline alignment,
-wrapping, distributed justification, flex factors and ambiguous repeated layout
-declarations remain blocked. Native compression/line wrapping may differ from a
+remain available in 1.5. Wrapping uses IR 1.6 below. Stretch/baseline alignment,
+distributed justification, flex factors and ambiguous repeated declarations
+remain blocked. Native compression/line wrapping may differ from a
 browser, so successful generation/build does not establish visual fidelity.
+
+### Explicit wrapping rows (IR 1.6)
+
+Add `flex-wrap: wrap` to an explicit centered row to place its children on as
+many lines as the available width requires. The HTML, React, Vue and Svelte
+adapters share the same mapping. The generated SwiftUI layout measures the
+intrinsic size of each leaf. An oversized leaf gets the container width and
+can grow vertically. SwiftUI applies its native line breaker to an unbroken
+word wider than the row. CSS flex items with `min-width:auto` may instead overflow
+at their minimum content width. This subset targets chips that fit individually.
+Each line centers its children vertically and uses the
+source gap between items and lines. Traversal follows source order.
+
+Ordinary rows still produce IR 1.5 and use HStack. Wrap-reverse, flex growth,
+distributed alignment and nested container sizing require additional mappings.
+The [chip row fixture](../../benchmarks/universal/wrapping-row/) checks
+orientation changes, accessibility element order and portrait text clipping.

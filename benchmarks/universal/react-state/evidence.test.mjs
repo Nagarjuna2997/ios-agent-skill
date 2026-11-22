@@ -71,3 +71,36 @@ test('independent sizes retain failures while collecting and resuming a successf
  failLarge=false;await verifyNativeSizes(run,async()=>assert.fail('unexpected failure'));
  assert.deepEqual(calls.map(x=>x[0]),['large','xxxl','large']);
 });
+
+test('wrapping cells require real portrait and landscape captures from the passing layout test before checkpointing',async t=>{
+ const {createRequire}=await import('node:module');
+ const {PNG}=createRequire(new URL('../../../mcp-server/package.json',import.meta.url))('pngjs');
+ const image=(width,height)=>PNG.sync.write({width,height,data:Buffer.alloc(width*height*4,255)});
+ const context=await setup(t),records=[];
+ let damage='missing';
+ const options={...context.options,fixture:'wrapping-chip-row',expectedTests:1,
+  runTests:async()=>({...await context.options.runTests(),passed:1}),
+  record:async(tests,artifacts)=>records.push(artifacts),
+  exportAttachments:async(bundle,dest)=>{
+   await mkdir(dest);
+   const attachment=orientation=>({isAssociatedWithFailure:false,exportedFileName:orientation+'.png',suggestedHumanReadableName:orientation+'-tags_0_UUID.png'});
+   const captures=[attachment('portrait'),attachment('landscape')];
+   if(damage==='missing')captures.pop();
+   if(damage==='failure')captures[0].isAssociatedWithFailure=true;
+   if(damage==='duplicate')captures.push(captures[0]);
+   if(damage==='unsafe')captures[0].exportedFileName='../portrait.png';
+   const id=damage==='wrong-test'?'UnrelatedTests/test()':'WrappingRowTests/testRowsReflowAndPreserveReadingOrder()';
+   await writeFile(join(dest,'manifest.json'),JSON.stringify([{testIdentifier:id,attachments:captures}]));
+   await writeFile(join(dest,'portrait.png'),damage==='truncated'?image(1,2).subarray(0,33):image(1,2));
+   await writeFile(join(dest,'landscape.png'),damage==='orientation'?image(1,2):image(2,1));
+  }};
+ for(damage of ['missing','failure','duplicate','unsafe','wrong-test','truncated','orientation']){
+  await assert.rejects(testEvidence(options));
+  assert.ok(records.at(-1).attachmentError,damage);
+  await assert.rejects(readFile(join(context.root,'checkpoints/large.json')),/ENOENT/);
+ }
+ damage=undefined;
+ const {attachments}=await testEvidence(options);
+ assert.ok((await readdir(attachments)).includes('landscape.png'));
+ assert.ok(JSON.parse(await readFile(join(context.root,'checkpoints/large.json'))).payload);
+});

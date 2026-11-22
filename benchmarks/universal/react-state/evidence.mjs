@@ -1,8 +1,10 @@
 import {join} from 'node:path';
+import {lstat,readFile} from 'node:fs/promises';
+import {wrappingFixture,verifyWrappingCaptures} from '../native-behavior/capture-contract.mjs';
 import {randomUUID} from 'node:crypto';
 
 // Keep the raw result bundle in the integrity contract, not just its derived summary.
-export async function testEvidence({root,folder,key,journal,runTests,record,exportAttachments,files,expectedTests}) {
+export async function testEvidence({root,folder,key,journal,runTests,record,exportAttachments,files,expectedTests,fixture}) {
  return journal.stage(key,async()=>{
   const tests=await runTests();await record(tests);
   const validTests=tests.status==='passed'&&Number.isInteger(tests.passed)&&tests.passed>0&&tests.failed===0&&tests.skipped===0;
@@ -22,6 +24,17 @@ export async function testEvidence({root,folder,key,journal,runTests,record,expo
   if(!validTests)throw Error('Native tests failed or unavailable: '+key);
   if(expectedTests!==undefined&&(!Number.isInteger(expectedTests)||expectedTests<1||tests.passed!==expectedTests))throw Error('Native test count differs from fixture contract: '+key);
   if(exportError)throw exportError;
+  if(fixture===wrappingFixture){
+   try{
+    await verifyWrappingCaptures(async(name,max)=>{
+     const path=join(attachments,name),stat=await lstat(path);
+     if(!stat.isFile()||stat.size>max)throw Error('Invalid wrapping-row attachment: '+name);
+     const data=await readFile(path);
+     if(data.length>max)throw Error('Attachment grew beyond limit: '+name);
+     return data;
+    });
+   }catch(error){await record(tests,{attachments,attachmentError:error.message});throw error;}
+  }
   return {value:{tests,attachments},files:[join(folder,tests.logPath),...await files(resultBundle),...await files(attachments)]};
  });
 }

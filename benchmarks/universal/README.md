@@ -103,3 +103,11 @@ set. A configured icon name remains selected. This permits unsigned simulator
 builds; it does not satisfy App Store icon requirements or certify release readiness.
 Asset-catalog and Interface Builder diagnostics retain their file and message even
 when Xcode supplies no source line number, so repair reports expose the actual error.
+
+## Responsive chips and accessible inputs
+
+The [wrapping-row fixture](wrapping-row/) measures tag reflow after rotation
+and tests the accessibility tree order at Large and XXXL. The [controlled React
+form](react-input/) checks the rendered prompt, the editable control, input/reset
+behavior and Apple's accessibility audit at those sizes. Each fixture links its
+Xcode 27.2 summaries and simulator screenshots.

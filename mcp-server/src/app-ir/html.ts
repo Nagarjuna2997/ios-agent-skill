@@ -40,7 +40,7 @@ export function htmlToIR(html: string, sourcePath = 'index.html', name = 'Import
     const out: AppIR['nodes'][number]['style'] = {};
     const rawStyle = (el.attrs.find(a => a.name === 'style')?.value ?? '').toLowerCase();
     const isRow=/display\s*:\s*flex\s*(?:;|$)/.test(rawStyle)&&/flex-direction\s*:\s*row\s*(?:;|$)/.test(rawStyle);
-    if(isRow&&['display','flex-direction'].some(key=>rawStyle.split(';').filter(part=>part.trim().startsWith(key+':')||new RegExp('^\\s*'+key+'\\s*:').test(part)).length>1))limitation('ambiguous-row-layout','Repeated row layout declarations require explicit resolution',el);
+    if(isRow&&['display','flex-direction','align-items','flex-wrap'].some(key=>rawStyle.split(';').filter(part=>part.trim().startsWith(key+':')||new RegExp('^\\s*'+key+'\\s*:').test(part)).length>1))limitation('ambiguous-row-layout','Repeated row layout declarations require explicit resolution',el);
     if(isRow&&!/align-items\s*:\s*center\s*(?:;|$)/.test(rawStyle))limitation('unsupported-row-alignment','Rows require explicit align-items:center; stretch and baseline layout are not mapped',el);
     if (!isRow && /display\s*:\s*flex\s*(?:;|$)/.test(rawStyle) && !/flex-direction\s*:\s*column\s*(?:;|$)/.test(rawStyle)) limitation('unsupported-flex-direction','Flex rows are not supported; explicit column direction is required',el);
     for (const part of (el.attrs.find(a => a.name === 'style')?.value ?? '').split(';').filter(s => s.trim())) {
@@ -54,6 +54,7 @@ export function htmlToIR(html: string, sourcePath = 'index.html', name = 'Import
       } else if (key === 'font-weight' && ['400','600','700','normal','bold'].includes(value)) out.bold = ['600','700','bold'].includes(value);
       else if (key === 'text-align' && ['left','center'].includes(value)) out.centered = value === 'center';
       else if ((key === 'margin' && value === '0') || (key === 'font-family' && ['-apple-system','system-ui'].includes(value))) { /* native defaults */ }
+      else if (isRow && key === 'flex-wrap' && value === 'wrap') out.wrap = true;
       else if ((key === 'display' && value === 'flex') || (key === 'flex-direction' && ['column','row'].includes(value)) || (key === 'align-items' && value === 'center' && isRow)) { /* native column */ }
       else limitation('unsupported-css',`CSS declaration is not mapped: ${key || part}`,el);
     }
@@ -78,8 +79,11 @@ export function htmlToIR(html: string, sourcePath = 'index.html', name = 'Import
     const id = `node-${++count}`; const appearance = style(n);
     const rawStyle=(n.attrs.find(a=>a.name==='style')?.value??'').toLowerCase();
     const row=/display\s*:\s*flex\s*(?:;|$)/.test(rawStyle)&&/flex-direction\s*:\s*row\s*(?:;|$)/.test(rawStyle);
-    if(row&&['p','h1','h2','h3','span','strong','details','summary'].includes(n.tagName))limitation('unsupported-row-element','Rows require a plain container element',n);
-    if(row){ir.schemaVersion='1.5.0';appearance.gap??=0;}
+    if (row && ['p','h1','h2','h3','span','strong','details','summary'].includes(n.tagName)) {
+      limitation('unsupported-row-element','Rows require a plain container element',n);
+      delete appearance.wrap;
+    }
+    if (row) appearance.gap ??= 0;
     if (['p','h1','h2','h3','span','strong'].includes(n.tagName)) {
       if (n.childNodes.some(element)) limitation('inline-markup',`Nested markup in <${n.tagName}> is flattened; inspect its semantics`,n);
       ir.nodes.push({id,kind:'text',text:content(n).replace(/\s+/g,' ').trim(),children:[],style:{...(n.tagName==='strong'?{bold:true}:{}),...(/^h[1-3]$/.test(n.tagName)?{bold:true,fontSize:n.tagName==='h1'?32:24}:{}),...appearance},evidence:evidence(n)}); return [id];
@@ -102,6 +106,7 @@ export function htmlToIR(html: string, sourcePath = 'index.html', name = 'Import
   const body = htmlEl.childNodes.find(n => element(n) && n.tagName === 'body') as Element;
   for (const n of head.childNodes) if (element(n) && ['style','script','link'].includes(n.tagName)) limitation('head-resource','Head CSS/scripts/resources are not evaluated',n);
   const root = visit(body,0)[0]!;
+  if (ir.nodes.some(n => n.kind === 'row')) ir.schemaVersion = ir.nodes.some(n => n.style.wrap) ? '1.6.0' : '1.5.0';
   const title = head.childNodes.find(n => element(n) && n.tagName === 'title');
   ir.screens.push({id:'home',title:(title?content(title):name).trim().slice(0,80) || name,root});
   for (const area of ['api','auth','data','assets','appearance','responsive'] as const) ir.requirements.push({id:`review-${area}`,area,status:'unknown',description:`No ${area} behavior inferred from static HTML. Developer review required.`,evidence:[]});

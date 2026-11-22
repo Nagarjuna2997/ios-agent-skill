@@ -127,3 +127,28 @@ test('a failed size checkpoint or export cannot be presented as native completio
  report.status='failed';report.large.error='<b>Artifact changed</b>';
  const {html}=await render();assert.ok(html.includes('&lt;b&gt;Artifact changed&lt;/b&gt;'));
 }));
+
+test('wrapping-row reports display both orientations per size and reject missing or reused captures',async()=>nativeFixture(async({root,report,attachments,render})=>{
+ const {createRequire}=await import('node:module');
+ const {PNG}=createRequire(new URL('../../mcp-server/package.json',import.meta.url))('pngjs');
+ report.fixture='wrapping-chip-row';report.expectedTests=1;
+ report.large.tests.passed=report.xxxl.tests.passed=1;
+ await assert.rejects(render(),/Distinct attachment folders/);
+ report.xxxl.attachments=report.large.attachments;
+ await assert.rejects(render(),/Distinct attachment folders/);
+ report.xxxl.attachments='xxxl-attachments';
+ await mkdir(join(root,report.xxxl.attachments));
+ const test=attachments[0];
+ test.testIdentifier='WrappingRowTests/testRowsReflowAndPreserveReadingOrder()';
+ test.attachments=['portrait','landscape'].map(orientation=>({exportedFileName:orientation+'.png',suggestedHumanReadableName:orientation+'-tags',isAssociatedWithFailure:false}));
+ for(const folder of ['large-attachments','xxxl-attachments']){
+  await writeFile(join(root,folder,'manifest.json'),JSON.stringify(attachments));
+  for(const [orientation,width,height] of [['portrait',1,2],['landscape',2,1]]){
+   await writeFile(join(root,folder,orientation+'.png'),PNG.sync.write({width,height,data:Buffer.alloc(width*height*4,255)}));
+  }
+ }
+ const {html,summary}=await render();assert.equal(summary.kind,'native-behavior');
+ assert.equal((html.match(/<figure>/g)??[]).length,4);assert.ok(html.includes('landscape-tags'));
+ await rm(join(root,'xxxl-attachments','landscape.png'));await assert.rejects(render(),/ENOENT/);
+ report.status='failed';assert.match((await render()).html,/landscape-tags unavailable/);
+}));

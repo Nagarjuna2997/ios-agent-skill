@@ -1,12 +1,12 @@
 # Universal Engine completion boundaries
 
-Status audited on October 28, 2026. A PR being incorporated into main does not
+Initial audit October 28, 2026. Text input evidence updated November 21. A PR being incorporated into main does not
 complete its unresolved acceptance checks. Historical evidence is not rewritten.
 
 | Area | Current boundary | Evidence or completion requirement |
 | --- | --- | --- |
 | Heading fidelity | A benchmark-only UIKit candidate has local and hosted build/typography evidence. The separately authorized local baseline covers only its exact recorded environment. | [Local authorization](evidence/local-known-good-20261028/README.md). Hosted reference approval and production integration are separate; do not infer either from a merge. |
-| Text inputs | Typing, reset, relaunch and independent state passed in the archived fixture, but placeholder clipping failed at both recorded sizes. | [6 passing / 2 failing executions](evidence/react-input-both-sizes-local-20261028/README.md). Correct the cause without removing the placeholder or excluding the audit. |
+| Text inputs | The controlled React input fixture passes typing, reset, relaunch, visible prompt OCR and accessibility audits at Large and XXXL on iOS 27.2. Broader form and VoiceOver coverage is open. | [8 passing executions and screenshots](evidence/react-input-20261121/result.json). [October clipping failure](evidence/react-input-both-sizes-local-20261028/README.md). |
 | Studio quality | Real generation, native execution and export exist. A sample's largest-size audit and bounded visual review retain unresolved findings. | [Studio boundaries](../../studio/WORKSPACE.md) and [actual results](../../studio/VALIDATION.md). A passing build is not a passing visual review. |
 | Framework coverage | HTML and bounded React/Vue/Svelte subsets share App IR; unsupported inputs must fail explicitly. | Existing adapter tests define supported syntax. Arbitrary Next.js, Angular, Flutter, React Native and UIKit-source conversion are not complete. |
 | Efficiency evaluation | Tool profiles, local memory and loop intervention are implemented. Trusted-receipt comparison exists; an isolated provider execution runner does not. | [Evaluation contract](../efficiency/README.md). Need actual sandboxed cold/warm paired runs before any savings claim. |

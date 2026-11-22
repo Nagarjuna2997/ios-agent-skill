@@ -12,6 +12,7 @@ import {ProcessRunner} from '../../../mcp-server/dist/agent/runner.js';
 import {buildProject} from '../../../mcp-server/dist/agent/build.js';
 import {testProject} from '../../../mcp-server/dist/agent/testing.js';
 import {runSetupCommand,classifyRunFailure,waitForSimulator} from '../fidelity/commands.mjs';
+import {fixtureUIScheme} from './ui-test-scheme.mjs';
 import {testEvidence,verifyNativeSizes} from '../react-state/evidence.mjs';
 
 // The caller chooses a repository-owned fixture, never a path from imported app code.
@@ -45,7 +46,7 @@ try{
  if(xcode!==`Xcode ${profile.xcode}\nBuild version ${profile.xcodeBuild}`||sdk!==profile.sdk)throw Error('Pinned Xcode/SDK unavailable');
  const runtimes=JSON.parse(await command('xcrun',['simctl','list','runtimes','--json']));
  const runtime=runtimes.runtimes.find(r=>r.identifier===profile.runtime&&r.isAvailable);if(!runtime)throw Error('Pinned simulator runtime unavailable');
- const inputs=[fileURLToPath(import.meta.url),resolve(here,'../react-state/evidence.mjs'),...await files(here),...await files(resolve(here,'../../../mcp-server/dist')),resolve(here,'../fidelity/commands.mjs')];
+ const inputs=[fileURLToPath(import.meta.url), fileURLToPath(new URL('./ui-test-scheme.mjs', import.meta.url)), fileURLToPath(new URL('./capture-contract.mjs', import.meta.url)),resolve(here,'../react-state/evidence.mjs'),...await files(here),...await files(resolve(here,'../../../mcp-server/dist')),resolve(here,'../fidelity/commands.mjs')];
  const hashes=[];for(const path of inputs)hashes.push([path.slice(resolve(here,'../../..').length),sha256(await readFile(path))]);
  const environment={xcode,sdk,runtime:runtime.identifier,runtimeBuild:runtime.buildversion,host:await command('sw_vers',['-buildVersion'])};
  const contract=sha256(JSON.stringify({profile,environment,hashes,name,fixture,expectedTests}));
@@ -70,7 +71,7 @@ try{
   for(const suffix of ['Tests','UITests'])await mkdir(join(folder,name+suffix),{recursive:true});
   await copyFile(join(here,'InteractionTests.swift'),join(folder,name+'UITests/InteractionTests.swift'));await regenerate(folder,spec,runner);
   const scheme=join(folder,name+'.xcodeproj/xcshareddata/xcschemes/'+name+'.xcscheme');
-  await writeFile(scheme,(await readFile(scheme,'utf8')).replace(new RegExp(`<TestableReference[^>]*><BuildableReference[^>]*BuildableName="${name}Tests\\.xctest"[^>]*\\/><\\/TestableReference>`,'g'),''));
+  await writeFile(scheme,fixtureUIScheme(await readFile(scheme,'utf8'),name));
   return {value:{folder,sourceHash:ir.sources[0].sha256,irHash:sha256(JSON.stringify(ir))},files:await files(folder)};
  });report.project=project;report.phase='build';await save();
  report.build=await journal.stage('build',async()=>{
@@ -78,7 +79,7 @@ try{
   return {value,files:[value.logPath,...await files(value.appPath)]};
  });await save();report.phase='tests';await save();
  await verifyNativeSizes(async(key,size)=>{
-  report[key]=await testEvidence({root,folder:project.folder,key,journal,files,expectedTests,
+  report[key]=await testEvidence({root,folder:project.folder,key,journal,files,expectedTests,fixture,
    runTests:async()=>{await ensureSimulator();await command('xcrun',['simctl','ui',udid,'content_size',size]);return testProject(project.folder,runner,udid);},record:async(tests,artifacts={})=>{report[key]={tests,...artifacts};await save();},
    exportAttachments:(bundle,destination)=>command('xcrun',['xcresulttool','export','attachments','--path',bundle,'--output-path',destination]),
   });await save();

@@ -1,6 +1,7 @@
 // Render recorded native behavior results; never infer browser fidelity or approve a baseline.
 import {basename,join} from 'node:path';
-export const nativeFixtures = new Map([['react-boolean-state',3],['react-memory-router',3],['react-controlled-text',3],['react-controlled-text-reset',4]]);
+import {wrappingFixture,verifyWrappingCaptures} from './native-behavior/capture-contract.mjs';
+export const nativeFixtures = new Map([[wrappingFixture,1],['react-boolean-state',3],['react-memory-router',3],['react-controlled-text',3],['react-controlled-text-reset',4]]);
 const leaf=value=>{
  if(typeof value!=='string'||!value||value.includes('\\'))throw Error('Invalid attachment path');
  const name=basename(value);if(!name||name==='.'||name==='..')throw Error('Invalid attachment path');return name;
@@ -20,11 +21,14 @@ export async function nativeEvidencePanels(report,{read,image,escape}){
  if(report.expectedTests!==undefined&&report.expectedTests!==expected)throw Error('Fixture test-count contract does not match report');
  const results=Object.fromEntries(['large','xxxl'].map(key=>[key,testResult(report[key]?.tests)]));
  if(report.status==='native-behavior-passed'&&(report.build?.success!==true||report.error!=null||['large','xxxl'].some(key=>report[key]?.error!=null||report[key]?.attachmentError!=null)||(report.build.errors!==undefined&&(!Array.isArray(report.build.errors)||report.build.errors.length!==0))||Object.values(results).some(r=>r?.status!=='passed'||r.passed!==expected)))throw Error('Contradictory native completion status');
+ const requireWrapping=report.status==='native-behavior-passed'&&report.fixture===wrappingFixture;
+ if(requireWrapping&&(!report.large.attachments||!report.xxxl.attachments||leaf(report.large.attachments)===leaf(report.xxxl.attachments)))throw Error('Distinct attachment folders required for wrapping-row size cells');
  const panels=[];
  for(const [key,label] of [['large','Large'],['xxxl','XXXL']]){
   const row=report[key],tests=results[key],captures=[];
   if(row?.attachments){
    const folder=leaf(row.attachments);
+   if(requireWrapping)await verifyWrappingCaptures((name,max)=>read(join(folder,name),max));
    let manifest;
    try{manifest=JSON.parse((await read(join(folder,'manifest.json'),1024*1024)).toString());}
    catch(error){if(error.code!=='ENOENT')throw error;}

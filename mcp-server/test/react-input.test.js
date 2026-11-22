@@ -61,3 +61,13 @@ test('borrowed setter resolution respects event-parameter and component-name sha
  const shadow=`import {useState} from 'react';function Child(){return <p>Global</p>}function Wrapper({Child}){return <Child/>}export default function App(){const [name,setName]=useState("");return <main><Wrapper Child={name}/></main>}`;
  assert.throws(()=>reactToIR(shadow),/shadows a router\/component/);
 });
+
+test('a visible prompt follows the empty binding and is exposed as a native field hint', () => {
+  const ir = reactToIR(app(input.replace('Enter name', 'Enter &quot;name&quot;')));
+  const source = renderSwiftUI(ir).source;
+  const field = ir.nodes.find(node => node.kind === 'textfield');
+  assert.equal(field.placeholder, 'Enter "name"');
+  assert.ok(source.includes('isEmpty: state_node_state_1.isEmpty'));
+  assert.ok(source.includes('.accessibilityHint(Text(verbatim: state_node_state_1.isEmpty ?'));
+  assert.ok(source.includes('if isEmpty && !prompt.isEmpty'));
+});

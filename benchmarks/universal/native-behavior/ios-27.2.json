@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "xcode": "27.2",
+  "xcodeBuild": "27B52",
+  "sdk": "27.2",
+  "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-27-2",
+  "deviceType": "com.apple.CoreSimulator.SimDeviceType.iPhone-18-Pro",
+  "appearance": "light",
+  "locale": "en_US"
+}
