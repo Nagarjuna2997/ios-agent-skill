@@ -416,7 +416,7 @@ Search offline with `node scripts/query-library.mjs search "SwiftData"`. Read a 
 | [docs/frameworks/cloudkit.md](../../docs/frameworks/cloudkit.md) | guide | 28577 |
 | [docs/frameworks/combine.md](../../docs/frameworks/combine.md) | guide | 9143 |
 | [docs/frameworks/core-ai.md](../../docs/frameworks/core-ai.md) | guide | 8989 |
-| [docs/frameworks/core-data.md](../../docs/frameworks/core-data.md) | guide | 10118 |
+| [docs/frameworks/core-data.md](../../docs/frameworks/core-data.md) | guide | 10210 |
 | [docs/frameworks/core-location.md](../../docs/frameworks/core-location.md) | guide | 9793 |
 | [docs/frameworks/core-spotlight-rag.md](../../docs/frameworks/core-spotlight-rag.md) | guide | 4845 |
 | [docs/frameworks/cryptokit.md](../../docs/frameworks/cryptokit.md) | guide | 11421 |
@@ -452,7 +452,7 @@ Search offline with `node scripts/query-library.mjs search "SwiftData"`. Read a 
 | [docs/frameworks/services/weatherkit.md](../../docs/frameworks/services/weatherkit.md) | guide | 12738 |
 | [docs/frameworks/storekit.md](../../docs/frameworks/storekit.md) | guide | 21942 |
 | [docs/frameworks/swift-charts.md](../../docs/frameworks/swift-charts.md) | guide | 15634 |
-| [docs/frameworks/swiftdata.md](../../docs/frameworks/swiftdata.md) | guide | 19444 |
+| [docs/frameworks/swiftdata.md](../../docs/frameworks/swiftdata.md) | guide | 19664 |
 | [docs/frameworks/tipkit.md](../../docs/frameworks/tipkit.md) | guide | 20029 |
 | [docs/frameworks/usernotifications.md](../../docs/frameworks/usernotifications.md) | guide | 22001 |
 | [docs/frameworks/visionkit.md](../../docs/frameworks/visionkit.md) | guide | 3464 |
@@ -498,7 +498,7 @@ Search offline with `node scripts/query-library.mjs search "SwiftData"`. Read a 
 | [docs/swiftui/ios-27-interactions.md](../../docs/swiftui/ios-27-interactions.md) | guide | 5287 |
 | [docs/swiftui/layout.md](../../docs/swiftui/layout.md) | guide | 14775 |
 | [docs/swiftui/navigation.md](../../docs/swiftui/navigation.md) | guide | 24322 |
-| [docs/swiftui/state-and-data-flow.md](../../docs/swiftui/state-and-data-flow.md) | guide | 26408 |
+| [docs/swiftui/state-and-data-flow.md](../../docs/swiftui/state-and-data-flow.md) | guide | 26448 |
 | [docs/swiftui/views-and-controls.md](../../docs/swiftui/views-and-controls.md) | guide | 18047 |
 | [docs/testing/evaluations.md](../../docs/testing/evaluations.md) | guide | 5617 |
 | [docs/testing/mocking-strategy.md](../../docs/testing/mocking-strategy.md) | guide | 18553 |
