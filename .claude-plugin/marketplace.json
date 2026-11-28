@@ -1,0 +1,11 @@
+{
+  "name": "ios-agent-skill",
+  "owner": { "name": "Nagarjuna2997" },
+  "plugins": [
+    {
+      "name": "ios-simulator",
+      "source": "./plugins/ios-simulator",
+      "description": "An iOS Simulator pane beside the chat: toolchain setup checklist, device picker, screen, and simctl actions."
+    }
+  ]
+}
