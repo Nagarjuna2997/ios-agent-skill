@@ -1,0 +1,10 @@
+{
+  "name": "ios-simulator",
+  "version": "0.1.0",
+  "description": "An iOS Simulator pane beside the chat: toolchain setup checklist, device picker, live screen, and simctl actions.",
+  "types": "./types/index.d.ts",
+  "license": "MIT",
+  "author": {
+    "name": "Nagarjuna2997"
+  }
+}

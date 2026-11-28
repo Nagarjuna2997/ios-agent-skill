@@ -2861,8 +2861,8 @@
       "path": "docs/frameworks/core-data.md",
       "title": "Core Data",
       "kind": "guide",
-      "characters": 10118,
-      "hash": "f8828b1208c5ab92933959eaefbd77a35bfc30017368993ce943377f62ae682e"
+      "characters": 10210,
+      "hash": "0688a76c11a2101bc99566aed485d0505a610cd5bd8d87ac4b4587ca7faf77f1"
     },
     {
       "path": "docs/frameworks/core-location.md",
@@ -3113,8 +3113,8 @@
       "path": "docs/frameworks/swiftdata.md",
       "title": "SwiftData",
       "kind": "guide",
-      "characters": 19444,
-      "hash": "9e69136e09ef0b4693292caa9cc6d1ba33d4848598f2a137a296e0be498f7244"
+      "characters": 19664,
+      "hash": "6ca9533a43da86a5661b4fd0ed8c1db23768b2908416db7da0fdfaf7653ec192"
     },
     {
       "path": "docs/frameworks/tipkit.md",
@@ -3435,8 +3435,8 @@
       "path": "docs/swiftui/state-and-data-flow.md",
       "title": "SwiftUI State and Data Flow",
       "kind": "guide",
-      "characters": 26408,
-      "hash": "2040c7f263086b6966695c79d62bff0a088e6dba780466a4d33c51f08643ff17"
+      "characters": 26448,
+      "hash": "c9fedd9593cdd8e2a80caa63badc437192087c58065aa07bb38078882184927f"
     },
     {
       "path": "docs/swiftui/views-and-controls.md",

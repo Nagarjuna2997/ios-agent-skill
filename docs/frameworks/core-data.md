@@ -10,8 +10,8 @@ Core Data uses an `.xcdatamodeld` file to define your schema visually in Xcode. 
 
 import CoreData
 
-@objc(Task)
-public class Task: NSManagedObject {
+@objc(TodoItem)
+public class TodoItem: NSManagedObject {
     @NSManaged public var id: UUID
     @NSManaged public var title: String
     @NSManaged public var isCompleted: Bool
@@ -21,8 +21,8 @@ public class Task: NSManagedObject {
 }
 
 extension Task {
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<Task> {
-        return NSFetchRequest<Task>(entityName: "Task")
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<TodoItem> {
+        return NSFetchRequest<TodoItem>(entityName: "TodoItem")
     }
 
     var priorityLevel: Priority {
@@ -66,9 +66,9 @@ class PersistenceController {
         let controller = PersistenceController(inMemory: true)
         let ctx = controller.container.viewContext
         for i in 0..<10 {
-            let task = Task(context: ctx)
+            let task = TodoItem(context: ctx)
             task.id = UUID()
-            task.title = "Sample Task \(i)"
+            task.title = "Sample TodoItem \(i)"
             task.isCompleted = i.isMultiple(of: 3)
             task.createdAt = Date()
             task.priority = Int16(i % 3)
@@ -105,7 +105,7 @@ func importData(_ items: [ItemDTO]) async throws {
 
     try await context.perform {
         for dto in items {
-            let task = Task(context: context)
+            let task = TodoItem(context: context)
             task.id = dto.id
             task.title = dto.title
             task.isCompleted = dto.completed
@@ -118,7 +118,7 @@ func importData(_ items: [ItemDTO]) async throws {
 // performBackgroundTask convenience
 PersistenceController.shared.container.performBackgroundTask { context in
     // Already on a background queue
-    let request = Task.fetchRequest()
+    let request = TodoItem.fetchRequest()
     request.predicate = NSPredicate(format: "isCompleted == YES")
     if let completed = try? context.fetch(request) {
         completed.forEach { context.delete($0) }
@@ -131,10 +131,10 @@ PersistenceController.shared.container.performBackgroundTask { context in
 
 ```swift
 // Basic fetch
-let request = Task.fetchRequest()
+let request = TodoItem.fetchRequest()
 request.sortDescriptors = [
-    NSSortDescriptor(keyPath: \Task.priority, ascending: false),
-    NSSortDescriptor(keyPath: \Task.createdAt, ascending: true),
+    NSSortDescriptor(keyPath: \TodoItem.priority, ascending: false),
+    NSSortDescriptor(keyPath: \TodoItem.createdAt, ascending: true),
 ]
 let allTasks = try viewContext.fetch(request)
 
@@ -167,7 +167,7 @@ struct TaskListView: View {
         predicate: NSPredicate(format: "isCompleted == NO"),
         animation: .default
     )
-    private var tasks: FetchedResults<Task>
+    private var tasks: FetchedResults<TodoItem>
 
     var body: some View {
         List {
@@ -191,15 +191,15 @@ struct TaskListView: View {
 // Used primarily in UIKit for efficient table/collection view updates
 class TaskListViewController: UITableViewController, NSFetchedResultsControllerDelegate {
 
-    private var fetchedResultsController: NSFetchedResultsController<Task>!
+    private var fetchedResultsController: NSFetchedResultsController<TodoItem>!
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let request = Task.fetchRequest()
+        let request = TodoItem.fetchRequest()
         request.sortDescriptors = [
-            NSSortDescriptor(keyPath: \Task.priority, ascending: false),
-            NSSortDescriptor(keyPath: \Task.title, ascending: true),
+            NSSortDescriptor(keyPath: \TodoItem.priority, ascending: false),
+            NSSortDescriptor(keyPath: \TodoItem.title, ascending: true),
         ]
         request.predicate = NSPredicate(format: "isCompleted == NO")
 
@@ -232,20 +232,20 @@ class TaskListViewController: UITableViewController, NSFetchedResultsControllerD
 public class Category: NSManagedObject {
     @NSManaged public var id: UUID
     @NSManaged public var name: String
-    @NSManaged public var tasks: NSSet? // One-to-many (inverse of Task.category)
+    @NSManaged public var tasks: NSSet? // One-to-many (inverse of TodoItem.category)
 }
 
 extension Category {
-    var tasksArray: [Task] {
-        let set = tasks as? Set<Task> ?? []
+    var tasksArray: [TodoItem] {
+        let set = tasks as? Set<TodoItem> ?? []
         return set.sorted { $0.createdAt < $1.createdAt }
     }
 
     @objc(addTasksObject:)
-    @NSManaged public func addToTasks(_ value: Task)
+    @NSManaged public func addToTasks(_ value: TodoItem)
 
     @objc(removeTasksObject:)
-    @NSManaged public func removeFromTasks(_ value: Task)
+    @NSManaged public func removeFromTasks(_ value: TodoItem)
 }
 
 // Creating with relationships
@@ -253,7 +253,7 @@ let category = Category(context: viewContext)
 category.id = UUID()
 category.name = "Work"
 
-let task = Task(context: viewContext)
+let task = TodoItem(context: viewContext)
 task.id = UUID()
 task.title = "Prepare presentation"
 task.category = category // Sets both sides with inverse relationship
